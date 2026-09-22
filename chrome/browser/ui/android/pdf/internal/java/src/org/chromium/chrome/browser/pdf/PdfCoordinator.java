@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -156,7 +157,13 @@ public class PdfCoordinator
 
     private final String mTabId;
     private String mTitle;
-    private final String mUrl;
+
+    /** The URL the user is currently visiting (updates instantly on navigation). */
+    private String mUrl;
+
+    /** The URL of the currently loaded document (updates after download). */
+    private @Nullable String mLoadedUrl;
+
     private final boolean mIsIncognito;
     private @TriState int mIsFitToPageActive;
     private float mLastFitZoom = -1f;
@@ -321,6 +328,9 @@ public class PdfCoordinator
             mChromePdfViewerFragment.setDelegate(this);
         }
         mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
+        if (filepath != null) {
+            mLoadedUrl = url;
+        }
     }
 
     private void relocateMisplacedFragmentViews() {
@@ -1360,15 +1370,28 @@ public class PdfCoordinator
     @Override
     public void onDownloadComplete(String pdfFilePath, String pdfFileName) {
         mTitle = pdfFileName;
-        // `mIsPdfLoaded` is true when the PDF is reloaded. In this case, a new download is
-        // triggered while the current PDF is still loaded. Since the `PdfCoordinator` is reused,
-        // `mIsPdfLoaded` remains true. We then reload the fragment with the new file path.
-        // This reload flow is only used when fragment reuse is disabled.
+        String oldFilePath = mPdfFilePath;
+        String oldLoadedUrl = mLoadedUrl;
+        Uri oldUri = mUri;
+        if (oldFilePath != null && !oldFilePath.equals(pdfFilePath)) {
+            if (mIsIncognito && oldUri != null) {
+                PdfContentProvider.removeContentUri(oldUri.toString());
+            }
+            PdfUtils.maybeDeleteTransientFile(oldFilePath, oldLoadedUrl);
+        }
+        mLoadedUrl = mUrl;
+        // mIsPdfLoaded is true if a PDF document is already loaded (e.g. on reload or redownload).
+        // When fragment reuse is enabled, reset the load state and load the document into the
+        // existing fragment. Otherwise, reload the fragment with the new file path.
         if (mIsPdfLoaded) {
-            assert !PdfUtils.isReuseFragmentEnabled();
-            mPdfFilePath = pdfFilePath;
-            mUri = PdfUtils.getContentUri(mPdfFilePath, mTitle, mTabId, mIsIncognito);
-            reload();
+            if (PdfUtils.isReuseFragmentEnabled()) {
+                resetLoadState();
+                loadPdfFile(pdfFilePath);
+            } else {
+                mPdfFilePath = pdfFilePath;
+                mUri = PdfUtils.getContentUri(mPdfFilePath, mTitle, mTabId, mIsIncognito);
+                reload();
+            }
         } else {
             loadPdfFile(pdfFilePath);
         }
@@ -1383,6 +1406,10 @@ public class PdfCoordinator
 
     /**
      * Updates the PDF file path and URI after changes are saved.
+     *
+     * <p>Note: {@link #mLoadedUrl} is intentionally retained to preserve the download origin URL so
+     * that transient file cleanup continues to operate correctly if a subsequent redownload/reload
+     * occurs.
      *
      * @param tempFile The temporary file containing the saved PDF content (non-Incognito).
      * @param pfd The ParcelFileDescriptor containing the saved PDF content in memory (Incognito).
@@ -1426,7 +1453,9 @@ public class PdfCoordinator
                                 /* ignore */
                             }
                             if (newUri != null) {
-                                PdfContentProvider.removeContentUri(mPdfFilePath);
+                                if (mUri != null) {
+                                    PdfContentProvider.removeContentUri(mUri.toString());
+                                }
                                 mPdfFilePath = newUri.toString();
                                 mUri = newUri;
                                 if (mChromePdfViewerFragment != null) {
@@ -1488,6 +1517,8 @@ public class PdfCoordinator
                         if (finalUpdatedFilePath != null) {
                             mPdfFilePath = finalUpdatedFilePath;
                             mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
+                            // mLoadedUrl is intentionally retained to preserve download origin
+                            // for transient file cleanup on reload.
                         }
                         onDone.run();
                     });
@@ -1540,11 +1571,10 @@ public class PdfCoordinator
         mIsFragmentRestored = false;
         mIsFitToPageActive = TriState.NOT_SET;
         mLastFitZoom = -1f;
-        mHasMadeAnyChanges = false;
         if (mChromePdfViewerFragment != null) {
             if (mChromePdfViewerFragment.isAdded()) {
-                mChromePdfViewerFragment.setDocumentUri(null);
                 mChromePdfViewerFragment.setEditModeEnabled(false);
+                mChromePdfViewerFragment.setDocumentUri(null);
             }
             mChromePdfViewerFragment.setPagesPerRow(false);
         }
@@ -1554,6 +1584,27 @@ public class PdfCoordinator
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.resetTwoPagesPerRow();
             mToolbarCoordinator.setEditModeActive(false);
+        }
+        mHasMadeAnyChanges = false;
+        mIsEditModeActive = false;
+    }
+
+    @Override
+    public void discardChanges() {
+        if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.isAdded()) {
+            mChromePdfViewerFragment.setEditModeEnabled(false);
+        }
+        if (mToolbarCoordinator != null) {
+            mToolbarCoordinator.setEditModeActive(false);
+        }
+
+        // Override any synchronous side-effects from setEditModeEnabled(false).
+        mHasMadeAnyChanges = false;
+        mIsEditModeActive = false;
+
+        for (Observer observer : mObservers) {
+            // Observers will now correctly read hasChanges() as false.
+            observer.onHasChangesChanged();
         }
     }
 
@@ -1615,6 +1666,7 @@ public class PdfCoordinator
         Runnable onConfirmWithMetric =
                 () -> {
                     PdfUtils.recordDiscardAnnotations();
+                    discardChanges();
                     if (onConfirm != null) {
                         onConfirm.run();
                     }
@@ -1798,8 +1850,22 @@ public class PdfCoordinator
         return mUri;
     }
 
-    boolean getIsPdfLoadedForTesting() {
+    @Override
+    public boolean isPdfLoaded() {
         return mIsPdfLoaded;
+    }
+
+    @Override
+    public void onUrlChanged(@NonNull String url) {
+        mUrl = url;
+    }
+
+    String getUrlForTesting() {
+        return mUrl;
+    }
+
+    @Nullable String getLoadedUrlForTesting() {
+        return mLoadedUrl;
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {
@@ -2450,6 +2516,8 @@ public class PdfCoordinator
         Runnable onProceedWithMetric =
                 () -> {
                     PdfUtils.recordDiscardAnnotations();
+                    discardChanges();
+                    resetLoadState();
                     if (onProceed != null) {
                         onProceed.run();
                     }

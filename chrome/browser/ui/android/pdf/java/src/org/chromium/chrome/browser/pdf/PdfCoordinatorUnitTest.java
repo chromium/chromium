@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -66,6 +67,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -180,6 +182,7 @@ public class PdfCoordinatorUnitTest {
     @After
     public void tearDown() {
         ChromeFileProvider.setGeneratedUriForTesting(null);
+        PdfContentProvider.cleanUpForTesting();
         PostTask.setPrenativeThreadPoolExecutorForTesting(null);
         if (mUserActionTester != null) {
             mUserActionTester.tearDown();
@@ -192,6 +195,10 @@ public class PdfCoordinatorUnitTest {
     }
 
     private void createPdfCoordinator(@Nullable String filePath) {
+        createPdfCoordinator(filePath, PDF_URL);
+    }
+
+    private void createPdfCoordinator(@Nullable String filePath, String url) {
         // For the purpose of testing, we are using the transient file path and url above when in
         // reality, the file path will not be available for a transient pdf when this constructor
         // is called.
@@ -203,7 +210,7 @@ public class PdfCoordinatorUnitTest {
                         filePath,
                         PDF_TITLE,
                         mTab,
-                        PDF_URL,
+                        url,
                         mPdfFragmentViewTracker);
         mPdfView = new PdfView(mActivity);
         mPdfView.layout(0, 0, /* width= */ 500, /* height= */ PDF_CONTENT_HEIGHT);
@@ -1791,6 +1798,8 @@ public class PdfCoordinatorUnitTest {
             assertTrue(proceedCalled[0]);
             assertFalse(cancelCalled[0]);
             assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
+            assertFalse(pdfCoordinator.hasChanges());
+            assertFalse(pdfCoordinator.isPdfLoaded());
         }
     }
 
@@ -2153,9 +2162,121 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDiscardChanges_ResetsChanges() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+
+        boolean[] observerNotified = new boolean[1];
+        PdfCoordinatorInterface.Observer observer = () -> observerNotified[0] = true;
+        mPdfCoordinator.addObserver(observer);
+
+        mPdfCoordinator.onEditsApplied();
+        assertTrue(mPdfCoordinator.hasChanges());
+        assertTrue(observerNotified[0]);
+
+        observerNotified[0] = false;
+        mPdfCoordinator.discardChanges();
+
+        assertFalse(
+                "hasChanges should be false after discardChanges", mPdfCoordinator.hasChanges());
+        assertTrue(
+                "isPdfLoaded should remain true after discardChanges",
+                mPdfCoordinator.isPdfLoaded());
+        assertTrue("Observer should be notified on discardChanges", observerNotified[0]);
+        assertTrue("File should not be deleted by discardChanges", new File(mFilePath).exists());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testResetLoadState_ResetsEditMode() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+
+        PdfCoordinator.ChromePdfViewerFragment spyFragment =
+                spy(mPdfCoordinator.mChromePdfViewerFragment);
+        mPdfCoordinator.mChromePdfViewerFragment = spyFragment;
+        doReturn(true).when(spyFragment).isAdded();
+
+        mPdfCoordinator.onEditModeChanged(true);
+        assertTrue(mPdfCoordinator.hasChanges());
+
+        mPdfCoordinator.resetLoadState();
+
+        assertFalse(
+                "isPdfLoaded should be false after resetLoadState", mPdfCoordinator.isPdfLoaded());
+        assertFalse(
+                "hasChanges should be false after resetLoadState", mPdfCoordinator.hasChanges());
+        InOrder inOrder = inOrder(spyFragment);
+        inOrder.verify(spyFragment).setEditModeEnabled(false);
+        inOrder.verify(spyFragment).setDocumentUri(null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnUrlChanged_UpdatesCoordinatorUrl() {
+        createPdfCoordinator();
+        String newUrl = "https://www.example.com/new.pdf";
+        mPdfCoordinator.onUrlChanged(newUrl);
+        assertEquals(newUrl, mPdfCoordinator.getUrlForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testLoadedUrl_SetOnlyAfterLoaded() {
+        createPdfCoordinator(null);
+        assertNull(mPdfCoordinator.getLoadedUrlForTesting());
+
+        String newUrl = "https://www.example.com/new.pdf";
+        mPdfCoordinator.onUrlChanged(newUrl);
+        assertNull(mPdfCoordinator.getLoadedUrlForTesting());
+
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        assertEquals(newUrl, mPdfCoordinator.getLoadedUrlForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testLoadedUrl_SetInConstructorWhenFilePathProvided() {
+        createPdfCoordinator(mFilePath);
+        assertEquals(PDF_URL, mPdfCoordinator.getLoadedUrlForTesting());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testLoadedUrl_FragmentRestored_DownloadInProgress_NotSetUntilDownloadComplete() {
+        TestChromePdfViewerFragment existingFragment = new TestChromePdfViewerFragment();
+        existingFragment.setFilePath(mFilePath);
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(existingFragment, String.valueOf(TAB_ID))
+                .commitNow();
+        PdfView pdfView = new PdfView(mActivity);
+        ShadowPdfView shadowPdfView = Shadow.extract(pdfView);
+        PdfDocument mockDocument = Mockito.mock(PdfDocument.class);
+        when(mockDocument.getPageCount()).thenReturn(3);
+        shadowPdfView.mPdfDocument = mockDocument;
+        existingFragment.onPdfViewCreated(pdfView);
+
+        String newUrl = "https://www.example.com/new.pdf";
+        createPdfCoordinator(null, newUrl);
+        // Even though mPdfFilePath is non-null from the restored fragment, filepath is null
+        // because the new web PDF is still downloading. mLoadedUrl should not be set yet.
+        assertNull(mPdfCoordinator.getLoadedUrlForTesting());
+
+        String newFilePath = "/data/user/10/com.google.android.apps.chrome/cache/pdfs/new_fw4.pdf";
+        String newFileName = "new_fw4.pdf";
+        mPdfCoordinator.onDownloadComplete(newFilePath, newFileName);
+        assertEquals(newUrl, mPdfCoordinator.getLoadedUrlForTesting());
+        assertTrue("Restored local file should not be deleted", new File(mFilePath).exists());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOnDownloadComplete_WhenLoaded_ReloadsWithContentUri() {
         createPdfCoordinator();
-        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
 
         String newFilePath = "/data/user/10/com.google.android.apps.chrome/cache/pdfs/new_fw4.pdf";
         String newFileName = "new_fw4.pdf";
@@ -2165,21 +2286,98 @@ public class PdfCoordinatorUnitTest {
         Uri expectedUri =
                 PdfUtils.getContentUri(newFilePath, newFileName, String.valueOf(TAB_ID), false);
         assertEquals(expectedUri, mPdfCoordinator.getUri());
+        assertFalse("Old transient file should be deleted on reload", new File(mFilePath).exists());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testOnDownloadComplete_WhenLoaded_FragmentReuseEnabled_ReusesFragment() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+        PdfCoordinator.ChromePdfViewerFragment fragmentBefore =
+                mPdfCoordinator.mChromePdfViewerFragment;
+
+        String newFilePath = "/data/user/10/com.google.android.apps.chrome/cache/pdfs/new_fw4.pdf";
+        String newFileName = "new_fw4.pdf";
+        mPdfCoordinator.onDownloadComplete(newFilePath, newFileName);
+
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+        assertSame(
+                "Fragment should be reused when fragment reuse is enabled",
+                fragmentBefore,
+                mPdfCoordinator.mChromePdfViewerFragment);
+        assertEquals(newFilePath, mPdfCoordinator.getFilepath());
+        Uri expectedUri =
+                PdfUtils.getContentUri(newFilePath, newFileName, String.valueOf(TAB_ID), false);
+        assertEquals(expectedUri, mPdfCoordinator.getUri());
+        assertFalse("Old transient file should be deleted on reload", new File(mFilePath).exists());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void
+            testOnDownloadComplete_WhenLoaded_FragmentReuseEnabled_Incognito_CleansUpContentUri()
+                    throws IOException {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+        assertTrue(mPdfCoordinator.isIncognito());
+
+        Uri oldUri = mPdfCoordinator.getUri();
+        assertNotNull(oldUri);
+        String oldStreamId = oldUri.getLastPathSegment();
+        assertNotNull(oldStreamId);
+        assertTrue(PdfContentProvider.hasStreamForTesting(oldStreamId));
+
+        File newTempFile = File.createTempFile("new_fw4", ".pdf");
+        newTempFile.deleteOnExit();
+        String newFilePath = newTempFile.getPath();
+        String newFileName = "new_fw4.pdf";
+        try {
+            mPdfCoordinator.onDownloadComplete(newFilePath, newFileName);
+
+            assertTrue(mPdfCoordinator.isPdfLoaded());
+            assertEquals(newFilePath, mPdfCoordinator.getFilepath());
+            assertFalse(
+                    "Old content URI stream should be removed on reload in incognito",
+                    PdfContentProvider.hasStreamForTesting(oldStreamId));
+            assertFalse(
+                    "Old transient file should be deleted on reload in incognito",
+                    new File(mFilePath).exists());
+        } finally {
+            newTempFile.delete();
+        }
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testOnDownloadComplete_WhenLocalFile_DoesNotDeleteOldFile() {
+        createPdfCoordinator(mFilePath, TEST_CONTENT_URI);
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+
+        String newFilePath = "/data/user/10/com.google.android.apps.chrome/cache/pdfs/new_fw4.pdf";
+        String newFileName = "new_fw4.pdf";
+        mPdfCoordinator.onDownloadComplete(newFilePath, newFileName);
+
+        assertTrue(mPdfCoordinator.isPdfLoaded());
+        assertEquals(newFilePath, mPdfCoordinator.getFilepath());
+        assertTrue(
+                "Local/content file should not be deleted on reload", new File(mFilePath).exists());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testLoadPdfFile_SameUri_SetsDocumentUri() {
         createPdfCoordinator();
-        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
         Uri originalUri = mPdfCoordinator.getUri();
 
         mPdfCoordinator.resetLoadState();
-        assertFalse(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertFalse(mPdfCoordinator.isPdfLoaded());
 
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
         mPdfCoordinator.mChromePdfViewerFragment.setDocumentUri(mPdfCoordinator.getUri());
-        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
         assertEquals(originalUri, mPdfCoordinator.getUri());
         assertEquals(originalUri, mPdfCoordinator.mChromePdfViewerFragment.getDocumentUri());
     }
@@ -2188,18 +2386,18 @@ public class PdfCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testReloadWhenViewDetached() {
         createPdfCoordinator();
-        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
 
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.removeView(mPdfCoordinator.getView());
         assertNull(mPdfCoordinator.getView().getParent());
 
         mPdfCoordinator.reload();
-        assertFalse(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertFalse(mPdfCoordinator.isPdfLoaded());
 
         contentView.addView(mPdfCoordinator.getView());
         ShadowLooper.idleMainLooper();
-        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
     }
 
     public static class TestModalDialogActivity extends TestActivity
@@ -2722,6 +2920,8 @@ public class PdfCoordinatorUnitTest {
 
         assertTrue(confirmed.get());
         assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
+        assertFalse(mPdfCoordinator.hasChanges());
+        assertTrue(mPdfCoordinator.isPdfLoaded());
     }
 
     @Test

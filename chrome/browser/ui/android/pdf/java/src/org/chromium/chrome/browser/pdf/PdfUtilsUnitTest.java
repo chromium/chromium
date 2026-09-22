@@ -39,6 +39,7 @@ import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -798,6 +799,37 @@ public class PdfUtilsUnitTest {
     public void testRecordEditFabAction() {
         PdfUtils.recordEditFabAction();
         assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
+    }
+
+    @Test
+    public void testMaybeDeleteTransientFile_WebPdf_DeletesFile() throws Exception {
+        File tempFile = File.createTempFile("test_transient_web", ".pdf");
+        tempFile.deleteOnExit();
+        Assert.assertTrue(tempFile.exists());
+
+        PdfUtils.maybeDeleteTransientFile(tempFile.getAbsolutePath(), mPdfPageUrl);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertFalse("Transient file should be deleted for web PDF", tempFile.exists());
+    }
+
+    @Test
+    public void testMaybeDeleteTransientFile_LocalPdf_DoesNotDeleteFile() throws Exception {
+        File tempFile = File.createTempFile("test_transient_local", ".pdf");
+        tempFile.deleteOnExit();
+        Assert.assertTrue(tempFile.exists());
+
+        PdfUtils.maybeDeleteTransientFile(tempFile.getAbsolutePath(), CONTENT_URL);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertTrue("File should not be deleted for local PDF", tempFile.exists());
+        tempFile.delete();
+    }
+
+    @Test
+    public void testMaybeDeleteTransientFile_ContentUriPath_DoesNothing() {
+        PdfUtils.maybeDeleteTransientFile("content://downloads/1", mPdfPageUrl);
+        // Should not throw or perform file operations.
     }
 
     @Test

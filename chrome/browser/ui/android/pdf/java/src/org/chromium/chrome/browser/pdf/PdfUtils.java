@@ -777,4 +777,36 @@ public class PdfUtils {
         // sensitive data (e.g. ChromeBrowserProvider).
         return false;
     }
+
+    /**
+     * Deletes the transient PDF file if the PDF is from a downloadable web URL.
+     *
+     * <p>Content URIs (e.g. incognito PDFs wrapped by PdfContentProvider) cannot be deleted
+     * directly as files; their lifecycle is managed separately (see PdfPage#destroy()). We don't
+     * check for "file://" because: 1. Transient files we download always use raw file paths. 2.
+     * Local files (which may use "file://" or "content://") have a null redownloadUrl and are
+     * skipped below.
+     *
+     * @param filepath The filepath of the transient PDF file.
+     * @param url The native page URL or download URL of the PDF.
+     */
+    public static void maybeDeleteTransientFile(@Nullable String filepath, @Nullable String url) {
+        if (filepath != null && !filepath.startsWith(UrlConstants.CONTENT_URL_PREFIX)) {
+            String redownloadUrl = url != null ? getPdfReDownloadUrl(url) : null;
+            if (redownloadUrl != null) {
+                PostTask.postTask(
+                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        () -> {
+                            try {
+                                File file = new File(filepath);
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                            } catch (SecurityException ignored) {
+                                // Ignore exceptions if the transient file cannot be deleted.
+                            }
+                        });
+            }
+        }
+    }
 }

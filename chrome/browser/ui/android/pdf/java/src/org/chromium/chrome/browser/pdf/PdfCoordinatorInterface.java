@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.pdf;
 import android.net.Uri;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -42,6 +44,19 @@ public interface PdfCoordinatorInterface {
 
     /** Reset PDF load state so that the page can be reloaded/refreshed. */
     void resetLoadState();
+
+    /** Discards all unsaved or applied changes. */
+    void discardChanges();
+
+    /** Returns whether the PDF document is currently loaded. */
+    boolean isPdfLoaded();
+
+    /**
+     * Updates the URL associated with the PDF page.
+     *
+     * @param url The new URL.
+     */
+    void onUrlChanged(@NonNull String url);
 
     /** Build structured data including content uri and grant permission. */
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile);

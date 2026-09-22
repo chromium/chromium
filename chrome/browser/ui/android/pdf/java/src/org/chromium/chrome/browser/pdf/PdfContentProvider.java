@@ -426,6 +426,24 @@ public class PdfContentProvider extends ContentProvider {
         }
     }
 
+    static void setPdfFileInfoForTesting(String streamId, PdfFileInfo pdfFileInfo) {
+        String id = streamId;
+        if (streamId.startsWith(UrlConstants.CONTENT_URL_PREFIX)) {
+            Uri uri = Uri.parse(streamId);
+            id = uri.getLastPathSegment();
+        }
+        sStreamRegistry.put(id, pdfFileInfo);
+    }
+
+    static boolean hasStreamForTesting(String streamId) {
+        String id = streamId;
+        if (streamId.startsWith(UrlConstants.CONTENT_URL_PREFIX)) {
+            Uri uri = Uri.parse(streamId);
+            id = uri.getLastPathSegment();
+        }
+        return sStreamRegistry.containsKey(id);
+    }
+
     static void cleanUpForTesting() {
         List<String> keys = new ArrayList<>(sStreamRegistry.keySet());
         for (String key : keys) {
