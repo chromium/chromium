@@ -9,13 +9,42 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/tips/core/tips_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 class PrefService;
 
 namespace tips {
+
+#if BUILDFLAG(IS_ANDROID)
+// Parameter to trigger instant notification delivery and bypass the global
+// 7-day cooldown for testing.
+inline constexpr base::FeatureParam<bool> kTipsSelfServiceInstantScheduling(
+    &chrome::android::kTipsSelfService,
+    "instant_scheduling",
+    /*default_value=*/false);
+
+// The delay in minutes after which the notification scheduler should start
+// delivering the chosen tip.
+inline constexpr base::FeatureParam<int> kTipsSelfServiceStartTimeMinutes(
+    &chrome::android::kTipsSelfService,
+    "start_time_minutes",
+    /*default_value=*/120);
+
+// The delivery window duration in minutes during which the notification
+// scheduler can deliver the notification.
+inline constexpr base::FeatureParam<int> kTipsSelfServiceWindowTimeMinutes(
+    &chrome::android::kTipsSelfService,
+    "window_time_minutes",
+    /*default_value=*/120);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Abstract interface that individual feature teams must implement to register a
 // new Tips notification.

@@ -13,13 +13,20 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/database_client.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 namespace tips {
 
@@ -79,6 +86,11 @@ void TipsService::DetermineBestTip(OnBestTipChosen callback) {
   // Min signal collection length 0, 28 days TTL.
   writer.SetDefaultSegmentationMetadataConfig(0, 28);
 
+  // Add the global 7-day cooldown signal (tracks if any tips were shown).
+  writer.AddFeatures({SignalToFeature(
+      HistogramEnum(kGlobalTipsShownSignal, kGlobalCooldownDays,
+                    {kNotificationLifeCycleEventShown}))});
+
   // Add feature signals to the metadata writer. The features are added
   // sequentially and in OnFeaturesProcessed, will be returned as inputs in the
   // same sequential order that they were added.
@@ -98,7 +110,20 @@ void TipsService::OnFeaturesProcessed(
     OnBestTipChosen callback,
     ResultStatus status,
     const segmentation_platform::ModelProvider::Request& inputs) {
-  if (status != ResultStatus::kSuccess) {
+  if (status != ResultStatus::kSuccess || inputs.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Check global 7-day cooldown. If any tips notification was shown recently,
+  // suppress all tips unless cooldown bypass is enabled.
+  bool bypass_global_cooldown = false;
+#if BUILDFLAG(IS_ANDROID)
+  bypass_global_cooldown = kTipsSelfServiceInstantScheduling.Get();
+#endif
+
+  float global_tips_shown_count = inputs[0];
+  if (global_tips_shown_count > 0 && !bypass_global_cooldown) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -108,7 +133,9 @@ void TipsService::OnFeaturesProcessed(
   // signal name in reference to its emitted value. Inputs are returned in the
   // same order as they were added sequentially above.
   std::map<TipsFeature*, std::map<std::string, float>> feature_signals_map;
-  size_t input_index = 0;
+  // `input_index` starts at 1 because index 0 contains the global cooldown
+  // signal (kGlobalTipsShownSignal) evaluated above.
+  size_t input_index = 1;
 
   for (const std::unique_ptr<TipsFeature>& feature : registered_features_) {
     for (const SignalDefinition& signal : feature->GetRequiredSignals()) {

@@ -124,6 +124,69 @@ TEST_F(TipsAgentAndroidTest, TestOnBestTipChosen) {
   TipsAgentAndroid::OnBestTipChosen(&mock_service_, std::nullopt);
 }
 
+TEST_F(TipsAgentAndroidTest,
+       TestOnBestTipChosen_DefaultScheduleParamsFromTipsSelfService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chrome::android::kTipsSelfService);
+
+  std::unique_ptr<notifications::NotificationParams> scheduled_params;
+  EXPECT_CALL(mock_service_, Schedule(_))
+      .WillOnce([&](std::unique_ptr<notifications::NotificationParams> params) {
+        scheduled_params = std::move(params);
+      });
+
+  base::Time before = base::Time::Now();
+  TipsAgentAndroid::OnBestTipChosen(
+      &mock_service_,
+      tips::TipsNotificationsFeatureType::kEnhancedSafeBrowsing);
+  base::Time after = base::Time::Now();
+
+  ASSERT_TRUE(scheduled_params);
+  // Default start_time_minutes is 120 (>= 5), so priority should be kLow.
+  EXPECT_EQ(scheduled_params->schedule_params.priority,
+            notifications::ScheduleParams::Priority::kLow);
+  EXPECT_GE(scheduled_params->schedule_params.deliver_time_start,
+            before + base::Minutes(120));
+  EXPECT_LE(scheduled_params->schedule_params.deliver_time_start,
+            after + base::Minutes(120));
+  EXPECT_GE(scheduled_params->schedule_params.deliver_time_end,
+            before + base::Minutes(240));
+  EXPECT_LE(scheduled_params->schedule_params.deliver_time_end,
+            after + base::Minutes(240));
+}
+
+TEST_F(TipsAgentAndroidTest,
+       TestOnBestTipChosen_InstantNotificationScheduleParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      chrome::android::kTipsSelfService, {{"start_time_minutes", "0"},
+                                          {"window_time_minutes", "1"},
+                                          {"instant_scheduling", "true"}});
+
+  std::unique_ptr<notifications::NotificationParams> scheduled_params;
+  EXPECT_CALL(mock_service_, Schedule(_))
+      .WillOnce([&](std::unique_ptr<notifications::NotificationParams> params) {
+        scheduled_params = std::move(params);
+      });
+
+  base::Time before = base::Time::Now();
+  TipsAgentAndroid::OnBestTipChosen(
+      &mock_service_,
+      tips::TipsNotificationsFeatureType::kEnhancedSafeBrowsing);
+  base::Time after = base::Time::Now();
+
+  ASSERT_TRUE(scheduled_params);
+  // With start_time_minutes = 0 (< 5), priority should be kNoThrottle.
+  EXPECT_EQ(scheduled_params->schedule_params.priority,
+            notifications::ScheduleParams::Priority::kNoThrottle);
+  EXPECT_GE(scheduled_params->schedule_params.deliver_time_start, before);
+  EXPECT_LE(scheduled_params->schedule_params.deliver_time_start, after);
+  EXPECT_GE(scheduled_params->schedule_params.deliver_time_end,
+            before + base::Minutes(1));
+  EXPECT_LE(scheduled_params->schedule_params.deliver_time_end,
+            after + base::Minutes(1));
+}
+
 TEST_F(TipsAgentAndroidTest, TestOnGetClientOverview_Reschedule) {
   notifications::ClientOverview overview;
   notifications::NotificationEntry entry(

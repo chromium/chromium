@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tips/core/tips_feature.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_service.h"
 #include "chrome/browser/tips/core/tips_types.h"
@@ -62,22 +63,31 @@ tips::TipsNotificationsFeatureType GetFeatureType(const std::string& label) {
 }
 
 notifications::ScheduleParams GetCurrentScheduleParams() {
+  int start_time_minutes;
+  int window_time_minutes;
+  if (base::FeatureList::IsEnabled(chrome::android::kTipsSelfService)) {
+    start_time_minutes = tips::kTipsSelfServiceStartTimeMinutes.Get();
+    window_time_minutes = tips::kTipsSelfServiceWindowTimeMinutes.Get();
+  } else {
+    start_time_minutes =
+        segmentation_platform::features::kStartTimeMinutes.Get();
+    window_time_minutes =
+        segmentation_platform::features::kWindowTimeMinutes.Get();
+  }
+
   // Setup the schedule params to either be for testing with instant and delayed
   // 2 minutes notifications, or the base use case of 2-4 hours.
   // The standard priority is low to include throttling logic from the scheduler
   // service, however testing params will allow this to be unthrottled.
   notifications::ScheduleParams schedule_params;
   schedule_params.priority =
-      (segmentation_platform::features::kStartTimeMinutes.Get() < 5)
+      (start_time_minutes < 5)
           ? notifications::ScheduleParams::Priority::kNoThrottle
           : notifications::ScheduleParams::Priority::kLow;
   schedule_params.deliver_time_start =
-      base::Time::Now() +
-      base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get());
+      base::Time::Now() + base::Minutes(start_time_minutes);
   schedule_params.deliver_time_end =
-      base::Time::Now() +
-      base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get()) +
-      base::Minutes(segmentation_platform::features::kWindowTimeMinutes.Get());
+      *schedule_params.deliver_time_start + base::Minutes(window_time_minutes);
   return schedule_params;
 }
 

@@ -4142,6 +4142,22 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsV2Variations[] = {
      kAndroidTipsNotificationsV2UtilityAndOrganization, nullptr},
 };
 
+const FeatureEntry::FeatureParam kTipsSelfServiceScheduleInstantNotification[] =
+    {{"start_time_minutes", "0"},
+     {"window_time_minutes", "1"},
+     {"instant_scheduling", "true"}};
+const FeatureEntry::FeatureParam kTipsSelfServiceScheduleDelayedNotification[] =
+    {{"start_time_minutes", "2"},
+     {"window_time_minutes", "4"},
+     {"instant_scheduling", "true"}};
+
+const FeatureEntry::FeatureVariation kTipsSelfServiceVariations[] = {
+    {" - Schedule Instant Notification",
+     kTipsSelfServiceScheduleInstantNotification, nullptr},
+    {" - Schedule Delayed Notification",
+     kTipsSelfServiceScheduleDelayedNotification, nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kRobustWindowManagementExperimentalOpenAdjacently[] = {
         {"open_adjacently", "false"}};
@@ -10289,7 +10305,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tips-self-service", flag_descriptions::kTipsSelfServiceName,
      flag_descriptions::kTipsSelfServiceDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTipsSelfService)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTipsSelfService,
+                                    kTipsSelfServiceVariations,
+                                    "TipsSelfService")},
 
     {"tab-strip-height-transition-glitch-fix",
      flag_descriptions::kTabStripHeightTransitionGlitchFixName,

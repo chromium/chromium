@@ -25,6 +25,10 @@
 #include "chrome/browser/tips/core/tips_feature.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_service_test_base.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -189,22 +193,32 @@ TEST_F(TipsServiceTest, VerifyMetadataConstruction) {
   const auto& captured_metadata =
       test_segmentation_service_->test_database_client()->last_metadata_;
 
-  // Verify captured_metadata
-  EXPECT_EQ(captured_metadata.input_features_size(), 3);
+  // Verify captured_metadata (1 global cooldown signal + 3 feature signals)
+  EXPECT_EQ(captured_metadata.input_features_size(), 4);
+
+  // Verify global cooldown signal at index 0
+  const auto& f0 = captured_metadata.input_features(0).uma_feature();
+  EXPECT_EQ(f0.name(), TipsService::kGlobalTipsShownSignal);
+  EXPECT_EQ(f0.type(),
+            segmentation_platform::proto::SignalType::HISTOGRAM_ENUM);
+  EXPECT_EQ(f0.bucket_count(),
+            static_cast<uint64_t>(TipsService::kGlobalCooldownDays));
+  ASSERT_EQ(f0.enum_ids_size(), 1);
+  EXPECT_EQ(f0.enum_ids(0), TipsService::kNotificationLifeCycleEventShown);
 
   // Verify Action1
-  const auto& f1 = captured_metadata.input_features(0).uma_feature();
+  const auto& f1 = captured_metadata.input_features(1).uma_feature();
   EXPECT_EQ(f1.name(), "Action1");
   EXPECT_EQ(f1.type(), segmentation_platform::proto::SignalType::USER_ACTION);
 
   // Verify Sum1
-  const auto& f2 = captured_metadata.input_features(1).uma_feature();
+  const auto& f2 = captured_metadata.input_features(2).uma_feature();
   EXPECT_EQ(f2.name(), "Sum1");
   EXPECT_EQ(f2.type(),
             segmentation_platform::proto::SignalType::HISTOGRAM_VALUE);
 
   // Verify Enum1
-  const auto& f3 = captured_metadata.input_features(2).uma_feature();
+  const auto& f3 = captured_metadata.input_features(3).uma_feature();
   EXPECT_EQ(f3.name(), "Enum1");
   EXPECT_EQ(f3.type(),
             segmentation_platform::proto::SignalType::HISTOGRAM_ENUM);
@@ -251,5 +265,51 @@ TEST_F(TipsServiceTest, DetermineBestTip_MultipleFeaturesAndSignals) {
   EXPECT_EQ(feature1_ptr->last_signal_values_["Sum1"], 20.0f);
   EXPECT_EQ(feature2_ptr->last_signal_values_["Enum1"], 30.0f);
 }
+
+TEST_F(TipsServiceTest, DetermineBestTip_GlobalCooldown_SuppressesTips) {
+  auto feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{UserAction("SomeAction", 7)},
+      /*is_eligible=*/true);
+
+  std::vector<FeatureTestConfig> configs;
+  configs.push_back(FeatureTestConfig{
+      .feature = std::move(feature),
+      .mock_signal_values = std::map<std::string, float>{{"SomeAction", 1.0f}},
+  });
+
+  // A tip was shown within the last 7 days (count = 1.0f).
+  // Expect std::nullopt even though the feature is eligible.
+  RunDetermineBestTipTestWithOverrides(
+      std::move(configs), /*expected_best_tip=*/std::nullopt,
+      /*mock_global_cooldown_shown_count=*/1.0f);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(TipsServiceTest,
+       DetermineBestTip_GlobalCooldown_BypassedByDedicatedParam) {
+  // Dedicated Finch param on kTipsSelfService bypasses the 7-day cooldown.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      chrome::android::kTipsSelfService, {{"instant_scheduling", "true"}});
+
+  auto feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{UserAction("SomeAction", 7)},
+      /*is_eligible=*/true);
+
+  std::vector<FeatureTestConfig> configs;
+  configs.push_back(FeatureTestConfig{
+      .feature = std::move(feature),
+      .mock_signal_values = std::map<std::string, float>{{"SomeAction", 1.0f}},
+  });
+
+  // A tip was shown within the last 7 days (count = 1.0f), but the dedicated
+  // param bypasses the cooldown so the eligible feature is chosen.
+  RunDetermineBestTipTestWithOverrides(
+      std::move(configs), TipsNotificationsFeatureType::kQuickDelete,
+      /*mock_global_cooldown_shown_count=*/1.0f);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace tips

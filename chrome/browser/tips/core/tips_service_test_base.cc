@@ -258,8 +258,12 @@ void TipsServiceTestBase::RunDetermineBestTipTest(
 
 void TipsServiceTestBase::RunDetermineBestTipTestWithOverrides(
     std::vector<FeatureTestConfig> configs,
-    std::optional<TipsNotificationsFeatureType> expected_best_tip) {
+    std::optional<TipsNotificationsFeatureType> expected_best_tip,
+    float mock_global_cooldown_shown_count) {
   std::vector<float> flat_inputs;
+  // Prepend the global cooldown signal value (index 0).
+  flat_inputs.push_back(mock_global_cooldown_shown_count);
+
   std::vector<std::unique_ptr<TipsFeature>> features;
 
   for (auto& config : configs) {

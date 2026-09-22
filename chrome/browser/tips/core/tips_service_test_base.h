@@ -101,7 +101,8 @@ class TipsServiceTestBase : public ::testing::Test {
 
   void RunDetermineBestTipTestWithOverrides(
       std::vector<FeatureTestConfig> configs,
-      std::optional<TipsNotificationsFeatureType> expected_best_tip);
+      std::optional<TipsNotificationsFeatureType> expected_best_tip,
+      float mock_global_cooldown_shown_count = 0.0f);
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestSegmentationPlatformService> test_segmentation_service_;
