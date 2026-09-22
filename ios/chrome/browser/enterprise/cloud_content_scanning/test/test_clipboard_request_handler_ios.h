@@ -8,8 +8,6 @@
 #import <memory>
 #import <string>
 
-#import "base/functional/callback.h"
-#import "base/time/time.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #import "url/gurl.h"
 
@@ -69,12 +67,6 @@ void SetMockClipboardRequestHandlerWithClosureForTesting(
 void SetMockClipboardRequestHandlerWithClosureAndNoResultForTesting(
     TriggeredRule::Action action,
     base::RepeatingClosure closure_callback);
-
-// Sets the ClipboardRequestHandler factory for testing that delays calling its
-// completion callback by `delay`.
-void SetMockClipboardRequestHandlerWithDelayForTesting(
-    base::TimeDelta delay,
-    TriggeredRule::Action action = TriggeredRule::ACTION_UNSPECIFIED);
 
 }  // namespace enterprise_connectors
 
