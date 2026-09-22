@@ -20,6 +20,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -121,6 +122,7 @@ SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
   out.bytes_per_sample =
       GetBytesPerSample(config.codec(), config.sample_format());
   out.channel_mask = ChannelLayoutToMask(config.channel_layout());
+  out.channel_count = base::checked_cast<uint16_t>(config.channels());
   out.sample_rate = config.samples_per_second();
   return out;
 }

@@ -101,8 +101,12 @@ pub mod ffi {
         bytes_per_sample: u8,
         /// Sample rate of the audio stream.
         sample_rate: u32,
-        /// Channel mask of the audio stream.
+        /// Channel mask of the audio stream. Zero if the stream's channels have
+        /// no known speaker positions (e.g. a discrete layout).
         channel_mask: u32,
+        /// Number of channels in the audio stream. Used when `channel_mask` is
+        /// zero.
+        channel_count: u16,
     }
 
     /// Represents a single, encoded audio packet to be sent to the decoder.
@@ -559,15 +563,20 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for AudioCodecParameters {
 
         let extra_data = get_extra_data(value.codec, value.extra_data)?;
 
+        // Chromium leaves the mask empty for layouts with no speaker positions.
+        let channels = if value.channel_mask != 0 {
+            Channels::Positioned(Position::from_bits_truncate(value.channel_mask.into()))
+        } else {
+            Channels::Discrete(value.channel_count)
+        };
+
         let mut params = AudioCodecParameters::new();
         params
             .for_codec(
                 to_symphonia_codec_id(value.codec).map_err(SymphoniaInitError::UnsupportedCodec)?,
             )
             .with_bits_per_sample(bits_per_sample)
-            .with_channels(Channels::Positioned(Position::from_bits_truncate(
-                value.channel_mask.into(),
-            )))
+            .with_channels(channels)
             .with_sample_rate(value.sample_rate);
 
         if let Some(extra_data) = extra_data {

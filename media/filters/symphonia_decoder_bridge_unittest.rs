@@ -225,6 +225,7 @@ fn test_decoder_init_failure() {
         extra_data: &[], // Empty extra data might be enough to fail some decoders.
         bytes_per_sample: 2,
         channel_mask: 0,
+        channel_count: 0,
         sample_rate: 44100,
     };
     let result = init_symphonia_decoder(&config);
@@ -241,6 +242,29 @@ fn test_decoder_init_failure() {
             // If it failed, there should be an error string.
             expect_false!(result.error_str.is_empty());
         }
+    }
+}
+
+// Verify that PCM decoder initialization succeeds for channel layouts that have
+// no speaker positions. Chromium uses CHANNEL_LAYOUT_DISCRETE, and therefore an
+// empty channel mask for unnamed layouts.
+#[gtest(SymphoniaDecoderBridgeTest, PcmInitWithDiscreteChannelLayout)]
+fn test_pcm_init_with_discrete_channel_layout() {
+    // 13 is the first count above kMaxConcurrentChannels; 32 is
+    // limits::kMaxChannels.
+    for channel_count in [13, 31, 32] {
+        let config = ffi::SymphoniaDecoderConfig {
+            codec: ffi::SymphoniaAudioCodec::PcmS16,
+            extra_data: &[],
+            bytes_per_sample: 2,
+            channel_mask: 0,
+            channel_count,
+            sample_rate: 48000,
+        };
+
+        let result = init_symphonia_decoder(&config);
+        expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok, "channels: {}", channel_count);
+        expect_true!(result.error_str.is_empty(), "channels: {}", channel_count);
     }
 }
 
@@ -261,6 +285,7 @@ fn test_flac_init_with_marker() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
 
@@ -274,6 +299,7 @@ fn test_flac_init_with_marker() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
     let result_trailing = init_symphonia_decoder(&config_trailing);
@@ -296,6 +322,7 @@ fn test_flac_init_with_header_only() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
 
@@ -318,6 +345,7 @@ fn test_flac_init_with_marker_only() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
 
@@ -343,6 +371,7 @@ fn test_flac_init_with_other_block() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
 
@@ -606,6 +635,7 @@ fn test_mp2_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -639,6 +669,7 @@ fn test_mp1_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -672,6 +703,7 @@ fn test_mp_midstream_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
+        channel_count: 1,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -714,6 +746,7 @@ fn test_pcm_large_packet() {
         extra_data: &[],
         bytes_per_sample: 2,
         channel_mask: 3, // Stereo
+        channel_count: 2,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);

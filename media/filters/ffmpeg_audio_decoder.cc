@@ -449,7 +449,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
   }
 
   int channels = DetermineChannels(frame);
-  if (channels <= 0 || channels >= limits::kMaxChannels) {
+  if (channels <= 0 || channels > limits::kMaxChannels) {
     DLOG(ERROR) << "Requested number of channels (" << channels
                 << ") exceeds limit.";
     return AVERROR(EINVAL);
