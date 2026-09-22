@@ -150,6 +150,7 @@ namespace glic {
 class ContextualCueingHelper;
 class GlicCueTabState;
 class GlicInstanceHelper;
+class GlicPromotionSourceNavigationObserver;
 class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
 class GlicSelectionObserver;
@@ -562,6 +563,8 @@ class TabFeatures {
       glic_selection_overlay_controller_;
 
   std::unique_ptr<glic::GlicPageFeaturesManager> glic_page_features_manager_;
+  std::unique_ptr<glic::GlicPromotionSourceNavigationObserver>
+      glic_promotion_source_navigation_observer_;
 
   // Observes page loads to decide when to offer glic contextual cueing.
   std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;

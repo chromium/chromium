@@ -7,6 +7,8 @@
 
 #include "components/metrics/metrics_provider.h"
 
+class Profile;
+
 namespace glic {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -25,6 +27,15 @@ class GlicMetricsProvider : public metrics::MetricsProvider {
  public:
   GlicMetricsProvider();
   ~GlicMetricsProvider() override;
+
+  // Reconciles the promotion source cohort across all loaded profiles (plus
+  // `initializing_profile` if provided before it is added to `ProfileManager`)
+  // and registers the `GlicPromotionSourceSynthetic` field trial. If all
+  // profiles with a recorded cohort agree, that cohort is registered; if two
+  // or more profiles have different recorded cohorts, "MultiProfileDetected"
+  // is registered.
+  static void RegisterPromotionSourceSyntheticTrial(
+      Profile* initializing_profile = nullptr);
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(

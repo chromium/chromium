@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -49,8 +50,46 @@ std::string_view GetOnboardingStatusGroupName(OnboardingStatus status) {
 GlicMetricsProvider::GlicMetricsProvider() = default;
 GlicMetricsProvider::~GlicMetricsProvider() = default;
 
+// static
+void GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial(
+    Profile* initializing_profile) {
+  std::vector<Profile*> profiles;
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
+  }
+  if (initializing_profile &&
+      !std::ranges::contains(profiles, initializing_profile)) {
+    profiles.push_back(initializing_profile);
+  }
+
+  std::string reconciled_cohort;
+  for (Profile* profile : profiles) {
+    if (!profile || !profile->GetPrefs()) {
+      continue;
+    }
+    const std::string cohort =
+        profile->GetPrefs()->GetString(prefs::kGlicPromotionSourceCohort);
+    if (cohort.empty()) {
+      continue;
+    }
+    if (reconciled_cohort.empty()) {
+      reconciled_cohort = cohort;
+    } else if (reconciled_cohort != cohort) {
+      reconciled_cohort = kGlicPromotionSourceMultiProfileDetected;
+      break;
+    }
+  }
+
+  if (!reconciled_cohort.empty()) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kGlicPromotionSourceTrialName, reconciled_cohort,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+}
+
 void GlicMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
+  RegisterPromotionSourceSyntheticTrial();
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager) {
     return;

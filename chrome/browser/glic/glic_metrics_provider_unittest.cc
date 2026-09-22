@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
+#include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
 #include "chrome/common/chrome_features.h"
@@ -162,6 +163,31 @@ TEST_F(GlicMetricsProviderTest, ProvideCurrentSessionData_OnboardingStatus) {
                                GlicProfilesAllSomeNone::kSome, 1);
   EXPECT_TRUE(variations::ContainsTrialAndGroupName(
       GetSyntheticFieldTrials(), "GlicOnboardingStatus", "PromptAndOptIn"));
+}
+
+TEST_F(GlicMetricsProviderTest, PromotionSourceSyntheticTrialReconciliation) {
+  profile1()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
+                                    kGlicPromotionSourceWebstore);
+  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
+      kGlicPromotionSourceWebstore));
+
+  // Matching cohort in second profile preserves the group.
+  profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
+                                    kGlicPromotionSourceWebstore);
+  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
+      kGlicPromotionSourceWebstore));
+
+  // Conflicting cohort in second profile registers MultiProfileDetected.
+  profile2()->GetPrefs()->SetString(prefs::kGlicPromotionSourceCohort,
+                                    kGlicPromotionSourceZss);
+  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial();
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), kGlicPromotionSourceTrialName,
+      kGlicPromotionSourceMultiProfileDetected));
 }
 
 }  // namespace glic

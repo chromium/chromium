@@ -142,6 +142,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #endif
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -405,6 +406,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());
+      glic_promotion_source_navigation_observer_ =
+          std::make_unique<glic::GlicPromotionSourceNavigationObserver>(&tab);
 
       if (glic::GlicEnabling::IsSelectionPromptEnabledForProfile(profile) ||
           (base::FeatureList::IsEnabled(

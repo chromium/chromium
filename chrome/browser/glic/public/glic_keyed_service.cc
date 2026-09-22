@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_transport_handler.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
@@ -193,6 +194,11 @@ GlicKeyedService::GlicKeyedService(
       tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
       tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
+
+  // Reconcile `prefs::kGlicPromotionSourceCohort` across loaded profiles and
+  // register the in-memory synthetic trial on startup if any profile has a
+  // persisted cohort (or mark `MultiProfileDetected` if profiles conflict).
+  GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial(profile);
 
   // TODO(crbug.com/450026474): Consider not constructing this metrics
   // instance for multi-instance

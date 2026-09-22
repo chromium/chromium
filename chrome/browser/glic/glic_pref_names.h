@@ -195,6 +195,11 @@ inline constexpr char kGlicPreviouslyNotAllowed[] =
 inline constexpr char kGlicMarketingAutoOpenCount[] =
     "glic.marketing_auto_open_count";
 
+// String pref that records the acquisition cohort for Glic promotion page
+// visits.
+inline constexpr char kGlicPromotionSourceCohort[] =
+    "glic.promotion_source_cohort";
+
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif
