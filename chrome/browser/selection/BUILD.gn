@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("selection") {
+  sources = [
+    "suggestion.cc",
+    "suggestion.h",
+    "suggestion_endpoint.h",
+    "suggestion_service.cc",
+    "suggestion_service.h",
+  ]
+
+  public_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//skia",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//base",
+    "//components/tabs:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "suggestion_service_unittest.cc" ]
+  deps = [
+    ":selection",
+    "//base",
+    "//base/test:test_support",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,8 +18,10 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/static_selection_suggestion_endpoint.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -189,8 +192,30 @@ class SelectionOverlayInteractiveTestWithPrompt
     feature_list_.InitAndEnableFeature(features::kGlicSelectionOverlayPrompt);
   }
 
+  void SetUpOnMainThread() override {
+    SelectionOverlayInteractiveTest::SetUpOnMainThread();
+    tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+    static_endpoint_ =
+        std::make_unique<StaticSelectionSuggestionEndpoint>(CHECK_DEREF(tab));
+    if (auto* service = ::selection::SuggestionService::From(tab)) {
+      service->RegisterEndpoint(static_endpoint_.get());
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+    if (tab && static_endpoint_) {
+      if (auto* service = ::selection::SuggestionService::From(tab)) {
+        service->UnregisterEndpoint(static_endpoint_.get());
+      }
+    }
+    static_endpoint_.reset();
+    SelectionOverlayInteractiveTest::TearDownOnMainThread();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<StaticSelectionSuggestionEndpoint> static_endpoint_;
 };
 
 class SelectionOverlayInteractiveTestWithSplitView

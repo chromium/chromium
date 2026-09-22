@@ -80,6 +80,10 @@ namespace skills {
 class SkillsUiTabControllerInterface;
 }  // namespace skills
 
+namespace selection {
+class SuggestionService;
+}  // namespace selection
+
 namespace back_to_opener {
 class BackToOpenerController;
 }  // namespace back_to_opener
@@ -552,6 +556,8 @@ class TabFeatures {
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<glic::GlicSelectionObserver> glic_selection_observer_;
+  std::unique_ptr<selection::SuggestionService>
+      selection_suggestion_service_;
   std::unique_ptr<glic::SelectionOverlayController>
       glic_selection_overlay_controller_;
 

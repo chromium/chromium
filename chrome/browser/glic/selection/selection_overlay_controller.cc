@@ -4,8 +4,12 @@
 
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
+#include "base/check_deref.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -15,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/selection/static_selection_suggestion_endpoint.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -78,6 +83,8 @@ namespace {
 // the selection overlay. https://crbug.com/512915349
 BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
   double x_scale = image.width();
@@ -198,11 +205,32 @@ bool WouldCapDownscaleCapture(
 
 DEFINE_USER_DATA(SelectionOverlayController);
 
+SelectionOverlayController::SelectedRegionData::SelectedRegionData(
+    selection::SelectedRegionPtr region)
+    : region(std::move(region)) {}
+
+SelectionOverlayController::SelectedRegionData::SelectedRegionData(
+    SelectedRegionData&&) = default;
+
+SelectionOverlayController::SelectedRegionData&
+SelectionOverlayController::SelectedRegionData::operator=(
+    SelectedRegionData&&) = default;
+
+SelectionOverlayController::SelectedRegionData::~SelectedRegionData() = default;
+
 SelectionOverlayController::SelectionOverlayController(
     tabs::TabInterface* tab,
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+  if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
+    static_suggestion_endpoint_ =
+        std::make_unique<StaticSelectionSuggestionEndpoint>(CHECK_DEREF(tab_));
+    if (auto* suggestion_service =
+            ::selection::SuggestionService::From(tab_)) {
+      suggestion_service->RegisterEndpoint(static_suggestion_endpoint_.get());
+    }
+  }
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&SelectionOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
@@ -222,6 +250,12 @@ SelectionOverlayController::SelectionOverlayController(
 }
 
 SelectionOverlayController::~SelectionOverlayController() {
+  if (static_suggestion_endpoint_) {
+    if (auto* suggestion_service =
+            ::selection::SuggestionService::From(tab_)) {
+      suggestion_service->UnregisterEndpoint(static_suggestion_endpoint_.get());
+    }
+  }
   if (tab_ && tab_->GetBrowserWindowInterface()) {
     if (auto* tab_strip_model =
             tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
@@ -266,9 +300,10 @@ SelectionOverlayController* SelectionOverlayController::FromTabWebContents(
 
 std::vector<int> SelectionOverlayController::GetPolylineCounts() const {
   std::vector<int> polyline_counts;
-  for (const auto& [id, region] : selected_regions_) {
-    if (region->shape->is_polyline()) {
-      polyline_counts.push_back(region->shape->get_polyline().size());
+  for (const auto& [id, region_data] : selected_regions_) {
+    if (region_data.region->shape->is_polyline()) {
+      polyline_counts.push_back(
+          region_data.region->shape->get_polyline().size());
     }
   }
   return polyline_counts;
@@ -381,10 +416,13 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
 void SelectionOverlayController::ShowWithSelection(
     const gfx::Rect& selection_bounds) {
   selected_regions_.clear();
+  active_region_id_.reset();
   if (tab_ && tab_->GetContents()) {
     if (auto region = CreateRegionFromBounds(
             selection_bounds, tab_->GetContents()->GetViewBounds())) {
-      selected_regions_[region->id] = std::move(region);
+      base::UnguessableToken id = region->id;
+      active_region_id_ = id;
+      selected_regions_.emplace(id, SelectedRegionData(std::move(region)));
     }
   }
   Show(/*options=*/nullptr);
@@ -465,8 +503,8 @@ void SelectionOverlayController::InitializeOverlay() {
   if (!selected_regions_.empty()) {
     std::vector<selection::SelectedRegionPtr> regions;
     regions.reserve(selected_regions_.size());
-    for (const auto& [id, region] : selected_regions_) {
-      regions.push_back(region.Clone());
+    for (const auto& [id, region_data] : selected_regions_) {
+      regions.push_back(region_data.region.Clone());
     }
     page_->SetPostRegionSelections(std::move(regions));
   }
@@ -652,11 +690,17 @@ void SelectionOverlayController::DismissOverlay(
 void SelectionOverlayController::AdjustRegion(
     selection::SelectedRegionPtr target,
     bool is_using_keyboard) {
-  auto it = selected_regions_.find(target->id);
-  if (it != selected_regions_.end()) {
-    it->second = std::move(target);
+  active_region_id_ = target->id;
+  if (SelectedRegionData* region_data =
+          base::FindOrNull(selected_regions_, target->id)) {
+    region_data->region = std::move(target);
+    region_data->suggestions.clear();
+    region_data->suggestions_requested = false;
+    region_data->suggestions_complete = false;
+    region_data->generation++;
   } else {
-    selected_regions_[target->id] = std::move(target);
+    base::UnguessableToken id = target->id;
+    selected_regions_.emplace(id, SelectedRegionData(std::move(target)));
   }
 
   RenderRegions(!is_using_keyboard);
@@ -666,8 +710,12 @@ void SelectionOverlayController::DeleteRegion(const base::UnguessableToken& id,
                                               bool is_using_keyboard) {
   if (selected_regions_.erase(id)) {
     if (selected_regions_.empty()) {
+      active_region_id_.reset();
       CloseUI();
       return;
+    }
+    if (active_region_id_ == id) {
+      active_region_id_ = selected_regions_.begin()->first;
     }
     RenderRegions(!is_using_keyboard);
   }
@@ -706,39 +754,127 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   }
 }
 
-std::vector<selection::SuggestedActionPtr>
-SelectionOverlayController::GetDefaultSuggestedActions() {
-  std::vector<selection::SuggestedActionPtr> actions;
-  auto explain_id = base::UnguessableToken::Create();
-  suggested_actions_[explain_id] = "Explain the selection in a few sentences.";
-  actions.push_back(selection::SuggestedAction::New(explain_id, "Explain"));
-
-  auto summarize_id = base::UnguessableToken::Create();
-  suggested_actions_[summarize_id] =
-      "Summarize the selection in a few sentences.";
-  actions.push_back(selection::SuggestedAction::New(summarize_id, "Summarize"));
-
-  auto create_image_id = base::UnguessableToken::Create();
-  suggested_actions_[create_image_id] =
-      "Create a cartoon styled image from the selection.";
-  actions.push_back(
-      selection::SuggestedAction::New(create_image_id, "Create Image"));
-  return actions;
-}
-
 void SelectionOverlayController::GetSuggestedActions(
     mojo::PendingRemote<selection::SuggestedActionsListener> listener) {
-  suggested_actions_.clear();
   suggested_actions_listener_.reset();
   suggested_actions_listener_.Bind(std::move(listener));
 
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
+      !active_region_id_.has_value()) {
     suggested_actions_listener_->OnSuggestedActionsAvailable({});
     return;
   }
 
-  suggested_actions_listener_->OnSuggestedActionsAvailable(
-      GetDefaultSuggestedActions());
+  SelectedRegionData* region_data =
+      base::FindOrNull(selected_regions_, *active_region_id_);
+  if (!region_data) {
+    suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    return;
+  }
+
+  if (region_data->suggestions_requested) {
+    if (!region_data->suggestions.empty() ||
+        region_data->suggestions_complete) {
+      std::vector<selection::SuggestedActionPtr> actions = base::ToVector(
+          region_data->suggestions, [](const auto& item) {
+            return selection::SuggestedAction::New(
+                item.first, base::UTF16ToUTF8(item.second->GetLabel()));
+          });
+      suggested_actions_listener_->OnSuggestedActionsAvailable(
+          std::move(actions));
+    }
+    return;
+  }
+
+  RequestNewSuggestions(*region_data);
+}
+
+void SelectionOverlayController::RequestNewSuggestions(
+    SelectedRegionData& region_data) {
+  ::selection::SuggestionService* suggestion_service =
+      ::selection::SuggestionService::From(tab_);
+  if (!suggestion_service || redacted_screenshot_.empty()) {
+    suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    return;
+  }
+
+  region_data.suggestions_requested = true;
+  uint64_t generation = ++region_data.generation;
+  base::UnguessableToken region_id = region_data.region->id;
+
+  ::selection::AreaOfInterest aoi;
+  aoi.screenshot = redacted_screenshot_;
+  const auto& region = region_data.region;
+  if (region->shape->is_rect()) {
+    gfx::RectF gfx_rect =
+        GetRectForRegion(redacted_screenshot_, region->shape->get_rect());
+    aoi.bounds = gfx::ToEnclosingRect(gfx_rect);
+  } else if (region->shape->is_polyline()) {
+    aoi.bounds = base::ToVector(
+        region->shape->get_polyline(), [&](const gfx::PointF& pt) {
+          return gfx::Point(
+              static_cast<int>(pt.x() * redacted_screenshot_.width()),
+              static_cast<int>(pt.y() * redacted_screenshot_.height()));
+        });
+  }
+  if (tab_context_ && tab_context_->annotated_page_data &&
+      tab_context_->annotated_page_data->annotated_page_content.has_value()) {
+    if (auto apc =
+            tab_context_->annotated_page_data->annotated_page_content
+                ->As<optimization_guide::proto::AnnotatedPageContent>()) {
+      aoi.apc = std::move(*apc);
+    }
+  }
+
+  suggestion_service->RequestSuggestions(
+      aoi,
+      base::BindRepeating(&SelectionOverlayController::OnSuggestionsReceived,
+                          weak_factory_.GetWeakPtr(), region_id, generation));
+}
+
+void SelectionOverlayController::OnSuggestionsReceived(
+    const base::UnguessableToken& region_id,
+    uint64_t generation,
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
+    bool complete) {
+  SelectedRegionData* region_data =
+      base::FindOrNull(selected_regions_, region_id);
+  if (!region_data || region_data->generation != generation) {
+    return;
+  }
+
+  if (complete) {
+    region_data->suggestions_complete = true;
+  }
+
+  if (suggestions.empty()) {
+    if (complete && active_region_id_ == region_id &&
+        suggested_actions_listener_.is_bound()) {
+      suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    }
+    return;
+  }
+
+  region_data->suggestions.reserve(region_data->suggestions.size() +
+                                   suggestions.size());
+  std::vector<selection::SuggestedActionPtr> actions;
+  actions.reserve(suggestions.size());
+  for (auto& suggestion : suggestions) {
+    auto action_id = base::UnguessableToken::Create();
+    std::string label = base::UTF16ToUTF8(suggestion->GetLabel());
+    suggestion->OnSuggestionPresented();
+    region_data->suggestions.emplace_back(action_id, std::move(suggestion));
+    actions.push_back(
+        selection::SuggestedAction::New(action_id, std::move(label)));
+  }
+
+  // This appends the new ones. The `suggested_actions_listener_` will be
+  // unbound when the user makes a new selection.
+  if (active_region_id_ == region_id &&
+      suggested_actions_listener_.is_bound()) {
+    suggested_actions_listener_->OnSuggestedActionsAvailable(
+        std::move(actions));
+  }
 }
 
 void SelectionOverlayController::ExecuteSuggestedAction(
@@ -746,12 +882,26 @@ void SelectionOverlayController::ExecuteSuggestedAction(
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
     return;
   }
-  auto it = suggested_actions_.find(action_id);
-  if (it == suggested_actions_.end()) {
+  ::selection::Suggestion* matched_suggestion = nullptr;
+  for (auto& [region_id, region_data] : selected_regions_) {
+    for (auto& [id, suggestion] : region_data.suggestions) {
+      if (id == action_id) {
+        matched_suggestion = suggestion.get();
+        break;
+      }
+    }
+    if (matched_suggestion) {
+      break;
+    }
+  }
+  if (!matched_suggestion) {
     receiver_.ReportBadMessage("Unknown suggested action ID.");
     return;
   }
-  SubmitPrompt(it->second);
+  matched_suggestion->OnSuggestionExecuted();
+  if (!capture_region_observer_.is_bound()) {
+    Close();
+  }
 }
 
 void SelectionOverlayController::Reset() {
@@ -761,7 +911,7 @@ void SelectionOverlayController::Reset() {
   redacted_screenshot_.reset();
   screenshot_available_ = false;
   selected_regions_.clear();
-  suggested_actions_.clear();
+  active_region_id_.reset();
   suggested_actions_listener_.reset();
   tab_context_.reset();
   capture_region_observer_.reset();
@@ -782,7 +932,8 @@ void SelectionOverlayController::RenderRegions(bool should_focus_panel) {
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
   // through all the regions. Revisit once we expand the selections.
-  for (const auto& [id, region] : selected_regions_) {
+  for (const auto& [id, region_data] : selected_regions_) {
+    const auto& region = region_data.region;
     if (region->shape->is_rect()) {
       gfx::RectF gfx_rect_on_canvas =
           GetRectForRegion(redacted_screenshot_, region->shape->get_rect());

@@ -658,6 +658,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/glic/selection",
         "//chrome/browser/record_replay:impl",
+        "//chrome/browser/selection",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/browser/ui/views/js_optimization:impl",
         "//chrome/browser/ui/views/zoom",

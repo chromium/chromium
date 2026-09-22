@@ -6,9 +6,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/selection/prompt_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -156,18 +159,87 @@ class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+namespace {
+
+class FakeStaticSelectionSuggestionEndpoint
+    : public ::selection::SuggestionEndpoint {
+ public:
+  explicit FakeStaticSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+      : tab_(tab) {}
+  ~FakeStaticSelectionSuggestionEndpoint() override = default;
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Explain", "Explain the selection in a few sentences."));
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Summarize", "Summarize the selection in a few sentences."));
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Create Image",
+        "Create a cartoon styled image from the selection."));
+    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+ private:
+  raw_ptr<tabs::TabInterface> tab_;
+};
+
+class FakeSelectionSuggestionEndpoint
+    : public ::selection::SuggestionEndpoint {
+ public:
+  explicit FakeSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+      : tab_(tab) {}
+  ~FakeSelectionSuggestionEndpoint() override = default;
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Translate to Spanish",
+        "Translate the selected text to Spanish."));
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Fact check", "Fact check the claims in this section."));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
+                                  /*complete=*/true));
+  }
+
+ private:
+  raw_ptr<tabs::TabInterface> tab_;
+};
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SuggestedActionsWhenEnabled) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  FakeStaticSelectionSuggestionEndpoint static_endpoint(tab);
+  suggestion_service->RegisterEndpoint(&static_endpoint);
+
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
   controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
 
   TestSuggestedActionsListener listener;
-  static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 3u);
@@ -179,6 +251,54 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_EQ(actions[2]->title, "Create Image");
   EXPECT_NE(actions[0]->id, actions[1]->id);
   EXPECT_NE(actions[1]->id, actions[2]->id);
+
+  suggestion_service->UnregisterEndpoint(&static_endpoint);
+}
+
+class SelectionOverlayStaticSuggestionsBrowserTest : public GlicBrowserTest {
+ public:
+  SelectionOverlayStaticSuggestionsBrowserTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        "GlicCaptureRegion,GlicSelectionOverlayPrompt,"
+        "StaticSelectionSuggestions",
+        "");
+  }
+  ~SelectionOverlayStaticSuggestionsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
+                       StaticSuggestionsInjectedWhenFeatureEnabled) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  TestSuggestedActionsListener listener;
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  listener.WaitForBatches(1);
+  const auto& actions = listener.actions();
+  ASSERT_EQ(actions.size(), 3u);
+  EXPECT_EQ(actions[0]->title, "Explain");
+  EXPECT_EQ(actions[1]->title, "Summarize");
+  EXPECT_EQ(actions[2]->title, "Create Image");
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
@@ -224,6 +344,198 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   controller->Close();
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SuggestedActionsFromMockEndpoint) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  FakeStaticSelectionSuggestionEndpoint static_endpoint(tab);
+  FakeSelectionSuggestionEndpoint fake_endpoint(tab);
+  suggestion_service->RegisterEndpoint(&static_endpoint);
+  suggestion_service->RegisterEndpoint(&fake_endpoint);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  TestSuggestedActionsListener listener;
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  listener.WaitForBatches(2);
+  const auto& actions = listener.actions();
+  ASSERT_EQ(actions.size(), 5u);
+  EXPECT_EQ(actions[0]->title, "Explain");
+  EXPECT_EQ(actions[1]->title, "Summarize");
+  EXPECT_EQ(actions[2]->title, "Create Image");
+  EXPECT_FALSE(actions[3]->id.is_empty());
+  EXPECT_EQ(actions[3]->title, "Translate to Spanish");
+  EXPECT_FALSE(actions[4]->id.is_empty());
+  EXPECT_EQ(actions[4]->title, "Fact check");
+  EXPECT_NE(actions[3]->id, actions[4]->id);
+
+  suggestion_service->UnregisterEndpoint(&static_endpoint);
+  suggestion_service->UnregisterEndpoint(&fake_endpoint);
+}
+
+namespace {
+
+class CountingSelectionSuggestionEndpoint
+    : public ::selection::SuggestionEndpoint {
+ public:
+  explicit CountingSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+      : tab_(tab) {}
+  ~CountingSelectionSuggestionEndpoint() override = default;
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    request_count_++;
+    if (std::holds_alternative<gfx::Rect>(processed_area.bounds)) {
+      last_rect_ = std::get<gfx::Rect>(processed_area.bounds);
+    }
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    std::u16string label = u"Action " + base::NumberToString16(request_count_);
+    suggestions.push_back(
+        std::make_unique<PromptSuggestion>(*tab_, label, "Prompt"));
+    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+  int request_count() const { return request_count_; }
+  const gfx::Rect& last_rect() const { return last_rect_; }
+
+ private:
+  raw_ptr<tabs::TabInterface> tab_;
+  int request_count_ = 0;
+  gfx::Rect last_rect_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SuggestionsCachedPerRegionAndRefetchedOnAdjust) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  CountingSelectionSuggestionEndpoint counting_endpoint(tab);
+  suggestion_service->RegisterEndpoint(&counting_endpoint);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+
+  // 1. No active region yet: GetSuggestedActions returns empty without
+  // fetching.
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    EXPECT_TRUE(listener.actions().empty());
+    EXPECT_EQ(counting_endpoint.request_count(), 0);
+  }
+
+  // 2. Select Region 1 and request suggestions -> fetches once ("Action 1").
+  const auto region1_id = base::UnguessableToken::Create();
+  const gfx::RectF region1_rect(0.2f, 0.2f, 0.2f, 0.2f);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          region1_id, selection::RegionShape::NewRect(region1_rect)),
+      /*is_using_keyboard=*/false);
+  base::UnguessableToken region1_action_id;
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    ASSERT_EQ(listener.actions().size(), 1u);
+    EXPECT_EQ(listener.actions()[0]->title, "Action 1");
+    region1_action_id = listener.actions()[0]->id;
+    EXPECT_EQ(counting_endpoint.request_count(), 1);
+  }
+
+  // 3. Re-request for Region 1 without changing bounds -> returns stored
+  // suggestions without refetching.
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    ASSERT_EQ(listener.actions().size(), 1u);
+    EXPECT_EQ(listener.actions()[0]->title, "Action 1");
+    EXPECT_EQ(listener.actions()[0]->id, region1_action_id);
+    EXPECT_EQ(counting_endpoint.request_count(), 1);
+  }
+
+  // 4. Select Region 2 -> Region 2 becomes active; requesting suggestions
+  // fetches for Region 2 ("Action 2").
+  const auto region2_id = base::UnguessableToken::Create();
+  const gfx::RectF region2_rect(0.5f, 0.5f, 0.2f, 0.2f);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          region2_id, selection::RegionShape::NewRect(region2_rect)),
+      /*is_using_keyboard=*/false);
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    ASSERT_EQ(listener.actions().size(), 1u);
+    EXPECT_EQ(listener.actions()[0]->title, "Action 2");
+    EXPECT_EQ(counting_endpoint.request_count(), 2);
+  }
+
+  // 5. Delete Region 2 so Region 1 becomes active again -> returns stored
+  // "Action 1" without refetching.
+  handler->DeleteRegion(region2_id, /*is_using_keyboard=*/false);
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    ASSERT_EQ(listener.actions().size(), 1u);
+    EXPECT_EQ(listener.actions()[0]->title, "Action 1");
+    EXPECT_EQ(listener.actions()[0]->id, region1_action_id);
+    EXPECT_EQ(counting_endpoint.request_count(), 2);
+  }
+
+  // 6. Adjust Region 1's bounds -> invalidates stored suggestions and refetches
+  // ("Action 3").
+  const gfx::RectF region1_adjusted_rect(0.3f, 0.3f, 0.2f, 0.2f);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          region1_id, selection::RegionShape::NewRect(region1_adjusted_rect)),
+      /*is_using_keyboard=*/false);
+  {
+    TestSuggestedActionsListener listener;
+    handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+    listener.WaitForBatches(1);
+    ASSERT_EQ(listener.actions().size(), 1u);
+    EXPECT_EQ(listener.actions()[0]->title, "Action 3");
+    EXPECT_NE(listener.actions()[0]->id, region1_action_id);
+    EXPECT_EQ(counting_endpoint.request_count(), 3);
+  }
+
+  suggestion_service->UnregisterEndpoint(&counting_endpoint);
 }
 
 }  // namespace glic

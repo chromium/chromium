@@ -14,15 +14,20 @@ source_set("selection") {
     "explain_selection_trigger.h",
     "inline_cue_blocklist_utils.cc",
     "inline_cue_blocklist_utils.h",
+    "prompt_suggestion.cc",
+    "prompt_suggestion.h",
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",
     "selection_overlay_untrusted_ui.h",
+    "static_selection_suggestion_endpoint.cc",
+    "static_selection_suggestion_endpoint.h",
   ]
 
   public_deps = [
     ":mojo_bindings",
     "//chrome/browser/glic",
+    "//chrome/browser/selection",
     "//chrome/browser/ui/lens",
   ]
 

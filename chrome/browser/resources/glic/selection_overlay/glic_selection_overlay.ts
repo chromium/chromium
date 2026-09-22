@@ -421,6 +421,7 @@ export class SelectionOverlayElementElement extends
           this.selectionElements.regionSelectionLayer
               .handlePostSelectionDragGestureEnd();
         }
+        this.fetchSuggestedActions();
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
