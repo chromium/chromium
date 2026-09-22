@@ -385,7 +385,9 @@ public class VerticalTabListCoordinator {
         } else {
             mTabUnderlineManager = null;
         }
-        mCollapseController = new VerticalTabRailCollapseController(this::setRailCollapseState);
+        mCollapseController =
+                new VerticalTabRailCollapseController(
+                        this::setRailCollapseState, this::setCollapseButtonEnabled);
         mModelList = new TabListModel();
         SimpleRecyclerViewAdapter adapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
@@ -617,10 +619,10 @@ public class VerticalTabListCoordinator {
                                 mCollapseController::expandOrCollapseOnHover)
                         .with(
                                 VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED,
-                                mCollapseController.isCollapseButtonEnabled())
+                                !mCollapseController.isForcedCollapsed())
                         .with(
                                 VerticalTabListProperties.COLLAPSE_STATE,
-                                mCollapseController.getRailCollapseStateByUser())
+                                mCollapseController.getEffectiveRailCollapseState())
                         .build();
         PropertyModelChangeProcessor.create(
                 mContainerModel, mContainerView, VerticalTabListViewBinder::bind);
@@ -1027,10 +1029,13 @@ public class VerticalTabListCoordinator {
     }
 
     /**
-     * Sets the collapsed state of the vertical tab rail.
+     * Applies the collapsed state of the vertical tab rail.
      *
      * <p>This updates the model properties and layouts for the rail container and all tab items to
      * transition between the expanded (icons + text) and collapsed (icons only) states.
+     *
+     * <p>Only invoked by {@link VerticalTabRailCollapseController}, which owns this state. Do not
+     * call directly; feed the controller inputs instead.
      *
      * @param railCollapseState The {@link RailCollapseState} to apply to the rail.
      */
@@ -1041,17 +1046,18 @@ public class VerticalTabListCoordinator {
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         updatePinnedLayoutSpanCount();
         updatePinnedTabsSeparatorVisibility();
-        mCollapseController.setRailCollapseStateSupplierValue(railCollapseState);
     }
 
     /**
-     * Sets whether the rail collapse button is enabled.
+     * Applies the collapse button enabled state to the model.
+     *
+     * <p>Only invoked by {@link VerticalTabRailCollapseController}, which owns this state. Do not
+     * call directly; feed the controller inputs instead.
      *
      * @param enabled True if the collapse button should be enabled, false otherwise.
      */
     void setCollapseButtonEnabled(boolean enabled) {
         mContainerModel.set(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED, enabled);
-        mCollapseController.setCollapseButtonEnabled(enabled);
     }
 
     /**

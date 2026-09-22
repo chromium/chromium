@@ -47,6 +47,8 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -97,7 +99,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
         mCollapseController =
                 new VerticalTabRailCollapseController(
-                        mMockTabListCoordinator::setRailCollapseState);
+                        mMockTabListCoordinator::setRailCollapseState,
+                        mMockTabListCoordinator::setCollapseButtonEnabled);
         when(mMockTabListCoordinator.getCollapseController()).thenReturn(mCollapseController);
 
         mCoordinator =
@@ -113,6 +116,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
+        // toggleCollapseState() persists the user preference; reset it between tests.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
     }
 
     @Test
@@ -186,8 +192,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testDetermineShowableSize_collapsedState() {
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
 
         // Available width smaller than expanded rail width (240dp), but >= collapsed rail width
         // (76dp)
@@ -296,15 +301,13 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
 
         // Collapse requested
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Expand again
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED);
+        mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
     }
@@ -312,15 +315,13 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     public void testHoverExpandAndCollapse() {
         // Collapse the rail
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover enter: rail expands for hovering
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -329,8 +330,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover exit: rail collapses back
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED_FOR_HOVERING, RailCollapseState.COLLAPSED);
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator, times(3))
@@ -340,15 +340,13 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     public void testPinRailWhenHoverExpanded() {
         // Start in COLLAPSED
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         verify(mMockSideUiCoordinator, times(1))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover expand
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -356,8 +354,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // User clicks expand chevron button to open pinned rail.
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED_FOR_HOVERING, RailCollapseState.EXPANDED);
+        mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         // updateUi() is not called when transitioning from EXPANDED_FOR_HOVERING to EXPANDED
@@ -422,8 +419,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     public void testDeferredStateApplication_OnSideUiSpecsChanged() {
         // Trigger collapse request
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
 
         // Verify setRailCollapseState is NOT called immediately
         verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
@@ -471,8 +467,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     public void testNarrowWindow_AlreadyCollapsed_ReenablesButtonOnWindowExpanded() {
         // Collapse rail manually while in wide window.
-        mCollapseController.requestRailCollapseStateChangeByUser(
-                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        mCollapseController.toggleCollapseState();
         clearInvocations(mMockTabListCoordinator);
 
         // Shrink window to narrow (< 504dp). determineShowableSize updates button state for empty
