@@ -23,6 +23,19 @@ import java.util.Map;
  */
 @NullMarked
 public class ActivityElement<ActivityT extends Activity> extends Element<ActivityT> {
+    /**
+     * Timeout to wait for an Activity to be launched in a new task.
+     *
+     * <p>Starting a new task (a cold start, or a new window in multi-window) is much more expensive
+     * than an in-task transition, and all Conditions in a Transition share a single timeout budget.
+     * With the default budget, a slow launch starves the Conditions that wait for the new window's
+     * contents, failing the Transition even though the UI settled promptly once it appeared.
+     *
+     * <p>Since the budget is the max of the Transition's and each Condition's timeout, this only
+     * extends Transitions that actually wait for a new task.
+     */
+    public static final int NEW_TASK_TIMEOUT_MS = 10000;
+
     private final Class<ActivityT> mActivityClass;
     private boolean mAllowSubclasses;
 
@@ -195,6 +208,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
 
         private ActivityExistsInNewTaskCondition() {
             super();
+            withTimeout(NEW_TASK_TIMEOUT_MS);
 
             // Store all task ids of Activities known to Public Transit.
             mExistingTaskIds = new HashMap<>();

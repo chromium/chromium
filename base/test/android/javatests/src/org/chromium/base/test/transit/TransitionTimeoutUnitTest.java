@@ -10,6 +10,9 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.Assert.assertThrows;
 
 import static org.chromium.base.test.transit.Triggers.runTo;
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import android.app.Activity;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
@@ -114,6 +117,19 @@ public class TransitionTimeoutUnitTest {
                                 new SettableCondition("default"),
                                 new SettableCondition("long").withTimeout(5000)));
         assertThat(timeout).isEqualTo(5000L);
+    }
+
+    @Test
+    public void testCalculateTimeoutMs_newTaskActivityExtendsBudget() {
+        Condition newTaskCondition =
+                assertNonNull(new ActivityElement<>(Activity.class).createEnterCondition());
+        assertThat(newTaskCondition.getTimeoutMs()).isEqualTo(ActivityElement.NEW_TASK_TIMEOUT_MS);
+
+        long timeout =
+                ConditionWaiter.calculateTimeoutMs(
+                        Transition.TransitionOptions.DEFAULT,
+                        List.of(new SettableCondition("default"), newTaskCondition));
+        assertThat(timeout).isEqualTo(ActivityElement.NEW_TASK_TIMEOUT_MS);
     }
 
     @Test
