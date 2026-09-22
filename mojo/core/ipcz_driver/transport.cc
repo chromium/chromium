@@ -201,11 +201,16 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
   }
 
   if (handle_owner == HandleOwner::kRecipient) {
-    if (from_transport.destination_type() != Transport::kBroker &&
-        !from_transport.is_peer_trusted() && !remote_process.is_current()) {
-      // Do not trust non-broker endpoints to send handles which already belong
-      // to us, unless the transport is explicitly marked as trustworthy (e.g.
-      // is connected to a known elevated process.)
+    // Only accept handles which the peer claims to have already duplicated into
+    // this process if the peer is at least as privileged as this end. An
+    // elevated process does not accept recipient-owned handles from an
+    // untrusted broker. A broker is otherwise implicitly at least as privileged
+    // as its peers.
+    const bool is_peer_at_least_as_privileged =
+        from_transport.is_peer_trusted() ||
+        (from_transport.destination_type() == Transport::kBroker &&
+         !from_transport.is_elevated());
+    if (!is_peer_at_least_as_privileged && !remote_process.is_current()) {
       return std::nullopt;
     }
     // Verify that this is a handle to a valid object. We do not yet know the
@@ -474,8 +479,13 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
   header.reserved[1] = 0;
   header.reserved[2] = 0;
 
+  // Handles are pre-duplicated into the recipient's process only when this end
+  // of the transport is at least as privileged as the recipient (so the
+  // recipient will accept them) and a handle to the recipient's process is
+  // available. When the peer is elevated it is more privileged than this end,
+  // so handles are sent as-is for the peer to duplicate.
   const HandleOwner handle_owner =
-      remote_process_.IsValid() &&
+      remote_process_.IsValid() && !is_peer_elevated() &&
               (source_type() == kBroker || is_trusted_by_peer())
           ? HandleOwner::kRecipient
           : HandleOwner::kSender;
