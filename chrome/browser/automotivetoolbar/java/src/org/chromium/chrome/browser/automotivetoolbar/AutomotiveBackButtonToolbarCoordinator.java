@@ -17,7 +17,6 @@ import androidx.annotation.AnimRes;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;

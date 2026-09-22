@@ -1768,6 +1768,7 @@ if (is_android) {
       "//base:flagged_apis_java",
       "//base:holder_java",
       "//chrome/browser/actor/android:java",
+      "//chrome/browser/automotivetoolbar:java",
       "//chrome/browser/notifications:java",
       "//chrome/browser/privacy:privacy_preference_manager_java",
       "//chrome/browser/settings:search_java",

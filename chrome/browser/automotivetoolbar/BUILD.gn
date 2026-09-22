@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.automotivetoolbar"
+  sources = [
+    "java/src/org/chromium/chrome/browser/automotivetoolbar/AutomotiveBackButtonToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/automotivetoolbar/EdgeSwipeGestureDetector.java",
+  ]
+  deps = [
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
