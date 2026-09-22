@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -148,6 +149,113 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   histogram_tester.ExpectUniqueSample("ContextualTasks.ActiveTasksCount", 1, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Session.Completed", true,
                                       1);
+}
+
+class ContextualTasksUiServiceSidePanelNavigationInteractiveUiTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextualTasksUiServiceSidePanelNavigationInteractiveUiTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kContextualTasks, kContextualTasksForceEntryPointEligibility};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(kContextualTasksRearchitecture);
+    } else {
+      disabled_features.push_back(kContextualTasksRearchitecture);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsRearchitectureEnabled() const { return GetParam(); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksUiServiceSidePanelNavigationInteractiveUiTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "RearchitectureEnabled" : "RearchitectureDisabled";
+    });
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel for an active task.
+//  (2) Navigation to a non-HTTP/HTTPS URL (e.g. file://) is not handled or
+//  routed to the tab strip.
+//  (3) Side panel WebContents initiates a navigation to an external HTTP/HTTPS
+//  URL.
+//  (4) Navigation is intercepted and handled by ContextualTasksUiService.
+//  (5) A new tab is created in the browser tab strip for the external URL.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksUiServiceSidePanelNavigationInteractiveUiTest,
+    SidePanelNavigation_ExternalLink_RoutesToTabStrip) {
+  // Disable side panel animations to make test deterministic.
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(contextual_tasks_service);
+
+  const GURL initial_search_url("https://www.google.com/search?q=test");
+  int initial_tab_count = TabListInterface::From(browser())->GetTabCount();
+  const GURL external_url("https://example.com/article");
+
+  ContextualTasksPanelController* coordinator =
+      ContextualTasksPanelController::From(browser());
+
+  RunTestSequence(
+      Do([&]() {
+        service->StartTaskUiInSidePanel(browser(),
+                                        browser()->GetActiveTabInterface(),
+                                        initial_search_url, nullptr);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+        content::WebContents* panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_TRUE(panel_contents);
+
+        // Verify that navigating to a non-HTTP(S) URL (e.g. file://) does not
+        // open a tab in the browser tab strip.
+        const GURL file_url("file:///path/to/test.pdf");
+        EXPECT_TRUE(content::ExecJs(
+            panel_contents,
+            content::JsReplace("window.open($1, '_blank');", file_url)));
+        EXPECT_EQ(TabListInterface::From(browser())->GetTabCount(),
+                  initial_tab_count);
+
+        // Emulate clicking a link in the side panel via window.open.
+        EXPECT_TRUE(content::ExecJs(
+            panel_contents,
+            content::JsReplace("window.open($1, '_blank');", external_url)));
+      }),
+      // Verify tab strip behavior based on whether rearchitecture is enabled.
+      Check([&]() {
+        if (IsRearchitectureEnabled()) {
+          return base::test::RunUntil([&]() {
+            return TabListInterface::From(browser())->GetTabCount() ==
+                   initial_tab_count + 1;
+          });
+        }
+        return TabListInterface::From(browser())->GetTabCount() ==
+               initial_tab_count;
+      }),
+      Check([&]() {
+        if (IsRearchitectureEnabled()) {
+          return TabListInterface::From(browser())
+                     ->GetActiveTab()
+                     ->GetContents()
+                     ->GetVisibleURL() == external_url;
+        }
+        return true;
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,

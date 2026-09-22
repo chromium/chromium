@@ -2994,6 +2994,218 @@ TEST_F(ContextualTasksUiServiceTest,
   contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsWebContentsInSidePanel) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  // Null web contents returns false.
+  EXPECT_FALSE(service_for_nav_->IsWebContentsInSidePanel(nullptr));
+
+  // Regular web contents not in side panel returns false.
+  EXPECT_FALSE(service_for_nav_->IsWebContentsInSidePanel(web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest, IsAllowedSidePanelUrl) {
+  EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillRepeatedly(testing::Return(false));
+
+  // AI URL is allowed.
+  EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(GURL("https://g.ai/")));
+  EXPECT_TRUE(
+      service_for_nav_->IsAllowedSidePanelUrl(GURL("https://www.g.ai/chat")));
+
+  // Valid search results page is allowed.
+  EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(
+      GURL("https://www.google.com/search?q=query")));
+  EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(
+      GURL("https://www.google.com/search?lns_mode=un")));
+
+  // Sign-in domain is allowed.
+  EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(
+      GURL("https://login.corp.google.com/signin")));
+
+  // Google CAPTCHA is allowed.
+  EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(GURL(
+      "https://www.google.com/sorry/index?continue=https://www.google.com/")));
+
+  // External web domains are not allowed.
+  EXPECT_FALSE(
+      service_for_nav_->IsAllowedSidePanelUrl(GURL("https://www.example.com")));
+  EXPECT_FALSE(service_for_nav_->IsAllowedSidePanelUrl(
+      GURL("https://en.wikipedia.org/")));
+
+  // Invalid or non-HTTP(S) schemes are not allowed.
+  EXPECT_FALSE(
+      service_for_nav_->IsAllowedSidePanelUrl(GURL("chrome://settings")));
+  EXPECT_FALSE(
+      service_for_nav_->IsAllowedSidePanelUrl(GURL("javascript:alert(1)")));
+  EXPECT_FALSE(service_for_nav_->IsAllowedSidePanelUrl(GURL("about:blank")));
+  EXPECT_FALSE(service_for_nav_->IsAllowedSidePanelUrl(
+      GURL("file:///path/to/test.pdf")));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_PostRearchitecture_NotInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
+
+  // External link clicked outside side panel should not be intercepted by
+  // post-rearch handler.
+  GURL external_url("https://example.com/page");
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(external_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_ExternalHttpUrl_RoutesToTab) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL external_url("https://example.com/article");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* browser) {
+        EXPECT_EQ(external_url, params.url);
+        // CURRENT_TAB should be converted to NEW_FOREGROUND_TAB.
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(external_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_PreservesNewTabDisposition) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL external_url("https://example.com/article");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* browser) {
+        EXPECT_EQ(external_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  content::OpenURLParams open_params(external_url, content::Referrer(),
+                                     WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                                     ui::PageTransition::PAGE_TRANSITION_LINK,
+                                     /*is_renderer_initiated=*/true);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      std::move(open_params), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/false, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_PostRearchitecture_SidePanel_NonHttpUrl_NotRouted) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  // Non-HTTP(S) schemes must not be dispatched via OpenUrl.
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  GURL js_url("javascript:alert(1)");
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(js_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  GURL file_url("file:///path/to/test.pdf");
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(file_url, /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_AllowedUrlWithParams_Proceeds) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  // Generate an allowed search URL that already contains all required side
+  // panel parameters.
+  GURL raw_search_url("https://www.google.com/search?q=test");
+  GURL allowed_url_with_params =
+      ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          raw_search_url, web_contents.get());
+
+  // Should not call OpenUrl.
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  // Since it is an allowed side panel URL and has all params, it proceeds in
+  // side panel (returns false).
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(allowed_url_with_params,
+                          /*is_renderer_initiated=*/true),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(

@@ -1384,6 +1384,12 @@ bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks HandleNavigationImplPostRearchitecture: "
       << url_params.url.spec();
+
+  // If the navigation does not originate from the side panel, do not intercept.
+  if (!IsWebContentsInSidePanel(source_contents)) {
+    return false;
+  }
+
   // Check if the navigation originates from the side panel WebContents and
   // requires URL changes (e.g. forced host override, missing parameters) to be
   // applied.
@@ -1395,40 +1401,21 @@ bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
                                           source_contents);
   }
 
+  // Check if the navigation is an external link from the side panel that should
+  // be rerouted from the side panel to the browser strip.
+  if (ShouldHandleSidePanelExternalNavigation(url_params.url,
+                                              source_contents)) {
+    return HandleSidePanelExternalNavigation(
+        std::move(url_params), source_contents, tab, window_features);
+  }
+
   return false;
 }
 
 bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
     const content::OpenURLParams& url_params,
     content::WebContents* source_contents) {
-  if (!source_contents) {
-    return false;
-  }
-
-  // Retrieve the BrowserWindowInterface registered on the side panel
-  // WebContents.
-  BrowserWindowInterface* browser_window =
-      webui::GetBrowserWindowInterface(source_contents);
-  if (!browser_window) {
-    return false;
-  }
-
-  // If not panel open on this browser window, then source_contents cannot be in
-  // the side panel.
-  auto* controller = ContextualTasksPanelController::From(browser_window);
-  if (!controller) {
-    return false;
-  }
-
-  // Verify that source_contents is explicitly a side panel WebContents.
-  bool is_side_panel_contents = false;
-  for (auto* wc : controller->GetPanelWebContentsList()) {
-    if (wc == source_contents) {
-      is_side_panel_contents = true;
-      break;
-    }
-  }
-  if (!is_side_panel_contents) {
+  if (!IsWebContentsInSidePanel(source_contents)) {
     return false;
   }
 
@@ -1549,6 +1536,106 @@ GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
   }
 
   return new_url;
+}
+
+bool ContextualTasksUiService::IsWebContentsInSidePanel(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  BrowserWindowInterface* browser_window =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (!browser_window) {
+    return false;
+  }
+
+  auto* controller = ContextualTasksPanelController::From(browser_window);
+  if (!controller) {
+    return false;
+  }
+
+  for (auto* wc : controller->GetPanelWebContentsList()) {
+    if (wc == web_contents) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ContextualTasksUiService::IsAllowedSidePanelUrl(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  return IsAiUrl(url) || IsValidSearchResultsPage(url) ||
+         IsGoogleCaptchaUrl(url) || IsSignInDomain(url);
+}
+
+bool ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation(
+    const GURL& url,
+    content::WebContents* source_contents) {
+  if (!IsWebContentsInSidePanel(source_contents)) {
+    return false;
+  }
+
+  // If the navigation is to an allowed side panel URL (e.g. Google AI URL,
+  // valid search results page, CAPTCHA, sign-in), it is allowed to commit
+  // within the side panel.
+  if (IsAllowedSidePanelUrl(url)) {
+    return false;
+  }
+
+  // Only HTTP(S) URLs are routed externally; non-web schemes (e.g.
+  // javascript:, chrome://, file://) must NOT be dispatched via OpenUrl.
+  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+}
+
+bool ContextualTasksUiService::HandleSidePanelExternalNavigation(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    const blink::mojom::WindowFeatures& window_features) {
+  BrowserWindowInterface* browser_window =
+      webui::GetBrowserWindowInterface(source_contents);
+  if (!browser_window && tab) {
+    browser_window = tab->GetBrowserWindowInterface();
+  }
+
+  if (browser_window) {
+    if (auto* controller =
+            ContextualTasksPanelController::From(browser_window)) {
+      controller->OnAiInteraction();
+    }
+  }
+
+  if (url_params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+    url_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  // Ensure initiator_origin is populated for renderer-initiated navigations to
+  // prevent DCHECK failures in NavigationControllerImpl::LoadURLWithParams.
+  if (url_params.is_renderer_initiated &&
+      !url_params.initiator_origin.has_value()) {
+    if (source_contents && source_contents->GetPrimaryMainFrame()) {
+      url_params.initiator_origin =
+          source_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    } else {
+      url_params.initiator_origin = url::Origin();
+    }
+  }
+
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks HandleSidePanelExternalNavigation: routing external "
+         "link to tab strip: "
+      << url_params.url.spec()
+      << ", disposition: " << static_cast<int>(url_params.disposition);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
+                     window_features, browser_window));
+  return true;
 }
 
 std::map<std::string, std::string>
@@ -1682,6 +1769,10 @@ void ContextualTasksUiService::OpenUrl(
 
   NavigateParams nav_params(profile_, url, url_params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(url_params);
+  if (nav_params.is_renderer_initiated &&
+      !nav_params.initiator_origin.has_value()) {
+    nav_params.initiator_origin = url::Origin();
+  }
 
   if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
       (url_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
@@ -1737,6 +1828,10 @@ void ContextualTasksUiService::OpenUrl(
 
   // Perform the navigation
   Navigate(&nav_params);
+
+  // Clear opener to prevent dangling pointer when message_proxy_web_contents is
+  // destroyed or released below.
+  nav_params.opener = nullptr;
 
   // Grab the web contents that was associated with tis navigation and begin
   // tracking it.

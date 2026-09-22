@@ -467,6 +467,8 @@ class ContextualTasksUiService : public KeyedService {
       content::WebContents* source_contents);
 
  protected:
+  friend class ContextualTasksUiServiceTest;
+
   virtual void StartTaskUiInSidePanelImpl(
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
@@ -533,6 +535,30 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool AddRequiredSidePanelUrlChanges(
       content::OpenURLParams url_params,
       content::WebContents* source_contents);
+
+  // Returns whether the given WebContents is currently hosted within the side
+  // panel.
+  virtual bool IsWebContentsInSidePanel(content::WebContents* web_contents);
+
+  // Returns whether the URL is allowed to navigate and commit within the side
+  // panel (e.g. Google AI URL, valid Google Search results page, Google
+  // Captcha, or sign-in domain).
+  virtual bool IsAllowedSidePanelUrl(const GURL& url);
+
+  // Returns whether the given navigation should be treated as an external link
+  // clicked from within the side panel, routing to the browser tab strip.
+  virtual bool ShouldHandleSidePanelExternalNavigation(
+      const GURL& url,
+      content::WebContents* source_contents);
+
+  // Handles an external link navigation originating in the side panel by
+  // routing HTTP(S) links to the main browser tab strip via OpenUrl (converting
+  // CURRENT_TAB to NEW_FOREGROUND_TAB).
+  virtual bool HandleSidePanelExternalNavigation(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      const blink::mojom::WindowFeatures& window_features);
 
   // Helper to build the common search parameters map for Contextual Tasks,
   // matching what was previously provided to app.ts via GetCommonSearchParams.
