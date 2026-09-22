@@ -12,6 +12,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -274,17 +277,17 @@ void TextInputManager::UpdateTextInputState(
   }
 
   // If |view| is different from |active_view| and its |TextInputState.type| is
-  // not NONE, |active_view_| should change to |view|.
+  // not NONE, |active_view_| should change to |view| only if |view| has focus.
   if (text_input_state.type != ui::TEXT_INPUT_TYPE_NONE &&
-      active_view_ != view) {
+      active_view_ != view && IsViewFocused(view)) {
     if (active_view_) {
       // Ideally, we should always receive an IPC from |active_view_|'s
       // RenderWidget to reset its |TextInputState.type| to NONE, before any
       // other RenderWidget updates its TextInputState. But there is no
-      // guarantee in the order of IPCs from different RenderWidgets and another
-      // RenderWidget's IPC might arrive sooner and we reach here. To make the
-      // IME behavior identical to the non-OOPIF case, we have to manually reset
-      // the state for |active_view_|.
+      // guarantee in the order of IPCs from different RenderWidgets and
+      // another RenderWidget's IPC might arrive sooner and we reach here. To
+      // make the IME behavior identical to the non-OOPIF case, we have to
+      // manually reset the state for |active_view_|.
       text_input_state_map_[active_view_]->type = ui::TEXT_INPUT_TYPE_NONE;
       RenderWidgetHostViewBase* active_view = active_view_;
       active_view_ = nullptr;
@@ -293,10 +296,13 @@ void TextInputManager::UpdateTextInputState(
     active_view_ = view;
   }
 
-  // If the state for |active_view_| is none, then we no longer have an
-  // |active_view_|.
-  if (active_view_ == view && text_input_state.type == ui::TEXT_INPUT_TYPE_NONE)
+  // If the state for |active_view_| is none, or if |active_view_| is no longer
+  // focused, then we no longer have an |active_view_|.
+  if (active_view_ == view &&
+      (text_input_state.type == ui::TEXT_INPUT_TYPE_NONE ||
+       !IsViewFocused(view))) {
     active_view_ = nullptr;
+  }
 
   NotifyObserversAboutInputStateUpdate(view, changed);
 }
@@ -499,6 +505,49 @@ void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {
 
 bool TextInputManager::IsRegistered(RenderWidgetHostViewBase* view) const {
   return text_input_state_map_.count(view) == 1;
+}
+
+bool TextInputManager::IsViewFocused(RenderWidgetHostViewBase* view) const {
+  if (!view || !view->host()) {
+    return false;
+  }
+  if (view->GetWidgetType() == WidgetType::kPopup) {
+    // Popups themselves do not hold frame focus directly. Instead, delegate the
+    // focus check to the frame that created the popup.
+    if (auto creator_id = view->host()->GetPopupCreatorFrameId()) {
+      RenderFrameHostImpl* creator_rfh =
+          RenderFrameHostImpl::FromID(*creator_id);
+      if (!creator_rfh) {
+        return false;
+      }
+      // When site isolation is disabled (such as for subframes on Android),
+      // child frames share the root RenderWidgetHostView with the main frame.
+      // Checking only whether the creator's view is focused would incorrectly
+      // return true even if the creator frame is not focused. Verify that the
+      // creator frame itself is the currently focused frame in the frame tree.
+      FrameTreeNode* focused_frame =
+          creator_rfh->frame_tree_node()->frame_tree().GetFocusedFrame();
+      RenderFrameHostImpl* focused_rfh =
+          focused_frame ? focused_frame->current_frame_host()
+                        : creator_rfh->GetMainFrame();
+      if (creator_rfh != focused_rfh) {
+        return false;
+      }
+      RenderWidgetHostViewBase* creator_view =
+          static_cast<RenderWidgetHostViewBase*>(creator_rfh->GetView());
+      return IsViewFocused(creator_view);
+    }
+    return false;
+  }
+  RenderWidgetHostViewBase* root_view = view->GetRootView();
+  if (!root_view) {
+    return false;
+  }
+  RenderWidgetHostImpl* focused_widget = root_view->GetFocusedWidget();
+  if (!focused_widget) {
+    return false;
+  }
+  return view->GetRenderWidgetHost() == focused_widget;
 }
 
 void TextInputManager::AddObserver(Observer* observer) {

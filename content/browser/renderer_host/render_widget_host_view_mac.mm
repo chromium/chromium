@@ -784,13 +784,16 @@ void RenderWidgetHostViewMac::OnUpdateTextInputStateCalled(
 
   // Set the monitor state based on the text input focus state.
   const bool has_focus = HasFocus();
-  bool need_monitor_composition =
-      has_focus && state && state->type != ui::TEXT_INPUT_TYPE_NONE;
+  const bool is_active_view =
+      text_input_manager->GetActiveWidget() &&
+      text_input_manager->GetActiveWidget()->GetView() == updated_view;
+  bool need_monitor_composition = has_focus && is_active_view && state &&
+                                  state->type != ui::TEXT_INPUT_TYPE_NONE;
 
   widget_host->RequestCompositionUpdates(false /* immediate_request */,
                                          need_monitor_composition);
 
-  if (has_focus) {
+  if (has_focus && is_active_view) {
     SetTextInputActive(true);
 
     // Let AppKit cache the new input context to make IMEs happy.

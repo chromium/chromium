@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
@@ -733,10 +734,8 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
                                        ui::TextInputType type) {
     DCHECK_NE(ui::TEXT_INPUT_TYPE_NONE, type);
     // First mock-focus the widget if not already.
-    if (render_widget_host_delegate()->GetFocusedRenderWidgetHost(
-            widget_host_) != view->GetRenderWidgetHost()) {
-      render_widget_host_delegate()->set_focused_widget(view->host());
-    }
+    render_widget_host_delegate()->set_focused_widget(view ? view->host()
+                                                           : nullptr);
 
     TextInputManager* manager = GetTextInputManager(view);
     if (manager->GetActiveWidget()) {
@@ -6503,6 +6502,43 @@ TEST_F(InputMethodResultAuraTest, ChangeTextDirectionAndLayoutAlignment) {
   }
 }
 
+// Test that an unfocused view cannot become active in TextInputManager.
+TEST_F(InputMethodResultAuraTest, UnfocusedViewCannotBecomeActive) {
+  TextInputManager* manager = GetTextInputManager(tab_view());
+  EXPECT_TRUE(manager);
+
+  ActivateViewForTextInputManager(views_[0], ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_EQ(views_[0], manager->active_view_for_testing());
+  EXPECT_EQ(widget_hosts_[0], manager->GetActiveWidget());
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, tab_view()->GetTextInputType());
+
+  // Attempt to activate an unfocused view without granting focus.
+  ui::mojom::TextInputState child_state;
+  child_state.type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  views_[1]->TextInputStateChanged(child_state);
+
+  // The active view, active widget, and text input type must remain unchanged.
+  EXPECT_EQ(views_[0], manager->active_view_for_testing());
+  EXPECT_EQ(widget_hosts_[0], manager->GetActiveWidget());
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, tab_view()->GetTextInputType());
+
+  // Inserting text should route to the focused widget (index 0), not widget 1.
+  text_input_client()->InsertText(
+      u"sample_text",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  std::string dispatched_messages;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    dispatched_messages = GetMessageNames(
+        widget_hosts_[0]->input_handler()->GetAndResetDispatchedMessages());
+    return !dispatched_messages.empty();
+  }));
+  EXPECT_EQ("CommitText", dispatched_messages);
+  EXPECT_EQ(
+      "",
+      GetMessageNames(
+          widget_hosts_[1]->input_handler()->GetAndResetDispatchedMessages()));
+}
+
 // A class of tests which verify the correctness of some tracked IME related
 // state at the browser side. Each test verifies the correctness tracking for
 // one specific state. To do so, the views are activated in a predetermined
@@ -6719,22 +6755,24 @@ TEST_F(InputMethodStateAuraTest, GetAutocorrectRangeFromActiveView) {
   ASSERT_TRUE(manager);
 
   // Send an autocorrect span from a child view, making it the active view.
+  ActivateViewForTextInputManager(views_[1], ui::TEXT_INPUT_TYPE_TEXT);
   ui::mojom::TextInputState child_state;
   child_state.type = ui::TEXT_INPUT_TYPE_TEXT;
   child_state.ime_text_spans_info.push_back(ui::mojom::ImeTextSpanInfo::New(
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kAutocorrect, 0, 1000),
       gfx::Rect()));
   views_[1]->TextInputStateChanged(child_state);
-  ASSERT_EQ(views_[1], manager->active_view_for_testing());
+  EXPECT_EQ(views_[1], manager->active_view_for_testing());
   EXPECT_EQ(gfx::Range(0, 1000), manager->GetAutocorrectRange());
 
   // Activate the tab view with no autocorrect span. The child view's span is
   // still stored in the manager, but it must not be returned for the now
   // active tab view.
+  ActivateViewForTextInputManager(views_[0], ui::TEXT_INPUT_TYPE_TEXT);
   ui::mojom::TextInputState tab_state;
   tab_state.type = ui::TEXT_INPUT_TYPE_TEXT;
   views_[0]->TextInputStateChanged(tab_state);
-  ASSERT_EQ(views_[0], manager->active_view_for_testing());
+  EXPECT_EQ(views_[0], manager->active_view_for_testing());
   EXPECT_EQ(gfx::Range(), manager->GetAutocorrectRange());
 
   // Activate the tab view with its own autocorrect span and verify that the

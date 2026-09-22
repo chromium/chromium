@@ -881,6 +881,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   ui::EventPointerType last_pointer_type_before_focus_ =
       ui::EventPointerType::kUnknown;
 
+  // Tracks the last text input type notified to the InputMethod.
+  ui::TextInputType last_text_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
+
   bool is_first_navigation_ = true;
   viz::LocalSurfaceId inset_surface_id_;
 

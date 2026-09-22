@@ -599,6 +599,9 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
   void ActivateViewWithTextInputManager(RenderWidgetHostViewBase* view,
                                         ui::TextInputType type) {
+    if (view && view->host()) {
+      delegate_.set_focused_widget(view->host());
+    }
     ui::mojom::TextInputState state;
     state.type = type;
     view->TextInputStateChanged(state);
@@ -2000,6 +2003,9 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
   void SetTextInputType(RenderWidgetHostViewBase* view,
                         ui::TextInputType type,
                         ui::TextInputFlags flags = ui::TEXT_INPUT_FLAG_NONE) {
+    if (view && view->host()) {
+      delegate_.set_focused_widget(view->host());
+    }
     ui::mojom::TextInputState state;
     state.type = type;
     state.flags = flags;
@@ -2413,7 +2419,7 @@ TEST_F(InputMethodMacTest, MonitorCompositionRangeForActiveWidget) {
   state.type = ui::TEXT_INPUT_TYPE_TEXT;
 
   // Make the tab's widget active.
-  tab_view()->TextInputStateChanged(state);
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
 
   base::RunLoop().RunUntilIdle();
   MockWidgetInputHandler::MessageVector events =
@@ -2428,7 +2434,7 @@ TEST_F(InputMethodMacTest, MonitorCompositionRangeForActiveWidget) {
   EXPECT_TRUE(message->monitor_request());
 
   // Now make the child view active.
-  child_view_->TextInputStateChanged(state);
+  SetTextInputType(child_view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   // The tab should receive another IPC for composition updates.
   base::RunLoop().RunUntilIdle();
@@ -2452,7 +2458,7 @@ TEST_F(InputMethodMacTest, MonitorCompositionRangeForActiveWidget) {
   EXPECT_TRUE(message->monitor_request());
 
   // Make the tab view active again.
-  tab_view()->TextInputStateChanged(state);
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
 
   base::RunLoop().RunUntilIdle();
   events = child_widget_->GetAndResetDispatchedMessages();

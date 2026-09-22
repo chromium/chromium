@@ -246,6 +246,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const viz::FrameSinkId& GetFrameSinkId() override;
   std::optional<GlobalRenderFrameHostId> GetPopupCreatorFrameId()
       const override;
+  void set_popup_creator_frame_id_for_testing(
+      std::optional<GlobalRenderFrameHostId> id) {
+    popup_creator_frame_id_ = id;
+  }
   void UpdateTextDirection(base::i18n::TextDirection direction) override;
   void NotifyTextDirection() override;
   void SetExternallySourcedComposition(

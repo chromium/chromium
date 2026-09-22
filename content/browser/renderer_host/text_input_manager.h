@@ -284,6 +284,11 @@ class CONTENT_EXPORT TextInputManager {
   // Returns true if |view| is already registered.
   bool IsRegistered(RenderWidgetHostViewBase* view) const;
 
+  // Returns true if |view| is currently the focused view. For popup widgets,
+  // popups do not hold frame focus directly, so this check is performed
+  // against the focus state of the frame that created the popup.
+  bool IsViewFocused(RenderWidgetHostViewBase* view) const;
+
   // Add and remove observers for notifications regarding updates in the
   // TextInputState. Clients must be sure to remove themselves before they go
   // away.
