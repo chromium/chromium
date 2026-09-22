@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -242,9 +243,15 @@ void MoveMouseAndPress(const gfx::Point& screen_pos,
                        ui_controls::MouseButton button,
                        int button_state,
                        base::OnceClosure closure) {
-  ASSERT_TRUE(ui_controls::SendMouseMove(screen_pos.x(), screen_pos.y()));
-  ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(button, button_state,
-                                                         std::move(closure)));
+  ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+      screen_pos.x(), screen_pos.y(),
+      base::BindOnce(
+          [](ui_controls::MouseButton button, int button_state,
+             base::OnceClosure closure) {
+            ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+                button, button_state, std::move(closure)));
+          },
+          button, button_state, std::move(closure))));
 }
 
 #endif  // !BUILDFLAG(IS_MAC)
@@ -885,13 +892,7 @@ class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenus DISABLED_ContextMenus
-#else
-#define MAYBE_ContextMenus ContextMenus
-#endif
-VIEW_TEST(BookmarkBarViewTest4, MAYBE_ContextMenus)
+VIEW_TEST(BookmarkBarViewTest4, ContextMenus)
 
 // Tests drag and drop within the same menu.
 class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
@@ -1214,9 +1215,13 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Send a down event, which should select the first item.
-    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
-        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
+    // Move the mouse over the first item in the submenu so that any queued
+    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
+    views::MenuItemView* first_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
+    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+        center.x(), center.y(),
         CreateEventTask(this, &BookmarkBarViewTest10::Step3)));
   }
 
@@ -1299,13 +1304,7 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_KeyEvents DISABLED_KeyEvents
-#else
-#define MAYBE_KeyEvents KeyEvents
-#endif
-VIEW_TEST(BookmarkBarViewTest10, MAYBE_KeyEvents)
+VIEW_TEST(BookmarkBarViewTest10, KeyEvents)
 
 // Make sure the menu closes with the following sequence: show menu, show
 // context menu, close context menu (via escape), then click else where. This
@@ -1510,13 +1509,7 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ClickOnContextMenuSeparator DISABLED_ClickOnContextMenuSeparator
-#else
-#define MAYBE_ClickOnContextMenuSeparator ClickOnContextMenuSeparator
-#endif
-VIEW_TEST(BookmarkBarViewTest13, MAYBE_ClickOnContextMenuSeparator)
+VIEW_TEST(BookmarkBarViewTest13, ClickOnContextMenuSeparator)
 
 // Makes sure right clicking on a folder on the bookmark bar doesn't result in
 // both a context menu and showing the menu.
@@ -1611,13 +1604,7 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MenuStaysVisibleAfterDelete DISABLED_MenuStaysVisibleAfterDelete
-#else
-#define MAYBE_MenuStaysVisibleAfterDelete MenuStaysVisibleAfterDelete
-#endif
-VIEW_TEST(BookmarkBarViewTest15, MAYBE_MenuStaysVisibleAfterDelete)
+VIEW_TEST(BookmarkBarViewTest15, MenuStaysVisibleAfterDelete)
 
 // Tests that we don't crash or get stuck if the parent of a menu is closed.
 class BookmarkBarViewTest16 : public BookmarkBarViewEventTestBase {
@@ -1715,14 +1702,7 @@ class BookmarkBarViewTest17 : public BookmarkBarViewEventTestBase {
   std::unique_ptr<BookmarkContextMenuNotificationObserver> observer_;
 };
 
-// TODO(crbug.com/40282036): Fails on latest versions of ChromeOS.
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenus3 DISABLED_ContextMenus3
-#else
-#define MAYBE_ContextMenus3 ContextMenus3
-#endif
-VIEW_TEST(BookmarkBarViewTest17, MAYBE_ContextMenus3)
+VIEW_TEST(BookmarkBarViewTest17, ContextMenus3)
 
 // Verifies sibling menus works. Clicks on the 'all bookmarks' folder, then
 // moves the mouse over the first item on the bookmark bar and makes sure the
@@ -1895,9 +1875,17 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     // The context menu will consume the event and exit. Thereafter,
     // the event is reposted and delivered to the Test View which
     // increases its press-count.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     ui_test_utils::MoveMouseToCenterAndClick(
         test_view_, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         CreateEventTask(this, &BookmarkBarViewTest20::Step3));
+#else
+    test_view_->set_on_mouse_pressed_callback(
+        CreateEventTask(this, &BookmarkBarViewTest20::Step3));
+    ui_test_utils::MoveMouseToCenterAndClick(
+        test_view_, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        base::OnceClosure());
+#endif
   }
 
   void Step3() {
@@ -1913,14 +1901,22 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
    public:
     TestViewForMenuExit() = default;
 
+    void set_on_mouse_pressed_callback(base::OnceClosure callback) {
+      on_mouse_pressed_callback_ = std::move(callback);
+    }
+
     bool OnMousePressed(const ui::MouseEvent& event) override {
       ++press_count_;
+      if (!on_mouse_pressed_callback_.is_null()) {
+        std::move(on_mouse_pressed_callback_).Run();
+      }
       return true;
     }
     int press_count() const { return press_count_; }
 
    private:
     int press_count_ = 0;
+    base::OnceClosure on_mouse_pressed_callback_;
   };
 
   raw_ptr<TestViewForMenuExit, DanglingUntriaged> test_view_ = nullptr;
@@ -1929,15 +1925,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
 BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit)
 END_METADATA
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-// TODO (crbug.com/41496199): This test is failing under Windows.
-// This skips it until it can be fixed.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
-#else
-#define MAYBE_ContextMenuExitTest ContextMenuExitTest
-#endif  // BUILDFLAG(IS_WIN)
-TEST_F(BookmarkBarViewTest20, MAYBE_ContextMenuExitTest) {
+TEST_F(BookmarkBarViewTest20, ContextMenuExitTest) {
 #if BUILDFLAG(IS_OZONE)
   // TODO (crbug.com/41496199): This test is failing under wayland.
   // This skips it until it can be fixed.
@@ -2008,14 +1996,7 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// If this flakes, disable and log details in http://crbug.com/40432443.
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenusForEmptyFolder DISABLED_ContextMenusForEmptyFolder
-#else
-#define MAYBE_ContextMenusForEmptyFolder ContextMenusForEmptyFolder
-#endif
-VIEW_TEST(BookmarkBarViewTest21, MAYBE_ContextMenusForEmptyFolder)
+VIEW_TEST(BookmarkBarViewTest21, ContextMenusForEmptyFolder)
 
 // Test that closing the source browser window while dragging a bookmark does
 // not cause a crash.
@@ -2069,7 +2050,10 @@ VIEW_TEST(BookmarkBarViewTest22, MAYBE_CloseSourceBrowserDuringDrag)
 class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest23()
-      : observer_(CreateEventTask(this, &BookmarkBarViewTest23::Step5)) {}
+      : step5_barrier_(base::BarrierClosure(
+            2,
+            CreateEventTask(this, &BookmarkBarViewTest23::Step5))),
+        observer_(step5_barrier_) {}
 
  protected:
   void DoTestOnMessageLoop() override {
@@ -2080,9 +2064,13 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Navigate down to highlight the first menu item.
-    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
-        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
+    // Move the mouse over the first item in the submenu so that any queued
+    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
+    views::MenuItemView* first_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
+    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+        center.x(), center.y(),
         CreateEventTask(this, &BookmarkBarViewTest23::Step3)));
   }
 
@@ -2098,11 +2086,12 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
   void Step4() {
     ASSERT_TRUE(MenuIsShowing());
 
-    // Open the context menu via the keyboard.
-    ASSERT_TRUE(ui_controls::SendKeyPress(window()->GetNativeWindow(),
-                                          ui::VKEY_APPS, false, false, false,
-                                          false));
-    // The BookmarkContextMenuNotificationObserver triggers Step5.
+    // Open the context menu via the keyboard. Wait for both the key release
+    // event and the BookmarkContextMenuNotificationObserver before Step5 so
+    // that the key-up event does not remain in the Windows message queue.
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_APPS, false, false, false, false,
+        step5_barrier_));
   }
 
   void Step5() {
@@ -2123,23 +2112,21 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
     Done();
   }
 
+  base::RepeatingClosure step5_barrier_;
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenusKeyboard DISABLED_ContextMenusKeyboard
-#else
-#define MAYBE_ContextMenusKeyboard ContextMenusKeyboard
-#endif
-VIEW_TEST(BookmarkBarViewTest23, MAYBE_ContextMenusKeyboard)
+VIEW_TEST(BookmarkBarViewTest23, ContextMenusKeyboard)
 
 // Test that pressing escape on a menu opened via the keyboard dismisses the
 // context menu but not the parent menu.
 class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest24()
-      : observer_(CreateEventTask(this, &BookmarkBarViewTest24::Step4)) {}
+      : step5_barrier_(base::BarrierClosure(
+            2,
+            CreateEventTask(this, &BookmarkBarViewTest24::Step5))),
+        observer_(step5_barrier_) {}
 
  protected:
   void DoTestOnMessageLoop() override {
@@ -2150,32 +2137,46 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Navigate down to highlight the first menu item.
-    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
-        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
+    // Move the mouse over the first item in the submenu so that any queued
+    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
+    views::MenuItemView* first_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
+    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+        center.x(), center.y(),
         CreateEventTask(this, &BookmarkBarViewTest24::Step3)));
   }
 
   void Step3() {
     ASSERT_TRUE(MenuIsShowing());
 
-    // Open the context menu via the keyboard.
-    ASSERT_TRUE(ui_controls::SendKeyPress(window()->GetNativeWindow(),
-                                          ui::VKEY_APPS, false, false, false,
-                                          false));
-    // The BookmarkContextMenuNotificationObserver triggers Step4.
+    // Navigate down to highlight the second menu item (the first bookmark).
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
+        CreateEventTask(this, &BookmarkBarViewTest24::Step4)));
   }
 
   void Step4() {
+    ASSERT_TRUE(MenuIsShowing());
+
+    // Open the context menu via the keyboard. Wait for both the key release
+    // event and the BookmarkContextMenuNotificationObserver before Step5 so
+    // that the key-up event does not remain in the Windows message queue.
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_APPS, false, false, false, false,
+        step5_barrier_));
+  }
+
+  void Step5() {
     ASSERT_TRUE(MenuIsShowing(bb_view_->GetContextMenu()));
 
     // Send escape to close the context menu.
     ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
         window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false, false,
-        false, CreateEventTask(this, &BookmarkBarViewTest24::Step5)));
+        false, CreateEventTask(this, &BookmarkBarViewTest24::Step6)));
   }
 
-  void Step5() {
+  void Step6() {
     ASSERT_FALSE(MenuIsShowing(bb_view_->GetContextMenu()));
     ASSERT_TRUE(MenuIsShowing());
 
@@ -2185,12 +2186,11 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
         false, CreateEventTask(this, &BookmarkBarViewTest24::Done)));
   }
 
+  base::RepeatingClosure step5_barrier_;
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// Fails on latest versions of Windows. (https://crbug.com/40141353).
-// Flaky on Linux (https://crbug.com/40757658).
-VIEW_TEST(BookmarkBarViewTest24, DISABLED_ContextMenusKeyboardEscape)
+VIEW_TEST(BookmarkBarViewTest24, ContextMenusKeyboardEscape)
 
 #if BUILDFLAG(IS_WIN)
 // Tests that pressing the key KEYCODE closes the menu.
