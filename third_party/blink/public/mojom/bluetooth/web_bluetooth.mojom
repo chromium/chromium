@@ -39,7 +39,8 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 // RemoteServiceGetCharacteristics("service1", ...).
 
 // Result codes that can occur during Web Bluetooth execution.
-// Transformed to a DOMException in Source/modules/bluetooth/BluetoothError.cpp.
+// Transformed to a DOMException in
+// third_party/blink/renderer/modules/bluetooth/bluetooth_error.cc.
 //
 // These errors all produce constant message strings. If a particular message
 // needs a dynamic component, we should add a separate enum so type-checking the
@@ -56,6 +57,7 @@ enum WebBluetoothResult {
   CHARACTERISTIC_NO_LONGER_EXISTS,
   PROMPT_CANCELED,
   CONNECT_DOES_NOT_EXIST,
+  DOCUMENT_NOT_ACTIVE,
   // NetworkError:
   CONNECT_ALREADY_IN_PROGRESS,
   CONNECT_AUTH_CANCELED,
@@ -113,6 +115,7 @@ enum WebBluetoothResult {
   REQUEST_DEVICE_WITH_BLOCKLISTED_UUID_OR_MANUFACTURER_DATA,
   DESCRIPTOR_NO_LONGER_EXISTS,
   PERMISSIONS_POLICY_VIOLATION,
+  USER_ACTIVATION_REQUIRED,
   // NotAllowedError:
   SCANNING_BLOCKED,
 };

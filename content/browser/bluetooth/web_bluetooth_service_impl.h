@@ -142,6 +142,16 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            DestroyedDuringRequestDeviceReset);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            DestroyedDuringRequestScanningStart);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           RequestDeviceWithoutUserActivation);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           RequestDeviceDoesNotConsumeUserActivation);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           RequestDeviceWhenDocumentNotActive);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           RequestScanningStartWithoutUserActivation);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           RequestScanningStartWhenDocumentNotActive);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest, PermissionAllowed);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            PermissionPromptCanceled);

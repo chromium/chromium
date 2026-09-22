@@ -778,6 +778,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
       const blink::mojom::WebBluetoothLeScanFilter& filter,
       FakeWebBluetoothAdvertisementClient* client,
       BluetoothScanningPrompt::Event event) {
+    contents()->GetPrimaryMainFrame()->SimulateUserActivation();
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
         client_remote;
     client->BindReceiver(client_remote.InitWithNewEndpointAndPassReceiver());
@@ -961,6 +962,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
 };
 
 TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
   auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
   options->accept_all_devices = true;
 
@@ -974,6 +976,7 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
 }
 
 TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDeviceReset) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
   browser_client_.bluetooth_delegate()->set_run_bluetooth_chooser_callback(
       base::BindLambdaForTesting(
           [this](RenderFrameHost* frame,
@@ -1011,6 +1014,60 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDeviceReset) {
   EXPECT_FALSE(future2.IsReady());
 }
 
+TEST_F(WebBluetoothServiceImplTest, RequestDeviceWithoutUserActivation) {
+  auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options->accept_all_devices = true;
+
+  TestFuture<blink::mojom::WebBluetoothResult,
+             blink::mojom::WebBluetoothDevicePtr>
+      future;
+  service_ptr_->RequestDevice(std::move(options), future.GetCallback());
+  EXPECT_EQ(future.Get<0>(),
+            blink::mojom::WebBluetoothResult::USER_ACTIVATION_REQUIRED);
+  EXPECT_TRUE(future.Get<1>().is_null());
+}
+
+TEST_F(WebBluetoothServiceImplTest, RequestDeviceDoesNotConsumeUserActivation) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+
+  auto options1 = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options1->accept_all_devices = true;
+  TestFuture<blink::mojom::WebBluetoothResult,
+             blink::mojom::WebBluetoothDevicePtr>
+      future1;
+  service_ptr_->RequestDevice(std::move(options1), future1.GetCallback());
+  EXPECT_NE(future1.Get<0>(),
+            blink::mojom::WebBluetoothResult::USER_ACTIVATION_REQUIRED);
+
+  auto options2 = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options2->accept_all_devices = true;
+  TestFuture<blink::mojom::WebBluetoothResult,
+             blink::mojom::WebBluetoothDevicePtr>
+      future2;
+  service_ptr_->RequestDevice(std::move(options2), future2.GetCallback());
+  EXPECT_NE(future2.Get<0>(),
+            blink::mojom::WebBluetoothResult::USER_ACTIVATION_REQUIRED);
+}
+
+TEST_F(WebBluetoothServiceImplTest, RequestDeviceWhenDocumentNotActive) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+  static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsActive());
+
+  auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
+  options->accept_all_devices = true;
+
+  TestFuture<blink::mojom::WebBluetoothResult,
+             blink::mojom::WebBluetoothDevicePtr>
+      future;
+  service_ptr_->RequestDevice(std::move(options), future.GetCallback());
+  EXPECT_EQ(future.Get<0>(),
+            blink::mojom::WebBluetoothResult::DOCUMENT_NOT_ACTIVE);
+  EXPECT_TRUE(future.Get<1>().is_null());
+}
+
 TEST_F(WebBluetoothServiceImplTest, PermissionAllowed) {
   blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
   std::optional<WebBluetoothServiceImpl::ScanFilters> filters;
@@ -1028,6 +1085,7 @@ TEST_F(WebBluetoothServiceImplTest, PermissionAllowed) {
 }
 
 TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
   blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
   std::optional<WebBluetoothServiceImpl::ScanFilters> filters;
 
@@ -1056,6 +1114,48 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
       FROM_HERE, base::BindLambdaForTesting([this]() { DeleteService(); }));
 
   loop.RunUntilIdle();
+}
+
+TEST_F(WebBluetoothServiceImplTest, RequestScanningStartWithoutUserActivation) {
+  blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
+  FakeWebBluetoothAdvertisementClient client;
+  mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
+      client_remote;
+  client.BindReceiver(client_remote.InitWithNewEndpointAndPassReceiver());
+
+  auto options = blink::mojom::WebBluetoothRequestLEScanOptions::New();
+  options->filters.emplace();
+  options->filters->push_back(std::move(filter));
+
+  TestFuture<blink::mojom::WebBluetoothResult> future;
+  service_ptr_->RequestScanningStart(std::move(client_remote),
+                                     std::move(options), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::WebBluetoothResult::USER_ACTIVATION_REQUIRED);
+}
+
+TEST_F(WebBluetoothServiceImplTest, RequestScanningStartWhenDocumentNotActive) {
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+  static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsActive());
+
+  blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
+  FakeWebBluetoothAdvertisementClient client;
+  mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
+      client_remote;
+  client.BindReceiver(client_remote.InitWithNewEndpointAndPassReceiver());
+
+  auto options = blink::mojom::WebBluetoothRequestLEScanOptions::New();
+  options->filters.emplace();
+  options->filters->push_back(std::move(filter));
+
+  TestFuture<blink::mojom::WebBluetoothResult> future;
+  service_ptr_->RequestScanningStart(std::move(client_remote),
+                                     std::move(options), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::WebBluetoothResult::DOCUMENT_NOT_ACTIVE);
 }
 
 TEST_F(WebBluetoothServiceImplTest, PermissionPromptCanceled) {
