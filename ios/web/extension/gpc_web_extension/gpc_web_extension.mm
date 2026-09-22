@@ -22,7 +22,7 @@ GPCWebExtension::~GPCWebExtension() = default;
 NSURL* GPCWebExtension::GetExtensionURL() const {
   NSString* resource_path = [base::apple::FrameworkBundle() resourcePath];
   NSString* path = [resource_path
-      stringByAppendingPathComponent:@"extensions/gpc_web_extension"];
+      stringByAppendingPathComponent:@"web_extensions/gpc_web_extension"];
   return [NSURL fileURLWithPath:path isDirectory:YES];
 }
 

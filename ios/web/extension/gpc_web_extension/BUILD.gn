@@ -6,7 +6,8 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 optimize_ts("gpc_feature_js") {
   sources = [ "resources/gpc_js_feature.ts" ]
-  output_dir = "extensions/gpc_web_extension"
+  # Avoid colliding with native app Extensions on case-insensitive filesystems.
+  output_dir = "web_extensions/gpc_web_extension"
 }
 
 bundle_data("gpc_web_extension_bundle_data") {
@@ -15,7 +16,7 @@ bundle_data("gpc_web_extension_bundle_data") {
     "resources/manifest.json",
     "resources/rules.json",
   ]
-  outputs = [ "{{bundle_resources_dir}}/extensions/gpc_web_extension/{{source_file_part}}" ]
+  outputs = [ "{{bundle_resources_dir}}/web_extensions/gpc_web_extension/{{source_file_part}}" ]
 }
 
 source_set("gpc_web_extension") {
