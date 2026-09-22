@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tools") {
+  sources = [
+    "ttc_tool_definitions.h",
+    "ttc_tool_definitions.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_tool_definitions_unittest.mm" ]
+  deps = [
+    ":tools",
+    "//base",
+    "//testing/gtest",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
