@@ -56,9 +56,6 @@
             "high_dpi_headless_shell_wpt_tests": {
                 "flag_specific": "highdpi"
             },
-            "vulkan_swiftshader_blink_web_tests": {
-                "flag_specific": "skia-vulkan-swiftshader"
-            },
             "not_site_per_process_blink_web_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
@@ -224,9 +221,6 @@
             },
             "high_dpi_headless_shell_wpt_tests": {
                 "flag_specific": "highdpi"
-            },
-            "vulkan_swiftshader_blink_web_tests": {
-                "flag_specific": "skia-vulkan-swiftshader"
             },
             "not_site_per_process_blink_web_tests": {
                 "flag_specific": "disable-site-isolation-trials"

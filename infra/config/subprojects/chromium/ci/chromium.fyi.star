@@ -133,7 +133,6 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "linux_viz_gtests",
-            "vulkan_swiftshader_isolated_scripts",
         ],
         additional_compile_targets = [
             "all",

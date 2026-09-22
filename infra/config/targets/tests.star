@@ -2672,23 +2672,6 @@ targets.tests.gpu_telemetry_test(
     module_scheme = "flat",
 )
 
-targets.tests.isolated_script_test(
-    name = "vulkan_swiftshader_blink_web_tests",
-    mixins = [
-        "has_native_resultdb_integration",
-        "blink_tests_write_run_histories",
-    ],
-    args = [
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        "--num-retries=3",
-        "--skipped=always",
-        "--flag-specific=skia-vulkan-swiftshader",
-    ],
-    binary = "blink_web_tests",
-)
-
 targets.tests.gtest_test(
     name = "vulkan_swiftshader_content_browsertests",
     binary = "content_browsertests",

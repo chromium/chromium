@@ -1647,13 +1647,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "vulkan_swiftshader_isolated_scripts",
-    tests = {
-        "vulkan_swiftshader_blink_web_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "webrtc_chromium_wpt_tests",
     tests = {
         "blink_wpt_tests": targets.legacy_test_config(

@@ -46,16 +46,6 @@
     "smoke_file": "TestLists/highdpi"
   },
   {
-    "name": "skia-vulkan-swiftshader",
-    "args": [
-          "--enable-gpu-rasterization",
-          "--enable-features=Vulkan",
-          "--use-vulkan=swiftshader",
-          "--disable-vulkan-fallback-to-gl-for-testing"
-    ],
-    "smoke_file": "TestLists/skia-vulkan-swiftshader"
-  },
-  {
     "name": "trees-in-viz",
     "args": [
           "--enable-features=TreesInViz"

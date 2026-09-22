@@ -1907,7 +1907,6 @@ targets.bundle(
         "mojo_python_unittests_isolated_scripts",
         "pytype_tests",
         "telemetry_perf_unittests_isolated_scripts",
-        "vulkan_swiftshader_isolated_scripts",
     ],
 )
 
@@ -1922,7 +1921,6 @@ targets.bundle(
         "mojo_python_unittests_isolated_scripts",
         "pytype_tests",
         "telemetry_perf_unittests_isolated_scripts_xvfb",
-        "vulkan_swiftshader_isolated_scripts",
     ],
 )
 
@@ -1941,7 +1939,6 @@ targets.bundle(
         "mojo_python_unittests_isolated_scripts",
         "pytype_tests",
         "telemetry_perf_unittests_isolated_scripts",
-        "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
         # TODO(crbug.com/40287410): Remove this once the BackgroundResourceFetch
         # feature launches.

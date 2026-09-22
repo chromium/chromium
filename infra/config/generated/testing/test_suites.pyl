@@ -2566,30 +2566,6 @@
       },
     },
 
-    'vulkan_swiftshader_isolated_scripts': {
-      'vulkan_swiftshader_blink_web_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'blink_tests_write_run_histories',
-          ],
-          'args': [
-            '--num-retries=3',
-            '--skipped=always',
-            '--flag-specific=skia-vulkan-swiftshader',
-          ],
-          'merge': {
-            'script': '//third_party/blink/tools/merge_web_test_results.py',
-            'args': [
-              '--verbose',
-            ],
-          },
-        },
-        'test': 'blink_web_tests',
-        'results_handler': 'layout tests',
-      },
-    },
-
     'webrtc_chromium_wpt_tests': {
       'blink_wpt_tests': {
         'test_common': {
@@ -2680,7 +2656,6 @@
       'chromium_blink_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
       'linux_specific_chromium_isolated_scripts',
-      'vulkan_swiftshader_isolated_scripts',
     ],
 
     'devtools_gtests': [
