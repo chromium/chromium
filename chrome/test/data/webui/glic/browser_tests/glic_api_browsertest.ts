@@ -4,12 +4,69 @@
 
 // cc_file_path: chrome/browser/glic/host/glic_api_browsertest.cc
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, PromptType, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, WebClientMode, WebUseCounter} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabContextResult, TabData, UserConfirmationDialogRequest, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import {                             //
+  CancelActionsResult,               //
+  ClientCapabilities,                //
+  ExperimentalTriggeringUpdateType,  //
+  FileUploadPolicyState,             //
+  FormFactor,                        //
+  HostCapability,                    //
+  InvocationSource,                  //
+  MetricUserInputReactionType,       //
+  PanelStateKind,                    //
+  Platform,                          //
+  PromptType,                        //
+  ResponseStopCause,                 //
+  SbThreatType,                      //
+  ScreenshotEncryptionScheme,        //
+  ScrollToErrorReason,               //
+  WebClientMode,                     //
+  WebUseCounter,                     //
+} from '/glic/glic_api/glic_api.js';
+import type {                               //
+             AdditionalContext,             //
+             CounterAbuseVerdict,           //
+             ExperimentalTriggeringUpdate,  //
+             FocusedTabData,                //
+             GetPinCandidatesOptions,       //
+             GlicBrowserHost,               //
+             GlicWebClient,                 //
+             InvokeOptions,                 //
+             Observable,                    //
+             Observable2,                   //
+             OpenPanelInfo,                 //
+             PageMetadata,                  //
+             PanelOpeningData,              //
+             PanelState,                    //
+             ScrollToError,                 //
+             TabContextResult,              //
+             TabData,                       //
+             UserConfirmationDialogRequest, //
+             UserProfileInfo,               //
+} from '/glic/glic_api/glic_api.js';
 import type {GlicBrowserHostImpl} from '/glic/glic_api_impl/client/glic_api_client.js';
 import {Subject} from '/glic/observable.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import {               //
+  ApiTestError,        //
+  ApiTestFixtureBase,  //
+  assertDefined,       //
+  assertEquals,        //
+  assertFalse,         //
+  assertNotEquals,     //
+  assertRejects,       //
+  assertTrue,          //
+  assertUndefined,     //
+  checkDefined,        //
+  mapObservable,       //
+  observeSequence,     //
+  readStream,          //
+  runUntil,            //
+  sleep,               //
+  testMain,            //
+  waitFor,             //
+  WebClient,           //
+} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
@@ -3389,6 +3446,34 @@ class ScreenshotTests extends ApiTestFixtureBase {
   }
 }
 
+class ConfirmationResponseTests extends ApiTestFixtureBase {
+  async testSubmitConfirmationResponse() {
+    const payload =
+        new Uint8Array(await this.client.waitForConfirmationResponse());
+    // Must match kTestConfirmationResponsePayload in the .cc file.
+    assertEquals(payload.length, 4);
+    assertEquals(payload[0], 0xde);
+    assertEquals(payload[1], 0xad);
+    assertEquals(payload[2], 0xbe);
+    assertEquals(payload[3], 0xef);
+  }
+}
+
+// Uses a client which receives confirmation responses but never reports a
+// result, so that the C++ side can verify the reply is still delivered when
+// the client goes away with a request in flight.
+class ConfirmationResponseDroppedTests extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    const client = new WebClient();
+    client.completeConfirmationResponses = false;
+    return client;
+  }
+
+  async testConfirmationResponseNotAppliedOnDisconnect() {
+    await this.client.waitForConfirmationResponse();
+  }
+}
+
 class WebClientThatOpensOnce extends WebClient {
   notifyPanelWillOpenCallCount = 0;
   override async notifyPanelWillOpen(panelOpeningData: PanelOpeningData):
@@ -3424,6 +3509,8 @@ const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTestFailsToInitialize,
   TriggeringUpdatesTest,
   ScreenshotTests,
+  ConfirmationResponseTests,
+  ConfirmationResponseDroppedTests,
   NotifyPanelWillOpenTest,
 ];
 

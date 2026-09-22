@@ -117,6 +117,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "pdf/buildflags.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -212,6 +213,10 @@ using ::testing::UnorderedElementsAre;
 std::string GlicTabId(tabs::TabHandle tab_handle) {
   return base::NumberToString(tab_handle.raw_value());
 }
+
+// Must match the payload expected by ConfirmationResponseTests in
+// glic_api_browsertest.ts.
+constexpr uint8_t kTestConfirmationResponsePayload[] = {0xde, 0xad, 0xbe, 0xef};
 
 }  // namespace
 
@@ -4729,6 +4734,56 @@ IN_PROC_BROWSER_TEST_P(
   base::expected<std::string, ScreenshotResult::Status> result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ScreenshotResult::Status::kErrorCapture);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSubmitConfirmationResponse) {
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ASSERT_TRUE(RunUntil(
+      [&]() { return GetOnlyGlicInstance()->host().IsWebClientConnected(); },
+      "waiting for web client connected"));
+
+  ASSERT_NE(GetOnlyGlicInstance()->GetExperimentalTriggeringManager(), nullptr);
+
+  base::test::TestFuture<bool> future;
+  GetOnlyGlicInstance()
+      ->GetExperimentalTriggeringManager()
+      ->SubmitConfirmationResponse(
+          base::ToVector(kTestConfirmationResponsePayload),
+          future.GetCallback());
+
+  // Verifies the opaque payload arrived at the web client intact.
+  ExecuteJsTest();
+
+  EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testConfirmationResponseNotAppliedOnDisconnect) {
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ASSERT_TRUE(RunUntil(
+      [&]() { return GetOnlyGlicInstance()->host().IsWebClientConnected(); },
+      "waiting for web client connected"));
+
+  GlicExperimentalTriggeringManager* manager =
+      GetOnlyGlicInstance()->GetExperimentalTriggeringManager();
+  ASSERT_NE(manager, nullptr);
+
+  base::test::TestFuture<bool> future;
+  manager->SubmitConfirmationResponse(
+      base::ToVector(kTestConfirmationResponsePayload), future.GetCallback());
+
+  // The web client used by this test receives the response but never calls
+  // onComplete(), so the reply is still in flight when the JS test returns.
+  ExecuteJsTest();
+  EXPECT_FALSE(future.IsReady());
+
+  // Simulate the web client going away with the response in flight. The reply
+  // callback must still run, reporting the response as not applied, rather
+  // than being dropped.
+  manager->Bind(mojo::NullRemote());
+  EXPECT_FALSE(future.Get());
 }
 
 class GlicApiUnresponsiveTest : public GlicApiTest {

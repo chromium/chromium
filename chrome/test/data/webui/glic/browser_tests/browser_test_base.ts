@@ -7,7 +7,17 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind, Screenshot} from '/glic/glic_api/glic_api.js';
+import type {                  //
+             GlicBrowserHost,  //
+             GlicHostRegistry, //
+             GlicWebClient,    //
+             InvokeOptions,    //
+             Observable,       //
+             OpenPanelInfo,    //
+             PanelOpeningData, //
+             PanelStateKind,   //
+             Screenshot,       //
+} from '/glic/glic_api/glic_api.js';
 import {ObservableValue, Subject, type Subscriber} from '/glic/observable.js';
 import {TaskQueue} from '/glic/task_queue.js';
 
@@ -203,6 +213,14 @@ export class WebClient implements GlicWebClient {
           this.lastUploadedScreenshot = request.screenshot;
           request.uploadComplete(this.mockFileToken);
         });
+    glicBrowserHost.experimentalTriggering?.()
+        ?.confirmationResponses?.()
+        ?.subscribe((request) => {
+          this.confirmationResponseReceived.resolve(request.response);
+          if (this.completeConfirmationResponses) {
+            request.onComplete(this.mockConfirmationApplied);
+          }
+        });
     this.initializedPromise.resolve();
   }
 
@@ -248,6 +266,17 @@ export class WebClient implements GlicWebClient {
         null;
   }
   mockFileToken: string|null = 'mock-file-token-12345';
+
+  // Resolved with the opaque payload of the first confirmation response
+  // received from the browser.
+  confirmationResponseReceived = Promise.withResolvers<ArrayBuffer>();
+  waitForConfirmationResponse(): Promise<ArrayBuffer> {
+    return this.confirmationResponseReceived.promise;
+  }
+  mockConfirmationApplied = true;
+  // When false, the client receives confirmation responses but never calls
+  // onComplete(), simulating a client which drops the result.
+  completeConfirmationResponses = true;
 }
 
 export interface TestStepper {
@@ -281,10 +310,10 @@ export type BrowserCommand = {
   command: 'make-attempt-otp-filling-action',
   taskId: number,
   tabId?: string,
-  nodeId: number,
-  documentIdentifier: string,
-  forSignin: boolean,
-  otpType: number,
+       nodeId: number,
+       documentIdentifier: string,
+       forSignin: boolean,
+       otpType: number,
 };
 
 export class BrowserControl {

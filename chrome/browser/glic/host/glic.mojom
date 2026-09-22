@@ -1897,6 +1897,17 @@ interface ExperimentalTriggeringClient {
   GetExperimentalTriggeringUpdates(
       pending_remote<ExperimentalTriggeringUpdatesHandler> handler)
       => (bool success);
+
+  // Delivers a confirmation decision made by the user on a remote surface.
+  //
+  // `response` is a serialized proto which is opaque to the browser. The web
+  // client is responsible for decoding it, matching it against a pending
+  // confirmation dialog, and resolving that dialog.
+  //
+  // Replies true if the response was matched to a pending confirmation dialog
+  // and applied, false otherwise.
+  SubmitExperimentalTriggeringConfirmationResponse(array<uint8> response)
+      => (bool accepted);
 };
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.

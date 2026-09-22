@@ -48,6 +48,14 @@ class GlicExperimentalTriggeringManager {
           handler,
       base::OnceCallback<void(bool)> success_status_callback);
 
+  // Forwards an opaque, serialized confirmation response to the web client so
+  // that it can resolve a pending confirmation dialog. `callback` is run with
+  // true if the web client applied the response, and false otherwise
+  // (including if the web client is not connected or drops the reply).
+  virtual void SubmitConfirmationResponse(
+      const std::vector<uint8_t>& response,
+      base::OnceCallback<void(bool accepted)> callback);
+
  private:
   void OnPageContextFetchedForEncryption(
       std::vector<uint8_t> public_key,

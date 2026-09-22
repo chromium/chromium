@@ -330,6 +330,37 @@ export declare interface ExperimentalTriggeringUploadScreenshotRequest {
 }
 
 /**
+ * A confirmation decision made by the user on a remote surface.
+ * Delivered to the client so that it can resolve the corresponding
+ * pending confirmation dialog.
+ */
+export declare interface ExperimentalTriggeringConfirmationResponseRequest {
+  /**
+   * The serialized confirmation response proto. This is opaque to Chrome and
+   * is forwarded verbatim from the server.
+   *
+   * The client is responsible for decoding this payload, matching it against
+   * a pending confirmation dialog request, and invoking that request's
+   * response callback.
+   */
+  response: ArrayBuffer;
+
+  /**
+   * The client must call this exactly once. Pass true if the response was
+   * matched to a pending confirmation dialog and applied, and false otherwise
+   * (for example, if there is no pending dialog, if the payload could not be
+   * decoded, or if the decision is no longer relevant).
+   *
+   * This should be called promptly, as it reports only whether the decision
+   * was applied locally. If it is not called within a short timeout, or if the
+   * web client is torn down while the request is in flight, the decision is
+   * reported to the browser as not applied. Calls made after that point are
+   * ignored.
+   */
+  onComplete(applied: boolean): void;
+}
+
+/**
  * Interface providing experimental triggering capabilities from the browser
  * host.
  */
@@ -340,6 +371,18 @@ export declare interface GlicExperimentalTriggeringBrowserHost {
    */
   uploadEncryptedScreenshotRequests?
       (): Observable<ExperimentalTriggeringUploadScreenshotRequest>;
+
+  /**
+   * Returns an Observable emitting confirmation decisions that were made by
+   * the user on a remote surface. Each emitted request carries an opaque
+   * payload which the client must decode in order to resolve the matching
+   * pending confirmation dialog.
+   *
+   * If the client has no active subscription to this Observable, the browser
+   * treats every confirmation response as unhandled.
+   */
+  confirmationResponses?
+      (): Observable<ExperimentalTriggeringConfirmationResponseRequest>;
 }
 
 /**

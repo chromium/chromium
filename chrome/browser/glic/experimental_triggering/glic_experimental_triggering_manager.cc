@@ -88,6 +88,18 @@ void GlicExperimentalTriggeringManager::GetExperimentalTriggeringUpdates(
                                             std::move(success_status_callback));
 }
 
+void GlicExperimentalTriggeringManager::SubmitConfirmationResponse(
+    const std::vector<uint8_t>& response,
+    base::OnceCallback<void(bool)> callback) {
+  if (!client_.is_bound()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  client_->SubmitExperimentalTriggeringConfirmationResponse(
+      response, mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                            false));
+}
+
 void GlicExperimentalTriggeringManager::CaptureAndUploadEncryptedScreenshot(
     const std::vector<uint8_t>& public_key,
     const std::vector<uint8_t>& auth_secret,
