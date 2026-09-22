@@ -11,8 +11,6 @@ source_set("companion_app") {
     "companion_app_broker.h",
     "companion_app_broker_impl.cc",
     "companion_app_broker_impl.h",
-    "companion_app_parser.cc",
-    "companion_app_parser.h",
   ]
 
   deps = [
@@ -47,10 +45,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "companion_app_broker_impl_unittest.cc",
-    "companion_app_parser_unittest.cc",
-  ]
+  sources = [ "companion_app_broker_impl_unittest.cc" ]
 
   deps = [
     ":companion_app",
