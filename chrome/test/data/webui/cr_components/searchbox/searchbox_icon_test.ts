@@ -53,6 +53,13 @@ suite('CrComponentsSearchboxIconTest', () => {
     document.body.appendChild(icon);
   });
 
+  test('container has aria-hidden and empty alt on images', () => {
+    assertEquals('true', icon.$.container.getAttribute('aria-hidden'));
+    assertEquals('', icon.$.image.getAttribute('alt'));
+    assertEquals('', icon.$.faviconImage.getAttribute('alt'));
+    assertEquals('', icon.$.iconImg.getAttribute('alt'));
+  });
+
   test('entity image shown on load', async () => {
     const match = createAutocompleteMatch();
     match.imageUrl = '#';

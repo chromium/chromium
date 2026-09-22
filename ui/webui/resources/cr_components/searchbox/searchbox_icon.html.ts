@@ -9,9 +9,9 @@ import type {SearchboxIconElement} from './searchbox_icon.js';
 export function getHtml(this: SearchboxIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="container"
+<div id="container" aria-hidden="true"
     style="--container-bg-color:${this.getContainerBgColor_()};">
-  <img id="image" src="${this.imageSrc_}" ?hidden="${!this.showImage_}"
+  <img id="image" alt="" src="${this.imageSrc_}" ?hidden="${!this.showImage_}"
       @load="${this.onImageLoad_}" @error="${this.onImageError_}">
 
   <div ?hidden="${this.showIconImg_}">
@@ -20,14 +20,14 @@ export function getHtml(this: SearchboxIconElement) {
     </div>
     <div id="faviconImageContainer"
         ?hidden="${!this.showFaviconImage_}">
-      <img id="faviconImage" src="${this.faviconImage_}"
+      <img id="faviconImage" alt="" src="${this.faviconImage_}"
           srcset="${this.faviconImageSrcSet_}"
           @load="${this.onFaviconLoad_}"
           @error="${this.onFaviconError_}">
     </div>
   </div>
 
-  <img id="iconImg" src="${this.iconSrc_}" ?hidden="${!this.showIconImg_}"
+  <img id="iconImg" alt="" src="${this.iconSrc_}" ?hidden="${!this.showIconImg_}"
       @load="${this.onIconLoad_}">
 </div>
 <!--_html_template_end_-->`;

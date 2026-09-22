@@ -42,6 +42,21 @@ suite('SearchboxInputTest', () => {
     input = await createInput(
         {searchboxIcon: 'search.svg', placeholderText: 'Search'});
     assertIconMaskImageUrl(input.$.icon, 'search.svg');
+    assertEquals('true', input.$.icon.getAttribute('aria-hidden'));
+  });
+
+  test('Lens searchbox icon has aria-hidden', async () => {
+    loadTimeData.resetForTesting({
+      isLensSearchbox: true,
+      isTopChromeSearchbox: false,
+    });
+    input = await createInput({
+      searchboxIcon:
+          '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+      placeholderText: 'Search',
+    });
+    assertEquals('true', input.$.icon.getAttribute('aria-hidden'));
+    assertEquals('true', input.$.icon.$.container.getAttribute('aria-hidden'));
   });
 
   test('Copying or cutting empty input fails', async () => {

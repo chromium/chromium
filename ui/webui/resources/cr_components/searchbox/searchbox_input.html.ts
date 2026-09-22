@@ -15,7 +15,7 @@ export function getHtml(this: SearchboxInputElement) {
         page-url="${this.pageUrl}"
         default-icon="${this.computeDefaultIcon_()}"
         ?in-keyword-mode="${this.inKeywordMode_()}"
-        in-searchbox part="icon">
+        in-searchbox part="icon" aria-hidden="true">
     </cr-searchbox-icon>
     <slot name="thumbnail"></slot>
     ${this.inKeywordMode_() ?
