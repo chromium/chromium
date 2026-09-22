@@ -37,6 +37,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "media/base/win/mf_feature_checks.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -184,16 +188,13 @@ TEST_F(MediaInterfaceProxyTest,
   EXPECT_FALSE(AudibilityBypassTracker::ClaimGrant(player_id));
 }
 
-// TODO(crbug.com/564789121): Failing on Win11 ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext \
-  DISABLED_CreateMediaFoundationRenderer_GrantWithProtectedContext
-#else
-#define MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext \
-  CreateMediaFoundationRenderer_GrantWithProtectedContext
-#endif
 TEST_F(MediaInterfaceProxyTest,
-       MAYBE_CreateMediaFoundationRenderer_GrantWithProtectedContext) {
+       CreateMediaFoundationRenderer_GrantWithProtectedContext) {
+  if (!media::SupportMediaFoundationEncryptedPlayback()) {
+    GTEST_SKIP() << "MediaFoundation encrypted playback is only supported on "
+                    "Windows x86_64.";
+  }
+
   mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
   auto dummy_factory_receiver =
       dummy_factory_remote.InitWithNewPipeAndPassReceiver();
