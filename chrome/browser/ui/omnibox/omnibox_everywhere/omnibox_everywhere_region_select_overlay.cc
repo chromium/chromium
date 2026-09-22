@@ -9,11 +9,14 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -24,10 +27,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -45,6 +51,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -84,6 +91,29 @@ constexpr int kSelectionCornerRadius = 14;
 
 constexpr float kGlifGradientWashAlpha = 0.18f;
 
+constexpr int kMinSelectionSize = 10;
+
+struct IntersectingSlice {
+  gfx::Rect dip_intersection;
+  gfx::Rect phys_rect_in_screenshot;
+  float scale = 1.0f;
+};
+
+gfx::Rect MapDipToPhysicalBounds(const gfx::Rect& dip_rect,
+                                 const gfx::Rect& display_bounds,
+                                 const gfx::Rect& pixel_bounds) {
+  if (display_bounds.IsEmpty()) {
+    return gfx::Rect();
+  }
+  const float scale_x =
+      static_cast<float>(pixel_bounds.width()) / display_bounds.width();
+  const float scale_y =
+      static_cast<float>(pixel_bounds.height()) / display_bounds.height();
+  return gfx::ScaleToRoundedRect(dip_rect - display_bounds.OffsetFromOrigin(),
+                                 scale_x, scale_y) +
+         pixel_bounds.OffsetFromOrigin();
+}
+
 SkColor4f ColorWithAlpha(SkColor color, float alpha) {
   SkColor4f c = SkColor4f::FromColor(color);
   c.fA = alpha;
@@ -116,6 +146,66 @@ SkBitmap ExtractCompactSubset(const SkBitmap& source,
   }
   compact_copy.setImmutable();
   return compact_copy;
+}
+
+std::pair<gfx::Rect, float> CalculateActiveBoundsAndScale(
+    base::span<const IntersectingSlice> slices) {
+  gfx::Rect active_dip_bounds;
+  float output_scale = 0.0f;
+  int64_t dominant_area = 0;
+
+  for (const auto& slice : slices) {
+    active_dip_bounds.Union(slice.dip_intersection);
+    const int64_t area = static_cast<int64_t>(slice.dip_intersection.width()) *
+                         slice.dip_intersection.height();
+    if (area > dominant_area ||
+        (area == dominant_area && slice.scale > output_scale)) {
+      dominant_area = area;
+      output_scale = slice.scale;
+    }
+  }
+  return {active_dip_bounds, output_scale};
+}
+
+void DrawSlicesToCanvas(const SkBitmap& screenshot,
+                        base::span<const IntersectingSlice> slices,
+                        const gfx::Rect& active_dip_bounds,
+                        float output_scale,
+                        SkBitmap& output) {
+  // If displays aren't perfectly aligned, then the "nothing" space will be
+  // black.
+  output.eraseColor(SK_ColorBLACK);
+
+  SkCanvas canvas(output);
+  SkPaint sk_paint;
+  sk_paint.setBlendMode(SkBlendMode::kSrc);
+
+  for (const auto& item : slices) {
+    SkBitmap piece;
+    if (!screenshot.extractSubset(
+            &piece, gfx::RectToSkIRect(item.phys_rect_in_screenshot))) {
+      continue;
+    }
+
+    const gfx::Rect dest_rect = gfx::ScaleToRoundedRect(
+        item.dip_intersection - active_dip_bounds.OffsetFromOrigin(),
+        output_scale);
+    if (dest_rect.IsEmpty()) {
+      continue;
+    }
+
+    const bool needs_resample = dest_rect.width() != piece.width() ||
+                                dest_rect.height() != piece.height();
+    const SkSamplingOptions sampling =
+        needs_resample
+            ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone)
+            : SkSamplingOptions();
+
+    canvas.drawImageRect(piece.asImage(),
+                         SkRect::MakeIWH(piece.width(), piece.height()),
+                         gfx::RectToSkRect(dest_rect), sampling, &sk_paint,
+                         SkCanvas::kStrict_SrcRectConstraint);
+  }
 }
 
 gfx::Rect GetDisplayPhysicalBounds(const display::Display& display) {
@@ -947,15 +1037,7 @@ void OmniboxEverywhereRegionSelectOverlay::OnDragUpdated(
 
 void OmniboxEverywhereRegionSelectOverlay::OnDragCompleted(
     const gfx::Rect& global_selection_rect) {
-  constexpr int kMinSelectionSize = 10;
-  if (global_selection_rect.width() < kMinSelectionSize ||
-      global_selection_rect.height() < kMinSelectionSize) {
-    Finish(SkBitmap());
-    return;
-  }
-
-  SkBitmap cropped = CropGlobalSelection(global_selection_rect);
-  Finish(cropped);
+  Finish(CropGlobalSelection(global_selection_rect));
 }
 
 void OmniboxEverywhereRegionSelectOverlay::OnDragCancelled() {
@@ -964,54 +1046,69 @@ void OmniboxEverywhereRegionSelectOverlay::OnDragCancelled() {
 
 SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
     const gfx::Rect& global_selection_rect) const {
-  if (screenshot_.empty() || global_selection_rect.IsEmpty()) {
+  if (screenshot_.drawsNothing() || global_selection_rect.IsEmpty()) {
     return SkBitmap();
   }
 
-  // Find the display with the largest area selected, treating it as the
-  // "owning" display and using its scaling factors for coordinate conversion.
-  const DisplaySliceInfo* best_slice = nullptr;
-  int max_intersection_area = 0;
+  std::vector<IntersectingSlice> intersecting;
+  const gfx::Rect screenshot_bounds = gfx::SkIRectToRect(screenshot_.bounds());
+
   for (const auto& slice : display_slices_) {
-    if (slice.display.bounds().Contains(global_selection_rect)) {
-      best_slice = &slice;
-      break;
+    // Find the intersection of the selection with the display.
+    // Skip if no intersection.
+    // Otherwise, map into physical bounds and union with the rest of the
+    // selection.
+    const gfx::Rect inter_dip =
+        gfx::IntersectRects(global_selection_rect, slice.display.bounds());
+    if (inter_dip.IsEmpty()) {
+      continue;
     }
 
-    const gfx::Rect intersection =
-        gfx::IntersectRects(slice.display.bounds(), global_selection_rect);
-    const int area = intersection.size().GetArea();
-    if (area > max_intersection_area) {
-      max_intersection_area = area;
-      best_slice = &slice;
+    gfx::Rect phys_crop = MapDipToPhysicalBounds(
+        inter_dip, slice.display.bounds(), slice.sub_rect_in_screenshot);
+    phys_crop.Intersect(slice.sub_rect_in_screenshot);
+    phys_crop.Intersect(screenshot_bounds);
+    if (phys_crop.IsEmpty()) {
+      continue;
     }
+
+    const float slice_scale =
+        std::max(static_cast<float>(slice.sub_rect_in_screenshot.width()) /
+                     slice.display.bounds().width(),
+                 static_cast<float>(slice.sub_rect_in_screenshot.height()) /
+                     slice.display.bounds().height());
+
+    intersecting.push_back({inter_dip, phys_crop, slice_scale});
   }
 
-  if (!best_slice) {
+  const auto [active_dip_bounds, output_scale] =
+      CalculateActiveBoundsAndScale(intersecting);
+  if (active_dip_bounds.width() < kMinSelectionSize ||
+      active_dip_bounds.height() < kMinSelectionSize) {
     return SkBitmap();
   }
 
-  // Map selection to display-local DIP coordinates.
-  const gfx::Rect local_dip =
-      global_selection_rect - best_slice->display.bounds().OffsetFromOrigin();
+  if (intersecting.size() == 1) {
+    return ExtractCompactSubset(screenshot_,
+                                intersecting[0].phys_rect_in_screenshot);
+  }
 
-  // Scale from local DIP coordinates to physical pixels within the slice.
-  const float scale_x =
-      best_slice->display.bounds().width() > 0
-          ? static_cast<float>(best_slice->sub_rect_in_screenshot.width()) /
-                best_slice->display.bounds().width()
-          : 1.0f;
-  const float scale_y =
-      best_slice->display.bounds().height() > 0
-          ? static_cast<float>(best_slice->sub_rect_in_screenshot.height()) /
-                best_slice->display.bounds().height()
-          : 1.0f;
+  const int out_width =
+      std::max(1, base::ClampRound(active_dip_bounds.width() * output_scale));
+  const int out_height =
+      std::max(1, base::ClampRound(active_dip_bounds.height() * output_scale));
 
-  gfx::Rect phys_crop = gfx::ScaleToRoundedRect(local_dip, scale_x, scale_y);
-  phys_crop.Offset(best_slice->sub_rect_in_screenshot.OffsetFromOrigin());
-  phys_crop.Intersect(best_slice->sub_rect_in_screenshot);
+  SkBitmap output;
+  if (!output.tryAllocPixels(
+          screenshot_.info().makeWH(out_width, out_height))) {
+    return SkBitmap();
+  }
 
-  return ExtractCompactSubset(screenshot_, phys_crop);
+  DrawSlicesToCanvas(screenshot_, intersecting, active_dip_bounds, output_scale,
+                     output);
+
+  output.setImmutable();
+  return output;
 }
 
 void OmniboxEverywhereRegionSelectOverlay::Finish(
