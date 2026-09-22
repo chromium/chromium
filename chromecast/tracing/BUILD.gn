@@ -42,6 +42,17 @@ cast_source_set("system_tracer") {
   ]
 }
 
+test("cast_tracing_unittests") {
+  sources = [ "system_tracing_common_unittest.cc" ]
+
+  deps = [
+    ":system_tracing_common",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+  ]
+}
+
 group("tracing") {
   deps = [
     ":system_tracing_common",

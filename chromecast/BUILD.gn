@@ -120,6 +120,7 @@ cast_test_group("cast_tests") {
   if (is_linux) {
     tests += [
       "//chromecast/crash:cast_crash_unittests",
+      "//chromecast/tracing:cast_tracing_unittests",
       "//sandbox/linux:sandbox_linux_unittests",
     ]
 

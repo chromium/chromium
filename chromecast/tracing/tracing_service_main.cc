@@ -5,9 +5,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/socket.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/un.h>
 
 #include <memory>
 #include <string_view>
@@ -40,37 +38,6 @@ namespace tracing {
 namespace {
 
 constexpr size_t kMessageSize = 4096;
-
-base::ScopedFD CreateServerSocket() {
-  struct sockaddr_un addr = GetSystemTracingSocketAddress();
-
-  if (unlink(addr.sun_path) != 0 && errno != ENOENT)
-    PLOG(ERROR) << "unlink: " << addr.sun_path;
-
-  base::ScopedFD socket_fd(
-      socket(AF_UNIX, SOCK_SEQPACKET | SOCK_NONBLOCK | SOCK_CLOEXEC, 0));
-  if (!socket_fd.is_valid()) {
-    PLOG(ERROR) << "socket";
-    return base::ScopedFD();
-  }
-
-  if (bind(socket_fd.get(), reinterpret_cast<struct sockaddr*>(&addr),
-           sizeof(addr))) {
-    PLOG(ERROR) << "bind: " << addr.sun_path;
-    return base::ScopedFD();
-  }
-
-  if (chmod(addr.sun_path, 0666))
-    PLOG(WARNING) << "chmod: " << addr.sun_path;
-
-  static constexpr int kBacklog = 10;
-  if (listen(socket_fd.get(), kBacklog)) {
-    PLOG(ERROR) << "listen: " << addr.sun_path;
-    return base::ScopedFD();
-  }
-
-  return socket_fd;
-}
 
 std::vector<std::string> ParseCategories(std::string_view message) {
   std::vector<std::string> requested_categories = base::SplitString(
@@ -296,7 +263,7 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
     base::ScopedFD read_end(pipefd[0]);
     base::ScopedFD write_end(pipefd[1]);
 
-    constexpr uint8 response[] = {0};
+    constexpr uint8_t response[] = {0};
     std::vector<int> send_fds;
     send_fds.push_back(read_end.get());
     if (!base::UnixDomainSocket::SendMsg(connection_fd_.get(), response,
@@ -352,7 +319,7 @@ class TracingService : public base::MessagePumpEpoll::FdWatcher {
   ~TracingService() override {}
 
   bool Init() {
-    server_socket_ = CreateServerSocket();
+    server_socket_ = CreateTracingServerSocket(GetSystemTracingSocketAddress());
     if (!server_socket_.is_valid())
       return false;
 
@@ -376,6 +343,13 @@ class TracingService : public base::MessagePumpEpoll::FdWatcher {
                                          SOCK_NONBLOCK | SOCK_CLOEXEC));
     if (!connection_fd.is_valid()) {
       PLOG(ERROR) << "accept: ";
+      return;
+    }
+
+    // Controlling this service means controlling system-wide kernel tracing,
+    // so drop connections from peers that are not allowed to do that instead
+    // of starting a session for them.
+    if (!IsTracingClientAuthorized(connection_fd.get())) {
       return;
     }
 
