@@ -5,8 +5,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertThrows} from 'chrome://webui-test/chai_assert.js';
 
 async function waitForAttributeChange(
     element: HTMLElement, attribute: string): Promise<MutationRecord[]> {
@@ -40,7 +39,6 @@ suite('CrAutoImgElementTest', () => {
   ([
     ['https://foo.com/img.png', 'chrome://image/?https://foo.com/img.png'],
     ['chrome://foo/img.png', 'chrome://foo/img.png'],
-    ['data:imge/png;base64,abc', 'data:imge/png;base64,abc'],
     ['', ''],
     ['chrome-untrusted://foo/img.png', ''],
   ] as Array<[string, string]>)
@@ -65,6 +63,20 @@ suite('CrAutoImgElementTest', () => {
           assertEquals(src, img.src);
         });
       });
+
+  test('setting auto-src to data URL throws an error', () => {
+    // Calling setAttribute() or setting autoSrc invokes
+    // attributeChangedCallback via custom element reactions ([CEReactions]),
+    // which catches exceptions and reports them to window.onerror (causing
+    // Mocha to fail the test) rather than propagating them to callers. Stub
+    // getAttribute() and invoke attributeChangedCallback() directly so
+    // assertThrows() can catch the error.
+    img.getAttribute = () => 'data:image/png;base64,abc';
+    assertThrows(() => {
+      img.attributeChangedCallback(
+          'auto-src', null, 'data:image/png;base64,abc');
+    });
+  });
 
   test(
       'setting isGooglePhotos creates a URL with autoSrc and isGooglePhotos as params',

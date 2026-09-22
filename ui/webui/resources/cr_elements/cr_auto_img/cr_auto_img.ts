@@ -5,7 +5,7 @@
 /**
  * @fileoverview <cr-auto-img> is a specialized <img> that facilitates embedding
  * images into WebUIs via its auto-src attribute. <cr-auto-img> automatically
- * determines if the image is local (e.g. data: or chrome://) or external (e.g.
+ * determines if the image is local (e.g. chrome://) or external (e.g.
  * https://), and embeds the image directly or via the chrome://image data
  * source accordingly. Usage:
  *
@@ -41,6 +41,8 @@
  * NOTE: Since <cr-auto-img> may use the chrome://image data source some images
  * may be transcoded to PNG.
  */
+
+import {assert} from '//resources/js/assert.js';
 
 const AUTO_SRC: string = 'auto-src';
 
@@ -83,14 +85,20 @@ export class CrAutoImgElement extends HTMLImageElement {
     } catch (_) {
     }
 
-    if (!url || url.protocol === 'chrome-untrusted:') {
+    if (!url || url.protocol === 'chrome-untrusted:' ||
+        url.protocol === 'data:') {
       // Loading chrome-untrusted:// directly kills the renderer process.
       // Loading chrome-untrusted:// via the chrome://image data source
-      // results in a broken image.
+      // results in a broken image. Data URLs are not supported.
       this.removeAttribute('src');
+      assert(
+          !url || url.protocol !== 'data:',
+          'Loading data URLs is not supported; use a standard <img> ' +
+              'element instead');
+
       return;
     }
-    if (url.protocol === 'data:' || url.protocol === 'chrome:') {
+    if (url.protocol === 'chrome:') {
       this.src = url.href;
       return;
     }

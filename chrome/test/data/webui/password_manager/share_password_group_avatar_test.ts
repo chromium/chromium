@@ -11,7 +11,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {makeRecipientInfo} from './test_util.js';
 
-const PROFILE_IMG_URL = 'data://image/url';
+const PROFILE_IMG_URL = 'https://image/url';
 
 function createMembers(count: number): chrome.passwordsPrivate.RecipientInfo[] {
   const members = new Array(count);
@@ -23,7 +23,7 @@ function createMembers(count: number): chrome.passwordsPrivate.RecipientInfo[] {
 }
 
 function assertVisibleImg(img: HTMLImageElement) {
-  assertEquals(PROFILE_IMG_URL, img.src);
+  assertEquals('chrome://image/?' + PROFILE_IMG_URL, img.src);
   assertTrue(isVisible(img));
 }
 

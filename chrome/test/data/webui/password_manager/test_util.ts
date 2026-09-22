@@ -37,7 +37,7 @@ export function makeRecipientInfo(isEligible: boolean = true):
     userId: 'user-id',
     email: 'user@example.com',
     displayName: 'New User',
-    profileImageUrl: 'data://image/url',
+    profileImageUrl: 'https://image/url',
     isEligible: isEligible,
   };
 }

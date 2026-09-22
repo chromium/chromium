@@ -31,7 +31,8 @@ suite('SharePasswordRecipientTest', function() {
     assertTrue(isVisible(element.$.name));
     assertTrue(isVisible(element.$.email));
 
-    assertEquals(recipient.profileImageUrl, element.$.avatar.src);
+    assertEquals(
+        'chrome://image/?' + recipient.profileImageUrl, element.$.avatar.src);
     assertEquals(recipient.displayName, element.$.name.textContent);
     assertEquals(recipient.email, element.$.email.textContent);
 
