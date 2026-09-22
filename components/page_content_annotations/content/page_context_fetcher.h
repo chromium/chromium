@@ -215,6 +215,11 @@ class PageContextFetcher : public content::WebContentsObserver {
                            NoIframeInfoWhenFeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(PdfMultiSourcePageContextFetcherBrowserTest,
                            FetchesEmbeddedPdfBytesMultipleCandidates);
+#if BUILDFLAG(ENABLE_PDF)
+  friend class PageContextFetcherPdfTest;
+  friend class PageContextFetcherPdfBytesExtractionTest;
+  friend class PageContextFetcherPdfTextExtractionTest;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Redacts a screenshot by painting over sensitive regions with
   // `redaction_color`.
@@ -231,6 +236,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void FetchPdfContent(const PdfOptions& options);
   void ReceivedPdfBytes(url::Origin pdf_origin,
+                        bool is_top_level_pdf,
                         uint32_t pdf_size_limit,
                         pdf::mojom::PdfListener::GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes,

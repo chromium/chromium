@@ -749,8 +749,10 @@ TEST_P(AnnotatePageContentRequestTest, RefreshAPCPdfShortCircuit) {
   histogram_tester.ExpectTotalCount(kPageContentExtractionRequestTypeHistogram,
                                     0);
   histogram_tester.ExpectTotalCount(kPdfTextExtractionStatusHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPdfTextExtractionLatencyHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPdfTextExtractionSizeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelLatencyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelSizeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelSizeLimitExceededHistogram,
+                                    0);
 }
 
 TEST_P(AnnotatePageContentRequestTest,
@@ -1122,8 +1124,10 @@ TEST_P(AnnotatePageContentRequestTest, GetAsyncOnPdfPages) {
   histogram_tester.ExpectTotalCount(kPageContentExtractionRequestTypeHistogram,
                                     0);
   histogram_tester.ExpectTotalCount(kPdfTextExtractionStatusHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPdfTextExtractionLatencyHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPdfTextExtractionSizeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelLatencyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelSizeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPdfTextTopLevelSizeLimitExceededHistogram,
+                                    0);
 }
 
 TEST_P(AnnotatePageContentRequestTest,

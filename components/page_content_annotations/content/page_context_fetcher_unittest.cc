@@ -9,16 +9,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/token.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -26,6 +31,11 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/mojom/pdf.mojom.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
 
@@ -288,5 +298,257 @@ TEST_F(PageContextFetcherIframeInfoTest, NoIframeInfoWhenFeatureDisabled) {
           .screenshot_info();
   EXPECT_EQ(screenshot_info.iframe_info_size(), 0);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class PageContextFetcherPdfTest : public content::RenderViewHostTestHarness {
+ public:
+  PageContextFetcherPdfTest() = default;
+  ~PageContextFetcherPdfTest() override = default;
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg>& GetFuture() {
+    return future_;
+  }
+
+  PageContextFetcher& GetFetcher() { return *fetcher_; }
+
+ protected:
+  void TearDown() override {
+    fetcher_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com"));
+    fetcher_ =
+        std::make_unique<PageContextFetcher>(base::NullCallback(), nullptr);
+    fetcher_->Observe(web_contents());
+    fetcher_->pending_result_ = std::make_unique<FetchPageContextResult>();
+    fetcher_->callback_ = future_.GetCallback();
+    fetcher_->initialization_done_ = true;
+    fetcher_->screenshot_done_ = true;
+    fetcher_->inner_text_done_ = true;
+    fetcher_->annotated_page_content_done_ = true;
+  }
+
+ private:
+  std::unique_ptr<PageContextFetcher> fetcher_;
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future_;
+};
+
+// PDF bytes extraction supports top-level PDF and embedded PDF.
+class PageContextFetcherPdfBytesExtractionTest
+    : public PageContextFetcherPdfTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PageContextFetcherPdfBytesExtractionTest() = default;
+  ~PageContextFetcherPdfBytesExtractionTest() override = default;
+
+  bool IsTopLevelPDF() const { return GetParam(); }
+
+  void ReceivedPdfBytes(uint32_t pdf_size_limit,
+                        pdf::mojom::PdfListener::GetPdfBytesStatus status,
+                        const std::vector<uint8_t>& pdf_bytes) {
+    GetFetcher().ReceivedPdfBytes(
+        url::Origin::Create(GURL("https://example.com")), IsTopLevelPDF(),
+        pdf_size_limit, status, pdf_bytes, /*page_count=*/1);
+  }
+};
+
+TEST_P(PageContextFetcherPdfBytesExtractionTest, ReceivedPdfBytes) {
+  base::HistogramTester histograms;
+  std::vector<uint8_t> pdf_bytes(1024, 1);
+  ReceivedPdfBytes(/*pdf_size_limit=*/1024,
+                   pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess,
+                   pdf_bytes);
+
+  histograms.ExpectTotalCount(IsTopLevelPDF()
+                                  ? kPdfBytesTopLevelLatencyHistogram
+                                  : kPdfBytesEmbeddedLatencyHistogram,
+                              1);
+  // The bytes size is recorded as 1KB in the UMA.
+  histograms.ExpectUniqueSample(IsTopLevelPDF()
+                                    ? kPdfBytesTopLevelSizeHistogram
+                                    : kPdfBytesEmbeddedSizeHistogram,
+                                1, 1);
+  histograms.ExpectUniqueSample(
+      IsTopLevelPDF() ? kPdfBytesTopLevelSizeLimitExceededHistogram
+                      : kPdfBytesEmbeddedSizeLimitExceededHistogram,
+      false, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_FALSE((*result)->pdf_result->size_exceeded);
+  const auto* bytes =
+      std::get_if<std::vector<uint8_t>>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(bytes);
+  EXPECT_EQ(*bytes, pdf_bytes);
+}
+
+// When the original PDF bytes exceed the limit, `ReceivedPdfBytes` will receive
+// an empty vector as the extraction result.
+TEST_P(PageContextFetcherPdfBytesExtractionTest,
+       OriginalPDFBytesSizeLimitExceeded) {
+  base::HistogramTester histograms;
+  std::vector<uint8_t> empty_bytes;
+  ReceivedPdfBytes(
+      /*pdf_size_limit=*/1024,
+      pdf::mojom::PdfListener::GetPdfBytesStatus::kSizeLimitExceeded,
+      empty_bytes);
+
+  histograms.ExpectTotalCount(IsTopLevelPDF()
+                                  ? kPdfBytesTopLevelLatencyHistogram
+                                  : kPdfBytesEmbeddedLatencyHistogram,
+                              1);
+  // When the extraction status is not successful, no size sample is recorded.
+  histograms.ExpectTotalCount(IsTopLevelPDF() ? kPdfBytesTopLevelSizeHistogram
+                                              : kPdfBytesEmbeddedSizeHistogram,
+                              0);
+  histograms.ExpectUniqueSample(
+      IsTopLevelPDF() ? kPdfBytesTopLevelSizeLimitExceededHistogram
+                      : kPdfBytesEmbeddedSizeLimitExceededHistogram,
+      true, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_TRUE((*result)->pdf_result->size_exceeded);
+  const auto* bytes =
+      std::get_if<std::vector<uint8_t>>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(bytes);
+  EXPECT_TRUE(bytes->empty());
+}
+
+// Even though the original PDF bytes do not exceed the limit, it is possible
+// that `ReceivedPdfBytes` receives bytes that exceed the limit. See comments in
+// `PageContextFetcher::ReceivedPdfBytes`.
+TEST_P(PageContextFetcherPdfBytesExtractionTest,
+       ReceivedPdfBytesSizeLimitExceeded) {
+  base::HistogramTester histograms;
+  std::vector<uint8_t> pdf_bytes(4096, 1);
+  ReceivedPdfBytes(/*pdf_size_limit=*/1024,
+                   pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess,
+                   pdf_bytes);
+
+  histograms.ExpectTotalCount(IsTopLevelPDF()
+                                  ? kPdfBytesTopLevelLatencyHistogram
+                                  : kPdfBytesEmbeddedLatencyHistogram,
+                              1);
+  histograms.ExpectUniqueSample(IsTopLevelPDF()
+                                    ? kPdfBytesTopLevelSizeHistogram
+                                    : kPdfBytesEmbeddedSizeHistogram,
+                                4, 1);
+  histograms.ExpectUniqueSample(
+      IsTopLevelPDF() ? kPdfBytesTopLevelSizeLimitExceededHistogram
+                      : kPdfBytesEmbeddedSizeLimitExceededHistogram,
+      true, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_TRUE((*result)->pdf_result->size_exceeded);
+  const auto* bytes =
+      std::get_if<std::vector<uint8_t>>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(bytes);
+  EXPECT_TRUE(bytes->empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageContextFetcherPdfBytesExtractionTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "TopLevel" : "Embedded";
+                         });
+
+// PDF text extraction supports only top-level PDF.
+class PageContextFetcherPdfTextExtractionTest
+    : public PageContextFetcherPdfTest {
+ public:
+  PageContextFetcherPdfTextExtractionTest() = default;
+  ~PageContextFetcherPdfTextExtractionTest() override = default;
+
+  void ReceivedPdfText(url::Origin pdf_origin,
+                       uint32_t text_byte_limit,
+                       const std::u16string& text) {
+    GetFetcher().ReceivedPdfText(std::move(pdf_origin), text_byte_limit, text);
+  }
+};
+
+TEST_F(PageContextFetcherPdfTextExtractionTest, ReceivedPdfText) {
+  base::HistogramTester histograms;
+  const std::u16string text(2048, 'a');
+  ReceivedPdfText(url::Origin::Create(GURL("https://example.com")),
+                  /*text_byte_limit=*/1024 * 1024, text);
+
+  histograms.ExpectUniqueSample(kPdfTextExtractionStatusHistogram,
+                                PdfTextExtractionStatus::kSuccess, 1);
+  histograms.ExpectTotalCount(kPdfTextTopLevelLatencyHistogram, 1);
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeHistogram,
+                                base::span(text).size_bytes() / 1024, 1);
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeLimitExceededHistogram,
+                                false, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_FALSE((*result)->pdf_result->size_exceeded);
+  const auto* str = std::get_if<std::string>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(str);
+  EXPECT_EQ(*str, base::UTF16ToUTF8(text));
+}
+
+TEST_F(PageContextFetcherPdfTextExtractionTest,
+       ReceivedPdfTextSizeLimitExceeded) {
+  base::HistogramTester histograms;
+  const std::u16string text(2048, 'a');
+  ReceivedPdfText(url::Origin::Create(GURL("https://example.com")),
+                  /*text_byte_limit=*/5, text);
+
+  histograms.ExpectUniqueSample(kPdfTextExtractionStatusHistogram,
+                                PdfTextExtractionStatus::kSuccess, 1);
+  histograms.ExpectTotalCount(kPdfTextTopLevelLatencyHistogram, 1);
+  // The recorded size should be the size of the text returned from PDFium,
+  // which is the `text` passed to `ReceivedPdfText` without any processing.
+  // So even if the `text` size exceeds the `text_byte_limit`, the recorded size
+  // is the size before any truncation by `ReceivedPdfText`.
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeHistogram,
+                                base::span(text).size_bytes() / 1024, 1);
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeLimitExceededHistogram,
+                                true, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_TRUE((*result)->pdf_result->size_exceeded);
+  const auto* str = std::get_if<std::string>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(str);
+  // The final result is truncated according to `text_byte_limit`.
+  EXPECT_EQ(*str, "aaaaa");
+}
+
+TEST_F(PageContextFetcherPdfTextExtractionTest, ReceivedPdfTextEmpty) {
+  base::HistogramTester histograms;
+  ReceivedPdfText(url::Origin::Create(GURL("https://example.com")),
+                  /*text_byte_limit=*/1024, u"");
+
+  histograms.ExpectUniqueSample(kPdfTextExtractionStatusHistogram,
+                                PdfTextExtractionStatus::kEmptyText, 1);
+  histograms.ExpectTotalCount(kPdfTextTopLevelLatencyHistogram, 1);
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeHistogram, 0, 1);
+  histograms.ExpectUniqueSample(kPdfTextTopLevelSizeLimitExceededHistogram,
+                                false, 1);
+
+  auto result = GetFuture().Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE((*result)->pdf_result.has_value());
+  EXPECT_FALSE((*result)->pdf_result->size_exceeded);
+  const auto* str = std::get_if<std::string>(&(*result)->pdf_result->data);
+  ASSERT_TRUE(str);
+  EXPECT_TRUE(str->empty());
+}
+
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace page_content_annotations

@@ -7,10 +7,31 @@
 
 namespace page_content_annotations {
 
-inline constexpr char kPdfTextExtractionLatencyHistogram[] =
-    "Glic.PageContextFetcher.PdfTextExtraction.Time";
-inline constexpr char kPdfTextExtractionSizeHistogram[] =
-    "Glic.PageContextFetcher.PdfTextExtraction.Size";
+// TODO(b/562182406): Once embedded PDF text extraction is supported, create
+// corresponding metrics.
+// LINT.IfChange(PdfExtractionHistogramNames)
+inline constexpr char kPdfBytesTopLevelLatencyHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.TopLevel.Time";
+inline constexpr char kPdfBytesTopLevelSizeHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.TopLevel.Size";
+inline constexpr char kPdfBytesTopLevelSizeLimitExceededHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.TopLevel.SizeLimitExceeded";
+
+inline constexpr char kPdfBytesEmbeddedLatencyHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.Embedded.Time";
+inline constexpr char kPdfBytesEmbeddedSizeHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.Embedded.Size";
+inline constexpr char kPdfBytesEmbeddedSizeLimitExceededHistogram[] =
+    "Glic.PageContextFetcher.PdfBytesExtraction.Embedded.SizeLimitExceeded";
+
+inline constexpr char kPdfTextTopLevelLatencyHistogram[] =
+    "Glic.PageContextFetcher.PdfTextExtraction.TopLevel.Time";
+inline constexpr char kPdfTextTopLevelSizeHistogram[] =
+    "Glic.PageContextFetcher.PdfTextExtraction.TopLevel.Size";
+inline constexpr char kPdfTextTopLevelSizeLimitExceededHistogram[] =
+    "Glic.PageContextFetcher.PdfTextExtraction.TopLevel.SizeLimitExceeded";
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:PDFExtractionMode)
+
 inline constexpr char kPdfTextExtractionStatusHistogram[] =
     "Glic.PageContextFetcher.PdfTextExtraction.Status";
 inline constexpr char kPdfContentsRequestedHistogram[] =

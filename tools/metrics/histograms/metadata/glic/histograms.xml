@@ -216,6 +216,20 @@ chromium-metrics-reviews@google.com.
   <variant name="OnOpen" summary="the glic panel is opened."/>
 </variants>
 
+<!-- LINT.IfChange(PDFExtractionMode) -->
+
+<variants name="PdfExtractionType">
+  <variant name="PdfBytesExtraction" summary="PDF bytes extraction"/>
+  <variant name="PdfTextExtraction" summary="PDF text extraction"/>
+</variants>
+
+<variants name="PdfType">
+  <variant name="Embedded" summary="an embedded PDF"/>
+  <variant name="TopLevel" summary="a top-level document PDF"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/page_content_annotations/content/page_context_fetcher_metrics.h:PdfExtractionHistogramNames) -->
+
 <variants name="ProfileEnablementSuffix">
   <variant name="Startup"
       summary="recorded early in startup when the first window is opened."/>
@@ -2355,17 +2369,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.PageContextFetcher.PdfTextExtraction.Size" units="bytes"
-    expires_after="2027-05-05">
-  <owner>xiaochenzh@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the byte size of the extracted PDF text before any truncation.
-    Recorded once per successful PDF text extraction.
-  </summary>
-</histogram>
-
 <histogram name="Glic.PageContextFetcher.PdfTextExtraction.Status"
     enum="PdfTextExtractionStatus" expires_after="2027-05-05">
   <owner>xiaochenzh@chromium.org</owner>
@@ -2375,17 +2378,6 @@ chromium-metrics-reviews@google.com.
     Records the status of PDF text extraction requests. Tracks whether the
     extraction was successful or failed due to reasons such as the PDF load is
     not complete. Recorded once per PDF text extraction request.
-  </summary>
-</histogram>
-
-<histogram name="Glic.PageContextFetcher.PdfTextExtraction.Time" units="ms"
-    expires_after="2027-05-05">
-  <owner>xiaochenzh@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the time taken for PDF text extraction. Recorded once per successful
-    PDF text extraction.
   </summary>
 </histogram>
 
@@ -2420,6 +2412,49 @@ chromium-metrics-reviews@google.com.
     Recorded when a page context fetcher finishes. Measure the time from start
     to finish.
   </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.{PdfExtractionType}.{PdfType}.Size"
+    units="KB" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the size (KB) of the extraction result of the {PdfExtractionType} of
+    {PdfType}. Note for PDF text extraction, this is the byte size of the UTF-16
+    string returned by PDFium. It is recorded immediately after the extraction
+    result is returned by PDFium, without any processing. Recorded once per
+    successful {PdfExtractionType}.
+  </summary>
+  <token key="PdfExtractionType" variants="PdfExtractionType"/>
+  <token key="PdfType" variants="PdfType"/>
+</histogram>
+
+<histogram
+    name="Glic.PageContextFetcher.{PdfExtractionType}.{PdfType}.SizeLimitExceeded"
+    enum="Boolean" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the {PdfExtractionType} of {PdfType} exceeded the size
+    limit. Recorded once per completed {PdfExtractionType}.
+  </summary>
+  <token key="PdfExtractionType" variants="PdfExtractionType"/>
+  <token key="PdfType" variants="PdfType"/>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.{PdfExtractionType}.{PdfType}.Time"
+    units="ms" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time taken for the {PdfExtractionType} of {PdfType}. Recorded
+    once per completed {PdfExtractionType}.
+  </summary>
+  <token key="PdfExtractionType" variants="PdfExtractionType"/>
+  <token key="PdfType" variants="PdfType"/>
 </histogram>
 
 <histogram name="Glic.PanelPresentationTime2.{InputMode}" units="ms"

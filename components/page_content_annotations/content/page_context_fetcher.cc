@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -591,7 +592,7 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
             base::BindOnce(
                 &PageContextFetcher::ReceivedPdfBytes, GetWeakPtr(),
                 pdf_helper->render_frame_host().GetLastCommittedOrigin(),
-                options.size_limit()));
+                is_top_level_pdf, options.size_limit()));
         pdf_done_ = false;  // Will fetch PDF bytes.
         break;
       }
@@ -618,6 +619,8 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
     // status.
     // Note: PDF text extraction is currently restricted to top-level document
     // PDF only.
+    // TODO(b/563402438): Unify the status metric for PDF bytes and text
+    // extractions.
     if (!is_top_level_pdf) {
       RecordPdfTextExtractionStatus(PdfTextExtractionStatus::kNotPdf);
     } else if (!pdf_helper) {
@@ -630,20 +633,43 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   }
 }
 
+// TODO(b/562581431): This function should handle the
+// `GetPdfBytesStatus::kFailed` extraction status.
 void PageContextFetcher::ReceivedPdfBytes(
     url::Origin pdf_origin,
+    bool is_top_level_pdf,
     uint32_t pdf_size_limit,
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& pdf_bytes,
     uint32_t page_count) {
   pdf_done_ = true;
 
+  // The sample is recorded in milliseconds.
+  base::UmaHistogramTimes(is_top_level_pdf ? kPdfBytesTopLevelLatencyHistogram
+                                           : kPdfBytesEmbeddedLatencyHistogram,
+                          elapsed_timer_.Elapsed());
+
+  // The sample is recorded in KB. Bytes extraction size is capped at 64MB by
+  // default.
+  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
+    base::UmaHistogramCounts100000(is_top_level_pdf
+                                       ? kPdfBytesTopLevelSizeHistogram
+                                       : kPdfBytesEmbeddedSizeHistogram,
+                                   pdf_bytes.size() / 1024);
+  }
+
   // Warning!: `pdf_bytes_` can be larger than pdf_size_limit.
   // `pdf_size_limit` applies to the original PDF size, but the PDF is
   // re-serialized and returned, so it is not identical to the original.
   bool size_limit_exceeded =
-      status == pdf::mojom::PdfListener_GetPdfBytesStatus::kSizeLimitExceeded ||
+      status ==
+          pdf::mojom::PdfListener::GetPdfBytesStatus::kSizeLimitExceeded ||
       pdf_bytes.size() > pdf_size_limit;
+
+  base::UmaHistogramBoolean(is_top_level_pdf
+                                ? kPdfBytesTopLevelSizeLimitExceededHistogram
+                                : kPdfBytesEmbeddedSizeLimitExceededHistogram,
+                            size_limit_exceeded);
 
   if (size_limit_exceeded) {
     pending_result_->pdf_result.emplace(std::move(pdf_origin));
@@ -658,8 +684,15 @@ void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
                                          const std::u16string& text) {
   pdf_done_ = true;
 
-  base::UmaHistogramTimes(kPdfTextExtractionLatencyHistogram,
+  // Note: PDF text extraction is currently restricted to top-level document
+  // PDF only.
+  base::UmaHistogramTimes(kPdfTextTopLevelLatencyHistogram,
                           elapsed_timer_.Elapsed());
+
+  // The sample is recorded in KB. Text extraction size is capped at 1MB by
+  // default.
+  base::UmaHistogramCounts10000(kPdfTextTopLevelSizeHistogram,
+                                base::span(text).size_bytes() / 1024);
 
   if (text.empty()) {
     // Note an empty text does not necessarily imply there is something wrong
@@ -680,15 +713,18 @@ void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
 
   // Convert to UTF-8 string.
   std::string utf8_text = base::UTF16ToUTF8(text_view);
-  base::UmaHistogramCounts1M(kPdfTextExtractionSizeHistogram, utf8_text.size());
 
   // Truncate the `utf8_text` to the `text_byte_limit`.
-  bool size_exceeded = TruncateUTF8ToByteLimit(utf8_text, text_byte_limit);
+  const bool truncated = TruncateUTF8ToByteLimit(utf8_text, text_byte_limit);
+  const bool size_limit_exceeded = text.size() > text_byte_limit || truncated;
+
+  base::UmaHistogramBoolean(kPdfTextTopLevelSizeLimitExceededHistogram,
+                            size_limit_exceeded);
 
   // Move construct the PDF result.
   pending_result_->pdf_result.emplace(std::move(pdf_origin),
                                       std::move(utf8_text));
-  pending_result_->pdf_result->size_exceeded = size_exceeded;
+  pending_result_->pdf_result->size_exceeded = size_limit_exceeded;
 
   RunCallbackIfComplete();
 }

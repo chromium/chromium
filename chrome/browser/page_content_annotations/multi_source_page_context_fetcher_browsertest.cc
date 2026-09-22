@@ -1648,6 +1648,15 @@ IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
   // The extraction request is on a top-level document PDF.
   histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
                                 PdfRequestStates::kPdfMainDoc_PdfFound, 1);
+
+  // The extraction metrics are recorded to the top-level PDF variants only.
+  histograms.ExpectTotalCount(kPdfBytesTopLevelLatencyHistogram, 1);
+  histograms.ExpectTotalCount(kPdfBytesTopLevelSizeHistogram, 1);
+  histograms.ExpectUniqueSample(kPdfBytesTopLevelSizeLimitExceededHistogram,
+                                false, 1);
+  histograms.ExpectTotalCount(kPdfBytesEmbeddedLatencyHistogram, 0);
+  histograms.ExpectTotalCount(kPdfBytesEmbeddedSizeHistogram, 0);
+  histograms.ExpectTotalCount(kPdfBytesEmbeddedSizeLimitExceededHistogram, 0);
 }
 
 // When feature is enabled, embedded PDF bytes are also extracted.
@@ -1691,6 +1700,15 @@ IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
     // embedded PDF in the page.
     histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
                                   PdfRequestStates::kNonPdfMainDoc_PdfFound, 1);
+
+    // The extraction metrics are recorded to the embedded PDF variants only.
+    histograms.ExpectTotalCount(kPdfBytesEmbeddedLatencyHistogram, 1);
+    histograms.ExpectTotalCount(kPdfBytesEmbeddedSizeHistogram, 1);
+    histograms.ExpectUniqueSample(kPdfBytesEmbeddedSizeLimitExceededHistogram,
+                                  false, 1);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelLatencyHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelSizeHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelSizeLimitExceededHistogram, 0);
   } else {
     // When feature is disabled, the extraction is not attempted because it is
     // restricted to top-level PDF only.
@@ -1699,6 +1717,14 @@ IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
     histograms.ExpectUniqueSample(kPdfContentsRequestedHistogram,
                                   PdfRequestStates::kNonPdfMainDoc_PdfNotFound,
                                   1);
+
+    // No extraction took place, so no extraction metrics are recorded.
+    histograms.ExpectTotalCount(kPdfBytesEmbeddedLatencyHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesEmbeddedSizeHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesEmbeddedSizeLimitExceededHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelLatencyHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelSizeHistogram, 0);
+    histograms.ExpectTotalCount(kPdfBytesTopLevelSizeLimitExceededHistogram, 0);
   }
 }
 
