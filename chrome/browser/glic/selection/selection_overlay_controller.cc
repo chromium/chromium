@@ -247,7 +247,6 @@ void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
   if (state() == State::kBackground) {
     return;
   }
-  ClosePreselectionBubbleImpl();
   TabWillEnterBackground(tab);
 }
 
@@ -596,7 +595,13 @@ void SelectionOverlayController::NotifyPageNavigated() {
 
 void SelectionOverlayController::NotifyTabForegrounded() {}
 
-void SelectionOverlayController::NotifyTabWillEnterBackground() {}
+void SelectionOverlayController::NotifyTabWillEnterBackground() {
+  // Closing the preselection bubble hides its widget synchronously, which can
+  // hand activation back to the browser window and re-enter `TabDeactivated()`.
+  // Closing the bubble at the end of the callstack so the reentrance to
+  // `TabDeactivated()` with kBackground is an early-out.
+  ClosePreselectionBubbleImpl();
+}
 
 OverlayBaseController::PreselectionUIConfig
 SelectionOverlayController::GetPreselectionBubbleConfig() {
