@@ -8,15 +8,23 @@
 
 #include "base/json/values_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_util.h"
+#include "build/build_config.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/model/string_ordinal.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_flag.h"
 #include "extensions/browser/test_extension_prefs.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/manifest.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -48,8 +56,12 @@ class LowTrustPolicyInstallBlockManagerTest : public testing::Test {
         std::make_unique<TestingProfile>());
     LowTrustPolicyInstallBlockManager::RegisterProfilePrefs(
         test_prefs_->pref_registry().get());
+    ExtensionManagement* extension_management =
+        ExtensionManagementFactory::GetForBrowserContext(
+            test_prefs_->browser_context());
     manager_ = std::make_unique<LowTrustPolicyInstallBlockManager>(
-        *test_prefs_->prefs()->pref_service());
+        test_prefs_->browser_context(), *test_prefs_->prefs()->pref_service(),
+        *extension_management);
   }
 
  protected:
@@ -184,5 +196,70 @@ TEST_F(LowTrustPolicyInstallBlockManagerTest, CleanupStaleRecords) {
 
   EXPECT_TRUE(manager()->IsBlocked(kFreshId));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class LowTrustPolicyInstallBlockManagerServiceTest
+    : public ExtensionServiceTestBase {
+ protected:
+  void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
+    ExtensionServiceInitParams params;
+    params.prefs_content = "{}";
+    params.autoupdate_enabled = false;
+    InitializeExtensionService(std::move(params));
+  }
+};
+
+// Tests that when a policy-installed extension overriding the New Tab Page is
+// present on a managed machine, transitioning to an unmanaged (low trust)
+// environment uninstalls the extension and marks it in the low-trust blocked
+// manager to restore user control and protect from persistent overrides.
+TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
+       LowTrustTransitionUninstall) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+
+  // 1. In a managed environment, policy installations of settings-override
+  // extensions are trusted and permitted to install and run normally.
+  policy::ScopedManagementServiceOverrideForTesting trusted_profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  auto extension =
+      ExtensionBuilder("Policy NTP Override")
+          .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
+          .AddJSON(R"(
+            "chrome_url_overrides": {
+              "newtab": "custom_newtab.html"
+            }
+          )")
+          .Build();
+
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
+
+  // Policy extensions are enabled upon install in a trusted environment.
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
+
+  // 2. Simulate transition to an unmanaged (low trust) environment where
+  // policy keys remain present on disk.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Trigger low-trust uninstallation of active policy-installed settings
+  // override extensions via the ExtensionManagement::Observer callback.
+  LowTrustPolicyInstallBlockManager* block_manager =
+      ExtensionManagementFactory::GetForBrowserContext(profile())
+          ->low_trust_block_manager();
+  block_manager->OnExtensionManagementSettingsChanged();
+
+  // When management trust is lost, active policy-installed settings-override
+  // extensions must be uninstalled to restore user control, and their IDs must
+  // be cached in the low-trust blocked manager to prevent subsequent installs.
+  EXPECT_FALSE(registry()->GetInstalledExtension(extension->id()));
+  EXPECT_TRUE(block_manager->IsBlocked(extension->id()));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

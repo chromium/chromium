@@ -147,7 +147,8 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
       InstallStageTracker::InstallCreationStage::
           NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED);
   low_trust_block_manager_ =
-      std::make_unique<LowTrustPolicyInstallBlockManager>(*pref_service_);
+      std::make_unique<LowTrustPolicyInstallBlockManager>(
+          profile_, *pref_service_, *this);
   low_trust_block_manager_->CleanupStaleRecords();
   providers_.push_back(
       std::make_unique<StandardManagementPolicyProvider>(this, profile_.get()));

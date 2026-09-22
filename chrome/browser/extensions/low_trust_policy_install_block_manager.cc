@@ -8,11 +8,23 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/one_shot_event.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 
 namespace extensions {
 
@@ -74,11 +86,85 @@ void LowTrustPolicyInstallBlockManager::RegisterProfilePrefs(
 }
 
 LowTrustPolicyInstallBlockManager::LowTrustPolicyInstallBlockManager(
-    PrefService& pref_service)
-    : pref_service_(pref_service) {}
+    content::BrowserContext* context,
+    PrefService& pref_service,
+    ExtensionManagement& extension_management)
+    : context_(context),
+      pref_service_(pref_service),
+      extension_management_(extension_management) {
+  CHECK(context_);
+  extension_management_observation_.Observe(&extension_management_.get());
+
+  // Policy-blocked extensions must be uninstalled once installed extensions
+  // are loaded into memory on startup.
+  //
+  // ExtensionSystem cannot be retrieved synchronously here because
+  // ChromeExtensionSystemSharedFactory depends on ExtensionManagementFactory.
+  // Querying ExtensionSystem while ExtensionManagement is still being
+  // constructed would re-entrantly trigger dependency resolution and cause
+  // a KeyedService cycle assertion. Posting a task defers registration until
+  // construction finishes.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LowTrustPolicyInstallBlockManager::
+                                    UninstallBlockedExtensionsWhenReady,
+                                weak_factory_.GetWeakPtr()));
+}
 
 LowTrustPolicyInstallBlockManager::~LowTrustPolicyInstallBlockManager() =
     default;
+
+void LowTrustPolicyInstallBlockManager::UninstallBlockedExtensionsWhenReady() {
+  // ExtensionSystem::ready() indicates that all installed extensions have
+  // been loaded into memory from disk, at which point the installed
+  // extensions can be inspected and uninstalled if they violate policy.
+  ExtensionSystem::Get(context_)->ready().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &LowTrustPolicyInstallBlockManager::UninstallBlockedExtensions,
+          weak_factory_.GetWeakPtr()));
+}
+
+void LowTrustPolicyInstallBlockManager::OnExtensionManagementSettingsChanged() {
+  UninstallBlockedExtensions();
+}
+
+void LowTrustPolicyInstallBlockManager::UninstallBlockedExtensions() {
+  if (!extension_management_->IsDseNtpOverrideBlockingActive()) {
+    return;
+  }
+
+  std::vector<scoped_refptr<const Extension>> low_trust_uninstall_list;
+  ExtensionSet installed_extensions =
+      ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
+  for (const auto& extension : installed_extensions) {
+    if (extension_management_
+            ->ShouldBlockPolicyInstalledDseNtpOverrideExtension(*extension)) {
+      low_trust_uninstall_list.push_back(extension);
+    }
+  }
+
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(context_);
+  for (const auto& extension : low_trust_uninstall_list) {
+    std::string update_url =
+        extension_management_->GetEffectiveUpdateURL(*extension).spec();
+    MarkBlocked(extension->id(),
+                BlockedExtensionInfo{
+                    .override_type = util::GetDseNtpOverrideType(*extension),
+                    .update_url = std::move(update_url),
+                    .timestamp = base::Time::Now()});
+    std::u16string error;
+    if (registrar->UninstallExtension(
+            extension->id(), UNINSTALL_REASON_INTERNAL_MANAGEMENT, &error)) {
+      LOG_POLICY(WARNING, POLICY_PROCESSING)
+          << "[BlockLowTrustExtension] Uninstalled policy extension "
+          << extension->id() << ": Device lost management trust status.";
+    } else {
+      LOG_POLICY(ERROR, POLICY_PROCESSING)
+          << "[BlockLowTrustExtension] Failed to uninstall policy extension "
+          << extension->id() << ": " << base::UTF16ToUTF8(error);
+    }
+  }
+}
 
 void LowTrustPolicyInstallBlockManager::MarkBlocked(
     const ExtensionId& extension_id,
