@@ -114,6 +114,11 @@ class MockAccountSelectionView : public AccountSelectionView {
                blink::mojom::RpMode),
               (override));
 
+  MOCK_METHOD(bool,
+              ShowNativeAppUi,
+              (const content::NativeAppRequestOptions&),
+              (override));
+
   MOCK_METHOD(std::string, GetTitle, (), (const, override));
 
   MOCK_METHOD(std::optional<std::string>, GetSubtitle, (), (const, override));
@@ -1171,4 +1176,109 @@ TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
               Run(IdentityDialogController::DismissReason::kOther))
       .Times(1);
   controller->SetActingTaskIdForTesting(actor::TaskId());
+}
+
+TEST_F(IdentityDialogControllerTest, ShowNativeAppUiSuccess) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  base::MockCallback<IdentityDialogController::DismissCallback>
+      dismiss_callback;
+  base::MockCallback<IdentityDialogController::NativeAppResultCallback>
+      native_result_callback;
+
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
+                                          dismiss_callback.Get(),
+                                          native_result_callback.Get()));
+
+  EXPECT_CALL(
+      native_result_callback,
+      Run(testing::Field(
+          &content::IdentityRequestDialogController::NativeAppResult::type,
+          content::IdentityRequestDialogController::NativeAppResult::Type::
+              kToken)))
+      .Times(1);
+  EXPECT_CALL(dismiss_callback, Run).Times(0);
+  controller->OnNativeAppResult("token123");
+
+  controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
+}
+
+// Launching a native application is a UI surface, so it must be suppressed for
+// the same reason the active mode dialog is: an actor task driving the tab
+// means there is no user present to interact with the application.
+TEST_F(IdentityDialogControllerTest, ShowNativeAppUiGuardedByActorTask) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  base::MockCallback<IdentityDialogController::DismissCallback>
+      dismiss_callback;
+  base::MockCallback<IdentityDialogController::NativeAppResultCallback>
+      native_result_callback;
+
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).Times(0);
+  EXPECT_FALSE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
+                                           dismiss_callback.Get(),
+                                           native_result_callback.Get()));
+}
+
+TEST_F(IdentityDialogControllerTest, ShowNativeAppUiErrorResult) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  base::MockCallback<IdentityDialogController::DismissCallback>
+      dismiss_callback;
+  base::MockCallback<IdentityDialogController::NativeAppResultCallback>
+      native_result_callback;
+
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
+                                          dismiss_callback.Get(),
+                                          native_result_callback.Get()));
+
+  EXPECT_CALL(
+      native_result_callback,
+      Run(testing::Field(
+          &content::IdentityRequestDialogController::NativeAppResult::type,
+          content::IdentityRequestDialogController::NativeAppResult::Type::
+              kError)))
+      .Times(1);
+  EXPECT_CALL(dismiss_callback, Run).Times(0);
+  controller->OnNativeAppError(content::IdentityCredentialTokenError{
+      "error_code", GURL("https://idp.example/error")});
+}
+
+TEST_F(IdentityDialogControllerTest, ShowNativeAppUiDismissed) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  base::MockCallback<IdentityDialogController::DismissCallback>
+      dismiss_callback;
+  base::MockCallback<IdentityDialogController::NativeAppResultCallback>
+      native_result_callback;
+
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller->ShowNativeAppUi(content::NativeAppRequestOptions(),
+                                          dismiss_callback.Get(),
+                                          native_result_callback.Get()));
+
+  EXPECT_CALL(dismiss_callback,
+              Run(IdentityDialogController::DismissReason::kOther))
+      .Times(1);
+  EXPECT_CALL(native_result_callback, Run).Times(0);
+  controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
 }

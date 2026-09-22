@@ -107,6 +107,11 @@ class MockAccountSelectionView : public AccountSelectionView {
                blink::mojom::RpMode),
               (override));
 
+  MOCK_METHOD(bool,
+              ShowNativeAppUi,
+              (const content::NativeAppRequestOptions&),
+              (override));
+
   MOCK_METHOD(void, SetCanShowUi, (bool can_show_ui), (override));
 
   MOCK_METHOD(std::string, GetTitle, (), (const, override));

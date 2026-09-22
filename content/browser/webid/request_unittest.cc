@@ -251,6 +251,8 @@ enum class NativeAppUiAction {
   kNone,
   kSuccess,
   kError,
+  // Returns an error whose URL is cross-site with respect to the IdP.
+  kErrorWithCrossSiteUrl,
   kLoginFinished,
 };
 
@@ -632,6 +634,7 @@ class TestDialogController
     bool did_show_loading_dialog{false};
     // State related to ShowNativeAppUi().
     bool did_show_native_app_ui{false};
+    std::optional<NativeAppRequestOptions> native_app_request_options;
     // List of IDP strings for which a mismatch is shown in a test.
     std::vector<std::string> displayed_mismatch_idps;
   };
@@ -871,8 +874,7 @@ class TestDialogController
   }
 
   bool ShowNativeAppUi(
-      const content::RelyingPartyData& rp_data,
-      const IdentityProviderData& idp_data,
+      const NativeAppRequestOptions& request_options,
       DismissCallback dismiss_callback,
       NativeAppResultCallback native_result_callback) override {
     if (!state_) {
@@ -880,6 +882,7 @@ class TestDialogController
     }
 
     state_->did_show_native_app_ui = true;
+    state_->native_app_request_options = request_options;
     switch (native_app_ui_action_) {
       case NativeAppUiAction::kSuccess: {
         IdentityRequestDialogController::NativeAppResult result;
@@ -896,6 +899,17 @@ class TestDialogController
         result.type =
             IdentityRequestDialogController::NativeAppResult::Type::kError;
         result.error = IdentityCredentialTokenError{"access_denied", GURL()};
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(native_result_callback),
+                                      std::move(result)));
+        return true;
+      }
+      case NativeAppUiAction::kErrorWithCrossSiteUrl: {
+        IdentityRequestDialogController::NativeAppResult result;
+        result.type =
+            IdentityRequestDialogController::NativeAppResult::Type::kError;
+        result.error = IdentityCredentialTokenError{
+            "access_denied", GURL("https://cross-site.example/error")};
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(native_result_callback),
                                       std::move(result)));
@@ -9919,6 +9933,31 @@ TEST_F(RequestTest, NativeAppUiSuccess) {
 
   RunTest(parameters, expectations, config);
   EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
+  ASSERT_TRUE(dialog_controller_state_.native_app_request_options.has_value());
+  const NativeAppRequestOptions& request_options =
+      *dialog_controller_state_.native_app_request_options;
+  EXPECT_EQ(GURL(kProviderUrlFull), request_options.config_url);
+  EXPECT_EQ(url::Origin::Create(GURL(kRpUrl)), request_options.rp_origin);
+
+  // The native application stands in for the id_assertion_endpoint, so it must
+  // receive the same parameters that endpoint would have been POSTed. In
+  // particular the requested fields are in here rather than being passed
+  // separately, so the two can never disagree.
+  EXPECT_THAT(request_options.assertion_params,
+              testing::HasSubstr("client_id=" + std::string(kClientId)));
+  EXPECT_THAT(request_options.assertion_params,
+              testing::HasSubstr("nonce=" + std::string(kNonce)));
+  EXPECT_THAT(request_options.assertion_params,
+              testing::HasSubstr("mode=active"));
+  EXPECT_THAT(request_options.assertion_params,
+              testing::HasSubstr("fields=name,email,picture"));
+
+  // Hints are consumed by the user agent rather than forwarded to the IdP, so
+  // they are passed separately instead of inside `assertion_params`.
+  EXPECT_THAT(request_options.assertion_params,
+              testing::Not(testing::HasSubstr("login_hint")));
+  EXPECT_THAT(request_options.assertion_params,
+              testing::Not(testing::HasSubstr("domain_hint")));
 }
 
 // Verifies that when the native app UI returns an IdP error, the request
@@ -9994,6 +10033,34 @@ TEST_F(RequestTest, NativeAppUiUnexpectedLoginFinishedCompletesWithError) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunTest(parameters, expectations, config);
+  EXPECT_TRUE(dialog_controller_state_.did_show_native_app_ui);
+}
+
+// Verifies that an error URL from a native application is held to the same
+// standard as one from the IdP's HTTP response: a cross-site URL is rejected
+// rather than being surfaced to the relying party.
+TEST_F(RequestTest, NativeAppUiCrossSiteErrorUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmNativeIdPs);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kUseNativeUiDelegation;
+  config.native_app_ui_action = NativeAppUiAction::kErrorWithCrossSiteUrl;
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 

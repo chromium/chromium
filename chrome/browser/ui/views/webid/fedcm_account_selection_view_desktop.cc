@@ -614,6 +614,11 @@ bool FedCmAccountSelectionView::ShowVerifyingDialog(
   return true;
 }
 
+bool FedCmAccountSelectionView::ShowNativeAppUi(
+    const content::NativeAppRequestOptions& request_options) {
+  return false;
+}
+
 void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(

@@ -834,6 +834,14 @@ class AccountSelectionMediator {
         }
     }
 
+    /**
+     * Whether FedCM UI may currently be shown. Flows that do not go through {@link #showContent()}
+     * (such as the native app UI, which hands off to another activity) must consult this directly.
+     */
+    boolean canShowUi() {
+        return mCanShowUi;
+    }
+
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
         switch (linkType) {
             case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:

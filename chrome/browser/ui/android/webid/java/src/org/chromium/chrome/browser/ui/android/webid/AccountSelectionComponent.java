@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.NativeAppRequestOptions;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
@@ -64,6 +65,9 @@ public interface AccountSelectionComponent {
 
         /** Called when the native app returns a token result. */
         void onNativeAppResult(String token);
+
+        /** Called when the native app returns an error result. */
+        void onNativeAppError(IdentityCredentialTokenError error);
 
         /** Called when the native app completes login. */
         void onNativeAppLoginFinished();
@@ -145,6 +149,14 @@ public interface AccountSelectionComponent {
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      */
     boolean showVerifyingDialog(RelyingPartyData rpData, Account account, boolean isAutoReauthn);
+
+    /**
+     * Attempts to show the native app UI using a native application.
+     *
+     * @param requestOptions is the request options for the native app flow.
+     * @return whether the flow was initiated successfully.
+     */
+    boolean showNativeAppUi(NativeAppRequestOptions requestOptions);
 
     /**
      * Closes the outstanding bottom sheet or the popup, depending on what this object corresponds

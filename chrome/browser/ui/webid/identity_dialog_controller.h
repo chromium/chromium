@@ -127,6 +127,9 @@ class IdentityDialogController
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       AccountsDisplayedCallback accounts_displayed_callback) override;
+  bool ShowNativeAppUi(const content::NativeAppRequestOptions& request_options,
+                       DismissCallback dismiss_callback,
+                       NativeAppResultCallback native_result_callback) override;
 
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
@@ -157,6 +160,8 @@ class IdentityDialogController
   void OnMoreDetails() override;
   void OnAccountsDisplayed() override;
   void OnNativeAppResult(const std::string& token) override;
+  void OnNativeAppError(
+      const content::IdentityCredentialTokenError& error) override;
   void OnNativeAppLoginFinished() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;

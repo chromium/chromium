@@ -47,6 +47,9 @@ class AccountSelectionView {
     virtual void OnAccountsDisplayed() = 0;
     // Informs the controller that a native app returned a token result.
     virtual void OnNativeAppResult(const std::string& token) = 0;
+    // Informs the controller that a native app returned an error result.
+    virtual void OnNativeAppError(
+        const content::IdentityCredentialTokenError& error) = 0;
     // Informs the controller that a native app completed login.
     virtual void OnNativeAppLoginFinished() = 0;
     // The web page view containing the focused field.
@@ -133,6 +136,10 @@ class AccountSelectionView {
                                    const IdentityRequestAccountPtr& account,
                                    Account::SignInMode sign_in_mode,
                                    blink::mojom::RpMode rp_mode) = 0;
+
+  // Shows the native app UI. Returns true if the native app UI was initiated.
+  virtual bool ShowNativeAppUi(
+      const content::NativeAppRequestOptions& request_options) = 0;
 
   // Shows or hides the account selection view.
   // Applies to both active mode (modal) and passive mode (widget/bottom sheet).

@@ -390,6 +390,8 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnMoreDetails() override {}
   void OnAccountsDisplayed() override {}
   void OnNativeAppResult(const std::string& token) override {}
+  void OnNativeAppError(
+      const content::IdentityCredentialTokenError& error) override {}
   void OnNativeAppLoginFinished() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
@@ -900,6 +902,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
 
   // Destroys FedCmAccountSelectionView. Should not cause crash.
   EXPECT_FALSE(view->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+}
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, ShowNativeAppUiReturnsFalse) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_FALSE(controller->ShowNativeAppUi(content::NativeAppRequestOptions()));
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {

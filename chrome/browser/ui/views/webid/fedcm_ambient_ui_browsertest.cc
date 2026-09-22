@@ -56,6 +56,10 @@ class MockDelegate : public AccountSelectionView::Delegate {
   MOCK_METHOD(void, OnMoreDetails, (), (override));
   MOCK_METHOD(void, OnAccountsDisplayed, (), (override));
   MOCK_METHOD(void, OnNativeAppResult, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnNativeAppError,
+              (const content::IdentityCredentialTokenError&),
+              (override));
   MOCK_METHOD(void, OnNativeAppLoginFinished, (), (override));
   MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));

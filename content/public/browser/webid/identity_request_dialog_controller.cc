@@ -55,6 +55,28 @@ RelyingPartyData::RelyingPartyData(const std::u16string& rp_for_display,
 RelyingPartyData::RelyingPartyData(const RelyingPartyData& other) = default;
 RelyingPartyData::~RelyingPartyData() = default;
 
+NativeAppRequestOptions::NativeAppRequestOptions() = default;
+NativeAppRequestOptions::NativeAppRequestOptions(
+    const GURL& config_url,
+    const url::Origin& rp_origin,
+    const std::string& assertion_params,
+    const std::string& login_hint,
+    const std::string& domain_hint)
+    : config_url(config_url),
+      rp_origin(rp_origin),
+      assertion_params(assertion_params),
+      login_hint(login_hint),
+      domain_hint(domain_hint) {}
+NativeAppRequestOptions::NativeAppRequestOptions(
+    const NativeAppRequestOptions& other) = default;
+NativeAppRequestOptions::NativeAppRequestOptions(
+    NativeAppRequestOptions&& other) = default;
+NativeAppRequestOptions& NativeAppRequestOptions::operator=(
+    const NativeAppRequestOptions& other) = default;
+NativeAppRequestOptions& NativeAppRequestOptions::operator=(
+    NativeAppRequestOptions&& other) = default;
+NativeAppRequestOptions::~NativeAppRequestOptions() = default;
+
 int IdentityRequestDialogController::GetBrandIconIdealSize(
     blink::mojom::RpMode rp_mode) {
   return 0;
@@ -151,8 +173,7 @@ bool IdentityRequestDialogController::ShowVerifyingDialog(
 }
 
 bool IdentityRequestDialogController::ShowNativeAppUi(
-    const content::RelyingPartyData& rp_data,
-    const IdentityProviderData& idp_data,
+    const NativeAppRequestOptions& request_options,
     DismissCallback dismiss_callback,
     NativeAppResultCallback native_result_callback) {
   return false;

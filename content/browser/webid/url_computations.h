@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom-forward.h"
 
@@ -30,6 +31,19 @@ std::string ComputeUrlEncodedTokenPostData(
     const std::vector<std::string>& disclosure_shown_for,
     const std::string& params_json,
     const std::optional<std::string>& type);
+
+// Resolves an IdP-supplied error URL against `idp_url` and classifies it
+// relative to `idp_url`'s origin. `url` may be null, empty, or relative.
+//
+// Returns an empty GURL when the error URL is absent, unparsable, or
+// cross-site with respect to the IdP: cross-site error URLs are deliberately
+// dropped so that they are never surfaced to the relying party. The returned
+// type is std::nullopt when there was no usable error URL to classify.
+//
+// This must be applied to every IdP-supplied error URL regardless of whether it
+// arrived over HTTP or from a native identity provider application.
+std::pair<GURL, std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>>
+GetErrorUrlAndType(const std::string* url, const GURL& idp_url);
 
 struct IdentityProviderLoginUrlInfo {
   std::string login_hint;

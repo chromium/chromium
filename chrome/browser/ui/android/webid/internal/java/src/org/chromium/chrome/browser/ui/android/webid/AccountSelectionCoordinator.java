@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.NativeAppRequestOptions;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.chrome.browser.webid.DigitalAssetLinksVerifier;
@@ -73,6 +73,31 @@ import java.util.Map;
 public class AccountSelectionCoordinator
         implements AccountSelectionComponent, ActivityStateObserver {
     private static final String TAG = "AccountSelection";
+
+    // Intent protocol shared with native identity provider applications. These
+    // strings are a public cross-application contract: they are read by code
+    // outside Chrome, so their values must never change once shipped, and they
+    // are namespaced to avoid colliding with extras from other components.
+    public static final String ACTION_ACTIVE_MODE_VIEW = "org.w3.fedcm.ACTION_ACTIVE_MODE_VIEW";
+
+    // Request parameters, sent to the application. The IdP config URL is not
+    // among them; it is the Intent's data URI.
+    public static final String EXTRA_RP_ORIGIN = "org.w3.fedcm.RP_ORIGIN";
+    // URL-encoded id_assertion_endpoint request parameters (client_id, nonce,
+    // mode, fields, params, type, ...). This is byte-for-byte what Chrome would
+    // have POSTed to the IdP's id_assertion_endpoint, so the native and HTTP
+    // paths cannot drift as new request parameters are added.
+    public static final String EXTRA_ASSERTION_PARAMS = "org.w3.fedcm.ASSERTION_PARAMS";
+    public static final String EXTRA_LOGIN_HINT = "org.w3.fedcm.LOGIN_HINT";
+    public static final String EXTRA_DOMAIN_HINT = "org.w3.fedcm.DOMAIN_HINT";
+
+    // Response parameters, returned by the application. Exactly one of
+    // EXTRA_TOKEN or EXTRA_ERROR_CODE is expected; anything else is treated as
+    // a dismissal.
+    public static final String EXTRA_TOKEN = "org.w3.fedcm.TOKEN";
+    public static final String EXTRA_ERROR_CODE = "org.w3.fedcm.ERROR_CODE";
+    public static final String EXTRA_ERROR_URL = "org.w3.fedcm.ERROR_URL";
+
     private static final Map<Integer, WeakReference<AccountSelectionComponent.Delegate>>
             sFedCMDelegateMap = new HashMap<>();
 
@@ -287,7 +312,11 @@ public class AccountSelectionCoordinator
     @Override
     public WebContents showModalDialog(GURL url) {
         if (ContentFeatureMap.isEnabled(ContentFeatures.FED_CM_NATIVE_ID_PS)) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setDataAndType(Uri.parse(url.getSpec()), "application/web-identity+json");
             findVerifiedApp(
+                    intent,
                     url,
                     appPackage -> {
                         if (appPackage == null) {
@@ -336,21 +365,6 @@ public class AccountSelectionCoordinator
         mWindowAndroid.addActivityStateObserver(this);
         context.startActivity(intent);
         mMediator.onModalDialogOpened();
-    }
-
-    private void findVerifiedApp(GURL url, Callback<String> callback) {
-        List<String> packages = getNativeAppPackages(url);
-        Origin origin = Origin.create(url.getSpec());
-        DigitalAssetLinksVerifier.checkPackages(
-                packages,
-                origin,
-                index -> {
-                    if (index != -1) {
-                        callback.onResult(packages.get(index));
-                    } else {
-                        callback.onResult(null);
-                    }
-                });
     }
 
     @Override
@@ -416,20 +430,40 @@ public class AccountSelectionCoordinator
         return mMediator;
     }
 
-    private List<String> getNativeAppPackages(GURL url) {
-        Log.i(TAG, "getNativeAppPackages url=" + url.getSpec());
+    /**
+     * Finds an installed app package that handles {@code queryIntent} and is verified via Digital
+     * Asset Links for {@code url}'s origin.
+     */
+    private void findVerifiedApp(Intent queryIntent, GURL url, Callback<String> callback) {
+        List<String> packages = getNativeAppPackages(queryIntent);
+        if (packages.isEmpty()) {
+            callback.onResult(null);
+            return;
+        }
+        Origin origin = Origin.create(url.getSpec());
+        if (origin == null) {
+            callback.onResult(null);
+            return;
+        }
+        DigitalAssetLinksVerifier.checkPackages(
+                packages,
+                origin,
+                index -> {
+                    if (index != -1) {
+                        callback.onResult(packages.get(index));
+                    } else {
+                        callback.onResult(null);
+                    }
+                });
+    }
+
+    private List<String> getNativeAppPackages(Intent intent) {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) {
-            Log.i(TAG, "Context is null");
             return Collections.emptyList();
         }
 
         PackageManager pm = context.getPackageManager();
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        // Query with MIME type
-        intent.setDataAndType(Uri.parse(url.getSpec()), "application/web-identity+json");
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
         if (resolveInfos == null || resolveInfos.isEmpty()) {
             return Collections.emptyList();
@@ -463,7 +497,7 @@ public class AccountSelectionCoordinator
         public void onIntentCompleted(int resultCode, @Nullable Intent data) {
             String token = null;
             if (data != null) {
-                token = data.getStringExtra("token");
+                token = IntentUtils.safeGetStringExtra(data, EXTRA_TOKEN);
             }
             if (resultCode == Activity.RESULT_OK) {
                 if (token != null) {
@@ -475,6 +509,90 @@ public class AccountSelectionCoordinator
                 mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
             }
             mMediator.onModalDialogClosed();
+        }
+    }
+
+    @Override
+    public boolean showNativeAppUi(NativeAppRequestOptions requestOptions) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatures.FED_CM_NATIVE_ID_PS)) {
+            return false;
+        }
+        // Launching a native application is a UI surface just like the bottom
+        // sheet, so it is subject to the same suppression. In particular it must
+        // not happen while an AI agent is driving the tab, since the user is not
+        // necessarily present to interact with the application.
+        if (!mMediator.canShowUi()) {
+            return false;
+        }
+        GURL idpConfigUrl = requestOptions.getConfigUrl();
+        Intent intent = new Intent(ACTION_ACTIVE_MODE_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(idpConfigUrl.getSpec()));
+        findVerifiedApp(
+                intent,
+                idpConfigUrl,
+                appPackage -> {
+                    // Digital Asset Links verification is asynchronous, so the
+                    // request may have been dismissed or torn down while it was
+                    // in flight. Launching an application at that point would
+                    // put UI in front of the user for a request that no longer
+                    // exists, and nothing would consume its result.
+                    if (mMediator.wasDismissed()) {
+                        return;
+                    }
+                    if (appPackage == null) {
+                        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                        return;
+                    }
+                    launchNativeAppUi(appPackage, requestOptions);
+                });
+        return true;
+    }
+
+    private void launchNativeAppUi(String packageName, NativeAppRequestOptions requestOptions) {
+        GURL idpConfigUrl = requestOptions.getConfigUrl();
+        Intent intent = new Intent(ACTION_ACTIVE_MODE_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse(idpConfigUrl.getSpec()));
+        intent.setPackage(packageName);
+        intent.putExtra(EXTRA_RP_ORIGIN, requestOptions.getRpOrigin());
+        intent.putExtra(EXTRA_ASSERTION_PARAMS, requestOptions.getAssertionParams());
+
+        String loginHint = requestOptions.getLoginHint();
+        if (!loginHint.isEmpty()) {
+            intent.putExtra(EXTRA_LOGIN_HINT, loginHint);
+        }
+        String domainHint = requestOptions.getDomainHint();
+        if (!domainHint.isEmpty()) {
+            intent.putExtra(EXTRA_DOMAIN_HINT, domainHint);
+        }
+
+        boolean launched = mWindowAndroid.showIntent(intent, new NativeAppUiIntentCallback(), null);
+        if (!launched) {
+            mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        }
+    }
+
+    private class NativeAppUiIntentCallback implements WindowAndroid.IntentCallback {
+        public NativeAppUiIntentCallback() {}
+
+        @Override
+        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                String token = IntentUtils.safeGetStringExtra(data, EXTRA_TOKEN);
+                if (token != null) {
+                    mDelegate.onNativeAppResult(token);
+                    return;
+                }
+                String errorCode = IntentUtils.safeGetStringExtra(data, EXTRA_ERROR_CODE);
+                String errorUrl = IntentUtils.safeGetStringExtra(data, EXTRA_ERROR_URL);
+                if (errorCode != null) {
+                    GURL url = errorUrl != null ? new GURL(errorUrl) : GURL.emptyGURL();
+                    mDelegate.onNativeAppError(new IdentityCredentialTokenError(errorCode, url));
+                    return;
+                }
+            }
+            mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
         }
     }
 

@@ -30,6 +30,8 @@ class FakeDelegate : public AccountSelectionView::Delegate {
   void OnMoreDetails() override {}
   void OnAccountsDisplayed() override {}
   void OnNativeAppResult(const std::string& token) override {}
+  void OnNativeAppError(
+      const content::IdentityCredentialTokenError& error) override {}
   void OnNativeAppLoginFinished() override {}
 
   using AccountSelectedCallback = base::OnceClosure;
