@@ -4,6 +4,9 @@
 
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 
+#include <optional>
+#include <vector>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/chrome_contextual_search_session_tab_validator.h"
 #include "chrome/browser/lens/lens_sapisid_generator.h"
@@ -45,6 +48,27 @@ ContextualSearchServiceFactory::ContextualSearchServiceFactory()
 
 ContextualSearchServiceFactory::~ContextualSearchServiceFactory() = default;
 
+namespace {
+
+void FetchIdentityDelegationHeadersForProfile(
+    Profile* profile,
+    std::optional<size_t> auth_user_index,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  if (!profile) {
+    std::move(callback).Run({});
+    return;
+  }
+  lens::FetchIdentityDelegationHeaders(
+      profile->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess(),
+      IdentityManagerFactory::GetForProfile(profile),
+      google_util::kGoogleHomepageURL,
+      base::BindRepeating(&lens::GenerateSapisidHash), auth_user_index,
+      std::move(callback));
+}
+
+}  // namespace
+
 std::unique_ptr<KeyedService>
 ContextualSearchServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
@@ -57,11 +81,6 @@ ContextualSearchServiceFactory::BuildServiceInstanceForBrowserContext(
       TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetVariationsClient(), chrome::GetChannel(),
       g_browser_process->GetApplicationLocale(), std::move(validator),
-      base::BindRepeating(
-          &lens::FetchIdentityDelegationHeaders,
-          base::Unretained(profile->GetDefaultStoragePartition()
-                               ->GetCookieManagerForBrowserProcess()),
-          IdentityManagerFactory::GetForProfile(profile),
-          google_util::kGoogleHomepageURL,
-          base::BindRepeating(&lens::GenerateSapisidHash)));
+      base::BindRepeating(&FetchIdentityDelegationHeadersForProfile,
+                          base::Unretained(profile)));
 }
