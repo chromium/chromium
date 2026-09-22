@@ -308,6 +308,56 @@ TEST_F(SendTabToSelfIphControllerTest, PromoNotShownForNonEligibleReasons) {
   }
 }
 
+TEST_F(SendTabToSelfIphControllerTest,
+       ObserversRemovedWhenInitialReasonNonEligible) {
+  // Start with kOfferReauth (e.g. user needs re-auth upon startup).
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferReauth);
+  AddTab(kEligibleUrl);
+
+  SendTabToSelfIphController controller(browser_window_interface());
+
+  // Becoming eligible later (e.g. after re-authenticating) should not trigger
+  // this startup-only promo because observers were removed.
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferFeature);
+
+  EXPECT_CALL(*user_education(),
+              MaybeShowStartupFeaturePromo(
+                  user_education::test::MatchFeaturePromoParams(
+                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+      .Times(0);
+
+  // Model updates or tab switches do not trigger the promo.
+  controller.OnModelReady();
+  AddTab(kEligibleUrl);
+  tab_strip_model()->ActivateTabAt(1);
+}
+
+TEST_F(SendTabToSelfIphControllerTest,
+       ObserversRemovedWhenReasonTransitionsFromNulloptToNonEligible) {
+  EXPECT_CALL(*user_education(),
+              MaybeShowStartupFeaturePromo(
+                  user_education::test::MatchFeaturePromoParams(
+                      feature_engagement::kIPHSendTabToSelfTutorialFeature)))
+      .Times(0);
+
+  // Start with std::nullopt (e.g. sync/model still initializing on startup).
+  SetEntryPointDisplayReason(std::nullopt);
+  AddTab(kEligibleUrl);
+
+  SendTabToSelfIphController controller(browser_window_interface());
+
+  // Once initialization resolves to an ineligible state (e.g. kOfferReauth),
+  // observers should be torn down.
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferReauth);
+  controller.OnModelReady();
+
+  // Becoming eligible later in the session should not trigger the promo.
+  SetEntryPointDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  controller.OnModelReady();
+  AddTab(kEligibleUrl);
+  tab_strip_model()->ActivateTabAt(1);
+}
+
 TEST_F(SendTabToSelfIphControllerTest, PromoTriggeredOnlyOnce) {
   SendTabToSelfIphController controller(browser_window_interface());
 

@@ -50,7 +50,7 @@ class SendTabToSelfIphController : public TabStripModelObserver,
   ui::ScopedUnownedUserData<SendTabToSelfIphController> scoped_data_;
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       model_observation_{this};
-  bool promo_shown_ = false;
+  bool promo_attempted_ = false;
 };
 
 }  // namespace send_tab_to_self

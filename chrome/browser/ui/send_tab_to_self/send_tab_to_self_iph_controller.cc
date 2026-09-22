@@ -81,7 +81,7 @@ void SendTabToSelfIphController::OnModelReady() {
 }
 
 void SendTabToSelfIphController::MaybeShowPromo() {
-  if (promo_shown_) {
+  if (promo_attempted_) {
     return;
   }
   if (!base::FeatureList::IsEnabled(
@@ -94,16 +94,27 @@ void SendTabToSelfIphController::MaybeShowPromo() {
     return;
   }
 
-  if (GetEntryPointDisplayReason(tab_strip_model->GetActiveWebContents()) ==
-      EntryPointDisplayReason::kOfferFeature) {
-    promo_shown_ = true;
-    if (BrowserUserEducationInterface* user_education =
-            BrowserUserEducationInterface::From(browser_window_interface_)) {
-      user_education->MaybeShowStartupFeaturePromo(
-          feature_engagement::kIPHSendTabToSelfTutorialFeature);
-    }
-    TabStripModelObserver::StopObservingAll(this);
-    model_observation_.Reset();
+  std::optional<EntryPointDisplayReason> reason =
+      GetEntryPointDisplayReason(tab_strip_model->GetActiveWebContents());
+  // Wait if sync or the model is still initializing.
+  if (!reason.has_value()) {
+    return;
+  }
+
+  // Once a definitive reason is known, mark attempted and tear down observers
+  // so this startup promo is not triggered mid-session (e.g. upon re-auth).
+  promo_attempted_ = true;
+  TabStripModelObserver::StopObservingAll(this);
+  model_observation_.Reset();
+
+  if (*reason != EntryPointDisplayReason::kOfferFeature) {
+    return;
+  }
+
+  if (BrowserUserEducationInterface* user_education =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_education->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHSendTabToSelfTutorialFeature);
   }
 }
 
