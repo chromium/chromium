@@ -1,7 +1,7 @@
 Name: oak
 URL: https://github.com/project-oak/oak/
 Version: N/A
-Revision: d3e0f13998b13628fa8b55be52c9ddf31244668d
+Revision: 14031232cec7d3d454e89bbae36404d74abf18dc
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: src/LICENSE
