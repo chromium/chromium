@@ -7427,21 +7427,6 @@
             ]
         }
     ],
-    "EnableExtensionInstallPolicyFetchingChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableExtensionInstallPolicyFetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableForceDownloadToOneDrive": [
         {
             "platforms": [
