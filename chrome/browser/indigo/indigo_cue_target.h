@@ -58,6 +58,8 @@ class IndigoCueTarget : public contextual_cueing::CueTarget {
   contextual_cueing::CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCue& cue,
       std::vector<tabs::TabHandle> tabs_to_show) const override;
+  bool OverridesUcbScoring() const override;
+  bool DowngradesToQuietOnDismiss() const override;
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
 

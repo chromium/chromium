@@ -18,6 +18,7 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -716,6 +717,11 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   TriggerEvaluation eval = EvaluateTriggerState();
   last_trigger_source_ = eval.source;
   const bool should_show = eval.source.has_value();
+
+  const bool delegate_to_contextual_cues =
+      base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2) &&
+      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2);
+
   if (should_show) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/true);
     // For V2, we defer recording the trigger source until
@@ -723,7 +729,7 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     // it when the cue is actually prepared to be shown, rather than just when
     // eligibility is evaluated (which might be called multiple times or not
     // lead to a shown cue).
-    if (!base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2)) {
+    if (!delegate_to_contextual_cues) {
       base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
                                     *eval.source);
     }
@@ -731,7 +737,7 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     ResolvePendingEligibilityCallbacks(/*eligible=*/false);
   }
 
-  if (base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2)) {
+  if (delegate_to_contextual_cues) {
     return;
   }
 
