@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/disks:test_support",
     "//components/drive",
     "//components/prefs",

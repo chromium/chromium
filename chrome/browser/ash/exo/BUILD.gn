@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/chunneld",

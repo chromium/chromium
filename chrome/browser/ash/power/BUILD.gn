@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

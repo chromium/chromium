@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/login/login_state",
     "//components/account_id",
     "//components/prefs:test_support",

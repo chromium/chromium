@@ -147,6 +147,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",

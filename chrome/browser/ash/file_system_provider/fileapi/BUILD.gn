@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_system_provider:test_support",
     "//chrome/browser/ash/fileapi",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",
     "//extensions/browser",
     "//net",

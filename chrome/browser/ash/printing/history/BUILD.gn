@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/settings",
     "//components/prefs:test_support",
     "//components/reporting/client:report_queue",

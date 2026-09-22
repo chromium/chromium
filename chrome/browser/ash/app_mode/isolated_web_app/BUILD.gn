@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",

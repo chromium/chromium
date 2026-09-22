@@ -131,6 +131,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",

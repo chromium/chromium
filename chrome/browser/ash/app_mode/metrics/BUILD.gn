@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_mode/metrics",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",

@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/kerberos",
     "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
     "//components/user_manager",

@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//chromeos/ash/experiences/arc",

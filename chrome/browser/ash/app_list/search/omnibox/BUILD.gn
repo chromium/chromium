@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/string_matching",
     "//components/account_id",

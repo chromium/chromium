@@ -189,6 +189,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/tts:unit_tests",
     "//chrome/browser/ash/arc/vmm:unit_tests",
     "//chrome/browser/ash/arc/wallpaper:unit_tests",
+    "//chrome/test/base:testing_browser_process",
   ]
 }
 

@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/feature_usage",

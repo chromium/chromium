@@ -262,6 +262,7 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/anomaly_detector",
     "//chromeos/ash/components/dbus/chunneld",

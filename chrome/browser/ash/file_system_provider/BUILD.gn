@@ -182,6 +182,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_system_provider/content_cache:unit_tests",
     "//chrome/browser/ash/file_system_provider/fileapi:unit_tests",
     "//chrome/browser/ash/file_system_provider/operations:unit_tests",
+    "//chrome/test/base:testing_browser_process",
   ]
 }
 

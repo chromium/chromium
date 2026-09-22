@@ -199,6 +199,7 @@ source_set("unit_tests") {
     # Gather unit tests from subdirectoies.
     "//chrome/browser/ash/guest_os/infra:unit_tests",
     "//chrome/browser/ash/guest_os/public:unit_tests",
+    "//chrome/test/base:testing_browser_process",
   ]
 }
 

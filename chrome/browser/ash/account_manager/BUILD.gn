@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/account_id",
     "//components/account_id:test_support",
     "//components/account_manager_core:test_support",

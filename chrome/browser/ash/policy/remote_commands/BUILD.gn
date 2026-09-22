@@ -183,6 +183,7 @@ source_set("unit_tests") {
     "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/debug_daemon",

@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/zoom",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/network",
     "//chromeos/ash/experiences/arc",

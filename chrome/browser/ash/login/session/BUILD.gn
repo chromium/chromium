@@ -246,6 +246,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/prefs",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/language/core/browser",

@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",

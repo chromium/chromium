@@ -131,6 +131,7 @@ source_set("browser_tests") {
 
     # Tests from subdirectories:
     "//chrome/browser/ash/system_web_apps/apps:browser_tests",
+    "//chrome/test/base:testing_browser_process",
   ]
 }
 
@@ -151,6 +152,7 @@ source_set("unit_tests") {
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/components/kiosk:test_support",

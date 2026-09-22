@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/session:test_support",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/lorgnette_manager",

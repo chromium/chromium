@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//components/account_id",

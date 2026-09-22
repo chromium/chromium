@@ -243,6 +243,7 @@ source_set("unit_tests") {
     "//chrome/browser/local_discovery:test_support",
     "//chrome/browser/printing",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",

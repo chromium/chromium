@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/settings",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/install_attributes:test_support",
     "//testing/gtest",
     "//third_party/private_membership",

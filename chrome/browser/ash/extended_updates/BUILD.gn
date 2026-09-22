@@ -72,5 +72,6 @@ source_set("unit_tests") {
 
     # Gather unit tests from subdirectories.
     "//chrome/browser/ash/extended_updates/test:unit_tests",
+    "//chrome/test/base:testing_browser_process",
   ]
 }

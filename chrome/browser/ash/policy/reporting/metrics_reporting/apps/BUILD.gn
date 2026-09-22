@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/session",
     "//components/account_id:test_support",

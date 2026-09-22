@@ -213,6 +213,7 @@ source_set("unit_tests") {
     # the other for test only modules, then let this target depend on
     # the latter.
     "//chrome/browser/ash/ownership",
+    "//chrome/test/base:testing_browser_process",
   ]
 
   if (is_cfm) {

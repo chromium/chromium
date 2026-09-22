@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/disks",

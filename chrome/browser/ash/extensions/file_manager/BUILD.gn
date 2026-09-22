@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",

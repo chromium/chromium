@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/chunneld",
     "//chromeos/ash/components/dbus/seneschal",
     "//chromeos/ash/components/disks:test_support",
