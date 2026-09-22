@@ -435,4 +435,256 @@ INSTANTIATE_TEST_SUITE_P(Workaround,
                          CompressedTextureTestES3,
                          ::testing::Bool());
 
+// Per OpenGL ES 3.2, "All pixel storage modes are ignored when decoding a
+// compressed texture image" (sec. 8.7). These tests upload the same data
+// with and without UNPACK_ROW_LENGTH / UNPACK_IMAGE_HEIGHT set while a
+// pixel unpack buffer is bound, and require byte-identical readbacks of
+// every layer either way (crbug.com/562279351).
+class CompressedTexturePixelUnpackStateTest : public CompressedTextureTestES3 {
+ protected:
+  static constexpr GLsizei kTexSize = 4;
+  static constexpr GLsizei kTexDepth = 4;
+  // GL_COMPRESSED_R11_EAC: one 8-byte block per 4x4 region.
+  static constexpr GLsizei kEacBlockSize = 8;
+  static constexpr GLsizei kImageSize = kEacBlockSize * kTexDepth;
+  static constexpr GLsizei kBufferSize = 16384;
+  // Large enough that a driver consuming these against the spec computes
+  // strides whose products wrap 32 bits.
+  static constexpr GLint kLargeRowLength = 524292;
+  static constexpr GLint kLargeImageHeight = 16384;
+
+  using LayerPixels = std::array<uint8_t, kTexSize * kTexSize * 4>;
+  using AllLayerPixels = std::array<LayerPixels, kTexDepth>;
+
+  void SetUp() override {
+    CompressedTextureTestES3::SetUp();
+
+    // Renders one selected layer of a 4x4 TEXTURE_2D_ARRAY via texelFetch.
+    const char* kVS =
+        "#version 300 es\n"
+        "void main() {\n"
+        "  vec2 p = vec2(gl_VertexID & 1, gl_VertexID >> 1);\n"
+        "  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);\n"
+        "}\n";
+    const char* kFS =
+        "#version 300 es\n"
+        "precision highp float;\n"
+        "precision highp int;\n"
+        "uniform highp sampler2DArray t;\n"
+        "uniform int layer;\n"
+        "out vec4 c;\n"
+        "void main() {\n"
+        "  c = texelFetch(t, ivec3(ivec2(gl_FragCoord.xy), layer), 0);\n"
+        "}\n";
+    program_ = GLTestHelper::LoadProgram(kVS, kFS);
+    ASSERT_NE(program_, 0u) << "failed to build the layer-sampling program";
+    glUseProgram(program_);
+    GLint tex_location = glGetUniformLocation(program_, "t");
+    ASSERT_NE(tex_location, -1) << "sampler uniform 't' not found";
+    glUniform1i(tex_location, 0);
+    layer_location_ = glGetUniformLocation(program_, "layer");
+    ASSERT_NE(layer_location_, -1) << "uniform 'layer' not found";
+  }
+
+  void TearDown() override {
+    if (program_) {
+      glDeleteProgram(program_);
+    }
+    CompressedTextureTestES3::TearDown();
+  }
+
+  // Creates and leaves bound a pixel unpack buffer holding the probe data.
+  // Each 8-byte EAC block gets a distinct byte pattern -- a per-block base
+  // value (0x11 * (block + 1)) perturbed per byte (^ (i * 7)) -- so the four
+  // layers decode to four distinguishable images; the rest of the buffer is
+  // filler that a conformant upload never reads.
+  GLuint MakeProbePixelUnpackBuffer() {
+    std::vector<uint8_t> bytes(kBufferSize, 0xA5);
+    for (GLsizei block = 0; block < kTexDepth; ++block) {
+      for (GLsizei i = 0; i < kEacBlockSize; ++i) {
+        bytes[block * kEacBlockSize + i] =
+            static_cast<uint8_t>((0x11 * (block + 1)) ^ (i * 7));
+      }
+    }
+    GLuint pbo = 0;
+    glGenBuffers(1, &pbo);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, bytes.size(), bytes.data(),
+                 GL_STATIC_DRAW);
+    return pbo;
+  }
+
+  void SetLargeUnpackGeometry(bool enable) {
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, enable ? kLargeRowLength : 0);
+    glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, enable ? kLargeImageHeight : 0);
+  }
+
+  void ReadBackAllLayers(AllLayerPixels* out) {
+    glViewport(0, 0, kTexSize, kTexSize);
+    for (GLsizei layer = 0; layer < kTexDepth; ++layer) {
+      glUniform1i(layer_location_, layer);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      glReadPixels(0, 0, kTexSize, kTexSize, GL_RGBA, GL_UNSIGNED_BYTE,
+                   (*out)[layer].data());
+    }
+  }
+
+  void ExpectLayersEqual(const AllLayerPixels& with_state,
+                         const AllLayerPixels& without_state) {
+    for (GLsizei layer = 0; layer < kTexDepth; ++layer) {
+      EXPECT_TRUE(with_state[layer] == without_state[layer])
+          << "layer " << layer
+          << " differs when UNPACK_ROW_LENGTH/UNPACK_IMAGE_HEIGHT are set";
+    }
+  }
+
+  GLuint program_ = 0;
+  GLint layer_location_ = -1;
+};
+
+INSTANTIATE_TEST_SUITE_P(Workaround,
+                         CompressedTexturePixelUnpackStateTest,
+                         ::testing::Bool());
+
+TEST_P(CompressedTexturePixelUnpackStateTest, IgnoredForCompressedTexImage3D) {
+  std::array<AllLayerPixels, 2> readback;
+  for (int with_state = 0; with_state < 2; ++with_state) {
+    GLuint pbo = MakeProbePixelUnpackBuffer();
+    GLuint tex = 0;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+    SetLargeUnpackGeometry(with_state != 0);
+    glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, /*level=*/0,
+                           GL_COMPRESSED_R11_EAC, kTexSize, kTexSize, kTexDepth,
+                           /*border=*/0, kImageSize, nullptr);
+    SetLargeUnpackGeometry(false);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("CompressedTexImage3D", __LINE__));
+
+    ReadBackAllLayers(&readback[with_state]);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("ReadBackAllLayers", __LINE__));
+    glDeleteTextures(1, &tex);
+    glDeleteBuffers(1, &pbo);
+  }
+  ExpectLayersEqual(readback[1], readback[0]);
+}
+
+TEST_P(CompressedTexturePixelUnpackStateTest,
+       IgnoredForCompressedTexSubImage3D) {
+  std::array<AllLayerPixels, 2> readback;
+  for (int with_state = 0; with_state < 2; ++with_state) {
+    GLuint tex = 0;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+    // Define the level from client memory first; the sub-image update below
+    // is the upload under test.
+    const std::vector<uint8_t> zeros(kImageSize, 0);
+    glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, /*level=*/0,
+                           GL_COMPRESSED_R11_EAC, kTexSize, kTexSize, kTexDepth,
+                           /*border=*/0, kImageSize, zeros.data());
+    GLuint pbo = MakeProbePixelUnpackBuffer();
+    SetLargeUnpackGeometry(with_state != 0);
+    glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, /*level=*/0, /*xoffset=*/0,
+                              /*yoffset=*/0, /*zoffset=*/0, kTexSize, kTexSize,
+                              kTexDepth, GL_COMPRESSED_R11_EAC, kImageSize,
+                              nullptr);
+    SetLargeUnpackGeometry(false);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+    ASSERT_TRUE(
+        GLTestHelper::CheckGLError("CompressedTexSubImage3D", __LINE__));
+
+    ReadBackAllLayers(&readback[with_state]);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("ReadBackAllLayers", __LINE__));
+    glDeleteTextures(1, &tex);
+    glDeleteBuffers(1, &pbo);
+  }
+  ExpectLayersEqual(readback[1], readback[0]);
+}
+
+// A partial sub-image into a fresh immutable texture makes the service
+// zero-fill the uncleared level first, a CPU-sourced compressed upload that
+// runs while the client's unpack state is still resident in the driver. The
+// never-written layers must decode identically with and without the unpack
+// state set.
+TEST_P(CompressedTexturePixelUnpackStateTest,
+       IgnoredWhenClearingCompressedLevels) {
+  std::array<AllLayerPixels, 2> readback;
+
+  // TODO(crbug.com/411230292): Remove this block once the android-x86-rel
+  // trybot is moved off of swiftshader_indirect to a GPU backend with more
+  // complete ES 3.0 conformance.
+  // Immutable compressed storage of ETC2/EAC is not supported everywhere
+  // this suite runs: several bot configurations accept compressed uploads of
+  // these formats (via decoder-side decompression, or an emulated stack
+  // underneath) but reject glTexStorage3D with them -- and the extension
+  // string GL_ANGLE_compressed_texture_etc does not discriminate, since the
+  // service advertises it for emulated support too (see
+  // FeatureInfo::EnableWebGLCompressedTextureETC and its "we assume"
+  // comment). The clear path under test needs an uncleared immutable
+  // compressed level, so probe the exact operation on a throwaway texture
+  // and skip where it is unsupported. On hardware with native ETC2 support
+  // (where this test discriminates) the probe succeeds and any failure in
+  // the test body below is a real failure; that hardware is also covered by
+  // the on-device falsification legs.
+  {
+    GLuint probe_tex = 0;
+    glGenTextures(1, &probe_tex);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, probe_tex);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, /*levels=*/1, GL_COMPRESSED_R11_EAC,
+                   kTexSize, kTexSize, kTexDepth);
+    const GLenum storage_error = glGetError();
+    glDeleteTextures(1, &probe_tex);
+    if (storage_error != GL_NO_ERROR) {
+      const char* renderer =
+          reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+      const char* version =
+          reinterpret_cast<const char*>(glGetString(GL_VERSION));
+      GTEST_SKIP() << "TexStorage3D with GL_COMPRESSED_R11_EAC unsupported "
+                      "(error 0x"
+                   << std::hex << storage_error << std::dec << ", "
+                   << "GL_ANGLE_compressed_texture_etc "
+                   << (GLTestHelper::HasExtension(
+                           "GL_ANGLE_compressed_texture_etc")
+                           ? "advertised"
+                           : "absent")
+                   << ", renderer: " << (renderer ? renderer : "null")
+                   << ", version: " << (version ? version : "null") << ")";
+    }
+  }
+
+  for (int with_state = 0; with_state < 2; ++with_state) {
+    GLuint tex = 0;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+    glTexStorage3D(GL_TEXTURE_2D_ARRAY, /*levels=*/1, GL_COMPRESSED_R11_EAC,
+                   kTexSize, kTexSize, kTexDepth);
+    GLuint pbo = MakeProbePixelUnpackBuffer();
+    SetLargeUnpackGeometry(with_state != 0);
+    // Depth 1 of kTexDepth: forces the zero-fill of the whole level before
+    // this upload lands in layer 0.
+    glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, /*level=*/0, /*xoffset=*/0,
+                              /*yoffset=*/0, /*zoffset=*/0, kTexSize, kTexSize,
+                              /*depth=*/1, GL_COMPRESSED_R11_EAC, kEacBlockSize,
+                              nullptr);
+    SetLargeUnpackGeometry(false);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("partial CompressedTexSubImage3D",
+                                           __LINE__));
+
+    ReadBackAllLayers(&readback[with_state]);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("ReadBackAllLayers", __LINE__));
+    glDeleteTextures(1, &tex);
+    glDeleteBuffers(1, &pbo);
+  }
+  ExpectLayersEqual(readback[1], readback[0]);
+}
+
 }  // namespace gpu

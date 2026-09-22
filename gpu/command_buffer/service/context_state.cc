@@ -713,6 +713,14 @@ void ContextState::UpdateUnpackParameters() const {
   }
 }
 
+void ContextState::SetUnpackParametersForCompressedTexImage() const {
+  if (!feature_info_->IsES3Capable()) {
+    return;
+  }
+  api()->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, 0);
+  api()->glPixelStoreiFn(GL_UNPACK_IMAGE_HEIGHT, 0);
+}
+
 void ContextState::SetBoundBuffer(GLenum target, Buffer* buffer) {
   bool do_refcounting = feature_info_->IsWebGL2OrES3Context();
   switch (target) {
