@@ -137,10 +137,10 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
     return false;
   localname = base::ToLowerASCII(localname);
 
-  bool have_ipv4 =
-      in_out_hosts.count(DnsHostsKey(localname, ADDRESS_FAMILY_IPV4)) > 0;
-  bool have_ipv6 =
-      in_out_hosts.count(DnsHostsKey(localname, ADDRESS_FAMILY_IPV6)) > 0;
+  DnsHostsKey ipv4_key(localname, ADDRESS_FAMILY_IPV4);
+  DnsHostsKey ipv6_key(localname, ADDRESS_FAMILY_IPV6);
+  bool have_ipv4 = in_out_hosts.contains(ipv4_key);
+  bool have_ipv6 = in_out_hosts.contains(ipv6_key);
 
   if (have_ipv4 && have_ipv6)
     return true;
@@ -170,12 +170,10 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
       }
       if (!have_ipv4 && (ipe.GetFamily() == ADDRESS_FAMILY_IPV4)) {
         have_ipv4 = true;
-        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV4)] =
-            ipe.address();
+        in_out_hosts[ipv4_key] = ipe.address();
       } else if (!have_ipv6 && (ipe.GetFamily() == ADDRESS_FAMILY_IPV6)) {
         have_ipv6 = true;
-        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV6)] =
-            ipe.address();
+        in_out_hosts[ipv6_key] = ipe.address();
       }
     }
   }
