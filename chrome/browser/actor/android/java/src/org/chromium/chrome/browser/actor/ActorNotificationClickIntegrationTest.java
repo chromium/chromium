@@ -28,8 +28,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -236,5 +238,56 @@ public class ActorNotificationClickIntegrationTest {
         mActivityTestRule.startMainActivityFromIntent(intent, null);
 
         assertEquals(1, notificationManager.getNotifications().size());
+    }
+
+    /**
+     * A task's native counterpart is destroyed as soon as it completes, after which the task can no
+     * longer report a live state. The live notification must still be demoted to an ordinary,
+     * dismissible one, otherwise it stays pinned indefinitely.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
+    public void testCompletedTaskWithUnreadableState_DemotesLiveNotification() throws Exception {
+        int taskId = 202;
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        ActorNotificationService.setDemotionDelayMsForTesting(100);
+        ActorForegroundServiceController.setInstanceForTesting(
+                mock(ActorForegroundServiceController.class));
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(taskId);
+        when(task.getTitle()).thenReturn("Integration Task");
+        when(task.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(task);
+
+        ActorNotificationService service =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new ActorNotificationService(mActorKeyedService));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        service.updateNotificationForTask(
+                                taskId,
+                                ActorTaskState.FINISHED,
+                                /* isSilent= */ false,
+                                /* isWarning= */ false));
+
+        // Native task is gone now, so the task object can only report a stale default.
+        when(task.getState()).thenReturn(ActorTaskState.CREATED);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Notification notification =
+                            service.getCachedNotification(
+                                    taskId, /* isSilent= */ false, /* isWarning= */ false);
+                    return notification != null
+                            && (notification.flags & Notification.FLAG_ONGOING_EVENT) == 0;
+                },
+                "Live notification for a completed task was never demoted");
     }
 }

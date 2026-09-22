@@ -1077,4 +1077,127 @@ public class ActorNotificationServiceTest {
         inOrder.verify(mockManager).onNotificationDismissed(taskId);
         inOrder.verify(spyNotificationManager).cancel(taskId);
     }
+
+    /**
+     * Once a task completes, its native counterpart is destroyed and {@link ActorTask#getState()}
+     * can no longer read a live state. The service must fall back to the last state it observed
+     * rather than whatever the orphaned task reports, otherwise a completed task looks like it is
+     * running again and the live notification never gets demoted.
+     */
+    @Test
+    public void testDemotion_TaskStateUnreadableAfterCompletion_StillDemotes() {
+        int taskId = 42;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        // Native task is torn down; an orphaned ActorTask used to report CREATED, which
+        // ActorUtils#isRunningState treats as still running.
+        when(mTask.getState()).thenReturn(ActorTaskState.CREATED);
+
+        // Re-pinning the foreground service reads the state back. This must not resurrect the
+        // task as running.
+        mNotificationService.getCachedNotification(
+                taskId, /* isSilent= */ false, /* isWarning= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        Notification demoted =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted);
+        assertFalse(
+                "Completed task should not be rebuilt as an ongoing notification",
+                (demoted.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertFalse(
+                "Completed task should not be re-promoted as a live notification",
+                demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+    }
+
+    /**
+     * With more than one task in flight, the finished task's state is never re-read while its
+     * native object is still alive, because the update queue reads whichever task is still active.
+     * An orphaned ActorTask is therefore stuck reporting whatever it last saw - a running state -
+     * so the service has to rely on the state it observed rather than asking the task.
+     */
+    @Test
+    public void testDemotion_SecondTaskStillRunning_StillDemotesFinishedTask() {
+        int finishedTaskId = 45;
+        int runningTaskId = 46;
+        ActorTask finishedTask = mock(ActorTask.class);
+        when(finishedTask.getId()).thenReturn(finishedTaskId);
+        when(finishedTask.getTitle()).thenReturn("Finished Task");
+        when(finishedTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(finishedTaskId)).thenReturn(finishedTask);
+
+        ActorTask runningTask = mock(ActorTask.class);
+        when(runningTask.getId()).thenReturn(runningTaskId);
+        when(runningTask.getTitle()).thenReturn("Running Task");
+        when(runningTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(runningTaskId)).thenReturn(runningTask);
+
+        // Both tasks are running and both notifications are live.
+        mNotificationService.updateNotificationForTask(
+                finishedTaskId,
+                ActorTaskState.ACTING,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+        mNotificationService.updateNotificationForTask(
+                runningTaskId,
+                ActorTaskState.ACTING,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+
+        // The first task finishes. The second keeps running, so nothing re-reads the first task's
+        // state before its native object goes away, leaving it frozen at ACTING.
+        mNotificationService.updateNotificationForTask(
+                finishedTaskId,
+                ActorTaskState.FINISHED,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(finishedTaskId));
+
+        // Re-pinning the foreground service reads the finished task back.
+        mNotificationService.getCachedNotification(
+                finishedTaskId, /* isSilent= */ false, /* isWarning= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Notification demoted =
+                mNotificationService.getCachedNotification(
+                        finishedTaskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted);
+        assertFalse(
+                "A finished task must still demote while another task is running",
+                (demoted.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testStepProgress_StateUnreadableAfterCompletion_DoesNotRebuild() {
+        int taskId = 44;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        mMockNotificationManager.getMutationCountAndDecrement();
+
+        when(mTask.getState()).thenReturn(ActorTaskState.CREATED);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+
+        assertEquals(
+                "A late step progress update must not revive a finished task's notification",
+                0,
+                mMockNotificationManager.getMutationCountAndDecrement());
+    }
 }

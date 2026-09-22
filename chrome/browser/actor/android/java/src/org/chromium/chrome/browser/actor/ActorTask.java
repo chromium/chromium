@@ -26,6 +26,9 @@ public class ActorTask {
     public static final int INVALID_TASK_ID = -1;
 
     private long mNativeTask;
+    // Last state read from the native task. Kept so getState() can keep reporting the real
+    // terminal state (finished / failed / cancelled) after the native task has been destroyed.
+    private @ActorTaskState int mLastKnownState = ActorTaskState.CREATED;
     private final int mId;
     private final String mTitle;
     private final WeakReference<Profile> mProfile;
@@ -75,11 +78,16 @@ public class ActorTask {
     }
 
     /**
-     * @return Current ActorTask::State.
+     * @return Current ActorTask::State. Once the native task has been destroyed this reports the
+     *     last state seen while it was alive. Returning a fixed value here is not safe: CREATED is
+     *     treated as a running state by {@link ActorUtils#isRunningState}, so reporting it for a
+     *     finished task makes callers believe the task is still active.
      */
     public @ActorTaskState int getState() {
-        if (mNativeTask == 0) return ActorTaskState.CREATED;
-        return ActorTaskJni.get().getState(mNativeTask);
+        if (mNativeTask != 0) {
+            mLastKnownState = ActorTaskJni.get().getState(mNativeTask);
+        }
+        return mLastKnownState;
     }
 
     public boolean isCompleted() {

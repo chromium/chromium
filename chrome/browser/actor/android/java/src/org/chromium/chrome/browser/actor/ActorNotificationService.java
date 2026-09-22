@@ -167,7 +167,11 @@ public class ActorNotificationService {
         if (task == null) {
             return;
         }
-        @ActorTaskState int state = task.getState();
+        @ActorTaskState int state = getEffectiveState(taskId, task);
+        // Step progress must never revive the notification of a task that already finished.
+        if (ActorUtils.isCompletedState(state)) {
+            return;
+        }
         NotificationWrapper current =
                 ActorNotificationFactory.buildNotification(
                         task, state, /* isSilent= */ true, /* isWarning= */ false);
@@ -249,12 +253,26 @@ public class ActorNotificationService {
         return wrapper != null ? wrapper.getNotification() : null;
     }
 
+    /**
+     * Returns the authoritative state for a task.
+     *
+     * <p>Prefers the last state delivered through {@link ActorKeyedService.Observer}, which this
+     * service records in {@link #mTaskStates}. {@link ActorTask#getState()} is only consulted for a
+     * task we have not observed a transition for yet, where CREATED is the truthful answer. A task
+     * whose native object has been destroyed cannot report its own state reliably, and this service
+     * caches {@link ActorTask} instances indefinitely in {@link #mTaskCache}.
+     */
+    private @ActorTaskState int getEffectiveState(int taskId, ActorTask task) {
+        Integer observed = mTaskStates.get(taskId);
+        return observed != null ? observed : task.getState();
+    }
+
     private @Nullable NotificationWrapper getOrBuildNotificationWrapper(
             int taskId, @Nullable Integer newState, boolean isSilent, boolean isWarning) {
         ActorTask task = getTask(taskId);
         if (task == null) return null;
 
-        @ActorTaskState int state = newState != null ? newState : task.getState();
+        @ActorTaskState int state = newState != null ? newState : getEffectiveState(taskId, task);
         Integer oldState = mTaskStates.get(taskId);
         NotificationWrapper cachedNotification = mNotificationCache.get(taskId);
 
