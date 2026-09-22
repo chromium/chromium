@@ -31,7 +31,8 @@
 
 namespace {
 
-NSString* const kTargetDeviceName = @"My other device";
+NSString* const kTargetDeviceName = @"My target device";
+NSString* const kSecondTargetDeviceName = @"My second target device";
 NSString* const kRemoteDeviceName = @"remote_device";
 NSString* const kExampleURL = @"https://www.example.com/";
 
@@ -83,6 +84,16 @@ id<GREYMatcher> SnackbarWithMessageAndSubtext(NSString* message,
   return grey_allOf(chrome_test_util::SnackbarViewMatcher(),
                     grey_descendant(grey_accessibilityLabel(message)),
                     grey_descendant(grey_accessibilityLabel(subtext)), nil);
+}
+
+// Returns a matcher for the success snackbar shown after sending a tab to
+// `device_name` for `user_email`.
+id<GREYMatcher> PostSendSuccessSnackbar(NSString* device_name,
+                                        NSString* user_email) {
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                              base::SysNSStringToUTF16(device_name));
+  return SnackbarWithMessageAndSubtext(message, user_email);
 }
 // Returns a matcher for an infobar banner label stack displaying `label`.
 id<GREYMatcher> InfobarBannerLabelsStack(NSString* label) {
@@ -326,6 +337,87 @@ void DismissSendTabToSelfModal() {
   DismissSendTabToSelfModal();
 }
 
+// Tests that rotating the device to landscape mode does not truncate target
+// device names or action buttons in the
+// `SendTabToSelfBottomSheetViewController`.
+- (void)testDevicePickerBottomSheetInLandscapeWithoutTruncation {
+  // Configure multiple target devices with distinct timestamps to guarantee
+  // deterministic ordering in the bottom sheet.
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [ChromeEarlGrey
+      addFakeSyncServerDeviceInfo:kSecondTargetDeviceName
+             lastUpdatedTimestamp:base::Time::Now() - base::Minutes(5)];
+
+  LoadActivePage(self.testServer);
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Open the Share Sheet and tap "Send tab to self" to present the bottom
+  // sheet.
+  [ChromeEarlGreyUI shareCurrentPage];
+  TapSendTabToSelfInActivitySheet();
+
+  // Verify that the bottom sheet is presented in portrait and both target
+  // devices are visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityLabel(kSecondTargetDeviceName)];
+
+  // Rotate the device to landscape.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
+
+  // Verify that the interface orientation has updated to landscape.
+  GREYAssertEqual([ChromeEarlGrey interfaceOrientation],
+                  UIInterfaceOrientationLandscapeLeft,
+                  @"Interface orientation should be landscape left.");
+
+  // Verify that target device names and action buttons remain sufficiently
+  // visible and are not truncated in landscape mode. Since rotation waits for
+  // the app to idle, elements are verified immediately without polling.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                          kSecondTargetDeviceName)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalSendButton)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButton)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select the second target device in landscape orientation.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kSecondTargetDeviceName)]
+      performAction:grey_tap()];
+
+  // Tap the Send button while in landscape orientation.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalSendButton)]
+      performAction:grey_tap()];
+
+  // Verify that the bottom sheet is dismissed.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kSendTabToSelfModalSendButton)];
+
+  // Wait for and verify the success snackbar message for the second device.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PostSendSuccessSnackbar(
+                                                       kSecondTargetDeviceName,
+                                                       fakeIdentity.userEmail)];
+
+  DismissSnackbar();
+
+  // Restore the device orientation to portrait.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
+}
+
 // Tests that when kSendTabToSelfPostSendToast is enabled, sending a tab to a
 // target device shows a success snackbar toast.
 - (void)testSendTabToSelfAndVerifySuccessSnackbar {
@@ -347,12 +439,10 @@ void DismissSendTabToSelfModal() {
                       grey_accessibilityID(kSendTabToSelfModalSendButton)];
 
   // Wait for and verify the success snackbar message.
-  NSString* snackbarMessage =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::SysNSStringToUTF16(kTargetDeviceName));
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      SnackbarWithMessageAndSubtext(snackbarMessage,
-                                                    fakeIdentity.userEmail)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PostSendSuccessSnackbar(
+                                                       kTargetDeviceName,
+                                                       fakeIdentity.userEmail)];
 
   DismissSnackbar();
 }
@@ -455,12 +545,10 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey verifyActivitySheetNotVisible];
 
   // Wait for and verify the success snackbar message.
-  NSString* snackbarMessage =
-      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                              base::SysNSStringToUTF16(kTargetDeviceName));
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      SnackbarWithMessageAndSubtext(snackbarMessage,
-                                                    fakeIdentity.userEmail)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PostSendSuccessSnackbar(
+                                                       kTargetDeviceName,
+                                                       fakeIdentity.userEmail)];
 
   // Verify that the modal device picker is bypassed and not presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
