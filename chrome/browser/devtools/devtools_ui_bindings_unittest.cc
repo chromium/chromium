@@ -1153,13 +1153,19 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   EXPECT_FALSE(
       initial_source_map_scopes->FindBool("enabled").value_or(true));
 
+  const base::DictValue* initial_nli =
+      initial_config.FindDict("devToolsAiNaturalLanguageInterface");
+  ASSERT_TRUE(initial_nli);
+  EXPECT_FALSE(initial_nli->FindBool("enabled").value_or(true));
+
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler,
        ::features::kDevToolsAiV2Architecture,
        ::features::kDevToolsInstrumentationBreakpoints,
-       ::features::kDevToolsSourceMapScopesInSourcesPanel},
+       ::features::kDevToolsSourceMapScopesInSourcesPanel,
+       ::features::kDevToolsAiNaturalLanguageInterface},
       {});
 
   // Verify state of features after enabling them.
@@ -1191,6 +1197,11 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
       result.FindDict("devToolsSourceMapScopesInSourcesPanel");
   ASSERT_TRUE(source_map_scopes);
   EXPECT_TRUE(source_map_scopes->FindBool("enabled").value_or(false));
+
+  const base::DictValue* nli =
+      result.FindDict("devToolsAiNaturalLanguageInterface");
+  ASSERT_TRUE(nli);
+  EXPECT_TRUE(nli->FindBool("enabled").value_or(false));
 }
 
 TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigGdpProfiles) {

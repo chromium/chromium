@@ -2363,6 +2363,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
           extensions::switches::AreExtensionsOnExtensionURLsAllowed()));
 #endif
 
+  response_dict.Set(
+      "devToolsAiNaturalLanguageInterface",
+      base::DictValue().Set(
+          "enabled", base::FeatureList::IsEnabled(
+                         ::features::kDevToolsAiNaturalLanguageInterface)));
+
   return response_dict;
 }
 

@@ -153,6 +153,8 @@ BASE_DECLARE_FEATURE(kDevToolsMobileSafeAreaEmulation);
 BASE_DECLARE_FEATURE(kDevToolsTargetLevelEvaluation);
 
 BASE_DECLARE_FEATURE(kDevToolsNetworkBackendLinking);
+
+BASE_DECLARE_FEATURE(kDevToolsAiNaturalLanguageInterface);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
