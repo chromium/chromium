@@ -492,13 +492,13 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
 }
 
 // Tests the view state before and after calling -[SigninPromoViewMediator
-// signinPromoViewIsVisible].
+// signingPromoDidBecomeVisible].
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
   // Test initial state.
   EXPECT_EQ(SigninPromoViewState::kNotYetDisplayed,
             mediator_.signinPromoViewState);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   // Test state once the sign-in promo view is visible.
   EXPECT_EQ(SigninPromoViewState::kHadNoInteraction,
             mediator_.signinPromoViewState);
@@ -507,7 +507,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
 // Tests the view state while signing in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   __block ShowSigninCommand* command;
   ShowSigninCommand* command_arg = AssignValueToVariable(command);
   // Start sign-in.
@@ -516,7 +516,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   OCMExpect([consumer_ promoProgressStateDidChange]);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_NE(nil, GetConfigurator());
-  EXPECT_TRUE(mediator_.showSpinner);
+  EXPECT_TRUE(mediator_.spinnerVisible);
   EXPECT_EQ(SigninPromoViewState::kUserInteracted,
             mediator_.signinPromoViewState);
   // Stop sign-in.
@@ -524,7 +524,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
 
   [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
   EXPECT_NE(nil, GetConfigurator());
-  EXPECT_FALSE(mediator_.showSpinner);
+  EXPECT_FALSE(mediator_.spinnerVisible);
   EXPECT_EQ(SigninPromoViewState::kUserInteracted,
             mediator_.signinPromoViewState);
 }
@@ -534,7 +534,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   __block ShowSigninCommand* command;
   ShowSigninCommand* command_arg = AssignValueToVariable(command);
   OCMExpect([signin_promo_mediator_delegate_ showSignin:mediator_
@@ -559,7 +559,7 @@ TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin2) {
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   __block ShowSigninCommand* command;
   ShowSigninCommand* command_arg = AssignValueToVariable(command);
   OCMExpect([signin_promo_mediator_delegate_ showSignin:mediator_
@@ -611,7 +611,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
       identity_, signin_metrics::AccessPoint::kFullscreenSigninPromo);
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
   fake_system_identity_manager()->FireIdentityUpdatedNotification(identity_);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   CheckSyncPromoWithAccountConfigurator(GetConfigurator(),
@@ -630,7 +630,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // OCMock uses autorelease in places, which could result in `mediator_`
   // staying allocated longer than we want without this @autoreleasepool.
   @autoreleasepool {
-    [mediator_ signinPromoViewIsVisible];
+    [mediator_ signingPromoDidBecomeVisible];
     ShowSigninCommand* command_arg = AssignValueToVariable(command);
     OCMExpect([signin_promo_mediator_delegate_ showSignin:mediator_
                                                   command:command_arg]);
@@ -666,7 +666,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   __block ShowSigninCommand* command;
   ShowSigninCommand* command_arg = AssignValueToVariable(command);
   OCMExpect([signin_promo_mediator_delegate_ showSignin:mediator_
@@ -697,7 +697,7 @@ TEST_F(SigninPromoViewMediatorTest,
        SigninPromoWithSigninWithNoDefaultIdentity) {
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   [mediator_
       setSigninPromoAction:SigninPromoAction::kSigninWithNoDefaultIdentity];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
@@ -715,7 +715,7 @@ TEST_F(SigninPromoViewMediatorTest,
       identity_, signin_metrics::AccessPoint::kFullscreenSigninPromo);
 
   CreateMediator(signin_metrics::AccessPoint::kBookmarkManager);
-  [mediator_ signinPromoViewIsVisible];
+  [mediator_ signingPromoDidBecomeVisible];
   [mediator_ setSigninPromoAction:SigninPromoAction::kReviewAccountSettings];
   EXPECT_EQ(identity_, mediator_.displayedIdentity);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();

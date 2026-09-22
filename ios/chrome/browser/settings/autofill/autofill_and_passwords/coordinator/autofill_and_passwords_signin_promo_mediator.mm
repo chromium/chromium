@@ -100,11 +100,11 @@
   }
 
   [self configureSigninPromoWithShouldShow:YES];
-  [_signinPromoViewMediator signinPromoViewIsVisible];
+  [_signinPromoViewMediator signingPromoDidBecomeVisible];
 }
 
 - (void)updateSignInPromoVisibility {
-  if (_signinPromoViewMediator.showSpinner) {
+  if (_signinPromoViewMediator.spinnerVisible) {
     SigninPromoViewConfigurator* promoConfigurator =
         [_signinPromoViewMediator createConfigurator];
     [_consumer configureSigninPromoWithConfigurator:promoConfigurator];
@@ -230,7 +230,7 @@
 
   [self configureSigninPromoWithShouldShow:shouldShowSignInPromo];
   if (shouldShowSignInPromo) {
-    [_signinPromoViewMediator signinPromoViewIsVisible];
+    [_signinPromoViewMediator signingPromoDidBecomeVisible];
   } else {
     if (_signinPromoViewMediator.isUsable) {
       [_signinPromoViewMediator signinPromoViewIsHidden];

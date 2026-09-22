@@ -592,7 +592,7 @@
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!_signinPromoViewMediator.showSpinner) {
+      if (!_signinPromoViewMediator.spinnerVisible) {
         self.shouldShowSignInPromo = NO;
       }
       break;
@@ -650,7 +650,7 @@
     return;
   }
 
-  if (_signinPromoViewMediator.showSpinner) {
+  if (_signinPromoViewMediator.spinnerVisible) {
     // If the user is signed-in with the promo (thus opted-in for Reading List
     // account storage), the promo should stay visible during the initial sync
     // and a spinner should be shown on it.
@@ -687,7 +687,7 @@
                                 promoDelegate:_signinPromoViewMediator
                                     promoText:[self promoTextForPromoAction]];
   if (shouldShowSignInPromo) {
-    [_signinPromoViewMediator signinPromoViewIsVisible];
+    [_signinPromoViewMediator signingPromoDidBecomeVisible];
   } else {
     if (_signinPromoViewMediator.isUsable) {
       [_signinPromoViewMediator signinPromoViewIsHidden];

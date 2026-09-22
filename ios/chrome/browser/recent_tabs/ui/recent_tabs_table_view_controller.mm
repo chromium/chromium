@@ -845,7 +845,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if ((newSessionState == self.sessionState &&
        self.sessionState !=
            SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) ||
-      self.signinPromoViewMediator.showSpinner) {
+      self.signinPromoViewMediator.spinnerVisible) {
     // No need to refresh the sections since all states other than
     // USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS only have static content. This means
     // that if the previous State is the same as the new one the static content
@@ -1005,7 +1005,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   // If SigninPromo will be shown, `self.signinPromoViewMediator` must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
-    [self.signinPromoViewMediator signinPromoViewIsVisible];
+    [self.signinPromoViewMediator signingPromoDidBecomeVisible];
     TableViewSigninPromoCell* signinPromoCell =
         base::apple::ObjCCastStrict<TableViewSigninPromoCell>(cell);
     TableViewSigninPromoItem* signinPromoItem =

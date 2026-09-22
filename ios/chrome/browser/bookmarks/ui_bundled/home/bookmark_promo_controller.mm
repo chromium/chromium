@@ -143,7 +143,7 @@
     // The user signed in, but not opted into account bookmarks storage - show
     // review account settings promo.
     signinPromoAction = SigninPromoAction::kReviewAccountSettings;
-  } else if (self.signinPromoViewMediator.showSpinner) {
+  } else if (self.signinPromoViewMediator.spinnerVisible) {
     // The user is opted into syncing bookmarks, but the first sync is not
     // finished yet - keep the promo visible with the same action to show the
     // spinner.
@@ -215,7 +215,7 @@
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!self.signinPromoViewMediator.showSpinner) {
+      if (!self.signinPromoViewMediator.spinnerVisible) {
         self.shouldShowSigninPromo = NO;
       }
       break;

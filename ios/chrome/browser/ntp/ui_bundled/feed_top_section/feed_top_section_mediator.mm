@@ -124,7 +124,7 @@ using base::UserMetricsAction;
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (!self.signinPromoMediator.showSpinner) {
+      if (!self.signinPromoMediator.spinnerVisible) {
         // User has signed in, stop showing the promo.
         [self updateShouldShowPromo];
       }
