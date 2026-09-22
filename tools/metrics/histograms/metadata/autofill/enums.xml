@@ -5420,6 +5420,8 @@ Called by update_autofill_enums.py.-->
   <int value="21" label="One time token expired"/>
   <int value="22" label="OTP attribute not found"/>
   <int value="23" label="Server error"/>
+  <int value="24" label="Subscription expired"/>
+  <int value="25" label="Message authentication failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/one_time_tokens/core/browser/one_time_token_retrieval_error.h) -->

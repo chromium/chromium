@@ -42,7 +42,8 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   kGmailOtpBackendOtpAttributeNotFound = 23,
   kGmailOtpBackendServerError = 24,
   kUnknownError = 25,
-  kMaxValue = kUnknownError,
+  kGmailOtpBackendMessageAuthenticationFailed = 26,
+  kMaxValue = kGmailOtpBackendMessageAuthenticationFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtpEvent)
 

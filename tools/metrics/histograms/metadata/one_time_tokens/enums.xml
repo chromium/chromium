@@ -73,6 +73,7 @@ found in the LICENSE file.
   <int value="23" label="GmailOtpBackendOtpAttributeNotFound"/>
   <int value="24" label="GmailOtpBackendServerError"/>
   <int value="25" label="UnknownError"/>
+  <int value="26" label="GmailOtpBackendMessageAuthenticationFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->

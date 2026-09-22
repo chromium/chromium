@@ -39,6 +39,9 @@ OneTimeTokenRetrievalError ConvertEmailOneTimeTokenFetchErrorReason(
       return OneTimeTokenRetrievalError::kGmailOtpBackendOtpAttributeNotFound;
     case FetchEmailOneTimeTokenErrorDetails::ONE_TIME_TOKEN_EXPIRED:
       return OneTimeTokenRetrievalError::kGmailOtpBackendOneTimeTokenExpired;
+    case FetchEmailOneTimeTokenErrorDetails::MESSAGE_AUTHENTICATION_FAILED:
+      return OneTimeTokenRetrievalError::
+          kGmailOtpBackendMessageAuthenticationFailed;
 
     case FetchEmailOneTimeTokenErrorDetails::REASON_CODE_UNSPECIFIED:
     default:

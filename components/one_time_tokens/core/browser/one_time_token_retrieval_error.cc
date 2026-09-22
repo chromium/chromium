@@ -64,6 +64,9 @@ std::ostream& operator<<(std::ostream& os, OneTimeTokenRetrievalError error) {
       return os << "kGmailOtpBackendServerError";
     case OneTimeTokenRetrievalError::kSubscriptionExpired:
       return os << "kSubscriptionExpired";
+    case OneTimeTokenRetrievalError::
+        kGmailOtpBackendMessageAuthenticationFailed:
+      return os << "kGmailOtpBackendMessageAuthenticationFailed";
   }
   return os << static_cast<int>(error);
 }

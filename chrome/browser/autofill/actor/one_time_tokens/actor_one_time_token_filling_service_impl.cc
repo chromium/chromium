@@ -153,6 +153,9 @@ ActorOneTimeTokenFillingServiceRetrieveOtp MapError(
       return kGmailOtpBackendOtpAttributeNotFound;
     case OneTimeTokenRetrievalError::kGmailOtpBackendServerError:
       return kGmailOtpBackendServerError;
+    case OneTimeTokenRetrievalError::
+        kGmailOtpBackendMessageAuthenticationFailed:
+      return kGmailOtpBackendMessageAuthenticationFailed;
     case OneTimeTokenRetrievalError::kSubscriptionExpired:
       return kRetrievalTimeout;
   }

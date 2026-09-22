@@ -55,6 +55,11 @@ message FetchEmailOneTimeTokenErrorDetails {
     // containing the OTP was not present on the message.
     // Canonical code: NOT_FOUND
     OTP_ATTRIBUTE_NOT_FOUND = 8;
+
+    // Indicates that domain authentication (DKIM/SPF) failed for the email
+    // message.
+    // Canonical code: NOT_FOUND
+    MESSAGE_AUTHENTICATION_FAILED = 9;
   }
 
   // A set of reasons for RPC failure.

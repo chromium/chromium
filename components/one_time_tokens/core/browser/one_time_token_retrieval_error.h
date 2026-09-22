@@ -39,7 +39,8 @@ enum class OneTimeTokenRetrievalError {
   kGmailOtpBackendOtpAttributeNotFound = 22,
   kGmailOtpBackendServerError = 23,
   kSubscriptionExpired = 24,
-  kMaxValue = kSubscriptionExpired,
+  kGmailOtpBackendMessageAuthenticationFailed = 25,
+  kMaxValue = kGmailOtpBackendMessageAuthenticationFailed,
 };
 
 std::ostream& operator<<(std::ostream& os, OneTimeTokenRetrievalError error);

@@ -52,6 +52,10 @@ TEST(EmailOneTimeTokenFetchErrorConverterTest, ConvertReason) {
   EXPECT_EQ(ConvertEmailOneTimeTokenFetchErrorReason(
                 FetchEmailOneTimeTokenErrorDetails::ONE_TIME_TOKEN_EXPIRED),
             OneTimeTokenRetrievalError::kGmailOtpBackendOneTimeTokenExpired);
+  EXPECT_EQ(
+      ConvertEmailOneTimeTokenFetchErrorReason(
+          FetchEmailOneTimeTokenErrorDetails::MESSAGE_AUTHENTICATION_FAILED),
+      OneTimeTokenRetrievalError::kGmailOtpBackendMessageAuthenticationFailed);
 }
 
 TEST(EmailOneTimeTokenFetchErrorConverterTest, ConvertDetailsEmpty) {
