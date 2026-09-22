@@ -172,13 +172,19 @@ void GridLanesGapAccumulator::RecordLaneEntry(
   }
 }
 
-void GridLanesGapAccumulator::MarkBlockedMainGapSegments(
+void GridLanesGapAccumulator::RecordMainGapSegmentStates(
     wtf_size_t main_gap_index,
     const Vector<wtf_size_t>& previous_lane_occupant_ids,
     const Vector<wtf_size_t>& current_lane_occupant_ids) {
-  // A lane with no entries cannot be spanned, so no segment is blocked.
-  if (previous_lane_occupant_ids.empty() || current_lane_occupant_ids.empty()) {
-    return;
+  // A segment is empty before if the previous lane has no items, and empty
+  // after if the current lane has no items. This state applies to every
+  // segment in the gap.
+  GapSegmentState empty_state(GapSegmentState::kNone);
+  if (previous_lane_occupant_ids.empty()) {
+    empty_state |= GapSegmentState::kEmptyBefore;
+  }
+  if (current_lane_occupant_ids.empty()) {
+    empty_state |= GapSegmentState::kEmptyAfter;
   }
 
   MainGap& main_gap = gap_geometry_->MainGapAt(main_gap_index);
@@ -187,7 +193,8 @@ void GridLanesGapAccumulator::MarkBlockedMainGapSegments(
   std::optional<wtf_size_t> blocked_run_start;
 
   // Walk through the gap decoration segments for this `MainGap` to mark the
-  // segments that are blocked by a spanner.
+  // segments that are blocked by a spanner and count all segments for the
+  // empty-state range.
   while (const auto segment = walker.Next()) {
     // If the IDs of the entries in the lanes adjacent to this `MainGap` match,
     // it means one item spans both lanes, so the segment is blocked.
@@ -209,8 +216,12 @@ void GridLanesGapAccumulator::MarkBlockedMainGapSegments(
     ++segment_index;
   }
 
-  // Close a blocked run that extends through the final segment.
-  if (blocked_run_start) {
+  if (empty_state.HasEmptyStatus()) {
+    // If either adjacent lane is empty, all segments share the same empty
+    // state.
+    main_gap.AddGapSegmentStateRange({0, segment_index, empty_state});
+  } else if (blocked_run_start) {
+    // Close a blocked run that extends through the final segment.
     main_gap.AddGapSegmentStateRange(
         {*blocked_run_start, segment_index,
          GapSegmentState(GapSegmentState::kBlocked)});
@@ -251,6 +262,12 @@ void GridLanesGapAccumulator::BuildCrossGaps(
   // Placement is skipped when the container has no in-flow items. Main gaps
   // still exist, but there is no lane graph from which to build cross gaps.
   if (grid_lanes.empty()) {
+    // Mark both sides of each main gap empty so `around` and `between` do not
+    // paint rules in an empty container.
+    for (wtf_size_t i = 0; i < gap_geometry_->MainGapCount(); ++i) {
+      RecordMainGapSegmentStates(i, /*previous_lane_occupant_ids=*/{},
+                                 /*current_lane_occupant_ids=*/{});
+    }
     return;
   }
 
@@ -312,7 +329,7 @@ void GridLanesGapAccumulator::BuildCrossGaps(
 #endif
 
     if (compact_track_index > 0) {
-      MarkBlockedMainGapSegments(compact_track_index - 1,
+      RecordMainGapSegmentStates(compact_track_index - 1,
                                  previous_lane_occupant_ids,
                                  current_lane_occupant_ids);
     }

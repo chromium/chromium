@@ -5755,15 +5755,6 @@ crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-00
 
 crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
 
-# Grid-lanes rule visibility does not account for empty grid-axis lanes.
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-rule-visibility-items-between-001.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-rule-visibility-items-around-002.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-rule-visibility-items-between-004.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-rule-visibility-items-between-002.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-rule-visibility-items-around-001.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-rule-visibility-items-around-002.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-rule-visibility-items-between-002.html [ Failure ]
-
 # Grid-lanes main-gap overlap-join does not account for crossing rule width.
 crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-inset-overlap-join.html [ Failure ]
 crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-inset-overlap-join.html [ Failure ]

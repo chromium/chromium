@@ -69,8 +69,8 @@ class CORE_EXPORT GridLanesGapAccumulator {
                        const GridLanesGapGeometryState& state,
                        Vector<wtf_size_t>& lane_occupant_ids);
 
-  // Adds blocked ranges between the previous and current lanes.
-  void MarkBlockedMainGapSegments(
+  // Records lane-wide emptiness and spanner-blocked ranges between two lanes.
+  void RecordMainGapSegmentStates(
       wtf_size_t main_gap_index,
       const Vector<wtf_size_t>& previous_lane_occupant_ids,
       const Vector<wtf_size_t>& current_lane_occupant_ids);

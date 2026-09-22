@@ -156,8 +156,6 @@ bool ShouldMoveIntersectionEndForward(
 
       const GapIntersection& closing = intersections[end_index + 1];
       CHECK(closing.IsOverlapWindowClose());
-      // TODO(javiercon): We'll need a check for visibility here once we
-      // implement rule-visibility-items for grid lanes.
       return !closing.SegmentState().HasGapStatus(GapSegmentState::kBlocked);
     }
     // Move forward only if the intersection is NOT blocked after.
