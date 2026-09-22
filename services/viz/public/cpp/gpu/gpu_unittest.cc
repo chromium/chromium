@@ -78,12 +78,6 @@ class TestGpuImpl : public mojom::Gpu {
         mojo::PendingReceiver<gpu::mojom::GpuChannel>(std::move(handle)));
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void CreateJpegDecodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
-          jda_receiver) override {}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}

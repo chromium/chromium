@@ -79,9 +79,6 @@ mojom("mojom") {
     "//ui/gl/mojom",
     "//ui/latency/mojom",
   ]
-  if (is_chromeos) {
-    public_deps += [ "//components/chromeos_camera/common" ]
-  }
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"

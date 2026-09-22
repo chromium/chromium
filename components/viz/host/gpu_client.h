@@ -67,11 +67,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   void SetEstablishGpuChannelCallbackForTesting(
       base::OnceCallback<void(bool)> callback);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void CreateJpegDecodeAccelerator(
-      mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
-          jda_receiver) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver) override;
