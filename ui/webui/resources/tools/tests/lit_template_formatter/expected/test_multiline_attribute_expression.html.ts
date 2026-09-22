@@ -43,6 +43,17 @@ export function getHtml(this: DummyTestElement) {
           </div>
         </div>
       </div>
+      <div
+          class="description-text ${
+              this.someCondition ? 'elide-from-start' : ''}">
+        Some text
+      </div>
+      <div
+          class="${
+              this.someCondition ? 'first-class' : 'second-class'
+          } trailing-static-class ${this.someValue}">
+        Some other text
+      </div>
     </div>
   </div>
 </div>

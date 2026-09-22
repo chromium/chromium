@@ -221,5 +221,27 @@ suite('lit_template_formatter', () => {
         blockSerialized.includes(
             '<span   class="weird-spacing" >No Formatting</span>'),
         'lit-template-format off block must be preserved exactly');
+
+    // Test 3: Partial attribute expressions with prefixes and suffixes
+    const mixedAttrTemplate = `
+      <div class="static-class-1 ${EXPR_PREFIX}-1 longer-static-class-2 ${
+        EXPR_PREFIX}-2"></div>
+    `;
+    const mixedMap = new Map([
+      [
+        `${EXPR_PREFIX}-1`,
+        {code: '${this.someCondition ? \'first-class\' : \'second-class\'}'},
+      ],
+      [`${EXPR_PREFIX}-2`, {code: '${this.someOtherClass}'}],
+    ]);
+    const mixedAst = prepareHtmlAst(mixedAttrTemplate, mixedMap);
+    const mixedSerialized = serializeHtmlAst(mixedAst, mixedMap, false);
+    const expectedMixed = `
+<div
+    class="static-class-1 \${
+        this.someCondition ? 'first-class' : 'second-class'
+    } longer-static-class-2 \${this.someOtherClass}">
+</div>`;
+    assert.strictEqual(mixedSerialized, expectedMixed);
   });
 });

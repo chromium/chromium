@@ -18,12 +18,11 @@ export function getHtml(this: OrganizerListSectionItemDescriptionElement) {
       ${descriptionPart.prefixElement ? html`
         <div class="prefix">${descriptionPart.prefixElement}</div>
       ` : ''}
-      <!-- lit-template-format-off -->
-      <div class="description-text ${
-          descriptionPart.elideFromStart ? 'elide-from-start' : ''}">
+      <div
+          class="description-text ${
+              descriptionPart.elideFromStart ? 'elide-from-start' : ''}">
         <bdi>${this.renderDescriptionPart_(descriptionPart.text, index)}</bdi>
       </div>
-      <!-- lit-template-format-on -->
     </div>
   `)}
 </div>
