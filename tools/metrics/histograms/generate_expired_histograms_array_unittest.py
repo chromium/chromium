@@ -201,16 +201,29 @@ class ExpiredHistogramsTest(unittest.TestCase):
       generate_expired_histograms_array.histogram_paths.HISTOGRAMS_XMLS
       + generate_expired_histograms_array.histogram_paths.VARIANTS_XMLS
     )
+    platform_groups = (
+      generate_expired_histograms_array.histogram_paths.PLATFORM_HISTOGRAMS_XMLS
+    )
+    all_platform_inputs = {f for group in platform_groups for f in group}
+    common_inputs = [f for f in all_inputs if f not in all_platform_inputs]
+
     self.assertEqual(
       (set(), set()),
-      generate_expired_histograms_array.CheckUnsyncedHistograms(all_inputs),
+      generate_expired_histograms_array.CheckUnsyncedHistograms(common_inputs),
     )
+    for group in platform_groups:
+      self.assertEqual(
+        (set(), set()),
+        generate_expired_histograms_array.CheckUnsyncedHistograms(
+          common_inputs + list(group)
+        ),
+      )
 
-    missing_one = all_inputs[1:]
+    missing_one = common_inputs[1:]
     to_add, to_remove = (
       generate_expired_histograms_array.CheckUnsyncedHistograms(missing_one)
     )
-    self.assertEqual({all_inputs[0]}, to_add)
+    self.assertEqual({common_inputs[0]}, to_add)
     self.assertEqual(set(), to_remove)
 
 

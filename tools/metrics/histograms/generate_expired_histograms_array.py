@@ -253,6 +253,10 @@ def CheckUnsyncedHistograms(inputs: Iterable[str]) -> tuple[set[str], set[str]]:
     histogram_paths.HISTOGRAMS_XMLS + histogram_paths.VARIANTS_XMLS
   )
   inputs_set = set(os.path.abspath(input) for input in inputs)
+  for platform_xmls in histogram_paths.PLATFORM_HISTOGRAMS_XMLS:
+    platform_set = set(platform_xmls)
+    if not (inputs_set & platform_set):
+      expected_set -= platform_set
   to_add = expected_set - inputs_set
   to_remove = inputs_set - expected_set
   return to_add, to_remove

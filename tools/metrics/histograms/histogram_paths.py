@@ -10,7 +10,7 @@ histograms.xml and enums.xml files that exist.
 """
 
 import os
-from typing import Iterable
+from typing import Iterable, NamedTuple
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -64,6 +64,54 @@ HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in _HISTOGRAMS_XMLS_RELATIVE]
 VARIANTS_XMLS = [path_util.GetInputFile(f) for f in _VARIANTS_XML_RELATIVE]
 ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 
+
+class _PlatformXmls(NamedTuple):
+  """Describes a platform's metrics XML directories and GN build condition."""
+
+  # Short identifier used for the generated GNI list name (e.g. 'android').
+  name: str
+  # GN boolean condition guarding this platform (e.g. 'is_android').
+  gn_condition: str
+  # Repo-relative directory prefixes containing this platform's XML files.
+  prefixes: tuple[str, ...]
+
+  def FilterPaths(self, paths: Iterable[str]) -> list[str]:
+    """Returns paths from |paths| that belong to this platform."""
+    return [p for p in paths if p.startswith(self.prefixes)]
+
+
+_PLATFORM_XML_DIRS = (
+  _PlatformXmls(
+    'android', 'is_android', ('tools/metrics/histograms/metadata/android/',)
+  ),
+  _PlatformXmls(
+    'chromeos',
+    'is_chromeos',
+    (
+      'tools/metrics/histograms/metadata/ash/',
+      'tools/metrics/histograms/metadata/chromeos/',
+    ),
+  ),
+  _PlatformXmls('ios', 'is_ios', ('tools/metrics/histograms/metadata/ios/',)),
+  _PlatformXmls(
+    'linux', 'is_linux', ('tools/metrics/histograms/metadata/linux/',)
+  ),
+  _PlatformXmls('mac', 'is_mac', ('tools/metrics/histograms/metadata/mac/',)),
+  _PlatformXmls(
+    'windows', 'is_win', ('tools/metrics/histograms/metadata/windows/',)
+  ),
+)
+_ALL_PLATFORM_PREFIXES = tuple(
+  prefix for platform in _PLATFORM_XML_DIRS for prefix in platform.prefixes
+)
+PLATFORM_HISTOGRAMS_XMLS = tuple(
+  tuple(
+    path_util.GetInputFile(f)
+    for f in platform.FilterPaths(_HISTOGRAMS_XMLS_RELATIVE)
+  )
+  for platform in _PLATFORM_XML_DIRS
+)
+
 ALL_TEST_XMLS_RELATIVE = [
   'tools/metrics/histograms/test_data/enums.xml',
   'tools/metrics/histograms/test_data/enums2.xml',
@@ -105,19 +153,55 @@ def _FormatGniList(name: str, paths: Iterable[str]) -> str:
 
 def _GenerateHistogramsXmlGniContent() -> str:
   """Generates the contents for the _HISTOGRAMS_XML_FILES_GNI file."""
+  common_enum_files = [
+    p for p in _ENUMS_XML_RELATIVE if not p.startswith(_ALL_PLATFORM_PREFIXES)
+  ]
+  common_histogram_files = [
+    p
+    for p in (_HISTOGRAMS_XMLS_RELATIVE + _VARIANTS_XML_RELATIVE)
+    if not p.startswith(_ALL_PLATFORM_PREFIXES)
+  ]
+
   sections = [
     '# Note: The contents of this file are auto-generated from the script at\n'
     '# //tools/metrics/histograms/histogram_paths.py.\n\n'
-    + _FormatGniList('enums_xml_files', _ENUMS_XML_RELATIVE),
-    _FormatGniList(
-      'histograms_and_variants_xml_files',
-      _HISTOGRAMS_XMLS_RELATIVE + _VARIANTS_XML_RELATIVE,
-    ),
-    (
-      'histograms_xml_files = '
-      'enums_xml_files + histograms_and_variants_xml_files\n'
-    ),
+    + _FormatGniList('common_enums_xml_files', common_enum_files),
+    _FormatGniList('histograms_and_variants_xml_files', common_histogram_files),
   ]
+  for platform in _PLATFORM_XML_DIRS:
+    platform_files = platform.FilterPaths(ALL_XMLS_RELATIVE)
+    sections.append(
+      _FormatGniList(f'{platform.name}_xml_files', platform_files)
+    )
+
+  sections.append(
+    'histograms_xml_files =\n'
+    '    common_enums_xml_files + histograms_and_variants_xml_files\n\n'
+    '# Official Windows builds generate the merged histograms.xml file\n'
+    '# consumed by server-side metrics infrastructure, so they must include\n'
+    '# XML files from all platforms as inputs.\n'
+    '_include_all_platforms = is_official_build && is_win\n'
+  )
+
+  for platform in _PLATFORM_XML_DIRS:
+    platform_histograms = sorted(
+      f'//{p}' for p in platform.FilterPaths(_HISTOGRAMS_XMLS_RELATIVE)
+    )
+    if len(platform_histograms) == 1:
+      hist_append = (
+        '  histograms_and_variants_xml_files +=\n'
+        f'      [ "{platform_histograms[0]}" ]\n'
+      )
+    else:
+      items = ''.join(f'    "{h}",\n' for h in platform_histograms)
+      hist_append = f'  histograms_and_variants_xml_files += [\n{items}  ]\n'
+    sections.append(
+      f'if ({platform.gn_condition} || _include_all_platforms) {{\n'
+      f'  histograms_xml_files += {platform.name}_xml_files\n'
+      f'{hist_append}'
+      f'}}\n'
+    )
+
   return '\n'.join(sections)
 
 

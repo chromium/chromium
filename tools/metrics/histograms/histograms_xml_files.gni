@@ -1,15 +1,13 @@
 # Note: The contents of this file are auto-generated from the script at
 # //tools/metrics/histograms/histogram_paths.py.
 
-enums_xml_files = [
+common_enums_xml_files = [
   "//tools/metrics/histograms/enums.xml",
   "//tools/metrics/histograms/metadata/accessibility/enums.xml",
   "//tools/metrics/histograms/metadata/actor/enums.xml",
   "//tools/metrics/histograms/metadata/ai/enums.xml",
-  "//tools/metrics/histograms/metadata/android/enums.xml",
   "//tools/metrics/histograms/metadata/apps/enums.xml",
   "//tools/metrics/histograms/metadata/arc/enums.xml",
-  "//tools/metrics/histograms/metadata/ash/enums.xml",
   "//tools/metrics/histograms/metadata/ash_clipboard/enums.xml",
   "//tools/metrics/histograms/metadata/ash_growth/enums.xml",
   "//tools/metrics/histograms/metadata/ash_user_education/enums.xml",
@@ -21,7 +19,6 @@ enums_xml_files = [
   "//tools/metrics/histograms/metadata/browser/enums.xml",
   "//tools/metrics/histograms/metadata/cbor/enums.xml",
   "//tools/metrics/histograms/metadata/chrome/enums.xml",
-  "//tools/metrics/histograms/metadata/chromeos/enums.xml",
   "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml",
   "//tools/metrics/histograms/metadata/collaboration_service/enums.xml",
   "//tools/metrics/histograms/metadata/commerce/enums.xml",
@@ -65,11 +62,8 @@ enums_xml_files = [
   "//tools/metrics/histograms/metadata/indigo/enums.xml",
   "//tools/metrics/histograms/metadata/input/enums.xml",
   "//tools/metrics/histograms/metadata/installer/enums.xml",
-  "//tools/metrics/histograms/metadata/ios/enums.xml",
   "//tools/metrics/histograms/metadata/language/enums.xml",
   "//tools/metrics/histograms/metadata/lens/enums.xml",
-  "//tools/metrics/histograms/metadata/linux/enums.xml",
-  "//tools/metrics/histograms/metadata/mac/enums.xml",
   "//tools/metrics/histograms/metadata/magic_stack/enums.xml",
   "//tools/metrics/histograms/metadata/media/enums.xml",
   "//tools/metrics/histograms/metadata/memory/enums.xml",
@@ -154,7 +148,6 @@ enums_xml_files = [
   "//tools/metrics/histograms/metadata/webapps/enums.xml",
   "//tools/metrics/histograms/metadata/webauthn/enums.xml",
   "//tools/metrics/histograms/metadata/webnn/enums.xml",
-  "//tools/metrics/histograms/metadata/windows/enums.xml",
   "//tools/metrics/histograms/metadata/xr/enums.xml",
 ]
 
@@ -163,10 +156,8 @@ histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/account_manager/histograms.xml",
   "//tools/metrics/histograms/metadata/actor/histograms.xml",
   "//tools/metrics/histograms/metadata/ai/histograms.xml",
-  "//tools/metrics/histograms/metadata/android/histograms.xml",
   "//tools/metrics/histograms/metadata/apps/histograms.xml",
   "//tools/metrics/histograms/metadata/arc/histograms.xml",
-  "//tools/metrics/histograms/metadata/ash/histograms.xml",
   "//tools/metrics/histograms/metadata/ash_clipboard/histograms.xml",
   "//tools/metrics/histograms/metadata/ash_growth/histograms.xml",
   "//tools/metrics/histograms/metadata/ash_user_education/histograms.xml",
@@ -182,7 +173,6 @@ histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/bruschetta/histograms.xml",
   "//tools/metrics/histograms/metadata/cbor/histograms.xml",
   "//tools/metrics/histograms/metadata/chrome/histograms.xml",
-  "//tools/metrics/histograms/metadata/chromeos/histograms.xml",
   "//tools/metrics/histograms/metadata/chromeos_hps/histograms.xml",
   "//tools/metrics/histograms/metadata/chromeos_settings/histograms.xml",
   "//tools/metrics/histograms/metadata/collaboration_service/histograms.xml",
@@ -238,16 +228,13 @@ histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/installer/histograms.xml",
   "//tools/metrics/histograms/metadata/interstitial/histograms.xml",
   "//tools/metrics/histograms/metadata/invalidation/histograms.xml",
-  "//tools/metrics/histograms/metadata/ios/histograms.xml",
   "//tools/metrics/histograms/metadata/kerberos/histograms.xml",
   "//tools/metrics/histograms/metadata/kiosk/histograms.xml",
   "//tools/metrics/histograms/metadata/language/histograms.xml",
   "//tools/metrics/histograms/metadata/lens/histograms.xml",
   "//tools/metrics/histograms/metadata/leveldb_proto/histograms.xml",
-  "//tools/metrics/histograms/metadata/linux/histograms.xml",
   "//tools/metrics/histograms/metadata/local/histograms.xml",
   "//tools/metrics/histograms/metadata/login/histograms.xml",
-  "//tools/metrics/histograms/metadata/mac/histograms.xml",
   "//tools/metrics/histograms/metadata/magic_stack/histograms.xml",
   "//tools/metrics/histograms/metadata/media/histograms.xml",
   "//tools/metrics/histograms/metadata/memory/histograms.xml",
@@ -346,9 +333,84 @@ histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/webapps/histograms.xml",
   "//tools/metrics/histograms/metadata/webauthn/histograms.xml",
   "//tools/metrics/histograms/metadata/webnn/histograms.xml",
-  "//tools/metrics/histograms/metadata/windows/histograms.xml",
   "//tools/metrics/histograms/metadata/xr/histograms.xml",
   "//tools/metrics/histograms/variants.xml",
 ]
 
-histograms_xml_files = enums_xml_files + histograms_and_variants_xml_files
+android_xml_files = [
+  "//tools/metrics/histograms/metadata/android/enums.xml",
+  "//tools/metrics/histograms/metadata/android/histograms.xml",
+]
+
+chromeos_xml_files = [
+  "//tools/metrics/histograms/metadata/ash/enums.xml",
+  "//tools/metrics/histograms/metadata/ash/histograms.xml",
+  "//tools/metrics/histograms/metadata/chromeos/enums.xml",
+  "//tools/metrics/histograms/metadata/chromeos/histograms.xml",
+]
+
+ios_xml_files = [
+  "//tools/metrics/histograms/metadata/ios/enums.xml",
+  "//tools/metrics/histograms/metadata/ios/histograms.xml",
+]
+
+linux_xml_files = [
+  "//tools/metrics/histograms/metadata/linux/enums.xml",
+  "//tools/metrics/histograms/metadata/linux/histograms.xml",
+]
+
+mac_xml_files = [
+  "//tools/metrics/histograms/metadata/mac/enums.xml",
+  "//tools/metrics/histograms/metadata/mac/histograms.xml",
+]
+
+windows_xml_files = [
+  "//tools/metrics/histograms/metadata/windows/enums.xml",
+  "//tools/metrics/histograms/metadata/windows/histograms.xml",
+]
+
+histograms_xml_files =
+    common_enums_xml_files + histograms_and_variants_xml_files
+
+# Official Windows builds generate the merged histograms.xml file
+# consumed by server-side metrics infrastructure, so they must include
+# XML files from all platforms as inputs.
+_include_all_platforms = is_official_build && is_win
+
+if (is_android || _include_all_platforms) {
+  histograms_xml_files += android_xml_files
+  histograms_and_variants_xml_files +=
+      [ "//tools/metrics/histograms/metadata/android/histograms.xml" ]
+}
+
+if (is_chromeos || _include_all_platforms) {
+  histograms_xml_files += chromeos_xml_files
+  histograms_and_variants_xml_files += [
+    "//tools/metrics/histograms/metadata/ash/histograms.xml",
+    "//tools/metrics/histograms/metadata/chromeos/histograms.xml",
+  ]
+}
+
+if (is_ios || _include_all_platforms) {
+  histograms_xml_files += ios_xml_files
+  histograms_and_variants_xml_files +=
+      [ "//tools/metrics/histograms/metadata/ios/histograms.xml" ]
+}
+
+if (is_linux || _include_all_platforms) {
+  histograms_xml_files += linux_xml_files
+  histograms_and_variants_xml_files +=
+      [ "//tools/metrics/histograms/metadata/linux/histograms.xml" ]
+}
+
+if (is_mac || _include_all_platforms) {
+  histograms_xml_files += mac_xml_files
+  histograms_and_variants_xml_files +=
+      [ "//tools/metrics/histograms/metadata/mac/histograms.xml" ]
+}
+
+if (is_win || _include_all_platforms) {
+  histograms_xml_files += windows_xml_files
+  histograms_and_variants_xml_files +=
+      [ "//tools/metrics/histograms/metadata/windows/histograms.xml" ]
+}
