@@ -225,17 +225,6 @@ class ReadAloudService
   // KeyedService:
   void Shutdown() override;
 
-  // Triggers distillation of a webpage using DomDistillerService.
-  void DistillPage(content::WebContents* web_contents);
-
-  // dom_distiller::ViewRequestDelegate:
-  void OnArticleReady(
-      const dom_distiller::DistilledArticleProto* article_proto) override;
-  void OnArticleUpdated(
-      dom_distiller::ArticleDistillationUpdate article_update) override;
-  void OnDistillationFailed(
-      dom_distiller::DistillationParseResult reason) override;
-
   // Stops any active playback session and restarts the service lifecycle for
   // the given `web_contents`, triggering page distillation and ensuring the
   // utility process is connected.
@@ -260,6 +249,17 @@ class ReadAloudService
           RequestSpeechSynthesisCallback callback) override;
 
  private:
+  // Triggers distillation of a webpage using DomDistillerService.
+  void DistillPage(content::WebContents* web_contents);
+
+  // dom_distiller::ViewRequestDelegate:
+  void OnArticleReady(
+      const dom_distiller::DistilledArticleProto* article_proto) override;
+  void OnArticleUpdated(
+      dom_distiller::ArticleDistillationUpdate article_update) override;
+  void OnDistillationFailed(
+      dom_distiller::DistillationParseResult reason) override;
+
   // Sends page title and publisher metadata to the UI delegate.
   void ProvideInitialMetadata();
   void EnsurePlaybackControllerConnected();

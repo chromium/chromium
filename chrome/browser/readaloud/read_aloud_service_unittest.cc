@@ -354,7 +354,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(ReadAloudServiceTest, DistillNullWebContents) {
   // Should be a completely safe no-op.
-  service()->DistillPage(nullptr);
+  service()->Initialize(nullptr);
   EXPECT_EQ(GetViewerHandle(), nullptr);
 }
 
@@ -761,7 +761,8 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleFailure) {
         return std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing());
       });
 
-  service()->DistillPage(web_contents());
+  ExpectInitializeCallbacks(delegate_ptr_mock);
+  service()->Initialize(web_contents());
 
   EXPECT_NE(nullptr, GetViewerHandle());
   ASSERT_NE(nullptr, delegate_ptr);
@@ -786,7 +787,8 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleFailure) {
 TEST_F(ReadAloudServiceTest, OnArticleUpdated) {
   dom_distiller::ArticleDistillationUpdate update({}, false, false);
   // Should be a completely safe no-op.
-  service()->OnArticleUpdated(update);
+  auto* delegate = static_cast<dom_distiller::ViewRequestDelegate*>(service());
+  delegate->OnArticleUpdated(update);
 }
 
 TEST_F(ReadAloudServiceTest, ShutdownClearsHandle) {
