@@ -55,10 +55,61 @@ settings-collapse-radio-button .settings-columned-section {
 }
 
 .settings-columned-section ul.icon-bulleted-list li {
-  column-gap: 16px;
   display: flex;
+  gap: 16px;
 }
 
 .settings-columned-section li {
   margin: 16px 0;
+}
+
+:host-context([settings-refresh-2026]) {
+  .settings-columned-section {
+    padding-bottom: 20px;
+  }
+
+  .settings-columned-section .column {
+    background-color: var(--color-settings-info-card-background);
+    border-radius: var(--cr-card-border-radius);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .settings-columned-section .description-header {
+    font-weight: 500;
+  }
+
+  .settings-columned-section ul:not(.icon-bulleted-list) {
+    list-style-type: disc;
+    padding-inline-start: 20px;
+  }
+
+  /* Use flex gap so hidden dom-if/comment anchors do not add stray spacing. */
+  .settings-columned-section ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .settings-columned-section li {
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+
+  .settings-columned-section ul.icon-bulleted-list li {
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (forced-colors: active) {
+  :host-context([settings-refresh-2026]) {
+    .settings-columned-section .column {
+      border: 1px solid ButtonBorder;
+    }
+  }
 }
