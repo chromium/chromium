@@ -587,12 +587,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
     web_contents()->Focus();
   }
 
-  if (profile_) {
-    if (auto* service =
-            OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
-      service->MaybeShowLensPromo();
-    }
-  }
+  MaybeShowLensPromo();
 }
 
 void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
@@ -632,6 +627,26 @@ void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
   PrefService* local_state =
       g_browser_process ? g_browser_process->local_state() : nullptr;
   omnibox_everywhere::prefs::IncrementFreImpression(profile_, local_state);
+}
+
+void OmniboxEverywhereUIManager::MaybeShowLensPromo() {
+  if (!profile_) {
+    return;
+  }
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->MaybeShowLensPromo();
+  }
+}
+
+void OmniboxEverywhereUIManager::EndLensPromo() {
+  if (!profile_) {
+    return;
+  }
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->EndLensPromo();
+  }
 }
 
 void OmniboxEverywhereUIManager::Close() {
@@ -686,6 +701,7 @@ void OmniboxEverywhereUIManager::Demote() {
     return;
   }
   is_demoted_ = true;
+  EndLensPromo();
   widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
   // Deactivate only if the widget is currently active to avoid deactivating
   // other windows in the application.
@@ -713,6 +729,9 @@ void OmniboxEverywhereUIManager::Minimize() {
     return;
   }
   CancelTransientUiState();
+  if (!std::exchange(is_demoted_, true)) {
+    EndLensPromo();
+  }
   widget_->Minimize();
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -825,9 +844,12 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
   if (active) {
     deactivation_task_.Cancel();
     hotkey_dropdown_deactivation_task_.Cancel();
-    is_demoted_ = false;
+    const bool was_demoted = std::exchange(is_demoted_, false);
     if (!HasOpenModalDialog() && !is_context_menu_open_ && web_contents()) {
       web_contents()->Focus();
+    }
+    if (was_demoted) {
+      MaybeShowLensPromo();
     }
     return;
   }
@@ -851,10 +873,15 @@ void OmniboxEverywhereUIManager::OnWidgetShowStateChanged(
     return;
   }
   if (!widget_->IsMinimized()) {
-    is_demoted_ = false;
+    if (std::exchange(is_demoted_, false)) {
+      MaybeShowLensPromo();
+    }
     return;
   }
   CancelTransientUiState();
+  if (!std::exchange(is_demoted_, true)) {
+    EndLensPromo();
+  }
   if (prefs::IsEphemeralModelEnabled() && !HasOpenModalDialog()) {
     Close();
   }
