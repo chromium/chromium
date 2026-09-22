@@ -7,6 +7,12 @@
 #include <optional>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
+#include "components/actor/core/actor_features.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data_fuzzable.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
@@ -35,12 +41,35 @@ Rule CreateExpectedRule(std::vector<Location> navigation_sources = {},
   return Rule(std::move(navigation_sources), resources, capabilities);
 }
 
+optimization_guide::proto::Actions CreateActionsWithScriptTool(
+    std::optional<int32_t> tab_id,
+    std::optional<std::string> document_identifier) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::ScriptToolAction* script_action =
+      actions.add_actions()->mutable_script_tool();
+  if (tab_id.has_value()) {
+    script_action->set_tab_id(*tab_id);
+  }
+  script_action->set_tool_name("echo");
+  script_action->set_input_arguments(R"({"text":"sample_input"})");
+  if (document_identifier.has_value()) {
+    script_action->mutable_document_identifier()->set_serialized_token(
+        *document_identifier);
+  }
+  return actions;
+}
+
 }  // namespace
 
 class ActorProtoConversionTest : public testing::Test {
  public:
-  ActorProtoConversionTest() = default;
+  ActorProtoConversionTest() {
+    feature_list_.InitAndEnableFeature(kGlicActorEnableScriptTools);
+  }
   ~ActorProtoConversionTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ActorProtoConversionTest, ConvertEmptyConfig) {
@@ -365,6 +394,60 @@ TEST_F(ActorProtoConversionTest, ValidateActionsAreScriptTools_MixedActions) {
   action2->mutable_click();
 
   EXPECT_FALSE(ValidateActionsAreScriptTools(actions));
+}
+
+TEST_F(
+    ActorProtoConversionTest,
+    BuildToolRequest_ScriptTool_ValidProto_CreatesRequestWithCorrectParameters) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithScriptTool(/*tab_id=*/100, token.ToString());
+
+  BuildToolRequestResult requests = BuildToolRequest(actions);
+  ASSERT_TRUE(requests.has_value());
+  ASSERT_EQ(requests.value().size(), 1u);
+
+  ToolRequest& created_request = *requests.value().front();
+  EXPECT_EQ(ScriptToolRequest::kName, created_request.Name());
+
+  const ScriptToolRequest& script_request =
+      static_cast<const ScriptToolRequest&>(created_request);
+  EXPECT_EQ(100, script_request.GetTabHandle().raw_value());
+  EXPECT_EQ(token, script_request.GetTargetDocumentIdForTesting());
+  EXPECT_EQ("echo", script_request.GetNameForTesting());
+  EXPECT_EQ(R"({"text":"sample_input"})",
+            script_request.GetInputArgumentsForTesting());
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ScriptTool_MissingDocumentIdentifier_ReturnsError) {
+  optimization_guide::proto::Actions actions = CreateActionsWithScriptTool(
+      /*tab_id=*/100, /*document_identifier=*/std::nullopt);
+
+  EXPECT_THAT(BuildToolRequest(actions),
+              base::test::ErrorIs(testing::Pair(
+                  0u, mojom::ActionResultCode::kArgumentsInvalid)));
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ScriptTool_InvalidDocumentIdentifier_ReturnsError) {
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithScriptTool(/*tab_id=*/100, "invalid_token");
+
+  EXPECT_THAT(BuildToolRequest(actions),
+              base::test::ErrorIs(testing::Pair(
+                  0u, mojom::ActionResultCode::kArgumentsInvalid)));
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ScriptTool_MissingTabId_ReturnsError) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithScriptTool(/*tab_id=*/std::nullopt, token.ToString());
+
+  EXPECT_THAT(BuildToolRequest(actions),
+              base::test::ErrorIs(testing::Pair(
+                  0u, mojom::ActionResultCode::kArgumentsInvalid)));
 }
 
 void CanConvertAnyProto(

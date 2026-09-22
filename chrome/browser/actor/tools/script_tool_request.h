@@ -36,6 +36,14 @@ class ScriptToolRequest : public TabToolRequest {
 
   bool RequiresOpeningWebContents() const override;
 
+  const base::UnguessableToken& GetTargetDocumentIdForTesting() const {
+    return target_document_id_;
+  }
+  const std::string& GetNameForTesting() const { return name_; }
+  const std::string& GetInputArgumentsForTesting() const {
+    return input_arguments_;
+  }
+
  private:
   base::UnguessableToken target_document_id_;
   std::string name_;

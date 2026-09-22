@@ -1687,8 +1687,11 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
        ExecuteActions_Complete) {
-  ExperimentalTriggeringRequest request =
-      CreateExecuteScriptToolRequest(mock_tab_.GetHandle().raw_value());
+  auto* user_data = optimization_guide::DocumentIdentifierUserData::
+      GetOrCreateForCurrentDocument(web_contents_->GetPrimaryMainFrame());
+
+  ExperimentalTriggeringRequest request = CreateExecuteScriptToolRequest(
+      mock_tab_.GetHandle().raw_value(), user_data->serialized_token());
 
   base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
   coordinator_->OnRequest(

@@ -188,6 +188,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
       R"JSON({"type":"object","properties":{"text":{"description":)JSON"
       R"JSON("Value to echo","type":"string"}},"required":["text"]})JSON";
   EXPECT_EQ(response->tool->input_schema, expected_input_schema);
+
+  // Navigate to a new document before invoking the tool; a request bound to
+  // the previous document's identifier must fail with kTabWentAway.
+  auto stale_action =
+      MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  RunScriptToolExpectingError(std::move(stale_action),
+                              mojom::ActionResultCode::kTabWentAway);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
@@ -807,6 +815,17 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   auto action = MakeScriptToolRequest(subframe, "echo", input_arguments);
   auto [action_result, response] = RunScriptTool(std::move(action));
   EXPECT_EQ(response->result, "cross_origin_subframe");
+
+  // Navigating the subframe before invoking the tool invalidates the old
+  // subframe document ID (kTabWentAway).
+  auto stale_subframe_action =
+      MakeScriptToolRequest(subframe, "echo", input_arguments);
+  const GURL new_subframe_url =
+      embedded_https_test_server().GetURL("c.com", "/actor/script_tool.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "iframe", new_subframe_url));
+  RunScriptToolExpectingError(std::move(stale_subframe_action),
+                              mojom::ActionResultCode::kTabWentAway);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, CrossOriginSubframeNavigates) {

@@ -695,19 +695,13 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
     return nullptr;
   }
 
-  // TODO(khushalsagar): Remove once the callers are setting up this ID
-  // correctly.
-  std::optional<base::UnguessableToken> document_identifier;
-  if (action.has_document_identifier()) {
-    document_identifier = base::UnguessableToken::DeserializeFromString(
-        action.document_identifier().serialized_token());
-  } else {
-    auto* main_rfh = tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-    document_identifier = optimization_guide::DocumentIdentifierUserData::
-                              GetOrCreateForCurrentDocument(main_rfh)
-                                  ->token();
+  if (!action.has_document_identifier()) {
+    return nullptr;
   }
 
+  std::optional<base::UnguessableToken> document_identifier =
+      base::UnguessableToken::DeserializeFromString(
+          action.document_identifier().serialized_token());
   if (!document_identifier) {
     return nullptr;
   }
