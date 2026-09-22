@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/memory.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/vector_math.h"
@@ -30,12 +31,10 @@ namespace media {
 // Returns `frames` rounded up to the nearest number which allows full rows of
 // SIMD instructions.
 constexpr static size_t AlignFramesUp(size_t frames) {
-  // Since our internal sample format is float, we can guarantee the alignment
-  // by making the number of frames an integer multiple of
-  // AudioBus::kChannelAlignment / sizeof(float).
-  return base::bits::AlignUp(frames * sizeof(float),
-                             AudioBus::kChannelAlignment) /
-         sizeof(float);
+  static_assert(AudioBus::kChannelAlignment % sizeof(float) == 0);
+  constexpr size_t kAlignmentFrames =
+      AudioBus::kChannelAlignment / sizeof(float);
+  return base::bits::AlignUp(frames, kAlignmentFrames);
 }
 
 // In order to guarantee that the memory block for each channel starts at an
@@ -43,10 +42,12 @@ constexpr static size_t AlignFramesUp(size_t frames) {
 // per channel, we may have to make these blocks larger than otherwise needed.
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
-// in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-constexpr static size_t CalculateMemorySizeInternal(int channels,
-                                                    size_t frames) {
-  return sizeof(float) * channels * AlignFramesUp(frames);
+// in bytes, using CheckedNumeric to detect potential arithmetic overflow.
+constexpr static base::CheckedNumeric<size_t> CalculateMemorySizeInternal(
+    int channels,
+    size_t frames) {
+  return base::CheckedNumeric<size_t>(channels) * AlignFramesUp(frames) *
+         sizeof(float);
 }
 
 constexpr static bool IsValidChannelCount(int channels) {
@@ -107,6 +108,57 @@ std::unique_ptr<AudioBus> AudioBus::Create(const AudioParameters& params) {
       new AudioBus(params.channels(), params.frames_per_buffer()));
 }
 
+std::unique_ptr<AudioBus> AudioBus::TryCreate(int channels, int frames) {
+  if (channels <= 0 || !IsValidChannelCount(channels) || frames <= 0) {
+    return nullptr;
+  }
+
+  const auto buffer_size =
+      CalculateMemorySizeInternal(channels, static_cast<size_t>(frames));
+  const auto allocation_size = buffer_size + (AudioBus::kChannelAlignment - 1);
+  if (!allocation_size.IsValid()) {
+    return nullptr;
+  }
+
+  const size_t alloc_bytes = allocation_size.ValueOrDie();
+  void* raw_data = nullptr;
+  if (!base::UncheckedMalloc(alloc_bytes, &raw_data) || !raw_data) {
+    return nullptr;
+  }
+
+  const uintptr_t raw_addr = reinterpret_cast<uintptr_t>(raw_data);
+  const uintptr_t aligned_addr =
+      base::bits::AlignUp(raw_addr, AudioBus::kChannelAlignment);
+  const size_t alignment_offset = aligned_addr - raw_addr;
+  const size_t buf_bytes = buffer_size.ValueOrDie();
+
+  // SAFETY: `raw_data` points to `alloc_bytes` from UncheckedMalloc.
+  // `alignment_offset` is at most `kChannelAlignment - 1`, and
+  // `alloc_bytes == buf_bytes + (kChannelAlignment - 1) >= alignment_offset +
+  // buf_bytes`.
+  auto aligned_byte_span =
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(raw_data), alloc_bytes)
+                         .subspan(alignment_offset, buf_bytes));
+  auto aligned_span = base::subtle::reinterpret_span<float>(aligned_byte_span);
+
+  auto bus = CreateWrapper(channels);
+  bus->set_frames(frames);
+  const size_t aligned_frames = AlignFramesUp(static_cast<size_t>(frames));
+  for (int i = 0; i < channels; ++i) {
+    bus->SetChannelData(i, aligned_span.subspan(i * aligned_frames,
+                                                static_cast<size_t>(frames)));
+  }
+  bus->SetWrappedDataDeleter(base::BindOnce(&base::UncheckedFree, raw_data));
+  return bus;
+}
+
+std::unique_ptr<AudioBus> AudioBus::TryCreate(const AudioParameters& params) {
+  if (!params.IsValid() || params.IsBitstreamFormat()) {
+    return nullptr;
+  }
+  return TryCreate(params.channels(), params.frames_per_buffer());
+}
+
 std::unique_ptr<AudioBus> AudioBus::CreateWrapper(int channels) {
   return base::WrapUnique(new AudioBus(channels));
 }
@@ -136,9 +188,7 @@ std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
                                                base::span<float> data) {
   // |data| must be aligned by AudioBus::kChannelAlignment.
   CHECK(IsAligned(data));
-  CHECK_GE(data.size_bytes(),
-           CalculateMemorySizeInternal(params.channels(),
-                                       params.frames_per_buffer()));
+  CHECK_GE(data.size_bytes(), CalculateMemorySize(params));
   return base::WrapUnique(
       new AudioBus(params.channels(), params.frames_per_buffer(), data));
 }
@@ -180,7 +230,7 @@ void AudioBus::set_frames(int frames) {
 
 void AudioBus::SetWrappedDataDeleter(base::OnceClosure deleter) {
   CHECK(is_wrapper_);
-  DCHECK(!wrapped_data_deleter_cb_);
+  CHECK(!wrapped_data_deleter_cb_);
   wrapped_data_deleter_cb_ = std::move(deleter);
 }
 
@@ -250,14 +300,16 @@ bool AudioBus::AreFramesZero() const {
 // static
 size_t AudioBus::CalculateMemorySize(const AudioParameters& params) {
   return CalculateMemorySizeInternal(
-      params.channels(),
-      base::checked_cast<size_t>(params.frames_per_buffer()));
+             params.channels(),
+             base::checked_cast<size_t>(params.frames_per_buffer()))
+      .ValueOrDie();
 }
 
 // static
 size_t AudioBus::CalculateMemorySize(int channels, int frames) {
   return CalculateMemorySizeInternal(channels,
-                                     base::checked_cast<size_t>(frames));
+                                     base::checked_cast<size_t>(frames))
+      .ValueOrDie();
 }
 
 // static
@@ -274,7 +326,7 @@ void AudioBus::BuildChannelData(int channels, base::span<float> data) {
   CHECK(!is_bitstream_format_);
   CHECK(frames_);
   CHECK(IsValidChannelCount(channels));
-  CHECK_GE(data.size_bytes(), CalculateMemorySizeInternal(channels, frames_));
+  CHECK_GE(data.size_bytes(), CalculateMemorySize(channels, frames_));
   CHECK(IsAligned(data));
   CHECK(channel_data_.empty());
 
