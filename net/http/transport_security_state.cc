@@ -322,7 +322,7 @@ bool TransportSecurityState::ShouldUpgradeToSSL(
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
     std::string_view host,
     bool is_issued_by_known_root,
-    const std::vector<SHA256HashValue>& public_key_hashes) {
+    const std::vector<SHA256HashValue>& public_key_hashes) const {
   // Perform pin validation only if the server actually has public key pins.
   if (!HasPublicKeyPins(host)) {
     return PKPStatus::OK;
@@ -332,7 +332,7 @@ TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
                                 public_key_hashes);
 }
 
-bool TransportSecurityState::HasPublicKeyPins(std::string_view host) {
+bool TransportSecurityState::HasPublicKeyPins(std::string_view host) const {
   PKPState pkp_state;
   return GetPKPState(host, &pkp_state) && pkp_state.HasPublicKeyPins();
 }
@@ -473,7 +473,7 @@ void TransportSecurityState::
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPins(
     bool is_issued_by_known_root,
     const TransportSecurityState::PKPState& pkp_state,
-    const std::vector<SHA256HashValue>& hashes) {
+    const std::vector<SHA256HashValue>& hashes) const {
   if (pkp_state.CheckPublicKeyPins(hashes)) {
     return PKPStatus::OK;
   }
@@ -603,7 +603,7 @@ TransportSecurityState::PKPStatus
 TransportSecurityState::CheckPublicKeyPinsImpl(
     std::string_view host,
     bool is_issued_by_known_root,
-    const std::vector<SHA256HashValue>& hashes) {
+    const std::vector<SHA256HashValue>& hashes) const {
   PKPState pkp_state;
   bool found_state = GetPKPState(host, &pkp_state);
 
@@ -729,7 +729,7 @@ bool TransportSecurityState::GetSTSState(std::string_view host,
 }
 
 bool TransportSecurityState::GetPKPState(std::string_view host,
-                                         PKPState* result) {
+                                         PKPState* result) const {
   return GetDynamicPKPState(host, result) || GetStaticPKPState(host, result);
 }
 
@@ -778,7 +778,7 @@ bool TransportSecurityState::GetDynamicSTSState(std::string_view host,
 }
 
 bool TransportSecurityState::GetDynamicPKPState(std::string_view host,
-                                                PKPState* result) {
+                                                PKPState* result) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
@@ -796,9 +796,8 @@ bool TransportSecurityState::GetDynamicPKPState(std::string_view host,
       continue;
     }
 
-    // If the entry is invalid, drop it.
+    // If the entry is invalid, skip it.
     if (current_time > j->second.expiry) {
-      enabled_pkp_hosts_.erase(j);
       continue;
     }
 
