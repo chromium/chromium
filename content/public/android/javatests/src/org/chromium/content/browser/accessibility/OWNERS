@@ -1,1 +1,3 @@
 file://content/public/android/java/src/org/chromium/content/browser/accessibility/OWNERS
+
+per-file WebContentsAccessibilityTreeTest.java=adibatra@google.com

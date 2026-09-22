@@ -19,3 +19,5 @@ per-file *test*=janewman@microsoft.com
 
 # For tests
 chrishtr@chromium.org
+per-file dump_accessibility_browsertest_base.*=adibatra@google.com
+per-file dump_accessibility_tree_browsertest.*=adibatra@google.com
