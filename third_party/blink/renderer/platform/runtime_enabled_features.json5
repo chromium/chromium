@@ -4697,6 +4697,7 @@
       // https://chromestatus.com/feature/5261280285949952
       name: "OverscrollGestures",
       status: "experimental",
+      depends_on: ["CSSScrollSnapTypePair"],
     },
     {
       name: "PagePopup",

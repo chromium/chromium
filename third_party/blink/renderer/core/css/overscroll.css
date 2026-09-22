@@ -4,7 +4,7 @@
   overflow: auto;
   pointer-events: none;
   scroll-behavior: inherit;
-  scroll-snap-type: both mandatory;
+  scroll-snap-type: pair mandatory;
   scrollbar-width: none;
   position: absolute;
 }

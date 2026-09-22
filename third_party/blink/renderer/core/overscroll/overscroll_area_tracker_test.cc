@@ -36,9 +36,12 @@
 namespace blink {
 
 class OverscrollAreaTrackerTest : public testing::Test,
+                                  ScopedCSSScrollSnapTypePairForTest,
                                   ScopedOverscrollGesturesForTest {
  public:
-  OverscrollAreaTrackerTest() : ScopedOverscrollGesturesForTest(true) {}
+  OverscrollAreaTrackerTest()
+      : ScopedCSSScrollSnapTypePairForTest(true),
+        ScopedOverscrollGesturesForTest(true) {}
 
   void SetUp() override {
     dummy_page_holder_ =
@@ -69,9 +72,12 @@ class OverscrollAreaTrackerTest : public testing::Test,
 
 class OverscrollAreaTrackerPageTest : public PageTestBase,
                                       public testing::WithParamInterface<int>,
+                                      ScopedCSSScrollSnapTypePairForTest,
                                       ScopedOverscrollGesturesForTest {
  public:
-  OverscrollAreaTrackerPageTest() : ScopedOverscrollGesturesForTest(true) {}
+  OverscrollAreaTrackerPageTest()
+      : ScopedCSSScrollSnapTypePairForTest(true),
+        ScopedOverscrollGesturesForTest(true) {}
 };
 
 TEST_F(OverscrollAreaTrackerTest, AddOverscrollAreaOneChild) {

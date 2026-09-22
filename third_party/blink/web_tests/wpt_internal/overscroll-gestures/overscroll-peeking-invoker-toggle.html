@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Peeking toggle invoker inside area can open, close, and reopen</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100px;
+    height: 100%;
+    right: 100%;
+    top: 0;
+  }
+  #invoker {
+    position: absolute;
+    left: 100%;
+    top: 10px;
+  }
+</style>
+
+<div id="container" overscrollcontainer="overlay">
+  <div id="menu" overscrollarea>
+    <button id="invoker" command="toggle-overscroll" commandfor="menu">Toggle</button>
+  </div>
+</div>
+
+<script>
+async function click(target) {
+  const clicked = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  await Promise.all([test_driver.click(target), clicked]);
+}
+
+promise_test(async () => {
+  assert_false(menu.matches(':overscroll-open'), "Initially closed");
+
+  await click(invoker);
+  assert_true(menu.matches(':overscroll-open'), "Opens on first click");
+
+  await click(invoker);
+  assert_false(menu.matches(':overscroll-open'), "Closes on second click");
+
+  await click(invoker);
+  assert_true(menu.matches(':overscroll-open'), "Reopens on third click");
+}, "Peeking toggle invoker inside overscroll area can open, close, and reopen the area");
+</script>
