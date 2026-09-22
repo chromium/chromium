@@ -3878,7 +3878,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateOpenReviewPageFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-  EXPECT_EQ("Review prompts are disabled by policy.",
+  EXPECT_EQ("The extension is ineligible for review prompts.",
             api_test_utils::RunFunctionAndReturnError(
                 function.get(), std::move(args), profile()));
 }

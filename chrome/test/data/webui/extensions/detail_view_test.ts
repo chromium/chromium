@@ -907,20 +907,15 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('RateExtensionLinkVisibility', async () => {
-    // Hidden when feature flag is disabled.
-    loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
+    // Hidden when canShowReviewPrompt is false.
     await updateItemData({
-      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
-      location: chrome.developerPrivate.Location.FROM_STORE,
+      canShowReviewPrompt: false,
     });
     assertFalse(testIsVisible('#rateLink'));
 
-    // Visible when feature flag is enabled for CWS store extensions.
-    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
+    // Visible when canShowReviewPrompt is true.
     await updateItemData({
-      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
-      location: chrome.developerPrivate.Location.FROM_STORE,
-      mustRemainInstalled: false,
+      canShowReviewPrompt: true,
     });
     assertTrue(testIsVisible('#rateLink'));
 
@@ -938,20 +933,11 @@ suite('ExtensionDetailViewTest', function() {
     item.inDevMode = false;
     await microtasksFinished();
     assertTrue(testIsVisible('#rateLink'));
-
-    // Hidden when ineligible (e.g. unpacked).
-    await updateItemData({
-      location: chrome.developerPrivate.Location.UNPACKED,
-    });
-    assertFalse(testIsVisible('#rateLink'));
   });
 
   test('RateExtensionLinkClick', async () => {
-    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
     await updateItemData({
-      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
-      location: chrome.developerPrivate.Location.FROM_STORE,
-      mustRemainInstalled: false,
+      canShowReviewPrompt: true,
     });
     assertTrue(testIsVisible('#rateLink'));
 

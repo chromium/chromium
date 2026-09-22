@@ -119,6 +119,7 @@ function createStoreItemData(
       {
         webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
         location: chrome.developerPrivate.Location.FROM_STORE,
+        canShowReviewPrompt: true,
       },
       overrides));
 }
@@ -219,6 +220,7 @@ suite('ExtensionItemTest', function() {
     dataWithStoreUrl.webStoreUrl =
         'https://chromewebstore.google.com/detail/foo';
     dataWithStoreUrl.location = chrome.developerPrivate.Location.FROM_STORE;
+    dataWithStoreUrl.canShowReviewPrompt = true;
     item.data = dataWithStoreUrl;
     await microtasksFinished();
     const reviewLink =
@@ -830,7 +832,7 @@ suite('ExtensionItemTest', function() {
 
     // Hidden when feature flag is disabled.
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
-    item.data = createStoreItemData();
+    item.data = createStoreItemData({canShowReviewPrompt: false});
     await microtasksFinished();
     testVisible(item, '#rate-link', false);
     assertFalse(card.classList.contains('review-prompting-enabled'));
@@ -843,18 +845,18 @@ suite('ExtensionItemTest', function() {
 
     // Enable feature flag for all remaining layout state tests.
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
-    item.data = createStoreItemData();
+    item.data = createStoreItemData({canShowReviewPrompt: true});
     await microtasksFinished();
     assertTrue(card.classList.contains('review-prompting-enabled'));
     assertCardHeight(180);
 
-    // Hidden by default when webStoreUrl is empty.
-    item.data = createExtensionInfo();
+    // Hidden by default when canShowReviewPrompt is false.
+    item.data = createExtensionInfo({canShowReviewPrompt: false});
     await microtasksFinished();
     testVisible(item, '#rate-link', false);
 
-    // Visible when webStoreUrl is present and item is from store.
-    item.data = createStoreItemData();
+    // Visible when canShowReviewPrompt is true.
+    item.data = createStoreItemData({canShowReviewPrompt: true});
     await microtasksFinished();
     testVisible(item, '#rate-link', true);
 
@@ -865,56 +867,18 @@ suite('ExtensionItemTest', function() {
     assertCardHeight(228);
     item.inDevMode = false;
 
-    // Hidden for local developer unpacked extensions.
-    item.data = createStoreItemData({
-      location: chrome.developerPrivate.Location.UNPACKED,
-    });
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden for third-party extensions.
-    item.data = createStoreItemData({
-      location: chrome.developerPrivate.Location.THIRD_PARTY,
-    });
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden for default pre-installed component extensions.
-    item.data = createStoreItemData({
-      location: chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT,
-    });
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden for unknown installation location.
-    item.data = createStoreItemData({
-      location: chrome.developerPrivate.Location.UNKNOWN,
-    });
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden for policy-controlled extensions.
-    item.data = createStoreItemData({
-      controlledInfo: {text: 'policy'},
-    });
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden when extension must remain installed.
-    item.data = createStoreItemData({mustRemainInstalled: true});
-    await microtasksFinished();
-    testVisible(item, '#rate-link', false);
-
-    // Hidden when extension is corrupted (repair state active).
-    const corruptedData = createStoreItemData();
+    // Hidden when extension is corrupted; the browser reports
+    // `canShowReviewPrompt` as false in this state.
+    const corruptedData = createStoreItemData({canShowReviewPrompt: false});
     corruptedData.disableReasons.corruptInstall = true;
     item.data = corruptedData;
     await microtasksFinished();
     testVisible(item, '#rate-link', false);
 
-    // Hidden when extension is terminated (reload button active).
+    // Hidden when extension is terminated, for the same reason.
     item.data = createStoreItemData({
       state: chrome.developerPrivate.ExtensionState.TERMINATED,
+      canShowReviewPrompt: false,
     });
     await microtasksFinished();
     testVisible(item, '#rate-link', false);

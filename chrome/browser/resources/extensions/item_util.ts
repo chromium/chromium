@@ -268,17 +268,6 @@ export function getEnableControl(data: chrome.developerPrivate.ExtensionInfo):
   return EnableControl.ENABLE_TOGGLE;
 }
 
-/**
- * @return Whether the "Write a review" link can be displayed for the extension.
- */
-export function canShowOpenReviewPageLink(
-    data: chrome.developerPrivate.ExtensionInfo): boolean {
-  if (!loadTimeData.getBoolean('cwsReviewPromptingEnabled')) {
-    return false;
-  }
-  return getItemSource(data) === SourceType.WEBSTORE && !!data.webStoreUrl &&
-      !data.mustRemainInstalled;
-}
 
 export function createDummyExtensionInfo():
     chrome.developerPrivate.ExtensionInfo {
@@ -332,5 +321,6 @@ export function createDummyExtensionInfo():
         chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
     isAffectedByMV2Deprecation: false,
     canUploadAsAccountExtension: false,
+    canShowReviewPrompt: false,
   };
 }

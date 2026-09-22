@@ -635,9 +635,6 @@ DeveloperPrivateOpenReviewPageFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
-  if (!profile->GetPrefs()->GetBoolean(prefs::kExtensionReviewPromptsAllowed)) {
-    return RespondNow(Error("Review prompts are disabled by policy."));
-  }
   if (!ui_util::ShouldShowReviewPrompt(*extension, *profile)) {
     return RespondNow(Error("The extension is ineligible for review prompts."));
   }

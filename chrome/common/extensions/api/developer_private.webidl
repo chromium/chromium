@@ -256,6 +256,7 @@ dictionary ExtensionInfo {
   boolean pinnedToToolbar;
   required boolean isAffectedByMV2Deprecation;
   required boolean canUploadAsAccountExtension;
+  required boolean canShowReviewPrompt;
 };
 
 dictionary ProfileInfo {

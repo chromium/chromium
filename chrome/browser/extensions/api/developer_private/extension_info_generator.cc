@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
@@ -915,6 +916,9 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
 #endif
       ;
+
+  info.can_show_review_prompt =
+      ui_util::ShouldShowReviewPrompt(extension, *profile);
 
   // The icon. This section must come last as it moves `info`.
   ExtensionResource icon = IconsInfo::GetIconResource(

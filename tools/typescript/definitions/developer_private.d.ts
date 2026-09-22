@@ -256,6 +256,7 @@ declare global {
         pinnedToToolbar?: boolean;
         isAffectedByMV2Deprecation: boolean;
         canUploadAsAccountExtension: boolean;
+        canShowReviewPrompt: boolean;
       }
 
       export interface ProfileInfo {

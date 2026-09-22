@@ -17,7 +17,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/cws_info_service.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
+#include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -83,18 +90,6 @@ TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_FeatureFlagDisabled) {
   EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
 }
 
-TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_FeatureFlagEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      extensions_features::kCWSReviewPromptingNativeUI);
-
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("cws_ext")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .AddFlags(Extension::FROM_WEBSTORE)
-          .Build();
-  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
-}
-
 TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_ProfileTypes) {
   base::test::ScopedFeatureList feature_list(
       extensions_features::kCWSReviewPromptingNativeUI);
@@ -136,6 +131,26 @@ TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_EnterprisePrefDisabled) {
 
   profile()->GetPrefs()->SetBoolean(prefs::kExtensionReviewPromptsAllowed,
                                     false);
+  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+}
+
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_MustRemainInstalled) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cws_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  TestManagementPolicyProvider provider(
+      TestManagementPolicyProvider::MUST_REMAIN_INSTALLED);
+  ExtensionSystem::Get(profile())->management_policy()->RegisterProvider(
+      &provider);
+
   EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
 }
 
@@ -190,58 +205,157 @@ TEST_F(ExtensionUIUtilUnittest,
       static_cast<testing::NiceMock<ExtensionUIUtilMockCWSInfoService>*>(
           CWSInfoServiceFactory::GetForProfile(profile()));
 
-  // Unpopulated CWS info cache returns false (fail-closed).
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(std::nullopt));
-  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+  using CWSInfo = CWSInfoServiceInterface::CWSInfo;
+  using ViolationType = CWSInfoServiceInterface::CWSViolationType;
 
-  // Malware violation returns false.
-  CWSInfoServiceInterface::CWSInfo malware_info;
-  malware_info.is_present = true;
-  malware_info.violation_type =
-      CWSInfoServiceInterface::CWSViolationType::kMalware;
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(malware_info));
-  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+  enum class CWSState {
+    kNoInfoCached,  // The CWS info cache has no entry for the extension.
+    kNotInStore,    // Cached entry says the extension isn't in CWS.
+    kUnpublished,   // In CWS, but not live (unpublished or taken down).
+    kLive,          // In CWS and live.
+  };
+  enum class Expectation { kNoPrompt, kShowPrompt };
 
-  // Policy violation returns false.
-  CWSInfoServiceInterface::CWSInfo policy_info;
-  policy_info.is_present = true;
-  policy_info.violation_type =
-      CWSInfoServiceInterface::CWSViolationType::kPolicy;
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(policy_info));
-  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+  static constexpr struct {
+    const char* name;
+    CWSState cws_state;
+    ViolationType violation_type;
+    Expectation expectation;
+  } kTestCases[] = {
+      // Fail closed unless CWS confirms the extension is live.
+      {"no_info", CWSState::kNoInfoCached, ViolationType::kNone,
+       Expectation::kNoPrompt},
+      {"not_in_store", CWSState::kNotInStore, ViolationType::kNone,
+       Expectation::kNoPrompt},
+      {"unpublished", CWSState::kUnpublished, ViolationType::kNone,
+       Expectation::kNoPrompt},
 
-  // Live extension with no violation returns true.
-  CWSInfoServiceInterface::CWSInfo live_info;
-  live_info.is_present = true;
-  live_info.is_live = true;
-  live_info.violation_type =
-      CWSInfoServiceInterface::CWSViolationType::kNone;
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(live_info));
+      // Taken down from CWS, so no longer live.
+      {"malware_takedown", CWSState::kUnpublished, ViolationType::kMalware,
+       Expectation::kNoPrompt},
+      {"policy_takedown", CWSState::kUnpublished, ViolationType::kPolicy,
+       Expectation::kNoPrompt},
+
+      // The only eligible state.
+      {"live_no_violation", CWSState::kLive, ViolationType::kNone,
+       Expectation::kShowPrompt},
+
+      // CWS is not expected to report a violation while the extension is still
+      // live, but the prompt must stay suppressed if it does. kUnknown covers
+      // violation types added to the server before this client parses them.
+      {"live_malware", CWSState::kLive, ViolationType::kMalware,
+       Expectation::kNoPrompt},
+      {"live_policy", CWSState::kLive, ViolationType::kPolicy,
+       Expectation::kNoPrompt},
+      {"live_minor_policy", CWSState::kLive, ViolationType::kMinorPolicy,
+       Expectation::kNoPrompt},
+      {"live_unknown", CWSState::kLive, ViolationType::kUnknown,
+       Expectation::kNoPrompt},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    std::optional<CWSInfo> info;
+    if (test_case.cws_state != CWSState::kNoInfoCached) {
+      CWSInfo cws_info;
+      cws_info.is_present = test_case.cws_state != CWSState::kNotInStore;
+      cws_info.is_live = test_case.cws_state == CWSState::kLive;
+      cws_info.violation_type = test_case.violation_type;
+      info = cws_info;
+    }
+
+    EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
+        .WillRepeatedly(testing::Return(info));
+    EXPECT_EQ(test_case.expectation == Expectation::kShowPrompt,
+              ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+    testing::Mock::VerifyAndClearExpectations(mock_cws_info);
+  }
+}
+
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_TerminatedExtension) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cws_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
   EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
 
-  // Non-live (unpublished) extension returns false.
-  CWSInfoServiceInterface::CWSInfo non_live_info;
-  non_live_info.is_present = true;
-  non_live_info.is_live = false;
-  non_live_info.violation_type =
-      CWSInfoServiceInterface::CWSViolationType::kNone;
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(non_live_info));
+  // Terminated extensions are offered a Reload affordance instead.
+  registry()->AddTerminated(extension);
   EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+}
 
-  // Missing store catalog extension returns false.
-  CWSInfoServiceInterface::CWSInfo not_present_info;
-  not_present_info.is_present = false;
-  not_present_info.is_live = false;
-  not_present_info.violation_type =
-      CWSInfoServiceInterface::CWSViolationType::kNone;
-  EXPECT_CALL(*mock_cws_info, GetCWSInfo(testing::_))
-      .WillRepeatedly(testing::Return(not_present_info));
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_CorruptedExtension) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cws_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  // Corrupted extensions are offered a Repair affordance instead.
+  ExtensionPrefs::Get(profile())->AddDisableReason(
+      extension->id(), disable_reason::DISABLE_CORRUPTED);
   EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+}
+
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_SuspiciousInstall) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cws_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  // Extensions disabled as possibly installed without consent are ineligible.
+  ExtensionPrefs::Get(profile())->AddDisableReason(
+      extension->id(), disable_reason::DISABLE_NOT_VERIFIED);
+  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+}
+
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_BlocklistStates) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  static constexpr struct {
+    const char* name;
+    BitMapBlocklistState state;
+  } kTestCases[] = {
+      {"malware", BitMapBlocklistState::BLOCKLISTED_MALWARE},
+      {"security_vulnerability",
+       BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY},
+      {"cws_policy_violation",
+       BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION},
+      {"potentially_unwanted",
+       BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    // Each case uses a distinct extension id so the prefs start clean.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetLocation(mojom::ManifestLocation::kInternal)
+            .AddFlags(Extension::FROM_WEBSTORE)
+            .Build();
+    EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+    blocklist_prefs::AddOmahaBlocklistState(extension->id(), test_case.state,
+                                            ExtensionPrefs::Get(profile()));
+    EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+  }
 }
 
 }  // namespace extensions
