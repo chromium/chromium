@@ -138,30 +138,6 @@ suite('CookiesPageTest', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.reset();
   });
-
-  test('disabledRWSToggle', async () => {
-    // Verify the RWS toggle is enabled iff the user has selected block 3PCs.
-    const relatedWebsiteSetsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#relatedWebsiteSetsToggle')!;
-    blockAll3pc().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY,
-        page.getPref('generated.third_party_cookie_blocking_setting').value);
-    assertFalse(
-        relatedWebsiteSetsToggle.disabled, 'expect toggle to be enabled');
-
-    block3pcIncognito().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY,
-        page.getPref('generated.third_party_cookie_blocking_setting').value);
-    assertTrue(
-        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
-  });
 });
 
 suite('UniversalOptOut', function() {

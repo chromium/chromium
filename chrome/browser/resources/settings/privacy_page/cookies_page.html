@@ -50,11 +50,6 @@
       padding-bottom: 12px;
     }
 
-    #relatedWebsiteSetsToggle {
-      padding-inline-end: 0;
-      padding-inline-start: 0;
-    }
-
     :host-context([settings-refresh-2026]) ul.icon-bulleted-list {
       --cr-icon-size: 20px;
       list-style-type: none;
@@ -148,15 +143,6 @@
             </ul>
           </controlled-radio-button>
         </settings-radio-group>
-        <template is="dom-if" if="[[isRelatedWebsiteSetsUiEnabled_]]">
-          <settings-toggle-button id="relatedWebsiteSetsToggle"
-              pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-              label="$i18n{cookiePageRwsLabel}"
-              sub-label="$i18n{cookiePageRwsSubLabel}"
-              disabled="[[relatedWebsiteSetsToggleDisabled_(
-                prefs.generated.third_party_cookie_blocking_setting.value)]]">
-          </settings-toggle-button>
-        </template>
       </template>
 
       <template is="dom-if" if="[[!isSettingsRefresh2026_]]">
@@ -216,17 +202,6 @@
                   $i18n{cookiePageSettingsBlockBulletThree}
                 </div>
               </div>
-            </div>
-            <div slot="noSelectionCollapse">
-              <template is="dom-if" if="[[isRelatedWebsiteSetsUiEnabled_]]">
-                <settings-toggle-button id="relatedWebsiteSetsToggle"
-                  pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                  label="$i18n{cookiePageRwsLabel}"
-                  sub-label="$i18n{cookiePageRwsSubLabel}"
-                  disabled="[[relatedWebsiteSetsToggleDisabled_(
-                  prefs.generated.third_party_cookie_blocking_setting.value)]]">
-                </settings-toggle-button>
-              </template>
             </div>
           </settings-collapse-radio-button>
         </settings-radio-group>

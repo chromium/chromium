@@ -490,8 +490,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[::content_settings::kThirdPartyCookieBlockingSetting] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[::prefs::kPrivacySandboxRelatedWebsiteSetsEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[universal_optout::prefs::kUniversalOptOutEnabled] =
       settings_api::PrefType::kBoolean;

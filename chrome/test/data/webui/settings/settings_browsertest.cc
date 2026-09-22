@@ -40,7 +40,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -1424,16 +1423,7 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
           "runMochaSuite('DeleteBrowsingDataTimePicker')");
 }
 
-class SettingsCookiesPageTest : public SettingsBrowserTest {
- public:
-  SettingsCookiesPageTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kRelatedWebsiteSetsUi);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SettingsCookiesPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, CookiesPageTest) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('CookiesPageTest')");

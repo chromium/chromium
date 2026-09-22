@@ -128,7 +128,6 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -494,9 +493,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               std::make_unique<SanitizedImageSource>(profile));
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
-  html_source->AddBoolean(
-      "isRelatedWebsiteSetsUiEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsUi));
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

@@ -87,11 +87,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
       },
 
-      isRelatedWebsiteSetsUiEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsUiEnabled'),
-      },
-
       pageTitle_: {
         type: String,
         computed: 'computePageTitle_(showUniversalOptOutSettings_)',
@@ -108,7 +103,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   declare private pageTitle_: string;
   declare private cookiesContentSettingType_: ContentSettingsTypes;
   declare private showUniversalOptOutSettings_: boolean;
-  declare private isRelatedWebsiteSetsUiEnabled_: boolean;
   declare private isSettingsRefresh2026_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -137,11 +131,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
 
     thirdPartyCookieBlockingSettingGroup.sendPrefChange();
-  }
-
-  private relatedWebsiteSetsToggleDisabled_() {
-    return this.getPref('generated.third_party_cookie_blocking_setting')
-               .value !== ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
   }
 
   private onUniversalOptOutToggleChange_(event: Event) {

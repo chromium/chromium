@@ -41,8 +41,7 @@ inline constexpr char
     kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized[] =
         "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
 
-// Boolean that indicates whether Related Website Sets is enabled. Exposed to
-// the user via Chrome UI, and to enterprises via enterprise policy.
+// Boolean that indicates whether Related Website Sets is enabled.
 // "first_party_sets" in the string name is kept for historic reasons to avoid
 // migration of a synced Pref.
 inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =

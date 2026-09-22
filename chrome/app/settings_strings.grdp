@@ -3124,12 +3124,6 @@
     <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_LABEL" desc="3 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies">
       Block third-party cookies
     </message>
-    <message name="IDS_SETTINGS_COOKIES_RELATED_WEBSITE_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control related website sets enabled sharing between related sites">
-      Allow related sites to see your activity in the group
-    </message>
-    <message name="IDS_SETTINGS_COOKIES_RELATED_WEBSITE_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control related website sets enabled sharing between related sites">
-      A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
-    </message>
     <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
       See all site data and permissions
     </message>
