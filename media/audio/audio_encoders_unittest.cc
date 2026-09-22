@@ -286,11 +286,16 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     }
   }
 
-  // The amount of front padding that the encoder emits.
-  size_t GetExpectedPadding() {
+  // The amount of padding that the encoder emits.
+  size_t GetExpectedPadding(size_t input_frames = 0) {
 #if BUILDFLAG(IS_MAC)
     if (options_.codec == AudioCodec::kAAC)
       return 2112;
+#elif BUILDFLAG(IS_ANDROID)
+    if (options_.codec == AudioCodec::kAAC && input_frames > 0 &&
+        input_frames < 2 * static_cast<size_t>(frames_per_buffer_)) {
+      return frames_per_buffer_;
+    }
 #endif
     return 0;
   }
@@ -302,7 +307,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
         frames_per_buffer_ -
         (expected_duration_helper_->frame_count() % frames_per_buffer_);
 
-    int64_t amount_of_padding = GetExpectedPadding() + frame_remainder;
+    int64_t amount_of_padding =
+        GetExpectedPadding(expected_duration_helper_->frame_count()) +
+        frame_remainder;
 
     // Padding is re-emitted after each flush.
     amount_of_padding *= flush_count;
@@ -412,6 +419,28 @@ TEST_P(AudioEncodersTest, EncodeAndFlush) {
   ProduceAudioAndEncode();
   ProduceAudioAndEncode();
   ProduceAudioAndEncode();
+
+  FlushAndVerifyStatus();
+
+  ValidateDoneCallbacksRun();
+  ValidateOutputDuration();
+}
+
+TEST_P(AudioEncodersTest, ShortInputAndFlush) {
+  if (EncoderHasDelay()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  if (options_.codec == AudioCodec::kAAC) {
+    GTEST_SKIP() << "MFAudioEncoder requires at least 3 frames before flush.";
+  }
+#endif
+
+  InitializeEncoder();
+  ProduceAudioAndEncode(
+      base::TimeTicks::Now(),
+      std::max(1, static_cast<int>(options_.sample_rate * 0.01)));
 
   FlushAndVerifyStatus();
 
