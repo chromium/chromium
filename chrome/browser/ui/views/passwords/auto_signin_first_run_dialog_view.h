@@ -37,6 +37,9 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegate,
   void ShowAutoSigninPrompt() override;
   void ControllerGone() override;
 
+  // views::DialogDelegate:
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
+
  private:
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;

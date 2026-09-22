@@ -69,6 +69,11 @@ void AutoSigninFirstRunDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
+bool AutoSigninFirstRunDialogView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
+}
+
 std::u16string AutoSigninFirstRunDialogView::GetWindowTitle() const {
   return controller_->GetAutoSigninPromoTitle();
 }
