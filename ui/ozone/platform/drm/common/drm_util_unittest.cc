@@ -664,6 +664,43 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
               Property(&display::DisplayMode::refresh_rate, Eq(60))))));
 }
 
+// Reading the EDID can fail, leaving |edid_parser| disengaged. A VRR capable
+// connector must not dereference it in that case.
+TEST(GetVariableRefreshRateStateTest, VrrCapableWithoutEdid) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
+
+  fake_drm->ResetStateWithAllProperties();
+  uint32_t crtc_id = 0, connector_id = 0;
+  {
+    auto& crtc = fake_drm->AddCrtc();
+    crtc_id = crtc.id;
+
+    auto& encoder = fake_drm->AddEncoder();
+    encoder.possible_crtcs = 1;
+
+    auto& connector = fake_drm->AddConnector();
+    connector_id = connector.id;
+    connector.connection = true;
+    connector.modes =
+        std::vector<ResolutionAndRefreshRate>{{gfx::Size(1920, 1080), 60}};
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    fake_drm->AddProperty(connector_id, {.id = kVrrCapablePropId, .value = 1});
+  }
+  fake_drm->InitializeState(/*use_atomic=*/true);
+
+  HardwareDisplayControllerInfo info(fake_drm->GetConnector(connector_id),
+                                     fake_drm->GetCrtc(crtc_id), /*index=*/0,
+                                     /*edid_parser=*/std::nullopt);
+
+  EXPECT_EQ(GetVariableRefreshRateState(*fake_drm, &info),
+            display::VariableRefreshRateState::kVrrNotCapable);
+}
+
 TEST(ConsolidateTiledDisplayInfoTest, OnlyNontiled) {
   std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
       std::make_unique<FakeDrmDeviceGenerator>();

@@ -643,7 +643,10 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
   if (!IsVrrCapable(drm, info->connector())) {
     return display::VariableRefreshRateState::kVrrNotCapable;
   }
-  if (!info->edid_parser()->vsync_rate_min().has_value() ||
+  // Reading the EDID can fail, in which case the minimum vsync rate is unknown
+  // and VRR cannot be used.
+  if (!info->edid_parser().has_value() ||
+      !info->edid_parser()->vsync_rate_min().has_value() ||
       info->edid_parser()->vsync_rate_min().value() == 0) {
     return display::VariableRefreshRateState::kVrrNotCapable;
   }
