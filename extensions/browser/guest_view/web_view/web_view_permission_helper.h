@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,10 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-namespace url {
-class Origin;
-}  // namespace url
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -125,6 +123,11 @@ class WebViewPermissionHelper {
       const GURL& requesting_frame_url,
       base::OnceCallback<void(bool)> callback);
 
+  bool HasClipboardPermission(WebViewPermissionType type,
+                              const url::Origin& requesting_origin) const;
+  void GrantClipboardPermission(WebViewPermissionType type,
+                                const url::Origin& requesting_origin);
+
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type);
 
@@ -163,6 +166,9 @@ class WebViewPermissionHelper {
 
   std::unique_ptr<WebViewPermissionHelperDelegate>
       web_view_permission_helper_delegate_;
+
+  std::set<url::Origin> granted_clipboard_read_write_origins_;
+  std::set<url::Origin> granted_clipboard_sanitized_write_origins_;
 
   const raw_ptr<WebViewGuest> web_view_guest_;
 

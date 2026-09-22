@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
@@ -19,8 +18,24 @@
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace {
+
+WebViewPermissionType GetWebViewPermissionType(
+    ChromeClipboardPermissionContextDelegate::Type type) {
+  switch (type) {
+    case ChromeClipboardPermissionContextDelegate::Type::kReadWrite:
+      return WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE;
+    case ChromeClipboardPermissionContextDelegate::Type::kSanitizedWrite:
+      return WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_SANITIZED_WRITE;
+  }
+}
+
+}  // namespace
 
 ChromeClipboardPermissionContextDelegate::
     ChromeClipboardPermissionContextDelegate(Type type)
@@ -44,7 +59,9 @@ bool ChromeClipboardPermissionContextDelegate::DecidePermission(
 
   // Check embedder permission status to not allow to
   // make clipboard actions if user has revoked the permission.
-  if (IsPermissionGrantedToWebView(rfh, web_view_permission_helper)) {
+  const url::Origin& requesting_origin = rfh->GetLastCommittedOrigin();
+  if (web_view_permission_helper->HasClipboardPermission(
+          GetWebViewPermissionType(type_), requesting_origin)) {
     if (IsEmbedderPermissionGranted(web_view_permission_helper)) {
       std::move(callback).Run(content::PermissionResult(
           blink::mojom::PermissionStatus::GRANTED,
@@ -86,8 +103,10 @@ ChromeClipboardPermissionContextDelegate::GetPermissionStatus(
     return std::nullopt;
   }
 
-  if (IsPermissionGrantedToWebView(render_frame_host,
-                                   web_view_permission_helper)) {
+  const url::Origin& requesting_origin =
+      render_frame_host->GetLastCommittedOrigin();
+  if (web_view_permission_helper->HasClipboardPermission(
+          GetWebViewPermissionType(type_), requesting_origin)) {
     if (IsEmbedderPermissionGranted(web_view_permission_helper)) {
       return ContentSetting::CONTENT_SETTING_ALLOW;
     } else {
@@ -137,34 +156,13 @@ void ChromeClipboardPermissionContextDelegate::OnWebViewPermissionResult(
   extensions::WebViewPermissionHelper* web_view_permission_helper =
       extensions::WebViewPermissionHelper::FromRenderFrameHost(rfh);
 
-  const url::Origin& embedder_origin =
-      web_view_permission_helper->web_view_guest()
-          ->embedder_rfh()
-          ->GetLastCommittedOrigin();
-  const url::Origin& requesting_origin = rfh->GetLastCommittedOrigin();
-
-  if (allowed) {
-    granted_permissions_[embedder_origin].insert(requesting_origin);
+  if (web_view_permission_helper && allowed) {
+    web_view_permission_helper->GrantClipboardPermission(
+        GetWebViewPermissionType(type_), rfh->GetLastCommittedOrigin());
   }
 
   std::move(callback).Run(content::PermissionResult(
       allowed ? blink::mojom::PermissionStatus::GRANTED
               : blink::mojom::PermissionStatus::DENIED,
       content::PermissionStatusSource::UNSPECIFIED));
-}
-
-bool ChromeClipboardPermissionContextDelegate::IsPermissionGrantedToWebView(
-    content::RenderFrameHost* render_frame_host,
-    extensions::WebViewPermissionHelper* web_view_permission_helper) const {
-  content::RenderFrameHost* embedder_rfh =
-      web_view_permission_helper->web_view_guest()->embedder_rfh();
-  const url::Origin& embedder_origin = embedder_rfh->GetLastCommittedOrigin();
-  const url::Origin& requesting_origin =
-      render_frame_host->GetLastCommittedOrigin();
-
-  if (auto* permissions =
-          base::FindOrNull(granted_permissions_, embedder_origin)) {
-    return permissions->contains(requesting_origin);
-  }
-  return false;
 }

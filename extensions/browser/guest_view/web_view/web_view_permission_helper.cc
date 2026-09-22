@@ -388,6 +388,35 @@ void WebViewPermissionHelper::RequestClipboardSanitizedWritePermission(
                                                  std::move(callback));
 }
 
+bool WebViewPermissionHelper::HasClipboardPermission(
+    WebViewPermissionType type,
+    const url::Origin& requesting_origin) const {
+  switch (type) {
+    case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE:
+      return granted_clipboard_read_write_origins_.contains(requesting_origin);
+    case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_SANITIZED_WRITE:
+      return granted_clipboard_sanitized_write_origins_.contains(
+          requesting_origin);
+    default:
+      return false;
+  }
+}
+
+void WebViewPermissionHelper::GrantClipboardPermission(
+    WebViewPermissionType type,
+    const url::Origin& requesting_origin) {
+  switch (type) {
+    case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE:
+      granted_clipboard_read_write_origins_.insert(requesting_origin);
+      break;
+    case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_SANITIZED_WRITE:
+      granted_clipboard_sanitized_write_origins_.insert(requesting_origin);
+      break;
+    default:
+      break;
+  }
+}
+
 std::optional<content::PermissionResult>
 WebViewPermissionHelper::OverridePermissionResult(ContentSettingsType type) {
   return web_view_permission_helper_delegate_->OverridePermissionResult(type);

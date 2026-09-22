@@ -6,13 +6,10 @@
 #define CHROME_BROWSER_CLIPBOARD_CHROME_CLIPBOARD_PERMISSION_CONTEXT_DELEGATE_H_
 
 #include <optional>
-#include <set>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/contexts/clipboard_permission_context_delegate.h"
-#include "url/origin.h"
 
 class GURL;
 
@@ -62,19 +59,6 @@ class ChromeClipboardPermissionContextDelegate
       permissions::BrowserPermissionCallback callback,
       permissions::PermissionRequestID request_id,
       bool allowed);
-
-  bool IsPermissionGrantedToWebView(
-      content::RenderFrameHost* render_frame_host,
-      extensions::WebViewPermissionHelper* web_view_permission_helper) const;
-
-  // The first origin belongs to the top level frame.
-  // The second origin is embedded frame origin.
-  // This ensures that permissions are properly isolated.
-  // Also the embedded origin is obtained from
-  // web_view_guest()->embedder_rfh()->GetLastCommittedOrigin();
-  // and not from permissions::PermissionRequest.embedding_origin,
-  // because the latter uses GetMainFrame() which doesn't traverse GuestView.
-  base::flat_map<url::Origin, std::set<url::Origin>> granted_permissions_;
 
   const Type type_;
 

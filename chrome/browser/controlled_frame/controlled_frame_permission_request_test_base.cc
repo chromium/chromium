@@ -8,11 +8,13 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
@@ -187,12 +189,13 @@ void ControlledFramePermissionRequestTestBase::
 void ControlledFramePermissionRequestTestBase::FocusControlledFrame(
     content::RenderFrameHost* app_frame,
     content::RenderFrameHost* controlled_frame,
-    bool must_wait_document_focus) {
+    bool must_wait_document_focus,
+    std::string_view selector) {
   // Focus when the frame is loaded.
-  EXPECT_TRUE(content::ExecJs(app_frame,
-                              R"(
+  EXPECT_TRUE(content::ExecJs(app_frame, content::JsReplace(
+                                             R"(
       (function() {
-        const frame = document.getElementsByTagName('controlledframe')[0];
+        const frame = document.querySelector($1);
         if (!frame) {
           throw new Error('FAIL: Could not find a controlledframe element.');
         }
@@ -202,13 +205,15 @@ void ControlledFramePermissionRequestTestBase::FocusControlledFrame(
         });
         return 'SUCCESS';
       })();
-    )"));
+    )",
+                                             selector)));
 
   WaitForHitTestData(controlled_frame);
 
   // Make user activation on <controlledframe> with a fake click.
+  auto* web_contents = content::WebContents::FromRenderFrameHost(app_frame);
   content::SimulateMouseClickAt(
-      content::WebContents::FromRenderFrameHost(app_frame),
+      web_contents,
       /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
       controlled_frame->GetView()->TransformPointToRootCoordSpace(
           gfx::Point(20, 20)));
@@ -220,14 +225,21 @@ void ControlledFramePermissionRequestTestBase::FocusControlledFrame(
     // and there are internal race conditions.
     base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE,
                                                      base::Seconds(5));
-    base::test::RunUntil([&]() -> bool {
-      auto* web_contents = content::WebContents::FromRenderFrameHost(app_frame);
-      return web_contents->GetFocusedFrame() == controlled_frame &&
-             content::EvalJs(controlled_frame,
-                             "document.hasFocus() && "
-                             "navigator.userActivation.isActive")
-                 .ExtractBool();
-    });
+    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+      if (web_contents->GetFocusedFrame() == controlled_frame &&
+          content::EvalJs(controlled_frame,
+                          "document.hasFocus() && "
+                          "navigator.userActivation.isActive")
+              .ExtractBool()) {
+        return true;
+      }
+      content::SimulateMouseClickAt(
+          web_contents,
+          /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
+          controlled_frame->GetView()->TransformPointToRootCoordSpace(
+              gfx::Point(20, 20)));
+      return false;
+    }));
 
     // Verify document focused.
     EXPECT_TRUE(

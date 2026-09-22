@@ -12,7 +12,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/browser_process.h"
@@ -35,12 +37,16 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_utils.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
@@ -51,6 +57,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using testing::Contains;
 using testing::StartsWith;
@@ -1101,6 +1109,431 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameMediaPermissionCacheBrowserTest,
   // embedder listener now explicitly denies the request. If the cache was not
   // wiped, this would incorrectly return SUCCESS.
   EXPECT_EQ("FAIL: NotAllowedError", RunGetVideo(controlled_frame));
+}
+
+// TODO(crbug.com/422421852): These tests require document focus,
+// and waiting for focus is flaky on mac.
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_ControlledFrameClipboardPermissionBrowserTest \
+  DISABLED_ControlledFrameClipboardPermissionBrowserTest
+#else
+#define MAYBE_ControlledFrameClipboardPermissionBrowserTest \
+  ControlledFrameClipboardPermissionBrowserTest
+#endif
+
+class MAYBE_ControlledFrameClipboardPermissionBrowserTest
+    : public ControlledFramePermissionRequestTestBase {
+ protected:
+  void SetEmbedderPermission(content::RenderFrameHost* app_frame,
+                             ContentSettingsType type,
+                             ContentSetting setting) {
+    HostContentSettingsMapFactory::GetForProfile(profile())
+        ->SetContentSettingDefaultScope(
+            app_frame->GetLastCommittedOrigin().GetURL(),
+            app_frame->GetLastCommittedOrigin().GetURL(), type, setting);
+  }
+
+  std::string RunReadText(content::RenderFrameHost* frame) {
+    return content::EvalJs(frame, R"(
+      (async function() {
+        try {
+          return await new Promise((resolve) => {
+            if (!document.hasFocus()) {
+              resolve('FAIL: Document must have focus');
+              return;
+            }
+            if (!navigator.userActivation.isActive) {
+              resolve('FAIL: User activation must be true');
+              return;
+            }
+            navigator.clipboard.readText().then(
+              (text) => {
+                resolve('SUCCESS');
+              },
+              (error) => {
+                resolve('FAIL: ' + error.name);
+              }
+            );
+          });
+        } catch (err) {
+          return 'FAIL: ' + err.name;
+        }
+      })();
+    )")
+        .ExtractString();
+  }
+
+  std::string RunWriteText(content::RenderFrameHost* frame,
+                           const std::string& text) {
+    return content::EvalJs(frame, content::JsReplace(R"(
+      (async function() {
+        try {
+          return await new Promise((resolve) => {
+            if (!document.hasFocus()) {
+              resolve('FAIL: Document must have focus');
+              return;
+            }
+            if (!navigator.userActivation.isActive) {
+              resolve('FAIL: User activation must be true');
+              return;
+            }
+            navigator.clipboard.writeText($1).then(
+              () => {
+                resolve('SUCCESS');
+              },
+              (error) => {
+                resolve('FAIL: ' + error.name);
+              }
+            );
+          });
+        } catch (err) {
+          return 'FAIL: ' + err.name;
+        }
+      })();
+    )",
+                                                     text))
+        .ExtractString();
+  }
+
+  web_app::ManifestBuilder GetClipboardManifestBuilder() {
+    web_app::ManifestBuilder manifest_builder;
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kClipboardRead);
+    manifest_builder.AddPermissionsPolicyWildcard(
+        network::mojom::PermissionsPolicyFeature::kClipboardWrite);
+    return manifest_builder;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       SameGuestRepeatedClipboardReadDoesNotRePrompt) {
+  GURL guest_url =
+      embedded_https_test_server().GetURL("guest.com", "/empty.html");
+  url::Origin guest_origin = url::Origin::Create(guest_url);
+
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame("guest.com", "/empty.html",
+                                                 GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  ASSERT_EQ(controlled_frame->GetLastCommittedOrigin(), guest_origin);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.permissionRequestCount = 0;
+    const cf = document.querySelector('controlledframe');
+    cf.addEventListener('permissionrequest', (e) => {
+      window.permissionRequestCount++;
+      e.request.allow();
+    });
+  )"));
+
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("SUCCESS", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.permissionRequestCount"));
+
+  // Second read on the same guest should be served from the guest's cache
+  // and NOT fire another permissionrequest on the embedder.
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("SUCCESS", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.permissionRequestCount"));
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       PostDestructionIsolation) {
+  GURL guest_url =
+      embedded_https_test_server().GetURL("guest.com", "/empty.html");
+  url::Origin guest_origin = url::Origin::Create(guest_url);
+
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame("guest.com", "/empty.html",
+                                                 GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+  ASSERT_EQ(controlled_frame->GetLastCommittedOrigin(), guest_origin);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  // Setup Guest 1 to allow clipboard permission.
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.guest1RequestCount = 0;
+    const cf1 = document.querySelector('controlledframe');
+    cf1.id = 'guest1';
+    cf1.addEventListener('permissionrequest', (e) => {
+      window.guest1RequestCount++;
+      e.request.allow();
+    });
+  )"));
+
+  FocusControlledFrame(app_frame, controlled_frame,
+                       /*must_wait_document_focus=*/true, "#guest1");
+  EXPECT_EQ("SUCCESS", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guest1RequestCount"));
+
+  // Destroy Guest 1.
+  content::RenderFrameHostWrapper guest1_rfh(controlled_frame);
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    document.getElementById('guest1').remove();
+  )"));
+  ASSERT_TRUE(guest1_rfh.WaitUntilRenderFrameDeleted());
+
+  // Create Guest 2 with the exact same origin, but with embedder listener
+  // denying requests.
+  EXPECT_TRUE(content::ExecJs(app_frame, content::JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const cf2 = document.createElement('controlledframe');
+      cf2.id = 'guest2';
+      cf2.setAttribute('src', $1);
+      cf2.addEventListener('loadstop', resolve);
+      cf2.addEventListener('loadabort', reject);
+      window.guest2RequestCount = 0;
+      cf2.addEventListener('permissionrequest', (e) => {
+        window.guest2RequestCount++;
+        e.request.deny();
+      });
+      document.body.appendChild(cf2);
+    });
+  )",
+                                                            guest_url)));
+
+  // Retrieve Guest 2 RenderFrameHost.
+  extensions::WebViewGuest* guest2_view = GetWebViewGuest(app_frame);
+  ASSERT_TRUE(guest2_view);
+  content::RenderFrameHost* guest2_frame = guest2_view->GetGuestMainFrame();
+  ASSERT_TRUE(guest2_frame);
+  ASSERT_NE(guest2_frame, controlled_frame);
+  ASSERT_EQ(guest2_frame->GetLastCommittedOrigin(), guest_origin);
+
+  FocusControlledFrame(app_frame, guest2_frame,
+                       /*must_wait_document_focus=*/true, "#guest2");
+
+  // Guest 2 should NOT inherit Guest 1's permission. A new permissionrequest
+  // must be dispatched to the embedder, which denies it.
+  EXPECT_EQ("FAIL: NotAllowedError", RunReadText(guest2_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guest2RequestCount"));
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       ConcurrentSameOriginGuestsAreIsolated) {
+  GURL guest_url =
+      embedded_https_test_server().GetURL("guest.com", "/empty.html");
+  url::Origin guest_origin = url::Origin::Create(guest_url);
+
+  auto [app_frame, guest_frame_a] = InstallAndOpenIwaThenCreateControlledFrame(
+      "guest.com", "/empty.html", GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(guest_frame_a);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  // Create second controlled frame pointing to the same guest origin.
+  ASSERT_TRUE(CreateControlledFrame(app_frame, guest_url));
+
+  // Style both frames side-by-side with explicit positioning so both have
+  // clear, non-overlapping hit test regions within the viewport,
+  // and attach permissionrequest listeners.
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    const frames = document.querySelectorAll('controlledframe');
+    frames[0].style.position = 'absolute';
+    frames[0].style.top = '0px';
+    frames[0].style.left = '0px';
+    frames[0].style.width = '200px';
+    frames[0].style.height = '200px';
+
+    frames[1].style.position = 'absolute';
+    frames[1].style.top = '0px';
+    frames[1].style.left = '220px';
+    frames[1].style.width = '200px';
+    frames[1].style.height = '200px';
+
+    window.guestARequestCount = 0;
+    frames[0].addEventListener('permissionrequest', (e) => {
+      window.guestARequestCount++;
+      e.request.allow();
+    });
+
+    window.guestBRequestCount = 0;
+    frames[1].addEventListener('permissionrequest', (e) => {
+      window.guestBRequestCount++;
+      e.request.deny();
+    });
+  )"));
+
+  // Identify guest B.
+  content::RenderFrameHost* guest_frame_b = nullptr;
+  app_frame->ForEachRenderFrameHostWithAction(
+      [&](content::RenderFrameHost* rfh) {
+        if (auto* web_view =
+                extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
+          if (web_view->GetGuestMainFrame() != guest_frame_a) {
+            guest_frame_b = web_view->GetGuestMainFrame();
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  ASSERT_TRUE(guest_frame_b);
+  ASSERT_NE(guest_frame_a, guest_frame_b);
+  ASSERT_EQ(guest_frame_a->GetLastCommittedOrigin(), guest_origin);
+  ASSERT_EQ(guest_frame_b->GetLastCommittedOrigin(), guest_origin);
+
+  // Request and grant permission in Guest A.
+  FocusControlledFrame(app_frame, guest_frame_a,
+                       /*must_wait_document_focus=*/true,
+                       "controlledframe:nth-of-type(1)");
+  EXPECT_EQ("SUCCESS", RunReadText(guest_frame_a));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guestARequestCount"));
+  EXPECT_EQ(0, content::EvalJs(app_frame, "window.guestBRequestCount"));
+
+  // Guest B attempts to read clipboard. It must not inherit Guest A's grant.
+  FocusControlledFrame(app_frame, guest_frame_b,
+                       /*must_wait_document_focus=*/true,
+                       "controlledframe:nth-of-type(2)");
+  EXPECT_EQ("FAIL: NotAllowedError", RunReadText(guest_frame_b));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guestARequestCount"));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guestBRequestCount"));
+
+  // Guest A's cached permission is still valid.
+  FocusControlledFrame(app_frame, guest_frame_a,
+                       /*must_wait_document_focus=*/true,
+                       "controlledframe:nth-of-type(1)");
+  EXPECT_EQ("SUCCESS", RunReadText(guest_frame_a));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.guestARequestCount"));
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       SanitizedWriteAndReadWriteSeparation) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame("guest.com", "/empty.html",
+                                                 GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.writeRequestCount = 0;
+    window.readRequestCount = 0;
+    const cf = document.querySelector('controlledframe');
+    cf.addEventListener('permissionrequest', (e) => {
+      if (e.permission === 'clipboardSanitizedWrite') {
+        window.writeRequestCount++;
+        e.request.allow();
+      } else if (e.permission === 'clipboardReadWrite') {
+        window.readRequestCount++;
+        e.request.deny();
+      }
+    });
+  )"));
+
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("SUCCESS", RunWriteText(controlled_frame, "hello"));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.writeRequestCount"));
+  EXPECT_EQ(0, content::EvalJs(app_frame, "window.readRequestCount"));
+
+  // Sanitized write permission should NOT grant read-write permission.
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("FAIL: NotAllowedError", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.writeRequestCount"));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.readRequestCount"));
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       EmbedderRevocationImmediatelyBlocksGuest) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame("guest.com", "/empty.html",
+                                                 GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.requestCount = 0;
+    const cf = document.querySelector('controlledframe');
+    cf.addEventListener('permissionrequest', (e) => {
+      window.requestCount++;
+      e.request.allow();
+    });
+  )"));
+
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("SUCCESS", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.requestCount"));
+
+  // Revoke embedder permission.
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_BLOCK);
+
+  // Even though guest cached the permission, embedder revocation must
+  // immediately block it.
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("FAIL: NotAllowedError", RunReadText(controlled_frame));
+  // Permission was blocked at embedder level without prompting again.
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.requestCount"));
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
+                       DifferentOriginInSameGuestRequiresNewPermission) {
+  GURL other_url =
+      embedded_https_test_server().GetURL("other.com", "/empty.html");
+
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame("guest.com", "/empty.html",
+                                                 GetClipboardManifestBuilder());
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  SetEmbedderPermission(app_frame, ContentSettingsType::CLIPBOARD_READ_WRITE,
+                        CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(content::ExecJs(app_frame, R"(
+    window.requestCount = 0;
+    window.shouldDeny = false;
+    const cf = document.querySelector('controlledframe');
+    cf.addEventListener('permissionrequest', (e) => {
+      window.requestCount++;
+      if (window.shouldDeny) {
+        e.request.deny();
+      } else {
+        e.request.allow();
+      }
+    });
+  )"));
+
+  FocusControlledFrame(app_frame, controlled_frame);
+  EXPECT_EQ("SUCCESS", RunReadText(controlled_frame));
+  EXPECT_EQ(1, content::EvalJs(app_frame, "window.requestCount"));
+
+  // Now change policy to deny and navigate the guest to a different origin.
+  EXPECT_TRUE(content::ExecJs(app_frame, content::JsReplace(R"(
+    window.shouldDeny = true;
+    new Promise((resolve, reject) => {
+      const cf = document.querySelector('controlledframe');
+      cf.addEventListener('loadstop', resolve, {once: true});
+      cf.addEventListener('loadabort', reject, {once: true});
+      cf.setAttribute('src', $1);
+    });
+  )",
+                                                            other_url)));
+
+  extensions::WebViewGuest* guest_view = GetWebViewGuest(app_frame);
+  ASSERT_TRUE(guest_view);
+  content::RenderFrameHost* navigated_frame = guest_view->GetGuestMainFrame();
+  ASSERT_TRUE(navigated_frame);
+  ASSERT_EQ(navigated_frame->GetLastCommittedOrigin(),
+            url::Origin::Create(other_url));
+
+  FocusControlledFrame(app_frame, navigated_frame);
+  EXPECT_EQ("FAIL: NotAllowedError", RunReadText(navigated_frame));
+  EXPECT_EQ(2, content::EvalJs(app_frame, "window.requestCount"));
 }
 
 }  // namespace controlled_frame
