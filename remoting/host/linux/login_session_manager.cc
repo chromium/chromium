@@ -8,7 +8,9 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -80,6 +82,46 @@ void LoginSessionManager::GetSessionInfo(const std::string& session_id,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void LoginSessionManager::GetSessionInfoByPath(
+    const gvariant::ObjectPath& session_object_path,
+    GetSessionInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  connection_.Call<org_freedesktop_DBus_Properties::GetAll>(
+      kDbusName, session_object_path,
+      std::make_tuple(org_freedesktop_login1_Session::Id::kInterfaceName),
+      base::BindOnce(&LoginSessionManager::OnGetSessionPropertiesResult,
+                     weak_ptr_factory_.GetWeakPtr(), session_object_path,
+                     std::move(callback)));
+}
+
+void LoginSessionManager::ListUserSessions(std::string_view username,
+                                           ListSessionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  connection_.Call<org_freedesktop_login1_Manager::ListSessions>(
+      kDbusName, kDbusPath, std::tuple(),
+      base::BindOnce(&LoginSessionManager::OnListSessionsResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::string(username),
+                     std::move(callback)));
+}
+
+std::unique_ptr<GDBusConnectionRef::SignalSubscription>
+LoginSessionManager::SubscribeSessionRemoved(SessionRemovedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return connection_
+      .SignalSubscribe<org_freedesktop_login1_Manager::SessionRemoved>(
+          kDbusName, kDbusPath,
+          base::BindRepeating(
+              [](const SessionRemovedCallback& callback,
+                 std::tuple<std::string, gvariant::ObjectPath> signal_args) {
+                auto [session_id, object_path] = std::move(signal_args);
+                callback.Run(std::move(session_id), std::move(object_path));
+              },
+              std::move(callback)));
+}
+
 void LoginSessionManager::OnGetSessionPathResult(
     GetSessionInfoCallback callback,
     base::expected<std::tuple<gvariant::ObjectPath>, Loggable> result) {
@@ -91,12 +133,7 @@ void LoginSessionManager::OnGetSessionPathResult(
   }
 
   auto [session_path] = *result;
-  connection_.Call<org_freedesktop_DBus_Properties::GetAll>(
-      kDbusName, session_path,
-      std::make_tuple(org_freedesktop_login1_Session::Id::kInterfaceName),
-      base::BindOnce(&LoginSessionManager::OnGetSessionPropertiesResult,
-                     weak_ptr_factory_.GetWeakPtr(), session_path,
-                     std::move(callback)));
+  GetSessionInfoByPath(session_path, std::move(callback));
 }
 
 void LoginSessionManager::OnGetSessionPropertiesResult(
@@ -165,7 +202,71 @@ void LoginSessionManager::OnGetSessionPropertiesResult(
   }
   info.is_remote = is_remote.value();
 
+  auto service = GetProperty<std::string>(
+      properties, org_freedesktop_login1_Session::Service::kPropertyName);
+  if (!service.has_value()) {
+    std::move(callback).Run(base::unexpected(service.error()));
+    return;
+  }
+  info.service = std::move(*service);
+
+  auto state = GetProperty<std::string>(
+      properties, org_freedesktop_login1_Session::State::kPropertyName);
+  if (!state.has_value()) {
+    std::move(callback).Run(base::unexpected(state.error()));
+    return;
+  }
+  info.state = std::move(*state);
+
   std::move(callback).Run(base::ok(std::move(info)));
+}
+
+void LoginSessionManager::OnListSessionsResult(
+    std::string username,
+    ListSessionsCallback callback,
+    base::expected<std::tuple<std::vector<SessionTuple>>, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(result.error()));
+    return;
+  }
+
+  auto [sessions] = std::move(*result);
+  std::vector<gvariant::ObjectPath> matching_paths;
+  for (auto& [session_id, uid, user_name, seat_id, object_path] : sessions) {
+    if (user_name == username) {
+      matching_paths.push_back(std::move(object_path));
+    }
+  }
+
+  if (matching_paths.empty()) {
+    std::move(callback).Run(base::ok(std::vector<SessionInfo>{}));
+    return;
+  }
+
+  auto barrier = base::BarrierCallback<base::expected<SessionInfo, Loggable>>(
+      matching_paths.size(),
+      base::BindOnce(
+          [](ListSessionsCallback callback,
+             std::vector<base::expected<SessionInfo, Loggable>> results) {
+            std::vector<SessionInfo> session_infos;
+            session_infos.reserve(results.size());
+            for (auto& session_result : results) {
+              if (session_result.has_value()) {
+                session_infos.push_back(std::move(*session_result));
+              } else {
+                LOG(WARNING) << "Failed to get properties for session: "
+                             << session_result.error();
+              }
+            }
+            std::move(callback).Run(base::ok(std::move(session_infos)));
+          },
+          std::move(callback)));
+
+  for (const auto& path : matching_paths) {
+    GetSessionInfoByPath(path, barrier);
+  }
 }
 
 void LoginSessionManager::TerminateSession(

@@ -8,6 +8,8 @@
 #include <sys/types.h>
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -57,12 +59,24 @@ class LoginSessionManager {
 
     // Whether the session is remote.
     bool is_remote;
+
+    // The PAM service name of the session (e.g.
+    // "chrome-remote-desktop-session").
+    std::string service;
+
+    // The session state (e.g. "active", "online", "closing").
+    std::string state;
   };
 
   using GetSessionInfoCallback =
       base::OnceCallback<void(base::expected<SessionInfo, Loggable>)>;
+  using ListSessionsCallback = base::OnceCallback<void(
+      base::expected<std::vector<SessionInfo>, Loggable>)>;
   using TerminateSessionCallback =
       base::OnceCallback<void(base::expected<void, Loggable>)>;
+  using SessionRemovedCallback =
+      base::RepeatingCallback<void(std::string session_id,
+                                   gvariant::ObjectPath object_path)>;
 
   // `connection`: An initiated system bus connection.
   explicit LoginSessionManager(GDBusConnectionRef connection);
@@ -73,10 +87,24 @@ class LoginSessionManager {
 
   void GetSessionInfo(const std::string& session_id,
                       GetSessionInfoCallback callback);
+  void GetSessionInfoByPath(const gvariant::ObjectPath& session_object_path,
+                            GetSessionInfoCallback callback);
+  void ListUserSessions(std::string_view username,
+                        ListSessionsCallback callback);
   void TerminateSession(const gvariant::ObjectPath& session_object_path,
                         TerminateSessionCallback callback);
 
+  // Subscribes to `org.freedesktop.login1.Manager.SessionRemoved` signals.
+  std::unique_ptr<GDBusConnectionRef::SignalSubscription>
+  SubscribeSessionRemoved(SessionRemovedCallback callback);
+
  private:
+  using SessionTuple = std::tuple<std::string /*session_id*/,
+                                  uint32_t /*uid*/,
+                                  std::string /*user_name*/,
+                                  std::string /*seat_id*/,
+                                  gvariant::ObjectPath /*object_path*/>;
+
   void OnGetSessionPathResult(
       GetSessionInfoCallback callback,
       base::expected<std::tuple<gvariant::ObjectPath>, Loggable> result);
@@ -85,6 +113,10 @@ class LoginSessionManager {
       GetSessionInfoCallback callback,
       base::expected<std::tuple<gvariant::GVariantRef<"a{sv}">>, Loggable>
           result);
+  void OnListSessionsResult(
+      std::string username,
+      ListSessionsCallback callback,
+      base::expected<std::tuple<std::vector<SessionTuple>>, Loggable> result);
   void OnTerminateSessionResult(TerminateSessionCallback callback,
                                 base::expected<std::tuple<>, Loggable> result);
 
