@@ -778,6 +778,9 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
           GlicInvokeOptions options(glic::Target(*tab_interface),
                                     mojom::InvocationSource::kNudge);
+          // The selected text flow doesn't support live mode, so leave a live
+          // conversation alone rather than pulling it into the side panel.
+          options.target.live_mode_behavior = LiveModeBehavior::kFail;
           options.additional_context = AdditionalTabContext(
               CreateAdditionalContext(web_contents.get(), selected_text),
               content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
@@ -1104,7 +1107,11 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
 
   GlicInvokeOptions options(glic::Target(*tab_interface),
                             mojom::InvocationSource::kTextSelectionWidget);
+  // Delivering the selection shouldn't relocate the conversation: leave it on
+  // the surface it's already showing on, and if that surface is a live mode
+  // floaty, don't invoke at all (see `InvokeGlicFromSelectionAffordance`).
   options.preserve_active_surface = true;
+  options.target.live_mode_behavior = LiveModeBehavior::kFail;
   options.additional_context = AdditionalTabContext(
       CreateAdditionalContext(web_contents(), selected_text),
       content::GlobalRenderFrameHostId(), PolicyCheck::kNone);

@@ -123,6 +123,11 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   bool BaseIsSidePanelOpen() const {
     return GlicSelectionObserver::IsSidePanelOpen();
   }
+  void BaseSendAdditionalContextToPanel(tabs::TabInterface* tab_interface,
+                                        const std::u16string& selected_text) {
+    GlicSelectionObserver::SendAdditionalContextToPanel(tab_interface,
+                                                        selected_text);
+  }
 
   bool send_context_called() const { return send_context_called_; }
   const std::optional<std::u16string>& last_sent_context() const {
@@ -1575,6 +1580,54 @@ TEST_F(GlicSelectionObserverPromptTest,
 
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
                                     web_contents()->GetWeakPtr());
+}
+
+// The selected text flow has no live mode UI, so its invocations opt out
+// rather than pulling a live conversation into the tab's side panel.
+TEST_F(GlicSelectionObserverPromptTest,
+       InvokeGlicFromSelectionAffordanceOptsOutOfLiveMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicSelectionPrompt, {{"auto_send_prompt", "false"}}}}, {});
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  EXPECT_CALL(*mock_glic_service(),
+              Invoke(testing::Field(&GlicInvokeOptions::target,
+                                    testing::Field(&Target::live_mode_behavior,
+                                                   LiveModeBehavior::kFail))))
+      .Times(1);
+
+  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr());
+}
+
+TEST_F(GlicSelectionObserverPromptTest,
+       SendAdditionalContextToPanelOptsOutOfLiveMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  SetMockEligibility(true);
+
+  EXPECT_CALL(*mock_glic_service(),
+              Invoke(testing::Field(&GlicInvokeOptions::target,
+                                    testing::Field(&Target::live_mode_behavior,
+                                                   LiveModeBehavior::kFail))))
+      .Times(1);
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
+                                                  u"Sample selected text");
 }
 
 TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {
