@@ -821,6 +821,46 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         omnibox.updateDropdownVisibility();
         assertTrue(omnibox.dropdownIsVisible);
       });
+
+  test(
+      'singleLineAutocomplete preserves single line and dropdown on arrow down',
+      async () => {
+        assertTrue(omnibox.singleLineOnInlineAutocomplete);
+        assertTrue(omnibox.$.input.singleLineOnInlineAutocomplete);
+
+        omnibox.activeQueryId = 0;
+        omnibox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: 0,
+          input: 'query',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'query',
+            }),
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: false,
+              fillIntoEdit: 'query with a very long second suggestion text',
+            }),
+          ],
+        }));
+        await microtasksFinished();
+
+        omnibox.$.input.inputElement.focus();
+        const arrowDownEvent = new KeyboardEvent('keydown', {
+          key: 'ArrowDown',
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(arrowDownEvent);
+        await microtasksFinished();
+        await omnibox.updateComplete;
+        await omnibox.$.input.updateComplete;
+
+        assertTrue(omnibox.$.input.hasAttribute('force-single-line'));
+        assertFalse(omnibox.$.input.isMultiline());
+        assertTrue(omnibox.dropdownIsVisible);
+      });
 });
 
 

@@ -3088,6 +3088,63 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       });
 
   test(
+      'arrow down to match keeps single line mode when ' +
+          'singleLineOnInlineAutocomplete is true',
+      async () => {
+        element.multiLineEnabled = true;
+        element.singleLineOnInlineAutocomplete = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        inputElement.singleLineOnInlineAutocomplete = true;
+        await microtasksFinished();
+
+        inputElement.inputElement.focus();
+        await simulateUserTextInput(inputElement, 'query');
+
+        await element.onAutocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: element.activeQueryId,
+              input: 'query',
+              matches: [
+                createSearchMatchForTesting({
+                  allowedToBeDefaultMatch: false,
+                  fillIntoEdit: 'query',
+                }),
+                createSearchMatchForTesting({
+                  allowedToBeDefaultMatch: false,
+                  fillIntoEdit: 'query with a very long second suggestion text',
+                }),
+              ],
+            }));
+        element.dropdownIsVisible = true;
+        await microtasksFinished();
+
+        // Arrow down to match 0.
+        element.getWrapperElement().dispatchEvent(
+            createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+
+        // Arrow down to match 1 (match preview).
+        element.getWrapperElement().dispatchEvent(
+            createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        await inputElement.updateComplete;
+
+        // Even if the long preview text would exceed the multiline threshold,
+        // force-single-line ensures single-line mode is preserved and the
+        // dropdown stays visible.
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          get: () => 64,
+          configurable: true,
+        });
+
+        assertEquals(1, element.selection.line);
+        assertTrue(inputElement.hasAttribute('force-single-line'));
+        assertFalse(inputElement.isMultiline());
+        assertTrue(element.dropdownIsVisible);
+      });
+
+  test(
       'ArrowUp and ArrowDown do not prevent default when multiLineEnabled ' +
           'and isMultiline',
       async () => {

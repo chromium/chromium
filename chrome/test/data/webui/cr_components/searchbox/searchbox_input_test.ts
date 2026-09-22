@@ -498,4 +498,81 @@ suite('SearchboxInputTest', () => {
         assertEquals(
             'clip', window.getComputedStyle(input.inputElement).textOverflow);
       });
+  test(
+      'isMatchPreview forces single line when user input is single line',
+      async () => {
+        input = await createInput({
+          multiLineEnabled: true,
+          singleLineOnInlineAutocomplete: true,
+        });
+        input.focus();
+
+        input.setInput({text: 'user query', inline: ''});
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+
+        // Simulating selecting a long suggestion match.
+        input.setInput({
+          text: 'user query that has a very long suggestion match',
+          inline: '',
+          isMatchPreview: true,
+        });
+        await input.updateComplete;
+
+        assertTrue(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('has-inline-selection'));
+        assertFalse(input.isMultiline());
+
+        // Navigating back to unselected user text.
+        input.setInput({
+          text: 'user query',
+          inline: '',
+          isMatchPreview: false,
+        });
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+
+        // Previewing match again.
+        input.setInput({
+          text: 'user query that has a very long suggestion match',
+          inline: '',
+          isMatchPreview: true,
+        });
+        await input.updateComplete;
+        assertTrue(input.hasAttribute('force-single-line'));
+
+        // Clicking in to edit the preview clears force-single-line.
+        input.setSelectionRange(5, 5);
+        document.dispatchEvent(new Event('selectionchange'));
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+      });
+
+  test(
+      'isMatchPreview does not force single line when user input was multiline',
+      async () => {
+        input = await createInput({
+          multiLineEnabled: true,
+          singleLineOnInlineAutocomplete: true,
+        });
+        input.focus();
+
+        input.setInput({text: 'first line\nsecond line', inline: ''});
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+
+        input.setInput({
+          text: 'some suggestion match',
+          inline: '',
+          isMatchPreview: true,
+        });
+        await input.updateComplete;
+
+        assertFalse(input.hasAttribute('force-single-line'));
+        Object.defineProperty(input.inputElement, 'scrollHeight', {
+          get: () => 64,
+          configurable: true,
+        });
+        assertTrue(input.isMultiline());
+      });
 });
