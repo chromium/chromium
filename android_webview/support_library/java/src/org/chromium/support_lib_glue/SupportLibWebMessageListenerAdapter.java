@@ -62,10 +62,7 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
             return;
         }
 
-        if (payload.getType() == MessagePayloadType.STRING
-                || (payload.getType() == MessagePayloadType.ARRAY_BUFFER
-                        && BoundaryInterfaceReflectionUtil.containsFeature(
-                                mSupportedFeatures, Features.WEB_MESSAGE_ARRAY_BUFFER))) {
+        if (supportsPayloadType(payload.getType())) {
             mImpl.onPostMessage(
                     mWebView,
                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -80,5 +77,18 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
                     "The AndroidX doesn't support payload type: "
                             + MessagePayload.typeToString(payload.getType()));
         }
+    }
+
+    private boolean supportsPayloadType(@MessagePayloadType int type) {
+        return switch (type) {
+            case MessagePayloadType.STRING -> true;
+            case MessagePayloadType.ARRAY_BUFFER ->
+                BoundaryInterfaceReflectionUtil.containsFeature(
+                    mSupportedFeatures, Features.WEB_MESSAGE_ARRAY_BUFFER);
+            case MessagePayloadType.SHARED_ARRAY_BUFFER ->
+                BoundaryInterfaceReflectionUtil.containsFeature(
+                    mSupportedFeatures, Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER);
+            default -> false;
+        };
     }
 }

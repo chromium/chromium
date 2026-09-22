@@ -11,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebMessagePayload. */
 @NullMarked
@@ -22,12 +23,19 @@ public interface WebMessagePayloadBoundaryInterface extends FeatureFlagHolderBou
 
     byte[] getAsArrayBuffer();
 
+    /* SharedArrayBuffer */ InvocationHandler getAsSharedArrayBuffer();
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
             flag = true,
-            value = {WebMessagePayloadType.TYPE_STRING, WebMessagePayloadType.TYPE_ARRAY_BUFFER})
+            value = {
+              WebMessagePayloadType.TYPE_STRING,
+              WebMessagePayloadType.TYPE_ARRAY_BUFFER,
+              WebMessagePayloadType.TYPE_SHARED_ARRAY_BUFFER
+            })
     @interface WebMessagePayloadType {
         int TYPE_STRING = 0;
         int TYPE_ARRAY_BUFFER = 1;
+        int TYPE_SHARED_ARRAY_BUFFER = 2;
     }
 }

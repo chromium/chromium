@@ -68,6 +68,18 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
         }
     }
 
+    @NonNull
+    @Override
+    public /* SharedArrayBuffer */ InvocationHandler getAsSharedArrayBuffer() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                    "WebView.APICall.AndroidX.WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER);
+            return SupportLibSharedArrayBufferAdapter.getInvocationHandler(
+                    mMessagePayload.getAsSharedArrayBuffer());
+        }
+    }
+
     public /* MessagePayload */ InvocationHandler getInvocationHandler() {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(this);
     }
@@ -75,7 +87,10 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
     public static MessagePayload fromWebMessageBoundaryInterface(
             @NonNull WebMessageBoundaryInterface boundaryInterface) {
         if (BoundaryInterfaceReflectionUtil.containsFeature(
-                boundaryInterface.getSupportedFeatures(), Features.WEB_MESSAGE_ARRAY_BUFFER)) {
+                        boundaryInterface.getSupportedFeatures(), Features.WEB_MESSAGE_ARRAY_BUFFER)
+                || BoundaryInterfaceReflectionUtil.containsFeature(
+                        boundaryInterface.getSupportedFeatures(),
+                        Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER)) {
             // MessagePayload API is supported by AndroidX.
             final MessagePayload messagePayload =
                     SupportLibWebMessagePayloadAdapter.toMessagePayload(
@@ -103,6 +118,10 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
                 return new MessagePayload(webMessagePayloadBoundaryInterface.getAsString());
             case WebMessagePayloadType.TYPE_ARRAY_BUFFER:
                 return new MessagePayload(webMessagePayloadBoundaryInterface.getAsArrayBuffer());
+            case WebMessagePayloadType.TYPE_SHARED_ARRAY_BUFFER:
+                return new MessagePayload(
+                        SupportLibSharedArrayBufferAdapter.toSharedArrayBuffer(
+                                webMessagePayloadBoundaryInterface.getAsSharedArrayBuffer()));
             default:
                 // String and ArrayBuffer are covered by WEB_MESSAGE_GET_MESSAGE_PAYLOAD feature.
                 // Please add new feature flags for new types.
