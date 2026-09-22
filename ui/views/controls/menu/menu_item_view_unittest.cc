@@ -403,8 +403,11 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
  protected:
   MenuItemView* test_item() { return test_item_; }
+  TestMenuItemView* root_menu() { return root_menu_.get(); }
 
   void PerformLayout() {
+    root_menu_->UpdateEmptyMenusAndMetrics();
+
     // SubmenuView does not lay out its children unless it is contained in a
     // view, so make a simple container for it.
     SubmenuView* submenu = root_menu_->GetSubmenu();
@@ -453,6 +456,175 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsMarginsAndPreferredSize) {
   EXPECT_GE(actual_margins.bottom(), child_margins.bottom());
   EXPECT_EQ(child_bounds.width(), child_size.width());
   EXPECT_EQ(child_bounds.height(), child_size.height());
+}
+
+// Tests that MenuItemView takes into account both its border and child margins
+// when laying out in container mode.
+TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsBorderAndMargins) {
+  test_item()->set_vertical_margin(0);
+  View* child_view = test_item()->AddChildView(std::make_unique<View>());
+
+  const gfx::Insets border_insets = gfx::Insets::TLBR(4, 8, 6, 12);
+  test_item()->SetBorder(views::CreateEmptyBorder(border_insets));
+
+  const gfx::Size child_size(200, 50);
+  const auto child_margins = gfx::Insets::VH(5, 10);
+  child_view->SetPreferredSize(child_size);
+  child_view->SetProperty(kMarginsKey, child_margins);
+
+  PerformLayout();
+
+  // In container mode, child view bounds are positioned within
+  // GetContentsBounds(), which accounts for the border insets.
+  const gfx::Rect child_bounds = child_view->bounds();
+  const gfx::Insets actual_margins =
+      test_item()->GetContentsBounds().InsetsFrom(child_bounds);
+  EXPECT_GE(actual_margins.left(), child_margins.left());
+  EXPECT_GE(actual_margins.right(), child_margins.right());
+  EXPECT_GE(actual_margins.top(), child_margins.top());
+  EXPECT_GE(actual_margins.bottom(), child_margins.bottom());
+  EXPECT_EQ(child_bounds.width(),
+            test_item()->GetContentsBounds().width() - child_margins.width());
+  EXPECT_EQ(child_bounds.height(),
+            test_item()->GetContentsBounds().height() - child_margins.height());
+
+  // Check that the total offset from the MenuItemView bounds includes both
+  // the border insets and the child margins.
+  const gfx::Insets total_insets =
+      test_item()->GetLocalBounds().InsetsFrom(child_bounds);
+  EXPECT_EQ(total_insets.left(), border_insets.left() + child_margins.left());
+  EXPECT_EQ(total_insets.right(),
+            border_insets.right() + child_margins.right());
+  EXPECT_EQ(total_insets.top(), border_insets.top() + child_margins.top());
+  EXPECT_EQ(total_insets.bottom(),
+            border_insets.bottom() + child_margins.bottom());
+
+  // Also verify GetContentStart and GetItemHorizontalBorder reflect the border.
+  EXPECT_EQ(border_insets.left(), test_item()->GetContentStart());
+  EXPECT_EQ(
+      border_insets.right() - MenuConfig::instance().item_horizontal_padding,
+      test_item()->GetItemHorizontalBorder());
+}
+
+// Tests that CalculateProposedLayout accurately computes child bounds for a
+// container MenuItemView with a border.
+TEST_F(MenuItemViewLayoutTest, ContainerCalculateProposedLayoutWithBorder) {
+  const gfx::Insets border_insets = gfx::Insets::TLBR(3, 7, 5, 11);
+  test_item()->SetBorder(views::CreateEmptyBorder(border_insets));
+  test_item()->set_vertical_margin(0);
+
+  View* child_view = test_item()->AddChildView(std::make_unique<View>());
+  const gfx::Insets child_margins = gfx::Insets::TLBR(2, 4, 6, 8);
+  child_view->SetProperty(kMarginsKey, child_margins);
+
+  const gfx::Size test_size(200, 60);
+  test_item()->SetSize(test_size);
+
+  views::ProposedLayout layout =
+      test_item()->CalculateProposedLayout(views::SizeBounds(test_size));
+  EXPECT_EQ(test_size, layout.host_size);
+
+  const auto child_layout = std::ranges::find(layout.child_layouts, child_view,
+                                              &views::ChildLayout::child_view);
+  ASSERT_NE(child_layout, layout.child_layouts.end());
+
+  const gfx::Rect expected_bounds(
+      border_insets.left() + child_margins.left(),
+      border_insets.top() + child_margins.top(),
+      test_size.width() - border_insets.width() - child_margins.width(),
+      test_size.height() - border_insets.height() - child_margins.height());
+  EXPECT_EQ(expected_bounds, child_layout->bounds);
+}
+
+// Tests that a border on the root menu item correctly updates SubmenuView
+// metrics and propagates to the layout of submenu items (arrow, checkbox icon,
+// and trailing child views).
+TEST_F(MenuItemViewLayoutTest, RootMenuBorderAffectsSubmenuMetricsAndLayout) {
+  const gfx::Insets border_insets = gfx::Insets::TLBR(2, 16, 2, 20);
+  root_menu()->SetBorder(views::CreateEmptyBorder(border_insets));
+
+  EXPECT_EQ(border_insets.left(), root_menu()->GetContentStart());
+  const MenuConfig& config = MenuConfig::instance();
+  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
+            root_menu()->GetItemHorizontalBorder());
+
+  // Append a submenu item with an arrow.
+  MenuItemView* submenu_item = root_menu()->AppendSubMenu(2, u"Submenu");
+  submenu_item->AppendMenuItem(3, u"Submenu Item");
+
+  // Append a checkbox item.
+  MenuItemView* check_item = root_menu()->AppendMenuItemImpl(
+      4, u"Checkbox", ui::ImageModel(), MenuItemView::Type::kCheckbox);
+
+  // Append an item with a trailing child view.
+  MenuItemView* item_with_child =
+      root_menu()->AppendMenuItem(5, u"Item with child");
+  const gfx::Size child_size(30, 20);
+  View* trailing_child =
+      item_with_child->AddChildView(std::make_unique<View>());
+  trailing_child->SetPreferredSize(child_size);
+
+  PerformLayout();
+
+  SubmenuView* submenu = root_menu()->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  // Submenu metrics should reflect the root menu's border.
+  EXPECT_EQ(border_insets.left(), submenu->content_start());
+  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
+            submenu->item_horizontal_border());
+  EXPECT_EQ(border_insets.right(), submenu->trailing_padding());
+
+  // 1. Verify submenu arrow layout in `submenu_item`.
+  ImageView* arrow_view =
+      TestMenuItemView::submenu_arrow_image_view(submenu_item);
+  ASSERT_TRUE(arrow_view);
+  const int expected_right_border =
+      submenu->item_horizontal_border() + config.arrow_to_edge_padding;
+  const int expected_arrow_x =
+      submenu_item->width() - expected_right_border - config.arrow_size;
+  EXPECT_EQ(expected_arrow_x, arrow_view->x());
+
+  // 2. Verify check icon layout in `check_item`.
+  ImageView* check_icon = TestMenuItemView::radio_check_image_view(check_item);
+  ASSERT_TRUE(check_icon);
+  EXPECT_EQ(submenu->content_start(), check_icon->x());
+
+  // 3. Verify trailing child view layout in `item_with_child`.
+  // By default, children_use_full_width is false, so it should align with
+  // trailing_padding.
+  EXPECT_EQ(item_with_child->width() - submenu->trailing_padding(),
+            trailing_child->bounds().right());
+
+  // When children_use_full_width is true, it should align to the edge of the
+  // item.
+  item_with_child->set_children_use_full_width(true);
+  item_with_child->InvalidateLayout();
+  item_with_child->DeprecatedLayoutImmediately();
+  EXPECT_EQ(item_with_child->width(), trailing_child->bounds().right());
+}
+
+// Tests that a MenuItemView of type kTitle with a custom border correctly
+// uses the border's left inset for content start and positioning.
+TEST_F(MenuItemViewLayoutTest, TitleItemWithBorder) {
+  MenuItemView* title_item = root_menu()->AppendTitle(u"Header Title");
+
+  const gfx::Insets border_insets = gfx::Insets::TLBR(6, 24, 6, 28);
+  title_item->SetBorder(views::CreateEmptyBorder(border_insets));
+
+  EXPECT_EQ(border_insets.left(), title_item->GetContentStart());
+  const MenuConfig& config = MenuConfig::instance();
+  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
+            title_item->GetItemHorizontalBorder());
+
+  PerformLayout();
+
+  // Verify that an item without a border uses the default content start.
+  MenuItemView* title_without_border =
+      root_menu()->AppendTitle(u"No Border Title");
+  EXPECT_EQ(title_without_border->GetItemHorizontalBorder() +
+                config.item_horizontal_padding,
+            title_without_border->GetContentStart());
 }
 
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
