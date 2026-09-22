@@ -27,7 +27,6 @@ export interface SignInPromoRefreshElement {
     rightAnimation: CrLottieElement,
     bottomAnimation: CrLottieElement,
     acceptSignInButton: CrButtonElement,
-    buttonRow: HTMLElement,
     declineSignInButton: CrButtonElement,
     disclaimerText: HTMLElement,
     managedDeviceDisclaimer: HTMLElement,

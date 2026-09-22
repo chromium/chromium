@@ -51,28 +51,26 @@ export function getHtml(this: SignInPromoRefreshElement) {
   </div>
 </div>
 
-<div id="buttonRow" class="fade-in">
-  <div id="buttonContainer">
+<div id="buttonContainer" class="fade-in">
 <if expr="not is_win">
-    <cr-button id="declineSignInButton" class="tangible-button tonal-button"
-        ?disabled="${this.shouldDisableButtons_()}"
-        @click="${this.onDeclineSignInButtonClick_}">
-      $i18n{declineSignInButtonTitle}
-    </cr-button>
+  <cr-button id="declineSignInButton" class="tangible-button tonal-button"
+      ?disabled="${this.shouldDisableButtons_()}"
+      @click="${this.onDeclineSignInButtonClick_}">
+    $i18n{declineSignInButtonTitle}
+  </cr-button>
 </if>
-    <cr-button id="acceptSignInButton" class="tangible-button action-button"
-        ?disabled="${this.shouldDisableButtons_()}"
-        @click="${this.onAcceptSignInButtonClick_}">
-      $i18n{acceptSignInButtonTitle}
-    </cr-button>
+  <cr-button id="acceptSignInButton" class="tangible-button action-button"
+      ?disabled="${this.shouldDisableButtons_()}"
+      @click="${this.onAcceptSignInButtonClick_}">
+    $i18n{acceptSignInButtonTitle}
+  </cr-button>
 <if expr="is_win">
-    <cr-button id="declineSignInButton" class="tangible-button tonal-button"
-        ?disabled="${this.shouldDisableButtons_()}"
-        @click="${this.onDeclineSignInButtonClick_}">
-      $i18n{declineSignInButtonTitle}
-    </cr-button>
+  <cr-button id="declineSignInButton" class="tangible-button tonal-button"
+      ?disabled="${this.shouldDisableButtons_()}"
+      @click="${this.onDeclineSignInButtonClick_}">
+    $i18n{declineSignInButtonTitle}
+  </cr-button>
 </if>
-  </div>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

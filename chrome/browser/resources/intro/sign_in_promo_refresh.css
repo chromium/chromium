@@ -278,12 +278,6 @@ h2 {
   line-height: 20px;
 }
 
-#buttonRow {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-}
-
 #buttonContainer {
   display: flex;
   flex-direction: row;
