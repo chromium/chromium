@@ -14,9 +14,12 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/disable_reason.h"
@@ -151,6 +154,37 @@ TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_MustRemainInstalled) {
   ExtensionSystem::Get(profile())->management_policy()->RegisterProvider(
       &provider);
 
+  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+}
+
+TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_ParentalControls) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kCWSReviewPromptingNativeUI);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cws_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(identity_manager);
+
+  // An account must be signed in for parental controls to apply.
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_is_subject_to_parental_controls(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  mutator.set_is_subject_to_parental_controls(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
 }
 

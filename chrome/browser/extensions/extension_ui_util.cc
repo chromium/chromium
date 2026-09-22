@@ -11,10 +11,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -167,6 +171,15 @@ bool ShouldShowReviewPrompt(const Extension& extension, Profile& profile) {
 
   if (extension.location() != mojom::ManifestLocation::kInternal ||
       !extension.from_webstore()) {
+    return false;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+  // Prompts are suppressed when capabilities are unknown (fail closed).
+  if (identity_manager &&
+      supervised_user::IsPrimaryAccountSubjectToParentalControls(
+          identity_manager) != signin::Tribool::kFalse) {
     return false;
   }
 
