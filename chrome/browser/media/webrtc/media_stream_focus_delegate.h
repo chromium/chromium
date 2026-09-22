@@ -53,7 +53,7 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
   void ResetExplicitDecisionForTesting() { explicit_decision_ = false; }
 
  private:
-  bool IsWidgetFocused() const;
+  bool IsBrowserActive() const;
   void FocusTab(const content::DesktopMediaID& media_id);
   void FocusWindow(const content::DesktopMediaID& media_id);
 

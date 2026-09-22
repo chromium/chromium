@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
 
 namespace ui_test_utils {
 
@@ -26,6 +27,9 @@ void HideNativeWindowAura(gfx::NativeWindow window) {
 
 bool ShowAndFocusNativeWindowAura(gfx::NativeWindow window) {
   window->Show();
+  if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window)) {
+    widget->Activate();
+  }
   window->Focus();
   return true;
 }

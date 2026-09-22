@@ -115,6 +115,11 @@ BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
 // resize.
 BASE_FEATURE(kThrottleResizeIpc, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, RenderWidgetHostViewMac::HasFocus() returns false if it is in
+// a non-key NSWindow. This aligns with Aura behavior. crbug.com/441089142.
+BASE_FEATURE(kRWHVMacHasFocusReturnsFalseForNonKeyWindow,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Extract any events in `visible_time_request` that should go to the
 // DelegatedFrameHost and sends them to `delegated_frame_host`. Modifies
 // `visible_time_request` in place.
@@ -683,6 +688,12 @@ void RenderWidgetHostViewMac::Focus() {
 }
 
 bool RenderWidgetHostViewMac::HasFocus() {
+  if (base::FeatureList::IsEnabled(
+          kRWHVMacHasFocusReturnsFalseForNonKeyWindow)) {
+    // In headless mode the NSView is not in a NSWindow.
+    return is_first_responder_ && (IsHeadless() || is_window_key_);
+  }
+
   return is_first_responder_;
 }
 

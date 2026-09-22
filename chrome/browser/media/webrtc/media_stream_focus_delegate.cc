@@ -85,8 +85,8 @@ void MediaStreamFocusDelegate::SetFocus(const content::DesktopMediaID& media_id,
     return;  // Window of opportunity to change focus now closed - we're done.
   }
 
-  if (!IsWidgetFocused()) {
-    // Capturing window not focused - likely the user has alt-tabbed away.
+  if (!IsBrowserActive()) {
+    // Capturing window not active - likely the user has alt-tabbed away.
     return;
   }
 
@@ -105,17 +105,20 @@ void MediaStreamFocusDelegate::OnTabStripModelChanged(
   focus_window_of_opportunity_open_ = false;
 }
 
-bool MediaStreamFocusDelegate::IsWidgetFocused() const {
+bool MediaStreamFocusDelegate::IsBrowserActive() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(capturing_web_contents_);  // Tested by caller.
 
-  content::RenderWidgetHostView* const rwhv =
-      capturing_web_contents_->GetRenderWidgetHostView();
-  if (!rwhv) {
-    return false;
-  }
-
-  return rwhv->HasFocus();
+  // Use BrowserWindowInterface::IsActive() rather than
+  // RenderWidgetHostView::HasFocus(). When the screen picker dialog is accepted
+  // and closing (e.g. during the asynchronous modal close animation on macOS),
+  // the child modal dialog window may still be the OS key window when
+  // SetFocus() runs, causing RenderWidgetHostView::HasFocus() to return false
+  // even though the browser window is still logically active.
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          capturing_web_contents_.get());
+  return browser && browser->IsActive();
 }
 
 void MediaStreamFocusDelegate::FocusTab(

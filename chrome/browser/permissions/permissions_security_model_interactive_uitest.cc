@@ -22,6 +22,7 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -59,6 +60,10 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -173,6 +178,7 @@ content::WebContents* OpenPopup(BrowserWindowInterface* browser,
       contents, content::JsReplace("window.open($1, '', '[]');", url));
   BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_NE(popup, browser);
+  EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup));
   content::WebContents* popup_contents =
       popup->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
@@ -307,6 +313,10 @@ void VerifyPermission(content::WebContents* opener_or_embedder_contents,
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
   // Move the web contents to the foreground.
+  BrowserWindowInterface* opener_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          opener_or_embedder_contents);
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(opener_browser));
   opener_rfh->GetView()->Focus();
   ASSERT_TRUE(opener_rfh->GetView()->HasFocus());
   // Request permission on the opener or embedder contents.
@@ -323,6 +333,10 @@ void VerifyPermission(content::WebContents* opener_or_embedder_contents,
   EXPECT_EQ(true, content::EvalJs(test_rfh, check_permission_script));
 
   // Request permission on the test RFH.
+  BrowserWindowInterface* test_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          content::WebContents::FromRenderFrameHost(test_rfh));
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(test_browser));
   test_rfh->GetView()->Focus();
   ASSERT_TRUE(test_rfh->GetView()->HasFocus());
   EXPECT_EQ("granted", content::EvalJs(test_rfh, request_permission_script));
@@ -350,6 +364,10 @@ void VerifyPopupWindowGetUserMedia(content::WebContents* opener_contents,
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
   // Move the web contents to the foreground.
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          popup_contents);
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup_browser));
   popup_rfh->GetView()->Focus();
   ASSERT_TRUE(popup_rfh->GetView()->HasFocus());
   // Request permission on the popup RenderFrameHost.
@@ -482,6 +500,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenAboutBlank) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland does not support programmatic window activation.";
+  }
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -500,6 +523,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenAboutBlankToUseQuiet) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland does not support programmatic window activation.";
+  }
+#endif
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kEnableQuietNotificationPermissionUi, true);
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -562,6 +590,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenBlob) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland does not support programmatic window activation.";
+  }
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
@@ -605,6 +638,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenFileSystemBrowserNavigation) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland does not support programmatic window activation.";
+  }
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
