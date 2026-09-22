@@ -1201,7 +1201,7 @@ void BubbleDialogModelHost::OnDialogButtonChanged() {
 
 void BubbleDialogModelHost::UpdateWindowIcon(
     const ui::ColorProvider* color_provider) {
-  if (!ShouldShowWindowIcon()) {
+  if (!ShouldShowWindowIcon() || !model_) {
     return;
   }
   const ui::ImageModel dark_mode_icon =
