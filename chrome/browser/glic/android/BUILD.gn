@@ -142,6 +142,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicMicPermissionDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtils.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
@@ -261,6 +262,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicBottomSheetContentUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicButtonStateControllerTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicMicPermissionDialogCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
@@ -338,6 +340,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragmentRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicAndroidMojoIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicMicPermissionDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonRenderTest.java",
   ]
   deps = [
@@ -363,6 +366,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/widget/android:java",
