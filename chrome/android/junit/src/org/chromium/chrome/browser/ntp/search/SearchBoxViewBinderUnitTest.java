@@ -192,4 +192,15 @@ public class SearchBoxViewBinderUnitTest {
         mSearchBoxLayout.mAiChip.performClick();
         verify(mOnClickListener).onClick(mSearchBoxLayout.mAiChip);
     }
+
+    @Test
+    public void testSetSearchBoxClickListener() {
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mOnClickListener);
+        mSearchBoxLayout.mHintTextView.performClick();
+        verify(mOnClickListener).onClick(mSearchBoxLayout.mHintTextView);
+        assertTrue(mSearchBoxLayout.mHintTextView.isFocusable());
+
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, null);
+        assertTrue(mSearchBoxLayout.mHintTextView.isFocusable());
+    }
 }
