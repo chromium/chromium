@@ -7,10 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/enterprise/data_protection/ui/watermark_consumer.h"
-
 // View containing a watermark text overlaid on top of the other content.
-@interface WatermarkView : UIView <WatermarkConsumer>
+@interface WatermarkView : UIView
 
 // The watermark text to display.
 @property(nonatomic, copy) NSString* text;

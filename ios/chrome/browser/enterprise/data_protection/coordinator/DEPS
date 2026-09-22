@@ -1,5 +1,10 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/overlays/model/public/overlay_request.h",
+  "+ios/chrome/browser/overlays/model/public/overlay_request_config.h",
+  "+ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h",
+  "+ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h",
+  "+ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h",
   "+ios/chrome/browser/tabs/model",
   # keep-sorted end
 ]

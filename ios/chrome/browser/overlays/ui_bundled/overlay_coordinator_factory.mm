@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/enterprise/data_protection/coordinator/watermark_overlay_coordinator.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
@@ -87,8 +88,7 @@
       }
       return [AlertOverlayCoordinator class];
     case OverlayModality::kWatermark:
-      NOTIMPLEMENTED();
-      return nil;
+      return [WatermarkOverlayCoordinator class];
     case OverlayModality::kInfobarBanner:
       if ([TranslateInfobarPlaceholderOverlayCoordinator requestSupport]
               ->IsRequestSupported(request)) {

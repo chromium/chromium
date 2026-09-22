@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/alert_view/ui_bundled",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
+  "+ios/chrome/browser/enterprise/data_protection/coordinator/watermark_overlay_coordinator.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/infobars/model",

@@ -19,6 +19,7 @@ source_set("ui_bundled") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/explain_with_gemini/coordinator",
     "//ios/chrome/browser/intelligence/features",

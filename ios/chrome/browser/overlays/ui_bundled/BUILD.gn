@@ -32,6 +32,7 @@ source_set("ui_bundled") {
     ":coordinators",
     ":ui",
     "//base",
+    "//ios/chrome/browser/enterprise/data_protection/coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",

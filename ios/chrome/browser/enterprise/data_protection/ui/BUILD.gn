@@ -4,6 +4,8 @@
 source_set("ui") {
   sources = [
     "watermark_consumer.h",
+    "watermark_overlay_view_controller.h",
+    "watermark_overlay_view_controller.mm",
     "watermark_view.h",
     "watermark_view.mm",
     "watermark_view_utils.h",
@@ -14,7 +16,10 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "watermark_view_unittest.mm" ]
+  sources = [
+    "watermark_overlay_view_controller_unittest.mm",
+    "watermark_view_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//testing/gtest",

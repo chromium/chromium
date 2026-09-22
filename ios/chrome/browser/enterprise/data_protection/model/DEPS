@@ -5,6 +5,7 @@ include_rules = [
   "+components/enterprise/connectors/core",
   "+components/prefs",
   "+ios/chrome/browser/enterprise/connectors",
+  "+ios/chrome/browser/overlays/model/public/overlay_request_config.h",
   "+ios/chrome/browser/safe_browsing/model",
   "+net/base/url_util.h",
   # keep-sorted end

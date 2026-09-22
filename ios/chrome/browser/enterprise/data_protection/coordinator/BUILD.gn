@@ -6,6 +6,10 @@ source_set("coordinator") {
   sources = [
     "data_protection_scene_agent.h",
     "data_protection_scene_agent.mm",
+    "watermark_overlay_coordinator.h",
+    "watermark_overlay_coordinator.mm",
+    "watermark_overlay_mediator.h",
+    "watermark_overlay_mediator.mm",
   ]
   deps = [
     "//base",
@@ -20,18 +24,24 @@ source_set("coordinator") {
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/model",
     "//ios/chrome/browser/enterprise/data_protection/ui",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/tabs/model:dependency_installer",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/screenshot_protection:screenshot_protection_api",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "data_protection_scene_agent_unittest.mm" ]
+  sources = [
+    "data_protection_scene_agent_unittest.mm",
+    "watermark_overlay_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
@@ -39,11 +49,14 @@ source_set("unit_tests") {
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/ui",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/coordinator/scene/test",

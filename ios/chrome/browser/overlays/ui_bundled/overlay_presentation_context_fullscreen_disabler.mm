@@ -29,6 +29,11 @@ OverlayContainerFullscreenDisabler::FullscreenDisabler::FullscreenDisabler(
     Browser* browser,
     OverlayModality modality)
     : browser_(browser) {
+  // Watermarks are passive, non-interactive, and persistent, so showing them
+  // should not disable fullscreen.
+  if (modality == OverlayModality::kWatermark) {
+    return;
+  }
   OverlayPresenter* overlay_presenter =
       OverlayPresenter::FromBrowser(browser, modality);
   DCHECK(overlay_presenter);

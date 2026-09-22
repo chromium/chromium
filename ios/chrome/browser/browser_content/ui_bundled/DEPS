@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h",
+  "+ios/chrome/browser/enterprise/data_protection/public/features.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/explain_with_gemini/coordinator",
   "+ios/chrome/browser/intelligence/features/features.h",
