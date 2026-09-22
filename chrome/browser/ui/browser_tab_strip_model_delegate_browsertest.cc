@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -22,6 +23,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace chrome {
 
@@ -216,6 +221,11 @@ class IsolatedBrowserTabStripModelDelegateWithEmbeddedServerTest
         enterprise_isolated_mode::switches::
             kForceEnterpriseIsolatedModeReplacesIncognito);
   }
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  ScopedChannelOverride channel_override_{ScopedChannelOverride::Channel::kDev};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -423,6 +433,11 @@ class IsolatedBrowserTabStripModelDelegateTest
         enterprise_isolated_mode::switches::
             kForceEnterpriseIsolatedModeReplacesIncognito);
   }
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  ScopedChannelOverride channel_override_{ScopedChannelOverride::Channel::kDev};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedBrowserTabStripModelDelegateTest,
