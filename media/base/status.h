@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
@@ -404,6 +405,16 @@ class MEDIA_EXPORT TypedStatus {
     using ErrorType = TypedStatus;
 
     ~Or() = default;
+
+    // Create an Or type implicitly from a base::expected. This only exists
+    // to facilitate the eventual removal of this 'Or' class.
+    Or(base::expected<O, TypedStatus<T>>&& expected) {
+      if (expected.has_value()) {
+        value_ = std::move(expected).value();
+      } else {
+        error_ = std::move(expected).error();
+      }
+    }
 
     // Create an Or type implicitly from a TypedStatus
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
