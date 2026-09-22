@@ -21,16 +21,8 @@ const int kLeftRightPadding = 2;
 const int kBetweenSpacing = 1;
 const int kBorderRadius = 2;
 const int kCandidateSquareSide = 24;
-const views::Label::CustomFont kCandidateTextFont = {
-    .font_list = gfx::FontList(gfx::FontList({"Roboto"},
-                                             gfx::Font::NORMAL,
-                                             16,
-                                             gfx::Font::Weight::MEDIUM))};
-const views::Label::CustomFont kIndexFont = {
-    .font_list = gfx::FontList(gfx::FontList({"Roboto"},
-                                             gfx::Font::NORMAL,
-                                             10,
-                                             gfx::Font::Weight::MEDIUM))};
+const int kCandidateTextFontSize = 16;
+const int kIndexTextFontSize = 10;
 
 IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
     PressedCallback callback,
@@ -82,8 +74,10 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
                                  views::BoxLayoutFlexSpecification());
   candidate_wrapper->SetPreferredSize(
       gfx::Size(kCandidateSquareSide, kCandidateSquareSide));
-  candidate_wrapper->AddChildView(
-      std::make_unique<views::Label>(candidate_text, kCandidateTextFont));
+  candidate_wrapper->AddChildView(std::make_unique<views::Label>(
+      candidate_text, views::Label::CustomFont{gfx::FontList(
+                          {"Roboto"}, gfx::Font::NORMAL, kCandidateTextFontSize,
+                          gfx::Font::Weight::MEDIUM)}));
 
   // Displaying the index (i.e. the "1" in the diagram below).
   //   +---+
@@ -91,8 +85,10 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
   //   |   |
   //   | 1 | <-- label being created
   //   +---+
-  auto* candidate_text_label =
-      AddChildView(std::make_unique<views::Label>(index_text, kIndexFont));
+  auto* candidate_text_label = AddChildView(std::make_unique<views::Label>(
+      index_text, views::Label::CustomFont{gfx::FontList(
+                      {"Roboto"}, gfx::Font::NORMAL, kIndexTextFontSize,
+                      gfx::Font::Weight::MEDIUM)}));
   candidate_text_label->SetEnabledColor(
       ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
 }
