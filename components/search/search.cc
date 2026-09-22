@@ -6,11 +6,9 @@
 
 #include "build/build_config.h"
 #include "components/search_engines/search_engine_type.h"
-#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "url/gurl.h"
 
 namespace search {
 
@@ -32,35 +30,8 @@ bool DefaultSearchProviderIsGoogle(
 
 bool TemplateURLIsGoogle(const TemplateURL* template_url,
                          const SearchTermsData& search_terms_data) {
-  if (!template_url ||
-      template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE) {
-    return false;
-  }
-
-  // The search URL must be valid and use HTTPS.
-  const GURL search_url = template_url->GenerateSearchURL(search_terms_data);
-  if (!search_url.is_valid() || !search_url.SchemeIsCryptographic()) {
-    return false;
-  }
-
-  // If a suggestion URL is configured, it must also be valid, use HTTPS, and
-  // resolve to Google. This prevents engines with a Google search endpoint but
-  // an external suggestion endpoint (e.g. spoofed OpenSearch engines) from
-  // passing as trusted Google engines and injecting privileged actions or
-  // answer templates.
-  if (!template_url->suggestions_url().empty()) {
-    const GURL suggest_url =
-        template_url->GenerateSuggestionURL(search_terms_data);
-    if (!suggest_url.is_valid() || !suggest_url.SchemeIsCryptographic() ||
-        search_engine_utils::GetEngineType(suggest_url) !=
-            SEARCH_ENGINE_GOOGLE) {
-      return false;
-    }
-  }
-
-  // When no suggestion URL is specified, trust relies on the verified search
-  // URL.
-  return true;
+  return template_url != nullptr &&
+         template_url->GetEngineType(search_terms_data) == SEARCH_ENGINE_GOOGLE;
 }
 
 }  // namespace search
