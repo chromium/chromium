@@ -186,7 +186,7 @@ TestSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
   base::OnceCallback<void(bool, SBThreatType)>
       trust_safety_sentiment_service_trigger = base::NullCallback();
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  if (is_safe_browsing_surveys_enabled) {
+  if (is_safe_browsing_surveys_enabled && mock_sentiment_service_) {
     trust_safety_sentiment_service_trigger =
         base::BindOnce(&MockTrustSafetySentimentService::
                            InteractedWithSafeBrowsingInterstitial,
