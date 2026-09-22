@@ -166,6 +166,7 @@ AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
   AutocompleteMatch match(this, score, /*deletable=*/false,
                           AutocompleteMatchType::TAB_GROUP);
   match.contents = group.title();
+  match.fill_into_edit = match.contents;
   auto contents_terms = FindTermMatches(input.text(), match.contents);
   match.contents_class = ClassifyTermMatches(
       contents_terms, match.contents.size(), ACMatchClassification::MATCH,

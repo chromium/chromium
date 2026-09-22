@@ -90,7 +90,7 @@ public class AutocompleteMatchBuilder {
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
         mSerializedAnswerTemplate = null;
-        mFillIntoEdit = null;
+        mFillIntoEdit = "";
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
         mImageDominantColor = null;

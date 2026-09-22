@@ -90,6 +90,7 @@ AutocompleteMatch CreateCrossDeviceTabMatch(
       match.destination_url, format_types, base::UnescapeRule::SPACES,
       /*new_parsed=*/nullptr, /*prefix_end=*/nullptr,
       /*offset_for_adjustment=*/nullptr);
+  match.fill_into_edit = match.contents;
   match.contents_class = ClassifyTermMatches(
       /*matches=*/{}, match.contents.length(), ACMatchClassification::NONE,
       ACMatchClassification::URL);

@@ -165,7 +165,7 @@ public class AutocompleteMatch {
                 // When parsing error occurs, leave template as null.
             }
         }
-        mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
+        mFillIntoEdit = fillIntoEdit;
         assert url != null;
         mUrl = url;
         assert imageUrl != null;
