@@ -13,8 +13,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.hamcrest.Matcher;
-
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
@@ -48,7 +46,10 @@ public class TabGroupPaneStation extends HubBaseStation {
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    Matcher<View> searchBox = withId(R.id.search_box);
+                    // Scoped to the Hub toolbar for the same reason as in
+                    // TabSwitcherStation, and identically to it, so that the Element is
+                    // recognized as shared when moving between Hub panes.
+                    ViewSpec<View> searchBox = toolbarElement.descendant(withId(R.id.search_box));
                     ViewSpec<View> searchLoupe =
                             toolbarElement.descendant(withId(R.id.search_loupe));
                     if (shouldHubSearchBoxBeVisible()) {

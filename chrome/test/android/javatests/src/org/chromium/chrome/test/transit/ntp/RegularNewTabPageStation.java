@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.Condition.whether;
 
@@ -17,6 +20,7 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp.search.SearchBoxContainerView;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -60,7 +64,14 @@ public class RegularNewTabPageStation extends CtaPageStation {
 
         if (!UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
             logoElement = declareView(withId(R.id.search_provider_logo));
-            searchBoxElement = declareView(withId(R.id.search_box));
+            // Scoped to the NTP's own fakebox class: R.id.search_box is also used by the Hub
+            // toolbar (and by bookmarks and settings search boxes), and an unscoped matcher
+            // here would match the Hub's search box while leaving the NTP for the Hub.
+            searchBoxElement =
+                    declareView(
+                            allOf(
+                                    withId(R.id.search_box),
+                                    isAssignableFrom(SearchBoxContainerView.class)));
             ntpMicButtonElement = declareOptionalView(withId(R.id.voice_search_button));
 
             nativePageElement =

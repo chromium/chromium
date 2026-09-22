@@ -81,7 +81,11 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    Matcher<View> searchBox = withId(R.id.search_box);
+                    // Scope to the Hub toolbar: the NTP's fakebox uses the same R.id.search_box,
+                    // so an unscoped matcher also matches the page behind the Hub. That makes the
+                    // declareNoView() exit condition below impossible to fulfill when leaving the
+                    // Hub back to an NTP.
+                    ViewSpec<View> searchBox = toolbarElement.descendant(withId(R.id.search_box));
                     ViewSpec<View> searchLoupe =
                             toolbarElement.descendant(withId(R.id.search_loupe));
                     if (shouldHubSearchBoxBeVisible()) {
