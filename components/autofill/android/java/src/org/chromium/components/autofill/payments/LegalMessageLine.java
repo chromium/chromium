@@ -38,7 +38,6 @@ public class LegalMessageLine {
          * @param end The ending exclusive index of the link position in the text.
          * @param url The URL of the link.
          */
-        @CalledByNative
         public Link(int start, int end, String url) {
             this.start = start;
             this.end = end;
@@ -92,7 +91,6 @@ public class LegalMessageLine {
      *
      * @param link The link to be added.
      */
-    @CalledByNative
     /*package*/ void addLink(Link link) {
         links.add(link);
     }

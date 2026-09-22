@@ -4,12 +4,12 @@
 
 #include "chrome/test/payments/android/payment_request_test_bridge.h"
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/default_conversions.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/test/payment_test_support_jni_headers/PaymentRequestTestBridge_jni.h"
 
 namespace payments {
@@ -19,41 +19,39 @@ void SetUseDelegateOnPaymentRequestForTesting(
     bool is_valid_ssl,
     bool prefs_can_make_payment,
     const std::string& twa_package_name) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_PaymentRequestTestBridge_setUseDelegateForTest(
       env, is_incognito, is_valid_ssl, prefs_can_make_payment,
-      base::android::ConvertUTF8ToJavaString(env, twa_package_name));
+      twa_package_name);
 }
 
 content::WebContents* GetPaymentHandlerWebContentsForTest() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  auto jweb_contents =
-      Java_PaymentRequestTestBridge_getPaymentHandlerWebContentsForTest(env);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
+      Java_PaymentRequestTestBridge_getPaymentHandlerWebContentsForTest(env);
   DCHECK(web_contents);
   return web_contents;
 }
 
 bool ClickPaymentHandlerSecurityIconForTest() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_PaymentRequestTestBridge_clickPaymentHandlerSecurityIconForTest(
       env);
 }
 
 bool ClickPaymentHandlerCloseButtonForTest() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_PaymentRequestTestBridge_clickPaymentHandlerCloseButtonForTest(
       env);
 }
 
 bool CloseDialogForTest() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_PaymentRequestTestBridge_closeDialogForTest(env);
 }
 
 bool ClickSecurePaymentConfirmationOptOutForTest() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_PaymentRequestTestBridge_clickSecurePaymentConfirmationOptOutForTest(
       env);
 }
@@ -95,7 +93,7 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_abort_called,
     base::RepeatingClosure on_complete_called,
     base::RepeatingClosure on_ui_displayed) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   // Store ownership of the callbacks so that we can pass a pointer to Java.
   NativeObserverCallbacks& callbacks = GetNativeObserverCallbacks();
@@ -142,27 +140,24 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
 // we expect to be called multiple times, so the callback object is not
 // destroyed after running it.
 static void JNI_PaymentRequestTestBridge_ResolvePaymentRequestObserverCallback(
-    JNIEnv* env,
     int64_t callback_ptr) {
   auto* callback = reinterpret_cast<base::RepeatingClosure*>(callback_ptr);
   callback->Run();
 }
 
 static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
-    JNIEnv* env,
     int64_t callback_ptr,
-    const base::android::JavaRef<JArray<jstring>>& japp_labels,
-    const base::android::JavaRef<JArray<jstring>>& japp_sublabels,
-    const base::android::JavaRef<JArray<jstring>>& japp_totals) {
-  int32_t app_labels_length = japp_labels.GetLength(env);
-  DCHECK_EQ(app_labels_length, japp_sublabels.GetLength(env));
-  DCHECK_EQ(app_labels_length, japp_totals.GetLength(env));
+    std::vector<std::string>&& app_labels,
+    std::vector<std::string>&& app_sublabels,
+    std::vector<std::string>&& app_totals) {
+  DCHECK_EQ(app_labels.size(), app_sublabels.size());
+  DCHECK_EQ(app_labels.size(), app_totals.size());
 
-  std::vector<AppDescription> descriptions(app_labels_length);
-  for (int i = 0; i < app_labels_length; ++i) {
-    descriptions[i].label = japp_labels.GetAs<std::string>(env, i);
-    descriptions[i].sublabel = japp_sublabels.GetAs<std::string>(env, i);
-    descriptions[i].total = japp_totals.GetAs<std::string>(env, i);
+  std::vector<AppDescription> descriptions(app_labels.size());
+  for (size_t i = 0; i < app_labels.size(); ++i) {
+    descriptions[i].label = std::move(app_labels[i]);
+    descriptions[i].sublabel = std::move(app_sublabels[i]);
+    descriptions[i].total = std::move(app_totals[i]);
   }
 
   auto* callback = reinterpret_cast<SetAppDescriptionsCallback*>(callback_ptr);
@@ -170,7 +165,6 @@ static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
 }
 
 static void JNI_PaymentRequestTestBridge_InvokeBooleanCallback(
-    JNIEnv* env,
     int64_t callback_ptr,
     bool jvalue) {
   auto* callback =

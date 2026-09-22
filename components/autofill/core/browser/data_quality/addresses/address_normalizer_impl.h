@@ -50,16 +50,12 @@ class AddressNormalizerImpl : public AddressNormalizer {
   bool NormalizeAddressSync(AutofillProfile* profile) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
-  void LoadRulesForAddressNormalization(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& region_code);
-  void StartAddressNormalization(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jprofile,
-      int32_t jtimeout_seconds,
-      const base::android::JavaRef<jobject>& jdelegate);
+  void LoadRulesForAddressNormalization(const std::string& region_code);
+  void StartAddressNormalization(const jni_zero::JavaRef<jobject>& jprofile,
+                                 int32_t jtimeout_seconds,
+                                 const jni_zero::JavaRef<jobject>& jdelegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
@@ -89,7 +85,7 @@ class AddressNormalizerImpl : public AddressNormalizer {
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side version of the AddressNormalizer.
-  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);

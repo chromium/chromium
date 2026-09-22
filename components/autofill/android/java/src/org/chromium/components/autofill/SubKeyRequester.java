@@ -8,11 +8,13 @@ import android.text.format.DateUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A class used handle SubKey requests. */
 @JNINamespace("autofill")
@@ -21,14 +23,15 @@ public class SubKeyRequester {
     /** Callback for subKeys request. */
     public interface GetSubKeysRequestDelegate {
         /**
-         * Called when the subkeys are received successfully.
-         * Here the subkeys are admin areas.
+         * Called when the subkeys are received successfully. Here the subkeys are admin areas.
          *
          * @param subKeysCodes The subkeys' codes.
          * @param subKeysNames The subkeys' names.
          */
         @CalledByNative
-        void onSubKeysReceived(String[] subKeysCodes, String[] subKeysNames);
+        void onSubKeysReceived(
+                @JniType("std::vector<std::string>") String @Nullable [] subKeysCodes,
+                @JniType("std::vector<std::string>") String @Nullable [] subKeysNames);
     }
 
     private static int sRequestTimeoutSeconds = 5;
@@ -85,11 +88,12 @@ public class SubKeyRequester {
 
     @NativeMethods
     interface Natives {
-        void loadRulesForSubKeys(long nativeSubKeyRequester, String regionCode);
+        void loadRulesForSubKeys(
+                long nativeSubKeyRequester, @JniType("std::string") String regionCode);
 
         void startRegionSubKeysRequest(
                 long nativeSubKeyRequester,
-                String regionCode,
+                @JniType("std::string") String regionCode,
                 int timeoutSeconds,
                 GetSubKeysRequestDelegate delegate);
 

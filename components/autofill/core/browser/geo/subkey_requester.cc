@@ -24,8 +24,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/default_conversions.h"
+
+// Must come after headers that provide symbols used by @JniType.
 #include "components/autofill/android/main_autofill_jni_headers/SubKeyRequester_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -90,13 +92,12 @@ class SubKeyRequest : public SubKeyRequester::Request {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-void OnSubKeysReceived(base::android::ScopedJavaGlobalRef<jobject> jdelegate,
+void OnSubKeysReceived(jni_zero::ScopedJavaGlobalRef<jobject> jdelegate,
                        const std::vector<std::string>& subkeys_codes,
                        const std::vector<std::string>& subkeys_names) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_GetSubKeysRequestDelegate_onSubKeysReceived(
-      env, jdelegate, base::android::ToJavaArrayOfStrings(env, subkeys_codes),
-      base::android::ToJavaArrayOfStrings(env, subkeys_names));
+      env, jdelegate, subkeys_codes, subkeys_names);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -162,41 +163,26 @@ void SubKeyRequester::CancelPendingGetSubKeys() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject> SubKeyRequester::GetJavaObject() {
+jni_zero::ScopedJavaLocalRef<jobject> SubKeyRequester::GetJavaObject() {
   if (!java_ref_) {
-    java_ref_.Reset(
-        Java_SubKeyRequester_Constructor(base::android::AttachCurrentThread(),
-                                         reinterpret_cast<intptr_t>(this)));
+    java_ref_.Reset(Java_SubKeyRequester_Constructor(
+        jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
   }
-  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+  return jni_zero::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void SubKeyRequester::LoadRulesForSubKeys(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jregion_code) {
-  LoadRulesForRegion(base::android::ConvertJavaStringToUTF8(env, jregion_code));
+void SubKeyRequester::LoadRulesForSubKeys(const std::string& region_code) {
+  LoadRulesForRegion(region_code);
 }
 
 void SubKeyRequester::StartRegionSubKeysRequest(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jregion_code,
+    const std::string& region_code,
     int32_t jtimeout_seconds,
-    const base::android::JavaRef<jobject>& jdelegate) {
-  const std::string region_code =
-      base::android::ConvertJavaStringToUTF8(env, jregion_code);
-
-  base::android::ScopedJavaGlobalRef<jobject> my_jdelegate;
-  my_jdelegate.Reset(env, jdelegate);
-
-  SubKeyReceiverCallback cb =
-      base::BindOnce(&OnSubKeysReceived,
-                     base::android::ScopedJavaGlobalRef<jobject>(my_jdelegate));
+    const jni_zero::JavaRef<jobject>& jdelegate) {
+  SubKeyReceiverCallback cb = base::BindOnce(
+      &OnSubKeysReceived, jni_zero::ScopedJavaGlobalRef<jobject>(jdelegate));
 
   StartRegionSubKeysRequest(region_code, jtimeout_seconds, std::move(cb));
-}
-
-void SubKeyRequester::CancelPendingGetSubKeys(JNIEnv* env) {
-  CancelPendingGetSubKeys();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

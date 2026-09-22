@@ -12,6 +12,7 @@ import android.text.Html;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
@@ -25,9 +26,10 @@ public abstract class IntentHelper {
     private IntentHelper() {}
 
     /**
-     * Triggers a send email intent.  If no application has registered to receive these intents,
-     * this will fail silently.
-     *  @param email The email address to send to.
+     * Triggers a send email intent. If no application has registered to receive these intents, this
+     * will fail silently.
+     *
+     * @param email The email address to send to.
      * @param subject The subject of the email.
      * @param body The body of the email.
      * @param chooserTitle The title of the activity chooser.
@@ -36,7 +38,11 @@ public abstract class IntentHelper {
     @SuppressWarnings("deprecation") // Update usage of Html.fromHtml when API min is 24
     @CalledByNative
     static void sendEmail(
-            String email, String subject, String body, String chooserTitle, String fileToAttach) {
+            @JniType("std::u16string") String email,
+            @JniType("std::u16string") String subject,
+            @JniType("std::u16string") String body,
+            @JniType("std::u16string") String chooserTitle,
+            @JniType("std::u16string") String fileToAttach) {
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("message/rfc822");
         if (!TextUtils.isEmpty(email)) send.putExtra(Intent.EXTRA_EMAIL, new String[] {email});

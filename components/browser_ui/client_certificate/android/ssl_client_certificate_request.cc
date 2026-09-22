@@ -32,16 +32,17 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_platform_key_android.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 
 namespace browser_ui {
 namespace {
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 class SSLClientCertPendingRequests;
 
@@ -167,13 +168,7 @@ static void StartClientCertificateRequest(
   // Build the |key_types| JNI parameter, as a String[]
   std::vector<std::string> key_types = net::SignatureAlgorithmsToJavaKeyTypes(
       request->cert_request_info()->signature_algorithms);
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobjectArray> key_types_ref =
-      base::android::ToJavaArrayOfStrings(env, key_types);
-  if (key_types_ref.is_null()) {
-    LOG(ERROR) << "Could not create key types array (String[])";
-    return;
-  }
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   // Build the |encoded_principals| JNI parameter, as a byte[][]
   ScopedJavaLocalRef<jobjectArray> principals_ref =
@@ -184,18 +179,12 @@ static void StartClientCertificateRequest(
     return;
   }
 
-  // Build the |host_name| and |port| JNI parameters, as a String and
-  // a int32_t.
-  ScopedJavaLocalRef<jstring> host_name_ref =
-      base::android::ConvertUTF8ToJavaString(
-          env, request->cert_request_info()->host_and_port.host());
-
   // Pass the address of the delegate through to Java.
   int64_t request_id = reinterpret_cast<intptr_t>(request.get());
 
   if (!Java_SSLClientCertificateRequest_selectClientCertificate(
-          env, request_id, window->GetJavaObject(), key_types_ref,
-          principals_ref, host_name_ref,
+          env, request_id, window, key_types, principals_ref,
+          request->cert_request_info()->host_and_port.host(),
           request->cert_request_info()->host_and_port.port())) {
     return;
   }
@@ -305,7 +294,7 @@ void ClientCertRequest::OnCancel() {
 
 scoped_refptr<net::SSLPrivateKey> WrapPrivateKeyInBackground(
     scoped_refptr<net::X509Certificate> cert,
-    base::android::ScopedJavaGlobalRef<jobject> key) {
+    jni_zero::ScopedJavaGlobalRef<jobject> key) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   return net::WrapJavaPrivateKey(cert.get(), key);
@@ -371,7 +360,7 @@ static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     return;
   }
 
-  base::android::ScopedJavaGlobalRef<jobject> key_ref(env, private_key_ref);
+  jni_zero::ScopedJavaGlobalRef<jobject> key_ref(env, private_key_ref);
 
   // Wrapping the Java PrivateKey calls Android KeyStore signature and cipher
   // support checks which may involve blocking Binder IPC. Perform wrapping on
@@ -388,8 +377,7 @@ static void NotifyClientCertificatesChanged() {
 }
 
 static void
-JNI_SSLClientCertificateRequest_NotifyClientCertificatesChangedOnIOThread(
-    JNIEnv* env) {
+JNI_SSLClientCertificateRequest_NotifyClientCertificatesChangedOnIOThread() {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
     NotifyClientCertificatesChanged();
   } else {

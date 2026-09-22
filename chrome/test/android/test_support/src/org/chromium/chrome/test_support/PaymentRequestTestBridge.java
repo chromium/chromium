@@ -6,12 +6,12 @@ package org.chromium.chrome.test_support;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
@@ -92,9 +92,8 @@ public class PaymentRequestTestBridge {
             return mPrefsCanMakePayment;
         }
 
-        @Nullable
         @Override
-        public String getTwaPackageName() {
+        public @Nullable String getTwaPackageName() {
             return mTwaPackageName;
         }
     }
@@ -267,7 +266,7 @@ public class PaymentRequestTestBridge {
             boolean isOffTheRecord,
             boolean isValidSsl,
             boolean prefsCanMakePayment,
-            String twaPackageName) {
+            @JniType("std::string") String twaPackageName) {
         ChromePaymentRequestFactory.sDelegateForTest =
                 new ChromePaymentRequestDelegateForTest(
                         isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
@@ -308,7 +307,8 @@ public class PaymentRequestTestBridge {
     }
 
     @CalledByNative
-    private static WebContents getPaymentHandlerWebContentsForTest() {
+    private static @JniType("content::WebContents*") @Nullable WebContents
+            getPaymentHandlerWebContentsForTest() {
         return sUiService.getPaymentHandlerWebContentsForTest();
     }
 
@@ -338,8 +338,7 @@ public class PaymentRequestTestBridge {
         return false;
     }
 
-    @Nullable
-    private static SecurePaymentConfirmationController getSecurePaymentConfirmation() {
+    private static @Nullable SecurePaymentConfirmationController getSecurePaymentConfirmation() {
         ChromePaymentRequestService chromeService =
                 (ChromePaymentRequestService)
                         PaymentRequestService.getBrowserPaymentRequestForTesting();
@@ -354,7 +353,10 @@ public class PaymentRequestTestBridge {
         void resolvePaymentRequestObserverCallback(long callbackPtr);
 
         void setAppDescriptions(
-                long callbackPtr, String[] appLabels, String[] appSublabels, String[] appTotals);
+                long callbackPtr,
+                @JniType("std::vector<std::string>") String[] appLabels,
+                @JniType("std::vector<std::string>") String[] appSublabels,
+                @JniType("std::vector<std::string>") String[] appTotals);
 
         /** The native method responsible for executing RepatingCallback<void(bool)> pointers. */
         void invokeBooleanCallback(long callbackPtr, boolean value);

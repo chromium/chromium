@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -263,23 +264,23 @@ public class SSLClientCertificateRequest {
     /**
      * Create a new asynchronous request to select a client certificate.
      *
-     * @param nativePtr         The native object responsible for this request.
-     * @param window            A WindowAndroid instance.
-     * @param keyTypes          The list of supported key exchange types.
+     * @param nativePtr The native object responsible for this request.
+     * @param window A WindowAndroid instance.
+     * @param keyTypes The list of supported key exchange types.
      * @param encodedPrincipals The list of CA DistinguishedNames.
-     * @param hostName          The server host name is available (empty otherwise).
-     * @param port              The server port if available (0 otherwise).
-     * @return                  true on success.
-     * Note that nativeOnSystemRequestComplete will be called iff this method returns true.
+     * @param hostName The server host name is available (empty otherwise).
+     * @param port The server port if available (0 otherwise).
+     * @return true on success. Note that nativeOnSystemRequestComplete will be called iff this
+     *     method returns true.
      */
     @CalledByNative
     private static boolean selectClientCertificate(
-            final long nativePtr,
-            final WindowAndroid window,
-            final String[] keyTypes,
+            long nativePtr,
+            @JniType("ui::WindowAndroid*") WindowAndroid window,
+            @JniType("std::vector<std::string>") String[] keyTypes,
             byte[][] encodedPrincipals,
-            final String hostName,
-            final int port) {
+            @JniType("std::string") String hostName,
+            int port) {
         ThreadUtils.assertOnUiThread();
 
         // Use the context for the failure dialog in case the activity doesn't have the correct

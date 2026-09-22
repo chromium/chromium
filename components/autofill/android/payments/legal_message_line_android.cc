@@ -6,28 +6,25 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "components/autofill/android/payments_jni_headers/LegalMessageLine_jni.h"
 
 namespace autofill {
 
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 // static
 ScopedJavaLocalRef<jobject> LegalMessageLineAndroid::ConvertToJavaObject(
     const LegalMessageLine& legal_message_line) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_object =
       Java_LegalMessageLine_Constructor(env, legal_message_line.text());
   for (const auto& link : legal_message_line.links()) {
-    Java_LegalMessageLine_addLink(
-        env, java_object,
-        Java_Link_Constructor(env, link.range.start(), link.range.end(),
-                              ConvertUTF8ToJavaString(env, link.url.spec())));
+    Java_LegalMessageLine_addLink(env, java_object, link.range.start(),
+                                  link.range.end(), link.url.spec());
   }
   return java_object;
 }
@@ -36,17 +33,8 @@ ScopedJavaLocalRef<jobject> LegalMessageLineAndroid::ConvertToJavaObject(
 std::vector<ScopedJavaLocalRef<jobject>>
 LegalMessageLineAndroid::ConvertToJavaLinkedList(
     const std::vector<LegalMessageLine>& legal_message_lines) {
-  std::vector<ScopedJavaLocalRef<jobject>> list;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  for (const auto& line : legal_message_lines) {
-    list.emplace_back(Java_LegalMessageLine_Constructor(env, line.text()));
-    for (const auto& link : line.links()) {
-      Java_LegalMessageLine_addLink(env, list.back(), link.range.start(),
-                                    link.range.end(), link.url.spec());
-    }
-  }
-  return list;
+  return base::ToVector(legal_message_lines,
+                        &LegalMessageLineAndroid::ConvertToJavaObject);
 }
 
 }  // namespace autofill

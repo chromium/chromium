@@ -17,10 +17,10 @@ class LegalMessageLine;
 
 class LegalMessageLineAndroid {
  public:
-  static base::android::ScopedJavaLocalRef<jobject> ConvertToJavaObject(
+  static jni_zero::ScopedJavaLocalRef<jobject> ConvertToJavaObject(
       const LegalMessageLine& legal_message_line);
 
-  static std::vector<base::android::ScopedJavaLocalRef<jobject>>
+  static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
   ConvertToJavaLinkedList(
       const std::vector<LegalMessageLine>& legal_message_lines);
 

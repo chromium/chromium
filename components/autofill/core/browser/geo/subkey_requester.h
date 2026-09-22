@@ -70,24 +70,18 @@ class SubKeyRequester : public LoadRulesListener {
   void CancelPendingGetSubKeys();
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Starts loading the rules for the specified |region_code| for the further
   // subkey request.
-  void LoadRulesForSubKeys(JNIEnv* env,
-                           const base::android::JavaRef<jstring>& region_code);
+  void LoadRulesForSubKeys(const std::string& region_code);
 
-  // Gets the subkeys for the region with |jregion_code| code, if the
-  // |jregion_code| rules have finished loading. Otherwise, sets up a task to
+  // Gets the subkeys for the region with |region_code| code, if the
+  // |region_code| rules have finished loading. Otherwise, sets up a task to
   // get the subkeys, when the rules are loaded.
-  void StartRegionSubKeysRequest(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& jregion_code,
-      int32_t jtimeout_seconds,
-      const base::android::JavaRef<jobject>& jdelegate);
-
-  // Cancels the pending subkey request task.
-  void CancelPendingGetSubKeys(JNIEnv* env);
+  void StartRegionSubKeysRequest(const std::string& region_code,
+                                 int32_t jtimeout_seconds,
+                                 const jni_zero::JavaRef<jobject>& jdelegate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
@@ -107,7 +101,7 @@ class SubKeyRequester : public LoadRulesListener {
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side version of the SubKeyRequester.
-  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

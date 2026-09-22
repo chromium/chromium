@@ -6,6 +6,7 @@ package org.chromium.components.autofill;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -78,7 +79,8 @@ public class AddressNormalizer {
 
     @NativeMethods
     interface Natives {
-        void loadRulesForAddressNormalization(long nativeAddressNormalizerImpl, String regionCode);
+        void loadRulesForAddressNormalization(
+                long nativeAddressNormalizerImpl, @JniType("std::string") String regionCode);
 
         void startAddressNormalization(
                 long nativeAddressNormalizerImpl,

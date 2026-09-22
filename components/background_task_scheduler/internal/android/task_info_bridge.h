@@ -15,7 +15,7 @@ namespace background_task {
 // Helper class to convert TaskInfo params to Java.
 class TaskInfoBridge {
  public:
-  static base::android::ScopedJavaLocalRef<jobject> CreateTaskInfo(
+  static jni_zero::ScopedJavaLocalRef<jobject> CreateTaskInfo(
       JNIEnv* env,
       const TaskInfo& task_info);
 };

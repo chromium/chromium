@@ -38,6 +38,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+
+// Must come after headers that provide symbols used by @JniType.
 #include "components/autofill/android/main_autofill_jni_headers/AddressNormalizer_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -97,11 +99,11 @@ std::unique_ptr<AddressValidator> CreateAddressValidator(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void OnAddressNormalized(base::android::ScopedJavaGlobalRef<jobject> jdelegate,
+void OnAddressNormalized(jni_zero::ScopedJavaGlobalRef<jobject> jdelegate,
                          const std::string& app_locale,
                          bool success,
                          const AutofillProfile& profile) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (success) {
     Java_NormalizedAddressRequestDelegate_onAddressNormalized(
         env, jdelegate, profile.CreateJavaObject(app_locale));
@@ -272,27 +274,23 @@ bool AddressNormalizerImpl::NormalizeAddressSync(AutofillProfile* profile) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-AddressNormalizerImpl::GetJavaObject() {
+jni_zero::ScopedJavaLocalRef<jobject> AddressNormalizerImpl::GetJavaObject() {
   if (!java_ref_) {
-    java_ref_.Reset(
-        Java_AddressNormalizer_Constructor(base::android::AttachCurrentThread(),
-                                           reinterpret_cast<intptr_t>(this)));
+    java_ref_.Reset(Java_AddressNormalizer_Constructor(
+        jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
   }
-  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+  return jni_zero::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
 void AddressNormalizerImpl::LoadRulesForAddressNormalization(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jregion_code) {
-  LoadRulesForRegion(base::android::ConvertJavaStringToUTF8(env, jregion_code));
+    const std::string& region_code) {
+  LoadRulesForRegion(region_code);
 }
 
 void AddressNormalizerImpl::StartAddressNormalization(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jprofile,
+    const jni_zero::JavaRef<jobject>& jprofile,
     int32_t jtimeout_seconds,
-    const base::android::JavaRef<jobject>& jdelegate) {
+    const jni_zero::JavaRef<jobject>& jdelegate) {
   // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, /*existing_profile=*/nullptr, app_locale_);
@@ -301,7 +299,7 @@ void AddressNormalizerImpl::StartAddressNormalization(
   NormalizeAddressAsync(
       profile, jtimeout_seconds,
       base::BindOnce(&OnAddressNormalized,
-                     base::android::ScopedJavaGlobalRef<jobject>(jdelegate),
+                     jni_zero::ScopedJavaGlobalRef<jobject>(jdelegate),
                      app_locale_));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
