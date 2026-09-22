@@ -81,11 +81,13 @@ inline constexpr base::FeatureParam<int>
         &kOmniboxFullWebUIDeferShowUntilVisualStateReady,
         "omnibox_full_webui_defer_show_until_visual_state_ready_timeout_ms",
         250};
+BASE_DECLARE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxAimDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxWebUIHeightWorkarounds);
 BASE_DECLARE_FEATURE(kOmniboxAimHeightWorkarounds);
+BASE_DECLARE_FEATURE(kOmniboxAimHeightWorkaroundsWithFullWebUI);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIHeightWorkarounds);
 BASE_DECLARE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow);
 BASE_DECLARE_FEATURE(kOmniboxAimDetachWebContentsOnHide);
@@ -94,6 +96,7 @@ BASE_DECLARE_FEATURE(kOmniboxFullWebUIDetachWebContentsOnHide);
 BASE_DECLARE_FEATURE(kOmniboxWebUIPopupMarkAsHidden);
 BASE_DECLARE_FEATURE(kOmniboxWebUIEvictOnHide);
 BASE_DECLARE_FEATURE(kOmniboxAimEvictOnHide);
+BASE_DECLARE_FEATURE(kOmniboxAimEvictOnHideWithFullWebUI);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIEvictOnHide);
 BASE_DECLARE_FEATURE(kOmniboxAimWebUIShadow);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIShadow);
