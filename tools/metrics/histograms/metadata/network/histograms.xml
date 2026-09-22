@@ -2153,7 +2153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.GlobalPrivacyControlSource.Subsampled"
-    enum="GPCSignalSourceType" expires_after="2026-12-31">
+    enum="GPCSignalSourceType" expires_after="2027-03-31">
   <owner>arichiv@chromium.org</owner>
   <owner>zalmashni@google.com</owner>
   <summary>
