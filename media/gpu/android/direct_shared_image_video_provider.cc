@@ -110,7 +110,8 @@ void GpuSharedImageVideoFactory::Initialize(
     return;
   }
 
-  is_vulkan_ = shared_context->GrContextIsVulkan();
+  is_vulkan_ =
+      shared_context->GrContextIsVulkan() || shared_context->IsGraphiteVulkan();
 
   // Make the shared context current.
   auto scoped_current = std::make_unique<ui::ScopedMakeCurrent>(

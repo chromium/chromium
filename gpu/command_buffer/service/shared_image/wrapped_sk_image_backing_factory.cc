@@ -65,6 +65,12 @@ bool GraphiteSupportsCompressedTextures(
         wgpu::FeatureName::TextureCompressionETC2);
   }
 #endif
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+  if (context_state->IsGraphiteVulkan()) {
+    // TODO(crbug.com/552951905): Add a way to query for this info.
+    return true;
+  }
+#endif
   return false;
 }
 
@@ -162,7 +168,8 @@ bool WrappedSkImageBackingFactory::IsSupported(
   // queues, we need to synchronize the reads/writes via semaphores.
   if (thread_safe) {
     bool is_vulkan = gr_context_type == GrContextType::kVulkan ||
-                     context_state_->IsGraphiteDawnVulkan();
+                     context_state_->IsGraphiteDawnVulkan() ||
+                     context_state_->IsGraphiteVulkan();
     bool is_dawn_metal = context_state_->IsGraphiteDawnMetal();
     if (!is_drdc_enabled_ || (!is_vulkan && !is_dawn_metal)) {
       return false;

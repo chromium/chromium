@@ -91,7 +91,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
                 &result);
         if (result == gpu::ContextResult::kSuccess) {
           DCHECK(shared_context_);
-          if (shared_context_->GrContextIsVulkan()) {
+          if (shared_context_->GrContextIsVulkan() ||
+              shared_context_->IsGraphiteVulkan()) {
             vulkan_context_provider_ = shared_context_->vk_context_provider();
           } else if (shared_context_->IsGraphiteDawnVulkan()) {
             dawn_context_provider_ = shared_context_->dawn_context_provider();

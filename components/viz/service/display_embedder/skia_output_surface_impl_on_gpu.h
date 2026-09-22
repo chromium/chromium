@@ -359,7 +359,9 @@ class SkiaOutputSurfaceImplOnGpu
 
   bool is_using_vulkan() const {
     return !!vulkan_context_provider_ &&
-           gpu_preferences_.gr_context_type == gpu::GrContextType::kVulkan;
+           (gpu_preferences_.gr_context_type == gpu::GrContextType::kVulkan ||
+            gpu_preferences_.gr_context_type ==
+                gpu::GrContextType::kGraphiteVulkan);
   }
 
   bool is_using_gl() const {
