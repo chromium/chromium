@@ -78,7 +78,7 @@ TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
 // extensions running in the lock profile.
 TEST_F(LoginStateApiUnittest, GetProfileType_LockProfile) {
   // |ash::ProfileHelper::GetLockScreenProfile()| cannot be used as the
-  // |TestingProfileManager| set up by |BrowserWithTestWindowTest| has an empty
+  // |TestingProfileManager| set up by |ExtensionApiUnittest| has an empty
   // user data directory.
   TestingProfile::Builder builder;
   builder.SetPath(base::FilePath(

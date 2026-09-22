@@ -257,12 +257,11 @@ TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
       user_manager());
   AddSearchToHistory(profile(), GURL("http://foo.com/history"));
   AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
-  AddTab(browser(), GURL("http://foo.com/tab"));
   base::test::TestFuture<void> test_done;
 
   auto ranker_manager =
       std::make_unique<app_list::TestRankerManager>(profile());
-  ranker_manager->SetBestMatchString(u"tab");
+  ranker_manager->SetBestMatchString(u"Foobaz");
   client.set_ranker_manager_for_test(std::move(ranker_manager));
 
   base::MockCallback<QuickInsertClientImpl::CrosSearchResultsCallback>
@@ -279,20 +278,13 @@ TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
                         &ash::QuickInsertBrowsingHistoryResult::best_match,
                         false))),
               VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
-                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                        GURL("http://foo.com/tab")),
-                  Field("best_match",
-                        &ash::QuickInsertBrowsingHistoryResult::best_match,
-                        true))),
-
-              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
                   Field("title", &ash::QuickInsertBrowsingHistoryResult::title,
                         u"Foobaz"),
                   Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
                         GURL("http://foo.com/bookmarks")),
                   Field("best_match",
                         &ash::QuickInsertBrowsingHistoryResult::best_match,
-                        false))),
+                        true))),
           })))
       .WillOnce([&]() { test_done.SetValue(); });
 

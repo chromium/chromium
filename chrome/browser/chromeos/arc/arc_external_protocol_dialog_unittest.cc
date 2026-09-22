@@ -6,9 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
@@ -16,6 +14,8 @@
 #include "chromeos/ash/experiences/arc/test/fake_arc_intent_helper_mojo.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -37,41 +37,37 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    browser_controller_.emplace();
     arc_icon_cache_ = std::make_unique<FakeArcIconCache>();
     delegate_provider_ =
         std::make_unique<ArcIconCacheDelegateProvider>(arc_icon_cache_.get());
   }
 
   void TearDown() override {
-    browser_controller_.reset();
+    web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
   void CreateTab(bool started_from_arc) {
-    AddTab(browser(), GURL("http://www.tests.com"));
-
-    web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     if (started_from_arc) {
       web_contents_->SetUserData(
           &ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<ArcWebContentsData>(web_contents_));
+          std::make_unique<ArcWebContentsData>(web_contents_.get()));
     }
   }
 
   bool WasTabStartedFromArc() {
     return GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlagForTesting(
-        web_contents_);
+        web_contents_.get());
   }
 
-
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
   // Keep only one |WebContents| at a time.
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
-  std::optional<ash::BrowserControllerImpl> browser_controller_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
   std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };

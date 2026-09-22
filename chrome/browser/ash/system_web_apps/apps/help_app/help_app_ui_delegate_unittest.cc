@@ -14,9 +14,10 @@
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,17 +44,18 @@ class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("about:blank"));
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     user_manager_ = static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
-    web_ui_->set_web_contents(contents);
+    web_ui_->set_web_contents(web_contents_.get());
     delegate_ = std::make_unique<ChromeHelpAppUIDelegate>(web_ui());
   }
 
   void TearDown() override {
     delegate_.reset();
+    web_ui_.reset();
+    web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -62,6 +64,7 @@ class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<ChromeHelpAppUIDelegate> delegate_;
 };
