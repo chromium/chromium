@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -87,7 +88,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHttpRequest(
   return response;
 }
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+const ui::ElementIdentifier kTabId =
+    WebUIAndViewsToolbarInteractiveUiTestBase::TabId();
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kTextCopiedState);
@@ -218,7 +220,7 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
   }
 };
 
-class FindBarViewsUiTest : public InteractiveBrowserTest,
+class FindBarViewsUiTest : public WebUIAndViewsToolbarInteractiveUiTestBase,
                            public ::testing::WithParamInterface<bool> {
  public:
   FindBarViewsUiTest() {
@@ -227,7 +229,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    WebUIAndViewsToolbarInteractiveUiTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -236,7 +238,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
         base::BindRepeating(&HandleHttpRequest));
     embedded_test_server()->StartAcceptingConnections();
 
-    InteractiveBrowserTest::SetUpOnMainThread();
+    WebUIAndViewsToolbarInteractiveUiTestBase::SetUpOnMainThread();
   }
 
   ui::InteractionSequence::StepBuilder BringBrowserWindowToFront() {
@@ -281,7 +283,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-        ObserveState(views::test::kCurrentWidgetFocus), InstrumentTab(kTabId),
+        ObserveState(views::test::kCurrentWidgetFocus), InstrumentToolbar(),
         NavigateWebContents(kTabId, url));
   }
 
@@ -809,13 +811,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
 }
 #endif
 
-// TODO(crbug.com/540863131): Flaky on Linux ARM64.
-#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
-#define MAYBE_PasteWithoutTextChange DISABLED_PasteWithoutTextChange
-#else
-#define MAYBE_PasteWithoutTextChange PasteWithoutTextChange
-#endif
-IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_PasteWithoutTextChange) {
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
   constexpr char16_t kSearchA[] = u"a";
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
 
@@ -834,21 +830,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_PasteWithoutTextChange) {
       CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
                         kSearchA),
       // Reload the page to clear the matching result.
-      // TODO(crbug.com/479732140): improve the test method to simplify the
-      // call.
-      MoveMouseTo(kReloadButtonElementId,
-#if !BUILDFLAG(IS_ANDROID)
-                  features::IsWebUIReloadButtonEnabled()
-                      ? RelativePositionSpecifier(
-                            base::BindOnce([](ui::TrackedElement* el) {
-                              return el->GetScreenBounds().CenterPoint();
-                            }))
-                      : CenterPoint()
-#else
-                  CenterPoint()
-#endif  // !BUILDFLAG(IS_ANDROID)
-                      ),
-      ClickMouse(), WaitForWebContentsNavigation(kTabId),
+      ClickReloadButton(), WaitForWebContentsNavigation(kTabId),
       WaitForState(views::test::kCurrentFocusedViewId,
                    ContentsWebView::kContentsWebViewElementId),
       // Focus the Find bar again to make sure the text is selected.
