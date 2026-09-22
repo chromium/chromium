@@ -36,6 +36,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -82,11 +83,10 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
   }
 
   // ::test::mojom::MojoFileSystemAccessTest:
-  void ResolveTransferToken(mojo::ScopedHandle h) override {
+  void ResolveTransferToken(mojo::ScopedMessagePipeHandle h) override {
     EXPECT_TRUE(true);
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token(
-        mojo::ScopedMessagePipeHandle::From(std::move(h)),
-        blink::mojom::FileSystemAccessTransferToken::Version_);
+        std::move(h), blink::mojom::FileSystemAccessTransferToken::Version_);
 
     auto* web_contents = web_ui()->GetWebContents();
     web_contents->GetBrowserContext()
