@@ -942,30 +942,21 @@ const InputState& InputStateModel::GetInputState() const {
   return state_;
 }
 
-void InputStateModel::SetLensCrop(const std::string& data_id,
-                                  const std::string& data_uri) {
+void InputStateModel::SetLensCrop(const std::string& data_uri) {
   // There is only ever one region crop; setting a crop replaces any existing
   // crop.
-  lens_crop_ = LensCrop{data_id, data_uri};
+  lens_crop_ = LensCrop{data_uri};
   notifySubscribers();
 }
 
-std::optional<std::string> InputStateModel::GetLensCrop(
-    const std::string& data_id) const {
-  if (lens_crop_ && lens_crop_->data_id == data_id) {
+std::optional<std::string> InputStateModel::GetLensCrop() const {
+  if (lens_crop_.has_value()) {
     return lens_crop_->data_uri;
   }
   return std::nullopt;
 }
 
-void InputStateModel::RemoveLensCrop(const std::string& data_id) {
-  if (lens_crop_ && lens_crop_->data_id == data_id) {
-    lens_crop_.reset();
-    notifySubscribers();
-  }
-}
-
-void InputStateModel::ClearLensCrop() {
+void InputStateModel::RemoveLensCrop() {
   if (lens_crop_.has_value()) {
     lens_crop_.reset();
     notifySubscribers();

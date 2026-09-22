@@ -158,10 +158,34 @@ generate_grd("build_tab_picker_grdp") {
   resource_path_prefix = "contextual_tasks_extension"
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [ "tab_picker_bundled/tab_picker.rollup.js" ]
-  resource_path_rewrites = [
-    "tab_picker_bundled/tab_picker.rollup.js|tab_picker.js",
-  ]
+  resource_path_rewrites =
+      [ "tab_picker_bundled/tab_picker.rollup.js|tab_picker.js" ]
   deps = [ ":bundle_tab_picker" ]
+}
+
+bundle_js("bundle_lens_chip") {
+  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
+  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  js_module_in_files = [ "lens_chip_app.js" ]
+  out_folder = "$target_gen_dir/lens_chip_bundled"
+  excludes = BUNDLE_JS_EXCLUDES
+  deps = [ ":build_ts" ]
+  external_paths =
+      [ "chrome://contextual-tasks/|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc",
+            root_build_dir) ]
+}
+
+generate_grd("build_lens_chip_grdp") {
+  grd_prefix = "contextual_tasks_extension"
+  out_grd = "$target_gen_dir/lens_chip_resources.grdp"
+  resource_path_prefix = "contextual_tasks_extension"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "lens_chip_bundled/lens_chip_app.rollup.js" ]
+  resource_path_rewrites =
+      [ "lens_chip_bundled/lens_chip_app.rollup.js|lens_chip_app.js" ]
+  deps = [ ":bundle_lens_chip" ]
 }
 
 build_webui("build") {
@@ -172,20 +196,22 @@ build_webui("build") {
   in_folder = "."
 
   static_files = [
-    "chip.html",
     "favicons.html",
     "lens_button.html",
+    "lens_chip.html",
     "manifest.json",
     "tab_picker.html",
   ]
 
   extra_grdp_deps = [
     ":build_background_grdp",
+    ":build_lens_chip_grdp",
     ":build_post_message_handler_grdp",
     ":build_tab_picker_grdp",
   ]
   extra_grdp_files = [
     "$target_gen_dir/background_resources.grdp",
+    "$target_gen_dir/lens_chip_resources.grdp",
     "$target_gen_dir/post_message_handler_resources.grdp",
     "$target_gen_dir/tab_picker_resources.grdp",
   ]
@@ -195,6 +221,8 @@ build_webui("build") {
     "favicons_app.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
+    "lens_chip_app.html.ts",
+    "lens_chip_app.ts",
     "tab_picker.ts",
     "tab_picker_app.html.ts",
     "tab_picker_app.ts",
@@ -204,6 +232,7 @@ build_webui("build") {
   css_files = [
     "favicons_app.css",
     "lens_button_app.css",
+    "lens_chip_app.css",
     "tab_picker_app.css",
   ]
 

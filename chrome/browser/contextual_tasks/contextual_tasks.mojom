@@ -426,22 +426,13 @@ interface ExtensionPageHandler {
   // - `uuid`: The Uuid of the new active task.
   SetTaskId(mojo_base.mojom.Uuid uuid);
 
-  // Returns the base64 PNG data-URI of the Lens crop preview for the given
-  // `data_id`, or null if not found or invalid.
+  // Returns the base64 PNG data-URI of the Lens crop preview for the current
+  // tab/session, or null if no crop is active.
   //
-  // `data_id` is a random UUID generated in the browser process
-  // (ContextualTasksExtensionHandler::OnLensThumbnailCreated) when a region
-  // selection is captured. It associates a specific region selection with its
-  // corresponding thumbnail data-URI in the tab's InputStateModel.
-  // This `data_id` is passed to the isolated extension frame (lens_chip.html)
-  // via a URL query parameter.
-  //
-  // Using an explicit `data_id` prevents race conditions where rapid,
-  // successive region selections could otherwise deliver stale or mismatched
-  // crops to an asynchronous fetch. If `data_id` is invalid, unknown, or does
-  // not correspond to an active region selection for this tab/session, this
-  // method safely returns null.
-  GetLensCropPreview(string data_id) => (string? data_uri);
+  // Previous designs used an explicit `data_id` parameter, but it was removed
+  // to prevent race conditions where the embedding page could request an image
+  // for a stale `data_id` that no longer exists in the browser.
+  GetLensCropPreview() => (string? data_uri);
 };
 
 // Extension-side handler for requests from the browser process.

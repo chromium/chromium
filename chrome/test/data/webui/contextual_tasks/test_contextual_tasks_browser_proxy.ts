@@ -535,9 +535,15 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
     ]);
   }
 
-  getLensCropPreview(dataId: string) {
-    this.methodCalled('getLensCropPreview', dataId);
-    return Promise.resolve({dataUri: null});
+  lensCropPreviewResult: {dataUri: string|null} = {dataUri: null};
+
+  setLensCropPreviewResult(dataUri: string|null) {
+    this.lensCropPreviewResult = {dataUri};
+  }
+
+  getLensCropPreview() {
+    this.methodCalled('getLensCropPreview');
+    return Promise.resolve(this.lensCropPreviewResult);
   }
 
   getHandshakeMessage() {

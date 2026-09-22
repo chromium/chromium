@@ -132,7 +132,6 @@ class InputStateModel {
   }
 
   struct LensCrop {
-    std::string data_id;
     std::string data_uri;
     bool operator==(const LensCrop&) const = default;
   };
@@ -140,11 +139,9 @@ class InputStateModel {
   // Lens region crop storage.
   // There is only ever one region crop; setting a crop clears any existing
   // crop.
-  void SetLensCrop(const std::string& data_id, const std::string& data_uri);
-  std::optional<std::string> GetLensCrop(const std::string& data_id) const;
-  void RemoveLensCrop(const std::string& data_id);
-  void ClearLensCrop();
-  void ClearLensCrops() { ClearLensCrop(); }
+  void SetLensCrop(const std::string& data_uri);
+  std::optional<std::string> GetLensCrop() const;
+  void RemoveLensCrop();
   const std::optional<LensCrop>& lens_crop() const { return lens_crop_; }
 
   // Gets the `PrefService`.

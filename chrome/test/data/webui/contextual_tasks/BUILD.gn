@@ -47,6 +47,7 @@ build_webui_tests("build") {
       "favicons_test.ts",
       "info_tooltip_test.ts",
       "lens_button_test.ts",
+      "lens_chip_test.ts",
       "tab_picker_test.ts",
       "unbounded_menu_test.ts",
     ]

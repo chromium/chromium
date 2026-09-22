@@ -85,8 +85,7 @@ class ContextualTasksExtensionHandler
   void SetTaskId(const base::Uuid& uuid) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
-  void GetLensCropPreview(const std::string& data_id,
-                          GetLensCropPreviewCallback callback) override;
+  void GetLensCropPreview(GetLensCropPreviewCallback callback) override;
 
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModelForTesting() {

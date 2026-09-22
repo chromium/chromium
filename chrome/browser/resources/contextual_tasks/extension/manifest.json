@@ -33,10 +33,10 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "chip.html",
         "favicons.html",
         "lens_button.html",
-        "tab_picker.html"
+        "tab_picker.html",
+        "lens_chip.html"
       ],
       // LINT.IfChange(WebAccessibleMatches)
       "matches": [

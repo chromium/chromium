@@ -212,6 +212,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensButton) {
   RunTest("contextual_tasks/lens_button_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensChip) {
+  RunTest("contextual_tasks/lens_chip_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TabPicker) {
   RunTest("contextual_tasks/tab_picker_test.js", "mocha.run();");
 }

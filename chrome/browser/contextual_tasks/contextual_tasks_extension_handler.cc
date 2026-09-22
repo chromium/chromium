@@ -172,22 +172,20 @@ void ContextualTasksExtensionHandler::GetHandshakeMessage(
 }
 
 void ContextualTasksExtensionHandler::GetLensCropPreview(
-    const std::string& data_id,
     GetLensCropPreviewCallback callback) {
   auto model = GetOrCreateInputStateModel();
   if (!model) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::move(callback).Run(model->GetLensCrop(data_id));
+  std::move(callback).Run(model->GetLensCrop());
 }
 
 void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
     const std::string& thumbnail_uri) {
-  std::string data_id = base::UnguessableToken::Create().ToString();
   auto model = GetOrCreateInputStateModel();
   if (model) {
-    model->SetLensCrop(data_id, thumbnail_uri);
+    model->SetLensCrop(thumbnail_uri);
   }
 }
 

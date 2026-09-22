@@ -470,16 +470,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   // Verify child handler can read the crop via GetLensCropPreview.
   ASSERT_TRUE(model1->lens_crop().has_value());
-  std::string data_id = model1->lens_crop()->data_id;
+  EXPECT_EQ("data:image/png;base64,test_crop", model1->lens_crop()->data_uri);
 
   base::RunLoop run_loop;
-  child_handler->GetLensCropPreview(
-      data_id, base::BindLambdaForTesting(
-                   [&](const std::optional<std::string>& data_uri) {
-                     ASSERT_TRUE(data_uri.has_value());
-                     EXPECT_EQ("data:image/png;base64,test_crop", *data_uri);
-                     run_loop.Quit();
-                   }));
+  child_handler->GetLensCropPreview(base::BindLambdaForTesting(
+      [&](const std::optional<std::string>& data_uri) {
+        ASSERT_TRUE(data_uri.has_value());
+        EXPECT_EQ("data:image/png;base64,test_crop", *data_uri);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

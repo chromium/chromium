@@ -1771,13 +1771,10 @@ TEST_F(InputStateModelTest, SetLensCrop_AddsCropAndNotifies) {
       [](int* count, const omnibox::InputState&) { (*count)++; },
       &notify_count));
 
-  input_state_model_->SetLensCrop("crop_1", "data:image/png;base64,abc");
+  input_state_model_->SetLensCrop("data:image/png;base64,abc");
   EXPECT_EQ(1, notify_count);
-  EXPECT_EQ("data:image/png;base64,abc",
-            input_state_model_->GetLensCrop("crop_1"));
-  EXPECT_EQ(std::nullopt, input_state_model_->GetLensCrop("nonexistent"));
+  EXPECT_EQ("data:image/png;base64,abc", input_state_model_->GetLensCrop());
   ASSERT_TRUE(input_state_model_->lens_crop().has_value());
-  EXPECT_EQ("crop_1", input_state_model_->lens_crop()->data_id);
   EXPECT_EQ("data:image/png;base64,abc",
             input_state_model_->lens_crop()->data_uri);
 }
@@ -1788,62 +1785,41 @@ TEST_F(InputStateModelTest, SetLensCrop_ReplaceSemantics) {
       [](int* count, const omnibox::InputState&) { (*count)++; },
       &notify_count));
 
-  input_state_model_->SetLensCrop("crop_1", "data:image/png;base64,first");
+  input_state_model_->SetLensCrop("data:image/png;base64,first");
   EXPECT_EQ(1, notify_count);
-  EXPECT_EQ("data:image/png;base64,first",
-            input_state_model_->GetLensCrop("crop_1"));
+  EXPECT_EQ("data:image/png;base64,first", input_state_model_->GetLensCrop());
 
-  // Setting a second crop replaces the first (decision 5: only ever one region
-  // crop).
-  input_state_model_->SetLensCrop("crop_2", "data:image/png;base64,second");
+  // Setting a second crop replaces the first (only ever one region crop).
+  input_state_model_->SetLensCrop("data:image/png;base64,second");
   EXPECT_EQ(2, notify_count);
-  EXPECT_EQ(std::nullopt, input_state_model_->GetLensCrop("crop_1"));
-  EXPECT_EQ("data:image/png;base64,second",
-            input_state_model_->GetLensCrop("crop_2"));
+  EXPECT_EQ("data:image/png;base64,second", input_state_model_->GetLensCrop());
   ASSERT_TRUE(input_state_model_->lens_crop().has_value());
-  EXPECT_EQ("crop_2", input_state_model_->lens_crop()->data_id);
   EXPECT_EQ("data:image/png;base64,second",
             input_state_model_->lens_crop()->data_uri);
 }
 
 TEST_F(InputStateModelTest, RemoveLensCrop_RemovesAndNotifies) {
-  input_state_model_->SetLensCrop("crop_1", "data:image/png;base64,abc");
-  EXPECT_TRUE(input_state_model_->GetLensCrop("crop_1").has_value());
+  input_state_model_->SetLensCrop("data:image/png;base64,abc");
+  EXPECT_TRUE(input_state_model_->GetLensCrop().has_value());
 
   int notify_count = 0;
   auto subscription = input_state_model_->subscribe(base::BindRepeating(
       [](int* count, const omnibox::InputState&) { (*count)++; },
       &notify_count));
 
-  input_state_model_->RemoveLensCrop("crop_1");
+  input_state_model_->RemoveLensCrop();
   EXPECT_EQ(1, notify_count);
-  EXPECT_EQ(std::nullopt, input_state_model_->GetLensCrop("crop_1"));
+  EXPECT_EQ(std::nullopt, input_state_model_->GetLensCrop());
   EXPECT_FALSE(input_state_model_->lens_crop().has_value());
 
-  // Removing non-existent does not notify.
-  input_state_model_->RemoveLensCrop("nonexistent");
+  // Removing when already empty does not notify.
+  input_state_model_->RemoveLensCrop();
   EXPECT_EQ(1, notify_count);
 }
 
-TEST_F(InputStateModelTest, ClearLensCrops_ClearsAndNotifies) {
-  input_state_model_->SetLensCrop("crop_1", "data:image/png;base64,abc");
-
-  int notify_count = 0;
-  auto subscription = input_state_model_->subscribe(base::BindRepeating(
-      [](int* count, const omnibox::InputState&) { (*count)++; },
-      &notify_count));
-
-  input_state_model_->ClearLensCrop();
-  EXPECT_EQ(1, notify_count);
-  EXPECT_FALSE(input_state_model_->lens_crop().has_value());
-
-  // Clearing when empty does not notify.
-  input_state_model_->ClearLensCrop();
-  EXPECT_EQ(1, notify_count);
-}
 
 TEST_F(InputStateModelTest, CopyConstructorPreservesLensCrops) {
-  input_state_model_->SetLensCrop("crop_1", "data:image/png;base64,preserved");
+  input_state_model_->SetLensCrop("data:image/png;base64,preserved");
 
   MockContextualSearchSessionHandle new_session_handle;
   auto new_controller =
@@ -1854,9 +1830,8 @@ TEST_F(InputStateModelTest, CopyConstructorPreservesLensCrops) {
       .WillByDefault(testing::Return(empty_file_info_list_));
 
   InputStateModel copy(*input_state_model_, new_session_handle);
-  EXPECT_EQ("data:image/png;base64,preserved", copy.GetLensCrop("crop_1"));
+  EXPECT_EQ("data:image/png;base64,preserved", copy.GetLensCrop());
   ASSERT_TRUE(copy.lens_crop().has_value());
-  EXPECT_EQ("crop_1", copy.lens_crop()->data_id);
   EXPECT_EQ("data:image/png;base64,preserved", copy.lens_crop()->data_uri);
 }
 

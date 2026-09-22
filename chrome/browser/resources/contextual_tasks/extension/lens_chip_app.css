@@ -1,0 +1,87 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  user-select: none;
+  width: 100%;
+}
+
+.chip {
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+:host([dark-mode]) .chip {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#cropImage {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  width: 100%;
+}
+
+#closeButton {
+  --cr-icon-button-fill-color: #fff;
+  --cr-icon-button-hover-background-color: rgba(0, 0, 0, 0.6);
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: inherit;
+  display: flex;
+  height: 100%;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 150ms ease-in-out;
+  width: 100%;
+  z-index: 2;
+}
+
+.chip:hover #closeButton,
+.chip:focus-within #closeButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (forced-colors: active) {
+  .chip {
+    border: 1px solid ButtonText;
+  }
+
+  #closeButton {
+    --cr-icon-button-fill-color: ButtonText;
+    --cr-icon-button-hover-background-color: ButtonFace;
+    background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    box-sizing: border-box;
+  }
+}
