@@ -40,6 +40,11 @@ bool IsTextForReadAnything(const ui::AXNode* node, bool is_pdf, bool is_docs) {
   return (GetHtmlTag(node, is_pdf, is_docs).length() == 0) || is_list_marker;
 }
 
+bool IsHeaderFooterRole(ax::mojom::Role role) {
+  return role == ax::mojom::Role::kSectionHeader ||
+         role == ax::mojom::Role::kSectionFooter;
+}
+
 bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
   if (ax_node->IsIgnored()) {
     return true;
@@ -65,6 +70,12 @@ bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
     } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
                parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
       return true;
+    }
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+      if (IsHeaderFooterRole(role) ||
+          (parent && IsHeaderFooterRole(parent->GetRole()))) {
+        return true;
+      }
     }
   }
 
