@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -638,13 +637,6 @@ public class NewTabPage
                     if (mRecordedFcp) return;
                     mRecordedFcp = true;
                     long durationMs = SystemClock.uptimeMillis() - mNavigationStartMs;
-                    if (DeviceInfo.isDesktop()) {
-                        // Keep collecting this histogram for Android desktop to avoid losing data.
-                        // TODO(crbug.com/531793117): Remove this histogram once we have finished
-                        // the study for Android desktop.
-                        RecordHistogram.recordMediumTimesHistogram(
-                                "NewTabPage.LoadTime.FirstContentfulPaint", durationMs);
-                    }
                     // LINT.IfChange(page_load_histogram)
                     RecordHistogram.recordCustomTimesHistogram(
                             "NewTabPage.LoadTime.FirstContentfulPaint2",
