@@ -11716,26 +11716,30 @@ void RenderFrameHostImpl::BeginNavigation(
 
   // A well-behaving renderer process should always have an
   // InitiatorNavigationState associated to its `initiator_state_token` and
-  // `initiator_document_token`. Terminate those that don't.
+  // `initiator_document_token`. Ideally, we should terminate those that don't.
+  // Unfortunately, this seems to happen in the wild, so for now do not
+  // terminate the renderer process.
+  // TODO(crbug.com/510258191): Investigate why this happens and re-enable
+  // renderer process termination upon having the wrong token.
   if (!initiator_navigation_state) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_TOKENS);
-    return;
+    // As a fallback, use the current InitiatorNavigationState.
+    initiator_navigation_state = GetCurrentInitiatorNavigationState();
   }
 
-  // The InitiatorNavigationState must be associated with the same process as
-  // this RenderFrameHost. Navigations with cross-process initiators go through
-  // RenderFrameProxyHost::OpenURL.
-  ChildProcessId initiator_state_process_id =
-      static_cast<InitiatorNavigationStateImpl*>(
-          initiator_navigation_state.get())
-          ->process_id();
-  if (initiator_state_process_id != GetProcess()->GetID()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_PROCESS);
-    return;
+  if (initiator_navigation_state) {
+    // The InitiatorNavigationState must be associated with the same process as
+    // this RenderFrameHost. Navigations with cross-process initiators go
+    // through RenderFrameProxyHost::OpenURL.
+    ChildProcessId initiator_state_process_id =
+        static_cast<InitiatorNavigationStateImpl*>(
+            initiator_navigation_state.get())
+            ->process_id();
+    if (initiator_state_process_id != GetProcess()->GetID()) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFHI_BEGIN_NAVIGATION_INVALID_INITIATOR_PROCESS);
+      return;
+    }
   }
 
   // See `owner_` invariants about `lifecycle_state_`.
@@ -11782,21 +11786,23 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
-  bool is_initiator_sandboxed_with_forms = false;
-  auto* initiator_navigation_state_impl =
-      static_cast<InitiatorNavigationStateImpl*>(
-          initiator_navigation_state.get());
-  is_initiator_sandboxed_with_forms =
-      (initiator_navigation_state_impl->policy_container_policies()
-           .sandbox_flags &
-       network::mojom::WebSandboxFlags::kForms) !=
-      network::mojom::WebSandboxFlags::kNone;
-  if ((begin_params->is_form_submission ||
-       validated_common_params->post_data) &&
-      is_initiator_sandboxed_with_forms) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME);
-    return;
+  if (initiator_navigation_state) {
+    bool is_initiator_sandboxed_with_forms = false;
+    auto* initiator_navigation_state_impl =
+        static_cast<InitiatorNavigationStateImpl*>(
+            initiator_navigation_state.get());
+    is_initiator_sandboxed_with_forms =
+        (initiator_navigation_state_impl->policy_container_policies()
+             .sandbox_flags &
+         network::mojom::WebSandboxFlags::kForms) !=
+        network::mojom::WebSandboxFlags::kNone;
+    if ((begin_params->is_form_submission ||
+         validated_common_params->post_data) &&
+        is_initiator_sandboxed_with_forms) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME);
+      return;
+    }
   }
 
   // If the request is bearing Private State Tokens parameters:
