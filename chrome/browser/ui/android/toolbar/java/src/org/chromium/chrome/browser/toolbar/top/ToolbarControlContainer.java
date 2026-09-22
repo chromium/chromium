@@ -1114,6 +1114,18 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     mToolbarRect, mLocationBarRect, shadowHeight);
         }
 
+        /**
+         * Returns the top edge of {@link #mToolbarRect}, the rect handed to the compositor as the
+         * toolbar layer's origin. It is written only by {@link #createNativeResource()}, so it
+         * keeps describing the bitmap the compositor is holding even after the view hierarchy has
+         * been re-laid out. 0 until the first capture, when there is no bitmap to position.
+         *
+         * @see ToolbarControlContainer#getToolbarTopOffsetInCapture()
+         */
+        int getToolbarTopOffsetInCapture() {
+            return mToolbarRect.top;
+        }
+
         public void onPageLoadStopped() {
             // With capture suppression, we don't capture after navigating. Instead, we schedule
             // a capture to happen when the controls become unlocked. With BCIV, there is no
@@ -1315,6 +1327,18 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     /** Returns the measured height of the entire container, minus the tabstrip's height. */
     public int getControlContainerHeightExcludingTabStrip() {
         return getMeasuredHeight() - mToolbar.getTabStripHeight();
+    }
+
+    /**
+     * Returns the y-offset, in px, at which the toolbar appears inside the current capture; that
+     * is, how much of the capture sits above the toolbar, such as the tabstrip. Measured against
+     * the view that is actually rasterized, at the moment of rasterization, so it needs no
+     * reconciliation with separately measured view heights and stays correct while the capture is
+     * stale. This is the same origin the compositor positions the toolbar background layer with.
+     */
+    public int getToolbarTopOffsetInCapture() {
+        return ((ToolbarViewResourceAdapter) getToolbarResourceAdapter())
+                .getToolbarTopOffsetInCapture();
     }
 
     private class SwipeGestureListenerImpl extends SwipeGestureListener {

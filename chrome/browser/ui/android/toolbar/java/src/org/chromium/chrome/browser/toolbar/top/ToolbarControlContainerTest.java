@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -1789,5 +1790,57 @@ public class ToolbarControlContainerTest {
                 "Hairline top margin is incorrect.",
                 expectedHairlineTopMargin,
                 newHairlineParams.topMargin);
+    }
+
+    /** Stubs the toolbar's reported position within its container. */
+    private void setToolbarPositionInContainer(int y) {
+        doAnswer(
+                        invocation -> {
+                            int[] position = invocation.getArgument(1);
+                            position[0] = 0;
+                            position[1] = y;
+                            return null;
+                        })
+                .when(mToolbar)
+                .getPositionRelativeToContainer(any(), any());
+    }
+
+    @Test
+    public void testCreateNativeResource_RecordsToolbarTopOffset() {
+        initControlContainer(R.layout.toolbar_tablet);
+        ToolbarViewResourceAdapter adapter =
+                (ToolbarViewResourceAdapter) mControlContainer.getToolbarResourceAdapter();
+        setToolbarPositionInContainer(40);
+
+        adapter.createNativeResource();
+
+        assertEquals(40, mControlContainer.getToolbarTopOffsetInCapture());
+    }
+
+    @Test
+    public void testToolbarTopOffset_NotUpdatedUntilNextCapture() {
+        // The offset must describe the bitmap the compositor is holding, not the live view, so
+        // that it stays consistent with a stale capture. Moving the toolbar without capturing
+        // must not change it.
+        initControlContainer(R.layout.toolbar_tablet);
+        ToolbarViewResourceAdapter adapter =
+                (ToolbarViewResourceAdapter) mControlContainer.getToolbarResourceAdapter();
+        setToolbarPositionInContainer(40);
+        adapter.createNativeResource();
+        assertEquals(40, mControlContainer.getToolbarTopOffsetInCapture());
+
+        // The tab strip goes away, moving the toolbar to the top of the container, but no new
+        // capture has been taken yet.
+        setToolbarPositionInContainer(0);
+
+        assertEquals(
+                "Offset must still describe the previously captured bitmap.",
+                40,
+                mControlContainer.getToolbarTopOffsetInCapture());
+
+        // Once a new capture happens, it catches up.
+        adapter.createNativeResource();
+
+        assertEquals(0, mControlContainer.getToolbarTopOffsetInCapture());
     }
 }

@@ -1074,8 +1074,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     // In compositor, the position of the toolbar depends on the capture. As of Nov 2025, the
     // capture includes everything in control container, including the top margin, which represents
     // the size of the tab strip.
-    // To place the toolbar at its desired position, we have to subtract the diffs of the capture a
-    // nd the toolbar, in order to put the toolbar at the desired yOffset.
+    // To place the toolbar at its desired position, we shift the scene layer up by however much of
+    // the capture sits above the toolbar, so that the toolbar itself lands on the desired yOffset.
     private void updateSceneLayerYOffset(boolean includeMinHeightBoundary) {
         // Edge case: When Chrome launches on NTP, the browser controls might not dispatch
         // a valid yOffset for the toolbar. If the capture size changes (e.g. resize screen), we
@@ -1088,9 +1088,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         int captureHeight = mControlContainer.getToolbarCaptureHeight();
 
         // The |diff| is the offset we need to move the toolbar scene layer upward to have the
-        // Toolbar show at the correct spot. The current math here is to reduce the capture size
-        // with toolbar height and hairline height.
-        int diff = 0;
+        // Toolbar show at the correct spot.
+        int diff;
 
         int tabStripHeight = getTabStripHeight();
         if (ChromeFeatureList.sAndroidTabstripStartupCaptureBugFix.isEnabled()
@@ -1106,43 +1105,20 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             // always positioned right above the toolbar.
             diff = tabStripHeight;
         } else {
-            // When switching omnibox from bottom to top, the toolbar capture size may not have been
-            // updated yet (e.g. captureHeight=1 while toolbarLayoutHeight=137). Using a stale
-            // capture height produces a large negative diff that pushes the cc layer below the
-            // toolbar, creating a "ghost view". Only compute diff when capture height is at least
-            // as large as the toolbar, indicating the capture is up-to-date.
-            int toolbarLayoutHeight = mControlContainer.getToolbarHeight();
-            int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
-            int controlContainerHeightExcludingTabStrip =
-                    mControlContainer.getControlContainerHeightExcludingTabStrip();
-            // The control container can be larger than toolbarLayoutHeight + tabstrip height, e.g.
-            // when the fusebox is visible. The capture does not always include this expanded height
-            // but when it does, we need to account for it to avoid over-translating by the extra
-            // height.
-            int maxControlContainerHeightMeasurement =
-                    Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
-            int minControlContainerHeightMeasurement =
-                    Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+            // Where the toolbar sits inside the captured bitmap. This is sampled against the view
+            // that is rasterized, at the instant of rasterization, so it carries no dp -> px
+            // rounding error relative to the bitmap, remains correct while the bitmap is stale,
+            // and is the same value the compositor positions the toolbar background layer with
+            // (see ToolbarLayer::PushResource). It is 0 before the first capture, when there is no
+            // bitmap to position.
+            diff = mControlContainer.getToolbarTopOffsetInCapture();
             if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
                 Log.e(
                         TAG,
-                        "[TopControlsPositioning] toolbarLayoutHeight="
-                                + toolbarLayoutHeight
-                                + ", hairlineHeight="
-                                + hairlineHeight
-                                + ", ccHeightExcludingTabStrip="
-                                + controlContainerHeightExcludingTabStrip
-                                + ", maxCCHeight="
-                                + maxControlContainerHeightMeasurement
-                                + ", minCCHeight="
-                                + minControlContainerHeightMeasurement);
-            }
-            if (captureHeight >= maxControlContainerHeightMeasurement + tabStripHeight
-                    && mTabStripTransitionCoordinator != null) {
-                // Capture includes extra height; use the full height.
-                diff = captureHeight - maxControlContainerHeightMeasurement - hairlineHeight;
-            } else if (captureHeight >= minControlContainerHeightMeasurement) {
-                diff = captureHeight - minControlContainerHeightMeasurement - hairlineHeight;
+                        "[TopControlsPositioning] toolbarTopOffsetInCapture="
+                                + diff
+                                + ", captureHeight="
+                                + captureHeight);
             }
         }
 
