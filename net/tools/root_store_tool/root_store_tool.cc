@@ -408,42 +408,6 @@ bool WriteRootCppFile(const RootStore& root_store,
   }
   string_to_write += "};\n\n";
 
-  // Write constants used by MTC anchors.
-  for (int i = 0; i < root_store.mtc_anchors_size(); i++) {
-    const auto& anchor = root_store.mtc_anchors(i);
-    if (!anchor.tls_trust_anchor()) {
-      continue;
-    }
-    WriteByteArrayConstant(base::StringPrintf("kMtcAnchorLogId%d", i),
-                           anchor.log_id(), &string_to_write);
-    MaybeWriteConstraintsConstant(
-        base::StringPrintf("kMtcAnchorConstraints%d", i), anchor.constraints(),
-        &string_to_write);
-  }
-
-  // Assemble list of trusted MTC anchors.
-  string_to_write +=
-      "constexpr ChromeMtcAnchorInfo kChromeTrustedMtcAnchorList[] = {\n";
-  for (int i = 0; i < root_store.mtc_anchors_size(); i++) {
-    const auto& anchor = root_store.mtc_anchors(i);
-    if (!anchor.tls_trust_anchor()) {
-      continue;
-    }
-    base::StringAppendF(&string_to_write, "  {kMtcAnchorLogId%d", i);
-    if (anchor.constraints().size() > 0) {
-      base::StringAppendF(&string_to_write, ", kMtcAnchorConstraints%d", i);
-    } else {
-      string_to_write += ", {}";
-    }
-    if (anchor.has_crs_root_id()) {
-      base::StringAppendF(&string_to_write, ", %d", anchor.crs_root_id());
-    } else {
-      string_to_write += ", std::nullopt";
-    }
-    string_to_write += "},\n";
-  }
-  string_to_write += "};\n\n";
-
   base::StringAppendF(&string_to_write,
                       "\nstatic const int64_t kRootStoreVersion = %" PRId64
                       ";\n",

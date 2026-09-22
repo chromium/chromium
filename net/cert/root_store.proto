@@ -113,31 +113,6 @@ message TrustAnchor {
   optional int32 crs_root_id = 12;
 }
 
-// TODO(crbug.com/520071497): Remove once the Cloudflare experiment is complete.
-message MtcAnchor {
-  // The log id is a trust anchor id in binary representation.
-  optional bytes log_id = 1;
-
-  // If not empty, the anchor is only trusted if at least one of the
-  // ConstraintSets is satisfied.
-  repeated ConstraintSet constraints = 2;
-
-  // If true, indicates that this MTC is a trust anchor for TLS connections.
-  optional bool tls_trust_anchor = 3;
-
-  // A stable identifier for this anchor. IDs should not be changed, and should
-  // not be reused. The identifiers 0, 1 and 2 are reserved and should not be
-  // used.
-  optional int32 crs_root_id = 4;
-
-  // TODO(crbug.com/452983502): Add co-signer configuration.
-  //
-  // In the current implementation, MTC anchors can only be used through the
-  // signatureless path, and the trusted subtrees are configured separately in
-  // MtcAnchorData. This MtcAnchor will be ignored unless a MtcAnchorData with
-  // matching log_id is also present.
-}
-
 // Message storing a complete Chrome Root Store.
 message RootStore {
   // Certificates in this list are expected to have |tls_trust_anchor| unset,
@@ -155,10 +130,7 @@ message RootStore {
   // but convey different trust information than those in trust_anchors.
   repeated TrustAnchor additional_certs = 3;
 
-  // Merkle Tree Certificate anchors. Like `additional_certs`, entries are not
-  // trusted for any purpose unless explicitly specified in the MtcAnchor (for
-  // example by setting `tls_trust_anchor=true`).
-  repeated MtcAnchor mtc_anchors = 4;
+  reserved 4;
 }
 
 message TrustAnchorIdRange {

@@ -71,14 +71,6 @@ struct ChromeRootCertInfo {
   std::optional<int32_t> crs_root_id;
 };
 
-struct ChromeMtcAnchorInfo {
-  base::span<const uint8_t> log_id;
-  base::span<const StaticChromeRootCertConstraints> constraints;
-  std::optional<int32_t> crs_root_id;
-  // Does not contain `tls_trust_anchor`, as MtcAnchors without that set to
-  // true are simply ignored.
-};
-
 struct NET_EXPORT ChromeRootCertConstraints {
   ChromeRootCertConstraints();
   ChromeRootCertConstraints(std::optional<base::Time> sct_not_after,
