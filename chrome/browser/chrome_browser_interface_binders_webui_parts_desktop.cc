@@ -564,10 +564,15 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #if !BUILDFLAG(IS_CHROMEOS)
   auto prompt_surface = default_browser::GetDefaultBrowserPromptSurface();
 
+  // The DefaultBrowserModalUI is only displayed for modal default browser
+  // prompts. Only expose this Mojo interface when the modal dialog prompt
+  // surface (with or without settings illustration) or sticky modal experiment
+  // is enabled.
   if (prompt_surface == default_browser::DefaultBrowserPromptSurface::
                             kModalDialogWithoutSettingsIllustration ||
       prompt_surface == default_browser::DefaultBrowserPromptSurface::
-                            kModalDialogWithSettingsIllustration) {
+                            kModalDialogWithSettingsIllustration ||
+      default_browser::IsDefaultBrowserModalSticky()) {
     RegisterWebUIControllerInterfaceBinder<
         default_browser_modal::mojom::PageHandlerFactory,
         DefaultBrowserModalUI>(map);

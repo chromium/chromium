@@ -481,6 +481,21 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromptSurfacesVariations[] =
       nullptr}};
 
 const FeatureEntry::FeatureParam
+    kDefaultBrowserStickyModal_WithSettingsIllustration[] = {
+        {"IsSticky", "true"},
+        {"WithSettingsIllustration", "true"}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserStickyModal_WithoutSettingsIllustration[] = {
+        {"IsSticky", "true"},
+        {"WithSettingsIllustration", "false"}};
+
+const FeatureEntry::FeatureVariation kDefaultBrowserStickyModalVariations[] = {
+    {"with Settings Illustration",
+     kDefaultBrowserStickyModal_WithSettingsIllustration, nullptr},
+    {"without Settings Illustration",
+     kDefaultBrowserStickyModal_WithoutSettingsIllustration, nullptr}};
+
+const FeatureEntry::FeatureParam
     kDefaultBrowserSetterSelection_ShellIntegration[] = {
         {"setter_option", "shell_integration"}};
 const FeatureEntry::FeatureParam kDefaultBrowserSetterSelection_VisualGuide[] =
@@ -11450,6 +11465,13 @@ const FeatureEntry kFeatureEntries[] = {
          default_browser::kDefaultBrowserPromptSurfaces,
          kDefaultBrowserPromptSurfacesVariations,
          "DefaultBrowserPromptSurfaces")},
+
+    {"default-browser-sticky-modal",
+     flag_descriptions::kDefaultBrowserStickyModalName,
+     flag_descriptions::kDefaultBrowserStickyModalDescription, kOsWin,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(default_browser::kDefaultBrowserStickyModal,
+                                    kDefaultBrowserStickyModalVariations,
+                                    "DefaultBrowserStickyModal")},
 
     {"default-browser-setter-selection",
      flag_descriptions::kDefaultBrowserSetterSelectionName,

@@ -33,13 +33,23 @@ export function getHtml(this: DefaultBrowserModalAppElement) {
   </div>
   <div id="bottom-section">
     <div id="button-row">
-      <cr-button id="cancel-button" @click="${this.onCancelClick_}">
-        $i18n{cancelButton}
-      </cr-button>
-      <cr-button id="confirm-button" class="action-button"
-          @click="${this.onConfirmClick_}">
-        $i18n{confirmButton}
-      </cr-button>
+      ${this.showRetryAndClose_() ? html`
+        <cr-button id="try-again-button" @click="${this.onTryAgainClick_}">
+          $i18n{tryAgainButton}
+        </cr-button>
+        <cr-button id="close-button" class="action-button"
+            @click="${this.onCloseClick_}">
+          $i18n{close}
+        </cr-button>
+      ` : html`
+        <cr-button id="cancel-button" @click="${this.onCancelClick_}">
+          $i18n{cancelButton}
+        </cr-button>
+        <cr-button id="confirm-button" class="action-button"
+            @click="${this.onConfirmClick_}">
+          $i18n{confirmButton}
+        </cr-button>
+      `}
     </div>
   </div>
 </div>

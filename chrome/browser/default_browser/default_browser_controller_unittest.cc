@@ -11,7 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -106,6 +108,8 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.OutcomeV2", true, 1);
 
   histogram_tester.ExpectTotalCount(
       "DefaultBrowser.ShellIntegration.SuccessDuration", 1);
@@ -131,9 +135,63 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.OutcomeV2", false, 1);
 
   histogram_tester.ExpectTotalCount(
       "DefaultBrowser.ShellIntegration.SuccessDuration", 0);
+}
+
+TEST_F(DefaultBrowserControllerTest, OutcomeV2ModalDialogNonSticky) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<DefaultBrowserState> future;
+
+  auto setter = std::make_unique<StrictlyMockedDefaultBrowserSetter>();
+  EXPECT_CALL(*setter, GetType)
+      .WillRepeatedly(
+          testing::Return(DefaultBrowserSetterType::kShellIntegration));
+  EXPECT_CALL(*setter, Execute(testing::_, testing::_))
+      .WillOnce([](DefaultBrowserSetterCompletionCallback callback,
+                   const DefaultBrowserSetter::ExecuteParams&) {
+        std::move(callback).Run(DefaultBrowserState::IS_DEFAULT);
+      });
+
+  auto controller = std::make_unique<DefaultBrowserController>(
+      std::move(setter),
+      DefaultBrowserEntrypointType::kModalDialogWithoutSettingsIllustration);
+  controller->OnAccepted(future.GetCallback());
+
+  EXPECT_EQ(future.Get(), DefaultBrowserState::IS_DEFAULT);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.ModalDialogWithoutSettingsIllustration.ShellIntegration."
+      "OutcomeV2",
+      true, 1);
+}
+
+TEST_F(DefaultBrowserControllerTest, OutcomeV2ModalDialogSticky) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<DefaultBrowserState> future;
+
+  auto setter = std::make_unique<StrictlyMockedDefaultBrowserSetter>();
+  EXPECT_CALL(*setter, GetType)
+      .WillRepeatedly(
+          testing::Return(DefaultBrowserSetterType::kShellIntegration));
+  EXPECT_CALL(*setter, Execute(testing::_, testing::_))
+      .WillOnce([](DefaultBrowserSetterCompletionCallback callback,
+                   const DefaultBrowserSetter::ExecuteParams&) {
+        std::move(callback).Run(DefaultBrowserState::IS_DEFAULT);
+      });
+
+  auto controller = std::make_unique<DefaultBrowserController>(
+      std::move(setter), DefaultBrowserEntrypointType::
+                             kStickyModalDialogWithoutSettingsIllustration);
+  controller->OnAccepted(future.GetCallback());
+
+  EXPECT_EQ(future.Get(), DefaultBrowserState::IS_DEFAULT);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.StickyModalDialogWithoutSettingsIllustration."
+      "ShellIntegration.OutcomeV2",
+      true, 1);
 }
 
 // Checks that there is no crash when OnAccepted is called second time before

@@ -22,8 +22,50 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
   }
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kDefaultBrowserPromptSurfaces);
+    feature_list.InitAndEnableFeature(kDefaultBrowserStickyModal);
+#if BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(IsDefaultBrowserPromptSurfacesEnabled());
+#else
     EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
+#endif
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {kDefaultBrowserPromptSurfaces, kDefaultBrowserStickyModal});
+    EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
+  }
+}
+
+TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserModalSticky) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserStickyModal, {{"IsSticky", "true"}}}}, {});
+#if BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(IsDefaultBrowserModalSticky());
+#else
+    EXPECT_FALSE(IsDefaultBrowserModalSticky());
+#endif
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserStickyModal, {{"IsSticky", "true"}}},
+         {kDefaultBrowserSetterSelection, {{"setter_option", "visual_guide"}}}},
+        {});
+    EXPECT_FALSE(IsDefaultBrowserModalSticky());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserStickyModal, {{"IsSticky", "false"}}}}, {});
+    EXPECT_FALSE(IsDefaultBrowserModalSticky());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kDefaultBrowserStickyModal);
+    EXPECT_FALSE(IsDefaultBrowserModalSticky());
   }
 }
 
@@ -90,6 +132,39 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
     feature_list.InitWithFeaturesAndParameters(
         {{kDefaultBrowserPromptSurfaces,
           {{"prompt_surface", "modal_dialog_without_settings_illustration"}}}},
+        {});
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(
+        GetDefaultBrowserPromptSurface(),
+        DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration);
+#else
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserStickyModal,
+          {{"IsSticky", "true"}, {"WithSettingsIllustration", "false"}}}},
+        {});
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(
+        GetDefaultBrowserPromptSurface(),
+        DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration);
+#else
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserStickyModal,
+          {{"IsSticky", "true"}, {"WithSettingsIllustration", "true"}}},
+         {kDefaultBrowserSetterSelection, {{"setter_option", "visual_guide"}}}},
         {});
 #if BUILDFLAG(IS_WIN)
     EXPECT_EQ(

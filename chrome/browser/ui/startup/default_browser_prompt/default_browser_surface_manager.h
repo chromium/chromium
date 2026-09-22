@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "ui/views/widget/widget.h"
@@ -49,6 +52,12 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
 
   bool can_pin_to_taskbar() const { return can_pin_to_taskbar_; }
 
+  bool has_accepted() const { return has_accepted_; }
+
+  // Registers `callback` to be notified when `has_accepted()` changes.
+  base::CallbackListSubscription RegisterHasAcceptedChanged(
+      base::RepeatingCallback<void(bool)> callback);
+
   // Methods for derived classes to handle user interactions via the controller.
   void HandleAccept();
   void HandleDismiss();
@@ -79,8 +88,21 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
   // Closes all prompt instances managed by the subclass.
   virtual void CloseAllPromptInstances() = 0;
 
+  // Closes all prompts once Chrome becomes the default browser.
+  void OnDefaultBrowserStateChanged(
+      shell_integration::DefaultWebClientState state);
+
   // Flag indicating if the taskbar pinning option should be available.
   bool can_pin_to_taskbar_ = false;
+
+  // Flag indicating if an accept was already handled in this session.
+  bool has_accepted_ = false;
+
+  // Observers notified when `has_accepted_` changes.
+  base::RepeatingCallbackList<void(bool)> has_accepted_callbacks_;
+
+  // Session-level subscription to default browser changes for sticky modal.
+  base::CallbackListSubscription default_browser_subscription_;
 
   // The controller instance managing the default browser flow.
   std::unique_ptr<default_browser::DefaultBrowserController> controller_;

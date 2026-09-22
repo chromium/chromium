@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -33,10 +34,14 @@ browser_util::PinAppToTaskbarChannel EntrypointToPinToTaskbarChannel(
       return browser_util::PinAppToTaskbarChannel::kDefaultBrowserBubbleDialog;
     case default_browser::DefaultBrowserEntrypointType::
         kModalDialogWithSettingsIllustration:
+    case default_browser::DefaultBrowserEntrypointType::
+        kStickyModalDialogWithSettingsIllustration:
       return browser_util::PinAppToTaskbarChannel::
           kDefaultBrowserModalDialogWithSettingsImage;
     case default_browser::DefaultBrowserEntrypointType::
         kModalDialogWithoutSettingsIllustration:
+    case default_browser::DefaultBrowserEntrypointType::
+        kStickyModalDialogWithoutSettingsIllustration:
       return browser_util::PinAppToTaskbarChannel::
           kDefaultBrowserModalDialogWithoutSettingsImage;
     case default_browser::DefaultBrowserEntrypointType::kStartupInfobar:
@@ -60,11 +65,24 @@ DefaultBrowserSurfaceManager::~DefaultBrowserSurfaceManager() {
 void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
   CloseAll();
   can_pin_to_taskbar_ = can_pin_to_taskbar;
+  has_accepted_ = false;
 
   controller_ = default_browser::DefaultBrowserManager::CreateControllerFor(
       GetEntrypointType());
   CHECK(controller_);
   controller_->OnShown();
+
+  if (default_browser::IsDefaultBrowserModalSticky()) {
+    if (auto* manager =
+            default_browser::DefaultBrowserManager::From(g_browser_process)) {
+      // Note: `DefaultBrowserMonitor` only runs when
+      // `kDefaultBrowserFramework` is enabled.
+      default_browser_subscription_ =
+          manager->RegisterDefaultBrowserChanged(base::BindRepeating(
+              &DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged,
+              base::Unretained(this)));
+    }
+  }
 
   auto* global_browser_collection = GlobalBrowserCollection::GetInstance();
   global_browser_collection->ForEach([this](BrowserWindowInterface* bwi) {
@@ -77,6 +95,7 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
 
 void DefaultBrowserSurfaceManager::CloseAll() {
   can_pin_to_taskbar_ = false;
+  default_browser_subscription_ = {};
   browser_collection_observation_.Reset();
   CloseAllPromptInstances();
 }
@@ -106,10 +125,27 @@ void DefaultBrowserSurfaceManager::OnBrowserClosed(
   CloseForBrowser(browser);
 }
 
+base::CallbackListSubscription
+DefaultBrowserSurfaceManager::RegisterHasAcceptedChanged(
+    base::RepeatingCallback<void(bool)> callback) {
+  return has_accepted_callbacks_.Add(std::move(callback));
+}
+
+void DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged(
+    shell_integration::DefaultWebClientState state) {
+  if (state == shell_integration::DefaultWebClientState::IS_DEFAULT) {
+    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kAccept);
+  }
+}
+
 void DefaultBrowserSurfaceManager::HandleAccept() {
   if (!controller_) {
     return;
   }
+
+  has_accepted_ = true;
+  has_accepted_callbacks_.Notify(true);
 
   default_browser::DefaultBrowserSetter::ExecuteParams execute_params;
   if (can_pin_to_taskbar()) {
@@ -146,12 +182,14 @@ void DefaultBrowserSurfaceManager::HandleDismiss() {
   local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
                        base::Time::Now());
 
-  if (!controller_) {
-    return;
+  if (controller_) {
+    controller_->OnDismissed();
+    controller_.reset();
+  } else if (has_accepted_) {
+    default_browser::DefaultBrowserManager::CreateControllerFor(
+        GetEntrypointType())
+        ->OnDismissed();
   }
-
-  controller_->OnDismissed();
-  controller_.reset();
 }
 
 void DefaultBrowserSurfaceManager::HandleIgnore() {

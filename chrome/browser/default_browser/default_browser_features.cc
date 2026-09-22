@@ -38,7 +38,22 @@ bool IsDefaultBrowserChangedOsNotificationEnabled() {
 
 bool IsDefaultBrowserPromptSurfacesEnabled() {
 #if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
+  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces) ||
+         base::FeatureList::IsEnabled(kDefaultBrowserStickyModal);
+#else
+  return false;
+#endif
+}
+
+bool IsDefaultBrowserModalSticky() {
+#if BUILDFLAG(IS_WIN)
+  // When the visual guided setter is selected, disable sticky modal because
+  // the visual guide opens its own dedicated full-tab stage.
+  if (GetDefaultBrowserSetterType() == DefaultBrowserSetterType::kVisualGuide) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kDefaultBrowserStickyModal) &&
+         kIsSticky.Get();
 #else
   return false;
 #endif
@@ -58,7 +73,16 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   }
 
   DefaultBrowserPromptSurface prompt_surface =
-      kDefaultBrowserPromptSurfaceParam.Get();
+      DefaultBrowserPromptSurface::kInfobar;
+  if (base::FeatureList::IsEnabled(kDefaultBrowserStickyModal)) {
+    prompt_surface =
+        kWithSettingsIllustration.Get()
+            ? DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration
+            : DefaultBrowserPromptSurface::
+                  kModalDialogWithoutSettingsIllustration;
+  } else {
+    prompt_surface = kDefaultBrowserPromptSurfaceParam.Get();
+  }
 #if BUILDFLAG(IS_WIN)
   // The modal prompt surface with settings illustration features an OS-level
   // diagram of Windows Settings with text in English. Because the visual UI
@@ -133,6 +157,15 @@ BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
                         "prompt_surface",
                         DefaultBrowserPromptSurface::kInfobar,
                         kDefaultBrowserPromptSurfaceOptions);
+
+BASE_FEATURE(kDefaultBrowserStickyModal, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool, kIsSticky, &kDefaultBrowserStickyModal, true);
+
+BASE_FEATURE_PARAM(bool,
+                   kWithSettingsIllustration,
+                   &kDefaultBrowserStickyModal,
+                   false);
 
 BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
              base::FEATURE_DISABLED_BY_DEFAULT);

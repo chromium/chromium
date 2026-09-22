@@ -13734,6 +13734,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_DEFAULT_BROWSER_MODAL_CONFIRM_BUTTON" desc="Label for the button to confirm setting the default browser.">
         Open settings
       </message>
+      <message name="IDS_DEFAULT_BROWSER_MODAL_TRY_AGAIN_BUTTON" desc="Retry button for the sticky default browser modal.">
+        Try again
+      </message>
       <message name="IDS_DEFAULT_BROWSER_MODAL_CANCEL_BUTTON" desc="Label for the button to cancel setting the default browser.">
         Set later
       </message>

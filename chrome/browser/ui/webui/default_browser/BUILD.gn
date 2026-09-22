@@ -30,6 +30,7 @@ source_set("default_browser_modal") {
     "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//components/strings:components_strings",
     "//content/public/browser",
     "//ui/base/interaction",
     "//ui/gfx",

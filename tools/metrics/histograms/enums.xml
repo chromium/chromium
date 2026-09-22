@@ -8257,6 +8257,7 @@ from previous Chrome versions.
   <int value="-2018008457" label="ClipboardContentsId:disabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017821808" label="PrivacySandboxAdsAPIsOverride:disabled"/>
+  <int value="-2017796159" label="DefaultBrowserStickyModal:enabled"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
   <int value="-2017250992"
       label="AutofillSuggestServerCardInsteadOfLocalCard:disabled"/>
@@ -17988,6 +17989,7 @@ from previous Chrome versions.
   <int value="966626581" label="NewInstanceFromDraggedLink:disabled"/>
   <int value="966958557"
       label="CryptAuthV2DedupDeviceLastActivityTime:enabled"/>
+  <int value="967149711" label="DefaultBrowserStickyModal:disabled"/>
   <int value="967181153" label="SearchInCCTAlternateTapHandling:disabled"/>
   <int value="967464596"
       label="autofill-ai-always-show-private-ai-notice:enabled"/>

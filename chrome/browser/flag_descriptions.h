@@ -554,6 +554,11 @@ inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
 inline constexpr char kDefaultBrowserSetterSelectionName[] =
     "Default Browser Setter Selection";
 
+inline constexpr char kDefaultBrowserStickyModalDescription[] =
+    "Enables the sticky modal dialog for the default browser prompt.";
+inline constexpr char kDefaultBrowserStickyModalName[] =
+    "Default Browser Sticky Modal";
+
 inline constexpr char kDefaultSearchEnginePrewarmName[] =
     "Default search engine prewarm";
 inline constexpr char kDefaultSearchEnginePrewarmDescription[] =

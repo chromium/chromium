@@ -37,7 +37,11 @@ enum class DefaultBrowserEntrypointType {
   kModalDialogWithSettingsIllustration = 4,
   // Modal dialog without settings illustration.
   kModalDialogWithoutSettingsIllustration = 5,
-  kMaxValue = kModalDialogWithoutSettingsIllustration,
+  // Sticky modal dialog with settings illustration.
+  kStickyModalDialogWithSettingsIllustration = 6,
+  // Sticky modal dialog without settings illustration.
+  kStickyModalDialogWithoutSettingsIllustration = 7,
+  kMaxValue = kStickyModalDialogWithoutSettingsIllustration,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:DefaultBrowserEntrypointType)
 

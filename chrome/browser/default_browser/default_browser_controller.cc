@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -71,6 +72,12 @@ std::string UiEntrypointTypeToString(
       return "ModalDialogWithSettingsIllustration";
     case DefaultBrowserEntrypointType::kModalDialogWithoutSettingsIllustration:
       return "ModalDialogWithoutSettingsIllustration";
+    case DefaultBrowserEntrypointType::
+        kStickyModalDialogWithSettingsIllustration:
+      return "StickyModalDialogWithSettingsIllustration";
+    case DefaultBrowserEntrypointType::
+        kStickyModalDialogWithoutSettingsIllustration:
+      return "StickyModalDialogWithoutSettingsIllustration";
   }
   NOTREACHED();
 }
@@ -157,6 +164,9 @@ void DefaultBrowserController::RecordInteractionMetric(
 void DefaultBrowserController::RecordResultMetric(bool success) {
   base::UmaHistogramBoolean(GetSetterHistogramName(GetSetterType(), "Result"),
                             success);
+  base::UmaHistogramBoolean(
+      GetEntrypointHistogramName(ui_entrypoint_, GetSetterType(), "OutcomeV2"),
+      success);
 }
 
 }  // namespace default_browser

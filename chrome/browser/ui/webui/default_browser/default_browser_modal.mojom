@@ -7,7 +7,8 @@ module default_browser_modal.mojom;
 // Interface for browser-to-page events. This interface should be implemented
 // by the WebUI page.
 interface Page {
-
+  // Notifies the page whether the user has accepted the prompt in this session.
+  OnHasAcceptedChanged(bool has_accepted);
 };
 
 // Interface that implements page-to-browser events. This interface is
@@ -16,11 +17,18 @@ interface PageHandler {
   // Invokes the C++ logic to set the browser as default.
   Confirm();
 
+  // User clicked "Try again" to re-launch Windows Settings.
+  TryAgain();
+
   // Invokes the C++ logic to close the dialog.
   Cancel();
 
   // Signals that the UI is ready to be shown.
   ShowUI();
+
+  // Checks the current default browser state and closes the dialog if Chrome
+  // is default. Returns true if Chrome is default.
+  CheckDefaultStatusAndMaybeClose() => (bool is_default);
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication. This

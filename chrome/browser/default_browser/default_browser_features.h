@@ -32,6 +32,11 @@ bool IsDefaultBrowserChangedOsNotificationEnabled();
 // Returns whether the experimental default browser prompt surfaces are enabled.
 bool IsDefaultBrowserPromptSurfacesEnabled();
 
+// Returns whether the modal dialog default browser prompt should remain open
+// after clicking the confirm action and switch to a retry state on focus
+// return.
+bool IsDefaultBrowserModalSticky();
+
 // Returns whether the visual guided setter docking feature flag is enabled.
 bool IsVisualGuidedSetterDockingEnabled();
 
@@ -53,6 +58,16 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromptSurfaces);
 
 BASE_DECLARE_FEATURE_PARAM(DefaultBrowserPromptSurface,
                            kDefaultBrowserPromptSurfaceParam);
+
+// Enables the sticky modal default browser prompt experiment.
+BASE_DECLARE_FEATURE(kDefaultBrowserStickyModal);
+
+// Parameter for whether the modal dialog prompt should remain open (sticky)
+// until default is set or dismissed.
+BASE_DECLARE_FEATURE_PARAM(bool, kIsSticky);
+
+// Parameter for whether the modal dialog prompt uses the settings illustration.
+BASE_DECLARE_FEATURE_PARAM(bool, kWithSettingsIllustration);
 
 // Enables the framework to perform additional checks when detecting default
 // browser.

@@ -21,7 +21,14 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
     BrowserProxy.setInstance(browserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({useSettingsIllustration: false});
+    loadTimeData.overrideValues({
+      useSettingsIllustration: false,
+      confirmButton: 'Open settings',
+      tryAgainButton: 'Try again',
+      cancelButton: 'Set later',
+      done: 'Done',
+      isStickyModal: false,
+    });
     app = document.createElement('default-browser-modal-app');
     document.body.appendChild(app);
   });
@@ -57,6 +64,61 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
     assertTrue(isVisible(cancelButton));
     assertTrue(!!cancelButton);
     cancelButton.click();
+    assertEquals(1, browserProxy.handler.getCallCount('cancel'));
+  });
+
+  test('StickyModalTryAgainFlow', async function() {
+    loadTimeData.overrideValues({isStickyModal: true});
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('default-browser-modal-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+
+    const confirmButton =
+        app.shadowRoot.querySelector<HTMLElement>('#confirm-button');
+    const cancelButton =
+        app.shadowRoot.querySelector<HTMLElement>('#cancel-button');
+    assertTrue(isVisible(confirmButton));
+    assertTrue(isVisible(cancelButton));
+    assertEquals(
+        loadTimeData.getString('confirmButton'),
+        confirmButton!.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('cancelButton'),
+        cancelButton!.textContent.trim());
+
+    confirmButton!.click();
+    assertEquals(1, browserProxy.handler.getCallCount('confirm'));
+    assertEquals(0, browserProxy.handler.getCallCount('tryAgain'));
+
+    await app.updateComplete;
+    assertTrue(isVisible(
+        app.shadowRoot.querySelector<HTMLElement>('#confirm-button')));
+
+    browserProxy.callbackRouterRemote.onHasAcceptedChanged(true);
+    await browserProxy.callbackRouterRemote.$.flushForTesting();
+    await app.updateComplete;
+
+    const tryAgainButton =
+        app.shadowRoot.querySelector<HTMLElement>('#try-again-button');
+    const closeButton =
+        app.shadowRoot.querySelector<HTMLElement>('#close-button');
+    assertTrue(isVisible(tryAgainButton));
+    assertTrue(isVisible(closeButton));
+    assertEquals(
+        loadTimeData.getString('tryAgainButton'),
+        tryAgainButton!.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('close'), closeButton!.textContent.trim());
+
+    window.dispatchEvent(new Event('focus'));
+    await browserProxy.handler.whenCalled('checkDefaultStatusAndMaybeClose');
+
+    tryAgainButton!.click();
+    assertEquals(1, browserProxy.handler.getCallCount('tryAgain'));
+
+    closeButton!.click();
     assertEquals(1, browserProxy.handler.getCallCount('cancel'));
   });
 });

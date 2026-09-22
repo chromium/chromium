@@ -5,13 +5,20 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/callback_list.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,4 +109,59 @@ TEST_F(DefaultBrowserSurfaceManagerTest, IsBrowserValidForNonNormalWindow) {
 
   TestDefaultBrowserSurfaceManager manager;
   EXPECT_FALSE(manager.IsBrowserValidForShowing(browser_window_interface()));
+}
+
+TEST_F(DefaultBrowserSurfaceManagerTest, HandleDismissIncrementsDeclinedCount) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(prefs::kDefaultBrowserDeclinedCount, 0);
+
+  TestDefaultBrowserSurfaceManager manager;
+  manager.Show(/*can_pin_to_taskbar=*/false);
+  manager.HandleDismiss();
+
+  EXPECT_EQ(local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
+}
+
+TEST_F(DefaultBrowserSurfaceManagerTest,
+       HandleDismissAfterAcceptIncrementsDeclinedCountAndRecordsDismissed) {
+  base::HistogramTester histogram_tester;
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(prefs::kDefaultBrowserDeclinedCount, 0);
+
+  TestDefaultBrowserSurfaceManager manager;
+  manager.Show(/*can_pin_to_taskbar=*/false);
+  manager.HandleAccept();
+  manager.HandleDismiss();
+
+  EXPECT_EQ(local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
+  histogram_tester.ExpectBucketCount(
+      "DefaultBrowser.InfoBar.ShellIntegration.Interaction",
+      default_browser::DefaultBrowserInteractionType::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      "DefaultBrowser.InfoBar.ShellIntegration.Interaction",
+      default_browser::DefaultBrowserInteractionType::kDismissed, 1);
+}
+
+TEST_F(DefaultBrowserSurfaceManagerTest, HandleAcceptNotifiesObservers) {
+  TestDefaultBrowserSurfaceManager manager;
+  manager.Show(/*can_pin_to_taskbar=*/false);
+  EXPECT_FALSE(manager.has_accepted());
+
+  std::vector<bool> observed;
+  base::CallbackListSubscription subscription =
+      manager.RegisterHasAcceptedChanged(
+          base::BindLambdaForTesting([&observed](bool has_accepted) {
+            observed.push_back(has_accepted);
+          }));
+
+  manager.HandleAccept();
+  EXPECT_TRUE(manager.has_accepted());
+  EXPECT_THAT(observed, ::testing::ElementsAre(true));
+
+  // Subsequent accepts are no-ops and do not re-notify.
+  manager.HandleAccept();
+  EXPECT_THAT(observed, ::testing::ElementsAre(true));
+
+  manager.Show(/*can_pin_to_taskbar=*/false);
+  EXPECT_FALSE(manager.has_accepted());
 }

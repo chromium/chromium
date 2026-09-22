@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -15,6 +16,7 @@
 #include "chrome/grit/default_browser_modal_resources.h"
 #include "chrome/grit/default_browser_modal_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -64,7 +66,9 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"confirmButton", IDS_DEFAULT_BROWSER_MODAL_CONFIRM_BUTTON},
+      {"tryAgainButton", IDS_DEFAULT_BROWSER_MODAL_TRY_AGAIN_BUTTON},
       {"cancelButton", IDS_DEFAULT_BROWSER_MODAL_CANCEL_BUTTON},
+      {"close", IDS_CLOSE},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -87,6 +91,8 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
 
   source->AddBoolean("useSettingsIllustration", use_settings_illustration);
   source->AddBoolean("isModal", is_modal);
+  source->AddBoolean("isStickyModal",
+                     default_browser::IsDefaultBrowserModalSticky());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DefaultBrowserModalUI)
@@ -97,7 +103,7 @@ void DefaultBrowserModalUI::CreatePageHandler(
     mojo::PendingRemote<default_browser_modal::mojom::Page> page,
     mojo::PendingReceiver<default_browser_modal::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<DefaultBrowserModalHandler>(
-      web_ui(), std::move(receiver));
+      web_ui(), std::move(page), std::move(receiver));
 }
 
 void DefaultBrowserModalUI::BindInterface(
