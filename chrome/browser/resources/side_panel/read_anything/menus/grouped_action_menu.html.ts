@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
+import {SettingsItemType} from './menu_util.js';
 
 export function getHtml(this: GroupedActionMenuElement) {
   // clang-format off
@@ -33,7 +34,7 @@ export function getHtml(this: GroupedActionMenuElement) {
         <button
             id="group-${groupIndex}-item-${itemIndex}"
             class="dropdown-item"
-            style="${item.style}"
+            style="${item.style || nothing}"
             role="${this.getItemRole_(item)}"
             title="${item.ariaLabel || item.title}"
             aria-label="${item.ariaLabel || item.title}"
@@ -41,10 +42,13 @@ export function getHtml(this: GroupedActionMenuElement) {
             @click="${this.onClick_}"
             data-group-index="${groupIndex}"
             data-item-index="${itemIndex}">
-          <cr-icon
-              class="button-image check-mark check-mark-showing-${item.selected}"
-              icon="${this.getItemIcon_(item)}">
-          </cr-icon>
+          ${item.itemType === SettingsItemType.ACTION ? nothing : html`
+            <cr-icon
+                class="button-image check-mark check-mark-showing-${
+                    !!item.selected}"
+                icon="${this.getItemIcon_(item)}">
+            </cr-icon>
+          `}
           <cr-icon
               class="button-image has-icon-${!!item.icon}"
               icon="${item.icon || ''}">
