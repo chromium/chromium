@@ -666,8 +666,9 @@ bool ArcSupportHost::Initialize() {
   const std::string& country_code = base::CountryCodeForCurrentTimezone();
   loadtime_data.Set("countryCode", country_code);
 
-  const std::string& app_locale = application_locale_storage_->Get();
-  webui::SetLoadTimeDataDefaults(app_locale, &loadtime_data);
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
+  webui::SetLoadTimeDataDefaults(std::string(app_locale), &loadtime_data);
   loadtime_data.Set("locale", app_locale);
 
   base::DictValue message;

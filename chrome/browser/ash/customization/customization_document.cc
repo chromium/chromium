@@ -809,8 +809,8 @@ void ServicesCustomizationDocument::OnCustomizationNotFound() {
 void ServicesCustomizationDocument::SetOemFolderName(
     Profile* profile,
     const base::DictValue& root) {
-  std::string name =
-      GetOemAppsFolderNameImpl(application_locale_storage_->Get(), root);
+  std::string name = GetOemAppsFolderNameImpl(
+      std::string(application_locale_storage_->GetTag().tag_string()), root);
   if (name.empty())
     name = chromeos::default_app_order::GetOemAppsFolderName();
   if (!name.empty()) {

@@ -535,8 +535,11 @@ GuestOsRegistryService::GetAllRegisteredApps() const {
       prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   for (const auto item : apps) {
-    result.emplace(item.first, Registration(application_locale_storage_->Get(),
-                                            item.first, item.second.Clone()));
+    result.emplace(
+        item.first,
+        Registration(
+            std::string(application_locale_storage_->GetTag().tag_string()),
+            item.first, item.second.Clone()));
   }
   return result;
 }
@@ -601,7 +604,7 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
     return std::nullopt;
   }
   return std::make_optional<Registration>(
-      application_locale_storage_->Get(), app_id,
+      std::string(application_locale_storage_->GetTag().tag_string()), app_id,
       base::Value(pref_registration->Clone()));
 }
 
@@ -805,8 +808,9 @@ void GuestOsRegistryService::ClearApplicationList(
     base::DictValue& apps = update.Get();
 
     for (const auto item : apps) {
-      Registration registration(application_locale_storage_->Get(), item.first,
-                                item.second.Clone());
+      Registration registration(
+          std::string(application_locale_storage_->GetTag().tag_string()),
+          item.first, item.second.Clone());
       if (vm_type != registration.VmType()) {
         continue;
       }

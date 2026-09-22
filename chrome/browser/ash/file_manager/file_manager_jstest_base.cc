@@ -68,8 +68,10 @@ class FileManagerTestWebUIProvider
     ash::file_manager::AddFilesAppResources(files_swa_source,
                                             kFileManagerGenResources);
 
-    const std::string& application_locale =
-        g_browser_process->GetFeatures()->application_locale_storage()->Get();
+    const std::string application_locale(g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->GetTag()
+                                             .tag_string());
     dict_ = GetFileManagerStrings(application_locale);
     AddFileManagerFeatureStrings(
         "en-US", application_locale,

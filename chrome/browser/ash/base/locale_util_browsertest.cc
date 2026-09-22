@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(LocaleUtilTest, SwitchLanguage) {
       g_browser_process->GetFeatures()->application_locale_storage();
 
   // Tests default to English.
-  EXPECT_EQ("en-US", application_locale_storage->Get());
+  EXPECT_EQ("en-US", application_locale_storage->GetTag().tag_string());
 
   // Attempt switch to Belgian French.
   base::RunLoop run_loop;
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(LocaleUtilTest, SwitchLanguage) {
   run_loop.Run();
 
   // Locale was remapped to generic French.
-  EXPECT_EQ("fr", application_locale_storage->Get());
+  EXPECT_EQ("fr", application_locale_storage->GetTag().tag_string());
 
   // Extension subsystem has both actual locale and preferred locale.
   EXPECT_EQ("fr", extension_l10n_util::CurrentLocaleOrDefault());

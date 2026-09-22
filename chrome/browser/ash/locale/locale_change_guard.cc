@@ -106,7 +106,7 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
 }
 
 void LocaleChangeGuard::Check() {
-  std::string cur_locale = application_locale_storage_->Get();
+  std::string cur_locale(application_locale_storage_->GetTag().tag_string());
   if (cur_locale.empty()) {
     NOTREACHED();
   }

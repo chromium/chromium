@@ -1050,7 +1050,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   }
   app_order_loader_ =
       std::make_unique<chromeos::default_app_order::ExternalLoader>(
-          g_browser_process->GetFeatures()->application_locale_storage()->Get(),
+          std::string(g_browser_process->GetFeatures()
+                          ->application_locale_storage()
+                          ->GetTag()
+                          .tag_string()),
           /*async=*/!immediate_login);
 
   audio::GlobalSoundsManager::Create(

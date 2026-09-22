@@ -629,7 +629,10 @@ void GetLocaleAndPreferredLanguages(
           ::language::prefs::kApplicationLocale);
   CHECK(locale_pref, base::NotFatalUntil::M160);
   const std::string& locale = locale_pref->GetValue()->GetString();
-  *out_locale = locale.empty() ? application_locale_storage.Get() : locale;
+  *out_locale =
+      locale.empty()
+          ? std::string(application_locale_storage.GetTag().tag_string())
+          : locale;
 
   // |preferredLanguages| consists of comma separated locale strings. It may be
   // empty or contain empty items, but those are ignored on ARC.  If an item

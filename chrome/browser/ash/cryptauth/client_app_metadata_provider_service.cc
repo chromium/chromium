@@ -324,7 +324,7 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_long_device_id(
       cryptauth_device_id::GetDeviceID(local_state_.get()));
 
-  metadata.set_locale(application_locale_storage_->Get());
+  metadata.set_locale(application_locale_storage_->GetTag().tag_string());
   metadata.set_device_os_version(base::GetLinuxDistro());
   metadata.set_device_os_version_code(SoftwareVersionCodeAsInt64());
   metadata.set_device_os_release(std::string(version_info::GetVersionNumber()));
