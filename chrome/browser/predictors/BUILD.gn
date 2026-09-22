@@ -168,6 +168,7 @@ source_set("unit_tests") {
     "//chrome/browser/sessions",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/no_state_prefetch/browser",
     "//components/omnibox/browser",
     "//components/omnibox/common",

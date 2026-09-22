@@ -146,6 +146,7 @@ if (!is_android) {
       "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",

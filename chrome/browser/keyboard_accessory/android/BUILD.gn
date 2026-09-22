@@ -84,6 +84,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager/android:unit_tests",
     "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:credit_card_number_validation",

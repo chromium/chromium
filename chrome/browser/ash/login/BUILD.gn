@@ -620,6 +620,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/biod",

@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//chrome/browser/skills:public",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/optimization_guide/core:test_support",
     "//components/skills:features",
     "//components/skills/mocks",

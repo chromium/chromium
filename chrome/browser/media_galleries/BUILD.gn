@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions:unit_tests",
     "//chrome/common/apps/platform_apps",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/storage_monitor:test_support",
     "//extensions/browser",
     "//testing/gtest",

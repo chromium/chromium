@@ -75,6 +75,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/omnibox/browser:mojo_bindings",
       "//components/omnibox/browser:test_support",
       "//content/test:test_support",

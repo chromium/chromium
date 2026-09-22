@@ -145,6 +145,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/usb",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/media_effects/test:test_support",
     "//components/omnibox/browser:vector_icons",
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",

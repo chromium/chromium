@@ -93,6 +93,7 @@ if (!is_android) {
         "//base",
         "//base/test:test_support",
         "//chrome/test:test_support",
+        "//chrome/test/base:chrome_render_view_host_test_harness",
         "//components/dbus",
         "//content/public/browser",
         "//content/test:test_support",

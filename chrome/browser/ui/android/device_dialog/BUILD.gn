@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/serial:test_support",
     "//chrome/browser/usb",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//content/test:test_support",
     "//services/device/public/mojom",
     "//testing/gmock",

@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/renderer_host",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/back_forward_cache",
     "//components/image_fetcher/core:test_support",
     "//components/offline_pages/content/background_loader:test_support",

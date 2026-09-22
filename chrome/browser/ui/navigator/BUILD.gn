@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//chrome/browser/tab_list:test_support",
     "//chrome/browser/ui:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",

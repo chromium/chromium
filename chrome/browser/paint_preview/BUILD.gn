@@ -74,6 +74,7 @@ if (enable_paint_preview) {
       ":services",
       "//base",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/paint_preview/common",
       "//components/paint_preview/common:test_utils",
       "//content/test:test_support",

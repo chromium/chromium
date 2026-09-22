@@ -817,6 +817,7 @@ source_set("unit_tests") {
     "//chrome/browser/pwc:features_shared_cpp_sources",
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//components/browser_actuator/public:payload_type_mapping",
     "//components/content_settings/core/browser",

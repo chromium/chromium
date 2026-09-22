@@ -436,6 +436,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/autofill/core/browser/proto",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:database_manager",

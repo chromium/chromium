@@ -50,6 +50,7 @@ if (is_android && dfmify_dev_ui) {
       ":impl",
       "//chrome/android/modules/dev_ui/provider:native",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//content/public/common",
       "//content/test:test_support",
       "//net",

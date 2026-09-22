@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/export",

@@ -187,6 +187,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/trusted_vault",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",

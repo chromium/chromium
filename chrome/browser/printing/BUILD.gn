@@ -264,6 +264,7 @@ if (enable_printing) {
     deps = [
       ":printing",
       "//base",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//content/public/browser",
       "//content/test:test_support",
       "//printing",
@@ -445,6 +446,7 @@ if (enable_print_preview) {
     public_deps = [
       "//chrome/browser/ui/webui/print_preview",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//ui/base/idle:test_support",
     ]
 

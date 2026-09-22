@@ -300,6 +300,7 @@ if (enable_dice_support) {
       "//base/test:test_support",
       "//chrome/browser/signin",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/signin/public/base",

@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/optimization_guide/core",
     "//content/test:test_support",
     "//testing/gmock",

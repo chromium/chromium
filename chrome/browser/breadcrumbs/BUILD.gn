@@ -30,6 +30,7 @@ source_set("unit_tests") {
     ":breadcrumbs",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/breadcrumbs/core",
     "//components/crash/core/common:crash_key",
     "//components/infobars/content",

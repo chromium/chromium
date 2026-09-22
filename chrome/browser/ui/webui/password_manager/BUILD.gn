@@ -149,6 +149,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/sync",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",

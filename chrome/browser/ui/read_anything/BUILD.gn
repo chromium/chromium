@@ -217,6 +217,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/user_education:impl",
     "//components/tabs:test_support",
     "//content/test:test_support",

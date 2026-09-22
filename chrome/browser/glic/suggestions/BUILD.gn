@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/common:buildflags",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/page_content_annotations/core:test_support",
     "//components/pdf/common:constants",
     "//components/sync:test_support",

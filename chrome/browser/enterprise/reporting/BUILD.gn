@@ -30,6 +30,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/enterprise/reporting/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/enterprise:test_support",
     "//components/enterprise/common/proto:extensions_workflow_events_proto_gen",
     "//components/sync_preferences:test_support",

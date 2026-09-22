@@ -139,6 +139,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/critical_actions/core/browser",
       "//components/history/core/browser",
       "//components/prefs",

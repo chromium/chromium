@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/startup_metric_utils",
     "//content/test:test_support",
     "//testing/gmock",

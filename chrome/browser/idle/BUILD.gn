@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//content/public/browser",

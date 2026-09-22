@@ -105,7 +105,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = []
-  deps = []
+  deps = [ "//chrome/test/base:chrome_render_view_host_test_harness" ]
 
   if (!is_android) {
     sources += [

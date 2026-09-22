@@ -571,6 +571,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/component_updater:test_support",
     "//components/metrics:test_support",
     "//components/metrics/private_metrics:dwa_recorder",

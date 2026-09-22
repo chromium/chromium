@@ -202,6 +202,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common/printing",
     "//chrome/services/printing/public/mojom",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//components/account_id",
     "//components/enterprise/buildflags",

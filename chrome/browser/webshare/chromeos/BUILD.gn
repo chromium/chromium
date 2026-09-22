@@ -15,6 +15,7 @@ source_set("unit_tests") {
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",

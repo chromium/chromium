@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/bookmarks",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/bookmarks/managed",
     "//content/test:test_support",
     "//testing/gtest",

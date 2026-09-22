@@ -1045,6 +1045,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs:page_context_eligibility_helper_unit_tests",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/actor/core",
     "//components/autofill/core/browser:test_support",
     "//components/blocked_content",

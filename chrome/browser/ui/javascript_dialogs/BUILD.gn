@@ -72,6 +72,7 @@ if (!is_android) {
       ":impl",
       ":javascript_dialogs",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/tabs:public",
       "//content/test:test_support",
       "//testing/gtest",

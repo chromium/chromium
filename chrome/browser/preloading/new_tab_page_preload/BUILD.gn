@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prerender",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//content/test:test_support",
   ]
 }

@@ -89,6 +89,7 @@ source_set("unit_tests") {
     ":sync",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/sync/base:features",
     "//components/sync/protocol",
     "//components/sync_sessions:test_support",

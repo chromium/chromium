@@ -140,6 +140,7 @@ source_set("unit_tests") {
     ":tab_group_sync",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/saved_tab_groups/public:features",
     "//content/test:test_support",
     "//net",

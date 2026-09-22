@@ -183,6 +183,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/infobars/content",
     "//components/translate/content/browser",
     "//components/translate/core/browser",

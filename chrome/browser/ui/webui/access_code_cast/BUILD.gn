@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/global_media_controls:test_support",
     "//chrome/browser/ui/media_router",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/media_router/browser",
     "//components/media_router/browser:test_support",
     "//components/media_router/common",

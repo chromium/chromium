@@ -82,6 +82,7 @@ if (!is_android) {
       "//chrome/browser/ui/actions",
       "//chrome/test:test_support",
       "//chrome/test:test_support_unit",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/omnibox/browser:mojo_bindings",
       "//components/tabs:public",
       "//components/tabs:test_support",

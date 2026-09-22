@@ -366,6 +366,7 @@ source_set("unit_tests") {
     "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/performance_manager/test_support",
     "//components/performance_manager/test_support:test_support_common",
     "//components/policy/core/browser:test_support",

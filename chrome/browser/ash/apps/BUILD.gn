@@ -95,6 +95,7 @@ source_set("unit_tests") {
     ":apps",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/webapps/browser:constants",
     "//components/webapps/common",

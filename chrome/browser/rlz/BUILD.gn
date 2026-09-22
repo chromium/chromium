@@ -53,6 +53,7 @@ source_set("unit_tests") {
     ":rlz",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/rlz:test_support",
     "//rlz:test_support",
     "//testing/gmock",

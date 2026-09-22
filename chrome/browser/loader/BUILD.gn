@@ -96,6 +96,7 @@ source_set("unit_tests") {
     ":impl",
     ":loader",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/page_load_metrics/browser",
     "//components/ukm:test_support",
   ]

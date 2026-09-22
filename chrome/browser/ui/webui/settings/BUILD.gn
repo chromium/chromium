@@ -592,6 +592,7 @@ if (!is_android) {
       "//chrome/browser/webauthn",
       "//chrome/browser/webauthn:local_credential_management",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/affiliations/core/browser:affiliations",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/core/browser",

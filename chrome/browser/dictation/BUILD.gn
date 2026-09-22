@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:accelerator_table",
     "//chrome/browser/ui:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//extensions/browser:test_support",

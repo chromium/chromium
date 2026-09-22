@@ -136,6 +136,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/content_settings/browser",
     "//components/tabs:public",
     "//components/tabs:test_support",

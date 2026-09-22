@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/enterprise/data_controls/core/browser:test_support",
     "//testing/gtest",
     "//ui/base/clipboard:clipboard_test_support",

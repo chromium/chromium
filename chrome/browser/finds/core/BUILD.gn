@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync:factories",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/history/core/browser",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

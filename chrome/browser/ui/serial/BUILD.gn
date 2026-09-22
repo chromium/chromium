@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/serial",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/permissions:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",

@@ -212,6 +212,7 @@ if (!is_android) {
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/favicon_base",
       "//components/ntp_tiles",
       "//components/omnibox/common",

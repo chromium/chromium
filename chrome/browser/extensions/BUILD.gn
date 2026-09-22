@@ -2066,6 +2066,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/supervised_user",
     "//chrome/browser/update_client",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:test_switches",
     "//components/bookmarks/managed",

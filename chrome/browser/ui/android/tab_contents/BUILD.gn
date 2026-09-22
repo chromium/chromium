@@ -30,6 +30,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//chrome/test/base:browser_test_waiters",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/dom_distiller/core",
     "//components/search_engines:test_support",
     "//content/test:test_support",

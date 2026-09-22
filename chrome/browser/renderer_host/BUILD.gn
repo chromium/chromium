@@ -78,6 +78,7 @@ if (is_mac) {
       ":history_swiping_control",
       "//base",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
       "//third_party/ocmock",

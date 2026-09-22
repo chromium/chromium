@@ -345,6 +345,7 @@ if (!is_android) {
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/proxy_config",
       "//components/send_tab_to_self",
       "//components/send_tab_to_self:features",

@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:public",
     "//components/tabs:test_support",
     "//content/public/browser",

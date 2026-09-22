@@ -437,6 +437,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs:util",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//net:test_support",

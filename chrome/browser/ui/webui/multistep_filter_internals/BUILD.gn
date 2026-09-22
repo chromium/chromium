@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/multistep_filter/core",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/multistep_filter/core",
     "//components/multistep_filter/core:features",
     "//components/multistep_filter/core:test_support",

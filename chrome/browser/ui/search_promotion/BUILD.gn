@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//chrome/browser/platform_experience:test_support",
     "//chrome/browser/segmentation_platform",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/user_education",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",

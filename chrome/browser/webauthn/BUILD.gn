@@ -430,6 +430,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/cbor",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",

@@ -101,6 +101,7 @@ if (is_android) {
       "//chrome/browser/webauthn",
       "//chrome/browser/webauthn:webauthn_request_delegate_android",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/autofill/core/common",
       "//components/password_manager/content/browser",
       "//components/password_manager/content/browser:test_support",

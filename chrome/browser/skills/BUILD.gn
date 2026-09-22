@@ -220,6 +220,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/keyed_service/core",
     "//components/skills:features",
     "//components/skills/mocks",

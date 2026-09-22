@@ -64,7 +64,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = []
-  deps = []
+  deps = [ "//chrome/test/base:chrome_render_view_host_test_harness" ]
 
   if (!is_android) {
     sources += [ "filter_ui_controller_unittest.cc" ]

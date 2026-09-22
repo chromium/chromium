@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//chrome/browser/reading_list",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/reading_list/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",

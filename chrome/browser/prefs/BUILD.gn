@@ -568,6 +568,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/language/core/browser",
     "//components/performance_manager",
     "//components/policy:generated",

@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/history",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/history/core/browser",

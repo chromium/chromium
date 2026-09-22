@@ -4120,6 +4120,7 @@ source_set("core_unit_tests") {
     "//chrome/common:version_header",
     "//chrome/test:test_interfaces",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/enterprise/connectors/core",
     "//components/enterprise/net/core:test_support",
     "//components/performance_manager",

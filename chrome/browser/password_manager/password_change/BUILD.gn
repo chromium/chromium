@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/optimization_guide/core",

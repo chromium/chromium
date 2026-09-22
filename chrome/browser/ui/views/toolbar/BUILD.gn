@@ -671,6 +671,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/waap",
       "//chrome/common:buildflags",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//chrome/test/user_education:impl",
       "//components/keyed_service/core",
       "//components/prefs",

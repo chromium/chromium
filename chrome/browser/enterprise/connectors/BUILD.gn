@@ -20,6 +20,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/enterprise:impl",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//testing/gtest",
   ]
 

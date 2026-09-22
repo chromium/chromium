@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/pwc/test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/input",
     "//content/public/browser",
     "//content/test:test_support",

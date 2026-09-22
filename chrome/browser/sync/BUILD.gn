@@ -332,6 +332,7 @@ source_set("unit_tests") {
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:scoped_metrics_service",
     "//components/commerce/core:feature_list",
     "//components/metrics",

@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":android",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/browser:test_support",
     "//components/facilitated_payments/core/utils",

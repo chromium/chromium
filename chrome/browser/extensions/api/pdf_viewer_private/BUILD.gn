@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:unit_tests",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/pdf/common:constants",
     "//content/test:test_support",
     "//extensions/browser",

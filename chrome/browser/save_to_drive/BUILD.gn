@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",

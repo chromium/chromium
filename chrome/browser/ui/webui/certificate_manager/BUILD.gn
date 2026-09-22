@@ -93,6 +93,7 @@ if (chrome_root_store_cert_management_ui) {
       "//chrome/browser/resources/certificate_manager:mojom",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/prefs",
       "//components/server_certificate_database",
       "//content/test:test_support",

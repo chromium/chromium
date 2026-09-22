@@ -322,6 +322,7 @@ if (!is_android) {
       "//chrome/common:chrome_features",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/crx_file",
       "//components/history/core/browser",
       "//components/omnibox/browser:location_bar",

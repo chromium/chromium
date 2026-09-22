@@ -70,6 +70,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//content/test:test_support",
       "//testing/gtest",
     ]

@@ -159,6 +159,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/prefs",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/account_id:test_support",
     "//components/prefs:test_support",
     "//content/test:test_support",

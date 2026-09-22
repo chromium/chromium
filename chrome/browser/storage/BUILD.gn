@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/bookmarks/test",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
