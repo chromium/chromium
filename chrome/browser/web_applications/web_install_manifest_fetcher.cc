@@ -33,10 +33,8 @@ size_t g_max_manifest_length = kMaxManifestLength;
 
 WebInstallManifestFetcher::WebInstallManifestFetcher(
     GURL manifest_url,
-    url::Origin initiator_origin,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : manifest_url_(std::move(manifest_url)),
-      initiator_origin_(std::move(initiator_origin)),
       url_loader_factory_(std::move(url_loader_factory)) {
   CHECK(manifest_url_.SchemeIs(url::kHttpsScheme) ||
         (manifest_url_.SchemeIs(url::kHttpScheme) &&
@@ -93,7 +91,6 @@ void WebInstallManifestFetcher::Fetch(FetchCallback callback) {
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = manifest_url_;
-  resource_request->request_initiator = initiator_origin_;
   resource_request->method = "GET";
   // Cookies are not allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;

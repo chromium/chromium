@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -33,15 +32,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/client_security_state.mojom.h"
-#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,9 +109,6 @@ class WebInstallServiceImplTest : public WebAppTest {
     // retrievers know which page state to use.
     fake_web_contents_manager().SetUrlLoaded(web_contents(),
                                              GURL(kDocumentUrl));
-    test_url_loader_factory_reset_ =
-        WebInstallServiceImpl::SetURLLoaderFactoryForTesting(
-            profile_url_loader_factory().GetSafeWeakWrapper().get());
   }
 
   // Creates a WebInstallServiceImpl bound to `service_remote_` via the
@@ -212,8 +203,6 @@ class WebInstallServiceImplTest : public WebAppTest {
  private:
   mojo::Remote<blink::mojom::WebInstallService> service_remote_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::optional<base::AutoReset<network::SharedURLLoaderFactory*>>
-      test_url_loader_factory_reset_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -465,21 +454,6 @@ TEST_F(WebInstallServiceImplTest, CreateIfAllowed_NonHttpsScheme) {
   base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
   remote->InstallFromManifest(/*options=*/nullptr, future.GetCallback());
   // The pipe is reset, so flushing should cause a disconnect.
-  remote.FlushForTesting();
-  EXPECT_FALSE(remote.is_connected());
-}
-
-// CreateIfAllowed with an untrustworthy origin resets the receiver.
-TEST_F(WebInstallServiceImplTest, CreateIfAllowed_UntrustworthyOrigin) {
-  // Navigate to an insecure HTTP URL.
-  NavigateAndCommit(GURL("http://insecure.example.com"));
-
-  mojo::Remote<blink::mojom::WebInstallService> remote;
-  WebInstallServiceImpl::CreateIfAllowed(web_contents()->GetPrimaryMainFrame(),
-                                         remote.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
-  remote->InstallFromManifest(/*options=*/nullptr, future.GetCallback());
   remote.FlushForTesting();
   EXPECT_FALSE(remote.is_connected());
 }

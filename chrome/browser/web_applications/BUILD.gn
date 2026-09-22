@@ -1427,7 +1427,6 @@ source_set("web_applications_browser_tests") {
     "//components/webapps/isolated_web_apps/test_support",
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//content/public/browser",
-    "//services/network/public/cpp:ip_address_space_overrides_test_utils",
     "//ui/color",
     "//ui/events/devices:test_support",
     "//url",

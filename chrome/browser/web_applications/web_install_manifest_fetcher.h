@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/model/web_install_manifest_fetch_error.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 struct RedirectInfo;
@@ -44,7 +43,6 @@ class WebInstallManifestFetcher {
 
   WebInstallManifestFetcher(
       GURL manifest_url,
-      url::Origin initiator_origin,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~WebInstallManifestFetcher();
@@ -69,7 +67,6 @@ class WebInstallManifestFetcher {
   void OnManifestDownloaded(std::optional<std::string> manifest_content);
 
   GURL manifest_url_;
-  url::Origin initiator_origin_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   FetchCallback fetch_callback_;
