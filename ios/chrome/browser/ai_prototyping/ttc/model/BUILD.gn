@@ -17,6 +17,7 @@ source_set("model") {
     "ttc_audio_recorder_delegate.h",
     "ttc_audio_session_manager.h",
     "ttc_audio_session_manager.mm",
+    "ttc_audio_session_manager_delegate.h",
   ]
   deps = [
     "//base",

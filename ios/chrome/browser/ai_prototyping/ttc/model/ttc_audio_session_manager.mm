@@ -12,6 +12,9 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_session_manager_delegate.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 NSString* const kTTCAudioSessionManagerErrorDomain =
     @"org.chromium.ttc.audio_session";
@@ -27,17 +30,17 @@ constexpr AVAudioSessionCategoryOptions kDefaultCategoryOptions =
     AVAudioSessionCategoryOptionAllowBluetoothHFP |
     AVAudioSessionCategoryOptionDefaultToSpeaker;
 
-// Applies the PlayAndRecord category, mode, and default options to the shared
-// AVAudioSession instance, and activates the session. Returns nil on success,
-// or the NSError encountered.
+// Applies the PlayAndRecord category, VoiceChat mode, and default options to
+// the shared AVAudioSession instance to enable Voice Processing (AEC/AGC), and
+// activates the session. Returns nil on success, or the NSError encountered.
 NSError* ConfigureAndActivateAudioSession() {
   AVAudioSession* session = [AVAudioSession sharedInstance];
   NSError* error = nil;
   if (![session.category isEqualToString:AVAudioSessionCategoryPlayAndRecord] ||
-      ![session.mode isEqualToString:AVAudioSessionModeDefault] ||
+      ![session.mode isEqualToString:AVAudioSessionModeVoiceChat] ||
       session.categoryOptions != kDefaultCategoryOptions) {
     [session setCategory:AVAudioSessionCategoryPlayAndRecord
-                    mode:AVAudioSessionModeDefault
+                    mode:AVAudioSessionModeVoiceChat
                  options:kDefaultCategoryOptions
                    error:&error];
     if (error) {
@@ -90,6 +93,11 @@ NSError* CreateCancelledError() {
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     }
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(handleInterruptionNotification:)
+               name:AVAudioSessionInterruptionNotification
+             object:[AVAudioSession sharedInstance]];
   }
   return self;
 }
@@ -97,10 +105,19 @@ NSError* CreateCancelledError() {
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isDisconnected = YES;
+  _delegate = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self restoreAudioSessionCategoryInternal];
 }
 
 #pragma mark - Properties
+
+- (BOOL)hasHardwareAEC {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  AVAudioSessionPortDescription* inputPort =
+      [AVAudioSession sharedInstance].currentRoute.inputs.firstObject;
+  return inputPort.hasHardwareVoiceCallProcessing;
+}
 
 - (NSString*)activeInputRouteName {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -259,6 +276,69 @@ NSError* CreateCancelledError() {
   } else {
     restoreBlock();
   }
+}
+
+// Handles audio session interruptions on the UI thread and notifies the
+// delegate.
+// @param type The type of interruption (Began or Ended).
+// @param shouldResume Whether audio processing should resume if Ended.
+- (void)handleInterruptionWithType:(AVAudioSessionInterruptionType)type
+                      shouldResume:(BOOL)shouldResume {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+
+  id<TTCAudioSessionManagerDelegate> delegate = self.delegate;
+  if (type == AVAudioSessionInterruptionTypeBegan) {
+    if ([delegate
+            respondsToSelector:@selector(
+                                   audioSessionManagerDidBeginInterruption:)]) {
+      [delegate audioSessionManagerDidBeginInterruption:self];
+    }
+  } else if (type == AVAudioSessionInterruptionTypeEnded) {
+    if ([delegate
+            respondsToSelector:
+                @selector(
+                    audioSessionManager:didEndInterruptionWithShouldResume:)]) {
+      [delegate audioSessionManager:self
+          didEndInterruptionWithShouldResume:shouldResume];
+    }
+  }
+}
+
+#pragma mark - Notifications
+
+// Handles AVAudioSessionInterruptionNotification received from AVFoundation on
+// arbitrary CoreAudio notification threads, validating the payload and
+// dispatching to the UI thread.
+// @param notification The interruption notification posted by AVFoundation.
+- (void)handleInterruptionNotification:(NSNotification*)notification {
+  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
+    return;
+  }
+
+  NSDictionary* userInfo = notification.userInfo;
+  NSNumber* typeValue = userInfo[AVAudioSessionInterruptionTypeKey];
+  if (!typeValue) {
+    return;
+  }
+  AVAudioSessionInterruptionType type =
+      static_cast<AVAudioSessionInterruptionType>(
+          [typeValue unsignedIntegerValue]);
+
+  NSNumber* optionValue = userInfo[AVAudioSessionInterruptionOptionKey];
+  AVAudioSessionInterruptionOptions options =
+      static_cast<AVAudioSessionInterruptionOptions>(
+          [optionValue unsignedIntegerValue]);
+  BOOL shouldResume =
+      (options & AVAudioSessionInterruptionOptionShouldResume) != 0;
+
+  __weak TTCAudioSessionManager* weakSelf = self;
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf handleInterruptionWithType:type shouldResume:shouldResume];
+      }));
 }
 
 @end

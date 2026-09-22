@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol TTCAudioSessionManagerDelegate;
+
 // Domain for errors originated by TTCAudioSessionManager.
 extern NSString* const kTTCAudioSessionManagerErrorDomain;
 
@@ -19,6 +21,13 @@ enum class TTCAudioSessionManagerErrorCode : NSInteger {
 // category activation, option configuration, category restoration upon
 // teardown, and route inspection.
 @interface TTCAudioSessionManager : NSObject
+
+// Delegate receiving session interruption and lifecycle events.
+@property(nonatomic, weak) id<TTCAudioSessionManagerDelegate> delegate;
+
+// Whether the currently active audio input hardware supports voice call
+// processing (hardware Acoustic Echo Cancellation).
+@property(nonatomic, readonly) BOOL hasHardwareAEC;
 
 // Human-readable name of the current active audio input port (e.g. "iPhone
 // Microphone", "AirPods"). Returns nil if no input port is available.
