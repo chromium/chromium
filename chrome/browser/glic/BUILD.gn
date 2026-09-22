@@ -1022,9 +1022,14 @@ source_set("browser_tests") {
       "widget/glic_side_panel_coordinator_browsertest.cc",
     ]
 
+    if (!is_mac) {
+      sources += [ "host/glic_drag_and_drop_browsertest.cc" ]
+      deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
+    }
+
     if (!is_mac && enterprise_cloud_content_analysis) {
       sources += [
-        "host/glic_drag_and_drop_browsertest.cc",
+        "host/glic_drag_and_drop_policy_browsertest.cc",
         "host/glic_web_drag_and_drop_browsertest.cc",
       ]
     }
