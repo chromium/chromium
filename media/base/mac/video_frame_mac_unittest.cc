@@ -4,12 +4,14 @@
 
 #include "media/base/mac/video_frame_mac.h"
 
+#include <CoreVideo/CoreVideo.h>
 #include <stddef.h>
 
 #include <utility>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -48,6 +50,67 @@ void ExpectWrappedPixelBuffer(CVPixelBufferRef pb,
               CVPixelBufferGetHeightOfPlane(pb, i))
         << frame.format() << " plane " << i;
   }
+}
+
+base::apple::ScopedCFTypeRef<CVPixelBufferRef>
+CreateIOSurfaceBackedPixelBuffer() {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> io_surface_properties(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> pixel_buffer_attributes(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  CFDictionarySetValue(pixel_buffer_attributes.get(),
+                       kCVPixelBufferIOSurfacePropertiesKey,
+                       io_surface_properties.get());
+
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
+  const CVReturn err = CVPixelBufferCreate(
+      kCFAllocatorDefault, kWidth, kHeight,
+      kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+      pixel_buffer_attributes.get(), pixel_buffer.InitializeInto());
+  EXPECT_EQ(err, kCVReturnSuccess);
+  return pixel_buffer;
+}
+
+double GetCleanApertureNumber(CFDictionaryRef clean_aperture, CFStringRef key) {
+  double value = 0;
+  CFNumberRef number =
+      base::apple::GetValueFromDictionary<CFNumberRef>(clean_aperture, key);
+  EXPECT_NE(number, nullptr);
+  if (number) {
+    CFNumberGetValue(number, kCFNumberDoubleType, &value);
+  }
+  return value;
+}
+
+void ExpectCleanAperture(CVPixelBufferRef pb,
+                         double expected_width,
+                         double expected_height,
+                         double expected_horizontal_offset,
+                         double expected_vertical_offset) {
+  CVAttachmentMode attachment_mode = kCVAttachmentMode_ShouldPropagate;
+  base::apple::ScopedCFTypeRef<CFTypeRef> clean_aperture_ref(
+      CVBufferCopyAttachment(pb, kCVImageBufferCleanApertureKey,
+                             &attachment_mode));
+  CFDictionaryRef clean_aperture =
+      base::apple::CFCast<CFDictionaryRef>(clean_aperture_ref.get());
+  ASSERT_NE(clean_aperture, nullptr);
+  EXPECT_EQ(attachment_mode, kCVAttachmentMode_ShouldNotPropagate);
+  EXPECT_EQ(GetCleanApertureNumber(clean_aperture,
+                                   kCVImageBufferCleanApertureWidthKey),
+            expected_width);
+  EXPECT_EQ(GetCleanApertureNumber(clean_aperture,
+                                   kCVImageBufferCleanApertureHeightKey),
+            expected_height);
+  EXPECT_EQ(GetCleanApertureNumber(
+                clean_aperture, kCVImageBufferCleanApertureHorizontalOffsetKey),
+            expected_horizontal_offset);
+  EXPECT_EQ(GetCleanApertureNumber(
+                clean_aperture, kCVImageBufferCleanApertureVerticalOffsetKey),
+            expected_vertical_offset);
 }
 
 }  // namespace
@@ -280,43 +343,11 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
   EXPECT_EQ(coded_size.height(),
             static_cast<int>(CVPixelBufferGetHeight(pb.get())));
 
-  // 2. Retrieve and verify the Clean Aperture crop dict using base helpers
-  CFDictionaryRef clean_aperture =
-      base::apple::CFCast<CFDictionaryRef>(CVBufferCopyAttachment(
-          pb.get(), kCVImageBufferCleanApertureKey, nullptr));
-  ASSERT_NE(clean_aperture, nullptr);
-
-  // Verify Width (48)
-  double width = 0;
-  CFNumberRef width_num = base::apple::GetValueFromDictionary<CFNumberRef>(
-      clean_aperture, kCVImageBufferCleanApertureWidthKey);
-  ASSERT_NE(width_num, nullptr);
-  CFNumberGetValue(width_num, kCFNumberDoubleType, &width);
-  EXPECT_EQ(width, visible_rect.width());
-
-  // Verify Height (32)
-  double height = 0;
-  CFNumberRef height_num = base::apple::GetValueFromDictionary<CFNumberRef>(
-      clean_aperture, kCVImageBufferCleanApertureHeightKey);
-  ASSERT_NE(height_num, nullptr);
-  CFNumberGetValue(height_num, kCFNumberDoubleType, &height);
-  EXPECT_EQ(height, visible_rect.height());
-
-  // Verify Horizontal Offset: 8 - (64 - 48) / 2.0 = 0
-  double horiz_off = 0;
-  CFNumberRef horiz_off_num = base::apple::GetValueFromDictionary<CFNumberRef>(
-      clean_aperture, kCVImageBufferCleanApertureHorizontalOffsetKey);
-  ASSERT_NE(horiz_off_num, nullptr);
-  CFNumberGetValue(horiz_off_num, kCFNumberDoubleType, &horiz_off);
-  EXPECT_EQ(horiz_off, 0.0);
-
-  // Verify Vertical Offset: 8 - (48 - 32) / 2.0 = 0
-  double vert_off = 0;
-  CFNumberRef vert_off_num = base::apple::GetValueFromDictionary<CFNumberRef>(
-      clean_aperture, kCVImageBufferCleanApertureVerticalOffsetKey);
-  ASSERT_NE(vert_off_num, nullptr);
-  CFNumberGetValue(vert_off_num, kCFNumberDoubleType, &vert_off);
-  EXPECT_EQ(vert_off, 0.0);
+  // 2. Retrieve and verify the Clean Aperture crop dict. Offset is relative to
+  // the image center: 8 - (64 - 48) / 2.0 = 0, 8 - (48 - 32) / 2.0 = 0.
+  ExpectCleanAperture(pb.get(), visible_rect.width(), visible_rect.height(),
+                      /*expected_horizontal_offset=*/0.0,
+                      /*expected_vertical_offset=*/0.0);
 
   CVPixelBufferLockBaseAddress(pb.get(), 0);
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); ++i) {
@@ -349,6 +380,46 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
     }
   }
   CVPixelBufferUnlockBaseAddress(pb.get(), 0);
+}
+
+TEST(VideoFrameMac, DoesNotPropagateCleanApertureToSharedIOSurface) {
+  auto source_pb = CreateIOSurfaceBackedPixelBuffer();
+  ASSERT_TRUE(source_pb.get());
+  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(source_pb.get());
+  ASSERT_TRUE(io_surface);
+
+  const gfx::Size coded_size(kWidth, kHeight);
+  const gfx::Rect crop_a(0, 0, 48, 32);
+  const gfx::Rect crop_b(16, 16, 32, 16);
+  auto frame_a = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, coded_size, crop_a,
+                                         crop_a.size(), kTimestamp);
+  auto frame_b = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, coded_size, crop_b,
+                                         crop_b.size(), kTimestamp);
+  ASSERT_TRUE(frame_a);
+  ASSERT_TRUE(frame_b);
+
+  auto pb_a = WrapIOSurfaceInCVPixelBuffer(*frame_a, io_surface);
+  auto pb_b = WrapIOSurfaceInCVPixelBuffer(*frame_b, io_surface);
+  ASSERT_TRUE(pb_a.get());
+  ASSERT_TRUE(pb_b.get());
+
+  // Each wrapper must keep its own crop even though they share an IOSurface.
+  // Horizontal offset: x - (coded_width - crop_width) / 2.
+  // crop_a: 0 - (64 - 48) / 2.0 = -8
+  // crop_b: 16 - (64 - 32) / 2.0 = 0
+  ExpectCleanAperture(pb_a.get(), crop_a.width(), crop_a.height(), -8.0, -8.0);
+  ExpectCleanAperture(pb_b.get(), crop_b.width(), crop_b.height(), 0.0, 0.0);
+
+  // A later wrap with no crop must not inherit a previous wrapper's aperture
+  // from the shared IOSurface.
+  auto frame_full =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, coded_size,
+                              gfx::Rect(coded_size), coded_size, kTimestamp);
+  ASSERT_TRUE(frame_full);
+  auto pb_full = WrapIOSurfaceInCVPixelBuffer(*frame_full, io_surface);
+  ASSERT_TRUE(pb_full.get());
+  EXPECT_FALSE(
+      CVBufferHasAttachment(pb_full.get(), kCVImageBufferCleanApertureKey));
 }
 
 }  // namespace media

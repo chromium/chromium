@@ -244,9 +244,14 @@ void ApplyCvPixelBufferCleanApertureIfNeeded(const VideoFrame& frame,
     base::apple::CFToNSPtrCast(kCVImageBufferCleanApertureVerticalOffsetKey) :
         @(vertical_offset)
   };
+  // Do not propagate. A propagating attachment is written back to the backing
+  // IOSurface, so concurrent wrappers of the same capture surface (e.g.
+  // multiple encoders with different visible rects) would overwrite each
+  // other's crop and flicker. The crop is a property of this VideoFrame wrap,
+  // not of the shared surface.
   CVBufferSetAttachment(pixel_buffer, kCVImageBufferCleanApertureKey,
                         base::apple::NSToCFPtrCast(clean_aperture),
-                        kCVAttachmentMode_ShouldPropagate);
+                        kCVAttachmentMode_ShouldNotPropagate);
 }
 
 }  // namespace
