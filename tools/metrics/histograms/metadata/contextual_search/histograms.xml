@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Query.TextLength.FunnelMetrics.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    units="characters" expires_after="2027-01-20">
+    units="characters" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Query.TextLength.{ContextualSearchSource}"
-    units="characters" expires_after="2027-01-20">
+    units="characters" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -623,7 +623,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -638,7 +638,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadAttemptCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics.{ContextualSearchFileTypes}.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -686,7 +686,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-19">
+    units="count" expires_after="2027-03-21">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1049,7 +1049,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.TabContextAddedFromPlusButton.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1062,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.TabContextAddedFromTabSuggestionChip.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -1220,7 +1220,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="{ContextualSearchSource}.AimEntrypoint.{PopupType}.ContextualElement.Clicked"
-    enum="ContextType" expires_after="2027-01-17">
+    enum="ContextType" expires_after="2027-03-21">
   <owner>mfacey@chromium.org</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>khalidpeer@chromium.org</owner>
@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="{ContextualSearchSource}.AimEntrypoint.{PopupType}.ContextualElement.Shown"
-    enum="ContextType" expires_after="2027-01-17">
+    enum="ContextType" expires_after="2027-03-21">
   <owner>mfacey@chromium.org</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>khalidpeer@chromium.org</owner>

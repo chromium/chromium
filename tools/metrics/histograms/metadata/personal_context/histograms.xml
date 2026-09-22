@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PersonalContext.FetchPiiEntities.Latency.{ContextMemoryFeature}"
-    units="ms" expires_after="2026-11-15">
+    units="ms" expires_after="2027-03-21">
   <owner>qiaoli@google.com</owner>
   <owner>chrome-memory-context-eng@google.com</owner>
   <summary>

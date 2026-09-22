@@ -4639,7 +4639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.SessionTagState.{Event}"
-    enum="WiFiSessionTagState" expires_after="2026-12-31">
+    enum="WiFiSessionTagState" expires_after="2027-03-21">
   <owner>kglund@google.com</owner>
   <owner>druth@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>

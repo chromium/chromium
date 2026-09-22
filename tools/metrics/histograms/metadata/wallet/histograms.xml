@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Wallet.NetworkRequest.OauthError"
-    enum="GoogleServiceAuthError" expires_after="2026-12-31">
+    enum="GoogleServiceAuthError" expires_after="2027-03-21">
   <owner>vizcay@google.com</owner>
   <owner>1p-integrations-autofill@google.com</owner>
   <summary>
