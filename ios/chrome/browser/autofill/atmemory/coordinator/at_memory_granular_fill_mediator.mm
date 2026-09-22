@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
 
 #import <optional>
+#import <variant>
 
 #import "base/check.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
@@ -46,7 +47,12 @@ using autofill::Suggestion;
   }
 
   CHECK(_suggestion);
+  const Suggestion::AtMemoryPayload* payload =
+      std::get_if<Suggestion::AtMemoryPayload>(&_suggestion->payload);
   [_consumer setTitle:GetAtMemoryGranularFillTitle(*_suggestion)];
+  [_consumer
+      setShowSuggestedByGeminiFooter:payload && payload->
+                                                is_personal_context_sourced];
   [_consumer setGranularFillItems:AtMemoryGranularFillItemsForSuggestion(
                                       *_suggestion)];
 }

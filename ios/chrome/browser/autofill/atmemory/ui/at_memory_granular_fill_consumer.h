@@ -18,6 +18,9 @@
 // Sets the list of granular fill items to be displayed.
 - (void)setGranularFillItems:(NSArray<AtMemoryGranularFillItem*>*)items;
 
+// Sets whether the "Suggested by Gemini" footer should be displayed.
+- (void)setShowSuggestedByGeminiFooter:(BOOL)show;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_GRANULAR_FILL_CONSUMER_H_

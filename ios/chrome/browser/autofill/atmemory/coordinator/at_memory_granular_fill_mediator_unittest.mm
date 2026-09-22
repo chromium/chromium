@@ -29,13 +29,14 @@ NSString* const kPassportTitle = @"Passport";
 NSString* const kPassportNumberLabel = @"Passport Number";
 NSString* const kPassportNumberValue = @"AA123456";
 
-Suggestion CreateTestSuggestionWithChildren() {
+Suggestion CreateTestSuggestionWithChildren(bool is_personal_context_sourced) {
   Suggestion parent(base::SysNSStringToUTF16(kPassportTitle),
                     SuggestionType::kAtMemorySearchResult);
   Suggestion::AtMemoryPayload parent_payload(
       base::SysNSStringToUTF16(kPassportNumberValue),
       MemoryDataType::kPassportNumber);
   parent_payload.type_name = base::SysNSStringToUTF16(kPassportTitle);
+  parent_payload.is_personal_context_sourced = is_personal_context_sourced;
   parent.payload = std::move(parent_payload);
 
   Suggestion child(base::SysNSStringToUTF16(kPassportNumberValue),
@@ -44,6 +45,7 @@ Suggestion CreateTestSuggestionWithChildren() {
       base::SysNSStringToUTF16(kPassportNumberValue),
       MemoryDataType::kPassportNumber);
   child_payload.type_name = base::SysNSStringToUTF16(kPassportNumberLabel);
+  child_payload.is_personal_context_sourced = is_personal_context_sourced;
   child.payload = std::move(child_payload);
 
   parent.children.push_back(std::move(child));
@@ -81,9 +83,11 @@ class AtMemoryGranularFillMediatorTest : public PlatformTest {
   AtMemoryGranularFillMediator* mediator_;
 };
 
-// Tests that setting consumer pushes title and granular fill items.
+// Tests that setting consumer pushes title and granular fill items, and hides
+// the "Suggested by Gemini" footer for Autofill-sourced suggestions.
 TEST_F(AtMemoryGranularFillMediatorTest, TestConsumerGetsItems) {
   OCMExpect([mock_consumer_ setTitle:kPassportTitle]);
+  OCMExpect([mock_consumer_ setShowSuggestedByGeminiFooter:NO]);
   OCMExpect([mock_consumer_
       setGranularFillItems:[OCMArg
                                checkWithBlock:^BOOL(
@@ -91,7 +95,27 @@ TEST_F(AtMemoryGranularFillMediatorTest, TestConsumerGetsItems) {
                                  return items.count == 1;
                                }]]);
 
-  CreateMediator(CreateTestSuggestionWithChildren());
+  CreateMediator(
+      CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/false));
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that setting consumer shows the "Suggested by Gemini" footer when the
+// suggestion is Personal Context-sourced.
+TEST_F(AtMemoryGranularFillMediatorTest,
+       TestConsumerShowsSuggestedByGeminiFooterForPersonalContext) {
+  OCMExpect([mock_consumer_ setTitle:kPassportTitle]);
+  OCMExpect([mock_consumer_ setShowSuggestedByGeminiFooter:YES]);
+  OCMExpect([mock_consumer_
+      setGranularFillItems:[OCMArg
+                               checkWithBlock:^BOOL(
+                                   NSArray<AtMemoryGranularFillItem*>* items) {
+                                 return items.count == 1;
+                               }]]);
+
+  CreateMediator(
+      CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/true));
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
@@ -99,7 +123,8 @@ TEST_F(AtMemoryGranularFillMediatorTest, TestConsumerGetsItems) {
 // Tests that selecting a granular fill item delegates to the fill handler.
 TEST_F(AtMemoryGranularFillMediatorTest,
        SelectGranularFillItemDelegatesToFillHandler) {
-  CreateMediator(CreateTestSuggestionWithChildren());
+  CreateMediator(
+      CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/false));
 
   FakeAtMemoryFillHandler* fake_fill_handler =
       [[FakeAtMemoryFillHandler alloc] init];
@@ -118,7 +143,8 @@ TEST_F(AtMemoryGranularFillMediatorTest,
 // Tests that selecting an invalid granular fill item dismisses the UI.
 TEST_F(AtMemoryGranularFillMediatorTest,
        SelectGranularFillItemInvalidIndexDismisses) {
-  CreateMediator(CreateTestSuggestionWithChildren());
+  CreateMediator(
+      CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/false));
 
   AtMemoryGranularFillItem* item = [[AtMemoryGranularFillItem alloc]
       initWithAttributeName:kPassportNumberLabel
@@ -138,7 +164,8 @@ TEST_F(AtMemoryGranularFillMediatorTest,
        SelectManageEnhancedAutofillItemOpensSettings) {
   base::test::ScopedFeatureList feature_list(kYourSavedInfoSettingsPageIos);
 
-  CreateMediator(CreateTestSuggestionWithChildren());
+  CreateMediator(
+      CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/false));
 
   OCMExpect([mock_settings_navigator_
       openSettingsForPage:AutofillSettingsPage::kIdentityDocs]);

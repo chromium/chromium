@@ -46,3 +46,26 @@ TEST_F(AtMemoryGranularFillViewControllerTest, TestSetGranularFillItems) {
   EXPECT_EQ(1, [viewController.tableView numberOfRowsInSection:0]);
   EXPECT_EQ(1, [viewController.tableView numberOfRowsInSection:1]);
 }
+
+// Tests that the "Suggested by Gemini" footer is hidden by default and shown
+// only when `setShowSuggestedByGeminiFooter:YES` is called.
+TEST_F(AtMemoryGranularFillViewControllerTest,
+       TestSuggestedByGeminiFooterVisibility) {
+  AtMemoryGranularFillViewController* viewController =
+      [[AtMemoryGranularFillViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
+  [viewController loadViewIfNeeded];
+
+  EXPECT_EQ(nil, [viewController tableView:viewController.tableView
+                     viewForFooterInSection:0]);
+  EXPECT_EQ(0.0, [viewController tableView:viewController.tableView
+                     heightForFooterInSection:0]);
+
+  [viewController setShowSuggestedByGeminiFooter:YES];
+
+  EXPECT_NE(nil, [viewController tableView:viewController.tableView
+                     viewForFooterInSection:0]);
+  EXPECT_EQ(UITableViewAutomaticDimension,
+            [viewController tableView:viewController.tableView
+                heightForFooterInSection:0]);
+}

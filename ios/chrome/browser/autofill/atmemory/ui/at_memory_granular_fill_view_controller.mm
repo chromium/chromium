@@ -45,6 +45,9 @@ enum ItemIdentifier {
   UITableViewDiffableDataSource<NSNumber*, id>* _dataSource;
   // List of dynamic granular fill items to display.
   NSArray<AtMemoryGranularFillItem*>* _granularFillItems;
+  // Whether the "Suggested by Gemini" footer is shown for the granular fill
+  // section.
+  BOOL _showSuggestedByGeminiFooter;
 }
 
 #pragma mark - UIViewController
@@ -109,13 +112,24 @@ enum ItemIdentifier {
   }
 }
 
+- (void)setShowSuggestedByGeminiFooter:(BOOL)show {
+  if (_showSuggestedByGeminiFooter == show) {
+    return;
+  }
+  _showSuggestedByGeminiFooter = show;
+  if (_dataSource) {
+    [self.tableView reloadData];
+  }
+}
+
 #pragma mark - UITableViewDelegate
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].unsignedIntegerValue);
-  if (sectionIdentifier == kGranularFillItemsSection) {
+  if (sectionIdentifier == kGranularFillItemsSection &&
+      _showSuggestedByGeminiFooter) {
     TableViewLinkHeaderFooterView* footer =
         DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
     [footer setText:l10n_util::GetNSString(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI)
@@ -129,7 +143,8 @@ enum ItemIdentifier {
     heightForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].unsignedIntegerValue);
-  if (sectionIdentifier == kGranularFillItemsSection) {
+  if (sectionIdentifier == kGranularFillItemsSection &&
+      _showSuggestedByGeminiFooter) {
     return UITableViewAutomaticDimension;
   }
   return 0.0;
