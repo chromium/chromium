@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 
 /** Observer for side UI changes. */
 @NullMarked
@@ -71,6 +72,10 @@ public interface SideUiObserver {
     /**
      * Called after {@link SideUiCoordinator} has applied the given {@link SideUiSpecs} to the UI.
      * This method will only be called for static resizing, not for animated changes.
+     *
+     * <p>Note: For {@link UpdateReason#RESIZE_COMMITTED}, this is called even if {@code
+     * sideUiSpecs} did not change from the preceding {@link UpdateReason#RESIZE_LIVE} update, so
+     * observers that deferred updates during the live resize can apply the final state.
      *
      * @param sideUiSpecs The new {@link SideUiSpecs}.
      * @param request The {@link UiUpdateRequest} that triggered this update.

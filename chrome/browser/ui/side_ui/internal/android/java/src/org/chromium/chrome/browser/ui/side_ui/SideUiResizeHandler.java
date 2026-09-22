@@ -26,6 +26,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -101,6 +103,7 @@ import java.lang.annotation.RetentionPolicy;
     private final SideUiContainer mContainer;
     private final @AnchorSide int mAnchorSide;
     private final ViewGroup mAnchorContainer;
+    private final SideUiCoordinator mSideUiCoordinator;
 
     private @Nullable View mHandleView;
 
@@ -130,13 +133,18 @@ import java.lang.annotation.RetentionPolicy;
      * @param context The {@link Context} used to create the handle {@link View}.
      * @param anchorContainer The anchor container that hosts the handle.
      * @param container The {@link SideUiContainer} this handler serves.
+     * @param sideUiCoordinator The {@link SideUiCoordinator} notified after each drag event.
      */
     /* package */ SideUiResizeHandler(
-            Context context, ViewGroup anchorContainer, SideUiContainer container) {
+            Context context,
+            ViewGroup anchorContainer,
+            SideUiContainer container,
+            SideUiCoordinator sideUiCoordinator) {
         mContext = context;
         mAnchorContainer = anchorContainer;
         mContainer = container;
         mAnchorSide = container.getAnchorSide();
+        mSideUiCoordinator = sideUiCoordinator;
     }
 
     /** Syncs the handle with the bound container's state after a UI update. */
@@ -212,6 +220,11 @@ import java.lang.annotation.RetentionPolicy;
                     mLastMoveWithDragRecordTimeMs = nowMs;
                 }
                 mContainer.onResizeLive(computeProposedWidthPx(event));
+                mSideUiCoordinator.updateUi(
+                        new UiUpdateRequest(
+                                mContainer.getSideUiId(),
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_LIVE));
                 return true;
             case MotionEvent.ACTION_UP:
                 if (!isDragging()) {
@@ -221,6 +234,11 @@ import java.lang.annotation.RetentionPolicy;
                 recordTouchState(TouchState.COMMITTED_ON_UP);
                 @Px int proposedWidthPx = computeProposedWidthPx(event);
                 mContainer.onResizeCommitted(proposedWidthPx);
+                mSideUiCoordinator.updateUi(
+                        new UiUpdateRequest(
+                                mContainer.getSideUiId(),
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_COMMITTED));
                 clearDragState();
                 return true;
             case MotionEvent.ACTION_CANCEL:
@@ -232,6 +250,11 @@ import java.lang.annotation.RetentionPolicy;
                 // Commit the width the drag started from, so the container drops the transient
                 // width recorded during the drag.
                 mContainer.onResizeCommitted(assumeNonNull(mDragStartWidthPx));
+                mSideUiCoordinator.updateUi(
+                        new UiUpdateRequest(
+                                mContainer.getSideUiId(),
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_COMMITTED));
                 clearDragState();
                 return true;
             default:

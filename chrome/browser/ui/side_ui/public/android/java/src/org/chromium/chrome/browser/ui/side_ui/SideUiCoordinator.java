@@ -145,7 +145,7 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             UpdateReason.RESIZE_COMMITTED
         })
         @Target(ElementType.TYPE_USE)
-        @interface UpdateReason {
+        public @interface UpdateReason {
             /** A request from outside the Side UI framework, with no originating container. */
             int UNSPECIFIED = 0;
 
@@ -197,7 +197,7 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         final boolean mSuppressAnimations;
 
         /** What triggered this request. */
-        private final @UpdateReason int mUpdateReason;
+        public final @UpdateReason int mUpdateReason;
 
         /**
          * Constructs a request with {@link UpdateReason#SIDE_UI_REQUEST}.
@@ -240,13 +240,28 @@ public interface SideUiCoordinator extends SideUiStateProvider {
          * @param suppressAnimations Whether animations should be suppressed during the UI update.
          * @param updateReason What triggered this request.
          */
-        UiUpdateRequest(
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+        public UiUpdateRequest(
                 @Nullable @SideUiId Integer sideUiId,
                 boolean suppressAnimations,
                 @UpdateReason int updateReason) {
             mSideUiId = sideUiId;
             mSuppressAnimations = suppressAnimations;
             mUpdateReason = updateReason;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof UiUpdateRequest other)) return false;
+            return Objects.equals(mSideUiId, other.mSideUiId)
+                    && mSuppressAnimations == other.mSuppressAnimations
+                    && mUpdateReason == other.mUpdateReason;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mSideUiId, mSuppressAnimations, mUpdateReason);
         }
 
         @Override

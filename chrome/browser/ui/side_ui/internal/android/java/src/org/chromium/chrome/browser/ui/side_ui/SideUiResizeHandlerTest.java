@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandler.TOUCH_STATE_HISTOGRAM;
@@ -31,6 +32,9 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 import org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandler.TouchState;
 import org.chromium.ui.base.TestActivity;
 
@@ -44,6 +48,7 @@ public class SideUiResizeHandlerTest {
 
     @Mock private SideUiContainer mSideUiContainer;
     @Mock private View mSideUiContainerView;
+    @Mock private SideUiCoordinator mSideUiCoordinator;
 
     private Context mContext;
     private FrameLayout mAnchorContainer;
@@ -51,6 +56,7 @@ public class SideUiResizeHandlerTest {
     @Before
     public void setUp() {
         mContext = Robolectric.buildActivity(TestActivity.class).setup().get();
+        when(mSideUiContainer.getSideUiId()).thenReturn(SideUiId.VERTICAL_TABS);
         when(mSideUiContainer.getView()).thenReturn(mSideUiContainerView);
         when(mSideUiContainerView.getWidth()).thenReturn(CONTAINER_WIDTH_PX);
 
@@ -61,7 +67,8 @@ public class SideUiResizeHandlerTest {
 
     private SideUiResizeHandler createHandler(@AnchorSide int anchorSide) {
         when(mSideUiContainer.getAnchorSide()).thenReturn(anchorSide);
-        return new SideUiResizeHandler(mContext, mAnchorContainer, mSideUiContainer);
+        return new SideUiResizeHandler(
+                mContext, mAnchorContainer, mSideUiContainer, mSideUiCoordinator);
     }
 
     private void dispatch(SideUiResizeHandler handler, int action, float x) {
@@ -136,13 +143,26 @@ public class SideUiResizeHandlerTest {
         // Dragging right grows a left-anchored container.
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
         verify(mSideUiContainer).onResizeLive(CONTAINER_WIDTH_PX + 50);
+        verify(mSideUiCoordinator)
+                .updateUi(
+                        new UiUpdateRequest(
+                                SideUiId.VERTICAL_TABS,
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_LIVE));
 
         dispatch(handler, MotionEvent.ACTION_UP, 160f);
         verify(mSideUiContainer).onResizeCommitted(CONTAINER_WIDTH_PX + 60);
+        verify(mSideUiCoordinator)
+                .updateUi(
+                        new UiUpdateRequest(
+                                SideUiId.VERTICAL_TABS,
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_COMMITTED));
 
         // The drag is over, so any trailing event is ignored.
         dispatch(handler, MotionEvent.ACTION_MOVE, 170f);
         verify(mSideUiContainer, never()).onResizeLive(CONTAINER_WIDTH_PX + 70);
+        verifyNoMoreInteractions(mSideUiCoordinator);
         histogramWatcher.assertExpected();
     }
 
@@ -173,13 +193,26 @@ public class SideUiResizeHandlerTest {
 
         dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
+        verify(mSideUiCoordinator)
+                .updateUi(
+                        new UiUpdateRequest(
+                                SideUiId.VERTICAL_TABS,
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_LIVE));
         dispatch(handler, MotionEvent.ACTION_CANCEL, 150f);
 
         verify(mSideUiContainer).onResizeCommitted(CONTAINER_WIDTH_PX);
+        verify(mSideUiCoordinator)
+                .updateUi(
+                        new UiUpdateRequest(
+                                SideUiId.VERTICAL_TABS,
+                                /* suppressAnimations= */ true,
+                                UpdateReason.RESIZE_COMMITTED));
 
         // The drag is over, so any trailing event is ignored.
         dispatch(handler, MotionEvent.ACTION_MOVE, 170f);
         verify(mSideUiContainer, never()).onResizeLive(CONTAINER_WIDTH_PX + 70);
+        verifyNoMoreInteractions(mSideUiCoordinator);
         histogramWatcher.assertExpected();
     }
 

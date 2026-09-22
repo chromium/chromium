@@ -933,6 +933,62 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    public void testUpdateUi_ResizeLive_NotAnimatedAndReportedAsLive() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.addObserver(mSideUiObserver);
+
+        // Open the side UI, then simulate one frame of a manual resize.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        clearInvocations(mSideUiObserver);
+        sideUiContainer.mMaxWidthDp -= 50;
+
+        UiUpdateRequest liveRequest =
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ true,
+                        UpdateReason.RESIZE_LIVE);
+        mCoordinator.updateUi(liveRequest);
+
+        // Assert: the new width is applied without an animation, and observers receive the live
+        // request.
+        @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        assertEquals(expectedWidth, mSideUiContainerView.getWidth());
+        verify(mSideUiObserver)
+                .onSideUiSpecsChanged(eq(new SideUiSpecs(0, expectedWidth)), eq(liveRequest));
+        verify(mSideUiObserver, never()).onTransitionBegun(any(), any());
+    }
+
+    @Test
+    public void testUpdateUi_ResizeCommitted_NotifiesObserversWithoutSpecsDiff() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.addObserver(mSideUiObserver);
+
+        // Open the side UI, then commit a resize at the width already applied.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        clearInvocations(mSideUiObserver);
+
+        UiUpdateRequest committedRequest =
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ true,
+                        UpdateReason.RESIZE_COMMITTED);
+        mCoordinator.updateUi(committedRequest);
+
+        // Assert: observers are notified even though the specs did not change.
+        @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
+        verify(mSideUiObserver)
+                .onSideUiSpecsChanged(eq(new SideUiSpecs(0, expectedWidth)), eq(committedRequest));
+    }
+
+    @Test
     @DisabledTest(message = "crbug.com/538387539")
     public void testUpdateUi_UpdatesWebContentHairline() {
         doReturn(50f).when(mBrowserControlsVisibilityManager).getTopVisibleContentOffset();

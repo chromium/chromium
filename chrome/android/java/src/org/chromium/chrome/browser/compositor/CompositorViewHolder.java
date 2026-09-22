@@ -41,6 +41,7 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -93,6 +94,7 @@ import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -1078,7 +1080,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @VisibleForTesting
-    @Nullable ViewGroup getContentView() {
+    @Nullable ContentView getContentView() {
         Tab tab = getCurrentTab();
         return tab != null ? tab.getContentView() : null;
     }
@@ -1164,7 +1166,7 @@ public class CompositorViewHolder extends FrameLayout
             sideUiLeftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
             horizontalViewportInsets = sideUiLeftMargin + sideUiSpecs.getWidth(AnchorSide.RIGHT);
         }
-        ContentView cv = (ContentView) getContentView();
+        ContentView cv = getContentView();
         if (cv != null) cv.setContentOffsetXPix(sideUiLeftMargin);
 
         // The view size takes into account of the browser controls whose height should be
@@ -1570,15 +1572,20 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        // Delay #updateWebContentsSize to the end of the task queue. Some side panel instances
-        // rapidly close and re-open the side panel, which can cause a flicker if the web contents
-        // are updated synchronously.
-        post(
-                () -> {
-                    updateWebContentsSize();
-                    // TODO(crbug.com/514774842): Account for offset X for animations.
-                    mLayoutManager.setContentOffsetX(sideUiSpecs.getWidth(AnchorSide.LEFT));
-                });
+        if (request.mUpdateReason == UpdateReason.RESIZE_LIVE) {
+            // Translate the composited layer without resizing WebContents during a live drag,
+            // avoiding per-frame layout passes that cause jank.
+            applySideUiContentOffsetX(sideUiSpecs);
+        } else {
+            // Delay #updateWebContentsSize to the end of the task queue. Some side panel instances
+            // rapidly close and re-open the side panel, which can cause a flicker if the web
+            // contents are updated synchronously.
+            post(
+                    () -> {
+                        updateWebContentsSize();
+                        applySideUiContentOffsetX(sideUiSpecs);
+                    });
+        }
 
         repositionTabViewForSideUi(sideUiSpecs);
         onViewportChanged();
@@ -1652,6 +1659,17 @@ public class CompositorViewHolder extends FrameLayout
 
         mResetClipToPaddingRunnable.run();
         mResetClipToPaddingRunnable = null;
+    }
+
+    /**
+     * Shifts the composited web contents and its touch coordinate space to sit next to the Side UI
+     * on the left, without resizing the web contents.
+     */
+    private void applySideUiContentOffsetX(SideUiSpecs sideUiSpecs) {
+        @Px int leftSideUiWidth = sideUiSpecs.getWidth(AnchorSide.LEFT);
+        mLayoutManager.setContentOffsetX(leftSideUiWidth);
+        ContentView contentView = getContentView();
+        if (contentView != null) contentView.setContentOffsetXPix(leftSideUiWidth);
     }
 
     // View.OnHierarchyChangeListener implementation

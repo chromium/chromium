@@ -225,7 +225,8 @@ final class SideUiCoordinatorImpl
                 new SideUiResizeHandler(
                         mParentActivity,
                         assumeNonNull(mAnchorContainers.get(anchorSide)),
-                        sideUiContainer));
+                        sideUiContainer,
+                        /* sideUiCoordinator= */ this));
     }
 
     @Override
@@ -544,7 +545,12 @@ final class SideUiCoordinatorImpl
         updateBrowserControlsVisibility(newSideUiSpecs);
 
         // 8. Commit the new SideUiSpecs.
-        if (!sideUiSpecsDiff.isEmpty() || !topMarginDiff.isEmpty()) {
+        // A live resize applies its specs frame by frame, so the RESIZE_COMMITTED update usually
+        // has an empty diff. It still needs to be committed so observers hear about the settled
+        // state.
+        if (!sideUiSpecsDiff.isEmpty()
+                || !topMarginDiff.isEmpty()
+                || request.mUpdateReason == UpdateReason.RESIZE_COMMITTED) {
             var uiUpdateSpecs =
                     new SideUiUpdateSpecs(
                             currentSideUiSpecs,
@@ -860,6 +866,9 @@ final class SideUiCoordinatorImpl
         }
 
         if (transitionSet != null && !willUpdateBothWidthHeight) {
+            assert uiUpdateSpecs.mRequest.mUpdateReason != UpdateReason.RESIZE_LIVE
+                            && uiUpdateSpecs.mRequest.mUpdateReason != UpdateReason.RESIZE_COMMITTED
+                    : "A manual resize should never be animated.";
             commitNewSpecsForAnimatedResize(uiUpdateSpecs, transitionSet);
         } else {
             commitNewSpecsForStaticResize(uiUpdateSpecs);
