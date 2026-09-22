@@ -88,6 +88,9 @@ suite('OrganizerPanelAppTest', () => {
         const listStyle = window.getComputedStyle(app.$.list);
         assertEquals('1', listStyle.flexGrow);
         assertEquals('auto', listStyle.overflowY);
+        assertEquals('hidden', listStyle.overflowX);
+        assertEquals('8px', listStyle.paddingLeft);
+        assertEquals('8px', listStyle.paddingRight);
 
         app.style.height = '100px';
         const dummy = document.createElement('div');
