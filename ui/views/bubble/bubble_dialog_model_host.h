@@ -168,6 +168,14 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   bool IsModalDialog() const;
 
+  // Handles presses of the extra button and extra link. Unlike the ok and
+  // cancel buttons, the extra view is not routed through
+  // DialogClientView::ButtonPressed(), so these apply the dialog's input
+  // protection before running the model callback.
+  void OnExtraButtonPressed(const ui::Event& event);
+  void OnExtraLinkClicked(const ui::Event& event);
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+
   std::unique_ptr<ui::DialogModel> model_;
   raw_ptr<BubbleDialogModelHostContentsView> contents_view_ = nullptr;
   base::CallbackListSubscription on_contents_changed_subscription_;

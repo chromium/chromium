@@ -20,7 +20,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -127,7 +130,14 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
       views::AsViewClass<views::MdTextButton>(dialog_delegate->GetExtraView());
   ASSERT_TRUE(idle_button);
 
-  views::test::ButtonTestApi(idle_button).NotifyDefaultMouseClick();
+  // The click timestamp must be past the dialog's input protection window,
+  // otherwise the extra button ignores it as a possibly unintended
+  // interaction.
+  views::test::ButtonTestApi(idle_button)
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+          ui::EventTimeForNow() + 2 * views::GetDoubleClickInterval(),
+          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_TRUE(manager()->is_scheduled());
   EXPECT_EQ(manager()->mode(), ScheduledRestartMode::kOnIdle);

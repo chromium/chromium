@@ -19,6 +19,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -32,6 +33,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
@@ -44,6 +46,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace views {
 namespace {
@@ -937,12 +940,11 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   if (ui::DialogModel::Button* extra_button =
           model_->extra_button(DialogModelHost::GetPassKey())) {
     DCHECK(!model_->extra_link(DialogModelHost::GetPassKey()));
-    auto builder =
-        views::Builder<MdTextButton>()
-            .SetCallback(base::BindRepeating(
-                &ui::DialogModel::Button::OnPressed,
-                base::Unretained(extra_button), DialogModelHost::GetPassKey()))
-            .SetText(extra_button->label());
+    auto builder = views::Builder<MdTextButton>()
+                       .SetCallback(base::BindRepeating(
+                           &BubbleDialogModelHost::OnExtraButtonPressed,
+                           base::Unretained(this)))
+                       .SetText(extra_button->label());
     if (extra_button->style()) {
       builder.SetStyle(extra_button->style().value());
     }
@@ -952,7 +954,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
                  model_->extra_link(DialogModelHost::GetPassKey())) {
     DCHECK(extra_link->callback().has_value());
     auto link = std::make_unique<views::Link>(extra_link->text());
-    link->SetCallback(extra_link->callback().value());
+    link->SetCallback(base::BindRepeating(
+        &BubbleDialogModelHost::OnExtraLinkClicked, base::Unretained(this)));
     SetExtraView(std::move(link));
   }
 
@@ -1045,6 +1048,28 @@ bool BubbleDialogModelHost::ShouldAllowKeyEventsDuringInputProtection() const {
   return model_
              ? !model_->enable_input_protection(DialogModelHost::GetPassKey())
              : true;
+}
+
+void BubbleDialogModelHost::OnExtraButtonPressed(const ui::Event& event) {
+  if (!model_ || IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+  model_->extra_button(DialogModelHost::GetPassKey())
+      ->OnPressed(DialogModelHost::GetPassKey(), event);
+}
+
+void BubbleDialogModelHost::OnExtraLinkClicked(const ui::Event& event) {
+  if (!model_ || IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+  model_->extra_link(DialogModelHost::GetPassKey())->callback()->Run(event);
+}
+
+bool BubbleDialogModelHost::IsPossiblyUnintendedInteraction(
+    const ui::Event& event) {
+  DialogClientView* const client_view = GetDialogClientView();
+  return client_view && client_view->IsPossiblyUnintendedInteraction(
+                            event, ShouldAllowKeyEventsDuringInputProtection());
 }
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {

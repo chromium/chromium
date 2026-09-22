@@ -15,6 +15,7 @@
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -100,12 +101,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsConnectionDialogBrowserTest, Disable) {
 
   content::WebContentsAddedObserver new_tab_observer;
 
+  // The click timestamp must be past the dialog's input protection window,
+  // otherwise the extra button ignores it as a possibly unintended
+  // interaction.
   views::test::ButtonTestApi(
       static_cast<views::MdTextButton*>(dialog_model_dialog->GetExtraView()))
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
+      .NotifyClick(ui::MouseEvent(
+          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+          ui::EventTimeForNow() + 2 * views::GetDoubleClickInterval(),
+          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   EXPECT_EQ(future.Get(),
             content::DevToolsManagerDelegate::AcceptConnectionResult::kDeny);

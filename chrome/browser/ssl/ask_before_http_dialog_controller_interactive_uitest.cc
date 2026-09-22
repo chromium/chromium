@@ -46,7 +46,15 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/metrics.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/window/dialog_client_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using security_interstitials::MetricsHelper;
 using security_interstitials::https_only_mode::BlockingResult;
@@ -399,6 +407,68 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
                                       InterstitialReason::kIsolatedMode, 1);
       break;
   }
+
+  ExpectUKMEntry(http_url, BlockingResult::kInterstitialProceed);
+}
+
+// Mouse clicks landing on the "Continue to site" button while the dialog's
+// input protection window is active (e.g. a click arriving right as the
+// dialog appears) must be ignored, matching the protection that the standard
+// dialog buttons get from DialogClientView. A click arriving after the
+// protection window has passed should still proceed to the site.
+IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
+                       FailedUpgrade_WarningShown_EarlyContinueClickIgnored) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestTab);
+
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController::LoadURLParams params(http_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, params, 1);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  RunTestSequence(
+      InAnyContext(
+          WaitForShow(AskBeforeHttpDialogController::kContinueButtonId)),
+      InSameContext(
+          InstrumentTab(kTestTab),
+          // Simulate a mouse click on the button within the input protection
+          // window. The protection window is restarted first so that the
+          // click reliably falls inside it, regardless of how much time has
+          // passed since the dialog was shown.
+          WithView(
+              AskBeforeHttpDialogController::kContinueButtonId,
+              [](views::Button* button) {
+                button->GetWidget()
+                    ->widget_delegate()
+                    ->AsDialogDelegate()
+                    ->GetDialogClientView()
+                    ->TriggerInputProtection(/*force_early=*/true);
+                views::test::InteractionTestUtilSimulatorViews::PressButton(
+                    button, ui::test::InteractionTestUtil::InputType::kMouse);
+              }),
+          // The click must have been ignored: the dialog is still showing.
+          EnsurePresent(AskBeforeHttpDialogController::kContinueButtonId),
+          // A click arriving after the protection window has passed is
+          // accepted and continues to the site.
+          WithView(
+              AskBeforeHttpDialogController::kContinueButtonId,
+              [](views::Button* button) {
+                const ui::MouseEvent click(
+                    ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
+                    ui::EventTimeForNow() + 2 * views::GetDoubleClickInterval(),
+                    ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+                views::test::ButtonTestApi(button).NotifyClick(click);
+              })
+              .SetMustRemainVisible(false),
+          WaitForWebContentsNavigation(kTestTab, http_url)));
+
+  // Only the delayed click should count as a decision on the warning.
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount("interstitial.https_first_mode.decision",
+                                  MetricsHelper::Decision::PROCEED, 1);
 
   ExpectUKMEntry(http_url, BlockingResult::kInterstitialProceed);
 }
