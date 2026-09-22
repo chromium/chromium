@@ -19118,7 +19118,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260731",
+                    "name": "EnabledWithRotate",
+                    "params": {
+                        "rotate_uma_log": "true"
+                    },
                     "enable_features": [
                         "VariationsRuntimeMutability"
                     ]
