@@ -455,13 +455,6 @@ bool BaseSearchProvider::CanSendSecureSuggestRequest(
     return false;
   }
 
-  // Make sure the suggest endpoint is also a Google domain URL.
-  if (!google_util::IsGoogleDomainUrl(suggest_url,
-                                      google_util::DISALLOW_SUBDOMAIN,
-                                      google_util::ALLOW_NON_STANDARD_PORTS)) {
-    return false;
-  }
-
   return true;
 }
 

@@ -942,6 +942,45 @@ TEST_F(BaseSearchProviderTest, AnswerAndImageOnlyPopulatedForGoogle) {
     EXPECT_EQ("https://example.com/image.png",
               map.begin()->second.image_url.spec());
   }
+
+  // 3. Spoofed engine (Google search URL + attacker suggestion URL): fields
+  // should NOT be populated.
+  {
+    TemplateURLData spoofed_data;
+    spoofed_data.SetURL("https://www.google.com/search?q={searchTerms}");
+    spoofed_data.suggestions_url =
+        "https://evil.com/complete/search?q={searchTerms}";
+    auto spoofed_turl = std::make_unique<TemplateURL>(spoofed_data);
+    TestBaseSearchProvider::MatchMap map;
+    provider_->AddMatchToMap(
+        result, AutocompleteInput(), spoofed_turl.get(),
+        client_->GetTemplateURLService()->search_terms_data(),
+        TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+    ASSERT_EQ(1U, map.size());
+    EXPECT_FALSE(map.begin()->second.answer_template.has_value());
+    EXPECT_TRUE(map.begin()->second.image_url.is_empty());
+  }
+
+  // 4. Google search engine with Google suggestion URL: fields SHOULD be
+  // populated.
+  {
+    TemplateURLData google_with_suggest_data;
+    google_with_suggest_data.SetURL(
+        "https://www.google.com/search?q={searchTerms}");
+    google_with_suggest_data.suggestions_url =
+        "https://www.google.com/complete/search?q={searchTerms}";
+    auto google_with_suggest_turl =
+        std::make_unique<TemplateURL>(google_with_suggest_data);
+    TestBaseSearchProvider::MatchMap map;
+    provider_->AddMatchToMap(
+        result, AutocompleteInput(), google_with_suggest_turl.get(),
+        client_->GetTemplateURLService()->search_terms_data(),
+        TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+    ASSERT_EQ(1U, map.size());
+    EXPECT_TRUE(map.begin()->second.answer_template.has_value());
+    EXPECT_EQ("https://example.com/image.png",
+              map.begin()->second.image_url.spec());
+  }
 }
 
 TEST_F(BaseSearchProviderTest, EntityImageMustBeHostedBySearchEngine) {
