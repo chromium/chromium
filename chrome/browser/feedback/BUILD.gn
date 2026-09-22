@@ -60,6 +60,10 @@ source_set("feedback") {
       "//chrome/browser/feedback:feedback_enum",
       "//components/sessions:session_id",
     ]
+    if (is_win || is_mac || is_linux) {
+      sources += [ "feedback_disabled_dialog.h" ]
+      public_deps += [ "//ui/gfx:native_ui_types" ]
+    }
   }
 }
 
@@ -150,6 +154,16 @@ source_set("feedback_impl") {
       "//net",
       "//services/cert_verifier:lib",
     ]
+    if (is_win || is_mac || is_linux) {
+      sources += [ "feedback_disabled_dialog.cc" ]
+      deps += [
+        "//chrome/app:generated_resources",
+        "//components/constrained_window",
+        "//components/prefs",
+        "//components/strings:components_strings_grit",
+        "//ui/base",
+      ]
+    }
   }
   if (is_chromeos) {
     deps += [
@@ -260,6 +274,11 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [ "show_feedback_page_browsertest.cc" ]
       deps += [ "//chromeos/ash/components/dbus/spaced" ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      sources += [ "feedback_disabled_dialog_browsertest.cc" ]
+      deps += [ "//components/prefs" ]
     }
 
     if (use_aura) {

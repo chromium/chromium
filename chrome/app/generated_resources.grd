@@ -11860,6 +11860,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_FEEDBACK_OFFLINE_DIALOG_TEXT" desc="The content of the message box displayed when the user attempts to send a report while offline">
           Thank you for your feedback. You are offline now, and your report will be sent later.
         </message>
+        <if expr="is_win or is_macosx or is_linux">
+          <message name="IDS_FEEDBACK_DISABLED_DIALOG_TITLE" desc="The title of a dialog informing the user that feedback cannot be submitted for their account.">
+            Can't send feedback
+          </message>
+          <message name="IDS_FEEDBACK_DISABLED_DIALOG_BODY" desc="The body text of a dialog that explains why feedback cannot be sent due to account restrictions, specifically for underaged accounts.">
+            Feedback isn't available for your account. An adult can use their device or profile to report an issue for you.
+          </message>
+          <message name="IDS_FEEDBACK_DISABLED_DIALOG_BODY_ENTERPRISE" desc="The body text of a dialog that explains why feedback cannot be sent due to enterprise policy restrictions.">
+            Feedback isn't available for your account. Your enterprise administrator can use their device or profile to report an issue for you.
+          </message>
+        </if>
         <if expr="not is_chromeos">
           <message name="IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX" desc="Checkbox for including system information on the bug report dialog box">
             Send <ph name="BEGIN_LINK1">&lt;a href="#" id="sys-info-url"&gt;</ph>system information<ph name="END_LINK1">&lt;/a&gt;</ph>
