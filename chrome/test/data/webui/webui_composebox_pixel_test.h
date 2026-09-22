@@ -10,17 +10,10 @@
 
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
-#include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
@@ -74,28 +67,11 @@ class WebUIComposeBoxPixelTest : public InteractiveBrowserTest {
     BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetSize(
         {400, 1200});
 
-    const SkColor bg =
-        dark_mode_ ? SkColorSetRGB(0x22, 0x24, 0x2B) : SK_ColorWHITE;
-
-    return Steps(
-        InstrumentTab(tab_id), Do([this, bg]() {
-          content::WebContents* const web_contents =
-              browser()->tab_strip_model()->GetActiveWebContents();
-          views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-              web_contents, bg);
-          web_contents->SetPageBaseBackgroundColor(bg);
-        }),
-        NavigateWebContents(tab_id, url), WaitForWebContentsReady(tab_id, url),
-        WaitForWebContentsPainted(tab_id), Do([this, bg]() {
-          content::WebContents* const web_contents =
-              browser()->tab_strip_model()->GetActiveWebContents();
-          web_contents->SetPageBaseBackgroundColor(bg);
-          if (web_contents->GetRenderWidgetHostView()) {
-            web_contents->GetRenderWidgetHostView()->SetBackgroundColor(bg);
-          }
-        }),
-        ExecuteJsAt(tab_id, root_element, kDisableAnimationsJs),
-        FocusElement(tab_id));
+    return Steps(InstrumentTab(tab_id), NavigateWebContents(tab_id, url),
+                 WaitForWebContentsReady(tab_id, url),
+                 WaitForWebContentsPainted(tab_id),
+                 ExecuteJsAt(tab_id, root_element, kDisableAnimationsJs),
+                 FocusElement(tab_id));
   }
 
  protected:
@@ -118,13 +94,17 @@ class WebUIComposeBoxPixelTest : public InteractiveBrowserTest {
 
 // Struct for ComposeBox pixel test params.
 struct ComposeBoxPixelTestParams {
+  bool focused = false;
   bool dark_mode = false;
   bool rtl = false;
   bool with_text = false;
 
   std::string ToString() const {
     std::string name;
-    name += dark_mode ? "Dark" : "Light";
+    name += focused ? "Focused" : "Unfocused";
+    if (dark_mode) {
+      name += "_Dark";
+    }
     if (rtl) {
       name += "_RTL";
     }
