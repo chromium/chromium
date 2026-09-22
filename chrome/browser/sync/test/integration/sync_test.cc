@@ -1374,10 +1374,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
       allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
       allowed_types.Put(syncer::COLLABORATION_GROUP);
 
-      if (base::FeatureList::IsEnabled(
-              syncer::kSyncSharedTabGroupAccountData)) {
-        allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
-      }
+      allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
 
       if (base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
         allowed_types.Put(syncer::SHARED_COMMENT);

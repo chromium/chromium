@@ -17,7 +17,6 @@
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -58,8 +57,7 @@ std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupAccountDataTypeConfiguration(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service) {
-  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
-      !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     return nullptr;
   }
 

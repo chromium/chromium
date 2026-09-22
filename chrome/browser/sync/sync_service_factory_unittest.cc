@@ -215,10 +215,7 @@ class SyncServiceFactoryTest : public testing::Test {
             data_sharing::features::kDataSharingFeature)) {
       datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
-      if (base::FeatureList::IsEnabled(
-              syncer::kSyncSharedTabGroupAccountData)) {
-        datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
-      }
+      datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
       if (base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
         datatypes.Put(syncer::SHARED_COMMENT);
       }

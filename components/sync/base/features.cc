@@ -11,8 +11,6 @@ namespace syncer {
 BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncSharedTabGroupAccountData, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncSharedComment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncAIThread, base::FEATURE_DISABLED_BY_DEFAULT);

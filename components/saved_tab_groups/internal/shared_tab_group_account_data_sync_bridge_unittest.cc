@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -15,7 +14,6 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/shared_tab_group_account_data_specifics.pb.h"
@@ -201,9 +199,7 @@ MATCHER_P(GroupSpecificsHasUnsupportedField, extra_field, "") {
 class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupAccountDataSyncBridgeTest()
-      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    feature_list_.InitAndEnableFeature(syncer::kSyncSharedTabGroupAccountData);
-  }
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
   void InitializeBridgeAndModel() {
@@ -338,8 +334,6 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
   SavedTabGroupModel& model() { return *model_; }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 

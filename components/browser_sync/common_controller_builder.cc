@@ -1084,8 +1084,7 @@ CommonControllerBuilder::CreateAccountSettingDataTypeController() {
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateSharedTabGroupAccountDataTypeController(
     syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData) ||
-      !data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     return nullptr;
   }
   syncer::DataTypeControllerDelegate* delegate = nullptr;

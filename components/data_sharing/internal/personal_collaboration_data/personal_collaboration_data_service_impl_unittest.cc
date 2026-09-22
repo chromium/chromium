@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -42,9 +40,7 @@ class PersonalCollaborationDataServiceImplTest : public testing::Test {
  public:
   PersonalCollaborationDataServiceImplTest()
       : data_type_store_(
-            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    feature_list_.InitAndEnableFeature(syncer::kSyncSharedTabGroupAccountData);
-  }
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   void SetUp() override {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
@@ -74,7 +70,6 @@ class PersonalCollaborationDataServiceImplTest : public testing::Test {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PersonalCollaborationDataServiceImpl> service_;
   testing::StrictMock<MockObserver> mock_observer_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PersonalCollaborationDataServiceImplTest,

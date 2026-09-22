@@ -1972,14 +1972,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "collaboration-shared-tab-group-account-data",
-    "owners": [
-      "mickeyburks@chromium.org",
-      "shaktisahu@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "collapse-tab-group-during-drag",
     "owners": [
       "lugli@chromium.org",

@@ -1622,11 +1622,6 @@ inline constexpr char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
-inline constexpr char kCollaborationSharedTabGroupAccountDataName[] =
-    "Shared Tab Group messaging sync";
-inline constexpr char kCollaborationSharedTabGroupAccountDataDescription[] =
-    "Enable the messaging sync backend for shared tab groups.";
-
 inline constexpr char kComposeboxRichImageSuggestionsName[] =
     "Composebox Rich Image Suggestions";
 inline constexpr char kComposeboxRichImageSuggestionsDescription[] =

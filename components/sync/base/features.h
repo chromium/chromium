@@ -21,9 +21,6 @@ inline constexpr base::FeatureParam<int>
         &kDeferredSyncStartupCustomDelay,
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
-// Enables syncing account-local metadata for shared tab groups.
-BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
-
 // Enables syncing comments for shared contexts.
 BASE_DECLARE_FEATURE(kSyncSharedComment);
 
