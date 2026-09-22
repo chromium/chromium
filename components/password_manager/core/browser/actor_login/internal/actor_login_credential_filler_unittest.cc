@@ -239,8 +239,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
-    return mock_mqls_logger_.AsWeakPtr();
+  scoped_refptr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_;
   }
 
   std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
@@ -297,7 +297,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
   testing::NiceMock<MockPasswordManagerClient> mock_client_;
   MockStubPasswordManagerDriver mock_driver_;
   FakeFormFetcher form_fetcher_;
-  MockActorLoginQualityLogger mock_mqls_logger_;
+  scoped_refptr<MockActorLoginQualityLogger> mock_mqls_logger_ =
+      base::MakeRefCounted<MockActorLoginQualityLogger>();
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
 };
@@ -326,7 +327,7 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_NO_SIGN_IN_FORM);
   expected_details.set_attempt_login_time_ms(0);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -349,7 +350,7 @@ TEST_P(ActorLoginCredentialFillerTest, PrimaryPageChanged) {
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_INTERRUPTED_BY_PAGE_CHANGE);
   expected_details.set_attempt_login_time_ms(0);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   filler->OnPrimaryPageChanged();
@@ -474,7 +475,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/true);
 
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -770,7 +771,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
   form_result->set_was_username_filled(true);
   form_result->set_was_password_filled(true);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -1014,7 +1015,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(true);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -1125,7 +1126,7 @@ TEST_P(ActorLoginCredentialFillerTest,
   form_result2->set_was_username_filled(true);
   form_result2->set_was_password_filled(true);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -1857,7 +1858,7 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
       CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(true);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -1970,7 +1971,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
       CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -2082,7 +2083,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
       CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -2191,7 +2192,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
       CreateExpectedFormData(*password_only_parsed_form);
   form_result3->set_was_password_filled(false);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -2222,7 +2223,7 @@ TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FILLING_NOT_ALLOWED);
   expected_details.set_attempt_login_time_ms(0);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -2381,7 +2382,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/false, kRequestDurationMs);
 
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   filler->AttemptLogin(&mock_password_manager_);
@@ -2495,7 +2496,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/true);
 
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   filler->AttemptLogin(&mock_password_manager_);
@@ -2547,7 +2548,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       /*is_password_visible=*/false);
 
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   filler.AttemptLogin(&mock_password_manager_);
@@ -2595,7 +2596,7 @@ TEST_P(ActorLoginCredentialFillerTest,
       *form_managers[0]->GetParsedObservedForm(), /*is_username_visible=*/true,
       /*is_password_visible=*/true);
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();
@@ -2658,7 +2659,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
       *parsed_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
 
   EXPECT_CALL(
-      mock_mqls_logger_,
+      *mock_mqls_logger_,
       AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
   // Destroy the filler, because it sends logs in the destructor.
   filler.reset();

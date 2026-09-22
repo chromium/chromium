@@ -65,6 +65,34 @@ std::string MaybeTargetDebugString(const std::optional<PageTarget>& target) {
   return target ? DebugString(*target) : "null";
 }
 
+// Returns the service the quality log is uploaded to, or null if quality
+// logging is disabled, in which case the log is collected but never uploaded.
+optimization_guide::ModelQualityLogsUploaderService*
+GetModelQualityLogsUploader(Profile& profile) {
+  // TODO(crbug.com/562029939): Clean up kActorLoginQualityLogs.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginQualityLogs)) {
+    return nullptr;
+  }
+
+  // Disable MQLS upload if Password Change is enabled while prototyping to
+  // avoid uploading incorrect logs.
+  // TODO(crbug.com/485620841): Remove this check once the prototyping is
+  // complete for Automated Password Change.
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_change::features::kPasswordChangeWithGlic)) {
+    return nullptr;
+  }
+#endif
+
+  OptimizationGuideKeyedService* opt_guide_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(&profile);
+  return opt_guide_service
+             ? opt_guide_service->GetModelQualityLogsUploaderService()
+             : nullptr;
+}
+
 bool IsSuccessfulPasswordCredentialFilling(
     actor_login::LoginStatusResult login_result) {
   switch (login_result) {
@@ -110,42 +138,11 @@ AttemptLoginTool::AttemptLoginTool(
       sign_in_with_google_button_(sign_in_with_google_button),
       requires_opening_web_contents_(requires_opening_web_contents),
       attempt_login_tool_start_time_(base::TimeTicks::Now()),
-      quality_logger_(g_browser_process->variations_service()) {}
+      quality_logger_(base::MakeRefCounted<ActorLoginQualityLogger>(
+          g_browser_process->variations_service(),
+          GetModelQualityLogsUploader(tool_delegate.GetProfile()))) {}
 
-AttemptLoginTool::~AttemptLoginTool() {
-  // Uploading the quality log on the destruction of the tool.
-  tabs::TabInterface* tab = tab_handle_.Get();
-  Profile* profile =
-      tab ? Profile::FromBrowserContext(tab->GetContents()->GetBrowserContext())
-          : nullptr;
-  // TODO(crbug.com/459397449): Update where the log is uploaded and
-  // send a pointer to the profile/service when creating the log instead
-  // of at the moment of uploading.
-  if (!profile) {
-    return;
-  }
-  OptimizationGuideKeyedService* opt_guide_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-
-  // Disable MQLS upload if Password Checkup is enabled while prototyping to
-  // avoid uploading incorrect logs.
-  // TODO(crbug.com/485620841): Remove this check once the prototyping is
-  // complete for Automated Password Change.
-#if BUILDFLAG(IS_ANDROID)
-  bool prototype_features_enabled = false;
-#else
-  bool prototype_features_enabled = base::FeatureList::IsEnabled(
-      password_change::features::kPasswordChangeWithGlic);
-#endif
-
-  if (opt_guide_service &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginQualityLogs) &&
-      !prototype_features_enabled) {
-    quality_logger_.UploadFinalLog(
-        opt_guide_service->GetModelQualityLogsUploaderService());
-  }
-}
+AttemptLoginTool::~AttemptLoginTool() = default;
 
 void AttemptLoginTool::Validate(ToolCallback callback) {
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
@@ -194,7 +191,7 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
         ChromeActorLoginDelegateClient::GetOrCreateForWebContents(
             tab->GetContents()),
         user_selected_credential_and_permission->credential,
-        should_store_permission, quality_logger_.AsWeakPtr(),
+        should_store_permission, quality_logger_,
         attempt_login_tool_start_time_,
         GetFrameFillingStartedCallback(
             tab, user_selected_credential_and_permission->credential),
@@ -225,7 +222,7 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
   GetActorLoginService().GetCredentials(
       ChromeActorLoginDelegateClient::GetOrCreateForWebContents(
           tab->GetContents()),
-      sign_in_with_google_button_.has_value(), quality_logger_.AsWeakPtr(),
+      sign_in_with_google_button_.has_value(), quality_logger_,
       base::BindOnce(&AttemptLoginTool::OnGetCredentials,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -380,7 +377,7 @@ void AttemptLoginTool::OnCredentialSelected(
               << " not found in the credentials list.";
     }
   } else {
-    quality_logger_.SetPermissionPicked(
+    quality_logger_->SetPermissionPicked(
         optimization_guide::proto::
             ActorLoginQuality_PermissionOption_TASK_STOPPED);
     VLOG(2) << "SelectCredentialDialogResponse has no selected "
@@ -398,18 +395,18 @@ void AttemptLoginTool::OnCredentialSelected(
   if (response->permission_duration.has_value()) {
     switch (response->permission_duration.value()) {
       case webui::mojom::UserGrantedPermissionDuration::kOneTime:
-        quality_logger_.SetPermissionPicked(
+        quality_logger_->SetPermissionPicked(
             optimization_guide::proto::
                 ActorLoginQuality_PermissionOption_ALLOW_ONCE);
         break;
       case webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow:
-        quality_logger_.SetPermissionPicked(
+        quality_logger_->SetPermissionPicked(
             optimization_guide::proto::
                 ActorLoginQuality_PermissionOption_ALWAYS_ALLOW);
         break;
     }
   } else {
-    quality_logger_.SetPermissionPicked(
+    quality_logger_->SetPermissionPicked(
         optimization_guide::proto::ActorLoginQuality_PermissionOption_UNKNOWN);
   }
 
@@ -466,7 +463,7 @@ void AttemptLoginTool::OnCredentialCachingDone(
   GetActorLoginService().AttemptLogin(
       ChromeActorLoginDelegateClient::GetOrCreateForWebContents(
           tab->GetContents()),
-      selected_credential, should_store_permission, quality_logger_.AsWeakPtr(),
+      selected_credential, should_store_permission, quality_logger_,
       attempt_login_tool_start_time_,
       GetFrameFillingStartedCallback(tab, selected_credential),
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
@@ -632,7 +629,7 @@ void AttemptLoginTool::MaybeRetryCredentialNeedingFocus() {
       ChromeActorLoginDelegateClient::GetOrCreateForWebContents(
           tab->GetContents()),
       credential_awaiting_task_focus_->first,
-      credential_awaiting_task_focus_->second, quality_logger_.AsWeakPtr(),
+      credential_awaiting_task_focus_->second, quality_logger_,
       attempt_login_tool_start_time_,
       GetFrameFillingStartedCallback(tab,
                                      credential_awaiting_task_focus_->first),

@@ -15,28 +15,38 @@
 #include "components/variations/service/variations_service.h"
 
 ActorLoginQualityLogger::ActorLoginQualityLogger(
-    variations::VariationsService* variations_service) {
+    variations::VariationsService* variations_service,
+    optimization_guide::ModelQualityLogsUploaderService* mqls_uploader)
+    : log_entry_(std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          mqls_uploader ? mqls_uploader->GetWeakPtr() : nullptr)) {
   if (variations_service) {
-    log_data_.mutable_actor_login()->mutable_quality()->set_location(
+    quality().set_location(
         base::ToUpperASCII(variations_service->GetLatestCountry()));
   }
 }
 
 ActorLoginQualityLogger::~ActorLoginQualityLogger() = default;
 
+optimization_guide::proto::ActorLoginQuality&
+ActorLoginQualityLogger::quality() {
+  return *log_entry_->log_ai_data_request()
+              ->mutable_actor_login()
+              ->mutable_quality();
+}
+
 void ActorLoginQualityLogger::SetDomainAndLanguage(
     translate::TranslateManager* translate_manager,
     const GURL& url) {
   // This should only be set once per log entry, by the first
   // request.
-  if (log_data_.mutable_actor_login()->mutable_quality()->has_domain()) {
+  if (quality().has_domain()) {
     return;
   }
-  log_data_.mutable_actor_login()->mutable_quality()->set_domain(
+  quality().set_domain(
       affiliations::GetExtendedTopLevelDomain(url,
                                               /*psl_extensions=*/{}));
   if (translate_manager) {
-    log_data_.mutable_actor_login()->mutable_quality()->set_language(
+    quality().set_language(
         translate_manager->GetLanguageState()->source_language());
   }
 }
@@ -44,9 +54,8 @@ void ActorLoginQualityLogger::SetDomainAndLanguage(
 void ActorLoginQualityLogger::SetGetCredentialsDetails(
     optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
         get_credentials_details) {
-  log_data_.mutable_actor_login()
-      ->mutable_quality()
-      ->mutable_get_credentials_details()
+  quality()
+      .mutable_get_credentials_details()
       // Merge instead of copy to avoid overwriting the federated get
       // credentials details.
       ->MergeFrom(get_credentials_details);
@@ -55,9 +64,8 @@ void ActorLoginQualityLogger::SetGetCredentialsDetails(
 void ActorLoginQualityLogger::SetFederatedGetCredentialsDetails(
     optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
         federated_get_credentials_details) {
-  log_data_.mutable_actor_login()
-      ->mutable_quality()
-      ->mutable_get_credentials_details()
+  quality()
+      .mutable_get_credentials_details()
       ->mutable_federated_get_credentials_details()
       ->CopyFrom(federated_get_credentials_details);
 }
@@ -65,32 +73,11 @@ void ActorLoginQualityLogger::SetFederatedGetCredentialsDetails(
 void ActorLoginQualityLogger::AddAttemptLoginDetails(
     optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
         attempt_login_details) {
-  log_data_.mutable_actor_login()
-      ->mutable_quality()
-      ->add_attempt_login_details()
-      ->CopyFrom(attempt_login_details);
+  quality().add_attempt_login_details()->CopyFrom(attempt_login_details);
 }
 
 void ActorLoginQualityLogger::SetPermissionPicked(
     optimization_guide::proto::ActorLoginQuality_PermissionOption
         permission_option) {
-  log_data_.mutable_actor_login()->mutable_quality()->set_permission_picked(
-      permission_option);
-}
-
-void ActorLoginQualityLogger::UploadFinalLog(
-    optimization_guide::ModelQualityLogsUploaderService* mqls_uploader) const {
-  if (!mqls_uploader) {
-    return;
-  }
-
-  auto new_log_entry =
-      std::make_unique<optimization_guide::ModelQualityLogEntry>(
-          mqls_uploader->GetWeakPtr());
-  new_log_entry->log_ai_data_request()->MergeFrom(log_data_);
-  optimization_guide::ModelQualityLogEntry::Upload(std::move(new_log_entry));
-}
-
-base::WeakPtr<ActorLoginQualityLogger> ActorLoginQualityLogger::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+  quality().set_permission_picked(permission_option);
 }

@@ -43,7 +43,7 @@ class ActorLoginCredentialFiller {
       const Credential& credential,
       bool should_store_permission,
       password_manager::PasswordManagerClient* client,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_start_time,
       IsTaskInFocus is_task_in_focus,
       FrameFillingStartedCallback frame_filling_started_cb,
@@ -185,9 +185,9 @@ class ActorLoginCredentialFiller {
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // Helper class that sends MQLS logs about full actor login attempt
-  // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
-  // TODO(crbug.com/460025687): Use raw_ptr instead.
-  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+  // (GetCredentials + AttemptLogin). Shared with the other participants of the
+  // login flow, the log is uploaded once the last of them is gone.
+  scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger_;
 
   // Logs entry to be given to `mqls_logger` when the request ends.
   optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails

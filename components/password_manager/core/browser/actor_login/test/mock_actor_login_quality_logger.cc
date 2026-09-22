@@ -7,9 +7,4 @@
 namespace actor_login {
 MockActorLoginQualityLogger::MockActorLoginQualityLogger() = default;
 MockActorLoginQualityLogger::~MockActorLoginQualityLogger() = default;
-
-base::WeakPtr<MockActorLoginQualityLogger>
-MockActorLoginQualityLogger::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
 }  // namespace actor_login

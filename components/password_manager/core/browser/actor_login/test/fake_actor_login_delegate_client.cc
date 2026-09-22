@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_siwg_controller_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
@@ -94,7 +95,7 @@ FakeActorLoginDelegateClient::GetPermissionCleaningService() {
 
 std::unique_ptr<ActorLoginCredentialsFetcher>
 FakeActorLoginDelegateClient::CreateFederatedCredentialsFetcher(
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     ActorLoginMetricsHelper* metrics_helper) {
   return std::make_unique<FakeActorLoginFederatedCredentialFetcher>(
       GetExpectedFederatedCredentials());
@@ -106,7 +107,7 @@ FakeActorLoginDelegateClient::CreateSiwgController(
     bool should_store_permission,
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     base::OnceCallback<void(bool)> post_button_click_login_result_callback) {
   auto siwg_controller = std::make_unique<FakeActorLoginSiwgController>(

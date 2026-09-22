@@ -9,7 +9,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
 #include "url/origin.h"
@@ -54,14 +56,14 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
   ActorLoginPermissionCleaningService* GetPermissionCleaningService() override;
   std::unique_ptr<ActorLoginCredentialsFetcher>
   CreateFederatedCredentialsFetcher(
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       ActorLoginMetricsHelper* metrics_helper) override;
   std::unique_ptr<ActorLoginSiwgControllerInterface> CreateSiwgController(
       const Credential& credential,
       bool should_store_permission,
       LoginStatusResultOrErrorReply on_finished_callback,
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       base::OnceCallback<void(bool)> post_button_click_login_result_callback)
       override;

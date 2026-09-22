@@ -15,7 +15,6 @@ namespace actor_login {
 class MockActorLoginQualityLogger : public ActorLoginQualityLoggerInterface {
  public:
   MockActorLoginQualityLogger();
-  ~MockActorLoginQualityLogger() override;
 
   MOCK_METHOD(void,
               SetDomainAndLanguage,
@@ -41,16 +40,13 @@ class MockActorLoginQualityLogger : public ActorLoginQualityLoggerInterface {
               (optimization_guide::proto::ActorLoginQuality_PermissionOption
                    permission_option),
               (override));
-  MOCK_METHOD(void,
-              UploadFinalLog,
-              (optimization_guide::ModelQualityLogsUploaderService *
-               mqls_uploader),
-              (const, override));
 
-  base::WeakPtr<MockActorLoginQualityLogger> AsWeakPtr();
+ protected:
+  friend class base::RefCounted<ActorLoginQualityLoggerInterface>;
 
- private:
-  base::WeakPtrFactory<MockActorLoginQualityLogger> weak_ptr_factory_{this};
+  // Protected, rather than private, so that `NiceMock` and `StrictMock`
+  // wrappers can derive from this class.
+  ~MockActorLoginQualityLogger() override;
 };
 }  // namespace actor_login
 

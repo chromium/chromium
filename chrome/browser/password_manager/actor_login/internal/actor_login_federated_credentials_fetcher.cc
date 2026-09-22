@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/webid/identity_credential_source.h"
@@ -26,7 +27,7 @@ ActorLoginFederatedCredentialsFetcher::ActorLoginFederatedCredentialsFetcher(
     const url::Origin& request_origin,
     IdentityCredentialSourceCallback get_source_callback,
     ActorLoginPermissionService& permission_service,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger)
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger)
     : request_origin_(request_origin),
       get_source_callback_(std::move(get_source_callback)),
       permission_service_(permission_service),

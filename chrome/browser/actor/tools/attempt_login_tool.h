@@ -125,8 +125,11 @@ class AttemptLoginTool : public Tool {
   // time of the flow until filling and submission time.
   const base::TimeTicks attempt_login_tool_start_time_;
 
-  // Helper class which uploads the model quality log for each filling.
-  ActorLoginQualityLogger quality_logger_;
+  // Helper class which collects the model quality log for this login flow.
+  // Shared with the login service internals: participants such as the
+  // Sign-in-with-Google controller can outlive this tool, and the log is
+  // uploaded once the last of them is done with it.
+  scoped_refptr<ActorLoginQualityLogger> quality_logger_;
 
   // Set on invocation. Used to check if the document changed during credential
   // selection.
