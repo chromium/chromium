@@ -238,17 +238,20 @@ class WebUIToolbarInternalWebView : public views::WebView {
     if (!did_originate_from_renderer && !drop_data.filenames.empty()) {
       cached_dragged_file_path_ = drop_data.filenames.front().path;
       cached_dragged_file_position_ = client_pt;
-    } else if (did_originate_from_renderer) {
+    } else {
       ClearCachedDraggedFile();
     }
-    webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-        web_contents())
-        ->set_drag_originated_from_renderer(did_originate_from_renderer);
+    const bool has_javascript_url =
+        !drop_data.url_infos.empty() &&
+        drop_data.url_infos.front().url.SchemeIs(url::kJavaScriptScheme);
+    auto* drag_state =
+        webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+            web_contents());
+    drag_state->set_drag_originated_from_renderer(did_originate_from_renderer);
+    drag_state->set_drag_has_javascript_url(has_javascript_url);
   }
 
   void PreHandleDragExit() override { ClearCachedDraggedFile(); }
-
-  void HandleDragEnded() override { ClearCachedDraggedFile(); }
 
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,

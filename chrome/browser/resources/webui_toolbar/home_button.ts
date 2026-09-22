@@ -81,8 +81,7 @@ export class HomeButtonElement extends HomeButtonElementBase {
   }
 
   protected onDragEnter_(e: DragEvent) {
-    if (e.dataTransfer && e.dataTransfer.types.includes('Files') &&
-        !e.dataTransfer.types.includes('text/uri-list')) {
+    if (e.dataTransfer && e.dataTransfer.types.includes('Files')) {
       e.preventDefault();
     }
   }
@@ -90,6 +89,7 @@ export class HomeButtonElement extends HomeButtonElementBase {
   protected onDragOver_(e: DragEvent) {
     if (e.dataTransfer &&
         (e.dataTransfer.types.includes('text/uri-list') ||
+         e.dataTransfer.types.includes('text/plain') ||
          e.dataTransfer.types.includes('Files'))) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
@@ -103,11 +103,21 @@ export class HomeButtonElement extends HomeButtonElementBase {
       return;
     }
 
-    const url = e.dataTransfer.getData('text/uri-list');
-    if (url) {
-      this.browserProxy_.toolbarUIHandler.onHomeButtonDropUrl(url.split('\n')[0]!);
-    } else if (e.dataTransfer.types.includes('Files')) {
+    if (e.dataTransfer.types.includes('Files')) {
       this.browserProxy_.toolbarUIHandler.onHomeButtonDropFile({x: e.clientX, y: e.clientY});
+    } else if (e.dataTransfer.types.includes('text/uri-list')) {
+      // A type can be present with empty data, e.g. setData(type, '').
+      const url = e.dataTransfer.getData('text/uri-list').split('\n')[0]!;
+      if (url) {
+        this.browserProxy_.toolbarUIHandler.onHomeButtonDropUrl(url);
+      }
+    } else if (e.dataTransfer.types.includes('text/plain')) {
+      // Dropped text never sets the home page. It is handed to the same
+      // channel the toolbar uses, which searches for it or navigates to it.
+      const text = e.dataTransfer.getData('text/plain');
+      if (text) {
+        this.browserProxy_.browserControlsHandler.navigateText(text);
+      }
     }
   }
 

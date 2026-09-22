@@ -2,39 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control_test_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/interaction/element_tracker_views.h"
+#include "url/gurl.h"
 
 // Tests for the home button. Also serve as the general PressHandler tests.
 class WebUIHomeControlBrowserTest : public WebUIHomeControlTestBase {};
@@ -263,138 +259,258 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, ShiftClickHomeButton) {
   EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DragAndDropHomeButton) {
-  std::string current_home_url =
-      browser()->GetProfile()->GetPrefs()->GetString(prefs::kHomePage);
-  std::string new_home_url = "https://www.example.test/";
-  EXPECT_NE(current_home_url, new_home_url);
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropPlainText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kWebPage);
 
-  PerformDragAndDrop(new_home_url);
+  ExpectSearchedFor("hello world");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropPlainText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kOs);
+
+  ExpectSearchedFor("hello world");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateTextDrop(url.spec(), DragOrigin::kWebPage);
+
+  ExpectNavigatedTo(url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
+
+  ExpectHomePageSetTo(url);
+}
+
+// Dragging a real link produces both `text/uri-list` and `text/plain` holding
+// the same URL. The link must win, otherwise this would navigate instead of
+// setting the home page.
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropUrlLinkWithTextFallback_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL link("https://www.example.test/");
+  SimulateLinkWithTextDrop(link.spec(), DragOrigin::kWebPage);
+
+  ExpectHomePageSetTo(link);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
+
+  ExpectNavigatedTo(url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFile_FromOs) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateFileDrop(file_path, DragOrigin::kOs);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714). The dragged file path is
+  // then never cached, leaving the drop with nothing to act on.
+  ExpectDropIgnored();
+#else
+  ExpectHomePageSetTo(net::FilePathToFileURL(file_path));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFilePath_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateTextDrop("file:///tmp/secret.html", DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+}
+
+// A web page cannot point the browser at a local file through `text/plain`
+// (see DropFilePath_FromWebPage), but it can through a link. This asymmetry
+// replicates the native Views behavior and is deliberate.
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFileLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL url("file:///tmp/secret.html");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
+
+  ExpectHomePageSetTo(url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFilePath_FromOs) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  const GURL file_url = net::FilePathToFileURL(file_path);
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateTextDrop(file_url.spec(), DragOrigin::kOs);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714), which limits text drops
+  // to HTTP/HTTPS.
+  ExpectDropIgnored();
+#else
+  ExpectNavigatedTo(file_url);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
-                       DragAndDropHomeButton_BlockedJavascript) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
+                       DropJavaScriptText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
 
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+// A nested pseudo-scheme must not survive a second round of unwrapping.
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropNestedJavaScriptText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropJavaScriptLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateLinkDrop("javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropNestedJavaScriptLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateLinkDrop("javascript:javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropJavaScriptText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:void(document.title='PWNED')", DragOrigin::kOs);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropPrivilegedUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateTextDrop("chrome://settings", DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropPrivilegedUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  SimulateLinkDrop("chrome://settings", DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
+                       DropPrivilegedUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  const GURL url("chrome://version/");
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714), which limits text drops
+  // to HTTP/HTTPS.
+  ExpectDropIgnored();
+#else
+  ExpectNavigatedTo(url);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlLinkAndUndo) {
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
-  std::string default_homepage = prefs->GetString(prefs::kHomePage);
 
-  // Directly call the drop URL method with a javascript: URL.
-  std::string malicious_url = "javascript:alert(1)";
-  webui_toolbar_view->OnHomeButtonDropUrl(GURL(malicious_url));
-
-  // Verify the homepage preference has NOT changed.
-  EXPECT_EQ(default_homepage, prefs->GetString(prefs::kHomePage));
-
-  // Also verify NO undo bubble appeared.
-  EXPECT_EQ(
-      nullptr,
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          HomePageUndoBubbleCoordinator::kHomePageUndoBubbleMainViewId,
-          views::ElementTrackerViews::GetContextForView(webui_toolbar_view)));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
-                       DragAndDropHomeButtonAndUndo) {
-  auto* const prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetString(prefs::kHomePage, "https://www.url-a.test");
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, false);
-  base::RunLoop().RunUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
 
-  WebUIToolbarWebView* webui_toolbar_view =
-      PerformDragAndDrop("https://www.url-b.test/");
-  PerformUndo(webui_toolbar_view);
+  const GURL url("https://www.url-b.test/");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
+  ExpectHomePageSetTo(url);
 
-  // Verify the home page is reverted.
+  PerformUndo();
+
   EXPECT_EQ("https://www.url-a.test/", prefs->GetString(prefs::kHomePage));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
-                       DragAndDropHomeButtonAndUndoFromNTP) {
-  auto* const prefs = browser()->GetProfile()->GetPrefs();
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlLinkAndUndoFromNtp) {
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, true);
-  base::RunLoop().RunUntilIdle();
 
-  WebUIToolbarWebView* webui_toolbar_view =
-      PerformDragAndDrop("https://www.example.test/");
-  PerformUndo(webui_toolbar_view);
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
 
-  // Verify the home page is reverted.
+  const GURL url("https://www.example.test/");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
+  ExpectHomePageSetTo(url);
+
+  PerformUndo();
+
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
 }
 
-// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
-// and renderer sources (b/256022714), so all drags are conservatively treated
-// as renderer-originated and home button file drop is blocked.
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFileAndUndo) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DropFileOnHomeButtonAndUndo DISABLED_DropFileOnHomeButtonAndUndo
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714). The dragged file path is
+  // then never cached, so the home page is never set and there is nothing to
+  // undo.
+  SimulateFileDrop(file_path, DragOrigin::kOs);
+  ExpectDropIgnored();
 #else
-#define MAYBE_DropFileOnHomeButtonAndUndo DropFileOnHomeButtonAndUndo
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
-                       MAYBE_DropFileOnHomeButtonAndUndo) {
-  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
-  content::WebContents* web_contents =
-      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-
-  std::string file_path = "/fake/path/to/file.pdf";
-
-  // Get the coordinates of the home button and dispatch event via hit-testing.
-  gfx::Point center = BrowserElements::From(browser())
-                          ->GetElement(kToolbarHomeButtonElementId)
-                          ->GetScreenBounds()
-                          .CenterPoint();
-  gfx::Point click_point =
-      center - webui_toolbar_view->GetBoundsInScreen().OffsetFromOrigin();
-
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
-  GURL old_url = GURL(prefs->GetString(prefs::kHomePage));
-  bool old_is_ntp = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
+  const GURL old_url(prefs->GetString(prefs::kHomePage));
+  const bool old_is_ntp = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
 
-  content::DropData drop_data;
-  drop_data.filenames.emplace_back(base::FilePath::FromUTF8Unsafe(file_path),
-                                   base::FilePath());
+  SimulateFileDrop(file_path, DragOrigin::kOs);
+  ExpectHomePageSetTo(net::FilePathToFileURL(file_path));
 
-  webui_toolbar_view->GetWebViewForTesting()
-      ->GetWebContents()
-      ->GetDelegate()
-      ->PreHandleDragUpdate(drop_data, gfx::PointF(click_point));
+  PerformUndo();
 
-  // Now actually dispatch the drop event.
-  EXPECT_EQ("success",
-            content::EvalJs(web_contents, base::StringPrintf(R"(
-    (function() {
-      const target = document.querySelector('toolbar-app').shadowRoot
-                       .querySelector('#home').shadowRoot
-                       .querySelector('cr-icon-button');
-      const dataTransfer = new DataTransfer();
-      Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
-      const dropEvent = new DragEvent('drop', {
-        bubbles: true,
-        cancelable: true,
-        clientX: %d,
-        clientY: %d,
-        dataTransfer: dataTransfer
-      });
-      target.dispatchEvent(dropEvent);
-      return 'success';
-    })();
-  )",
-                                                             click_point.x(),
-                                                             click_point.y())));
-
-  // Wait for the undo bubble. This proves the Mojo call reached C++.
-  WaitForUndoBubble(webui_toolbar_view);
-
-  GURL expected_url =
-      net::FilePathToFileURL(base::FilePath::FromUTF8Unsafe(file_path));
-  EXPECT_EQ(prefs->GetString(prefs::kHomePage), expected_url.spec());
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
-
-  PerformUndo(webui_toolbar_view);
-
-  // Verify that the pref is restored.
-  EXPECT_EQ(prefs->GetString(prefs::kHomePage), old_url.spec());
-  EXPECT_EQ(prefs->GetBoolean(prefs::kHomePageIsNewTabPage), old_is_ntp);
+  EXPECT_EQ(old_url.spec(), prefs->GetString(prefs::kHomePage));
+  EXPECT_EQ(old_is_ntp, prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
+#endif
 }

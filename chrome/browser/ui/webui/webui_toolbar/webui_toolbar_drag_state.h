@@ -15,6 +15,18 @@ class WebUIToolbarDragState
   static WebUIToolbarDragState* GetOrCreateForWebContents(
       content::WebContents* contents);
 
+  // Returns whether the drag currently being handled originated from a
+  // renderer (i.e. is "renderer-tainted"), and clears the flag.
+  //
+  // Clearing is required so that the tainted state of one drag does not
+  // persist and pollute subsequent non-drag navigations. Callers must
+  // therefore consult this exactly once per drop.
+  static bool TakeDragOriginatedFromRenderer(content::WebContents* contents);
+
+  // Returns whether the unfiltered drag URL captured before `FilterDropData`
+  // had a `javascript:` scheme, and clears the flag.
+  static bool TakeDragHasJavaScriptUrl(content::WebContents* contents);
+
   ~WebUIToolbarDragState() override;
 
   bool drag_originated_from_renderer() const {
@@ -24,11 +36,15 @@ class WebUIToolbarDragState
     drag_originated_from_renderer_ = val;
   }
 
+  bool drag_has_javascript_url() const { return drag_has_javascript_url_; }
+  void set_drag_has_javascript_url(bool val) { drag_has_javascript_url_ = val; }
+
  private:
   explicit WebUIToolbarDragState(content::WebContents* contents);
   friend class content::WebContentsUserData<WebUIToolbarDragState>;
 
   bool drag_originated_from_renderer_ = false;
+  bool drag_has_javascript_url_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -162,23 +162,8 @@ BrowserControlsAdapterImpl::ComputeSplitTabStatus() {
 }
 
 bool BrowserControlsAdapterImpl::GetDragOriginatedFromRendererAndReset() {
-  if (!web_contents()) {
-    return false;
-  }
-  auto* drag_state =
-      webui_toolbar::WebUIToolbarDragState::FromWebContents(web_contents());
-
-  if (!drag_state) {
-    return false;
-  }
-
-  bool val = drag_state->drag_originated_from_renderer();
-  // Clear the drag state immediately after reading to ensure that the
-  // "renderer-tainted" drag state does not persist and pollute subsequent
-  // generic non-drag navigations (e.g. if the WebUI triggers
-  // Navigate/NavigateText outside a drag transaction).
-  drag_state->set_drag_originated_from_renderer(false);
-  return val;
+  return webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
+      web_contents());
 }
 
 }  // namespace browser_controls_api

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
+#include "url/url_constants.h"
 
 WebUIHomeControl::WebUIHomeControl(WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate), home_menu_(delegate_->GetBrowser(), kActionHome) {}
@@ -88,8 +90,20 @@ void WebUIHomeControl::ShowSetHomePageBubble(const GURL& undo_url,
 }
 
 void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
+  const bool drag_has_javascript_url =
+      webui_toolbar::WebUIToolbarDragState::TakeDragHasJavaScriptUrl(
+          delegate_->GetWebContents());
+  const bool drag_originated_from_renderer =
+      webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
+          delegate_->GetWebContents());
+
   // Disallow javascript: URLs to prevent self-XSS.
-  if (url.SchemeIs(url::kJavaScriptScheme)) {
+  if (url.SchemeIs(url::kJavaScriptScheme) || drag_has_javascript_url) {
+    return;
+  }
+
+  if (drag_originated_from_renderer && !url.SchemeIsHTTPOrHTTPS() &&
+      !url.SchemeIs(url::kFileScheme)) {
     return;
   }
 
