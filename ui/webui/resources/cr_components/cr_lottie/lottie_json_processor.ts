@@ -18,21 +18,32 @@ const LOTTIE_GRADIENT_FILL_TYPE = 'gf';
  * palettes become more complex.
  */
 const CDDS_TOKENS: Set<string> = new Set([
-  'cdds.sys.color.illo-primary-min',   'cdds.sys.color.illo-primary-low',
-  'cdds.sys.color.illo-primary-mid',   'cdds.sys.color.illo-primary-high',
+  'cdds.sys.color.illo-primary-min',
+  'cdds.sys.color.illo-primary-low',
+  'cdds.sys.color.illo-primary-mid',
+  'cdds.sys.color.illo-primary-high',
   'cdds.sys.color.illo-primary-max',
 
-  'cdds.sys.color.illo-secondary-min', 'cdds.sys.color.illo-secondary-low',
-  'cdds.sys.color.illo-secondary-mid', 'cdds.sys.color.illo-secondary-high',
+  'cdds.sys.color.illo-secondary-min',
+  'cdds.sys.color.illo-secondary-low',
+  'cdds.sys.color.illo-secondary-mid',
+  'cdds.sys.color.illo-secondary-high',
   'cdds.sys.color.illo-secondary-max',
 
-  'cdds.sys.color.illo-tertiary-min',  'cdds.sys.color.illo-tertiary-low',
-  'cdds.sys.color.illo-tertiary-mid',  'cdds.sys.color.illo-tertiary-high',
+  'cdds.sys.color.illo-tertiary-min',
+  'cdds.sys.color.illo-tertiary-low',
+  'cdds.sys.color.illo-tertiary-mid',
+  'cdds.sys.color.illo-tertiary-high',
   'cdds.sys.color.illo-tertiary-max',
 
-  'cdds.sys.color.illo-neutral-min',   'cdds.sys.color.illo-neutral-low',
-  'cdds.sys.color.illo-neutral-mid',   'cdds.sys.color.illo-neutral-high',
+  'cdds.sys.color.illo-neutral-min',
+  'cdds.sys.color.illo-neutral-low',
+  'cdds.sys.color.illo-neutral-mid',
+  'cdds.sys.color.illo-neutral-high',
   'cdds.sys.color.illo-neutral-max',
+
+  'cdds.sys.color.error',
+  'cdds.sys.color.error-container',
 ]);
 
 /**
