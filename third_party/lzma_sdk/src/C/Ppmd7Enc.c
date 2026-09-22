@@ -1,5 +1,5 @@
 /* Ppmd7Enc.c -- Ppmd7z (PPMdH with 7z Range Coder) Encoder
-2023-09-07 : Igor Pavlov : Public domain
+: Igor Pavlov : Public domain
 This code is based on:
   PPMd var.H (2001): Dmitry Shkarin : Public domain */
 
@@ -35,7 +35,10 @@ static void Ppmd7z_RangeEnc_ShiftLow(CPpmd7 *p)
     R->Cache = (Byte)((UInt32)R->Low >> 24);
   }
   R->CacheSize++;
-  R->Low = (UInt32)((UInt32)R->Low << 8);
+  {
+    const UInt32 low2 = (UInt32)R->Low << 8;
+    R->Low = low2;
+  }
 }
 
 #define RC_NORM_BASE(p) if (R->Range < kTopValue) { R->Range <<= 8;  Ppmd7z_RangeEnc_ShiftLow(p);
