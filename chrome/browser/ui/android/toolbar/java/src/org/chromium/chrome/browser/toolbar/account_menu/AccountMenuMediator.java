@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.account_menu;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -130,7 +131,9 @@ public class AccountMenuMediator
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
     private @Nullable ProfileDataCache mProfileDataCache;
-    private @Nullable SigninManager mSigninManager;
+    private final SigninManager mSigninManager;
+    private final IdentityManager mIdentityManager;
+    private final SyncService mSyncService;
 
     public AccountMenuMediator(
             Context context,
@@ -148,12 +151,11 @@ public class AccountMenuMediator
         mSigninLauncher = signinLauncher;
         mDismissCallback = dismissCallback;
 
-        if (!mProfile.isOffTheRecord()) {
-            mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-            if (mSigninManager != null) {
-                mSigninManager.addSignInStateObserver(this);
-            }
-        }
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mSigninManager.addSignInStateObserver(this);
+        mIdentityManager =
+                assertNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
+        mSyncService = assertNonNull(SyncServiceFactory.getForProfile(mProfile));
 
         updateMenuItems(/* recordShownMetrics= */ false);
     }
@@ -199,9 +201,7 @@ public class AccountMenuMediator
 
         maybeAddManageGoogleAccount();
 
-        IdentityManager identityManager =
-                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
-        if (identityManager.hasPrimaryAccount()) {
+        if (mIdentityManager.hasPrimaryAccount()) {
             SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
             boolean showIconBadge =
                     syncService.getUserActionableError() != UserActionableError.NONE;
@@ -245,10 +245,7 @@ public class AccountMenuMediator
 
     /** Cleans up observers and resources. */
     public void destroy() {
-        if (mSigninManager != null) {
-            mSigninManager.removeSignInStateObserver(this);
-            mSigninManager = null;
-        }
+        mSigninManager.removeSignInStateObserver(this);
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
             mProfileDataCache = null;
@@ -257,10 +254,7 @@ public class AccountMenuMediator
 
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        AccountInfo primaryAccount =
-                identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
+        AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccount == null || !primaryAccount.getId().equals(profileData.getAccountId())) {
             return;
         }
@@ -274,21 +268,16 @@ public class AccountMenuMediator
     }
 
     private void maybeAddHeader(boolean recordShownMetrics) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        AccountInfo accountInfo =
-                identityManager == null ? null : identityManager.getPrimaryAccountInfo();
+        AccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
 
         final @Event int shownEvent;
-        if (identityManager != null && accountInfo != null) {
-            addIdentityCard(identityManager, accountInfo);
-            SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (accountInfo != null) {
+            addIdentityCard(mIdentityManager, accountInfo);
             boolean hasIdentityError =
-                    syncService != null
-                            && syncService.getUserActionableError() != UserActionableError.NONE;
+                    mSyncService.getUserActionableError() != UserActionableError.NONE;
             shownEvent =
                     hasIdentityError ? Event.SHOWN_SIGNED_IN_WITH_ERROR : Event.SHOWN_SIGNED_IN;
-        } else if (mSigninManager != null && mSigninManager.isSigninAllowed()) {
+        } else if (mSigninManager.isSigninAllowed()) {
             addPromoCard();
             shownEvent = Event.SHOWN_SIGNED_OUT;
             if (recordShownMetrics) {
@@ -332,7 +321,7 @@ public class AccountMenuMediator
     }
 
     private void startSigninFlow() {
-        if (mSigninManager == null || !mSigninManager.isSigninAllowed()) {
+        if (!mSigninManager.isSigninAllowed()) {
             return;
         }
 
@@ -409,9 +398,7 @@ public class AccountMenuMediator
         if (mProfile.isOffTheRecord()) {
             return;
         }
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        if (identityManager != null && identityManager.hasPrimaryAccount()) {
+        if (mIdentityManager.hasPrimaryAccount()) {
             mModelList.add(
                     new ListItem(
                             ItemType.MENU_ITEM,

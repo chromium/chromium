@@ -44,12 +44,29 @@ public class AccountMenuCoordinator {
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private long mLastDismissTimeMs;
 
+    /**
+     * Creates AccountMenuCoordinator object. Throws {@link java.lang.IllegalStateException} if
+     * profile is off the record.
+     *
+     * @param context {@link Context} for view management.
+     * @param profile {@link Profile} for accessing profile scoped objects. Assumes profile is not
+     *     off the record.
+     * @param windowAndroid {@link WindowAndroid} for view management.
+     * @param signinCoordinator {@link BottomSheetSigninAndHistorySyncCoordinator} for triggering
+     *     sign-in flow.
+     * @param signinLauncher {@link SigninAndHistorySyncActivityLauncher} for launching Signin
+     *     Activity.
+     */
     public AccountMenuCoordinator(
             Context context,
             Profile profile,
             WindowAndroid windowAndroid,
             @Nullable BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
             SigninAndHistorySyncActivityLauncher signinLauncher) {
+        if (profile.isOffTheRecord()) {
+            throw new IllegalStateException("Profile should not be off the record");
+        }
+
         mContext = context;
         mContentView = LayoutInflater.from(context).inflate(R.layout.account_menu, null);
 
