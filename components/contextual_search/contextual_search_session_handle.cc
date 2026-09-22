@@ -237,8 +237,12 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
     return;
   }
 
-  if (contextual_input_data &&
-      contextual_input_data->tab_session_id.has_value()) {
+  if (!contextual_input_data) {
+    uploaded_context_tokens_.erase(it);
+    return;
+  }
+
+  if (contextual_input_data->tab_session_id.has_value()) {
     deselected_tabs_urls_.erase(contextual_input_data->tab_session_id.value());
   }
 

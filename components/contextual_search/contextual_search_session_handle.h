@@ -184,7 +184,9 @@ class ContextualSearchSessionHandle {
 
   // Starts the tab context upload flow for the given file token using the
   // tab context stored in the contextual input data. The file token must have
-  // been previously returned by `CreateContextToken`.
+  // been previously returned by `CreateContextToken`. If
+  // `contextual_input_data` is null, the upload flow is aborted and
+  // `file_token` is removed from uploaded context tokens.
   virtual void StartTabContextUploadFlow(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
