@@ -18,11 +18,11 @@ dangerous, Chrome shows a warning to the user:
 Chrome can perform three types of Safe Browsing checks during navigation:
 
 *   The hash-prefix database check
-    ([HPD](https://developers.google.com/safe-browsing/v4/update-api)).
+    ([HPD](https://developers.google.com/safe-browsing/reference/How.To.Guides#local-list-mode)).
 *   The URL real-time check
     ([URT](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/realtime/)).
 *   The hash-prefix real-time check
-    ([HPRT](https://developers.google.com/safe-browsing/reference)).
+    ([HPRT](https://developers.google.com/safe-browsing/reference/How.To.Guides#real-time-mode)).
 
 Only the HPD check is on the blocking path of navigation. Before the check is
 completed, the navigation is not committed, the page body is not read by the

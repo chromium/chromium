@@ -182,8 +182,8 @@ message RTLookupResponse {
 
       // The returned cache expression applies to all URLs covered by it. See
       // the following for how covering works:
-      // https://developers.google.com/safe-browsing/v4/urls-hashing e.g.
-      // "test.com/foo1" of type COVERING_MATCH will not apply to
+      // https://developers.google.com/safe-browsing/reference/URLs.and.Hashing
+      // e.g. "test.com/foo1" of type COVERING_MATCH will not apply to
       // "test.com/foo2" or "test.com/", but will apply to "test.com/foo1/bar2"
       // and "baz.test.com/foo1".
       COVERING_MATCH = 1;
