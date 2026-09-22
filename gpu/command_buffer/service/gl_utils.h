@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -116,6 +117,8 @@ GPU_GLES2_EXPORT void InitializeGLDebugLogging(bool log_non_errors,
 bool ValidContextLostReason(GLenum reason);
 error::ContextLostReason GetContextLostReasonFromResetStatus(
     GLenum reset_status);
+
+GPU_GLES2_EXPORT gfx::Vector2d GetCompressedTexBlockDimensions(GLenum format);
 
 bool GetCompressedTexSizeInBytes(const char* function_name,
                                  GLsizei width,

@@ -13393,15 +13393,20 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
         if (texture->GetLevelSize(target, 0, &level0_width, &level0_height,
                                   &level0_depth) &&
             level0_width > 0 && level0_height > 0) {
-          const int slot_w = std::max(
-              1, static_cast<int>(
-                     std::bit_ceil(static_cast<uint32_t>(level0_width))) >>
-                     level);
-          const int slot_h = std::max(
-              1, static_cast<int>(
-                     std::bit_ceil(static_cast<uint32_t>(level0_height))) >>
-                     level);
-          if (width > slot_w || height > slot_h) {
+          const gfx::Vector2d block_size =
+              GetCompressedTexBlockDimensions(internal_format);
+          const int expected_width = std::max(1, level0_width >> level);
+          const int expected_height = std::max(1, level0_height >> level);
+          const int expected_blocks_x =
+              (expected_width + block_size.x() - 1) / block_size.x();
+          const int expected_blocks_y =
+              (expected_height + block_size.y() - 1) / block_size.y();
+          const int incoming_blocks_x =
+              (width + block_size.x() - 1) / block_size.x();
+          const int incoming_blocks_y =
+              (height + block_size.y() - 1) / block_size.y();
+          if (incoming_blocks_x > expected_blocks_x ||
+              incoming_blocks_y > expected_blocks_y) {
             GLuint scratch = 0;
             api()->glGenBuffersARBFn(1, &scratch);
             api()->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, scratch);
