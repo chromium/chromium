@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -13,6 +15,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.view.View;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -38,6 +44,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
@@ -45,6 +53,8 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,9 +89,9 @@ public class TabOverflowMenuCoordinatorUnitTest {
                 TabGroupSyncService tabGroupSyncService,
                 CollaborationService collaborationService) {
             super(
-                    0,
-                    0,
-                    null,
+                    R.layout.tab_switcher_action_menu_layout,
+                    R.layout.tab_switcher_action_menu_layout,
+                    (menuId, id, collaborationId, listViewTouchTracker) -> {},
                     tabModelSupplier,
                     multiInstanceManager,
                     tabGroupSyncService,
@@ -90,7 +100,18 @@ public class TabOverflowMenuCoordinatorUnitTest {
         }
 
         @Override
-        public void buildMenuActionItems(ModelList itemList, Integer id) {}
+        public void buildMenuActionItems(ModelList itemList, Integer id) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.close_tab)
+                            .withMenuId(R.id.close_tab)
+                            .build());
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitle("Show tabs vertically")
+                            .withMenuId(R.id.toggle_tab_layout_menu_id)
+                            .build());
+        }
 
         @Override
         public void onMenuDismissed() {}
@@ -103,7 +124,7 @@ public class TabOverflowMenuCoordinatorUnitTest {
 
         @Override
         protected int getMenuWidth(int anchorViewWidthPx) {
-            return 0;
+            return 200;
         }
 
         public ListItem testCreateMoveToWindowItem(
@@ -167,5 +188,46 @@ public class TabOverflowMenuCoordinatorUnitTest {
 
         assertTrue(actionExecuted[0]);
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(1);
+    }
+
+    @Test
+    public void testHighlightMenuItem() {
+        TestTabOverflowMenuCoordinator coordinator =
+                new TestTabOverflowMenuCoordinator(
+                        mActivity,
+                        mTabModelSupplier,
+                        mMultiInstanceManager,
+                        mTabGroupSyncService,
+                        mCollaborationService);
+        // Build a context menu popup.
+        coordinator.buildMenuView(
+                new RectProvider(new Rect(0, 0, 100, 100)),
+                /* id= */ 1,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ true,
+                Resources.ID_NULL,
+                HorizontalOrientation.LAYOUT_DIRECTION,
+                mActivity,
+                /* isIncognito= */ false);
+
+        // Highlight index 1.
+        coordinator.highlightMenuItem(R.id.toggle_tab_layout_menu_id);
+
+        TabOverflowMenuHolder<Integer> menuHolder = coordinator.getMenuHolder();
+        assertNotNull(menuHolder);
+        ModelList modelList = menuHolder.getModelList();
+        assertFalse(modelList.get(0).model.get(ListMenuItemProperties.IS_IPH_HIGHLIGHTED));
+        assertTrue(modelList.get(1).model.get(ListMenuItemProperties.IS_IPH_HIGHLIGHTED));
+
+        // Verify the ViewBinder turns on ViewHighlighter for the highlighted row, and turns it off
+        // when the View is recycled for a non-highlighted row.
+        ListView listView = menuHolder.getListView();
+        View rowView = listView.getAdapter().getView(1, null, listView);
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOn(rowView));
+        // Recycle rowView for tab 0, ViewBinder is called.
+        listView.getAdapter().getView(0, rowView, listView);
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOff(rowView));
+
+        coordinator.destroyMenuForTesting();
     }
 }

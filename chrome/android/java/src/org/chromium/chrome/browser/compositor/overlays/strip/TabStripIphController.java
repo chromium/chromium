@@ -69,6 +69,7 @@ public class TabStripIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final Tracker mTracker;
     private boolean mGlicIphShowing;
+    private boolean mVerticalTabsIphShowing;
 
     /**
      * Constructs the controller.
@@ -149,6 +150,10 @@ public class TabStripIphController {
             iphCommandBuilder
                     .setOnShowCallback(() -> mGlicIphShowing = true)
                     .setOnDismissCallback(() -> mGlicIphShowing = false);
+        } else if (iphType == IphType.VERTICAL_TABS_PROMO) {
+            iphCommandBuilder
+                    .setOnShowCallback(() -> mVerticalTabsIphShowing = true)
+                    .setOnDismissCallback(() -> mVerticalTabsIphShowing = false);
         }
 
         mUserEducationHelper.requestShowIph(iphCommandBuilder.build());
@@ -174,6 +179,11 @@ public class TabStripIphController {
     /** Returns whether Glic IPH is currently showing on the tab strip. */
     public boolean isGlicIphShowing() {
         return mGlicIphShowing;
+    }
+
+    /** Returns whether Vertical Tabs IPH is currently showing on the tab strip. */
+    public boolean isVerticalTabsIphShowing() {
+        return mVerticalTabsIphShowing;
     }
 
     /**

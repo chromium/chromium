@@ -618,6 +618,23 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      * @param anchorInfo The {@link AnchorInfo} for the context menu to be shown.
      */
     public void showMenu(RectProvider anchorViewRectProvider, AnchorInfo anchorInfo) {
+        showMenu(
+                anchorViewRectProvider, anchorInfo, /* shouldHighlightShowTabsVertically= */ false);
+    }
+
+    /**
+     * Show the context menu for the given tabs.
+     *
+     * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
+     *     coordinates.
+     * @param anchorInfo The {@link AnchorInfo} for the context menu to be shown.
+     * @param shouldHighlightShowTabsVertically Whether the "Show tabs vertically" menu item should
+     *     be highlighted.
+     */
+    public void showMenu(
+            RectProvider anchorViewRectProvider,
+            AnchorInfo anchorInfo,
+            boolean shouldHighlightShowTabsVertically) {
         createAndShowMenu(
                 anchorViewRectProvider,
                 anchorInfo,
@@ -626,6 +643,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
+        if (shouldHighlightShowTabsVertically) {
+            highlightMenuItem(R.id.toggle_tab_layout_menu_id);
+        }
         TabStripMenuMetricsUtils.recordTabMenuUserAction(
                 TabMenuAction.SHOWN, anchorInfo.getAllTabIds().size() > 1, mTabStripLayout);
     }

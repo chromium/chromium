@@ -2821,7 +2821,8 @@ public class StripLayoutHelperTest {
         verify(mTabContextMenuCoordinator)
                 .showMenu(
                         rectProviderArgumentCaptor.capture(),
-                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)),
+                        eq(false));
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2855,7 +2856,8 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
+        verify(mTabContextMenuCoordinator)
+                .showMenu(rectProviderArgumentCaptor.capture(), any(), eq(false));
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -2896,7 +2898,8 @@ public class StripLayoutHelperTest {
 
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
+        verify(mTabContextMenuCoordinator)
+                .showMenu(rectProviderArgumentCaptor.capture(), any(), eq(false));
 
         // Verify anchorView coordinates are offset by controlContainer's location.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
@@ -2910,6 +2913,39 @@ public class StripLayoutHelperTest {
                 "Anchor view for menu should be offset by controlContainer's location",
                 expectedRect,
                 actualRect);
+    }
+
+    @Test
+    @Feature("Tab Context Menu")
+    public void testShowTabContextMenu_VerticalTabsIphHighlight() {
+        var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
+
+        // 1. Secondary click (right-click) while Vertical Tabs IPH is showing should highlight.
+        when(mController.isVerticalTabsIphShowing()).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.click(TIMESTAMP, 10f, 0f, MotionEvent.BUTTON_SECONDARY, 0);
+        verify(mTabContextMenuCoordinator).showMenu(any(), any(), eq(true));
+
+        // 2. Long-press where IPH is showing onDown, then dismissed before onLongPress, should
+        // still highlight.
+        mStripLayoutHelper.onDown(LONG_PRESS_X, LONG_PRESS_Y, 0);
+        when(mController.isVerticalTabsIphShowing()).thenReturn(false);
+        onLongPress_OnTab(tabs);
+        verify(mTabContextMenuCoordinator, times(2)).showMenu(any(), any(), eq(true));
+
+        // 3. If gesture ends (onUpOrCancel) without opening the menu,
+        // mWasVerticalTabsIphShowingOnDown
+        // is reset so a subsequent context menu trigger does not highlight.
+        when(mController.isVerticalTabsIphShowing()).thenReturn(true);
+        // Saves mWasVerticalTabsIphShowingOnDown = true.
+        mStripLayoutHelper.onDown(LONG_PRESS_X, LONG_PRESS_Y, 0);
+        when(mController.isVerticalTabsIphShowing()).thenReturn(false);
+        // Sets mWasVerticalTabsIphShowingOnDown = false;
+        mStripLayoutHelper.onUpOrCancel();
+        // Does not call onDown.
+        mStripLayoutHelper.click(TIMESTAMP, 10f, 0f, MotionEvent.BUTTON_SECONDARY, 0);
+        verify(mTabContextMenuCoordinator).showMenu(any(), any(), eq(false));
     }
 
     @Test
@@ -3207,7 +3243,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "Should not be in reorder mode after long press on tab close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        verify(mTabContextMenuCoordinator).showMenu(any(), any());
+        verify(mTabContextMenuCoordinator).showMenu(any(), any(), eq(false));
     }
 
     @Test
@@ -5879,7 +5915,7 @@ public class StripLayoutHelperTest {
                                         - stripViews[1].getTouchTargetBounds().left)
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
-        verify(mTabContextMenuCoordinator).showMenu(any(), any());
+        verify(mTabContextMenuCoordinator).showMenu(any(), any(), eq(false));
 
         // Secondary click on tab close - show menu.
         // Mock tab's view.
@@ -5893,7 +5929,7 @@ public class StripLayoutHelperTest {
                                         - tabCloseButton.getTouchTargetBounds().left)
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
-        verify(mTabContextMenuCoordinator, times(2)).showMenu(any(), any());
+        verify(mTabContextMenuCoordinator, times(2)).showMenu(any(), any(), eq(false));
     }
 
     @Test
@@ -6703,7 +6739,7 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
-        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), any());
+        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), any(), eq(false));
     }
 
     @Test
@@ -7131,7 +7167,8 @@ public class StripLayoutHelperTest {
         verify(mTabContextMenuCoordinator)
                 .showMenu(
                         any(),
-                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)),
+                        eq(false));
     }
 
     @Test

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_IPH_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
 
@@ -29,9 +30,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
+import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -112,6 +117,20 @@ public class TabOverflowMenuHolder<T> {
                                     collaborationId,
                                     /* listViewTouchTracker= */ mListView);
                             mMenuWindow.dismiss();
+                        },
+                        (model, view, propertyKey) -> {
+                            ListMenuItemViewBinder.binder(model, view, propertyKey);
+                            // We do this instead of adding this logic inside
+                            // ListMenuItemViewBinder.binder because ListMenuItemViewBinder is in
+                            // ui/android.
+                            if (propertyKey == IS_IPH_HIGHLIGHTED) {
+                                if (model.get(IS_IPH_HIGHLIGHTED)) {
+                                    ViewHighlighter.turnOnHighlight(
+                                            view, new HighlightParams(HighlightShape.RECTANGLE));
+                                } else {
+                                    ViewHighlighter.turnOffHighlight(view);
+                                }
+                            }
                         });
         mListView.setItemsCanFocus(true);
         mListView.setAdapter(adapter);

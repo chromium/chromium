@@ -83,6 +83,8 @@ public class ListMenuItemProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_IPH_HIGHLIGHTED =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<@Nullable Intent> INTENT =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
@@ -143,6 +145,7 @@ public class ListMenuItemProperties {
         CLICK_LISTENER,
         HOVER_LISTENER,
         IS_HIGHLIGHTED,
+        IS_IPH_HIGHLIGHTED,
         INTENT,
         ENABLED,
         ICON_TINT_COLOR_STATE_LIST_ID,

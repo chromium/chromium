@@ -40,10 +40,12 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.util.AttrUtils;
 
 import java.util.Collection;
@@ -84,6 +86,25 @@ public class ListMenuUtils {
             ModelList listItems,
             Collection<Integer> disabledTypes,
             ListMenu.@Nullable Delegate delegate) {
+        return createAdapter(listItems, disabledTypes, delegate, ListMenuItemViewBinder::binder);
+    }
+
+    /**
+     * Creates and configures a {@link ModelListAdapter} for the context menu with a custom {@link
+     * ViewBinder} for {@link ListItemType#MENU_ITEM}.
+     *
+     * @param listItems The {@link ModelList} containing the items to be displayed in the menu.
+     * @param disabledTypes Additional integer types which should not be enabled in the adapter.
+     * @param delegate The {@link ListMenu.Delegate} used to handle menu clicks. If not provided,
+     *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
+     * @param menuItemViewBinder The {@link ViewBinder} to use for {@link ListItemType#MENU_ITEM}.
+     * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
+     */
+    public static ListMenuItemAdapter createAdapter(
+            ModelList listItems,
+            Collection<Integer> disabledTypes,
+            ListMenu.@Nullable Delegate delegate,
+            ViewBinder<PropertyModel, View, PropertyKey> menuItemViewBinder) {
         ListMenuItemAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes, delegate);
 
         adapter.registerType(
@@ -93,7 +114,7 @@ public class ListMenuUtils {
         adapter.registerType(
                 ListItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.list_menu_item),
-                ListMenuItemViewBinder::binder);
+                menuItemViewBinder);
         adapter.registerType(
                 ListItemType.MENU_ITEM_WITH_CHECKBOX,
                 new LayoutViewBuilder<>(R.layout.list_menu_checkbox),

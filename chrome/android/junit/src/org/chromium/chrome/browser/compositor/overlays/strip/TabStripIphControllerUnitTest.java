@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -327,5 +329,12 @@ public class TabStripIphControllerUnitTest {
         // Assert: anchor rect bounds.
         Rect anchorRect = cmd.anchorRect;
         assertEquals("Iph anchor rect bottom bound is incorrect ", 40, anchorRect.bottom);
+
+        // Assert: show and dismiss callbacks update isVerticalTabsIphShowing().
+        assertFalse(mController.isVerticalTabsIphShowing());
+        cmd.onShowCallback.run();
+        assertTrue(mController.isVerticalTabsIphShowing());
+        cmd.onDismissCallback.run();
+        assertFalse(mController.isVerticalTabsIphShowing());
     }
 }
