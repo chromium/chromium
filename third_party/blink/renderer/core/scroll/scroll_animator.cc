@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_id_provider.h"
@@ -96,22 +95,13 @@ ScrollConsumption ScrollAnimator::UserScroll(
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
 
-  ScrollableArea::ScrollCallback run_on_return(blink::BindOnce(
-      [](ScrollableArea::ScrollCallback callback,
-         ScrollableArea::ScrollCompletionMode mode) {
-        if (callback) {
-          std::move(callback).Run(mode);
-        }
-      },
-      std::move(on_finish)));
-
   if (!scrollable_area_->ScrollAnimatorEnabled() ||
       granularity == ui::ScrollGranularity::kScrollByPrecisePixel) {
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
     return ScrollAnimatorBase::UserScroll(granularity, delta, source_type,
-                                          std::move(run_on_return));
+                                          std::move(on_finish));
   }
 
   TRACE_EVENT0("blink", "ScrollAnimator::scroll");
@@ -132,7 +122,7 @@ ScrollConsumption ScrollAnimator::UserScroll(
       std::move(on_finish_)
           .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
     }
-    on_finish_ = std::move(run_on_return);
+    on_finish_ = std::move(on_finish);
     // Report unused delta only if there is no animation running. See
     // comment below regarding scroll latching.
     // TODO(bokan): Need to standardize how ScrollAnimators report
@@ -149,10 +139,13 @@ ScrollConsumption ScrollAnimator::UserScroll(
   // Report unused delta only if there is no animation and we are not
   // starting one. This ensures we latch for the duration of the
   // animation rather than animating multiple scrollers at the same time.
-  if (on_finish_)
+  if (on_finish_) {
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  }
+  if (on_finish) {
+    std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  }
 
-  std::move(run_on_return).Run(ScrollableArea::ScrollCompletionMode::kFinished);
   return ScrollConsumption(false, false, delta.x(), delta.y());
 }
 
