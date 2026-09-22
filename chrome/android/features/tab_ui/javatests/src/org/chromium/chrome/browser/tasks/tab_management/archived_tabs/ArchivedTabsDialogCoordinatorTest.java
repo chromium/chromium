@@ -861,11 +861,9 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/445994927
     // Flaky in automotive, https://crbug.com/462785937
-    @DisabledTest(message = "https://crbug.com/564429611")
     @Feature({"RenderTest"})
     public void testIphMessageResizedOnTablet() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
         addArchivedTab(new GURL("https://www.google1.com/"), "test 1");
         addArchivedTab(new GURL("https://www.google2.com/"), "test 2");
         addArchivedTab(new GURL("https://www.google3.com/"), "test 3");
@@ -875,6 +873,10 @@ public class ArchivedTabsDialogCoordinatorTest {
         RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
         tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
 
+        // Rotate to portrait after opening the dialog (rather than before entering the tab
+        // switcher, where toolbar relayout races with the tab switcher button click on
+        // landscape-default tablets) to establish a portrait baseline before rotating to landscape.
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
         mRenderTestRule.render(
                 cta.findViewById(R.id.archived_tabs_dialog),
                 "archived_tabs_iph_message_tablet_portrait");
