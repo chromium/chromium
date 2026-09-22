@@ -27,9 +27,14 @@
 
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 
-#include <unicode/normalizer2.h>
+#include <unicode/uchar.h>
 #include <unicode/utf16.h>
 
+#include <string>
+
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -307,29 +312,13 @@ bool ContainsKanaLetters(const String& pattern) {
 Vector<UChar> NormalizeCharactersIntoNfc(base::span<const UChar> characters) {
   DCHECK(characters.size());
 
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* normalizer = icu::Normalizer2::getNFCInstance(status);
-  DCHECK(U_SUCCESS(status));
-  int32_t input_length = static_cast<int32_t>(characters.size());
-  // copy-on-write.
-  icu::UnicodeString normalized(false, characters.data(), input_length);
-  // In the vast majority of cases, input is already NFC. Run a quick check
-  // to avoid normalizing the entire input unnecessarily.
-  int32_t normalized_prefix_length =
-      normalizer->spanQuickCheckYes(normalized, status);
-  if (normalized_prefix_length < input_length) {
-    icu::UnicodeString un_normalized(normalized, normalized_prefix_length);
-    normalized.truncate(normalized_prefix_length);
-    normalizer->normalizeSecondAndAppend(normalized, un_normalized, status);
-  }
-  int32_t buffer_size = normalized.length();
-  DCHECK(buffer_size);
+  const std::u16string normalized =
+      base::i18n::IcuBridge::GetInstance().normalizer().Normalize(
+          base::i18n::IcuBridge::Normalizer::NormalizationForm::NFC,
+          base::as_string_view(characters));
+  DCHECK(normalized.size());
 
-  Vector<UChar> buffer;
-  buffer.resize(static_cast<wtf_size_t>(buffer_size));
-  normalized.extract(buffer.data(), buffer_size, status);
-  DCHECK(U_SUCCESS(status));
-  return buffer;
+  return Vector<UChar>(base::span<const UChar>(normalized));
 }
 
 // This function returns kNotFound if |first| and |second| contain different
