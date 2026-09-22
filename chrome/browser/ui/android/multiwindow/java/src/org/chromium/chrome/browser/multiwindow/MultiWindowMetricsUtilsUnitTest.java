@@ -20,21 +20,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
-import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
-import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
-
-import java.util.Collections;
 
 /** Unit tests for {@link MultiWindowMetricsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MultiWindowMetricsUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private SharedPreferencesManager mSharedPreferencesManager;
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -42,49 +35,37 @@ public class MultiWindowMetricsUtilsUnitTest {
 
     @Before
     public void setup() {
-        mSharedPreferencesManager = MultiInstanceSharedPreferences.getInstance();
+        MultiInstancePersistentStore.ensureInitialized();
     }
 
     @After
     public void tearDown() {
-        // Clear all preferences that may have been set during a test.
-        mSharedPreferencesManager.getEditor().clear().commit();
+        MultiInstancePersistentStore.resetForTesting();
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510019356")
     public void testRecordWindowingMode() {
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
         assertEquals(
                 "Activity count for fullscreen should be 1.",
                 1,
-                mSharedPreferencesManager
-                        .readStringSet(
-                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
-                                        WindowingMode.FULLSCREEN),
-                                Collections.emptySet())
+                MultiInstancePersistentStore.readMultiWindowModeActivities(WindowingMode.FULLSCREEN)
                         .size());
         assertTrue(
                 "Start time should be recorded.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
-                                WindowingMode.FULLSCREEN)));
+                MultiInstancePersistentStore.containsMultiWindowModeStartTime(
+                        WindowingMode.FULLSCREEN));
         assertTrue(
                 "Cycle start time should be recorded.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME));
+                MultiInstancePersistentStore.containsMultiWindowModeCycleStartTime());
 
         // Simulate another activity resuming in fullscreen mode, count should be 2.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 2, true);
         assertEquals(
                 "Activity count for fullscreen should now be 2.",
                 2,
-                mSharedPreferencesManager
-                        .readStringSet(
-                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
-                                        WindowingMode.FULLSCREEN),
-                                Collections.emptySet())
+                MultiInstancePersistentStore.readMultiWindowModeActivities(WindowingMode.FULLSCREEN)
                         .size());
 
         // Stop both activities in fullscreen mode, count should become 0.
@@ -94,32 +75,23 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Activity count for fullscreen should be 0.",
                 0,
-                mSharedPreferencesManager
-                        .readStringSet(
-                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
-                                        WindowingMode.FULLSCREEN),
-                                Collections.emptySet())
+                MultiInstancePersistentStore.readMultiWindowModeActivities(WindowingMode.FULLSCREEN)
                         .size());
         assertFalse(
                 "Start time should be removed.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
-                                WindowingMode.FULLSCREEN)));
+                MultiInstancePersistentStore.containsMultiWindowModeStartTime(
+                        WindowingMode.FULLSCREEN));
         assertEquals(
                 "Duration should be recorded.",
                 1000,
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
-                                WindowingMode.FULLSCREEN),
-                        0));
+                MultiInstancePersistentStore.readMultiWindowModeDurationMs(
+                        WindowingMode.FULLSCREEN));
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510013948")
     public void recordTimeSpentInWindowingMode_withinCycle() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
-        mSharedPreferencesManager.writeLong(
-                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+        MultiInstancePersistentStore.writeMultiWindowModeCycleStartTime(t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -134,23 +106,18 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Fullscreen duration should be the time elapsed.",
                 1000,
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
-                                WindowingMode.FULLSCREEN),
-                        -1L));
+                MultiInstancePersistentStore.readMultiWindowModeDurationMs(
+                        WindowingMode.FULLSCREEN));
         assertFalse(
                 "Start time for fullscreen mode should be removed.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
-                                WindowingMode.FULLSCREEN)));
+                MultiInstancePersistentStore.containsMultiWindowModeStartTime(
+                        WindowingMode.FULLSCREEN));
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510025914")
     public void recordTimeSpentInWindowingMode_cycleBoundary_stoppingModeDurationNotLost() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
-        mSharedPreferencesManager.writeLong(
-                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+        MultiInstancePersistentStore.writeMultiWindowModeCycleStartTime(t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -165,18 +132,14 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Fullscreen duration in new cycle is incorrect.",
                 100,
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
-                                WindowingMode.FULLSCREEN),
-                        -1L));
+                MultiInstancePersistentStore.readMultiWindowModeDurationMs(
+                        WindowingMode.FULLSCREEN));
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510022013")
     public void recordTimeSpentInWindowingMode_cycleBoundary_activeModeHandled() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
-        mSharedPreferencesManager.writeLong(
-                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, t0);
+        MultiInstancePersistentStore.writeMultiWindowModeCycleStartTime(t0);
 
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -196,14 +159,11 @@ public class MultiWindowMetricsUtilsUnitTest {
         // and its start time updated. Its duration key is removed after recording.
         assertFalse(
                 "Fullscreen duration key should be removed after histogram recording.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
-                                WindowingMode.FULLSCREEN)));
+                MultiInstancePersistentStore.containsMultiWindowModeDurationMs(
+                        WindowingMode.FULLSCREEN));
         long newFullscreenStartTime =
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
-                                WindowingMode.FULLSCREEN),
-                        -1L);
+                MultiInstancePersistentStore.readMultiWindowModeStartTime(
+                        WindowingMode.FULLSCREEN, /* currentTime= */ -1L);
         // The new start time will be aligned to the cycle boundary.
         long expectedNewStartTime = t0 + CYCLE_LENGTH_MS;
         assertEquals(
@@ -216,19 +176,15 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Desktop window duration in new cycle is incorrect.",
                 1000,
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(
-                                WindowingMode.DESKTOP_WINDOW),
-                        -1L));
+                MultiInstancePersistentStore.readMultiWindowModeDurationMs(
+                        WindowingMode.DESKTOP_WINDOW));
         assertFalse(
                 "Desktop window start time key should be removed.",
-                mSharedPreferencesManager.contains(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(
-                                WindowingMode.DESKTOP_WINDOW)));
+                MultiInstancePersistentStore.containsMultiWindowModeStartTime(
+                        WindowingMode.DESKTOP_WINDOW));
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510006428")
     public void recordTimeSpentInWindowingMode_cycleStartTimeUpdated() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
 
@@ -267,24 +223,18 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Cycle start time should be updated to the end of the last recorded cycle.",
                 t0 + CYCLE_LENGTH_MS,
-                mSharedPreferencesManager.readLong(
-                        MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, -1L));
+                MultiInstancePersistentStore.readMultiWindowModeCycleStartTime());
         histogramWatcher.assertExpected();
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/510010805")
     public void testRecordWindowingMode_duplicateIds() {
         // Start in fullscreen mode with window ID 1.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
         assertEquals(
                 "Activity count for fullscreen should be 1.",
                 1,
-                mSharedPreferencesManager
-                        .readStringSet(
-                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
-                                        WindowingMode.FULLSCREEN),
-                                Collections.emptySet())
+                MultiInstancePersistentStore.readMultiWindowModeActivities(WindowingMode.FULLSCREEN)
                         .size());
 
         // Call again with the same window ID.
@@ -292,11 +242,7 @@ public class MultiWindowMetricsUtilsUnitTest {
         assertEquals(
                 "Activity count for fullscreen should still be 1.",
                 1,
-                mSharedPreferencesManager
-                        .readStringSet(
-                                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(
-                                        WindowingMode.FULLSCREEN),
-                                Collections.emptySet())
+                MultiInstancePersistentStore.readMultiWindowModeActivities(WindowingMode.FULLSCREEN)
                         .size());
     }
 }
