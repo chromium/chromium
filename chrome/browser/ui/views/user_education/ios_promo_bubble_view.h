@@ -43,7 +43,7 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
                      Profile* profile,
                      desktop_to_mobile_promos::PromoType promo_type,
                      desktop_to_mobile_promos::BubbleType promo_bubble_type,
-                     views::View* anchor_view,
+                     views::BubbleAnchor anchor,
                      views::BubbleBorder::Arrow arrow);
   ~IOSPromoBubbleView() override;
 
