@@ -427,13 +427,32 @@ export class ComposeboxVoiceSearchElement extends
     }
   };
 
+  private onKeyDown_ = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (this.isPermissionPromptOpen) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      // TODO(crbug.com/564678643): Rename shouldShowErrorScrim_() to
+      // isInError_().
+      if (this.shouldShowErrorScrim_()) {
+        this.onCloseClick_();
+      } else {
+        this.onStopClick_();
+      }
+    }
+  };
+
   /**
    * Adds global listeners to close voice search on outside interactions.
    * `pointerdown` captures clicks on flat DOMs (e.g., NTP).
    * `blur` captures clicks inside isolated webviews (e.g., Contextual Tasks
    * `#threadFrame`) which steal focus but do not bubble click events.
+   * `keydown` captures Escape key to stop voice search.
    */
   private addOutsideListeners_() {
+    document.addEventListener('keydown', this.onKeyDown_, true);
     WindowProxy.getInstance().setTimeout(() => {
       document.addEventListener('pointerdown', this.onOutsideInteraction_);
       window.addEventListener('blur', this.onOutsideInteraction_);
@@ -442,6 +461,7 @@ export class ComposeboxVoiceSearchElement extends
 
   private removeOutsideListeners_() {
     document.removeEventListener('pointerdown', this.onOutsideInteraction_);
+    document.removeEventListener('keydown', this.onKeyDown_, true);
     window.removeEventListener('blur', this.onOutsideInteraction_);
   }
 
