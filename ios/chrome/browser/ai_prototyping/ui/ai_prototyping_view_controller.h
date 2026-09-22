@@ -21,6 +21,7 @@
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
 
 // Initializes the menu with the TalkToChrome view controller.
+// `ttcViewController` can be nil if TTC is disabled.
 - (instancetype)initWithTTCViewController:
     (UIViewController<AIPrototypingViewControllerProtocol>*)ttcViewController
     NS_DESIGNATED_INITIALIZER;
