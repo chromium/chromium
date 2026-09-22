@@ -146,10 +146,11 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "systemGeolocationDialogLearnMoreUrl",
       ash::external_urls::kPrivacyHubGeolocationLearnMoreURL);
 
-  html_source->AddString("timeZoneSettingsLearnMoreURL",
-                         base::ASCIIToUTF16(base::StringPrintf(
-                             ash::external_urls::kTimeZoneSettingsLearnMoreURL,
-                             application_locale_storage_->Get().c_str())));
+  html_source->AddString(
+      "timeZoneSettingsLearnMoreURL",
+      base::ASCIIToUTF16(base::StringPrintf(
+          ash::external_urls::kTimeZoneSettingsLearnMoreURL,
+          application_locale_storage_->GetTag().tag_string())));
 
   // Set the initial time zone to show.
   html_source->AddString("timeZoneName", system::GetCurrentTimezoneName());

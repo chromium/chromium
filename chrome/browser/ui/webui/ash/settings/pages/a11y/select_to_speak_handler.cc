@@ -36,8 +36,9 @@ SelectToSpeakHandler::~SelectToSpeakHandler() = default;
 
 void SelectToSpeakHandler::HandleGetAppLocale(const base::ListValue& args) {
   AllowJavascript();
-  FireWebUIListener("app-locale-updated",
-                    base::Value(application_locale_storage_->Get()));
+  FireWebUIListener(
+      "app-locale-updated",
+      base::Value(application_locale_storage_->GetTag().tag_string()));
 }
 
 void SelectToSpeakHandler::OnVoicesChanged() {
@@ -61,11 +62,13 @@ void SelectToSpeakHandler::OnVoicesChanged() {
       response.Set(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
-              language_code, application_locale_storage_->Get(), true));
-      response.Set("displayLanguageAndCountry",
-                   l10n_util::GetDisplayNameForLocale(
-                       language_and_country_code,
-                       application_locale_storage_->Get(), true));
+              language_code, application_locale_storage_->GetTag().tag_string(),
+              true));
+      response.Set(
+          "displayLanguageAndCountry",
+          l10n_util::GetDisplayNameForLocale(
+              language_and_country_code,
+              application_locale_storage_->GetTag().tag_string(), true));
     }
     for (auto& event : voice.events) {
       event_types.Append(TtsEventTypeToString(event));

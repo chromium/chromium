@@ -233,7 +233,8 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
       Dictation::GetAllSupportedLocales();
 
   // Get application locale.
-  const std::string& application_locale = application_locale_storage_->Get();
+  std::string_view application_locale =
+      application_locale_storage_->GetTag().tag_string();
   std::pair<std::string_view, std::string_view> application_lang_and_locale =
       language::SplitIntoMainAndTail(application_locale);
 
@@ -299,7 +300,7 @@ std::u16string AccessibilityHandler::GetDictationLocaleDisplayName() {
 
   return l10n_util::GetDisplayNameForLocale(
       /*locale=*/dictation_locale,
-      /*display_locale=*/application_locale_storage_->Get(),
+      /*display_locale=*/application_locale_storage_->GetTag().tag_string(),
       /*is_ui=*/true);
 }
 

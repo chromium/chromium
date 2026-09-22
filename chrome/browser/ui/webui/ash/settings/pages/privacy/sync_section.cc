@@ -142,7 +142,7 @@ void SyncSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                    syncer::kSyncEnableNewSyncDashboardUrl)
                    ? ash::chrome_external_urls::kNewSyncGoogleDashboardURL
                    : ash::chrome_external_urls::kLegacySyncGoogleDashboardURL),
-          application_locale_storage_->Get())
+          std::string(application_locale_storage_->GetTag().tag_string()))
           .spec();
 
   html_source->AddString(

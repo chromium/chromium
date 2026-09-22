@@ -80,7 +80,7 @@ void TtsHandler::HandleGetDisplayNameForLocale(const base::ListValue& args) {
   const std::string locale = args[1].GetString();
 
   const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
-      locale, application_locale_storage_->Get(), true);
+      locale, application_locale_storage_->GetTag().tag_string(), true);
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, base::UTF16ToUTF8(display_name));
@@ -90,7 +90,8 @@ void TtsHandler::HandleGetApplicationLocale(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string callback_id = args[0].GetString();
 
-  const std::string& application_locale = application_locale_storage_->Get();
+  std::string_view application_locale =
+      application_locale_storage_->GetTag().tag_string();
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, application_locale);
@@ -101,7 +102,8 @@ void TtsHandler::OnVoicesChanged() {
       content::TtsController::GetInstance();
   std::vector<content::VoiceData> voices;
   tts_controller->GetVoices(Profile::FromWebUI(web_ui()), GURL(), &voices);
-  const std::string& app_locale = application_locale_storage_->Get();
+  const std::string app_locale(
+      application_locale_storage_->GetTag().tag_string());
   base::ListValue responses;
   for (const auto& voice : voices) {
     base::DictValue response;
