@@ -6,7 +6,7 @@
 #define NET_QUIC_QUIC_MIGRATION_ATTEMPT_CONTEXT_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/functional/callback.h"
@@ -39,7 +39,7 @@ enum class QuicMigrationAttemptCause {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicMigrationAttemptCause,//tools/metrics/histograms/metadata/net/histograms.xml:QuicMigrationAttemptCause)
 
-NET_EXPORT_PRIVATE std::string QuicMigrationAttemptCauseToString(
+NET_EXPORT_PRIVATE std::string_view QuicMigrationAttemptCauseToString(
     QuicMigrationAttemptCause cause);
 
 // Reasons why an eligible migration attempt failed.

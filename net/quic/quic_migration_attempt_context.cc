@@ -14,7 +14,8 @@
 
 namespace net {
 
-std::string QuicMigrationAttemptCauseToString(QuicMigrationAttemptCause cause) {
+std::string_view QuicMigrationAttemptCauseToString(
+    QuicMigrationAttemptCause cause) {
   switch (cause) {
     case QuicMigrationAttemptCause::kUnknown:
       return "Unknown";
@@ -85,7 +86,7 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
     outcome_details_ = QuicMigrationAttemptIneligibleReason::kSessionDestroyed;
   }
 
-  std::string trigger_str = QuicMigrationAttemptCauseToString(cause_);
+  std::string_view trigger_str = QuicMigrationAttemptCauseToString(cause_);
 
   switch (outcome_) {
     case Outcome::kSuccess:

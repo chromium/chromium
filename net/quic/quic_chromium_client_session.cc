@@ -415,7 +415,7 @@ base::DictValue NetLogQuicClientSessionParams(
 // connection migration histogram names.
 // TODO(crbug.com/557126867): Remove this when we drop the old connection
 // migration histograms.
-std::string MigrationCauseToString(QuicMigrationAttemptCause cause) {
+std::string_view MigrationCauseToString(QuicMigrationAttemptCause cause) {
   // This is the only name that differs between the old and new histogram names.
   if (cause == QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading) {
     return "OnPathDegrading";
@@ -428,8 +428,9 @@ std::string MigrationCauseToString(QuicMigrationAttemptCause cause) {
 // TODO(fayang): Remove this when necessary data is collected.
 void LogProbeResultToHistogram(QuicMigrationAttemptCause cause, bool success) {
   UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.PathValidationSuccess", success);
-  const std::string histogram_name =
-      "Net.QuicSession.PathValidationSuccess." + MigrationCauseToString(cause);
+  const auto histogram_name =
+      base::StrCat({"Net.QuicSession.PathValidationSuccess.",
+                    MigrationCauseToString(cause)});
   STATIC_HISTOGRAM_POINTER_GROUP(
       histogram_name, static_cast<int>(cause),
       static_cast<int>(QuicMigrationAttemptCause::kMaxValue) + 1,
@@ -3838,10 +3839,11 @@ void QuicChromiumClientSession::LogMigrationResultToHistogram(
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ConnectionMigration", status,
                             MIGRATION_STATUS_MAX);
 
-  // Log the connection migraiton result to different histograms based on the
+  // Log the connection migration on result to different histograms based on the
   // cause of the connection migration.
-  std::string histogram_name = "Net.QuicSession.ConnectionMigration." +
-                               MigrationCauseToString(current_migration_cause_);
+  const auto histogram_name =
+      base::StrCat({"Net.QuicSession.ConnectionMigration.",
+                    MigrationCauseToString(current_migration_cause_)});
   base::UmaHistogramEnumeration(histogram_name, status, MIGRATION_STATUS_MAX);
   current_migration_cause_ = QuicMigrationAttemptCause::kUnknown;
 }
@@ -3865,9 +3867,9 @@ void QuicChromiumClientSession::LogHandshakeStatusOnMigrationSignal() const {
   UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HandshakeStatusOnConnectionMigration",
                         OneRttKeysAvailable());
 
-  const std::string histogram_name =
-      "Net.QuicSession.HandshakeStatusOnConnectionMigration." +
-      MigrationCauseToString(current_migration_cause_);
+  const auto histogram_name =
+      base::StrCat({"Net.QuicSession.HandshakeStatusOnConnectionMigration.",
+                    MigrationCauseToString(current_migration_cause_)});
   STATIC_HISTOGRAM_POINTER_GROUP(
       histogram_name, static_cast<int>(current_migration_cause_),
       static_cast<int>(QuicMigrationAttemptCause::kMaxValue) + 1,
