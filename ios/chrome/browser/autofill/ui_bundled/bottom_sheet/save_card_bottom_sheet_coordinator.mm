@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "url/gurl.h"
 
 @interface SaveCardBottomSheetCoordinator () <
     CreditCardScannerCoordinatorDelegate,
@@ -123,6 +124,11 @@
 #pragma mark - SaveCardBottomSheetDelegate
 
 - (void)didTapLinkURL:(CrURL*)URL {
+  // Ensure the link URL is a valid HTTP or HTTPS URL before opening in a new
+  // tab.
+  if (!URL || !URL.gurl.is_valid() || !URL.gurl.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   [_mediator onBottomSheetDismissedWithLinkClicked:YES];
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);

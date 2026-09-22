@@ -207,3 +207,38 @@ TEST_F(WalletReminderNoticeCoordinatorTest,
       autofill::autofill_metrics::WalletReminderNoticeInteraction::kDismissed,
       1);
 }
+
+// Test that tapping on a link with a non-HTTP(S) scheme or an invalid HTTP(S)
+// URL does not open a new tab or log metrics.
+TEST_F(WalletReminderNoticeCoordinatorTest,
+       DoesNotOpenNewTabForNonHttpOrHttpsOrInvalidURL) {
+  base::HistogramTester histogram_tester;
+  autofill::LegalMessageLines legal_message_lines;
+  WalletReminderNoticeCoordinator* coordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                   legalMessageLines:legal_message_lines];
+
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  [coordinator start];
+
+  NSURL* non_http_url = [NSURL URLWithString:@"chrome://version"];
+  NSURL* invalid_http_url = [NSURL URLWithString:@"http://example.com:9999999"];
+  OCMReject([mock_scene_handler openURLInNewTab:[OCMArg any]]);
+
+  id<WalletReminderNoticeViewControllerDelegate> delegate =
+      static_cast<id<WalletReminderNoticeViewControllerDelegate>>(coordinator);
+  [delegate walletReminderNoticeViewController:nil didTapLinkURL:non_http_url];
+  [delegate walletReminderNoticeViewController:nil
+                                 didTapLinkURL:invalid_http_url];
+  [coordinator stop];
+
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler);
+  histogram_tester.ExpectTotalCount("Autofill.WalletReminderNotice.Interaction",
+                                    0);
+}

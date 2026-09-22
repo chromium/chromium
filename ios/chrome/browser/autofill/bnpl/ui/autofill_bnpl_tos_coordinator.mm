@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 @interface AutofillBnplTosCoordinator () <AutofillBnplTosViewControllerDelegate,
                                           UISheetPresentationControllerDelegate>
@@ -83,8 +84,14 @@
 
 - (void)tosViewController:(AutofillBnplTosViewController*)viewController
               didTapOnURL:(NSURL*)url {
+  // Ensure the link URL is a valid HTTP or HTTPS URL before opening in a new
+  // tab.
+  const GURL gurl = net::GURLWithNSURL(url);
+  if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:net::GURLWithNSURL(url)
+      commandWithURLFromChrome:gurl
                    inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
   [_sceneHandler openURLInNewTab:command];
 }

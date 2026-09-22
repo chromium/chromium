@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//net",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

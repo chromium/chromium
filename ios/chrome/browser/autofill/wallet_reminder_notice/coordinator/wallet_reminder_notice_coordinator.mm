@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 @interface WalletReminderNoticeCoordinator () <
     ConfirmationAlertActionHandler,
@@ -106,14 +107,19 @@
 - (void)walletReminderNoticeViewController:
             (WalletReminderNoticeViewController*)viewController
                              didTapLinkURL:(NSURL*)URL {
+  // Ensure the link URL is a valid HTTP or HTTPS URL before opening in a new
+  // tab.
+  const GURL gurl = net::GURLWithNSURL(URL);
+  if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   autofill::autofill_metrics::LogWalletReminderNoticeInteraction(
       autofill::autofill_metrics::WalletReminderNoticeInteraction::
           kClickedLink);
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler
-      openURLInNewTab:[OpenNewTabCommand
-                          commandWithURLFromChrome:net::GURLWithNSURL(URL)]];
+      openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:gurl]];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

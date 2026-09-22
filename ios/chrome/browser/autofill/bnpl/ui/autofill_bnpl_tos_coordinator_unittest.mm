@@ -101,6 +101,23 @@ TEST_F(AutofillBnplTosCoordinatorTest, OpensNewTabForLinkClicked) {
   [coordinator_ stop];
 }
 
+// Test that tapping on a link with a non-HTTP(S) scheme or an invalid HTTP(S)
+// URL does not open a new tab.
+TEST_F(AutofillBnplTosCoordinatorTest,
+       DoesNotOpenNewTabForNonHttpOrHttpsOrInvalidURL) {
+  [coordinator_ start];
+  NSURL* non_http_url = [NSURL URLWithString:@"chrome://version"];
+  NSURL* invalid_http_url = [NSURL URLWithString:@"http://example.com:9999999"];
+
+  OCMReject([scene_handler_ openURLInNewTab:[OCMArg any]]);
+
+  id delegate = coordinator_;
+  [delegate tosViewController:nil didTapOnURL:non_http_url];
+  [delegate tosViewController:nil didTapOnURL:invalid_http_url];
+
+  [coordinator_ stop];
+}
+
 TEST_F(AutofillBnplTosCoordinatorTest, TriggersAcceptCallback) {
   [coordinator_ start];
 

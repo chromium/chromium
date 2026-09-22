@@ -90,6 +90,7 @@ source_set("save_card_bottom_sheet_coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//url",
   ]
   public_deps = [ ":save_card_bottom_sheet_delegate" ]
   frameworks = [ "UIKit.framework" ]
@@ -116,6 +117,7 @@ source_set("save_card_bottom_sheet_coordinator_unittest") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 
@@ -260,6 +262,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -286,6 +289,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator_unittest") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 

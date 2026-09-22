@@ -29,6 +29,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 // Tests the SetUpListView and subviews.
 class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
@@ -140,4 +141,21 @@ TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, OpensNewTabForLinks) {
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
+}
+
+// Test that tapping a link with a non-HTTP(S) scheme or an invalid HTTP(S) URL
+// does not open a new tab.
+TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest,
+       DoesNotOpenNewTabForNonHttpOrHttpsOrInvalidURL) {
+  [coordinator_ start];
+
+  CrURL* non_http_url = [[CrURL alloc] initWithGURL:GURL("chrome://version")];
+  CrURL* invalid_http_url =
+      [[CrURL alloc] initWithGURL:GURL("http://example.com:9999999")];
+
+  OCMReject([application_handler_ openURLInNewTab:[OCMArg any]]);
+
+  [coordinator_ didTapLinkURL:non_http_url text:@"Terms"];
+  [coordinator_ didTapLinkURL:invalid_http_url text:@"Terms"];
+  [coordinator_ stop];
 }
