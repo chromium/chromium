@@ -58,6 +58,9 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
   void OnPageContextChanged() override;
 
   // TtcBackend::Observer implementation:
+  void OnApplicationInitialized() override;
+  void OnApplicationClosed() override;
+  void OnApplicationError(ErrorCode error) override;
   void OnTransportStateChanged(bool connected,
                                const std::string& session_id,
                                const std::string& error_message) override;

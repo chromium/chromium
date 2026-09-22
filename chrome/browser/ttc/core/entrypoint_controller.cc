@@ -59,15 +59,15 @@ void EntrypointController::ToolbarButtonHandler() {
   ToggleSession();
 }
 
-void EntrypointController::OnTtcStateChanged(TtcState state) {
+void EntrypointController::OnTtcStateChanged(ServiceState state) {
   UpdateUi(state);
 }
 
-void EntrypointController::UpdateUi(TtcState state) {
+void EntrypointController::UpdateUi(ServiceState state) {
   UpdateToolbarButton(state);
 }
 
-void EntrypointController::UpdateToolbarButton(TtcState state) {
+void EntrypointController::UpdateToolbarButton(ServiceState state) {
 #if !BUILDFLAG(IS_ANDROID)
   PinnedToolbarActions* const pinned_actions =
       browser_->GetFeatures().pinned_toolbar_actions();
@@ -76,15 +76,15 @@ void EntrypointController::UpdateToolbarButton(TtcState state) {
   }
 
   switch (state) {
-    case TtcState::kDisabled:
+    case ServiceState::kProfileIneligible:
       // TODO(danielmendz): Remove the toolbar button entirely when TTC becomes
       // unavailable.
       break;
-    case TtcState::kSessionInactive:
+    case ServiceState::kSessionInactive:
       pinned_actions->UpdateActionState(kActionTtcToolbar,
                                         /*is_active=*/false);
       break;
-    case TtcState::kSessionActive:
+    case ServiceState::kSessionActive:
       pinned_actions->UpdateActionState(kActionTtcToolbar,
                                         /*is_active=*/true);
       break;

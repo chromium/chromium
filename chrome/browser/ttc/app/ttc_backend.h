@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "chrome/browser/ttc/app/error_codes.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 
@@ -28,6 +29,19 @@ class TtcBackend {
   class Observer {
    public:
     virtual ~Observer() = default;
+
+    // Called when the backend has set up the application and the session is
+    // ready to be interacted with.
+    virtual void OnApplicationInitialized() = 0;
+
+    // Called when the application on the backend has shut down. The session
+    // can no longer be interacted with.
+    virtual void OnApplicationClosed() = 0;
+
+    // Called when the application on the backend failed with `error`. The
+    // session can no longer be interacted with.
+    virtual void OnApplicationError(ErrorCode error) = 0;
+
     virtual void OnTransportStateChanged(bool connected,
                                          const std::string& session_id,
                                          const std::string& error_message) = 0;

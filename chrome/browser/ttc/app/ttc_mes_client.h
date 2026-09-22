@@ -57,6 +57,13 @@ class TtcMesClient
       optimization_guide::RemoteModelExecutionSession::ConnectionState state)
       override;
 
+  // The session this client was given by the OptimizationGuideKeyedService.
+  // Null until Connect() and after Close().
+  optimization_guide::RemoteModelExecutionSession*
+  GetExecutionSessionForTesting() {
+    return session_.get();
+  }
+
  protected:
   // Dispatches a decoded server frame to the observer. Protected so tests can
   // feed frames without a server sending them.

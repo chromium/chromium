@@ -25,12 +25,11 @@ std::unique_ptr<Conversation> MakeConversationImpl(
 
 std::unique_ptr<Conversation> MakeConversationImplForTesting(
     SessionController& session_controller,
-    std::unique_ptr<TtcBackend> backend,
     std::unique_ptr<AudioController> audio_controller) {
-  CHECK(backend);
   CHECK(audio_controller);
   return std::make_unique<ConversationImpl>(
-      std::move(backend), std::move(audio_controller), session_controller);
+      std::make_unique<TtcMesClient>(session_controller.GetProfile()),
+      std::move(audio_controller), session_controller);
 }
 
 }  // namespace ttc

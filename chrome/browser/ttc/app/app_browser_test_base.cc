@@ -9,17 +9,23 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/types/expected.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/app/conversation_impl.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
-#include "chrome/browser/ttc/app/test_utils.h"
+#include "chrome/browser/ttc/app/ttc_mes_client.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "content/public/browser/browser_context.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -31,6 +37,36 @@
 
 namespace ttc {
 
+namespace {
+
+// Creates a server frame carrying a SessionStatusResponse with the given
+// fields.
+optimization_guide::proto::TtcServerFrame MakeSessionStatusFrame(
+    optimization_guide::proto::SessionStatusResponse::SessionState state,
+    std::string_view server_session_id,
+    std::string_view diagnostic_error_detail) {
+  optimization_guide::proto::TtcServerFrame frame;
+  auto* status = frame.mutable_session_status();
+  status->set_state(state);
+  status->set_server_session_id(server_session_id);
+  status->set_diagnostic_error_detail(diagnostic_error_detail);
+  return frame;
+}
+
+// Creates a server frame carrying a ServerErrorNotification with the given
+// fields.
+optimization_guide::proto::TtcServerFrame MakeServerErrorFrame(
+    optimization_guide::proto::ServerErrorNotification::ErrorCode error_code,
+    std::string_view error_message) {
+  optimization_guide::proto::TtcServerFrame frame;
+  auto* error = frame.mutable_server_error();
+  error->set_error_code(error_code);
+  error->set_error_message(error_message);
+  return frame;
+}
+
+}  // namespace
+
 AppBrowserTestBase::AppBrowserTestBase() {
   scoped_feature_list_.InitAndEnableFeature(kTtc);
 }
@@ -41,7 +77,17 @@ void AppBrowserTestBase::SetUpBrowserContextKeyedServices(
     content::BrowserContext* context) {
   PlatformBrowserTest::SetUpBrowserContextKeyedServices(context);
 
-  // Replace the service with one whose sessions use a MockTtcBackend.
+  // The conversation uses the production TtcMesClient so mock out the service
+  // it talks to rather than the client itself.
+  OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<MockOptimizationGuideKeyedService>>();
+      }));
+
+  // Replace the service with one whose sessions use the conversation created
+  // by MakeConversation().
   TtcKeyedServiceFactory::GetInstance()->SetTestingFactory(
       context,
       base::BindLambdaForTesting([this](content::BrowserContext* context)
@@ -66,13 +112,33 @@ void AppBrowserTestBase::SetUpOnMainThread() {
                              media::ChannelLayoutConfig::Mono(),
                              /*sample_rate=*/48000,
                              /*frames_per_buffer=*/480));
+
+  // Created up front, rather than when requested, so that tests can set
+  // expectations on it before starting a session.
+  ResetModelExecutionSession();
+
+  ON_CALL(optimization_guide_service(), StartStreamingSession)
+      .WillByDefault(
+          [this](optimization_guide::ModelBasedCapabilityKey,
+                 const optimization_guide::StreamingModelExecutionOptions&,
+                 optimization_guide::
+                     OptimizationGuideModelExecutionStreamingCallback callback)
+              -> std::unique_ptr<
+                  optimization_guide::RemoteModelExecutionSession> {
+            CHECK(pending_model_execution_session_)
+                << "Call ResetModelExecutionSession() before starting another "
+                   "session.";
+            streaming_callback_ = std::move(callback);
+            return std::move(pending_model_execution_session_);
+          });
 }
 
 void AppBrowserTestBase::TearDownOnMainThread() {
   // The session owns the AudioController so it must go away before the audio
   // manager it's using.
   ttc_service().EndSession();
-  conversation_ = nullptr;
+  pending_model_execution_session_.reset();
+  streaming_callback_.Reset();
 
   audio_manager_->Shutdown();
   audio_manager_.reset();
@@ -92,15 +158,104 @@ TtcKeyedService& AppBrowserTestBase::ttc_service() {
   return CHECK_DEREF(TtcKeyedService::Get(profile()));
 }
 
-ConversationImpl* AppBrowserTestBase::conversation() {
-  return ttc_service().is_session_active() ? conversation_.get() : nullptr;
+MockOptimizationGuideKeyedService&
+AppBrowserTestBase::optimization_guide_service() {
+  return CHECK_DEREF(static_cast<MockOptimizationGuideKeyedService*>(
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile())));
 }
 
-MockTtcBackend* AppBrowserTestBase::backend() {
+SessionControllerImpl* AppBrowserTestBase::session_controller() {
+  return static_cast<SessionControllerImpl*>(
+      ttc_service().session_controller());
+}
+
+ConversationImpl* AppBrowserTestBase::conversation() {
+  SessionControllerImpl* controller = session_controller();
+  return controller
+             ? static_cast<ConversationImpl*>(&controller->conversation())
+             : nullptr;
+}
+
+TtcMesClient* AppBrowserTestBase::backend() {
   ConversationImpl* conversation_impl = conversation();
   return conversation_impl
-             ? static_cast<MockTtcBackend*>(conversation_impl->backend())
+             ? static_cast<TtcMesClient*>(conversation_impl->backend())
              : nullptr;
+}
+
+optimization_guide::MockRemoteModelExecutionSession*
+AppBrowserTestBase::model_execution_session() {
+  // Ownership moves to the client once it starts its streaming session.
+  optimization_guide::RemoteModelExecutionSession* session =
+      backend() ? backend()->GetExecutionSessionForTesting() : nullptr;
+  if (!session) {
+    session = pending_model_execution_session_.get();
+  }
+  return static_cast<optimization_guide::MockRemoteModelExecutionSession*>(
+      session);
+}
+
+void AppBrowserTestBase::ResetModelExecutionSession() {
+  pending_model_execution_session_ = std::make_unique<
+      testing::NiceMock<optimization_guide::MockRemoteModelExecutionSession>>();
+}
+
+void AppBrowserTestBase::StartSessionAndConnectBackend() {
+  ttc_service().StartSession();
+
+  // The connection is established once the client has sent its setup frame.
+  OpenBackendConnection();
+}
+
+void AppBrowserTestBase::OpenBackendConnection() {
+  CHECK_DEREF(model_execution_session())
+      .SetConnectionState(optimization_guide::RemoteModelExecutionSession::
+                              ConnectionState::kConnected);
+}
+
+void AppBrowserTestBase::CloseBackendConnection() {
+  CHECK_DEREF(model_execution_session())
+      .SetConnectionState(optimization_guide::RemoteModelExecutionSession::
+                              ConnectionState::kDisconnected);
+}
+
+void AppBrowserTestBase::SimulateResponse(
+    const optimization_guide::proto::TtcServerFrame& frame) {
+  CHECK(streaming_callback_) << "No streaming session has been started.";
+  streaming_callback_.Run(
+      optimization_guide::OptimizationGuideModelStreamingResult(
+          base::ok(optimization_guide::AnyWrapProto(frame)),
+          /*execution_info=*/nullptr));
+}
+
+void AppBrowserTestBase::RespondSessionStatus(
+    optimization_guide::proto::SessionStatusResponse::SessionState state,
+    std::string_view server_session_id,
+    std::string_view diagnostic_error_detail) {
+  SimulateResponse(MakeSessionStatusFrame(state, server_session_id,
+                                          diagnostic_error_detail));
+}
+
+void AppBrowserTestBase::RespondServerError(
+    optimization_guide::proto::ServerErrorNotification::ErrorCode error_code,
+    std::string_view error_message) {
+  SimulateResponse(MakeServerErrorFrame(error_code, error_message));
+}
+
+bool AppBrowserTestBase::WaitForServiceState(ServiceState state) {
+  if (ttc_service().GetState() == state) {
+    return true;
+  }
+
+  base::test::TestFuture<void> reached;
+  base::CallbackListSubscription subscription =
+      ttc_service().RegisterStateChangedCallback(
+          base::BindLambdaForTesting([&](ServiceState new_state) {
+            if (new_state == state && !reached.IsReady()) {
+              reached.SetValue();
+            }
+          }));
+  return reached.Wait();
 }
 
 std::unique_ptr<Conversation> AppBrowserTestBase::MakeConversation(
@@ -116,11 +271,8 @@ std::unique_ptr<Conversation> AppBrowserTestBase::MakeConversation(
                 audio_manager_.get());
           }));
 
-  std::unique_ptr<Conversation> conversation = MakeConversationImplForTesting(
-      session_controller, std::make_unique<testing::NiceMock<MockTtcBackend>>(),
-      std::move(audio_controller));
-  conversation_ = static_cast<ConversationImpl*>(conversation.get());
-  return conversation;
+  return MakeConversationImplForTesting(session_controller,
+                                        std::move(audio_controller));
 }
 
 }  // namespace ttc

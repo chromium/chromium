@@ -37,12 +37,12 @@ bool TtcKeyedService::IsEnabled() const {
   return true;
 }
 
-TtcState TtcKeyedService::GetState() const {
+ServiceState TtcKeyedService::GetState() const {
   if (!IsEnabled()) {
-    return TtcState::kDisabled;
+    return ServiceState::kProfileIneligible;
   }
-  return is_session_active() ? TtcState::kSessionActive
-                             : TtcState::kSessionInactive;
+  return is_session_active() ? ServiceState::kSessionActive
+                             : ServiceState::kSessionInactive;
 }
 
 void TtcKeyedService::StartSession() {
@@ -60,7 +60,7 @@ void TtcKeyedService::EndSession() {
 }
 
 base::CallbackListSubscription TtcKeyedService::RegisterStateChangedCallback(
-    base::RepeatingCallback<void(TtcState)> callback) {
+    base::RepeatingCallback<void(ServiceState)> callback) {
   return state_changed_callbacks_.Add(std::move(callback));
 }
 

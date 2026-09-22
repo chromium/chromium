@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/states.h"
 
 namespace ttc {
 
@@ -90,24 +91,33 @@ void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
   backend_->ReportPlaybackStatus(sequence_number);
 }
 
+void ConversationImpl::OnApplicationInitialized() {
+  backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
+  session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
+}
+
+void ConversationImpl::OnApplicationClosed() {
+  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
+}
+
+void ConversationImpl::OnApplicationError(ErrorCode error) {
+  // TODO(b/561677132): Show the error in some way.
+  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
+}
+
 void ConversationImpl::OnTransportStateChanged(
     bool connected,
     const std::string& session_id,
     const std::string& error_message) {
-  // TODO(b/561651267): Technically we only need to send this when a session is
-  // established. This method can be called after an already created session
-  // reconnects after a temporary disconnection. Differentiating this state
-  // would require us to cache the session_id, and ideally TtcBackend::Observer
-  // would just expose a separate notification for this.
-  if (connected && !session_id.empty()) {
-    // `backend_` is necessarily alive here since it invoked this
-    // TtcBackend::Observer call.
-    CHECK(backend_);
-    backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
+  // Connecting the transport doesn't make the session usable; that happens
+  // once the backend reports the application is initialized.
+  if (connected) {
+    return;
   }
 
-  session_controller_->OnTransportStateChanged(connected, session_id,
-                                               error_message);
+  // TODO(b/561677132): Show an error in some way.
+
+  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
 }
 
 void ConversationImpl::OnTranscriptions(

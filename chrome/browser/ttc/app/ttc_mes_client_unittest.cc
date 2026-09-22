@@ -31,6 +31,9 @@ namespace {
 
 class FakeObserver : public TtcBackend::Observer {
  public:
+  void OnApplicationInitialized() override {}
+  void OnApplicationClosed() override {}
+  void OnApplicationError(ErrorCode error) override {}
   void OnTransportStateChanged(bool connected,
                                const std::string& session_id,
                                const std::string& error_message) override {}

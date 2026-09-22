@@ -13,6 +13,7 @@
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -124,16 +125,13 @@ TEST_F(TtcKeyedServiceUnitTest, ConversationStartedAndStoppedWithSession) {
   EXPECT_EQ(conversation_stopped_count(), 1);
 }
 
-TEST_F(TtcKeyedServiceUnitTest, ConversationErrorEndsSession) {
+TEST_F(TtcKeyedServiceUnitTest, FinishedSessionIsEnded) {
   service_->StartSession();
   SessionController* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
 
-  // When disconnected (with or without an error message), SessionController
-  // should post a task to end the session.
-  controller->OnTransportStateChanged(
-      /*connected=*/false, /*session_id=*/"",
-      /*error_message=*/"");
+  // Finishing the session should post a task to end it.
+  controller->SetSessionLifecycle(SessionLifecycle::kFinished);
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service_->session_controller() == nullptr; }));

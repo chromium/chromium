@@ -14,11 +14,11 @@ source_set("core") {
     "page_context.h",
     "session_controller.h",
     "session_view.h",
+    "states.h",
     "tool_controller.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
     "ttc_page_context_monitor.h",
-    "ttc_state.h",
   ]
   public_deps = [
     ":features",

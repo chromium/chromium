@@ -132,6 +132,8 @@ source_set("test_support") {
     "browser_test_util.h",
     "mock_optimization_guide_keyed_service.cc",
     "mock_optimization_guide_keyed_service.h",
+    "mock_remote_model_executor.cc",
+    "mock_remote_model_executor.h",
   ]
   deps = [
     ":optimization_guide",

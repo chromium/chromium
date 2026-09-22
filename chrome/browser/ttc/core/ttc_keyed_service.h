@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ttc/core/ttc_state.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -50,7 +50,7 @@ class TtcKeyedService : public KeyedService {
 
   bool IsEnabled() const;
 
-  TtcState GetState() const;
+  ServiceState GetState() const;
 
   void StartSession();
 
@@ -59,7 +59,7 @@ class TtcKeyedService : public KeyedService {
   void EndSession();
 
   base::CallbackListSubscription RegisterStateChangedCallback(
-      base::RepeatingCallback<void(TtcState)> callback);
+      base::RepeatingCallback<void(ServiceState)> callback);
 
   bool is_session_active() const { return session_controller_ != nullptr; }
 
@@ -79,7 +79,7 @@ class TtcKeyedService : public KeyedService {
   ConversationFactory conversation_factory_;
   std::unique_ptr<SessionController> session_controller_;
 
-  base::RepeatingCallbackList<void(TtcState)> state_changed_callbacks_;
+  base::RepeatingCallbackList<void(ServiceState)> state_changed_callbacks_;
 
   base::WeakPtrFactory<TtcKeyedService> weak_ptr_factory_{this};
 };

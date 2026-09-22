@@ -95,8 +95,7 @@ void TtcMesClient::Connect(Observer* observer) {
   OptimizationGuideKeyedService* opt_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   if (!opt_guide) {
-    observer_->OnTransportStateChanged(
-        false, "", "OptimizationGuideKeyedService unavailable");
+    observer_->OnApplicationError(ErrorCode::kOptimizationGuideUnavailable);
     return;
   }
 
@@ -109,8 +108,7 @@ void TtcMesClient::Connect(Observer* observer) {
                           weak_factory_.GetWeakPtr()));
 
   if (!session_) {
-    observer_->OnTransportStateChanged(
-        false, "", "Failed to create RemoteModelExecutionSession");
+    observer_->OnApplicationError(ErrorCode::kExecutionSessionCreationFailed);
     return;
   }
 
@@ -132,7 +130,10 @@ void TtcMesClient::OnConnectionStateChanged(
   is_transport_connected_ =
       (state == optimization_guide::RemoteModelExecutionSession::
                     ConnectionState::kConnected);
-  observer_->OnTransportStateChanged(is_transport_connected_, session_id_, "");
+  if (state == optimization_guide::RemoteModelExecutionSession::
+                   ConnectionState::kDisconnected) {
+    observer_->OnApplicationClosed();
+  }
 }
 
 void TtcMesClient::OnStreamingResult(
@@ -156,7 +157,8 @@ void TtcMesClient::HandleServerFrame(
     const optimization_guide::proto::TtcServerFrame& frame) {
   if (frame.has_session_status()) {
     session_id_ = frame.session_status().server_session_id();
-    observer_->OnTransportStateChanged(true, session_id_, "");
+    // TODO(b/564241442): SessionStatus could be unsuccessful.
+    observer_->OnApplicationInitialized();
   }
 
   if (frame.has_server_content()) {
@@ -202,12 +204,18 @@ void TtcMesClient::HandleServerFrame(
   }
 
   if (frame.has_server_error()) {
-    observer_->OnTransportStateChanged(false, session_id_,
-                                       frame.server_error().error_message());
+    optimization_guide::proto::ServerErrorNotification_ErrorCode
+        server_error_code = frame.server_error().error_code();
+    ErrorCode ttc_error_code = ErrorCode::kUnknown;
+    if (server_error_code <= static_cast<int>(ErrorCode::kMaxServerErrorCode)) {
+      ttc_error_code =
+          static_cast<ErrorCode>(frame.server_error().error_code());
+    }
+    observer_->OnApplicationError(ttc_error_code);
   }
 
   if (frame.has_go_away()) {
-    Close();
+    observer_->OnApplicationClosed();
   }
 }
 

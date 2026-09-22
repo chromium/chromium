@@ -34,22 +34,17 @@ namespace {
 
 class FakeSessionController : public SessionController {
  public:
-  struct ConnectionState {
-    bool connected = false;
-    std::string session_id;
-    std::string error_message;
-  };
-
   explicit FakeSessionController(Profile* profile) : profile_(profile) {}
   ~FakeSessionController() override = default;
 
   // SessionController overrides:
   void GetPageContext(FetchCompleteCallback callback) override {}
   Profile* GetProfile() override { return profile_; }
-  void OnTransportStateChanged(bool connected,
-                               const std::string& session_id,
-                               const std::string& error_message) override {
-    connection_state_ = {connected, session_id, error_message};
+  SessionLifecycle GetSessionLifecycle() const override {
+    return session_lifecycle_;
+  }
+  void SetSessionLifecycle(SessionLifecycle lifecycle) override {
+    session_lifecycle_ = lifecycle;
   }
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response) override {
@@ -69,8 +64,6 @@ class FakeSessionController : public SessionController {
 
   const ToolRequest& last_request() const { return last_request_; }
 
-  const ConnectionState& connection_state() const { return connection_state_; }
-
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
     tool.name = name;
@@ -81,7 +74,7 @@ class FakeSessionController : public SessionController {
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
   std::vector<ToolDefinition> tools_;
-  ConnectionState connection_state_;
+  SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 };
 
 }  // namespace
@@ -184,13 +177,17 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller().is_playing());
 }
 
-TEST_F(ConversationImplTest, ForwardsConnectionStateToSessionController) {
+TEST_F(ConversationImplTest, TransportDisconnectionFinishesSession) {
   ConversationImpl& conversation = CreateConversation();
 
+  // The transport connecting doesn't make the session usable on its own.
   conversation.OnTransportStateChanged(true, "sess_123", "");
-  EXPECT_TRUE(session_controller_.connection_state().connected);
-  EXPECT_EQ(session_controller_.connection_state().session_id, "sess_123");
-  EXPECT_EQ(session_controller_.connection_state().error_message, "");
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kInitializing);
+
+  conversation.OnTransportStateChanged(false, "sess_123", "some error");
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
 }
 
 TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {
@@ -276,7 +273,7 @@ TEST_F(ConversationImplTest, SendTextInputForwardsToBackend) {
   conversation.SendTextInput("hello world");
 }
 
-TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
+TEST_F(ConversationImplTest, ApplicationInitializedSendsToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
@@ -288,19 +285,19 @@ TEST_F(ConversationImplTest, ConnectionSendsToolSetUpdate) {
           sent_tool_names.push_back(tool.name);
         }
       });
-  conversation.OnTransportStateChanged(/*connected=*/true, "sess_123", "");
+  conversation.OnApplicationInitialized();
   EXPECT_THAT(sent_tool_names, testing::ElementsAre("navigate"));
 }
 
-TEST_F(ConversationImplTest, ConnectionWithoutSessionIdSkipsToolSetUpdate) {
+TEST_F(ConversationImplTest, TransportConnectionSkipsToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
 
-  // The backend reports the transport as connected before the server session
-  // is set up, at which point there is no session to send the tool set for.
+  // The transport can connect before the application on the backend is set up,
+  // at which point there is no session to send the tool set for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnTransportStateChanged(/*connected=*/true, "", "");
+  conversation.OnTransportStateChanged(/*connected=*/true, "sess_123", "");
 }
 
 TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
