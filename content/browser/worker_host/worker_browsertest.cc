@@ -17,11 +17,13 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -51,8 +53,10 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/client_cert_identity.h"
@@ -74,6 +78,7 @@
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -81,7 +86,16 @@ namespace content {
 
 namespace {
 
-const char kSameSiteCookie[] = "same-site-cookie=same-site-cookie-value";
+const char kSameSiteLaxCookie[] =
+    "same-site-lax-cookie=same-site-lax-cookie-value";
+const char kSameSiteStrictCookie[] =
+    "same-site-strict-cookie=same-site-strict-cookie-value";
+const char kSameSiteNoneCookie[] =
+    "same-site-none-cookie=same-site-none-cookie-value";
+const char kFirstPartyPartitionedCookie[] =
+    "first-party-partitioned=partitioned-cookie-value";
+const char kCrossSitePartitionedCookie[] =
+    "cross-site-partitioned=partitioned-cookie-value";
 
 // Used by both the embedded test server when a header specified by
 // "/echoheader" is missing, and by the test fixture when there's no cookie
@@ -245,33 +259,26 @@ class WorkerTest : public ContentBrowserTest {
     runner->Run();
   }
 
-  void SetSameSiteCookie(const std::string& host) {
-    StoragePartition* partition = shell()
-                                      ->web_contents()
-                                      ->GetBrowserContext()
-                                      ->GetDefaultStoragePartition();
-    mojo::Remote<network::mojom::CookieManager> cookie_manager;
-    partition->GetNetworkContext()->GetCookieManager(
-        cookie_manager.BindNewPipeAndPassReceiver());
-    net::CookieOptions options;
-    options.set_same_site_cookie_context(
-        net::CookieOptions::SameSiteCookieContext(
-            net::CookieOptions::SameSiteCookieContext::ContextType::
-                SAME_SITE_LAX));
+  void SetSameSiteLaxCookie(std::string_view host) {
+    ASSERT_TRUE(SetCookie(
+        shell()->web_contents()->GetBrowserContext(),
+        ssl_server_.GetURL(host, "/"),
+        base::StrCat({kSameSiteLaxCookie, "; SameSite=Lax; Secure"})));
+  }
+
+  void SetPartitionedCookie(
+      std::string_view host,
+      std::string_view cookie_name_value,
+      net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit) {
     GURL cookie_url = ssl_server_.GetURL(host, "/");
-    std::unique_ptr<net::CanonicalCookie> cookie =
-        net::CanonicalCookie::CreateForTesting(
-            cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
-            base::Time::Now(), net::CookieSourceType::kOther);
-    base::RunLoop run_loop;
-    cookie_manager->SetCanonicalCookie(
-        *cookie, cookie_url, options,
-        base::BindLambdaForTesting(
-            [&](net::CookieAccessResult set_cookie_result) {
-              EXPECT_TRUE(set_cookie_result.status.IsInclude());
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    net::CookiePartitionKey partition_key = net::CookiePartitionKey::FromWire(
+        net::SchemefulSite(cookie_url), ancestor_chain_bit);
+    ASSERT_TRUE(
+        SetCookie(shell()->web_contents()->GetBrowserContext(), cookie_url,
+                  base::StrCat({cookie_name_value,
+                                "; SameSite=None; Secure; Partitioned"}),
+                  net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+                  partition_key));
   }
 
   // Returns the cookie received with the request for the specified path. If the
@@ -981,8 +988,8 @@ IN_PROC_BROWSER_TEST_F(WorkerTest,
   const GURL resource_url(
       ssl_server()->GetURL(cross_site_domain, "/workers/empty.html"));
 
-  // Set a cookie for verfifying which requests send SameSite cookies.
-  SetSameSiteCookie(cross_site_domain);
+  // Set a cookie for verifying which requests send SameSite cookies.
+  SetSameSiteLaxCookie(cross_site_domain);
 
   std::set<GURL> expected_request_urls = {worker_url, script_url, resource_url};
   const url::Origin expected_origin =
@@ -1020,28 +1027,28 @@ IN_PROC_BROWSER_TEST_F(WorkerTest,
 // Test that an "a.test" worker sends "a.test" SameSite cookies, both when
 // requesting the worker script and when fetching other resources.
 IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerSameSiteCookies1) {
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(),
       ssl_server()->GetURL(
           "a.test",
           "/workers/create_worker.html?worker_url=fetch_from_worker.js")));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             EvalJs(shell()->web_contents(),
                    "worker.postMessage({url: '/echoheader?Cookie'}); "
                    "waitForMessage();"));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             GetReceivedCookie(
                 "/workers/create_worker.html?worker_url=fetch_from_worker.js"));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             GetReceivedCookie("/workers/fetch_from_worker.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/echoheader?Cookie"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/echoheader?Cookie"));
 }
 
 // Test that a "b.test" worker does not send "a.test" SameSite cookies when
 // fetching resources.
 IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerSameSiteCookies2) {
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(),
       ssl_server()->GetURL(
@@ -1060,26 +1067,26 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerSameSiteCookies2) {
 // Test that an "a.test" nested worker sends "a.test" SameSite cookies, both
 // when requesting the worker script and when fetching other resources.
 IN_PROC_BROWSER_TEST_F(WorkerTest, NestedWorkerSameSiteCookies) {
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(),
       ssl_server()->GetURL(
           "a.test",
           "/workers/"
           "create_worker.html?worker_url=fetch_from_nested_worker.js")));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             EvalJs(shell()->web_contents(),
                    "worker.postMessage({url: '/echoheader?Cookie'}); "
                    "waitForMessage();"));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             GetReceivedCookie(
                 "/workers/"
                 "create_worker.html?worker_url=fetch_from_nested_worker.js"));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             GetReceivedCookie("/workers/fetch_from_nested_worker.js"));
-  EXPECT_EQ(kSameSiteCookie,
+  EXPECT_EQ(kSameSiteLaxCookie,
             GetReceivedCookie("/workers/fetch_from_worker.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/echoheader?Cookie"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/echoheader?Cookie"));
 }
 
 // Test that an "a.test" iframe in a "b.test" frame does not send same-site
@@ -1087,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, NestedWorkerSameSiteCookies) {
 // "a.test" resources.
 IN_PROC_BROWSER_TEST_F(WorkerTest,
                        CrossOriginIframeWorkerDoesNotSendSameSiteCookies1) {
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
 
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
@@ -1129,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest,
 // cookies when its "b.test" worker requests "a.test" resources.
 IN_PROC_BROWSER_TEST_F(WorkerTest,
                        CrossOriginIframeWorkerDoesNotSendSameSiteCookies2) {
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
 
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("a.test", "/workers/frame_factory.html")));
@@ -1280,15 +1287,15 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerSameDefault) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
   EvalJsResult result =
       EvalJs(shell(), "new SharedWorker('/workers/worker.js');");
   ASSERT_TRUE(result.is_ok());
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/empty.html"));
 }
 
 // Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
@@ -1297,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerSameNone) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
   EvalJsResult result = EvalJs(
@@ -1315,16 +1322,16 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerSameAll) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
   EvalJsResult result = EvalJs(
       shell(),
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
   ASSERT_TRUE(result.is_ok());
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
-  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteLaxCookie, GetReceivedCookie("/workers/empty.html"));
 }
 
 // Test that an "a.test" iframe in a "b.test" frame starting a worker without
@@ -1333,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerCrossDefault) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
   content::TestNavigationObserver navigation_observer(
@@ -1365,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
   content::TestNavigationObserver navigation_observer(
@@ -1398,7 +1405,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
   if (!SupportsSharedWorker()) {
     return;
   }
-  SetSameSiteCookie("a.test");
+  SetSameSiteLaxCookie("a.test");
   ASSERT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
   content::TestNavigationObserver navigation_observer(
@@ -1420,6 +1427,73 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
       subframe_rfh,
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
   ASSERT_FALSE(worker_result.is_ok());
+}
+
+// Test that an "a.test" iframe in a "b.test" frame starting a first-party
+// shared worker via the Storage Access API (`handle.SharedWorker(...)`) sends
+// "a.test"'s unpartitioned SameSite=None and cross-site-partition
+// (AncestorChainBit::kCrossSite) SameSite=None; Partitioned cookies, rather
+// than SameSite=Strict/Lax or first-party-partition
+// (AncestorChainBit::kSameSite) cookies, on worker subresource requests.
+IN_PROC_BROWSER_TEST_F(
+    WorkerTest,
+    StorageAccessSharedWorkerSubresourcesDoNotSendFirstPartyPartitionedCookies) {
+  if (!SupportsSharedWorker()) {
+    GTEST_SKIP() << "SharedWorker not supported";
+  }
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  const GURL a_cookie_url = ssl_server()->GetURL("a.test", "/");
+  ASSERT_TRUE(SetCookie(
+      browser_context, a_cookie_url,
+      base::StrCat({kSameSiteStrictCookie, "; SameSite=Strict; Secure"})));
+  SetSameSiteLaxCookie("a.test");
+  ASSERT_TRUE(SetCookie(
+      browser_context, a_cookie_url,
+      base::StrCat({kSameSiteNoneCookie, "; SameSite=None; Secure"})));
+  SetPartitionedCookie("a.test", kFirstPartyPartitionedCookie,
+                       net::CookiePartitionKey::AncestorChainBit::kSameSite);
+  SetPartitionedCookie("a.test", kCrossSitePartitionedCookie,
+                       net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+
+  const GURL top_url =
+      ssl_server()->GetURL("b.test", "/workers/frame_factory.html");
+  const GURL subframe_url =
+      ssl_server()->GetURL("a.test", "/workers/simple.html");
+  ASSERT_TRUE(NavigateToURL(shell(), top_url));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*expected_number_of_navigations=*/1);
+  const char kSubframeName[] = "foo";
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace("createFrame($1, $2)", subframe_url.spec(), kSubframeName)));
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+  static_cast<PermissionControllerImpl*>(
+      subframe_rfh->GetBrowserContext()->GetPermissionController())
+      ->SetPermissionOverride(
+          /*requesting_origin=*/url::Origin::Create(subframe_url),
+          /*embedding_origin=*/url::Origin::Create(top_url),
+          blink::PermissionType::STORAGE_ACCESS_GRANT,
+          blink::mojom::PermissionStatus::GRANTED, future.GetCallback());
+  ASSERT_EQ(future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
+
+  EXPECT_TRUE(ExecJs(subframe_rfh, R"(
+    (async () => {
+      const handle = await document.requestStorageAccess({SharedWorker: true});
+      handle.SharedWorker('/workers/worker.js');
+    })()
+  )"));
+  const std::string expected_cookies = base::JoinString(
+      {kSameSiteNoneCookie, kCrossSitePartitionedCookie}, "; ");
+  EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/empty.html"));
 }
 
 // Test for the SharedWorker extendedLifetime option.

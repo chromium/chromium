@@ -236,8 +236,12 @@ class CONTENT_EXPORT SharedWorkerHost
     worker_client_security_state_ = std::move(client_security_state);
   }
 
-  // Computes the IsolationInfo used for WebSocket connections from this worker.
-  net::IsolationInfo ComputeIsolationInfoForWebSocket() const;
+  // Computes the IsolationInfo used for network requests from this worker. The
+  // SiteForCookies is nulled out when the worker requires cross-site request
+  // semantics for cookies (e.g. a worker in a third-party context, or one
+  // created with a first-party storage key via the Storage Access API).
+  net::IsolationInfo ComputeIsolationInfoForNetworkRequest(
+      bool is_websocket_request) const;
 
   base::WeakPtr<SharedWorkerHost> AsWeakPtr();
 

@@ -36,6 +36,9 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
@@ -419,6 +422,49 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
   EXPECT_EQ(host->GetWorkerStorageKey().origin(),
             params->isolation_info.frame_origin());
   EXPECT_FALSE(params->isolation_info.nonce().has_value());
+  EXPECT_TRUE(
+      params->isolation_info.site_for_cookies().IsFirstParty(kWorkerUrl));
+  EXPECT_EQ(net::CookiePartitionKey::FromNetworkIsolationKey(
+                params->isolation_info.network_isolation_key(),
+                params->isolation_info.site_for_cookies(),
+                net::SchemefulSite(kWorkerUrl),
+                /*main_frame_navigation=*/false),
+            net::CookiePartitionKey::FromWire(
+                net::SchemefulSite(kWorkerUrl),
+                net::CookiePartitionKey::AncestorChainBit::kSameSite));
+}
+
+TEST_F(SharedWorkerHostTest,
+       CreateNetworkFactoryParamsForSubresources_CrossSiteCookieRestrictions) {
+  // Create a SharedWorkerHost with a first-party storage key and
+  // SharedWorkerSameSiteCookies::kNone (e.g. created in a third-party context
+  // via the Storage Access API or with `sameSiteCookies: 'none'`).
+  base::WeakPtr<SharedWorkerHost> host = CreateHostWithSameSiteCookies(
+      blink::mojom::SharedWorkerSameSiteCookies::kNone);
+
+  // Start the worker.
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+  StartWorker(host.get(), std::move(factory));
+
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      host->CreateNetworkFactoryParamsForSubresources();
+  EXPECT_EQ(host->GetWorkerStorageKey().origin(),
+            params->isolation_info.top_frame_origin());
+  EXPECT_EQ(host->GetWorkerStorageKey().origin(),
+            params->isolation_info.frame_origin());
+  // SiteForCookies must be null so that subresource requests do not derive a
+  // first-party (kSameSite) CHIPS cookie partition key.
+  EXPECT_TRUE(params->isolation_info.site_for_cookies().IsNull());
+  EXPECT_EQ(net::CookiePartitionKey::FromNetworkIsolationKey(
+                params->isolation_info.network_isolation_key(),
+                params->isolation_info.site_for_cookies(),
+                net::SchemefulSite(kWorkerUrl),
+                /*main_frame_navigation=*/false),
+            net::CookiePartitionKey::FromWire(
+                net::SchemefulSite(kWorkerUrl),
+                net::CookiePartitionKey::AncestorChainBit::kCrossSite));
 }
 
 TEST_F(SharedWorkerHostTest, CreateBlobUrlStoreProvider) {
@@ -640,7 +686,9 @@ TEST_F(SharedWorkerHostTest, CreateWebSocketConnector_SameOrigin) {
       network::mojom::ClientSecurityState::New());
 
   base::HistogramTester histogram_tester;
-  net::IsolationInfo isolation_info = host->ComputeIsolationInfoForWebSocket();
+  net::IsolationInfo isolation_info =
+      host->ComputeIsolationInfoForNetworkRequest(
+          /*is_websocket_request=*/true);
   // SiteForCookies should NOT be null for same-origin workers.
   EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
 
@@ -686,7 +734,8 @@ TEST_F(SharedWorkerHostTest,
     base::HistogramTester histogram_tester;
 
     net::IsolationInfo isolation_info =
-        host->ComputeIsolationInfoForWebSocket();
+        host->ComputeIsolationInfoForNetworkRequest(
+            /*is_websocket_request=*/true);
     EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
 
     histogram_tester.ExpectUniqueSample(
@@ -703,7 +752,8 @@ TEST_F(SharedWorkerHostTest,
     base::HistogramTester histogram_tester;
 
     net::IsolationInfo isolation_info =
-        host->ComputeIsolationInfoForWebSocket();
+        host->ComputeIsolationInfoForNetworkRequest(
+            /*is_websocket_request=*/true);
     EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 
     histogram_tester.ExpectUniqueSample(

@@ -535,7 +535,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       url_loader_factory::ContentClientParams(
           GetProcessHost()->GetBrowserContext(),
           /*frame=*/nullptr, GetProcessHost()->GetDeprecatedID(), origin,
-          GetWorkerStorageKey().ToPartialNetIsolationInfo(),
+          ComputeIsolationInfoForNetworkRequest(/*is_websocket_request=*/false),
           ukm::SourceIdObj::FromInt64(ukm_source_id_), bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::
           ForSharedWorker(this));
@@ -561,7 +561,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin_lock,
-          GetWorkerStorageKey().ToPartialNetIsolationInfo(),
+          ComputeIsolationInfoForNetworkRequest(/*is_websocket_request=*/false),
           std::move(coep_reporter), std::move(dip_reporter),
           GetStoragePartitionImpl()
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
@@ -719,35 +719,37 @@ void SharedWorkerHost::CreateWebSocketConnector(
           GlobalRenderFrameHostId(GetProcessHost()->GetID(),
                                   IPC::mojom::kRoutingIdNone),
           WeakDocumentPtr(), storage_key.origin(),
-          ComputeIsolationInfoForWebSocket(),
+          ComputeIsolationInfoForNetworkRequest(/*is_websocket_request=*/true),
           worker_client_security_state_->Clone(),
           net::StorageAccessApiStatus::kNone, network_restrictions_id_,
           GetDevToolsToken()),
       std::move(receiver));
 }
 
-net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForWebSocket() const {
+net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForNetworkRequest(
+    bool is_websocket_request) const {
   const blink::StorageKey& storage_key = GetWorkerStorageKey();
   net::IsolationInfo isolation_info = storage_key.ToPartialNetIsolationInfo();
 
-  base::UmaHistogramBoolean(
-      "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
-      instance_.DoesRequireCrossSiteRequestForCookies());
+  if (is_websocket_request) {
+    base::UmaHistogramBoolean(
+        "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+        instance_.DoesRequireCrossSiteRequestForCookies());
+  }
 
-  if (instance_.DoesRequireCrossSiteRequestForCookies()) {
-    if (base::FeatureList::IsEnabled(
-            features::kRestrictSharedWorkerWebSocketCrossSiteCookies)) {
-      // If the worker requires cross-site cookie semantics (e.g. a worker in a
-      // third-party context or created via the Storage Access API), we must
-      // ensure that the SiteForCookies is null. This prevents the network
-      // service from incorrectly attaching SameSite=Strict/Lax cookies to the
-      // WebSocket handshake.
-      CHECK(!isolation_info.IsEmpty());
-      isolation_info = net::IsolationInfo::Create(
-          isolation_info.request_type(), *isolation_info.top_frame_origin(),
-          *isolation_info.frame_origin(), net::SiteForCookies(),
-          isolation_info.nonce());
-    }
+  if (instance_.DoesRequireCrossSiteRequestForCookies() &&
+      base::FeatureList::IsEnabled(
+          features::kRestrictSharedWorkerWebSocketCrossSiteCookies)) {
+    // If the worker requires cross-site cookie semantics (e.g. a worker in a
+    // third-party context or created via the Storage Access API), we must
+    // ensure that the SiteForCookies is null. This prevents the network service
+    // from incorrectly attaching SameSite=Strict/Lax or first-party CHIPS
+    // cookies to the request.
+    CHECK(!isolation_info.IsEmpty());
+    isolation_info = net::IsolationInfo::Create(
+        isolation_info.request_type(), *isolation_info.top_frame_origin(),
+        *isolation_info.frame_origin(), net::SiteForCookies(),
+        isolation_info.nonce());
   }
   return isolation_info;
 }
