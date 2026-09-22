@@ -828,9 +828,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/328419809): Also flaky on Mac.
 // TODO(crbug.com/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
 // TODO(crbug.com/540031290): Also flaky on Win ASAN.
-// TODO(crbug.com/562441464): Also flaky on Android.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) ||                                                 \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
     (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||                          \
     (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
