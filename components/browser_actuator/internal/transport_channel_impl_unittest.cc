@@ -667,6 +667,53 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+TEST_F(TransportChannelImplTest,
+       StartSessionDownstreamTriggersStartSessionAckUpstream) {
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* downstream =
+      response.mutable_actuator_downstream_message();
+  downstream->set_session_id("session_start_test");
+  downstream->set_sequence_number(42);
+
+  ControlCommand command;
+  command.mutable_start_session();
+
+  auto* typed_payload = downstream->add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_value(
+      command.SerializeAsString());
+
+  fake_client_->Dispatch(response.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  std::string upload_body = network::GetUploadData(pending->request);
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(request.ParseFromString(upload_body));
+
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "session_start_test");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_EQ(upstream.responding_to_sequence_number(), 42);
+
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+
+  ControlCommand command_ack;
+  command_ack.mutable_start_session_ack();
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().value(),
+            command_ack.SerializeAsString());
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().type_url(),
+            "type.googleapis.com/browser_actuator.ControlCommand");
+}
+
 TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ControlCommand command;

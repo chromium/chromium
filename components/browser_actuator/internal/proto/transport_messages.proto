@@ -21,6 +21,7 @@ message ControlCommand {
     CloseChannel close_channel = 1;
     CloseSession close_session = 2;
     StartSession start_session = 3;
+    StartSessionAck start_session_ack = 4;
   }
   // Closes the channel between the client and the server.
   message CloseChannel {}
@@ -30,8 +31,12 @@ message ControlCommand {
   // message.
   message CloseSession {}
 
-  // Starts or initializes a session.
+  // Starts or initializes a session. Currently only supported being sent from
+  // the server to Chrome.
   message StartSession {}
+
+  // Confirmation sent from Chrome to server that a session was started.
+  message StartSessionAck {}
 }
 
 // Identifies the routing destination in the server of an

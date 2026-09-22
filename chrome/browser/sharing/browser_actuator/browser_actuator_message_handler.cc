@@ -9,11 +9,14 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
@@ -41,13 +44,45 @@ void BrowserActuatorMessageHandler::OnMessage(
             browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
                 profile_);
         if (service && service->IsInitialized()) {
-          service->GetOrCreateSession(session_id);
+          browser_actuator::TransportSession* session =
+              service->GetOrCreateSession(session_id);
+          // TODO(crbug.com/538161953): Handle invalid/empty session_id or null
+          // profile (e.g. via UMA metrics).
+          if (session) {
+            for (const auto& typed_payload : bundled_message.typed_payloads()) {
+              std::optional<browser_actuator::PayloadType> payload_type =
+                  browser_actuator::FromDownstreamProtoPayloadType(
+                      typed_payload.payload_type());
+              if (!payload_type.has_value()) {
+                continue;
+              }
+              switch (*payload_type) {
+                case browser_actuator::PayloadType::kControl: {
+                  browser_actuator::ControlCommand command;
+                  if (command.ParseFromString(
+                          typed_payload.proto_payload().value())) {
+                    session->OnMessage(browser_actuator::PayloadType::kControl,
+                                       command);
+                  } else {
+                    DLOG(WARNING)
+                        << "Failed to parse ControlCommand payload"
+                        << " session_id: " << session_id
+                        << " payload_type: " << typed_payload.payload_type();
+                  }
+                  break;
+                }
+                case browser_actuator::PayloadType::kExperimentalTriggering: {
+                  // TODO(crbug.com/538161953): Handle experimental triggering
+                  // messages.
+                  break;
+                }
+                case browser_actuator::PayloadType::kUnspecified:
+                  break;
+              }
+            }
+          }
         }
       }
-      // TODO(crbug.com/538161953): Handle invalid/empty session_id or null
-      // profile (e.g. via UMA metrics).
-      // TODO(crbug.com/538161953): Iterate over
-      // bundled_message.typed_payloads() and dispatch them.
       break;
     }
     case components_sharing_message::SharingMessage::

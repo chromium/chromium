@@ -13,7 +13,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/transport_session.h"
 #include "components/browser_actuator/test_support/mock_browser_actuator_service.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -127,6 +129,22 @@ TEST_F(BrowserActuatorMessageHandlerTest, IgnoresMessageWithNoRequest) {
   EXPECT_EQ(done_future.Get(), nullptr);
 }
 
+class MockTransportSession : public browser_actuator::TransportSession {
+ public:
+  MOCK_METHOD(std::string_view, GetSessionId, (), (const, override));
+  MOCK_METHOD(
+      (base::expected<void, browser_actuator::SendUpstreamMessageError>),
+      SendUpstreamMessage,
+      (browser_actuator::PayloadType payload_type,
+       const google::protobuf::MessageLite& message),
+      (override));
+  MOCK_METHOD(void,
+              OnMessage,
+              (browser_actuator::PayloadType payload_type,
+               const google::protobuf::MessageLite& message),
+              (override));
+};
+
 TEST_F(BrowserActuatorMessageHandlerTest, HandlesActuatorDownstreamMessage) {
   components_sharing_message::SharingMessage message;
   browser_actuator::ActuatorDownstreamMessage* bundled =
@@ -134,6 +152,37 @@ TEST_F(BrowserActuatorMessageHandlerTest, HandlesActuatorDownstreamMessage) {
   bundled->set_session_id("bundled_session_123");
 
   EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"));
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_EQ(done_future.Get(), nullptr);
+}
+
+TEST_F(BrowserActuatorMessageHandlerTest,
+       HandlesActuatorDownstreamMessageWithControlPayload) {
+  components_sharing_message::SharingMessage message;
+  browser_actuator::ActuatorDownstreamMessage* bundled =
+      message.mutable_actuator_downstream_message();
+  bundled->set_session_id("bundled_session_123");
+
+  browser_actuator::ControlCommand command;
+  command.mutable_start_session();
+
+  auto* typed_payload = bundled->add_typed_payloads();
+  typed_payload->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_value(
+      command.SerializeAsString());
+
+  MockTransportSession mock_session;
+  EXPECT_CALL(*mock_service_, GetOrCreateSession("bundled_session_123"))
+      .WillOnce(testing::Return(
+          static_cast<browser_actuator::TransportSession*>(&mock_session)));
+  EXPECT_CALL(mock_session,
+              OnMessage(browser_actuator::PayloadType::kControl, testing::_));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
