@@ -1376,17 +1376,6 @@ gfx::Rect LocationBarView::GetLocalBoundsWithoutEndcaps() const {
 }
 
 void LocationBarView::RefreshBackground() {
-  // When the full WebUI popup is open, the WebUI searchbox completely replaces
-  // the native location bar visually. Suppress the native background and border
-  // so they do not peek out from underneath the WebUI searchbox.
-  if (GetOmniboxController() && GetOmniboxController()->popup_state_manager() &&
-      GetOmniboxController()->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kFull) {
-    SetBackground(nullptr);
-    SchedulePaint();
-    return;
-  }
-
   const double opacity = hover_animation_.GetCurrentValue();
   const bool is_caret_visible =
       GetOmniboxController()->edit_model()->is_caret_visible();
