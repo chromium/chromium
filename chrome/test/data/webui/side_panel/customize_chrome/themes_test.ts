@@ -349,6 +349,11 @@ suite('ThemesTest', () => {
     assertTrue(tooltip.$.tooltip.hidden);
 
     tile.dispatchEvent(new Event('focus'));
+    assertTrue(tooltip.$.tooltip.hidden);
+
+    tile.matches = (selector: string): this is HTMLElement =>
+        selector === ':focus-visible';
+    tile.dispatchEvent(new Event('focus'));
     assertFalse(tooltip.$.tooltip.hidden);
 
     tile.dispatchEvent(new Event('blur'));
