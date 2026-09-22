@@ -451,6 +451,21 @@
   <message name="IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP" desc="The text of the suggestion that opens Gmail to view one time passwords." translateable="false">
     Open Gmail
   </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_TITLE" desc="Title of the bubble prompting the user to opt in to autofilling verification codes from Gmail.">
+    Autofill verification codes from Gmail
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_DESCRIPTION" desc="Body text of the bubble prompting the user to opt in to autofilling verification codes from Gmail. Explains that Google Password Manager can retrieve verification codes from the user's Gmail account and contains a link to learn more in settings.">
+    Google Password Manager can get these codes for you from your Gmail <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You can change your mind and <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK">$2<ex>learn more about this feature in settings</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" desc="Link text within the body of the Gmail OTP opt-in bubble that opens settings to learn more about autofilling verification codes from Gmail.">
+    learn more about this feature in settings
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_TURN_ON_BUTTON" desc="Label for the accept button in the Gmail OTP opt-in bubble that turns on autofilling verification codes from Gmail.">
+    Turn on
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_NO_THANKS_BUTTON" desc="Label for the cancel button in the Gmail OTP opt-in bubble that declines autofilling verification codes from Gmail.">
+    No thanks
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
     Google isn’t your autofill provider
   </message>
