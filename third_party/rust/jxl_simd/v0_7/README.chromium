@@ -1,7 +1,7 @@
 Name: jxl_simd
 URL: https://crates.io/crates/jxl_simd
-Version: 0.7.3
-Revision: 02eff168cd58047034a6a901e692297fcd5c7be0
+Version: 0.7.4
+Revision: 624ce908afcf8eb0dc2585a671535eaabb5d88cc
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: BSD-3-Clause
 License File: //third_party/rust/chromium_crates_io/vendor/jxl_simd-v0_7/LICENSE

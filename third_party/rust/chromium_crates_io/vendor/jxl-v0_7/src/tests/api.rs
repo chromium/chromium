@@ -11,20 +11,19 @@ use crate::api::{
 };
 use crate::error::Error;
 use crate::image::{Image, JxlOutputBuffer, Rect};
-use crate::tests::decode::{compare_frames, decode, decode_internal, scan_frames_with_decoder};
+use crate::tests::decode::{
+    DecodeParams, compare_frames, decode, decode_internal, scan_frames_with_decoder,
+};
 
 #[test]
 fn decode_small_chunks() {
     arbtest::arbtest(|u| {
         decode_internal(
             &std::fs::read("resources/test/green_queen_vardct_e3.jxl").unwrap(),
-            u.arbitrary::<u8>().unwrap() as usize + 1,
-            false,
-            false,
-            None,
-            None,
-            None,
-            false,
+            DecodeParams {
+                chunk_size: u.arbitrary::<u8>().unwrap() as usize + 1,
+                ..Default::default()
+            },
         )
         .unwrap();
         Ok(())
@@ -850,7 +849,13 @@ fn test_fuzzer_smallbuffer_overflow() {
     let data = include_bytes!("../../tests/testdata/fuzzer_smallbuffer_overflow.jxl");
 
     let result = panic::catch_unwind(|| {
-        let _ = decode_internal(data, 1024, false, false, None, None, None, false);
+        let _ = decode_internal(
+            data,
+            DecodeParams {
+                chunk_size: 1024,
+                ..Default::default()
+            },
+        );
     });
 
     if let Err(e) = result {
@@ -874,7 +879,35 @@ fn test_fuzzer_smallbuffer_overflow() {
 fn flush_without_partial_render_support() {
     let data = std::fs::read("resources/test/squeeze_empty_residual.jxl").unwrap();
     for chunk_size in 1..=16 {
-        decode_internal(&data, chunk_size, false, true, None, None, None, false).unwrap();
+        decode_internal(
+            &data,
+            DecodeParams {
+                chunk_size,
+                do_flush: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    }
+}
+
+/// Regression test for https://issues.chromium.org/issues/562761172: flushing
+/// a truncated image used to panic when a smooth-squeeze upsample step read a
+/// tile whose channel had not been decoded yet.
+#[test]
+fn flush_truncated_squeeze_missing_tiles() {
+    let data = include_bytes!("../../tests/testdata/truncated_squeeze_flush_missing_tiles.jxl");
+    for chunk_size in [64, 256, usize::MAX] {
+        decode_internal(
+            data,
+            DecodeParams {
+                chunk_size,
+                do_flush: true,
+                allow_partial: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
     }
 }
 
@@ -1305,10 +1338,15 @@ fn decode_test_strategic_solid_blue_grid_boundary() {
 #[test]
 fn test_fuzzer_vardct_grayscale_unused_channel() {
     let data = include_bytes!("../../tests/testdata/vardct_grayscale_unused_channel.jxl");
-    let (_, frames) =
-        decode_internal(data, usize::MAX, false, false, None, None, None, false).unwrap();
-    let (_, simple_frames) =
-        decode_internal(data, usize::MAX, true, false, None, None, None, false).unwrap();
+    let (_, frames) = decode_internal(data, DecodeParams::default()).unwrap();
+    let (_, simple_frames) = decode_internal(
+        data,
+        DecodeParams {
+            use_simple_pipeline: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
     assert_eq!(frames.len(), 1);
     assert_eq!(frames[0].len(), 1);
     assert_eq!(frames[0][0].size(), (1, 1));
@@ -1319,15 +1357,30 @@ fn test_fuzzer_vardct_grayscale_unused_channel() {
         &simple_frames[0],
     );
     // Streaming input with flushing exercises the low-memory pipeline's partial renders.
-    decode_internal(data, 1, false, true, None, None, None, false).unwrap();
+    decode_internal(
+        data,
+        DecodeParams {
+            chunk_size: 1,
+            do_flush: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
 }
 
 /// Regression test: a context map with cluster index 255. This shouldn't panic.
 #[test]
 fn test_fuzzer_context_map_num_histograms_overflow() {
     let data = include_bytes!("../../tests/testdata/context_map_num_histograms_overflow.jxl");
-    let _ = decode_internal(data, usize::MAX, false, false, None, None, None, false);
-    let _ = decode_internal(data, 1024, false, true, None, None, None, false);
+    let _ = decode_internal(data, DecodeParams::default());
+    let _ = decode_internal(
+        data,
+        DecodeParams {
+            chunk_size: 1024,
+            do_flush: true,
+            ..Default::default()
+        },
+    );
 }
 
 /// Regression test: two nested palette transforms, where the inner one has no colors and no
@@ -1338,7 +1391,7 @@ fn test_fuzzer_context_map_num_histograms_overflow() {
 #[test]
 fn test_fuzzer_modular_palette_empty_meta_channel() {
     let data = include_bytes!("../../tests/testdata/modular_palette_empty_meta_channel.jxl");
-    assert!(decode_internal(data, usize::MAX, false, false, None, None, None, false).is_err());
+    assert!(decode_internal(data, DecodeParams::default()).is_err());
 }
 
 /// Regression test: a frame with patches that declares `upsampling = 4` and `ec_upsampling = [4]`
@@ -1351,7 +1404,7 @@ fn test_fuzzer_modular_palette_empty_meta_channel() {
 #[test]
 fn test_fuzzer_patches_ec_upsampling_dim_shift() {
     let data = include_bytes!("../../tests/testdata/patches_ec_upsampling_dim_shift.jxl");
-    let result = decode_internal(data, usize::MAX, false, false, None, None, None, false);
+    let result = decode_internal(data, DecodeParams::default());
     assert!(
         matches!(result, Err(Error::PatchesUnsupportedMixedUpsampling(..))),
         "expected a mixed upsampling error, got {:?}",
@@ -1369,13 +1422,20 @@ fn test_fuzzer_patches_ec_upsampling_dim_shift() {
 #[test]
 fn test_fuzzer_modular_rle_fast_path_without_lz77() {
     let data = include_bytes!("../../tests/testdata/modular_rle_fast_path_without_lz77.jxl");
-    let (_, frames) =
-        decode_internal(data, usize::MAX, false, false, None, None, None, false).unwrap();
+    let (_, frames) = decode_internal(data, DecodeParams::default()).unwrap();
     assert_eq!(frames.len(), 1);
     // A single 8x8 frame, with its three colour channels interleaved.
     assert_eq!(frames[0][0].size(), (3 * 8, 8));
     // Streaming input with flushing exercises the low-memory pipeline as well.
-    decode_internal(data, 1, false, true, None, None, None, false).unwrap();
+    decode_internal(
+        data,
+        DecodeParams {
+            chunk_size: 1,
+            do_flush: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
 }
 
 /// The other direction: a stream that is genuinely RLE-coded (LZ77 enabled, every copy at
@@ -1384,11 +1444,9 @@ fn test_fuzzer_modular_rle_fast_path_without_lz77() {
 #[test]
 fn test_modular_rle_fast_path() {
     let data = include_bytes!("../../tests/testdata/modular_rle_fast_path.jxl");
-    let (_, frames) =
-        decode_internal(data, usize::MAX, false, false, None, None, None, false).unwrap();
+    let (_, frames) = decode_internal(data, DecodeParams::default()).unwrap();
     let no_lz77 = include_bytes!("../../tests/testdata/modular_rle_fast_path_without_lz77.jxl");
-    let (_, no_lz77_frames) =
-        decode_internal(no_lz77, usize::MAX, false, false, None, None, None, false).unwrap();
+    let (_, no_lz77_frames) = decode_internal(no_lz77, DecodeParams::default()).unwrap();
     compare_frames(
         Path::new("modular_rle_fast_path.jxl"),
         0,

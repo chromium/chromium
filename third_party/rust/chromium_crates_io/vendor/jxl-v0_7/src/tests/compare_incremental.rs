@@ -6,9 +6,11 @@
 use std::path::Path;
 
 use crate::image::Image;
-use crate::tests::decode::{compare_frames, compute_mse, decode, decode_internal};
+use crate::tests::decode::{
+    DecodeParams, compare_frames, compute_tile_quartiles, decode, decode_internal, image_size,
+};
 
-pub fn run(path: &Path, expected_checkpoints: &[(usize, f32)]) {
+pub fn run(path: &Path, expected_checkpoints: &[(usize, [f32; 4])]) {
     let file = std::fs::read(path).unwrap();
     // One-shot decode
     let (_, one_shot_frames) = decode(&file).unwrap();
@@ -16,6 +18,7 @@ pub fn run(path: &Path, expected_checkpoints: &[(usize, f32)]) {
         return;
     }
 
+    let size = image_size(&file).unwrap();
     let mut actual_checkpoints = Vec::new();
 
     let mut flush_callback = |consumed_bytes: usize,
@@ -26,8 +29,8 @@ pub fn run(path: &Path, expected_checkpoints: &[(usize, f32)]) {
             consumed_bytes <= expected_bytes && consumed_bytes + 123 > expected_bytes
         });
         if is_checkpoint {
-            let mse = compute_mse(buffers, &one_shot_frames[f_idx]);
-            actual_checkpoints.push((consumed_bytes, mse));
+            let quartiles = compute_tile_quartiles(buffers, &one_shot_frames[f_idx], size);
+            actual_checkpoints.push((consumed_bytes, quartiles));
         }
         Ok(())
     };
@@ -35,45 +38,39 @@ pub fn run(path: &Path, expected_checkpoints: &[(usize, f32)]) {
     // Incremental decode with progressive callback
     let (_, frames) = decode_internal(
         &file,
-        123,
-        false,
-        true,
-        None,
-        Some(&mut flush_callback),
-        None,
-        false,
+        DecodeParams {
+            chunk_size: 123,
+            do_flush: true,
+            flush_callback: Some(&mut flush_callback),
+            ..Default::default()
+        },
     )
     .unwrap();
 
     // Record the final state (fully decoded frame has MSE 0.0)
-    actual_checkpoints.push((file.len(), 0.0));
+    actual_checkpoints.push((file.len(), [0.0, 0.0, 0.0, 0.0]));
 
-    // Validate actual MSE against expected checkpoints
-    for &(expected_bytes, max_mse) in expected_checkpoints {
+    for &(expected_bytes, max_quartiles) in expected_checkpoints {
         let latest_flush = actual_checkpoints
             .iter()
             .rfind(|&&(bytes, _)| bytes <= expected_bytes);
 
-        if let Some(&(actual_bytes, actual_mse)) = latest_flush {
-            assert!(
-                actual_mse <= max_mse * 1.02 + 1e-6,
-                "Progressive decoding test failed for {:?}: at {} bytes, expected MSE <= {}, but latest flush at {} bytes achieved MSE {} (actual PSNR: {:.2} dB, expected: {:.2} dB)",
-                path,
-                expected_bytes,
-                max_mse * 1.02 + 1e-6,
-                actual_bytes,
-                actual_mse,
-                if actual_mse > 0.0 {
-                    -10.0 * actual_mse.log10()
-                } else {
-                    99.99
-                },
-                if (max_mse * 1.02 + 1e-6) > 0.0 {
-                    -10.0 * (max_mse * 1.02 + 1e-6).log10()
-                } else {
-                    99.99
-                }
-            );
+        if let Some(&(actual_bytes, actual_quartiles)) = latest_flush {
+            for q_idx in 0..4 {
+                let actual_q = actual_quartiles[q_idx];
+                let expected_q = max_quartiles[q_idx];
+                let bound = expected_q * 1.02 + 1e-6;
+                assert!(
+                    actual_q <= bound,
+                    "Progressive decoding test failed for {:?}: at {} bytes (latest flush {} bytes), quartile {} expected <= {}, but achieved {}",
+                    path,
+                    expected_bytes,
+                    actual_bytes,
+                    q_idx + 1,
+                    bound,
+                    actual_q,
+                );
+            }
         } else {
             panic!(
                 "Progressive decoding test failed for {:?}: no flush occurred at or before {} bytes (total file length: {} bytes)",

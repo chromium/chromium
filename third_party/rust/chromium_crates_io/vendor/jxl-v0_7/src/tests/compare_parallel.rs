@@ -4,81 +4,14 @@
 // license that can be found in the LICENSE file.
 
 use std::path::Path;
-#[cfg(not(feature = "shuttle"))]
-use std::sync::Mutex;
-#[cfg(not(feature = "shuttle"))]
-use std::sync::atomic::{AtomicUsize, Ordering};
-#[cfg(not(feature = "shuttle"))]
-use std::thread;
 
-#[cfg(feature = "shuttle")]
-use shuttle::sync::Mutex;
-#[cfg(feature = "shuttle")]
-use shuttle::sync::atomic::{AtomicUsize, Ordering};
 #[cfg(feature = "shuttle")]
 use shuttle::thread;
 
-use crate::api::JxlParallelRunner;
 use crate::error::Error;
 use crate::image::Image;
-use crate::tests::decode::{compare_frames, decode_internal};
-
-pub struct TestParallelRunner {
-    max_threads: usize,
-}
-
-impl JxlParallelRunner for TestParallelRunner {
-    fn run(&mut self, num: usize, fun: &crate::api::JxlParallelRunnerFun<'_>) -> Result<(), Error> {
-        if num <= 1 || self.max_threads <= 1 {
-            for i in 0..num {
-                fun(i)?;
-            }
-            return Ok(());
-        }
-        let num_threads = self.max_threads.min(num);
-        let next_task = AtomicUsize::new(0);
-        let error = Mutex::new(None);
-
-        thread::scope(|s| {
-            let mut handles = Vec::with_capacity(num_threads);
-            for _ in 0..num_threads {
-                handles.push(s.spawn(|| {
-                    loop {
-                        if error.lock().unwrap().is_some() {
-                            break;
-                        }
-                        let task = next_task.fetch_add(1, Ordering::Relaxed);
-                        if task >= num {
-                            break;
-                        }
-                        if let Err(e) = fun(task) {
-                            let mut err = error.lock().unwrap();
-                            if err.is_none() {
-                                *err = Some(e);
-                            }
-                            break;
-                        }
-                    }
-                }));
-            }
-            for handle in handles {
-                if let Err(e) = handle.join() {
-                    std::panic::resume_unwind(e);
-                }
-            }
-        });
-
-        if let Some(err) = error.into_inner().unwrap() {
-            Err(err)
-        } else {
-            Ok(())
-        }
-    }
-
-    fn num_threads(&self) -> usize {
-        self.max_threads
-    }
-}
+use crate::tests::decode::{DecodeParams, compare_frames, decode_internal};
+use crate::tests::parallel_runner::TestParallelRunner;
 
 fn clone_images(imgs: &[Image<f32>]) -> Vec<Image<f32>> {
     imgs.iter()
@@ -96,8 +29,7 @@ pub fn run_oneshot(path: &Path) {
     let file = std::fs::read(path).unwrap();
 
     // Oneshot sequential decode
-    let (_, seq_frames) =
-        decode_internal(&file, usize::MAX, false, false, None, None, None, false).unwrap();
+    let (_, seq_frames) = decode_internal(&file, DecodeParams::default()).unwrap();
 
     if seq_frames.is_empty() {
         return;
@@ -114,13 +46,10 @@ pub fn run_oneshot(path: &Path) {
     };
     let (_, par_frames) = decode_internal(
         &file,
-        usize::MAX,
-        false,
-        false,
-        None,
-        None,
-        Some(&mut runner),
-        false,
+        DecodeParams {
+            parallel_runner: Some(&mut runner),
+            ..Default::default()
+        },
     )
     .unwrap();
 
@@ -151,13 +80,12 @@ pub fn run_progressive(path: &Path) {
     // Sequential progressive decode
     let _ = decode_internal(
         &file,
-        chunk_size,
-        false,
-        true,
-        None,
-        Some(&mut seq_callback),
-        None,
-        false,
+        DecodeParams {
+            chunk_size,
+            do_flush: true,
+            flush_callback: Some(&mut seq_callback),
+            ..Default::default()
+        },
     );
 
     let mut par_flushes: Vec<(usize, usize, Vec<Image<f32>>)> = Vec::new();
@@ -178,13 +106,13 @@ pub fn run_progressive(path: &Path) {
     };
     let _ = decode_internal(
         &file,
-        chunk_size,
-        false,
-        true,
-        None,
-        Some(&mut par_callback),
-        Some(&mut runner),
-        false,
+        DecodeParams {
+            chunk_size,
+            do_flush: true,
+            flush_callback: Some(&mut par_callback),
+            parallel_runner: Some(&mut runner),
+            ..Default::default()
+        },
     );
 
     assert_eq!(

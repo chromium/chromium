@@ -91,10 +91,19 @@ fn upsample_lf_group(
         let lf_width = lf_img.size().0.shrc(hs);
         let lf_height = lf_img.size().1.shrc(vs);
 
-        let start_x = lf_x0.saturating_sub(2);
         let lf_x1 = (lf_x0 + lf_group_dim_x).min(lf_width);
-        let end_x = (lf_x1 + 2).min(lf_width);
-        let copy_width = end_x - start_x;
+        let num_blocks = lf_x1 - lf_x0;
+
+        let lfg_dim_x = group_dim >> hs;
+        let lfg_dim_y = group_dim >> vs;
+        let to_storage_x = |x: usize| (x / lfg_dim_x) * group_dim + (x % lfg_dim_x);
+        let to_storage_y = |y: usize| (y / lfg_dim_y) * group_dim + (y % lfg_dim_y);
+
+        let phys_x0 = to_storage_x(lf_x0);
+        let ix0 = to_storage_x(mirror(lf_x0 as isize - 2, lf_width));
+        let ix1 = to_storage_x(mirror(lf_x0 as isize - 1, lf_width));
+        let ix2 = to_storage_x(mirror(lf_x1 as isize, lf_width));
+        let ix3 = to_storage_x(mirror(lf_x1 as isize + 1, lf_width));
 
         for y in 0..lf_group_dim_y {
             let cy = lf_y0 + y;
@@ -102,22 +111,14 @@ fn upsample_lf_group(
             for dy in -2..=2 {
                 let iy = cy as isize + dy;
                 let iy = mirror(iy, lf_height);
+                let row = lf_img.row(to_storage_y(iy));
 
                 let storage = &mut input_rows_storage[(dy + 2) as usize];
-
-                let save_start = if start_x == lf_x0 { 2 } else { 0 };
-                let save_end = save_start + copy_width;
-
-                storage[save_start..save_end].copy_from_slice(&lf_img.row(iy)[start_x..end_x]);
-
-                if start_x == lf_x0 {
-                    storage[1] = storage[2];
-                    storage[0] = storage[if copy_width >= 2 { 3 } else { 2 }];
-                }
-                if end_x == lf_x1 {
-                    storage[save_end] = storage[save_end - 1];
-                    storage[save_end + 1] = storage[save_end.saturating_sub(2)];
-                }
+                storage[0] = row[ix0];
+                storage[1] = row[ix1];
+                storage[2..2 + num_blocks].copy_from_slice(&row[phys_x0..phys_x0 + num_blocks]);
+                storage[2 + num_blocks] = row[ix2];
+                storage[2 + num_blocks + 1] = row[ix3];
             }
 
             let input_rows_refs = input_rows_storage.iter().map(|x| &x[..]).collect();
@@ -130,7 +131,7 @@ fn upsample_lf_group(
 
                 upsample.process_row_chunk(
                     (0, 0),
-                    lf_x1 - lf_x0,
+                    num_blocks,
                     &input_channels,
                     &mut output_channels,
                     Some(state.as_mut()),

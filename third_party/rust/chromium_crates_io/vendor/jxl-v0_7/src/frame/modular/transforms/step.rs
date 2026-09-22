@@ -404,15 +404,19 @@ enum TileGuard<'a> {
 }
 
 impl<'a> TileGuard<'a> {
-    fn as_rect<T: ImageDataType>(&self) -> ImageRect<'_, T> {
+    /// Returns `None` if the tile has not been decoded yet (no buffer).
+    /// Not-yet-decoded tiles are semantically all-zero.
+    fn as_rect<T: ImageDataType>(&self) -> Option<ImageRect<'_, T>> {
         match self {
-            TileGuard::Channel(g) => ImageRect::<T>::from_raw(g.as_ref().unwrap().data.as_rect()),
-            TileGuard::Border(g) => ImageRect::<T>::from_raw(g.as_ref().unwrap().as_rect()),
+            TileGuard::Channel(g) => g
+                .as_ref()
+                .map(|c| ImageRect::<T>::from_raw(c.data.as_rect())),
+            TileGuard::Border(g) => g.as_ref().map(|b| ImageRect::<T>::from_raw(b.as_rect())),
         }
     }
 
-    fn row<T: ImageDataType>(&self, row: usize) -> &[T] {
-        self.as_rect::<T>().row(row)
+    fn row<T: ImageDataType>(&self, row: usize) -> Option<&[T]> {
+        self.as_rect::<T>().map(|r| r.row(row))
     }
 }
 
@@ -448,16 +452,21 @@ impl<'a> TiledChannelView<'a> {
         dest: &mut [i32],
     ) {
         let img = self.tiles[dy * 3 + dx].as_ref().unwrap();
+        let Some(rect) = img.as_rect::<T>() else {
+            // Not-yet-decoded tiles are semantically all-zero.
+            dest.fill(0);
+            return;
+        };
         let src = match (dy, dx) {
-            (1, 1) => &img.row::<T>(ly)[src_range],
-            (0, _) => &img.row::<T>(Self::top_border_row(ly, top_tile_h))[src_range],
-            (2, _) => &img.row::<T>(Self::bottom_border_row(ly))[src_range],
+            (1, 1) => &rect.row(ly)[src_range],
+            (0, _) => &rect.row(Self::top_border_row(ly, top_tile_h))[src_range],
+            (2, _) => &rect.row(Self::bottom_border_row(ly))[src_range],
             (1, 0) => {
                 let offset_start = 4 - (tile_w - src_range.start);
                 let offset_end = 4 - (tile_w - src_range.end);
-                &img.row::<T>(ly)[offset_start..offset_end]
+                &rect.row(ly)[offset_start..offset_end]
             }
-            (1, 2) => &img.row::<T>(ly)[src_range],
+            (1, 2) => &rect.row(ly)[src_range],
             _ => unreachable!(),
         };
         for (d, &s) in dest.iter_mut().zip(src) {
@@ -491,7 +500,11 @@ impl<'a> TiledChannelView<'a> {
         };
 
         let Some(grid_dim) = self.grid_dim else {
-            let row = self.tiles[4].as_ref().unwrap().row::<T>(clamped_y);
+            let Some(row) = self.tiles[4].as_ref().unwrap().row::<T>(clamped_y) else {
+                // Not-yet-decoded tiles are semantically all-zero.
+                row_buf.fill(0);
+                return;
+            };
 
             let left_clamp = (2 - xoff as isize).max(0) as usize;
             let right_clamp_start = (w as isize + 2 - xoff as isize).min(max_len as isize) as usize;
@@ -571,15 +584,21 @@ impl<'a> TiledChannelView<'a> {
 
         if left_clamp > 0 {
             let left_val = match dy {
-                1 => self.tiles[4].as_ref().unwrap().row::<T>(ly)[0],
+                1 => self.tiles[4]
+                    .as_ref()
+                    .unwrap()
+                    .row::<T>(ly)
+                    .map_or_else(T::default, |r| r[0]),
                 0 => self.tiles[1]
                     .as_ref()
                     .unwrap()
-                    .row::<T>(Self::top_border_row(ly, top_tile_h))[0],
+                    .row::<T>(Self::top_border_row(ly, top_tile_h))
+                    .map_or_else(T::default, |r| r[0]),
                 2 => self.tiles[7]
                     .as_ref()
                     .unwrap()
-                    .row::<T>(Self::bottom_border_row(ly))[0],
+                    .row::<T>(Self::bottom_border_row(ly))
+                    .map_or_else(T::default, |r| r[0]),
                 _ => T::default(),
             };
             row_buf[..left_clamp].fill(left_val.into());
@@ -590,16 +609,26 @@ impl<'a> TiledChannelView<'a> {
             let lx_right = (w - 1) % grid_w;
             let dx = (gx_right as isize - gx_center as isize + 1) as usize;
             let right_val = match (dy, dx) {
-                (1, 1) => self.tiles[4].as_ref().unwrap().row::<T>(ly)[lx_right],
-                (1, 2) => self.tiles[5].as_ref().unwrap().row::<T>(ly)[3],
+                (1, 1) => self.tiles[4]
+                    .as_ref()
+                    .unwrap()
+                    .row::<T>(ly)
+                    .map_or_else(T::default, |r| r[lx_right]),
+                (1, 2) => self.tiles[5]
+                    .as_ref()
+                    .unwrap()
+                    .row::<T>(ly)
+                    .map_or_else(T::default, |r| r[3]),
                 (0, 1 | 2) => self.tiles[dx]
                     .as_ref()
                     .unwrap()
-                    .row::<T>(Self::top_border_row(ly, top_tile_h))[lx_right],
+                    .row::<T>(Self::top_border_row(ly, top_tile_h))
+                    .map_or_else(T::default, |r| r[lx_right]),
                 (2, 1 | 2) => self.tiles[6 + dx]
                     .as_ref()
                     .unwrap()
-                    .row::<T>(Self::bottom_border_row(ly))[lx_right],
+                    .row::<T>(Self::bottom_border_row(ly))
+                    .map_or_else(T::default, |r| r[lx_right]),
                 _ => T::default(),
             };
             row_buf[max_len - right_clamp..max_len].fill(right_val.into());
