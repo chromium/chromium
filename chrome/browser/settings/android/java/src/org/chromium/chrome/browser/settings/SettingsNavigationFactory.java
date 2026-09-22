@@ -45,12 +45,12 @@ public final class SettingsNavigationFactory {
             return sInstanceForTesting;
         }
 
-        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+        // SettingsInTabUrlNav requires SettingsInTab to be enabled (which may be disabled by
+        // @DisableFeatures in tests).
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                || !SettingsInTab.isFeatureEnabled()) {
             return sInstance;
         }
-
-        // SettingsInTabUrlNav implies that SettingsInTab is enabled.
-        assert SettingsInTab.isFeatureEnabled();
 
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {

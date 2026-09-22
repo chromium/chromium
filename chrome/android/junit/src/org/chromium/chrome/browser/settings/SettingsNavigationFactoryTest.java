@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.ui.base.TestActivity;
@@ -79,5 +83,15 @@ public class SettingsNavigationFactoryTest {
 
         verify(mSettingsNavigation, never())
                 .startSettings(mActivity, SettingsFragment.CLEAR_BROWSING_DATA);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testCreateSettingsNavigation_urlNavEnabledWithSettingsInTabDisabled() {
+        SettingsNavigationFactory.setInstanceForTesting(null);
+        assertTrue(
+                SettingsNavigationFactory.createSettingsNavigation(mActivity)
+                        instanceof SettingsNavigationImpl);
     }
 }
