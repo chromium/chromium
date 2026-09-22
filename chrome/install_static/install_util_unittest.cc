@@ -8,6 +8,7 @@
 
 #include <guiddef.h>
 
+#include <array>
 #include <tuple>
 
 #include "base/compiler_specific.h"
@@ -400,92 +401,96 @@ TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kInstallDirs[] = {
+  static constexpr auto kInstallDirs = std::to_array<const wchar_t*>({
       L"Google\\Chrome",
       L"Google\\Chrome Beta",
       L"Google\\Chrome Dev",
       L"Google\\Chrome SxS",
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kInstallDirs[] = {
+  static constexpr auto kInstallDirs = std::to_array<const wchar_t*>({
       L"Google\\Chrome for Testing",
-  };
+  });
 #else
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kInstallDirs[] = {
+  static constexpr auto kInstallDirs = std::to_array<const wchar_t*>({
       L"Chromium",
-  };
+  });
 #endif
   static_assert(std::size(kInstallDirs) == NUM_INSTALL_MODES,
                 "kInstallDirs out of date.");
   EXPECT_THAT(GetChromeInstallSubDirectory(),
-              StrCaseEq(UNSAFE_TODO(kInstallDirs[std::get<0>(GetParam())])));
+              StrCaseEq(kInstallDirs[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetRegistryPath) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kRegistryPaths[] = {
+  static constexpr auto kRegistryPaths = std::to_array<const wchar_t*>({
       L"Software\\Google\\Chrome",
       L"Software\\Google\\Chrome Beta",
       L"Software\\Google\\Chrome Dev",
       L"Software\\Google\\Chrome SxS",
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kRegistryPaths[] = {
+  static constexpr auto kRegistryPaths = std::to_array<const wchar_t*>({
       L"Software\\Google\\Chrome for Testing",
-  };
+  });
 #else
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kRegistryPaths[] = {
+  static constexpr auto kRegistryPaths = std::to_array<const wchar_t*>({
       L"Software\\Chromium",
-  };
+  });
 #endif
   static_assert(std::size(kRegistryPaths) == NUM_INSTALL_MODES,
                 "kRegistryPaths out of date.");
   EXPECT_THAT(GetRegistryPath(),
-              StrCaseEq(UNSAFE_TODO(kRegistryPaths[std::get<0>(GetParam())])));
+              StrCaseEq(kRegistryPaths[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The uninstall registry path strings for the brand's install modes; parallel
   // to kInstallModes.
-  static constexpr const wchar_t* kUninstallRegistryPaths[] = {
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome",
+  static constexpr auto kUninstallRegistryPaths = std::to_array<
+      const wchar_t*>({
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google "
+      L"Chrome",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
       L"Google Chrome Beta",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
       L"Google Chrome Dev",
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
       L"Google Chrome SxS",
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kUninstallRegistryPaths[] = {
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome "
-      L"for Testing",
-  };
+  static constexpr auto kUninstallRegistryPaths =
+      std::to_array<const wchar_t*>({
+          L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google "
+          L"Chrome "
+          L"for Testing",
+      });
 #else
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr const wchar_t* kUninstallRegistryPaths[] = {
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Chromium",
-  };
+  static constexpr auto kUninstallRegistryPaths =
+      std::to_array<const wchar_t*>({
+          L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Chromium",
+      });
 #endif
   static_assert(std::size(kUninstallRegistryPaths) == NUM_INSTALL_MODES,
                 "kUninstallRegistryPaths out of date.");
-  EXPECT_THAT(
-      GetUninstallRegistryPath(),
-      StrCaseEq(UNSAFE_TODO(kUninstallRegistryPaths[std::get<0>(GetParam())])));
+  EXPECT_THAT(GetUninstallRegistryPath(),
+              StrCaseEq(kUninstallRegistryPaths[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetAppGuid) {
@@ -495,16 +500,15 @@ TEST_P(InstallStaticUtilTest, GetAppGuid) {
   EXPECT_STREQ(L"", GetAppGuid());
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The app guids for the brand's install modes; parallel to kInstallModes.
-  static constexpr const wchar_t* kAppGuids[] = {
+  static constexpr auto kAppGuids = std::to_array<const wchar_t*>({
       L"{8A69D345-D564-463c-AFF1-A69D9E530F96}",  // Google Chrome.
       L"{8237E44A-0054-442C-B6B6-EA0509993955}",  // Google Chrome Beta.
       L"{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}",  // Google Chrome Dev.
       L"{4EA16AC7-FD5A-47C3-875B-DBF4A2008C20}",  // Google Chrome SxS (Canary).
-  };
+  });
   static_assert(std::size(kAppGuids) == NUM_INSTALL_MODES,
                 "kAppGuids out of date.");
-  EXPECT_THAT(GetAppGuid(),
-              StrCaseEq(UNSAFE_TODO(kAppGuids[std::get<0>(GetParam())])));
+  EXPECT_THAT(GetAppGuid(), StrCaseEq(kAppGuids[std::get<0>(GetParam())]));
 #else
   FAIL() << "Not implemented.";
 #endif
@@ -513,34 +517,33 @@ TEST_P(InstallStaticUtilTest, GetAppGuid) {
 TEST_P(InstallStaticUtilTest, GetBaseAppId) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The base app ids for the brand's install modes; parallel to kInstallModes.
-  static constexpr const wchar_t* kBaseAppIds[] = {
+  static constexpr auto kBaseAppIds = std::to_array<const wchar_t*>({
       L"Chrome",
       L"ChromeBeta",
       L"ChromeDev",
       L"ChromeCanary",
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The base app ids for the brand's install modes; parallel to kInstallModes.
-  static constexpr const wchar_t* kBaseAppIds[] = {
+  static constexpr auto kBaseAppIds = std::to_array<const wchar_t*>({
       L"ChromeForTesting",
-  };
+  });
 #else
   // The base app ids for the brand's install modes; parallel to kInstallModes.
-  static constexpr const wchar_t* kBaseAppIds[] = {
+  static constexpr auto kBaseAppIds = std::to_array<const wchar_t*>({
       L"Chromium",
-  };
+  });
 #endif
   static_assert(std::size(kBaseAppIds) == NUM_INSTALL_MODES,
                 "kBaseAppIds out of date.");
-  EXPECT_THAT(GetBaseAppId(),
-              StrCaseEq(UNSAFE_TODO(kBaseAppIds[std::get<0>(GetParam())])));
+  EXPECT_THAT(GetBaseAppId(), StrCaseEq(kBaseAppIds[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The toast activator CLSIDs for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr CLSID kToastActivatorClsids[] = {
+  static constexpr auto kToastActivatorClsids = std::to_array<CLSID>({
       {0xA2C6CB58,
        0xC076,
        0x425C,
@@ -559,61 +562,65 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
        0x4E95,
        {0x83, 0x2D, 0x8F, 0x69, 0x8D, 0x40, 0xAD,
         0x7F}}  // Google Chrome SxS (Canary).
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{A2C6CB58-C076-425C-ACB7-6D19D64428CD}",  // Google Chrome.
-      L"{B89B137F-96AA-4AE2-98C4-6373EAA1EA4D}",  // Google Chrome Beta.
-      L"{F01C03EB-D431-4C83-8D7A-902771E732FA}",  // Google Chrome Dev.
-      L"{FA372A6E-149F-4E95-832D-8F698D40AD7F}",  // Google Chrome SxS (Canary).
-  };
+  static constexpr auto kToastActivatorClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{A2C6CB58-C076-425C-ACB7-6D19D64428CD}",  // Google Chrome.
+          L"{B89B137F-96AA-4AE2-98C4-6373EAA1EA4D}",  // Google Chrome Beta.
+          L"{F01C03EB-D431-4C83-8D7A-902771E732FA}",  // Google Chrome Dev.
+          L"{FA372A6E-149F-4E95-832D-8F698D40AD7F}",  // Google Chrome SxS
+                                                      // (Canary).
+      });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The toast activator CLSIDs for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr CLSID kToastActivatorClsids[] = {
+  static constexpr auto kToastActivatorClsids = std::to_array<CLSID>({
       {0x77ED8F9B,
        0xE27A,
        0x499F,
        {0x8E, 0x2F, 0xD7, 0xC0, 0x41, 0x57, 0xCF, 0x64}}  // Google Chrome for
                                                           // Testing.
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{77ED8F9B-E27A-499F-8E2F-D7C04157CF64}"  // Google Chrome for Testing.
-  };
+  static constexpr auto kToastActivatorClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{77ED8F9B-E27A-499F-8E2F-D7C04157CF64}"  // Google Chrome for
+                                                     // Testing.
+      });
 #else
   // The toast activator CLSIDs for the brand's install modes; parallel to
   // kInstallModes.
-  static constexpr CLSID kToastActivatorClsids[] = {
+  static constexpr auto kToastActivatorClsids = std::to_array<CLSID>({
       {0x635EFA6F,
        0x08D6,
        0x4EC9,
        {0xBD, 0x14, 0x8A, 0x0F, 0xDE, 0x97, 0x51, 0x59}}  // Chromium.
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kToastActivatorClsidsString[] = {
-      L"{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}"  // Chromium.
-  };
+  static constexpr auto kToastActivatorClsidsString =
+      std::to_array<const wchar_t*>({
+          L"{635EFA6F-08D6-4EC9-BD14-8A0FDE975159}"  // Chromium.
+      });
 #endif
   static_assert(std::size(kToastActivatorClsids) == NUM_INSTALL_MODES,
                 "kToastActivatorClsids out of date.");
 
   EXPECT_EQ(GetToastActivatorClsid(),
-            UNSAFE_TODO(kToastActivatorClsids[std::get<0>(GetParam())]));
+            kToastActivatorClsids[std::get<0>(GetParam())]);
 
   auto clsid_str = base::win::WStringFromGUID(GetToastActivatorClsid());
   EXPECT_THAT(clsid_str.c_str(),
-              StrCaseEq(UNSAFE_TODO(
-                  kToastActivatorClsidsString[std::get<0>(GetParam())])));
+              StrCaseEq(kToastActivatorClsidsString[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Elevator CLSIDs, one for each of the kInstallModes.
-  static constexpr CLSID kElevatorClsids[] = {
+  static constexpr auto kElevatorClsids = std::to_array<CLSID>({
       {0x708860E0,
        0xF641,
        0x4611,
@@ -631,59 +638,57 @@ TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
        0x435E,
        {0xA4, 0x69, 0xA, 0x53, 0x43, 0x13, 0xC4,
         0x2B}},  // Google Chrome SxS (Canary).
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kElevatorClsidsString[] = {
+  static constexpr auto kElevatorClsidsString = std::to_array<const wchar_t*>({
       L"{708860E0-F641-4611-8895-7D867DD3675B}",  // Google Chrome.
       L"{DD2646BA-3707-4BF8-B9A7-038691A68FC2}",  // Google Chrome Beta.
       L"{DA7FDCA5-2CAA-4637-AA17-0740584DE7DA}",  // Google Chrome Dev.
       L"{704C2872-2049-435E-A469-0A534313C42B}",  // Google Chrome SxS (Canary).
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The Elevator CLSIDs, one for each of the kInstallModes.
-  static constexpr CLSID kElevatorClsids[] = {
+  static constexpr auto kElevatorClsids = std::to_array<CLSID>({
       {0x724349BF,
        0xE1CF,
        0x4481,
        {0xA6, 0x4D, 0x8C, 0xD1, 0x01, 0x83, 0xCA, 0x03}},  // Google Chrome for
                                                            // Testing
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kElevatorClsidsString[] = {
+  static constexpr auto kElevatorClsidsString = std::to_array<const wchar_t*>({
       L"{724349BF-E1CF-4481-A64D-8CD10183CA03}",  // Google Chrome for Testing
-  };
+  });
 #else
   // The Elevator CLSIDs, one for each of the kInstallModes.
-  static constexpr CLSID kElevatorClsids[] = {
+  static constexpr auto kElevatorClsids = std::to_array<CLSID>({
       {0xD133B120,
        0x6DB4,
        0x4D6B,
        {0x8B, 0xFE, 0x83, 0xBF, 0x8C, 0xA1, 0xB1, 0xB0}},  // Chromium.
-  };
+  });
 
   // The string representation of the CLSIDs above.
-  static constexpr const wchar_t* kElevatorClsidsString[] = {
+  static constexpr auto kElevatorClsidsString = std::to_array<const wchar_t*>({
       L"{D133B120-6DB4-4D6B-8BFE-83BF8CA1B1B0}",  // Chromium.
-  };
+  });
 #endif
   static_assert(std::size(kElevatorClsids) == NUM_INSTALL_MODES,
                 "kElevatorClsids needs to be updated for any new modes.");
 
-  EXPECT_EQ(GetElevatorClsid(),
-            UNSAFE_TODO(kElevatorClsids[std::get<0>(GetParam())]));
+  EXPECT_EQ(GetElevatorClsid(), kElevatorClsids[std::get<0>(GetParam())]);
 
   auto clsid_str = base::win::WStringFromGUID(GetElevatorClsid());
-  EXPECT_THAT(
-      clsid_str.c_str(),
-      StrCaseEq(UNSAFE_TODO(kElevatorClsidsString[std::get<0>(GetParam())])));
+  EXPECT_THAT(clsid_str.c_str(),
+              StrCaseEq(kElevatorClsidsString[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetElevatorIid) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Elevator IIDs, one for each of the kInstallModes.
-  static constexpr IID kElevatorIids[] = {
+  static constexpr auto kElevatorIids = std::to_array<IID>({
       {0x1bf5208b,
        0x295f,
        0x4992,
@@ -711,18 +716,18 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
         0xa}},  // IElevator IID and TypeLib
                 // {FF672E9F-0994-4322-81E5-3A5A9746140A} for Google Chrome
                 // Canary.
-  };
+  });
 
   // The string representation of the IIDs above.
-  static constexpr const wchar_t* kElevatorIidsString[] = {
+  static constexpr auto kElevatorIidsString = std::to_array<const wchar_t*>({
       L"{1BF5208B-295F-4992-B5F4-3A9BB6494838}",  // Google Chrome.
       L"{B96A14B8-D0B0-44D8-BA68-2385B2A03254}",  // Google Chrome Beta.
       L"{3FEFA48E-C8BF-461F-AED6-63F658CC850A}",  // Google Chrome Dev.
       L"{FF672E9F-0994-4322-81E5-3A5A9746140A}",  // Google Chrome Canary.
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The Elevator IIDs, one for each of the kInstallModes.
-  static constexpr IID kElevatorIids[] = {
+  static constexpr auto kElevatorIids = std::to_array<IID>({
       {0x3DC48E97,
        0x47D0,
        0x476F,
@@ -730,38 +735,36 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
         0x67}},  // IElevator IID and TypeLib
                  // {3DC48E97-47D0-476F-8F89-0792FC611567} for Google Chrome for
                  // Testing
-  };
+  });
 
   // The string representation of the IIDs above.
-  static constexpr const wchar_t* kElevatorIidsString[] = {
+  static constexpr auto kElevatorIidsString = std::to_array<const wchar_t*>({
       L"{3DC48E97-47D0-476F-8F89-0792FC611567}",  // Google Chrome for Testing
-  };
+  });
 #else
   // The Elevator IIDs, one for each of the kInstallModes.
-  static constexpr IID kElevatorIids[] = {
+  static constexpr auto kElevatorIids = std::to_array<IID>({
       {0xbb19a0e5,
        0xc6,
        0x4966,
        {0x94, 0xb2, 0x5a, 0xfe, 0xc6, 0xfe, 0xd9,
         0x3a}},  // IElevator IID and TypeLib
                  // {BB19A0E5-00C6-4966-94B2-5AFEC6FED93A} for Chromium.
-  };
+  });
 
   // The string representation of the IIDs above.
-  static constexpr const wchar_t* kElevatorIidsString[] = {
+  static constexpr auto kElevatorIidsString = std::to_array<const wchar_t*>({
       L"{BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}",  // Chromium.
-  };
+  });
 #endif
   static_assert(std::size(kElevatorIids) == NUM_INSTALL_MODES,
                 "kElevatorIids needs to be updated for any new modes.");
 
-  EXPECT_EQ(GetElevatorIid(),
-            UNSAFE_TODO(kElevatorIids[std::get<0>(GetParam())]));
+  EXPECT_EQ(GetElevatorIid(), kElevatorIids[std::get<0>(GetParam())]);
 
   auto iid_str = base::win::WStringFromGUID(GetElevatorIid());
-  EXPECT_THAT(
-      iid_str.c_str(),
-      StrCaseEq(UNSAFE_TODO(kElevatorIidsString[std::get<0>(GetParam())])));
+  EXPECT_THAT(iid_str.c_str(),
+              StrCaseEq(kElevatorIidsString[std::get<0>(GetParam())]));
 }
 
 TEST_P(InstallStaticUtilTest, GetOldElevatorIids) {
@@ -841,7 +844,7 @@ TEST_P(InstallStaticUtilTest, GetChromeChannelName) {
 
 TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static constexpr const wchar_t* kSandBoxSids[] = {
+  static constexpr auto kSandBoxSids = std::to_array<const wchar_t*>({
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012149-",  // Google Chrome.
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
@@ -850,20 +853,21 @@ TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {
       L"924012152-",  // Google Chrome Dev.
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012150-",  // Google Chrome SxS (Canary).
-  };
+  });
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-  static constexpr const wchar_t* kSandBoxSids[] = {
+  static constexpr auto kSandBoxSids = std::to_array<const wchar_t*>({
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012153-",  // Google Chrome for Testing
-  };
+  });
 #else
-  static constexpr const wchar_t* kSandBoxSids[] = {
+  static constexpr auto kSandBoxSids = std::to_array<const wchar_t*>({
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012148-",  // Chromium.
-  };
+  });
 #endif
-  EXPECT_STREQ(GetSandboxSidPrefix(),
-               UNSAFE_TODO(kSandBoxSids[std::get<0>(GetParam())]));
+  static_assert(std::size(kSandBoxSids) == NUM_INSTALL_MODES,
+                "kSandBoxSids out of date.");
+  EXPECT_STREQ(GetSandboxSidPrefix(), kSandBoxSids[std::get<0>(GetParam())]);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

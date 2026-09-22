@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <wtsapi32.h>
 
+#include <array>
 #include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -30,19 +32,20 @@ constexpr WCHAR kWinClientName[] = L"${client_name}";
 constexpr WCHAR kWinSessionName[] = L"${session_name}";
 
 struct WinFolderNamesToCSIDLMapping {
-  const WCHAR* name;
+  std::wstring_view name;
   int id;
 };
 
 // Mapping from variable names to Windows CSIDL ids.
-constexpr WinFolderNamesToCSIDLMapping kWinFolderMapping[] = {
+constexpr auto kWinFolderMapping = std::to_array<WinFolderNamesToCSIDLMapping>({
     {kWinWindowsFolderVarName, CSIDL_WINDOWS},
     {kWinProgramFilesFolderVarName, CSIDL_PROGRAM_FILES},
     {kWinProgramDataFolderVarName, CSIDL_COMMON_APPDATA},
     {kWinProfileFolderVarName, CSIDL_PROFILE},
     {kWinLocalAppDataFolderVarName, CSIDL_LOCAL_APPDATA},
     {kWinRoamingAppDataFolderVarName, CSIDL_APPDATA},
-    {kWinDocumentsFolderVarName, CSIDL_PERSONAL}};
+    {kWinDocumentsFolderVarName, CSIDL_PERSONAL},
+});
 
 template <class FunctionType>
 struct ScopedFunctionHelper {
@@ -107,16 +110,15 @@ std::wstring ExpandPathVariables(const std::wstring& untranslated_string) {
   auto sh_get_special_folder_path =
       SCOPED_LOAD_FUNCTION(L"shell32.dll", ::SHGetSpecialFolderPathW);
   // First translate all path variables we recognize.
-  for (size_t i = 0; i < _countof(kWinFolderMapping); ++i) {
-    size_t position = result.find(UNSAFE_TODO(kWinFolderMapping[i]).name);
+  for (const auto& [name, id] : kWinFolderMapping) {
+    size_t position = result.find(name);
     if (position != std::wstring::npos) {
-      size_t variable_length = wcslen(UNSAFE_TODO(kWinFolderMapping[i]).name);
-      WCHAR path[MAX_PATH];
-      if (!sh_get_special_folder_path(
-              nullptr, path, UNSAFE_TODO(kWinFolderMapping[i]).id, false)) {
+      size_t variable_length = name.length();
+      std::array<WCHAR, MAX_PATH> path{};
+      if (!sh_get_special_folder_path(nullptr, path.data(), id, false)) {
         path[0] = 0;
       }
-      std::wstring path_string(path);
+      std::wstring path_string(path.data());
       // Remove a trailing slash if there is any but also only if the rest of
       // the string contains one right after to avoid ending in a drive only
       // value situation. This usually won't happen but if the value of this
