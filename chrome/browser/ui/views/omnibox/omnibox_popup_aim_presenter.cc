@@ -66,7 +66,8 @@ void OmniboxPopupAimPresenter::LogResultToContentReadyMetric(
 
 std::optional<base::TimeDelta>
 OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
-  if (!omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
     return std::nullopt;
   }
   return base::Milliseconds(
@@ -78,7 +79,7 @@ bool OmniboxPopupAimPresenter::ShouldDebounceResize() const {
 }
 
 bool OmniboxPopupAimPresenter::ShouldApplyHeightWorkarounds() const {
-  return omnibox::ShouldApplyAimHeightWorkarounds();
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimHeightWorkarounds);
 }
 
 bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
@@ -87,7 +88,7 @@ bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
 }
 
 bool OmniboxPopupAimPresenter::ShouldEvictOnHide() const {
-  return omnibox::ShouldAimEvictOnHide();
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimEvictOnHide);
 }
 
 bool OmniboxPopupAimPresenter::ShouldSizeWebViewToPreferredHeight() const {

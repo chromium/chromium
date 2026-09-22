@@ -1132,10 +1132,12 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
 
 void WebUILocationBar::ClearInPopupStateTransition() {
   in_popup_state_transition_ = false;
-  // AIM Placeholder text gets deferred during transition if the AIM popup
-  // defers its show until the visual state is ready, so request a repaint when
-  // the transition period expires.
-  if (omnibox_view_ && omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
+  // AIM Placeholder text gets deferred during transition if
+  // kOmniboxAimDeferShowUntilVisualStateReady is on,
+  // so request a repaint when the transition period expires.
+  if (omnibox_view_ &&
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
     omnibox_view_->RequestUpdateWebUI();
   }
 }
