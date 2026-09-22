@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 39
+version_major: 40
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -1057,14 +1057,6 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "b49141502d00663d740f2e7ec340c52800962666121a36d09cf7dd2b90384fb4"
   crs_root_id: 106
-}
-
-# Cloudflare MTC experiment log shard3.
-# See https://bootstrap-mtca.cloudflareresearch.com/logs/shard3/metadata
-mtc_anchors {
-  log_id: "\x82\xda\x4b\x30\x08"  # 44363.48.8
-  crs_root_id: 107
-  tls_trust_anchor: true
 }
 
 # CN=OISTE Server Root ECC G1, O=OISTE Foundation, C=CH
