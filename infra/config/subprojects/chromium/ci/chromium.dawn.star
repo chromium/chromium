@@ -636,6 +636,14 @@ ci.thin_tester(
         mixins = [
             "linux_nvidia_gtx_1660_stable",
         ],
+        per_test_modifications = {
+            "webgpu_cts_tests": targets.mixin(
+                # Mostly equivalent test coverage is provided by the version
+                # with backend validation enabled and the GTX 1660 fleet is
+                # overloaded. See crbug.com/559526702.
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1399,6 +1407,14 @@ ci.thin_tester(
         mixins = [
             "linux_nvidia_gtx_1660_stable",
         ],
+        per_test_modifications = {
+            "webgpu_cts_tests": targets.mixin(
+                # Mostly equivalent test coverage is provided by the version
+                # with backend validation enabled and the GTX 1660 fleet is
+                # overloaded. See crbug.com/559526702.
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -2679,6 +2695,14 @@ ci.thin_tester(
         mixins = [
             "win10_nvidia_gtx_1660_stable",
         ],
+        per_test_modifications = {
+            "webgpu_cts_tests": targets.mixin(
+                # Mostly equivalent test coverage is provided by the version
+                # with backend validation enabled and the GTX 1660 fleet is
+                # overloaded. See crbug.com/559526702.
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
@@ -2969,6 +2993,12 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "webgpu_cts_default_features_tests": targets.mixin(
+                ci_only = True,
+            ),
+            "webgpu_cts_tests": targets.mixin(
+                # Mostly equivalent test coverage is provided by the version
+                # with backend validation enabled and the GTX 1660 fleet is
+                # overloaded. See crbug.com/559526702.
                 ci_only = True,
             ),
         },
