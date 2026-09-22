@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/ntp_tiles/features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
@@ -115,6 +116,32 @@ constexpr CGFloat kAimIconSize = 20.0;
   }
   return self;
 }
+
+#pragma mark - Public
+
+- (void)configureAsAIMTile {
+  CHECK(IsAimEnabledInNtp());
+  ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAimAsMvt ||
+        arm == ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  _faviconView.hidden = YES;
+  if (!_aimIconView) {
+    _aimIconView = [[UIImageView alloc] init];
+    _aimIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _aimIconView.image = MakeSymbolMonochrome(
+        SymbolWithPointSize(SymbolMagnifyingglassSpark, kAimIconSize));
+    _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    [self addSubview:_aimIconView];
+    AddSameCenterConstraints(_aimIconView, self.imageContainerView);
+  }
+  _aimIconView.hidden = NO;
+  if (!self.titleLabel.text) {
+    self.titleLabel.text = l10n_util::GetNSString(IDS_NTP_TILES_AI_MODE_TITLE);
+  }
+  self.accessibilityLabel = self.titleLabel.text;
+}
+
+#pragma mark - ContentSuggestionsTileView
 
 - (void)setTitleSpacing:(CGFloat)size {
   if (size == _stackView.spacing) {
@@ -322,26 +349,6 @@ constexpr CGFloat kAimIconSize = 20.0;
   stackView.alignment = UIStackViewAlignmentCenter;
   stackView.distribution = UIStackViewDistributionFill;
   return stackView;
-}
-
-// Configures this tile as a virtual AI Mode tile.
-- (void)configureAsAIMTile {
-  CHECK(IsAimEnabledInNtp());
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kAimAsMvt);
-  _faviconView.hidden = YES;
-  if (!_aimIconView) {
-    _aimIconView = [[UIImageView alloc] init];
-    _aimIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _aimIconView.contentMode = UIViewContentModeScaleAspectFit;
-    AddSquareConstraints(_aimIconView, kAimIconSize);
-    [self addSubview:_aimIconView];
-    AddSameCenterConstraints(_aimIconView, self.imageContainerView);
-  }
-  _aimIconView.hidden = NO;
-  _aimIconView.image = MakeSymbolMonochrome(
-      SymbolWithPointSize(SymbolMagnifyingglassSpark, kAimIconSize));
-  _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
 }
 
 @end

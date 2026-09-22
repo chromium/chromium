@@ -19,9 +19,6 @@
                                   UIContentView,
                                   UIContextMenuInteractionDelegate>
 
-// Initializes and configures the view with `config`.
-- (instancetype)initWithConfiguration:(MostVisitedItem*)config;
-
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
 
@@ -31,6 +28,12 @@
 
 // Tap gesture recognizer for this view.
 @property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;
+
+// Initializes and configures the view with `config`.
+- (instancetype)initWithConfiguration:(MostVisitedItem*)config;
+
+// Configures this tile as a virtual AI Mode tile.
+- (void)configureAsAIMTile;
 
 @end
 
