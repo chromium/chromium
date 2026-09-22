@@ -599,6 +599,17 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
     return;
   }
 
+  CueTarget* target = GetTarget(best_type);
+  auto* window = tab_->GetBrowserWindowInterface();
+  if (auto* side_panel_ui = window ? SidePanelUI::From(window) : nullptr;
+      side_panel_ui && side_panel_ui->IsSidePanelShowing() && target &&
+      !target->IsPersistent()) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because side panel is visible.");
+    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    return;
+  }
+
   CUEING_LOG(base::StringPrintf(
       "OnAllEligibilityChecksComplete: winner is '%s' (score %.4f)",
       GetName(best_type), best_score));
@@ -959,10 +970,21 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
 
   if (auto* side_panel_ui = SidePanelUI::From(window);
       side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
-    CUEING_LOG(
-        "Not attempting to show/generate cue because side panel is visible.");
-    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
-    return ContextualCueingDecision::kSidePanelShowing;
+    bool bypass_for_target = false;
+    for (const auto& [type, target] : cue_targets_) {
+      if (target && target->IsPersistent()) {
+        bypass_for_target = true;
+        break;
+      }
+    }
+
+    if (!bypass_for_target) {
+      CUEING_LOG(
+          "Not attempting to show/generate cue because side panel is visible.");
+      RecordContextualCueingDecision(
+          ContextualCueingDecision::kSidePanelShowing);
+      return ContextualCueingDecision::kSidePanelShowing;
+    }
   }
 
   if (tab_->IsSplit() && !kShouldShowCueInSplitView.Get()) {
@@ -1317,6 +1339,13 @@ void ContextualCueingController::RecordContextualCueingDecision(
 }
 
 void ContextualCueingController::OnSidePanelShown() {
+  if (active_cue_data_) {
+    CueTarget* target = GetTarget(active_cue_data_->cue_type);
+    if (target && target->IsPersistent()) {
+      HideAnchoredMessage();
+      return;
+    }
+  }
   HideCue();
 }
 
@@ -1393,7 +1422,12 @@ void ContextualCueingController::OnCueInteraction(
       HideCue();
     }
   } else {
-    HideCue();
+    CueTarget* target = GetTarget(cue_type);
+    if (!target || !target->IsPersistent()) {
+      HideCue();
+    } else {
+      HideAnchoredMessage();
+    }
   }
 
   switch (interaction_type) {

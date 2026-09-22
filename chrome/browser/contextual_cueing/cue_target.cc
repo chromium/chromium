@@ -49,6 +49,10 @@ const char* GetName(CueIntrusiveness intrusiveness) {
   }
 }
 
+bool CueTarget::IsPersistent() const {
+  return false;
+}
+
 bool CueTarget::SupportsIntrusiveness(CueIntrusiveness intrusiveness) const {
   if (RequiresModelExecution()) {
     return intrusiveness == CueIntrusiveness::kLoud;
