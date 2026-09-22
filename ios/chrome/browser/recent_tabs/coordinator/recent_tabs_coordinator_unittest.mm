@@ -349,4 +349,14 @@ TEST_F(RecentTabsTableCoordinatorTest, TestReopenHistorySyncWhenPreviousShown) {
   [delegate showHistorySyncOptInAfterDedicatedSignIn:NO];
 }
 
+// Tests that opening all tabs from an unknown session does not crash.
+TEST_F(RecentTabsTableCoordinatorTest, TestOpenAllTabsFromUnknownSession) {
+  SetupSyncState(YES, YES);
+  CreateController();
+
+  id<RecentTabsPresentationDelegate> delegate =
+      static_cast<id<RecentTabsPresentationDelegate>>(coordinator_);
+  [delegate openAllTabsFromSession:"unknown_session_tag"];
+}
+
 }  // namespace

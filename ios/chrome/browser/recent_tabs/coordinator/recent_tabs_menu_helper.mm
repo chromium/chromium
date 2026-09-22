@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_menu_helper.h"
 
+#import <string>
+
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -130,10 +132,11 @@
             [weakSelf.contextMenuDelegate
                 sessionForTableSectionWithIdentifier:sectionIdentifier];
 
-        if (!session->tabs.empty()) {
+        if (session && !session->tabs.empty()) {
+          std::string sessionTag = session->tag;
           [menuElements addObject:[actionFactory actionToOpenAllTabsWithBlock:^{
                           [strongSelf.recentTabsPresentationDelegate
-                              openAllTabsFromSession:session];
+                              openAllTabsFromSession:sessionTag];
                         }]];
         }
 

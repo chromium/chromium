@@ -12,7 +12,6 @@
 #import "components/sessions/core/session_id.h"
 
 namespace synced_sessions {
-struct DistantSession;
 struct DistantTab;
 }
 
@@ -30,8 +29,8 @@ struct DistantTab;
 // (Eg. using the Recent Tabs sync promo), `dedicatedSignInDone` will be `YES`,
 // and the user is signed-out if history opt-in is declined.
 - (void)showHistorySyncOptInAfterDedicatedSignIn:(BOOL)dedicatedSignInDone;
-// Tells the receiver to open all tabs from the given `session`.
-- (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session;
+// Tells the receiver to open all tabs from the session with `sessionTag`.
+- (void)openAllTabsFromSession:(const std::string&)sessionTag;
 // Tells the receiver to restore the tab with the given `sessionId`.
 - (void)openTabWithTabRestoreEntryId:(SessionID)sessionId;
 // Tells the receiver to open the given `distantTab`.

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_coordinator.h"
 
+#import <string>
+
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -233,17 +235,30 @@
   [_reauthCoordinator start];
 }
 
-- (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session {
+- (void)openAllTabsFromSession:(const std::string&)sessionTag {
+  if (!self.browser) {
+    return;
+  }
+  sync_sessions::SessionSyncService* sessionSyncService =
+      SessionSyncServiceFactory::GetForProfile(self.profile);
+  if (!sessionSyncService) {
+    return;
+  }
+  synced_sessions::DistantSession session(sessionSyncService, sessionTag);
+  if (session.tabs.empty()) {
+    return;
+  }
+
   base::RecordAction(base::UserMetricsAction(
       "MobileRecentTabManagerOpenAllTabsFromOtherDevice"));
   base::UmaHistogramCounts100(
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
-      session->tabs.size());
+      session.tabs.size());
 
   BOOL inIncognito = self.profile->IsOffTheRecord();
   UrlLoadingBrowserAgent* URLLoader =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  OpenDistantSessionInBackground(session, inIncognito,
+  OpenDistantSessionInBackground(&session, inIncognito,
                                  GetDefaultNumberOfTabsToLoadSimultaneously(),
                                  URLLoader, self.loadStrategy);
 
