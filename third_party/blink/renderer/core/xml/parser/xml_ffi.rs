@@ -8,7 +8,6 @@ use std::io::Cursor;
 use xml::{
     attribute::OwnedAttribute,
     common::{Position, TextPosition},
-    namespace::{Namespace, NS_XMLNS_URI, NS_XML_URI},
     reader::{
         ErrorKind, EventReader as XmlEventReader,
         XmlEvent::{
@@ -28,8 +27,6 @@ struct XmlReadState<'a> {
     error_details: Option<xml::reader::Error>,
     last_event_position: Option<TextPosition>,
     parser_callbacks: Pin<&'a mut XmlCallbacks>,
-    namespace_stack: Vec<Namespace>,
-    seen_first_event: bool,
 }
 
 fn create_reader() -> XmlEventReader<Cursor<Vec<u8>>> {
@@ -54,8 +51,6 @@ fn create_read_state(callbacks: Pin<&mut XmlCallbacks>) -> Box<XmlReadState<'_>>
         error_details: None,
         last_event_position: None,
         parser_callbacks: callbacks,
-        namespace_stack: Vec::new(),
-        seen_first_event: false,
     })
 }
 
@@ -82,21 +77,6 @@ struct AttributesIterator<'a> {
 
 struct NamespacesIterator<'a> {
     namespaces: Box<dyn Iterator<Item = (&'a str, &'a str)> + 'a>,
-}
-
-fn new_namespaces(existing: &Namespace, new: &Namespace, seen_first_event: bool) -> Namespace {
-    let mut result = Namespace::empty();
-    for (new_prefix, new_uri) in new.iter() {
-        // Don't add the first empty default namespace, as the parser synthesizes it and
-        // it likely did not come from the input document.
-        // See: https://github.com/kornelski/xml-rs/issues/48
-        if existing.get(new_prefix).is_none_or(|uri| uri != new_uri)
-            && (seen_first_event || !new_prefix.is_empty() || !new_uri.is_empty())
-        {
-            result.put(new_prefix, new_uri);
-        }
-    }
-    result
 }
 
 fn process_next_event(read_state: &mut XmlReadState) {
@@ -130,7 +110,8 @@ fn process_next_event(read_state: &mut XmlReadState) {
                         })
                         .unwrap_or_else(|| {
                             if xml_declaration_view.is_some() {
-                                // <?xml instruction present, but standalone not specified
+                                // <?xml instruction present, but standalone not
+                                // specified
                                 return StandaloneInfo::kStandaloneUnspecified;
                             }
                             StandaloneInfo::kNoXmlDeclaration
@@ -154,25 +135,17 @@ fn process_next_event(read_state: &mut XmlReadState) {
                     let data = data.trim_start();
                     read_state.parser_callbacks.as_mut().ProcessingInstruction(&name, data);
                 }
-                StartElement { name, attributes, namespace } => {
+                StartElement { name, attributes, .. } => {
                     let local_name: &str = &name.local_name;
                     let has_prefix = name.prefix.is_some();
                     let prefix: &str = &name.prefix.unwrap_or_default();
                     let has_ns = name.namespace.is_some();
                     let ns: &str = &name.namespace.unwrap_or_default();
 
-                    let new_namespaces = new_namespaces(
-                        read_state.namespace_stack.last().unwrap_or(&Namespace::empty()),
-                        &namespace,
-                        read_state.seen_first_event,
-                    );
-
-                    read_state.seen_first_event = true;
-
-                    read_state.namespace_stack.push(namespace);
+                    let declared = read_state.event_reader.declared_namespaces();
                     let mut attributes = AttributesIterator { attributes: attributes.iter() };
                     let mut new_namespaces =
-                        NamespacesIterator { namespaces: Box::new(new_namespaces.iter()) };
+                        NamespacesIterator { namespaces: Box::new(declared.into_iter().flatten()) };
                     read_state.parser_callbacks.as_mut().StartElementNs(
                         local_name,
                         has_prefix,
@@ -184,8 +157,6 @@ fn process_next_event(read_state: &mut XmlReadState) {
                     );
                 }
                 EndElement { name } => {
-                    read_state.namespace_stack.pop();
-
                     let local_name: &str = &name.local_name;
                     let prefix: &str = &name.prefix.unwrap_or_default();
                     let ns: &str = &name.namespace.unwrap_or_default();
@@ -207,8 +178,9 @@ fn process_next_event(read_state: &mut XmlReadState) {
                     read_state.parser_callbacks.as_mut().EndDocument();
                 }
                 Doctype { .. } => {
-                    // It's safe to unwrap here. `doctype_ids()` after a `Doctype`
-                    // event only fails if there's no doctype name, which would have
+                    // It's safe to unwrap here. `doctype_ids()` after a
+                    // `Doctype` event only fails if there's
+                    // no doctype name, which would have
                     // resulted in a parser error earlier.
                     // See: https://github.com/kornelski/xml-rs/blob/main/src/reader/parser.rs#L162
                     let ids = read_state.event_reader.doctype_ids().unwrap();
@@ -321,24 +293,9 @@ fn namespaces_next(
     prefix: &mut String,
     uri: &mut String,
 ) -> bool {
-    for namespace in namespaces_iterator.namespaces.by_ref() {
-        // TODO(drott): Why does the library generate these default ones?
-        // TODO(drott): Why do we see an empty namespace here for
-        // fast/dom/attribute-namespaces-get-set.html and XML like:
-        // <root xmlns:foo=\"http://www.example.com\" attr=\"test2\" foo:attr=\"test\" />
-        // and virtual/rust-xml/fast/xmlhttprequest/xmlhttprequest-get.xhtml
-        // Filed as: https://github.com/kornelski/xml-rs/issues/50
-
-        // Letting the empty namespace and empty URL pass through here
-        // is important to reset the default namespace to none.
-        if (namespace.0 == "xml" && namespace.1 == NS_XML_URI)
-            || (namespace.0 == "xmlns" && namespace.1 == NS_XMLNS_URI)
-        {
-            continue;
-        }
-
-        *prefix = namespace.0.to_string();
-        *uri = namespace.1.to_string();
+    if let Some((pfx, u)) = namespaces_iterator.namespaces.next() {
+        *prefix = pfx.to_string();
+        *uri = u.to_string();
         return true;
     }
     false
@@ -405,10 +362,10 @@ mod ffi {
             standalone: StandaloneInfo,
         );
         fn ProcessingInstruction(self: Pin<&mut XmlCallbacks>, name: &str, data: &str);
-        // CXX Rust::Str and &str do not allow a distinction between null and empty
-        // strings, so one way to convey that to the C++ side is to carry an
-        // extra boolean - which we require to be able to distinguish between a
-        // null and an empty namespace URI.
+        // CXX Rust::Str and &str do not allow a distinction between null and
+        // empty strings, so one way to convey that to the C++ side is
+        // to carry an extra boolean - which we require to be able to
+        // distinguish between a null and an empty namespace URI.
         #[allow(clippy::too_many_arguments)]
         fn StartElementNs(
             self: Pin<&mut XmlCallbacks>,
