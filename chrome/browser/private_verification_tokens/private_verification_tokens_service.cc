@@ -47,35 +47,28 @@ using private_verification_tokens::PrivateVerificationTokensStore;
 using private_verification_tokens::TryGetTokensError;
 
 const char* PrivacyPassAthmBatchRequestErrorToString(
-    private_verification_tokens::PrivacyPassAthmBatchRequestError error) {
+    PrivacyPassAthmBatchRequestError error) {
   switch (error) {
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kInvalidBatchSize:
+    case PrivacyPassAthmBatchRequestError::kInvalidBatchSize:
       return "kInvalidBatchSize";
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kInvalidBucketCount:
+    case PrivacyPassAthmBatchRequestError::kInvalidBucketCount:
       return "kInvalidBucketCount";
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kClientRequestGenerationFailed:
+    case PrivacyPassAthmBatchRequestError::kClientRequestGenerationFailed:
       return "kClientRequestGenerationFailed";
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kAlreadyFinalized:
+    case PrivacyPassAthmBatchRequestError::kAlreadyFinalized:
       return "kAlreadyFinalized";
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kInvalidResponseBodyLength:
+    case PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength:
       return "kInvalidResponseBodyLength";
-    case private_verification_tokens::PrivacyPassAthmBatchRequestError::
-        kClientFinalizeFailed:
+    case PrivacyPassAthmBatchRequestError::kClientFinalizeFailed:
       return "kClientFinalizeFailed";
   }
 }
 
-const char* TryGetTokensErrorToString(
-    private_verification_tokens::TryGetTokensError error) {
+const char* TryGetTokensErrorToString(TryGetTokensError error) {
   switch (error) {
-    case private_verification_tokens::TryGetTokensError::kNetNotOk:
+    case TryGetTokensError::kNetNotOk:
       return "kNetNotOk";
-    case private_verification_tokens::TryGetTokensError::kNullResponse:
+    case TryGetTokensError::kNullResponse:
       return "kNullResponse";
   }
 }
@@ -433,7 +426,7 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   }
 
   base::expected<private_verification_tokens::PrivacyPassAthmBatchRequest,
-                 private_verification_tokens::PrivacyPassAthmBatchRequestError>
+                 PrivacyPassAthmBatchRequestError>
       batch_request =
           private_verification_tokens::PrivacyPassAthmBatchRequest::Create(
               config, params->num_buckets);
@@ -508,7 +501,7 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
   }
 
   base::expected<std::vector<std::vector<uint8_t>>,
-                 private_verification_tokens::PrivacyPassAthmBatchRequestError>
+                 PrivacyPassAthmBatchRequestError>
       finalized_tokens =
           batch_request.Finalize(base::as_byte_span(result.value()));
   if (!finalized_tokens.has_value()) {
