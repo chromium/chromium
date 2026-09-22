@@ -32,6 +32,28 @@
 
 namespace {
 
+// Backoff policy for V5 update requests.
+// With initial_delay_ms = 30 minutes, multiply_factor = 2.0, and
+// jitter_factor = 0.5, the backoff delay increases exponentially with
+// subsequent failures and has random jitter in [0.5 * base, base]:
+//  - 1st failure: 15 min - 30 min
+//  - 2nd failure: 30 min to 1 hour
+//  - 3rd failure: 1 hour to 2 hours
+//  - 4th failure: 2 hours to 4 hours
+//  - Subsequent failures continue doubling up to the 24 hour maximum backoff
+//    cap.
+const net::BackoffEntry::Policy kV5UpdateBackoffPolicy = {
+    0,                    // num_errors_to_ignore
+    30 * 60 * 1000,       // initial_delay_ms (30 minutes)
+    2.0,                  // multiply_factor (exponentially increases delays
+                          // by 2x for each new failure)
+    0.5,                  // jitter_factor (randomly reduces the delay by up
+                          // to 50%)
+    24 * 60 * 60 * 1000,  // maximum_backoff_ms (24 hours)
+    -1,                   // entry_lifetime_ms (never discard)
+    false,                // always_use_initial_delay
+};
+
 void RecordSBUpdateResult(safe_browsing::V4OperationResult v4_result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.SBUpdate.Result", v4_result,
@@ -49,7 +71,9 @@ V5UpdateProtocolManager::V5UpdateProtocolManager(
     const SBProtocolConfig& config,
     V5UpdateCallback update_callback)
     : SBUpdateProtocolManager(std::move(url_loader_factory), config),
-      update_callback_(update_callback) {
+      update_callback_(update_callback),
+      backoff_entry_(
+          std::make_unique<net::BackoffEntry>(&kV5UpdateBackoffPolicy)) {
   // Do not auto-schedule updates. Let the owner (SBLocalDatabaseManager) do it
   // when it is ready to process updates.
 }
@@ -442,13 +466,12 @@ V5UpdateProtocolManager::ParsedResponse&
 V5UpdateProtocolManager::ParsedResponse::operator=(ParsedResponse&&) = default;
 
 void V5UpdateProtocolManager::ResetUpdateErrors() {
-  update_error_count_ = 0;
-  update_back_off_mult_ = 1;
+  backoff_entry_->Reset();
 }
 
 base::TimeDelta V5UpdateProtocolManager::GetNextBackOffInterval() {
-  return SBProtocolManagerUtil::GetNextBackOffInterval(&update_error_count_,
-                                                       &update_back_off_mult_);
+  backoff_entry_->InformOfRequest(/*succeeded=*/false);
+  return backoff_entry_->GetTimeUntilRelease();
 }
 
 void V5UpdateProtocolManager::RecordProtocolSpecificNextUpdateInterval(

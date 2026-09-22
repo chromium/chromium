@@ -23,6 +23,7 @@
 #include "components/safe_browsing/core/browser/db/sb_update_protocol_manager.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "net/base/backoff_entry.h"
 
 class GURL;
 
@@ -199,12 +200,8 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   // The callback that's called when fetching lists completes.
   V5UpdateCallback update_callback_;
 
-  // The number of HTTP response errors since the last successful HTTP
-  // response, used for request backoff timing.
-  size_t update_error_count_ = 0;
-
-  // Multiplier for the backoff error after the second.
-  size_t update_back_off_mult_ = 1;
+  // Enforces exponential backoff on update requests.
+  std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
   base::WeakPtrFactory<V5UpdateProtocolManager> weak_factory_{this};
 };
