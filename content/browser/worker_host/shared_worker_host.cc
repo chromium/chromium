@@ -737,9 +737,7 @@ net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForNetworkRequest(
         instance_.DoesRequireCrossSiteRequestForCookies());
   }
 
-  if (instance_.DoesRequireCrossSiteRequestForCookies() &&
-      base::FeatureList::IsEnabled(
-          features::kRestrictSharedWorkerWebSocketCrossSiteCookies)) {
+  if (instance_.DoesRequireCrossSiteRequestForCookies()) {
     // If the worker requires cross-site cookie semantics (e.g. a worker in a
     // third-party context or created via the Storage Access API), we must
     // ensure that the SiteForCookies is null. This prevents the network service

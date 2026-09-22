@@ -725,41 +725,17 @@ TEST_F(SharedWorkerHostTest,
   host->set_client_security_state_for_testing(
       network::mojom::ClientSecurityState::New());
 
-  {
-    // Case 1: The feature flag is disabled. The UMA should still be recorded,
-    // but the SiteForCookies should NOT be cleared.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kRestrictSharedWorkerWebSocketCrossSiteCookies);
-    base::HistogramTester histogram_tester;
+  // The SiteForCookies should be cleared.
+  base::HistogramTester histogram_tester;
 
-    net::IsolationInfo isolation_info =
-        host->ComputeIsolationInfoForNetworkRequest(
-            /*is_websocket_request=*/true);
-    EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+  net::IsolationInfo isolation_info =
+      host->ComputeIsolationInfoForNetworkRequest(
+          /*is_websocket_request=*/true);
+  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 
-    histogram_tester.ExpectUniqueSample(
-        "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
-        true, 1);
-  }
-
-  {
-    // Case 2: The feature flag is enabled. The SiteForCookies SHOULD be
-    // cleared.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kRestrictSharedWorkerWebSocketCrossSiteCookies);
-    base::HistogramTester histogram_tester;
-
-    net::IsolationInfo isolation_info =
-        host->ComputeIsolationInfoForNetworkRequest(
-            /*is_websocket_request=*/true);
-    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
-
-    histogram_tester.ExpectUniqueSample(
-        "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
-        true, 1);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
+      true, 1);
 }
 
 TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
