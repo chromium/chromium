@@ -8923,7 +8923,7 @@
   {
     "name": "searchbox-embedded-permission",
     "owners": [ "jamesleung@google.com", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "secure-payment-confirmation-credential-discovery-mode",

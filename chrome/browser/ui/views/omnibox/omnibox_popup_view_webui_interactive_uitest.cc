@@ -40,6 +40,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/test/mock_permission_request.h"
 #if BUILDFLAG(IS_MAC)
 #include "components/viz/common/features.h"
@@ -497,11 +498,14 @@ class TestPermissionPromptDelegate
     : public permissions::PermissionPrompt::Delegate {
  public:
   explicit TestPermissionPromptDelegate(content::WebContents* web_contents)
-      : web_contents_(web_contents) {
+      : web_contents_(web_contents),
+        embedded_prompt_flow_model_(web_contents, this) {
     request_list_.push_back(
         std::make_unique<permissions::MockPermissionRequest>(
             permissions::RequestType::kMicStream,
             permissions::PermissionRequestGestureType::GESTURE));
+    embedded_prompt_flow_model_.set_prompt_variant(
+        permissions::EmbeddedPermissionPromptFlowModel::Variant::kAsk);
   }
 
   const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
@@ -549,6 +553,11 @@ class TestPermissionPromptDelegate
   const permissions::PermissionPrompt* GetCurrentPrompt() const override {
     return nullptr;
   }
+  permissions::EmbeddedPermissionPromptFlowModel* GetEmbeddedPromptFlowModel()
+      const override {
+    return const_cast<permissions::EmbeddedPermissionPromptFlowModel*>(
+        &embedded_prompt_flow_model_);
+  }
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
@@ -559,6 +568,7 @@ class TestPermissionPromptDelegate
  private:
   raw_ptr<content::WebContents> web_contents_;
   std::vector<std::unique_ptr<permissions::PermissionRequest>> request_list_;
+  permissions::EmbeddedPermissionPromptFlowModel embedded_prompt_flow_model_;
   base::WeakPtrFactory<TestPermissionPromptDelegate> weak_factory_{this};
 };
 
@@ -594,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
   // Directly call `PermissionPromptFactory::CreatePermissionPrompt`
   // synchronously.
-  CreatePermissionPrompt(web_contents, &test_delegate);
+  auto prompt = CreatePermissionPrompt(web_contents, &test_delegate);
 
   // Regular WebUI popup presenter MUST be locked synchronously by
   // `PermissionPromptFactory`.

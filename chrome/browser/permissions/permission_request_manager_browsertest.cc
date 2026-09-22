@@ -42,6 +42,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
@@ -492,9 +493,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
 class PermissionRequestManagerOmniboxEverywhereBrowserTest
     : public PermissionRequestManagerBrowserTest {
+ public:
+  PermissionRequestManagerOmniboxEverywhereBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kOmniboxEverywhere},
+        /*disabled_features=*/{
+            omnibox_feature_configs::kEmbeddedPermissionEnabled});
+  }
+
  private:
-  base::test::ScopedFeatureList enable_omnibox_everywhere{
-      omnibox::kOmniboxEverywhere};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Request via omnibox everywhere. PEPC should be used.

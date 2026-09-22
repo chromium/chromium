@@ -359,6 +359,7 @@ if (!is_chromeos_device) {
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",
       "//components/omnibox/browser",
+      "//components/permissions",
       "//components/prefs",
       "//components/search_engines",
       "//components/send_tab_to_self",
