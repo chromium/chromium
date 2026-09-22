@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import(
+    "//third_party/devtools-frontend/src/scripts/build/typescript/typescript.gni")
 import("../tools/build/bidi_module.gni")
 
-bidi_foundation_module("utils") {
+ts_library("utils") {
+  runs_in = "node"
   sources = [
     "utils/Buffer.ts",
     "utils/DefaultMap.ts",
@@ -38,17 +41,19 @@ bidi_foundation_module("utils") {
   ]
 }
 
-bidi_foundation_module("cdp") {
+ts_library("cdp") {
+  runs_in = "node"
   sources = [
     "cdp/CdpClient.ts",
     "cdp/CdpConnection.ts",
     "cdp/cdp.ts",
     "cdp/cdpMessage.ts",
   ]
-  deps = [ ":utils" ]
+  ts_deps = [ ":utils" ]
 }
 
-bidi_foundation_module("protocol") {
+ts_library("protocol") {
+  runs_in = "node"
   sources = [
     "protocol/ErrorResponse.ts",
     "protocol/cdp.ts",
@@ -63,7 +68,8 @@ bidi_foundation_module("protocol") {
   ]
 }
 
-bidi_foundation_module("protocol_parser") {
+ts_library("protocol_parser") {
+  runs_in = "node"
   sources = [
     "protocol-parser/generated/webdriver-bidi-bluetooth.ts",
     "protocol-parser/generated/webdriver-bidi-digital-credentials.ts",
@@ -73,10 +79,11 @@ bidi_foundation_module("protocol_parser") {
     "protocol-parser/generated/webdriver-bidi.ts",
     "protocol-parser/protocol-parser.ts",
   ]
-  deps = [ ":protocol" ]
+  ts_deps = [ ":protocol" ]
 }
 
-bidi_foundation_module("bidi_mapper") {
+ts_library("bidi_mapper") {
+  runs_in = "node"
   sources = [
     "bidiMapper/BidiMapper.ts",
     "bidiMapper/BidiNoOpParser.ts",
@@ -133,48 +140,41 @@ bidi_foundation_module("bidi_mapper") {
     "bidiMapper/modules/storage/StorageProcessor.ts",
     "bidiMapper/modules/webExtension/WebExtensionProcessor.ts",
   ]
-  deps = [
+  ts_deps = [
     ":cdp",
     ":protocol",
     ":protocol_parser",
     ":utils",
   ]
-  node_es_libs = [
-    "es2023",
-    "dom",
-    "dom.iterable",
-  ]
 }
 
-bidi_foundation_module("bidi_tab") {
+ts_library("bidi_tab") {
+  runs_in = "node"
   sources = [
     "bidiTab/BidiParser.ts",
     "bidiTab/Transport.ts",
     "bidiTab/bidiTab.ts",
     "bidiTab/mapperTabPage.ts",
   ]
-  deps = [ ":bidi_mapper" ]
-  node_es_libs = [
-    "es2023",
-    "dom",
-    "dom.iterable",
-  ]
+  ts_deps = [ ":bidi_mapper" ]
 }
 
 bidi_bundle("mapper_bundle") {
   entrypoint = "$target_gen_dir/bidiTab/bidiTab.js"
   output_file = "$target_gen_dir/mapperTab.js"
-  deps = [ ":bidi_tab" ]
+  deps = [
+    ":bidi_mapper_checked",
+    ":bidi_tab_checked",
+    ":cdp_checked",
+    ":protocol_checked",
+    ":protocol_parser_checked",
+    ":utils_checked",
+  ]
 }
 
 ts_library("unit_tests") {
   testonly = true
-  es_target = "es2023"
-  es_libs = [
-    "dom",
-    "dom.iterable",
-    "es2023",
-  ]
+  runs_in = "node"
   sources = [
     "bidiMapper/modules/browser/BrowserProcessot.test.ts",
     "bidiMapper/modules/browser/ContextConfigStorage.test.ts",
@@ -210,7 +210,7 @@ ts_library("unit_tests") {
     "utils/urlHelpers.test.ts",
     "utils/uuid.test.ts",
   ]
-  deps = [
+  ts_deps = [
     ":bidi_mapper",
     ":bidi_tab",
     ":cdp",
@@ -220,16 +220,12 @@ ts_library("unit_tests") {
   ]
 }
 
-bidi_foundation_module("chromium_bidi") {
+ts_library("chromium_bidi") {
+  runs_in = "node"
   sources = [ "index.ts" ]
-  deps = [
+  ts_deps = [
     ":bidi_mapper",
     ":protocol",
-  ]
-  node_es_libs = [
-    "es2023",
-    "dom",
-    "dom.iterable",
   ]
 }
 
