@@ -13,9 +13,15 @@
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/content_navigation_policy.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/render_document_feature.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_switches.h"
@@ -390,6 +396,101 @@ TEST_F(WebContentsFrameTrackerTest,
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);
+}
+
+// Regression test for the tab-capture pause/resume teardown.
+//
+// Pausing a capture stream disconnects the last client, which makes
+// VideoCaptureManager release the capture device entirely. Resuming
+// re-creates the device from the routing ID recorded in the DesktopMediaID at
+// share time. If the captured tab performed a cross-process navigation while
+// paused, that RenderFrameHost is gone. The tracker must still recover the tab
+// rather than report the capture target as permanently lost, which would abort
+// the whole stream with a fatal error.
+class WebContentsFrameTrackerRoutingIdTest : public RenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    // Guarantee that a cross-document navigation swaps the main
+    // RenderFrameHost, and that the old one is actually destroyed rather than
+    // preserved in the back/forward cache, so that the recorded routing ID
+    // really does go stale.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kRenderDocument,
+                               {{kRenderDocumentLevelParameterName,
+                                 GetRenderDocumentLevelName(
+                                     RenderDocumentLevel::kAllFrames)}}}},
+        /*disabled_features=*/{features::kBackForwardCache});
+    RenderViewHostTestHarness::SetUp();
+  }
+
+  // The controller is ignored on iOS, and must be initialized on all
+  // other platforms.
+  MouseCursorOverlayController* controller() {
+#if BUILDFLAG(IS_IOS)
+    return nullptr;
+#else
+    return &controller_;
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+#if !BUILDFLAG(IS_IOS)
+  MouseCursorOverlayController controller_;
+#endif
+};
+
+TEST_F(WebContentsFrameTrackerRoutingIdTest,
+       RecoversCapturedTabAfterCrossProcessNavigation) {
+  NavigateAndCommit(GURL("https://first.example/"));
+  RenderFrameHost* const original_rfh = main_rfh();
+  const GlobalRenderFrameHostId original_id = original_rfh->GetGlobalId();
+
+  // Capture starts: the routing ID resolves directly.
+  {
+    StrictMock<MockCaptureDevice> device;
+    EXPECT_CALL(device, OnTargetChanged(_, _)).Times(testing::AnyNumber());
+    EXPECT_CALL(device, OnTargetPermanentlyLost()).Times(0);
+
+    WebContentsFrameTracker tracker(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), device.AsWeakPtr(),
+        controller());
+    tracker.SetWebContentsAndContextFromRoutingId(original_id);
+    RunAllTasksUntilIdle();
+    ASSERT_EQ(web_contents(), tracker.web_contents());
+
+    // The stream is paused, which releases the capture device.
+  }
+
+  // The captured tab navigates cross-process while nothing is capturing it.
+  RenderFrameHostTester* const original_rfh_tester =
+      RenderFrameHostTester::For(original_rfh);
+  NavigateAndCommit(GURL("https://second.example/"));
+  ASSERT_NE(original_id, main_rfh()->GetGlobalId());
+  // The old RenderFrameHost is only pending deletion until the renderer acks
+  // the unload; drive that so it is really gone.
+  if (RenderFrameHost::FromID(original_id)) {
+    original_rfh_tester->SimulateUnloadACK();
+  }
+  RunAllTasksUntilIdle();
+  ASSERT_EQ(nullptr, RenderFrameHost::FromID(original_id))
+      << "Test precondition failed: the original RenderFrameHost is still "
+         "alive, so this test would pass even without the fix.";
+
+  // The stream resumes, re-creating the device from the original routing ID.
+  StrictMock<MockCaptureDevice> resumed_device;
+  EXPECT_CALL(resumed_device, OnTargetChanged(_, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(resumed_device, OnTargetPermanentlyLost()).Times(0);
+
+  WebContentsFrameTracker resumed_tracker(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      resumed_device.AsWeakPtr(), controller());
+  resumed_tracker.SetWebContentsAndContextFromRoutingId(original_id);
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(web_contents(), resumed_tracker.web_contents())
+      << "The resumed capture failed to recover the captured tab.";
 }
 
 }  // namespace
