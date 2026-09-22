@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.contacts_picker.ContactsPickerFeatureMap;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
@@ -49,6 +51,11 @@ public class ContactsPickerLauncherTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Before
+    public void setUp() {
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(false);
+    }
 
     private boolean showContactsPicker(WebContents webContents) {
         ContactsFetcher fetcher =

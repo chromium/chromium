@@ -4,11 +4,15 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import android.os.Build;
+
+import androidx.annotation.ChecksSdkIntAtLeast;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.FeatureMap;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -18,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 public class ContactsPickerFeatureMap extends FeatureMap {
     private static final ContactsPickerFeatureMap sInstance = new ContactsPickerFeatureMap();
     private static @Nullable ContactsPickerFeatureMap sInstanceForTesting;
+    private static @Nullable Boolean sSystemContactsPickerEnabledForTesting;
 
     // Do not instantiate this class.
     protected ContactsPickerFeatureMap() {}
@@ -42,10 +47,23 @@ public class ContactsPickerFeatureMap extends FeatureMap {
         return getInstance().isEnabledInNative(featureName);
     }
 
+    /**
+     * Overrides whether the system contacts picker should be used for testing.
+     *
+     * @param enabled Whether the system contacts picker should be enabled, or null to reset.
+     */
+    public static void setSystemContactsPickerEnabledForTesting(@Nullable Boolean enabled) {
+        sSystemContactsPickerEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sSystemContactsPickerEnabledForTesting = null);
+    }
+
     /** Returns whether the system contacts picker should be used instead of the built-in one. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     public static boolean shouldShowSystemContactsPicker() {
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        return delegate != null && delegate.isSystemContactsPickerEnabled();
+        if (sSystemContactsPickerEnabledForTesting != null) {
+            return sSystemContactsPickerEnabledForTesting;
+        }
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN;
     }
 
     @Override

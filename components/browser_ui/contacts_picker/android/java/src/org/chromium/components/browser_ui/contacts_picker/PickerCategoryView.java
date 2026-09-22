@@ -15,17 +15,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.provider.ContactsPickerSessionContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -420,24 +422,10 @@ public class PickerCategoryView extends OptimizedFrameLayout
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
     private void launchSystemPicker() {
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL);
-            return;
-        }
-
-        String action = delegate.getSystemContactsPickerAction();
-        String extraUseSystemContactsPicker =
-                delegate.getSystemContactsPickerExtraUseSystemContactsPicker();
-        String extraFields = delegate.getSystemContactsPickerExtraRequestedDataFields();
-        if (action == null || extraUseSystemContactsPicker == null || extraFields == null) {
-            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL);
-            return;
-        }
-
-        Intent intent = new Intent(action);
-        intent.putExtra(extraUseSystemContactsPicker, true);
+        Intent intent = new Intent(ContactsPickerSessionContract.ACTION_PICK_CONTACTS);
+        intent.putExtra(Intent.EXTRA_USE_SYSTEM_CONTACTS_PICKER, true);
         ArrayList<String> requestedFields = new ArrayList<>();
         if (mSiteWantsNames) {
             requestedFields.add(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
@@ -455,7 +443,9 @@ public class PickerCategoryView extends OptimizedFrameLayout
         if (mSiteWantsIcons) {
             requestedFields.add(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
         }
-        intent.putStringArrayListExtra(extraFields, requestedFields);
+        intent.putStringArrayListExtra(
+                ContactsPickerSessionContract.EXTRA_PICK_CONTACTS_REQUESTED_DATA_FIELDS,
+                requestedFields);
 
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, mMultiSelectionAllowed);
 
@@ -471,11 +461,10 @@ public class PickerCategoryView extends OptimizedFrameLayout
                     }
 
                     Uri sessionUri = data.getData();
-                    String expectedAuthority = delegate.getSystemContactsPickerAuthority();
                     boolean isCorrectAuthority =
                             sessionUri != null
-                                    && expectedAuthority != null
-                                    && expectedAuthority.equals(sessionUri.getHost());
+                                    && ContactsPickerSessionContract.AUTHORITY.equals(
+                                            sessionUri.getHost());
                     if (sessionUri == null
                             || !ContentResolver.SCHEME_CONTENT.equals(sessionUri.getScheme())
                             || !isCorrectAuthority) {

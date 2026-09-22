@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.ContactsPermissionProvider;
@@ -51,9 +50,7 @@ public class AndroidContactsPermissionProviderTest {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mActivity.getContentResolver()).thenReturn(null); // Not used in this path
 
-        FakeAconfigFlaggedApiDelegate fakeDelegate = new FakeAconfigFlaggedApiDelegate();
-        fakeDelegate.setSystemContactsPickerEnabled(true);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(fakeDelegate);
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(true);
 
         mProvider = new AndroidContactsPermissionProviderImpl();
     }
@@ -72,9 +69,7 @@ public class AndroidContactsPermissionProviderTest {
     @Test
     @SmallTest
     public void testPermissionRequestedWhenSystemPickerDisabled() {
-        FakeAconfigFlaggedApiDelegate fakeDelegate = new FakeAconfigFlaggedApiDelegate();
-        fakeDelegate.setSystemContactsPickerEnabled(false);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(fakeDelegate);
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(false);
         // Assume permission not granted initially.
         when(mWindowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)).thenReturn(false);
         when(mWindowAndroid.canRequestPermission(Manifest.permission.READ_CONTACTS))

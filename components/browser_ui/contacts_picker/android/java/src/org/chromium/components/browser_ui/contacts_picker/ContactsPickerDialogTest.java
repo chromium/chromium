@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -146,9 +145,7 @@ public class ContactsPickerDialogTest
 
     @Before
     public void setupTest() throws Exception {
-        FakeAconfigFlaggedApiDelegate fakeDelegate = new FakeAconfigFlaggedApiDelegate();
-        fakeDelegate.setSystemContactsPickerEnabled(false);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(fakeDelegate);
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(false);
 
         mWindowAndroid =
                 ThreadUtils.runOnUiThreadBlocking(

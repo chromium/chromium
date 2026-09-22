@@ -7,7 +7,10 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
+import android.provider.ContactsPickerSessionContract;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -23,11 +26,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
@@ -45,6 +48,8 @@ import java.util.ArrayList;
 /** Tests for the System Contacts Picker integration. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+@RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
 public class SystemContactsPickerTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
@@ -77,9 +82,7 @@ public class SystemContactsPickerTest {
 
     @Before
     public void setUp() {
-        FakeAconfigFlaggedApiDelegate fakeDelegate = new FakeAconfigFlaggedApiDelegate();
-        fakeDelegate.setSystemContactsPickerEnabled(true);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(fakeDelegate);
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(true);
 
         mActivity = activityTestRule.getActivity();
 
@@ -127,7 +130,7 @@ public class SystemContactsPickerTest {
 
                     Intent intent = intentCaptor.getValue();
                     Assert.assertEquals(
-                            FakeAconfigFlaggedApiDelegate.ACTION_PICK_CONTACTS, intent.getAction());
+                            ContactsPickerSessionContract.ACTION_PICK_CONTACTS, intent.getAction());
                 });
     }
 

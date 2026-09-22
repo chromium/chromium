@@ -1869,6 +1869,7 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/ui/side_panel/android:dev_java",
+    "//components/browser_ui/contacts_picker/android:java",
     "//components/browser_ui/http_auth/android:java",
     "//components/variations:variations_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
