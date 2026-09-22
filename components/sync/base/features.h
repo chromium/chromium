@@ -163,13 +163,6 @@ inline constexpr base::FeatureParam<double>
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
 #if BUILDFLAG(IS_ANDROID)
-// Flag to test different alternatives for the passwords sync error message
-// content.
-BASE_DECLARE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative);
-inline constexpr base::FeatureParam<int>
-    kSyncEnablePasswordsSyncErrorMessageAlternativeVersion{
-        &kSyncEnablePasswordsSyncErrorMessageAlternative, "version", 3};
-
 // If enabled, the error message to unlock passwords is shown for longer.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultErrorMessageDuration);
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -14239,24 +14239,6 @@
             ]
         }
     ],
-    "PasswordsSyncErrorMessageAlternatives": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_SyncEnablePasswordsSyncErrorMessageAlternative",
-                    "params": {
-                        "version": "3"
-                    },
-                    "enable_features": [
-                        "SyncEnablePasswordsSyncErrorMessageAlternative"
-                    ]
-                }
-            ]
-        }
-    ],
     "Path2DPaintCache": [
         {
             "platforms": [

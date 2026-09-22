@@ -2572,9 +2572,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error). Also used for error message and notification title.">
         Verify it’s you
       </message>
-      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_OKAY" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for confirming that a user wants to get all their passwords on their device.">
-        Okay
-      </message>
       <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_GET" desc="Button label for the message shown in the Sync Error Card (due to missing trusted vault keys) for fixing the issue and getting all passwords of a user on their device.">
         Get
       </message>

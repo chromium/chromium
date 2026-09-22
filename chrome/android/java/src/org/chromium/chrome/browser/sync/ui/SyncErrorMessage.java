@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -76,7 +75,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
 
     private static final UnownedUserDataKey<SyncErrorMessage> SYNC_ERROR_MESSAGE_KEY =
             new UnownedUserDataKey<>();
-    private static final String PASSWORDS_SYNC_ERROR_MESSAGE_VERSION_PARAM_NAME = "version";
     private static final String TAG = "SyncErrorMessage";
 
     @VisibleForTesting
@@ -174,9 +172,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private @DrawableRes int getNotificationIconResourceId() {
-        if (mError == UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE)) {
+        if (mError == UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS) {
             return R.drawable.ic_password_manager_key_off;
         }
         return R.drawable.ic_sync_error_legacy_24dp;
@@ -268,7 +264,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 // Reuse the same string as that for the identity error card button.
                 return context.getString(R.string.identity_error_card_button_client_out_of_date);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(getButtonTextForTrustedVaultErrorInfobarStudy());
+                return context.getString(R.string.identity_error_card_button_get);
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -282,27 +278,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         }
     }
 
-    private @StringRes int getButtonTextForTrustedVaultErrorInfobarStudy() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE)) {
-            switch (getTrustedVaultErrorMessageVersion()) {
-                case 1:
-                    return R.string.identity_error_message_button_verify;
-                case 2:
-                    return R.string.identity_error_card_button_okay;
-                case 3:
-                    return R.string.identity_error_card_button_get;
-                default:
-                    // This should never happen, as there are only two versions.
-                    assert false
-                            : "Invalid version for SyncEnablePasswordsSyncErrorMessageAlternative: "
-                                    + getTrustedVaultErrorMessageVersion();
-                    break;
-            }
-        }
-        return R.string.identity_error_message_button_verify;
-    }
-
     private @Nullable String getTitle(Context context) {
         assert mError != UserActionableError.NONE;
 
@@ -313,7 +288,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 return context.getString(R.string.identity_error_message_title_client_out_of_date);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(getTitleForTrustedVaultErrorMessageStudy());
+                return context.getString(R.string.password_sync_trusted_vault_error_title);
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -328,21 +303,13 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         }
     }
 
-    private @StringRes int getTitleForTrustedVaultErrorMessageStudy() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE)) {
-            return R.string.password_sync_trusted_vault_error_title;
-        }
-        return R.string.identity_error_card_button_verify;
-    }
-
     private @Nullable String getMessage(Context context) {
         assert mError != UserActionableError.NONE;
 
         // Strings for identity error.
         switch (mError) {
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(getContentForTrustedVaultErrorMessageStudy());
+                return context.getString(R.string.password_sync_trusted_vault_error_hint);
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
                 return context.getString(
                         R.string
@@ -362,21 +329,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 assert false;
                 return "";
         }
-    }
-
-    private @StringRes int getContentForTrustedVaultErrorMessageStudy() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE)) {
-            return R.string.password_sync_trusted_vault_error_hint;
-        }
-        return R.string.identity_error_message_body_sync_retrieve_keys_for_passwords;
-    }
-
-    private int getTrustedVaultErrorMessageVersion() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE,
-                PASSWORDS_SYNC_ERROR_MESSAGE_VERSION_PARAM_NAME,
-                /* defaultValue= */ 3);
     }
 
     private void openBookmarkLimitHelpPage() {
