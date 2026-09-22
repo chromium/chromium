@@ -1228,6 +1228,7 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
       << "ContextualTasks navigation trace: "
          "OnSearchResultsNavigationInSidePanel called for URL: "
       << url_params.url;
+  url_params.is_renderer_initiated = false;
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 

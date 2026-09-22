@@ -1654,10 +1654,15 @@ TEST_F(ContextualTasksUiServiceTest,
       ->SetLastCommittedURL(host_web_content_url);
 
   base::RunLoop run_loop;
+  std::optional<content::OpenURLParams> intercepted_params;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+      .WillOnce([&](content::OpenURLParams url_params,
+                    ContextualTasksUIInterface* web_ui_interface) {
+        intercepted_params = std::move(url_params);
+        run_loop.Quit();
+      });
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
@@ -1666,6 +1671,18 @@ TEST_F(ContextualTasksUiServiceTest,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
       std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
+
+  // Regression check for b/564494672: once OnSearchResultsNavigationInSidePanel
+  // resets `is_renderer_initiated` to false and transfers the navigation to the
+  // embedded <webview>, the resulting navigation must not be re-intercepted by
+  // HandleNavigationImpl.
+  ASSERT_TRUE(intercepted_params.has_value());
+  intercepted_params->is_renderer_initiated = false;
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      *intercepted_params, web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 }
 
 TEST_F(ContextualTasksUiServiceTest, CaptchaNavigation_ViewedInSidePanel) {

@@ -1575,6 +1575,7 @@ void ContextualTasksUI::TransferNavigationToEmbeddedPage(
   //                  partition.
   params.frame_tree_node_id =
       embedded_web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+  params.is_renderer_initiated = false;
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: "
          "TransferNavigationToEmbeddedPage opening URL in embedded page";

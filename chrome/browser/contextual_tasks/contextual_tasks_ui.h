@@ -69,6 +69,7 @@ namespace contextual_tasks {
 class ContextualTasksAutoSuggestionManager;
 class ContextualTasksComposeboxHandlerInterface;
 class ContextualTasksUiService;
+class ContextualTasksUiTest;
 
 }  // namespace contextual_tasks
 
@@ -103,6 +104,7 @@ class ContextualTasksUI
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSmartTabSharingMenuItemElementId);
 
   friend class ContextualTasksUIBrowserTest;
+  friend class contextual_tasks::ContextualTasksUiTest;
 
   // A WebContentsObserver used to observe navigations or URL changes in the
   // frame being hosted by this WebUI. Top-level navigations are ignored since
