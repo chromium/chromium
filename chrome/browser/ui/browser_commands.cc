@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/new_tab_grouping_user_data.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -121,6 +122,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -2529,6 +2531,12 @@ void FindInPage(BrowserWindowInterface* browser,
 }
 
 void ShowTabSearch(BrowserWindowInterface* browser) {
+  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+    auto* controller = OrganizerPanelController::From(browser);
+    CHECK(controller);
+    controller->SetOrganizerVisible(!controller->IsOrganizerPanelVisible());
+    return;
+  }
   BrowserWindow::FromBrowser(browser)->CreateTabSearchBubble();
 }
 

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -142,6 +143,23 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelControllerInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       ExpectControllerState(false), EnsurePresent(kTabSearchButtonElementId),
       MoveMouseTo(kTabSearchButtonElementId), ClickMouse(), WaitForPanelShow());
+}
+
+// This test checks that the tab search keyboard shortcut toggles the organizer
+// panel instead of showing the tab search bubble.
+IN_PROC_BROWSER_TEST_F(OrganizerPanelControllerInteractiveUiTest,
+                       VerifyTabSearchKeyboardShortcut) {
+  ui::Accelerator tab_search_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_TAB_SEARCH, &tab_search_accelerator));
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      ExpectControllerState(false),
+      SendAccelerator(kBrowserViewElementId, tab_search_accelerator),
+      WaitForPanelShow(), EnsureNotPresent(kTabSearchBubbleElementId),
+      SendAccelerator(kBrowserViewElementId, tab_search_accelerator),
+      WaitForPanelHide());
 }
 
 }  // namespace base::test
