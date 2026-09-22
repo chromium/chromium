@@ -5499,133 +5499,7 @@ def _CheckAndroidInfoBarDeprecation(input_api, output_api):
     return infobar_deprecation.CheckDeprecationOnUpload(input_api, output_api)
 
 
-class _PydepsCheckerResult:
-
-    def __init__(self, cmd, pydeps_path, process, old_contents):
-        self._cmd = cmd
-        self._pydeps_path = pydeps_path
-        self._process = process
-        self._old_contents = old_contents
-
-    def GetError(self):
-        """Returns an error message, or None."""
-        import difflib
-        new_contents = self._process.stdout.read().splitlines()[2:]
-        if self._process.wait() != 0:
-            # STDERR should already be printed.
-            return 'Command failed: ' + self._cmd
-        if self._old_contents != new_contents:
-            diff = '\n'.join(
-                difflib.context_diff(self._old_contents, new_contents))
-            return ('File is stale: {}\n'
-                    'Diff (apply to fix):\n'
-                    '{}\n'
-                    'To regenerate, run:\n\n'
-                    '    {}').format(self._pydeps_path, diff, self._cmd)
-        return None
-
-
-class PydepsChecker:
-
-    def __init__(self, input_api, pydeps_files):
-        self._file_cache = {}
-        self._input_api = input_api
-        self._pydeps_files = pydeps_files
-
-    def _LoadFile(self, path):
-        """Returns the list of paths within a .pydeps file relative to //."""
-        if path not in self._file_cache:
-            with open(path, encoding='utf-8') as f:
-                self._file_cache[path] = f.read()
-        return self._file_cache[path]
-
-    def _ComputeNormalizedPydepsEntries(self, pydeps_path):
-        """Returns an iterable of paths within the .pydep, relativized to //."""
-        pydeps_data = self._LoadFile(pydeps_path)
-        uses_gn_paths = '--gn-paths' in pydeps_data
-        entries = (l for l in pydeps_data.splitlines()
-                   if not l.startswith('#'))
-        if uses_gn_paths:
-            # Paths look like: //foo/bar/baz
-            return (e[2:] for e in entries)
-        else:
-            # Paths look like: path/relative/to/file.pydeps
-            os_path = self._input_api.os_path
-            pydeps_dir = os_path.dirname(pydeps_path)
-            return (os_path.normpath(os_path.join(pydeps_dir, e))
-                    for e in entries)
-
-    def _CreateFilesToPydepsMap(self):
-        """Returns a map of local_path -> list_of_pydeps."""
-        ret = {}
-        for pydep_local_path in self._pydeps_files:
-            for path in self._ComputeNormalizedPydepsEntries(pydep_local_path):
-                ret.setdefault(path, []).append(pydep_local_path)
-        return ret
-
-    def ComputeAffectedPydeps(self):
-        """Returns an iterable of .pydeps files that might need regenerating."""
-        affected_pydeps = set()
-        file_to_pydeps_map = None
-        for f in self._input_api.AffectedFiles(include_deletes=True):
-            local_path = f.LocalPath()
-            # Changes to DEPS can lead to .pydeps changes if any .py files are in
-            # subrepositories. We can't figure out which files change, so re-check
-            # all files.
-            # Changes to print_python_deps.py affect all .pydeps.
-            if local_path in ('DEPS', 'PRESUBMIT.py'
-                              ) or local_path.endswith('print_python_deps.py'):
-                return self._pydeps_files
-            elif local_path.endswith('.pydeps'):
-                if local_path in self._pydeps_files:
-                    affected_pydeps.add(local_path)
-            elif local_path.endswith('.py'):
-                if file_to_pydeps_map is None:
-                    file_to_pydeps_map = self._CreateFilesToPydepsMap()
-                affected_pydeps.update(file_to_pydeps_map.get(local_path, ()))
-        return affected_pydeps
-
-    def DetermineIfStaleAsync(self, pydeps_path):
-        """Runs print_python_deps.py to see if the files is stale."""
-        import os
-
-        old_pydeps_data = self._LoadFile(pydeps_path).splitlines()
-        if old_pydeps_data:
-            cmd = old_pydeps_data[1][1:].strip()
-            if '--output' not in cmd:
-                cmd += ' --output ' + pydeps_path
-            old_contents = old_pydeps_data[2:]
-        else:
-            # A default cmd that should work in most cases (as long as pydeps filename
-            # matches the script name) so that PRESUBMIT.py does not crash if pydeps
-            # file is empty/new.
-            cmd = 'build/print_python_deps.py {} --root={} --output={}'.format(
-                pydeps_path[:-4], os.path.dirname(pydeps_path), pydeps_path)
-            old_contents = []
-        env = dict(os.environ)
-        env['PYTHONDONTWRITEBYTECODE'] = '1'
-        process = self._input_api.subprocess.Popen(
-            cmd + ' --output ""',
-            shell=True,
-            env=env,
-            stdout=self._input_api.subprocess.PIPE,
-            encoding='utf-8')
-        return _PydepsCheckerResult(cmd, pydeps_path, process, old_contents)
-
-
-def _ParseGclientArgs():
-    args = {}
-    with open('build/config/gclient_args.gni', 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            attribute, value = line.split('=')
-            args[attribute.strip()] = value.strip()
-    return args
-
-
-def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
+def CheckPydepsNeedsUpdating(input_api, output_api):
     """Checks if a .pydeps file needs to be regenerated."""
     # This check is for Python dependency lists (.pydeps files), and involves
     # paths not only in the PRESUBMIT.py, but also in the .pydeps files. It
@@ -5633,84 +5507,23 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
     if not input_api.platform.startswith('linux'):
         return []
 
-    results = []
-    # First, check for new / deleted .pydeps.
-    for f in input_api.AffectedFiles(include_deletes=True):
-        # Check whether we are running the presubmit check for a file in src.
-        if f.LocalPath().endswith('.pydeps'):
-            # f.LocalPath is relative to repo (src, or internal repo).
-            # os_path.exists is relative to src repo.
-            # Therefore if os_path.exists is true, it means f.LocalPath is relative
-            # to src and we can conclude that the pydeps is in src.
-            exists = input_api.os_path.exists(f.LocalPath())
-            if f.Action() == 'D' and f.LocalPath() in _ALL_PYDEPS_FILES:
-                results.append(
-                    output_api.PresubmitError(
-                        'Please update _ALL_PYDEPS_FILES within //PRESUBMIT.py to '
-                        'remove %s' % f.LocalPath()))
-            elif (f.Action() != 'D' and exists
-                  and f.LocalPath() not in _ALL_PYDEPS_FILES):
-                results.append(
-                    output_api.PresubmitError(
-                        'Please update _ALL_PYDEPS_FILES within //PRESUBMIT.py to '
-                        'include %s' % f.LocalPath()))
-
-    if results:
-        return results
-
+    import sys
+    original_sys_path = sys.path
     try:
-        parsed_args = _ParseGclientArgs()
-    except FileNotFoundError:
-        message = (
-            'build/config/gclient_args.gni not found. Please make sure your '
-            'workspace has been initialized with gclient sync.')
-        import sys
-        original_sys_path = sys.path
-        try:
-            sys.path = sys.path + [
-                input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                       'third_party', 'depot_tools')
-            ]
-            import gclient_utils
-            if gclient_utils.IsEnvCog():
-                # Users will always hit this when they run presubmits before cog
-                # workspace initialization finishes. The check shouldn't fail in
-                # this case. This is an unavoidable workaround that's needed for
-                # good presubmit UX for cog.
-                results.append(output_api.PresubmitPromptWarning(message))
-            else:
-                results.append(output_api.PresubmitError(message))
-            return results
-        finally:
-            # Restore sys.path to what it was before.
-            sys.path = original_sys_path
+        sys.path = sys.path + [
+            input_api.os_path.join(input_api.PresubmitLocalPath(), 'build')
+        ]
+        import pydeps_presubmit
+    finally:
+        # Restore sys.path to what it was before.
+        sys.path = original_sys_path
 
-    is_android = parsed_args.get('checkout_android', 'false') == 'true'
-    checker = checker_for_tests or PydepsChecker(input_api, _ALL_PYDEPS_FILES)
-    affected_pydeps = set(checker.ComputeAffectedPydeps())
-    affected_android_pydeps = affected_pydeps.intersection(
-        set(_ANDROID_SPECIFIC_PYDEPS_FILES))
-    if affected_android_pydeps and not is_android:
-        results.append(
-            output_api.PresubmitPromptOrNotify(
-                'You have changed python files that may affect pydeps for android\n'
-                'specific scripts. However, the relevant presubmit check cannot be\n'
-                'run because you are not using an Android checkout. To validate that\n'
-                'the .pydeps are correct, re-run presubmit in an Android checkout, or\n'
-                'use the android-internal-presubmit optional trybot.\n'
-                'Possibly stale pydeps files:\n{}'.format(
-                    '\n'.join(affected_android_pydeps))))
-
-    all_pydeps = _ALL_PYDEPS_FILES if is_android else _GENERIC_PYDEPS_FILES
-    pydeps_to_check = affected_pydeps.intersection(all_pydeps)
-    # Process these concurrently, as each one takes 1-2 seconds.
-    pydep_results = [checker.DetermineIfStaleAsync(p) for p in pydeps_to_check]
-    for result in pydep_results:
-        error_msg = result.GetError()
-        if error_msg:
-            results.append(output_api.PresubmitError(error_msg))
-
-    return results
+    return pydeps_presubmit.run_presubmit(
+        input_api,
+        output_api,
+        all_pydeps_files=_ALL_PYDEPS_FILES,
+        android_specific_pydeps_files=_ANDROID_SPECIFIC_PYDEPS_FILES,
+        generic_pydeps_files=_GENERIC_PYDEPS_FILES)
 
 
 def CheckSingletonInHeaders(input_api, output_api):
