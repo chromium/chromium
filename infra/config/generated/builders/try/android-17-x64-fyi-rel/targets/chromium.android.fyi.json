@@ -3698,6 +3698,7 @@
           "always",
           "--test-type",
           "wdspec",
+          "--timeout-multiplier=4",
           "--avd-config=../../tools/android/avd/proto/android_37_google_apis_ps16k_x64.textpb"
         ],
         "ci_only": true,

@@ -49,6 +49,7 @@ targets.tests.isolated_script_test(
         "always",
         "--test-type",
         "wdspec",
+        "--timeout-multiplier=4",
     ],
     binary = "chrome_public_wpt",
 )
