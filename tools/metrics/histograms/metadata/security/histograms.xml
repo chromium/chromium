@@ -746,6 +746,88 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PrivateVerificationTokens.EmptyCache" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Recorded when a request meets all redemption criteria for a registered PVT
+    redeemer origin. True value is recorded when Chrome has no tokens in cache
+    to attach, False value is recorded otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.FeatureActive"
+    units="requests" expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Recorded when the Private Verification Tokens feature is active on an
+    eligible browser-initiated outermost main-frame request. Operates strictly
+    as an absolute volume numerator. For Origin Trial experimentation capacity
+    percentages, this should be explicitly divided by the global Chrome page
+    load denominator metric (Navigation.MainFrameProfileTypeDifferentPage2),
+    which tracks all cross-document outermost main frame navigations.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.FetchSetupResult"
+    enum="PrivateVerificationTokensFetchSetupResult" expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Recorded when attempting to initialize the Private Verification Tokens fetch
+    process. Captures whether structural parameters and the fetcher object were
+    instantiated correctly prior to deriving the batch request.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.RedemptionLimitHit"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    True value is recorded when a registered page in an incognito session does
+    not get a PVT because the redemption limit is hit (at most 2 distinct
+    issuers per incognito session). False value is recorded when the limit is
+    not hit.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.TokenAttachTime"
+    units="microseconds" expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Measures the blocking execution time in microseconds to evaluate redemption
+    and retrieve a token from the in-memory cache during WillStartRequest. Note:
+    This metric is reported only for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.TokenFetchTime" units="ms"
+    expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Measures the total round-trip time in milliseconds to issue a token request,
+    download the response, and finalize the tokens. This histogram is emitted
+    only when TokenParsingResult is success.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateVerificationTokens.TokenParsingResult"
+    enum="PrivateVerificationTokensTokenParsingResult"
+    expires_after="2027-04-01">
+  <owner>aykutb@chromium.org</owner>
+  <owner>private-verification-tokens-chrome-team@google.com</owner>
+  <summary>
+    Records the outcome of parsing and finalizing token responses received from
+    issuers. Helps detect issuer server misconfigurations or malformed
+    responses.
+  </summary>
+</histogram>
+
 <histogram name="Security.SafetyTips.Interaction{SafetyTip}"
     enum="SafetyTipInteraction" expires_after="2023-06-18">
   <owner>jdeblasio@chromium.org</owner>

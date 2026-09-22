@@ -9,8 +9,11 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_metrics.h"
 #include "net/base/features.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
@@ -58,6 +61,19 @@ void PrivateVerificationTokensURLLoaderThrottle::WillStartRequest(
   request->headers.RemoveHeader(
       net::HttpRequestHeaders::kSecPrivateVerificationToken);
 
+  if (!request->request_initiator.has_value()) {
+    // PVT feature code is executed only for browser-initiated requests.
+    // This metric is intentionally recorded as a raw volume counter rather
+    // than a boolean, because the throttle is never instantiated upstream
+    // when the feature is disabled. For Origin Trial capacity calculations,
+    // this acts as the specific volume numerator. The correct denominator
+    // to determine the global experimentation percentage of Chrome traffic
+    // is Navigation.MainFrameProfileTypeDifferentPage2, which tracks all
+    // cross-document outermost main frame navigations globally.
+    base::UmaHistogramExactLinear(
+        private_verification_tokens::kFeatureActiveHistogram, 1, 2);
+  }
+
   // Token Issuance: Trigger token fetch if request_initiator is null and not
   // off the record.
   if (!request->request_initiator.has_value() &&
@@ -76,10 +92,16 @@ void PrivateVerificationTokensURLLoaderThrottle::WillStartRequest(
       !request->headers.HasHeader(net::HttpRequestHeaders::kCookie) &&
       request->credentials_mode != network::mojom::CredentialsMode::kOmit &&
       request->is_outermost_main_frame && top_frame_matches) {
+    base::TimeTicks start_time = base::TimeTicks::Now();
     auto token_info = pvt_service_->GetTokenForRedemption(
         *request->trusted_params->isolation_info.top_frame_origin(),
         profile_.get());
     if (token_info.has_value()) {
+      base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+      base::UmaHistogramCustomMicrosecondsTimes(
+          private_verification_tokens::kTokenAttachTimeHistogram, elapsed,
+          base::Microseconds(1), base::Milliseconds(100), 50);
+
       token_id_ = token_info->first;
       redeemer_origin_ =
           *request->trusted_params->isolation_info.top_frame_origin();

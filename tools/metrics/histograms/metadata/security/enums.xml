@@ -421,6 +421,24 @@ chromium-metrics-reviews@google.com.
              outermost main frame"/>
 </enum>
 
+<enum name="PrivateVerificationTokensFetchSetupResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid Version"/>
+  <int value="2" label="Fetcher Initialization Failed"/>
+</enum>
+
+<enum name="PrivateVerificationTokensTokenParsingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Net Error"/>
+  <int value="2" label="Null Response"/>
+  <int value="3" label="Invalid Batch Size"/>
+  <int value="4" label="Invalid Bucket Count"/>
+  <int value="5" label="Client Request Generation Failed"/>
+  <int value="6" label="Already Finalized"/>
+  <int value="7" label="Invalid Response Body Length"/>
+  <int value="8" label="Client Finalize Failed"/>
+</enum>
+
 <enum name="ReusePendingOrCommittedSiteEnum">
   <int value="0" label="Had to create a new RenderProcessHost"/>
   <int value="1" label="Could reuse an existing RenderProcessHost"/>

@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -27,6 +28,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_metrics.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,7 +42,9 @@ namespace {
 const base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PrivateVerificationTokens");
 
+using private_verification_tokens::PrivacyPassAthmBatchRequestError;
 using private_verification_tokens::PrivateVerificationTokensStore;
+using private_verification_tokens::TryGetTokensError;
 
 const char* PrivacyPassAthmBatchRequestErrorToString(
     private_verification_tokens::PrivacyPassAthmBatchRequestError error) {
@@ -75,6 +79,7 @@ const char* TryGetTokensErrorToString(
       return "kNullResponse";
   }
 }
+
 const char kOtrIssuerTrackerKey[] = "PrivateVerificationTokensOtrTracker";
 
 class OtrIssuerTracker : public base::SupportsUserData::Data {
@@ -94,6 +99,42 @@ OtrIssuerTracker* GetOrCreateOtrTracker(Profile* profile) {
 }
 
 }  // namespace
+
+namespace private_verification_tokens {
+
+PrivateVerificationTokensTokenParsingResult MapTryGetTokensErrorToParsingResult(
+    TryGetTokensError error) {
+  switch (error) {
+    case TryGetTokensError::kNullResponse:
+      return PrivateVerificationTokensTokenParsingResult::kNullResponse;
+    case TryGetTokensError::kNetNotOk:
+      return PrivateVerificationTokensTokenParsingResult::kNetError;
+  }
+  NOTREACHED();
+}
+
+PrivateVerificationTokensTokenParsingResult MapPrivacyPassErrorToParsingResult(
+    PrivacyPassAthmBatchRequestError error) {
+  switch (error) {
+    case PrivacyPassAthmBatchRequestError::kInvalidBatchSize:
+      return PrivateVerificationTokensTokenParsingResult::kInvalidBatchSize;
+    case PrivacyPassAthmBatchRequestError::kInvalidBucketCount:
+      return PrivateVerificationTokensTokenParsingResult::kInvalidBucketCount;
+    case PrivacyPassAthmBatchRequestError::kClientRequestGenerationFailed:
+      return PrivateVerificationTokensTokenParsingResult::
+          kClientRequestGenerationFailed;
+    case PrivacyPassAthmBatchRequestError::kAlreadyFinalized:
+      return PrivateVerificationTokensTokenParsingResult::kAlreadyFinalized;
+    case PrivacyPassAthmBatchRequestError::kInvalidResponseBodyLength:
+      return PrivateVerificationTokensTokenParsingResult::
+          kInvalidResponseBodyLength;
+    case PrivacyPassAthmBatchRequestError::kClientFinalizeFailed:
+      return PrivateVerificationTokensTokenParsingResult::kClientFinalizeFailed;
+  }
+  NOTREACHED();
+}
+
+}  // namespace private_verification_tokens
 
 // static
 std::unique_ptr<PrivateVerificationTokensService>
@@ -384,6 +425,10 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   if (!params.has_value()) {
     VLOG(1) << "Invalid version value in PVT config. Version: "
             << config.public_key.version();
+    base::UmaHistogramEnumeration(
+        private_verification_tokens::kFetchSetupResultHistogram,
+        private_verification_tokens::PrivateVerificationTokensFetchSetupResult::
+            kInvalidVersion);
     return;
   }
 
@@ -395,6 +440,9 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   if (!batch_request.has_value()) {
     VLOG(1) << "PVT token request derivation failed with error: "
             << PrivacyPassAthmBatchRequestErrorToString(batch_request.error());
+    base::UmaHistogramEnumeration(
+        private_verification_tokens::kTokenParsingResultHistogram,
+        MapPrivacyPassErrorToParsingResult(batch_request.error()));
     return;
   }
 
@@ -405,8 +453,17 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   if (!fetcher) {
     VLOG(1) << "Failed to initialize PVT fetcher for URL: "
             << config.issuer_request_url;
+    base::UmaHistogramEnumeration(
+        private_verification_tokens::kFetchSetupResultHistogram,
+        private_verification_tokens::PrivateVerificationTokensFetchSetupResult::
+            kFetcherInitFailed);
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      private_verification_tokens::kFetchSetupResultHistogram,
+      private_verification_tokens::PrivateVerificationTokensFetchSetupResult::
+          kSuccess);
 
   auto* fetcher_ptr = fetcher.get();
   active_fetchers_[issuer] = std::move(fetcher);
@@ -418,11 +475,14 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
   base::Time expiration = config.public_key.expiration();
   uint32_t version = config.public_key.version();
 
+  base::TimeTicks fetch_start_time = base::TimeTicks::Now();
+
   fetcher_ptr->TryGetTokens(
       std::move(request_body),
       base::BindOnce(&PrivateVerificationTokensService::OnFetchTokensCompleted,
                      weak_ptr_factory_.GetWeakPtr(), issuer,
-                     std::move(*batch_request), key_id, expiration, version));
+                     std::move(*batch_request), key_id, expiration, version,
+                     fetch_start_time));
 }
 
 void PrivateVerificationTokensService::OnFetchTokensCompleted(
@@ -431,16 +491,22 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
     uint32_t key_id,
     base::Time expiration,
     uint32_t version,
+    base::TimeTicks fetch_start_time,
     base::expected<std::string, private_verification_tokens::TryGetTokensResult>
         result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   active_fetchers_.erase(issuer);
+
   if (!result.has_value()) {
     VLOG(1) << "PVT fetcher failed with error: "
             << TryGetTokensErrorToString(result.error().error)
             << ", network error code: " << result.error().network_error_code;
+    base::UmaHistogramEnumeration(
+        private_verification_tokens::kTokenParsingResultHistogram,
+        MapTryGetTokensErrorToParsingResult(result.error().error));
     return;
   }
+
   base::expected<std::vector<std::vector<uint8_t>>,
                  private_verification_tokens::PrivacyPassAthmBatchRequestError>
       finalized_tokens =
@@ -449,8 +515,21 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
     VLOG(1) << "PVT response parsing failed with error: "
             << PrivacyPassAthmBatchRequestErrorToString(
                    finalized_tokens.error());
+    base::UmaHistogramEnumeration(
+        private_verification_tokens::kTokenParsingResultHistogram,
+        MapPrivacyPassErrorToParsingResult(finalized_tokens.error()));
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      private_verification_tokens::kTokenParsingResultHistogram,
+      private_verification_tokens::PrivateVerificationTokensTokenParsingResult::
+          kSuccess);
+
+  base::TimeDelta fetch_time = base::TimeTicks::Now() - fetch_start_time;
+  base::UmaHistogramMediumTimes(
+      private_verification_tokens::kTokenFetchTimeHistogram, fetch_time);
+
   std::vector<private_verification_tokens::PrivateVerificationTokensToken>
       tokens;
   tokens.reserve(finalized_tokens->size());
@@ -458,6 +537,7 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
     tokens.emplace_back(issuer, std::move(token_bytes), key_id, expiration,
                         version);
   }
+
   StoreTokens(std::move(tokens), base::DoNothing());
 }
 
@@ -501,19 +581,25 @@ PrivateVerificationTokensService::GetTokenForRedemption(
         config_it->second.public_key.version());
     if (params.has_value() &&
         tracker->issuers.size() >= params->max_distinct_issuers_per_session) {
-      base::UmaHistogramBoolean("PrivateVerificationTokens.RedemptionLimitHit",
-                                true);
+      base::UmaHistogramBoolean(
+          private_verification_tokens::kRedemptionLimitHitHistogram, true);
       return std::nullopt;
     }
+    base::UmaHistogramBoolean(
+        private_verification_tokens::kRedemptionLimitHitHistogram, false);
   }
 
   CHECK(store_);
   const auto& tokens = store_->tokens();
   auto it = tokens.find(matching_issuer);
   if (it == tokens.end()) {
+    base::UmaHistogramBoolean(private_verification_tokens::kEmptyCacheHistogram,
+                              true);
     return std::nullopt;
   }
 
+  base::UmaHistogramBoolean(private_verification_tokens::kEmptyCacheHistogram,
+                            false);
   std::string base64_token = base::Base64Encode(it->second.token.token());
   return std::make_pair(it->second.id, std::move(base64_token));
 }

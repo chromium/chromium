@@ -18,13 +18,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_fetcher.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 
 namespace private_verification_tokens {
-class PrivacyPassAthmBatchRequest;
+enum class PrivacyPassAthmBatchRequestError;
+enum class PrivateVerificationTokensTokenParsingResult;
 }
 
 namespace url {
@@ -34,6 +36,17 @@ class Origin;
 namespace network {
 class SharedURLLoaderFactory;
 }
+
+namespace private_verification_tokens {
+class PrivacyPassAthmBatchRequest;
+
+// Exposed purely for testing the exhaustive enum mappings statically.
+PrivateVerificationTokensTokenParsingResult MapTryGetTokensErrorToParsingResult(
+    TryGetTokensError error);
+
+PrivateVerificationTokensTokenParsingResult MapPrivacyPassErrorToParsingResult(
+    PrivacyPassAthmBatchRequestError error);
+}  // namespace private_verification_tokens
 
 class GURL;
 class HostContentSettingsMap;
@@ -141,6 +154,7 @@ class PrivateVerificationTokensService : public KeyedService {
       uint32_t key_id,
       base::Time expiration,
       uint32_t version,
+      base::TimeTicks fetch_start_time,
       base::expected<std::string,
                      private_verification_tokens::TryGetTokensResult> result);
 

@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -26,6 +27,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_metrics.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "content/public/test/browser_task_environment.h"
@@ -817,6 +819,41 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
 
   EXPECT_FALSE(request2.headers.HasHeader(
       net::HttpRequestHeaders::kSecPrivateVerificationToken));
+}
+
+TEST_F(PrivateVerificationTokensURLLoaderThrottleTest, Metrics_FeatureActive) {
+  base::HistogramTester histogram_tester;
+  auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), nullptr, shared_url_loader_factory());
+  ASSERT_TRUE(throttle);
+
+  auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
+  bool defer = false;
+  throttle->WillStartRequest(&request, &defer);
+
+  histogram_tester.ExpectUniqueSample(
+      private_verification_tokens::kFeatureActiveHistogram, 1, 1);
+}
+
+TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
+       Metrics_TokenAttachedAndAttachTime) {
+  base::HistogramTester histogram_tester;
+  WaitForInitialization(service());
+  StoreTestTokens(service());
+  SetTestIssuerConfig(service());
+
+  auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
+      service(), nullptr, shared_url_loader_factory());
+  ASSERT_TRUE(throttle);
+
+  auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
+  bool defer = false;
+  throttle->WillStartRequest(&request, &defer);
+
+  EXPECT_TRUE(request.headers.HasHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken));
+  histogram_tester.ExpectTotalCount(
+      private_verification_tokens::kTokenAttachTimeHistogram, 1);
 }
 
 }  // namespace
