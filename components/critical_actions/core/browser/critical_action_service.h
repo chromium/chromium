@@ -131,9 +131,16 @@ class CriticalActionService : public KeyedService,
   // resolutions.
   base::LRUCache<int64_t, NavigationState> navigation_cache_;
 
-  // TODO(b/561944228): Capacity-limited LRU cache mapping actor_task_id to
-  // conversation_id.
+  // Capacity-limited LRU cache mapping actor_task_id to conversation_id.
+  // TODO(b/561944228): Remove when b/494212836 is fixed and conversation_id is
+  // available when logging critical actions.
   base::LRUCache<std::string, std::string> task_to_conversation_cache_;
+
+  // Capacity-limited LRU cache mapping actor_task_id to critical_action_ids.
+  // TODO(b/561944228): Remove when b/494212836 is fixed and conversation_id is
+  // available when logging critical actions.
+  base::LRUCache<std::string, std::vector<std::string>>
+      task_to_critical_action_ids_cache_;
 };
 
 }  // namespace critical_actions

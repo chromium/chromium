@@ -44,9 +44,9 @@ class CriticalActionBackend {
   void AddCriticalAction(const CriticalActionEntry& entry);
 
   // Associates conversation_id with all critical actions matching
-  // actor_task_ids.
+  // critical_action_ids.
   void SetCriticalActionsConversationId(
-      const std::vector<std::string>& actor_task_ids,
+      const std::vector<std::string>& critical_action_ids,
       std::string_view conversation_id);
 
   // Retrieves a critical action record by its client UUID.

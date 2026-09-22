@@ -50,7 +50,7 @@ TEST_F(CriticalActionBackendTest, CallBeforeInitReturnsGracefully) {
   // Database is not initialized. All the operations should return gracefully
   // without crashing.
   backend_->AddCriticalAction(entry);
-  backend_->SetCriticalActionsConversationId({"task_id"}, "conv_id");
+  backend_->SetCriticalActionsConversationId({action_id}, "conv_id");
   EXPECT_FALSE(backend_->GetCriticalAction(action_id).has_value());
   backend_->DeleteCriticalAction(action_id);
   backend_->DeleteCriticalActionsInTimeRange(base::Time::Now(),
@@ -102,7 +102,7 @@ TEST_F(CriticalActionBackendTest, SetCriticalActionsConversationId) {
   ASSERT_TRUE(retrieved.has_value());
   EXPECT_TRUE(retrieved->conversation_id.empty());
 
-  backend_->SetCriticalActionsConversationId({task_id}, conv_id);
+  backend_->SetCriticalActionsConversationId({action_id}, conv_id);
 
   retrieved = backend_->GetCriticalAction(action_id);
   ASSERT_TRUE(retrieved.has_value());

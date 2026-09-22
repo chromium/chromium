@@ -605,122 +605,65 @@ TEST(CriticalActionDatabaseHelpersTest,
   EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC LIMIT ?"));
 }
 
-namespace {
-
-struct SetCriticalActionsConversationIdTestCase {
-  std::string test_name;
-  std::vector<std::string> actor_task_ids_to_resolve;
-  std::vector<std::string> entry_task_ids;
-  base::flat_map<std::string, std::string> expected_conversation_ids;
-};
-
-}  // namespace
-
-class SetCriticalActionsConversationIdTest
-    : public CriticalActionDatabaseTest,
-      public ::testing::WithParamInterface<
-          SetCriticalActionsConversationIdTestCase> {};
-
-// Tests SetCriticalActionsConversationId with various task ID sets.
-TEST_P(SetCriticalActionsConversationIdTest, SetCriticalActionsConversationId) {
-  const SetCriticalActionsConversationIdTestCase& test_case = GetParam();
-
+TEST_F(CriticalActionDatabaseTest, SetCriticalActionsConversationId) {
   CriticalActionDatabase database(db_path_);
   ASSERT_TRUE(database.Init());
 
-  std::vector<CriticalActionEntry> entries;
-  for (const auto& task_id : test_case.entry_task_ids) {
-    CriticalActionEntry entry = CreateDefaultEntry();
-    entry.actor_task_id = task_id;
-    EXPECT_TRUE(database.AddCriticalAction(entry));
-    entries.push_back(entry);
-  }
+  const std::string action_id1 = "action_1";
+  const std::string action_id2 = "action_2";
+  const std::string conv_id = "conv_1";
 
-  // Before resolution, none of the entries should have a conversation ID.
-  for (const auto& entry : entries) {
-    SCOPED_TRACE(entry.actor_task_id);
-    auto retrieved = database.GetCriticalAction(entry.critical_action_id);
-    ASSERT_TRUE(retrieved.has_value());
-    EXPECT_TRUE(retrieved->conversation_id.empty());
-  }
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.critical_action_id = action_id1;
+  ASSERT_TRUE(database.AddCriticalAction(entry1));
 
-  EXPECT_TRUE(database.SetCriticalActionsConversationId(
-      test_case.actor_task_ids_to_resolve, "conv_resolved1"));
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.critical_action_id = action_id2;
+  ASSERT_TRUE(database.AddCriticalAction(entry2));
 
-  for (const auto& entry : entries) {
-    SCOPED_TRACE(entry.actor_task_id);
-    auto retrieved = database.GetCriticalAction(entry.critical_action_id);
-    ASSERT_TRUE(retrieved.has_value());
-    EXPECT_EQ(retrieved->conversation_id,
-              test_case.expected_conversation_ids.at(entry.actor_task_id));
-  }
+  // Before associating conversation ID, conversation_id is empty.
+  auto retrieved1 = database.GetCriticalAction(action_id1);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_TRUE(retrieved1->conversation_id.empty());
+
+  // Associate conversation ID with action_id1.
+  EXPECT_TRUE(database.SetCriticalActionsConversationId({action_id1}, conv_id));
+
+  retrieved1 = database.GetCriticalAction(action_id1);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->conversation_id, conv_id);
+
+  // action_id2 remains without conversation ID.
+  auto retrieved2 = database.GetCriticalAction(action_id2);
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_TRUE(retrieved2->conversation_id.empty());
 
   database.Close();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SetCriticalActionsConversationIdTest,
-    testing::Values(
-        SetCriticalActionsConversationIdTestCase{
-            .test_name = "SubsetResolves",
-            .actor_task_ids_to_resolve = {"task_1", "task_2"},
-            .entry_task_ids = {"task_1", "task_2", "task_other"},
-            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
-                                          {"task_2", "conv_resolved1"},
-                                          {"task_other", ""}},
-        },
-        SetCriticalActionsConversationIdTestCase{
-            .test_name = "AllResolve",
-            .actor_task_ids_to_resolve = {"task_1", "task_2", "task_other"},
-            .entry_task_ids = {"task_1", "task_2", "task_other"},
-            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
-                                          {"task_2", "conv_resolved1"},
-                                          {"task_other", "conv_resolved1"}},
-        },
-        SetCriticalActionsConversationIdTestCase{
-            .test_name = "NoneResolve",
-            .actor_task_ids_to_resolve = {"task_unknown"},
-            .entry_task_ids = {"task_1", "task_2", "task_other"},
-            .expected_conversation_ids = {{"task_1", ""},
-                                          {"task_2", ""},
-                                          {"task_other", ""}},
-        }),
-    [](const testing::TestParamInfo<SetCriticalActionsConversationIdTestCase>&
-           info) { return info.param.test_name; });
-
 TEST_F(CriticalActionDatabaseTest,
-       SetCriticalActionsConversationId_OnlyUpdatesMostRecentAction) {
+       SetCriticalActionsConversationIdEmptyActionIds) {
   CriticalActionDatabase database(db_path_);
   ASSERT_TRUE(database.Init());
 
-  base::Time base_time = base::Time::Now();
-  const std::string kActorTaskId = "test_task";
-  const std::string kConversationId = "test_conv";
+  // Empty action IDs is a no-op that returns true.
+  EXPECT_TRUE(database.SetCriticalActionsConversationId({}, "conv_1"));
 
-  CriticalActionEntry older_entry = CreateDefaultEntry();
-  older_entry.actor_task_id = kActorTaskId;
-  older_entry.timestamp = base_time - base::Hours(1);
-  ASSERT_TRUE(database.AddCriticalAction(older_entry));
+  database.Close();
+}
 
-  CriticalActionEntry newer_entry = CreateDefaultEntry();
-  newer_entry.actor_task_id = kActorTaskId;
-  newer_entry.timestamp = base_time;
-  ASSERT_TRUE(database.AddCriticalAction(newer_entry));
+TEST_F(CriticalActionDatabaseTest,
+       SetCriticalActionsConversationIdEmptyConversationId) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
 
-  EXPECT_TRUE(database.SetCriticalActionsConversationId({kActorTaskId},
-                                                        kConversationId));
+  const std::string action_id = "action_1";
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.critical_action_id = action_id;
+  ASSERT_TRUE(database.AddCriticalAction(entry));
 
-  // Only the most recent critical action for `kActorTaskId` should be updated.
-  auto retrieved_newer =
-      database.GetCriticalAction(newer_entry.critical_action_id);
-  ASSERT_TRUE(retrieved_newer.has_value());
-  EXPECT_EQ(retrieved_newer->conversation_id, kConversationId);
-
-  auto retrieved_older =
-      database.GetCriticalAction(older_entry.critical_action_id);
-  ASSERT_TRUE(retrieved_older.has_value());
-  EXPECT_TRUE(retrieved_older->conversation_id.empty());
+  // Empty conversation ID returns false.
+  EXPECT_FALSE(database.SetCriticalActionsConversationId({action_id}, ""));
 
   database.Close();
 }

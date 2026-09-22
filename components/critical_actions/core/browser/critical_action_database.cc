@@ -415,10 +415,10 @@ bool CriticalActionDatabase::AddCriticalAction(
 }
 
 bool CriticalActionDatabase::SetCriticalActionsConversationId(
-    const std::vector<std::string>& actor_task_ids,
+    const std::vector<std::string>& critical_action_ids,
     std::string_view conversation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (actor_task_ids.empty()) {
+  if (critical_action_ids.empty()) {
     // No-op succeeds since nothing needs updating.
     return true;
   }
@@ -431,18 +431,6 @@ bool CriticalActionDatabase::SetCriticalActionsConversationId(
     return false;
   }
 
-  // Selects critical actions lacking a conversation ID, ordered so the most
-  // recent is entry is first.
-  sql::Statement select_stmt(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT e.critical_action_id "
-      "FROM CriticalActionEntries e "
-      "LEFT JOIN CriticalActionConversations c "
-      "  ON e.critical_action_id = c.critical_action_id "
-      "WHERE e.actor_task_id = ? "
-      "AND (c.conversation_id IS NULL OR c.conversation_id = '') "
-      "ORDER BY e.timestamp DESC"));
-
   // Unlike DeleteCriticalActionsByVisitIds which runs rarely and in bulk, this
   // is called often with only a few actor tasks per conversation, making
   // GetCachedStatement preferred over dynamic statement compilation.
@@ -451,18 +439,12 @@ bool CriticalActionDatabase::SetCriticalActionsConversationId(
       "INSERT OR REPLACE INTO CriticalActionConversations "
       "(critical_action_id, conversation_id) VALUES (?, ?) "));
 
-  for (const std::string& task_id : actor_task_ids) {
-    select_stmt.Reset(true);
-    select_stmt.BindString(0, task_id);
-
-    // Only step once to update the most recent critical action.
-    if (select_stmt.Step()) {
-      insert_stmt.Reset(true);
-      insert_stmt.BindString(0, select_stmt.ColumnString(0));
-      insert_stmt.BindString(1, conversation_id);
-      if (!insert_stmt.Run()) {
-        return false;
-      }
+  for (const std::string& critical_action_id : critical_action_ids) {
+    insert_stmt.Reset(true);
+    insert_stmt.BindString(0, critical_action_id);
+    insert_stmt.BindString(1, conversation_id);
+    if (!insert_stmt.Run()) {
+      return false;
     }
   }
 

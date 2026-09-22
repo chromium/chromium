@@ -54,7 +54,9 @@ CriticalActionService::CriticalActionService(
     : backend_(backend_task_runner, db_path),
       navigation_cache_(features::kMaxNavigationCacheCapacity.Get()),
       task_to_conversation_cache_(
-          features::kMaxTaskToConversationCacheCapacity.Get()) {
+          features::kMaxTaskToConversationCacheCapacity.Get()),
+      task_to_critical_action_ids_cache_(
+          features::kMaxTaskToCriticalActionIdsCacheCapacity.Get()) {
   backend_.AsyncCall(&CriticalActionBackend::Init);
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -74,6 +76,7 @@ void CriticalActionService::Shutdown() {
   }
   navigation_cache_.Clear();
   task_to_conversation_cache_.Clear();
+  task_to_critical_action_ids_cache_.Clear();
   backend_.Reset();
 }
 
@@ -152,12 +155,27 @@ void CriticalActionService::SetCriticalActionsConversationId(
 
   // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
   // temporary solution while b/494212836 is in place; remove once fixed.
+  std::vector<std::string> critical_action_ids_to_update;
   for (const std::string& task_id : actor_task_ids) {
+    // Always populate `task_to_conversation_cache_` so that any subsequent
+    // critical actions logged for this task ID can immediately resolve their
+    // conversation ID.
     task_to_conversation_cache_.Put(task_id, std::string(conversation_id));
+
+    auto it = task_to_critical_action_ids_cache_.Get(task_id);
+    if (it != task_to_critical_action_ids_cache_.end()) {
+      critical_action_ids_to_update.insert(critical_action_ids_to_update.end(),
+                                           it->second.begin(),
+                                           it->second.end());
+      task_to_critical_action_ids_cache_.Erase(it);
+    }
   }
 
-  backend_.AsyncCall(&CriticalActionBackend::SetCriticalActionsConversationId)
-      .WithArgs(actor_task_ids, std::string(conversation_id));
+  if (!critical_action_ids_to_update.empty()) {
+    backend_.AsyncCall(&CriticalActionBackend::SetCriticalActionsConversationId)
+        .WithArgs(std::move(critical_action_ids_to_update),
+                  std::string(conversation_id));
+  }
 }
 
 void CriticalActionService::AddCriticalActionWithNavigationId(
@@ -274,6 +292,16 @@ void CriticalActionService::MaybeSetConversationId(CriticalActionEntry& entry) {
     auto it = task_to_conversation_cache_.Get(entry.actor_task_id);
     if (it != task_to_conversation_cache_.end()) {
       entry.conversation_id = it->second;
+    } else {
+      auto critical_action_it =
+          task_to_critical_action_ids_cache_.Get(entry.actor_task_id);
+      if (critical_action_it != task_to_critical_action_ids_cache_.end()) {
+        critical_action_it->second.push_back(entry.critical_action_id);
+      } else {
+        task_to_critical_action_ids_cache_.Put(
+            entry.actor_task_id,
+            std::vector<std::string>{entry.critical_action_id});
+      }
     }
   }
 }

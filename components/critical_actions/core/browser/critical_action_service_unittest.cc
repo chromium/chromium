@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -481,6 +482,135 @@ INSTANTIATE_TEST_SUITE_P(
                 }}),
     [](const testing::TestParamInfo<
         CriticalActionServiceConversationIdTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_F(CriticalActionServiceTest,
+       SubsequentActionAfterConversationRegistered) {
+  const std::string task_id = "task_multi_action";
+  const std::string conv_id = "conv_multi_action";
+
+  // First action occurs before conversation is registered.
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = task_id;
+  service_->AddCriticalAction(entry1);
+
+  // Conversation is registered.
+  service_->SetCriticalActionsConversationId({task_id}, conv_id);
+
+  // Second action occurs after conversation is registered.
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = task_id;
+  service_->AddCriticalAction(entry2);
+
+  // Verify both entries received the conversation_id.
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future1;
+  service_->GetCriticalAction(entry1.critical_action_id,
+                              get_future1.GetCallback());
+  auto retrieved1 = get_future1.Get();
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->conversation_id, conv_id);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_future2;
+  service_->GetCriticalAction(entry2.critical_action_id,
+                              get_future2.GetCallback());
+  auto retrieved2 = get_future2.Get();
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_EQ(retrieved2->conversation_id, conv_id);
+}
+
+namespace {
+
+struct SetCriticalActionsConversationIdServiceTestCase {
+  std::string test_name;
+  std::vector<std::string> actor_task_ids_to_resolve;
+  std::vector<std::string> entry_task_ids;
+  base::flat_map<std::string, std::string> expected_conversation_ids;
+};
+
+}  // namespace
+
+class SetCriticalActionsConversationIdServiceTest
+    : public CriticalActionServiceTest,
+      public ::testing::WithParamInterface<
+          SetCriticalActionsConversationIdServiceTestCase> {};
+
+TEST_P(SetCriticalActionsConversationIdServiceTest,
+       SetCriticalActionsConversationId) {
+  const SetCriticalActionsConversationIdServiceTestCase& test_case = GetParam();
+  const std::string kConvId = "conv_resolved1";
+
+  std::vector<CriticalActionEntry> entries;
+  for (const auto& task_id : test_case.entry_task_ids) {
+    CriticalActionEntry entry = CreateDefaultEntry();
+    entry.actor_task_id = task_id;
+    service_->AddCriticalAction(entry);
+    entries.push_back(entry);
+  }
+
+  // Before resolution, none of the entries should have a conversation ID.
+  for (const auto& entry : entries) {
+    SCOPED_TRACE(entry.actor_task_id);
+    base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+    service_->GetCriticalAction(entry.critical_action_id,
+                                get_future.GetCallback());
+    auto retrieved = get_future.Get();
+    ASSERT_TRUE(retrieved.has_value());
+    EXPECT_TRUE(retrieved->conversation_id.empty());
+  }
+
+  service_->SetCriticalActionsConversationId(
+      test_case.actor_task_ids_to_resolve, kConvId);
+
+  for (const auto& entry : entries) {
+    SCOPED_TRACE(entry.actor_task_id);
+    base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+    service_->GetCriticalAction(entry.critical_action_id,
+                                get_future.GetCallback());
+    auto retrieved = get_future.Get();
+    ASSERT_TRUE(retrieved.has_value());
+    EXPECT_EQ(retrieved->conversation_id,
+              test_case.expected_conversation_ids.at(entry.actor_task_id));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SetCriticalActionsConversationIdServiceTest,
+    testing::Values(
+        SetCriticalActionsConversationIdServiceTestCase{
+            .test_name = "SubsetResolves",
+            .actor_task_ids_to_resolve = {"task_1", "task_2"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
+                                          {"task_2", "conv_resolved1"},
+                                          {"task_other", ""}},
+        },
+        SetCriticalActionsConversationIdServiceTestCase{
+            .test_name = "AllResolve",
+            .actor_task_ids_to_resolve = {"task_1", "task_2", "task_other"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
+                                          {"task_2", "conv_resolved1"},
+                                          {"task_other", "conv_resolved1"}},
+        },
+        SetCriticalActionsConversationIdServiceTestCase{
+            .test_name = "NoneResolve",
+            .actor_task_ids_to_resolve = {"task_unknown"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", ""},
+                                          {"task_2", ""},
+                                          {"task_other", ""}},
+        },
+        SetCriticalActionsConversationIdServiceTestCase{
+            .test_name = "MultipleActionsSameTask",
+            .actor_task_ids_to_resolve = {"task_1"},
+            .entry_task_ids = {"task_1", "task_1", "task_other"},
+            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
+                                          {"task_other", ""}},
+        }),
+    [](const testing::TestParamInfo<
+        SetCriticalActionsConversationIdServiceTestCase>& info) {
       return info.param.test_name;
     });
 

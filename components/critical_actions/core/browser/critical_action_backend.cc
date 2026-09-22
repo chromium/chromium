@@ -54,15 +54,17 @@ void CriticalActionBackend::AddCriticalAction(
 }
 
 void CriticalActionBackend::SetCriticalActionsConversationId(
-    const std::vector<std::string>& actor_task_ids,
+    const std::vector<std::string>& critical_action_ids,
     std::string_view conversation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "CriticalActionBackend::SetCriticalActionsConversationId: tasks="
-          << actor_task_ids.size() << ", conv_id=" << conversation_id;
+  VLOG(1) << "CriticalActionBackend::SetCriticalActionsConversationId: "
+             "critical_action_ids="
+          << critical_action_ids.size() << ", conv_id=" << conversation_id;
   if (!db_) {
     return;
   }
-  if (!db_->SetCriticalActionsConversationId(actor_task_ids, conversation_id)) {
+  if (!db_->SetCriticalActionsConversationId(critical_action_ids,
+                                             conversation_id)) {
     LOG(WARNING) << "Failed to set critical actions conversation ID";
   }
 }
