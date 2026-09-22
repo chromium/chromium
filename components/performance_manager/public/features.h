@@ -202,6 +202,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // enabled.
 BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
 
+// If enabled, periodic unfreezing of tabs is disabled while the system is under
+// critical memory pressure.
+BASE_DECLARE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure);
+
 // If enabled, tabs may be discarded on Windows when the system approaches the
 // commit limit.
 BASE_DECLARE_FEATURE(kDiscardOnCommitLimit);

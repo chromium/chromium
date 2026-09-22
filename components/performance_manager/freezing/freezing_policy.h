@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
@@ -87,10 +88,10 @@ class FreezingPolicy : public PageNodeObserver,
   bool IsPeriodicUnfreezeTimerRunningForTesting(
       const PageNode* page_node) const;
 
-  // Simulates a memory pressure state update through the production transition
-  // path, including deduplication, timer reconciliation, and page state
-  // updates.
+  // Updates the memory pressure level for testing.
   void SetIsUnderMemoryPressureForTesting(bool is_under_memory_pressure);
+  void SetMemoryPressureLevelForTesting(
+      base::MemoryPressureLevel memory_pressure_level);
 
   // Invoked freezing on battery saver is enabled or disabled.
   void ToggleFreezingOnBatterySaverMode(bool is_enabled);
@@ -309,7 +310,8 @@ class FreezingPolicy : public PageNodeObserver,
   void CheckMemoryPressureForFreezing();
 
   // Updates the cached memory pressure state and reconciles policy state.
-  void OnMemoryPressureStateChanged(bool is_under_memory_pressure);
+  void OnMemoryPressureStateChanged(
+      base::MemoryPressureLevel memory_pressure_level);
 
   // Triggers a re-evaluation of the frozen state for all pages in the graph.
   void UpdateAllPagesFrozenState(base::LiveTicks now);
@@ -359,9 +361,9 @@ class FreezingPolicy : public PageNodeObserver,
   // Timer to periodically check system memory.
   base::RepeatingTimer memory_check_timer_;
 
-  // True if the system is considered to be under memory pressure by our
-  // internal check.
-  bool is_under_memory_pressure_ = false;
+  // Current memory pressure level of the system.
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };

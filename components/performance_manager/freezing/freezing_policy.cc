@@ -39,6 +39,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
+#endif
+
 namespace performance_manager {
 
 namespace {
@@ -262,7 +266,9 @@ FreezingPolicy::FreezingPolicy(
   }
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(
-          features::kInfiniteTabsFreezingOnMemoryPressure)) {
+          features::kInfiniteTabsFreezingOnMemoryPressure) ||
+      base::FeatureList::IsEnabled(
+          features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure)) {
     memory_check_timer_.Start(
         FROM_HERE,
         features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get(), this,
@@ -280,7 +286,21 @@ bool FreezingPolicy::IsPeriodicUnfreezeTimerRunningForTesting(
 
 void FreezingPolicy::SetIsUnderMemoryPressureForTesting(
     bool is_under_memory_pressure) {
-  OnMemoryPressureStateChanged(is_under_memory_pressure);
+#if BUILDFLAG(IS_WIN)
+  memory_check_timer_.Stop();
+#endif
+  OnMemoryPressureStateChanged(
+      is_under_memory_pressure
+          ? base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE
+          : base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE);
+}
+
+void FreezingPolicy::SetMemoryPressureLevelForTesting(
+    base::MemoryPressureLevel memory_pressure_level) {
+#if BUILDFLAG(IS_WIN)
+  memory_check_timer_.Stop();
+#endif
+  OnMemoryPressureStateChanged(memory_pressure_level);
 }
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
@@ -446,6 +466,7 @@ void FreezingPolicy::UpdateFrozenState(
 
   const double high_cpu_proportion = features::kFreezingHighCPUProportion.Get();
 
+  const bool is_periodic_unfreezing_active = IsPeriodicUnfreezingActive();
   for (const PageNode* visited_page : connected_pages) {
     auto& page_freezing_state = GetFreezingState(visited_page);
 
@@ -456,7 +477,8 @@ void FreezingPolicy::UpdateFrozenState(
       all_pages_have_freeze_vote = false;
     }
 
-    if (page_freezing_state.IsInUnfreezePeriod(now)) {
+    if (is_periodic_unfreezing_active &&
+        page_freezing_state.IsInUnfreezePeriod(now)) {
       is_in_periodic_unfreeze = true;
     }
 
@@ -491,7 +513,9 @@ void FreezingPolicy::UpdateFrozenState(
   } else if (is_freezing_enabled_by_user_ &&
              can_freeze_per_type_tracker.CanFreeze(
                  FreezingType::kInfiniteTabs) &&
-             !is_in_periodic_unfreeze && is_under_memory_pressure_ &&
+             !is_in_periodic_unfreeze &&
+             memory_pressure_level_ !=
+                 base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE &&
              base::FeatureList::IsEnabled(
                  features::kInfiniteTabsFreezingOnMemoryPressure)) {
     should_be_frozen = true;
@@ -1266,11 +1290,20 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
 }
 
 bool FreezingPolicy::IsPeriodicUnfreezingActive() const {
-  return is_freezing_enabled_by_user_ &&
-         (base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
-          (base::FeatureList::IsEnabled(
-               features::kInfiniteTabsFreezingOnMemoryPressure) &&
-           is_under_memory_pressure_));
+  if (!is_freezing_enabled_by_user_) {
+    return false;
+  }
+  if (memory_pressure_level_ ==
+          base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL &&
+      base::FeatureList::IsEnabled(
+          features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
+         (base::FeatureList::IsEnabled(
+              features::kInfiniteTabsFreezingOnMemoryPressure) &&
+          memory_pressure_level_ !=
+              base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE);
 }
 
 void FreezingPolicy::UpdatePeriodicUnfreezeTimer(const PageNode* page_node,
@@ -1491,21 +1524,32 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
 
   bool is_now_under_pressure = available_percent < kPressureThresholdPercent;
 
-  OnMemoryPressureStateChanged(is_now_under_pressure);
+  base::MemoryPressureLevel new_level =
+      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  // TODO(b/466015017): Standardize memory pressure handling and remove this
+  // direct dependency on //components/memory_pressure once the experiment
+  // concludes.
+  if (avail <= memory_pressure::win::SystemMemoryPressureEvaluator::
+                   kPhysicalMemoryDefaultCriticalThreshold) {
+    new_level = base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  } else if (is_now_under_pressure) {
+    new_level = base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+  }
+
+  OnMemoryPressureStateChanged(new_level);
 
 #endif  // BUILDFLAG(IS_WIN)
 }
 
 void FreezingPolicy::OnMemoryPressureStateChanged(
-    bool is_under_memory_pressure) {
-  // If the pressure state hasn't changed, no transition work is needed.
-  if (is_under_memory_pressure == is_under_memory_pressure_) {
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == memory_pressure_level_) {
     return;
   }
 
   const bool was_periodic_unfreezing_active = IsPeriodicUnfreezingActive();
   const base::LiveTicks now = base::LiveTicks::Now();
-  is_under_memory_pressure_ = is_under_memory_pressure;
+  memory_pressure_level_ = memory_pressure_level;
   if (was_periodic_unfreezing_active != IsPeriodicUnfreezingActive()) {
     UpdateAllPeriodicUnfreezeTimers(now);
   }

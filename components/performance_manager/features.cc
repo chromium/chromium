@@ -247,6 +247,9 @@ BASE_FEATURE_PARAM(int,
                    "percent_threshold",
                    15);
 
+BASE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDiscardOnCommitLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

@@ -359,6 +359,10 @@ static_library("performance_manager") {
       "power/dbus_power_manager_sampling_event_source.h",
     ]
   }
+
+  if (is_win) {
+    deps += [ "//components/memory_pressure" ]
+  }
 }
 
 source_set("unit_tests") {
