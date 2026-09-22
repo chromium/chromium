@@ -13,6 +13,8 @@ import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
@@ -392,6 +394,12 @@ public class WebappDataStorage {
     /** Updates the last used time of this object. */
     void updateLastUsedTime() {
         mPreferences.edit().putLong(KEY_LAST_USED, TimeUtils.currentTimeMillis()).apply();
+    }
+
+    /** Updates the scope for testing. */
+    @VisibleForTesting
+    public void updateScopeForTests(String scope) {
+        mPreferences.edit().putString(KEY_SCOPE, scope).apply();
     }
 
     /** Returns the package name if the data is for a WebAPK, null otherwise. */

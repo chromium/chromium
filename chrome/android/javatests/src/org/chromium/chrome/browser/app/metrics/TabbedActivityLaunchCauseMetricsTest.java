@@ -333,7 +333,9 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                                             "",
                                             ReferrerPolicy.DEFAULT,
                                             "",
-                                            null);
+                                            null,
+                                            null,
+                                            false);
                                 }));
         CriteriaHelper.pollInstrumentationThread(
                 () -> {

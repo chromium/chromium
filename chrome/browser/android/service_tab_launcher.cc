@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ServiceTabLauncher_jni.h"
@@ -61,7 +62,7 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
       env, request_id, browser_context->IsOffTheRecord(), params.url,
       static_cast<int32_t>(disposition), params.referrer.url.spec(),
       static_cast<int32_t>(params.referrer.policy), params.extra_headers,
-      nullptr);
+      nullptr, params.initiator_origin, params.is_renderer_initiated);
 }
 
 void ServiceTabLauncher::OnTabLaunched(int request_id,

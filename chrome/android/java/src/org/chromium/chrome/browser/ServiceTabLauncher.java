@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -38,9 +40,11 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -67,19 +71,25 @@ public class ServiceTabLauncher {
      * @param referrerPolicy The referrer policy to consider when applying the referrer.
      * @param extraHeaders Extra headers to apply when requesting the tab's URL.
      * @param postData Post-data to include in the tab URL's request body.
+     * @param initiatorOrigin The origin of the initiator of the navigation.
+     * @param isRendererInitiated Whether the navigation was initiated from a renderer.
      */
     @CalledByNative
     public static void launchTab(
-            final int requestId,
+            int requestId,
             boolean incognito,
             @JniType("GURL") GURL url,
             int disposition,
             @JniType("std::string") String referrerUrl,
             int referrerPolicy,
             @JniType("std::string") String extraHeaders,
-            ResourceRequestBody postData) {
+            @Nullable ResourceRequestBody postData,
+            @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin,
+            boolean isRendererInitiated) {
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().
+        // PaymentRequestService.openPaymentHandlerWindow() internally validates that the URL's
+        // origin matches the invoked payment app's registered origin before opening the window.
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             WebContents paymentHandlerWebContent =
                     PaymentRequestService.openPaymentHandlerWindow(url);
@@ -93,6 +103,8 @@ public class ServiceTabLauncher {
             return;
         }
 
+        boolean canLaunchInApp = canLaunchInApp(isRendererInitiated, initiatorOrigin, url);
+
         dispatchLaunch(
                 requestId,
                 incognito,
@@ -100,22 +112,53 @@ public class ServiceTabLauncher {
                 referrerUrl,
                 referrerPolicy,
                 extraHeaders,
-                postData);
+                postData,
+                initiatorOrigin,
+                isRendererInitiated,
+                canLaunchInApp);
+    }
+
+    /**
+     * Determines whether a navigation may be captured into an installed web app (WebAPK, TWA, or
+     * standalone window). Renderer-initiated navigations must be strictly same-origin with the
+     * target to prevent cross-origin service workers from bypassing navigation initiator tracking
+     * and SameSite cookie restrictions.
+     */
+    @VisibleForTesting
+    static boolean canLaunchInApp(
+            boolean isRendererInitiated, @Nullable Origin initiatorOrigin, GURL targetUrl) {
+        if (!isRendererInitiated) {
+            return true;
+        }
+        if (initiatorOrigin == null || initiatorOrigin.isOpaque()) {
+            return false;
+        }
+        return initiatorOrigin.equals(Origin.create(targetUrl));
     }
 
     /** Dispatches the launch event. */
     private static void dispatchLaunch(
-            final int requestId,
-            final boolean incognito,
-            final String url,
-            final String referrerUrl,
-            final int referrerPolicy,
-            final String extraHeaders,
-            final ResourceRequestBody postData) {
+            int requestId,
+            boolean incognito,
+            String url,
+            String referrerUrl,
+            int referrerPolicy,
+            String extraHeaders,
+            @Nullable ResourceRequestBody postData,
+            @Nullable Origin initiatorOrigin,
+            boolean isRendererInitiated,
+            boolean canLaunchInApp) {
         Context context = ContextUtils.getApplicationContext();
 
-        List<ResolveInfo> resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
-        String webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);
+        List<ResolveInfo> resolveInfos;
+        String webApkPackageName;
+        if (canLaunchInApp) {
+            resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
+            webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);
+        } else {
+            resolveInfos = Collections.emptyList();
+            webApkPackageName = null;
+        }
 
         if (webApkPackageName != null) {
             final List<ResolveInfo> resolveInfosFinal = resolveInfos;
@@ -138,6 +181,9 @@ public class ServiceTabLauncher {
                                 referrerPolicy,
                                 extraHeaders,
                                 postData,
+                                initiatorOrigin,
+                                isRendererInitiated,
+                                canLaunchInApp,
                                 resolveInfosFinal);
                     };
             ChromeWebApkHost.checkChromeBacksWebApkAsync(webApkPackageName, callback);
@@ -152,6 +198,9 @@ public class ServiceTabLauncher {
                 referrerPolicy,
                 extraHeaders,
                 postData,
+                initiatorOrigin,
+                isRendererInitiated,
+                canLaunchInApp,
                 resolveInfos);
     }
 
@@ -163,16 +212,22 @@ public class ServiceTabLauncher {
             String referrerUrl,
             int referrerPolicy,
             String extraHeaders,
-            ResourceRequestBody postData,
+            @Nullable ResourceRequestBody postData,
+            @Nullable Origin initiatorOrigin,
+            boolean isRendererInitiated,
+            boolean canLaunchInApp,
             List<ResolveInfo> resolveInfosForUrl) {
         // Launch WebappActivity if one matches the target URL and was opened recently.
         // Otherwise, open the URL in a tab.
-        WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorageForUrl(url);
+        WebappDataStorage storage =
+                canLaunchInApp
+                        ? WebappRegistry.getInstance().getWebappDataStorageForUrl(url)
+                        : null;
         ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(incognito);
 
         // Launch into a TrustedWebActivity if one exists for the URL.
         Context appContext = ContextUtils.getApplicationContext();
-        if (!incognito) {
+        if (!incognito && canLaunchInApp) {
             Intent twaIntent =
                     TrustedWebActivityClient.getInstance()
                             .createLaunchIntentForTwa(appContext, url, resolveInfosForUrl);
@@ -184,14 +239,28 @@ public class ServiceTabLauncher {
         }
 
         // Open a new tab if:
+        // - The navigation cannot be launched in an app (e.g. cross-origin renderer initiator).
+        // OR
         // - We did not find a WebappDataStorage corresponding to this URL.
         // OR
         // - The WebappDataStorage hasn't been opened recently enough.
-        if (storage == null || !storage.wasUsedRecently()) {
+        if (!canLaunchInApp || storage == null || !storage.wasUsedRecently()) {
+            // If a renderer-initiated navigation somehow lacks an initiator origin, fail closed
+            // by attributing it to an opaque origin rather than granting browser-initiated
+            // privileges (which would bypass SameSite=Strict cookie restrictions).
+            Origin effectiveInitiator = initiatorOrigin;
+            if (isRendererInitiated && effectiveInitiator == null) {
+                effectiveInitiator = Origin.createOpaqueOrigin();
+            }
+
             LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.LINK);
-            loadUrlParams.setPostData(postData);
+            if (postData != null) {
+                loadUrlParams.setPostData(postData);
+            }
             loadUrlParams.setVerbatimHeaders(extraHeaders);
             loadUrlParams.setReferrer(new Referrer(referrerUrl, referrerPolicy));
+            loadUrlParams.setInitiatorOrigin(effectiveInitiator);
+            loadUrlParams.setIsRendererInitiated(isRendererInitiated);
 
             AsyncTabCreationParams asyncParams =
                     new AsyncTabCreationParams(loadUrlParams, requestId);
