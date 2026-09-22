@@ -4,6 +4,10 @@
 
 #include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
 
+#include <windows.h>
+
+#include <lm.h>
+
 #include "base/win/ntsecapi_shim.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -138,6 +142,34 @@ TEST_F(GcpOSGaiaUserManagerTest, ChangeGaiaUserPasswordIfNeededWithStoredSid) {
 
   // No password change.
   EXPECT_STREQ(first_password, second_password);
+}
+
+TEST_F(GcpOSGaiaUserManagerTest,
+       SetDefaultPasswordChangePoliciesPreservesAccountDisableFlag) {
+  base::win::ScopedBstr sid;
+  DWORD error = 0;
+  std::wstring domain = OSUserManager::GetLocalDomain();
+  std::wstring username = L"disabled_user";
+  ASSERT_EQ(S_OK, fake_os_user_manager()->AddUser(
+                      username.c_str(), L"password", L"fullname", L"comment",
+                      true, domain.c_str(), sid.Receive(), &error));
+
+  // Simulate an account that has been disabled and does not currently have the
+  // password change policy flags set.
+  ASSERT_EQ(S_OK, fake_os_user_manager()->SetUserFlagsFake(
+                      domain.c_str(), username.c_str(),
+                      UF_ACCOUNTDISABLE | UF_NORMAL_ACCOUNT));
+
+  ASSERT_EQ(S_OK, OSUserManager::Get()->SetDefaultPasswordChangePolicies(
+                      domain.c_str(), username.c_str()));
+
+  DWORD flags = 0;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->GetUserFlagsFake(
+                      domain.c_str(), username.c_str(), &flags));
+  EXPECT_NE(0u, flags & UF_ACCOUNTDISABLE);
+  EXPECT_NE(0u, flags & UF_PASSWD_CANT_CHANGE);
+  EXPECT_NE(0u, flags & UF_DONT_EXPIRE_PASSWD);
+  EXPECT_NE(0u, flags & UF_NORMAL_ACCOUNT);
 }
 
 }  // namespace testing

@@ -480,10 +480,39 @@ HRESULT FakeOSUserManager::ModifyUserAccessWithLogonHours(
   return S_OK;
 }
 
-HRESULT FakeOSUserManager::SetDefaultPasswordChangePolicies(
-    const wchar_t* domain,
-    const wchar_t* username) {
-  return S_OK;
+HRESULT FakeOSUserManager::GetUserFlagsFake(const wchar_t* domain,
+                                            const wchar_t* username,
+                                            DWORD* flags) {
+  return GetUserFlags(domain, username, flags);
+}
+
+HRESULT FakeOSUserManager::SetUserFlagsFake(const wchar_t* domain,
+                                            const wchar_t* username,
+                                            DWORD flags) {
+  return SetUserFlags(domain, username, flags);
+}
+
+HRESULT FakeOSUserManager::GetUserFlags(const wchar_t* domain,
+                                        const wchar_t* username,
+                                        DWORD* flags) {
+  DCHECK(flags);
+  if (auto it = username_to_info_.find(username);
+      it != username_to_info_.end()) {
+    *flags = it->second.flags;
+    return S_OK;
+  }
+  return HRESULT_FROM_WIN32(NERR_UserNotFound);
+}
+
+HRESULT FakeOSUserManager::SetUserFlags(const wchar_t* domain,
+                                        const wchar_t* username,
+                                        DWORD flags) {
+  if (auto it = username_to_info_.find(username);
+      it != username_to_info_.end()) {
+    it->second.flags = flags;
+    return S_OK;
+  }
+  return HRESULT_FROM_WIN32(NERR_UserNotFound);
 }
 
 FakeOSUserManager::UserInfo::UserInfo(const wchar_t* domain,
@@ -495,7 +524,9 @@ FakeOSUserManager::UserInfo::UserInfo(const wchar_t* domain,
       password(password),
       fullname(fullname),
       comment(comment),
-      sid(sid) {}
+      sid(sid),
+      flags(UF_PASSWD_CANT_CHANGE | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT) {
+}
 
 FakeOSUserManager::UserInfo::UserInfo() = default;
 

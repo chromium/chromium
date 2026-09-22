@@ -393,20 +393,50 @@ HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
   return HRESULT_FROM_WIN32(NERR_UserExists);
 }
 
-HRESULT OSUserManager::SetDefaultPasswordChangePolicies(
-    const wchar_t* domain,
-    const wchar_t* username) {
+HRESULT OSUserManager::GetUserFlags(const wchar_t* domain,
+                                    const wchar_t* username,
+                                    DWORD* flags) {
+  DCHECK(flags);
+  LPBYTE buffer = nullptr;
+  NET_API_STATUS nsts = ::NetUserGetInfo(domain, username, 1, &buffer);
+  if (nsts != NERR_Success) {
+    LOGFN(ERROR) << "NetUserGetInfo(get user flags) nsts=" << nsts;
+    return HRESULT_FROM_WIN32(nsts);
+  }
+
+  USER_INFO_1* user_info = reinterpret_cast<USER_INFO_1*>(buffer);
+  *flags = user_info->usri1_flags;
+  ::NetApiBufferFree(buffer);
+  return S_OK;
+}
+
+HRESULT OSUserManager::SetUserFlags(const wchar_t* domain,
+                                    const wchar_t* username,
+                                    DWORD flags) {
   USER_INFO_1008 info1008;
   DWORD error;
   memset(&info1008, 0, sizeof(info1008));
-  info1008.usri1008_flags =
-      UF_PASSWD_CANT_CHANGE | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT;
+  info1008.usri1008_flags = flags;
   NET_API_STATUS nsts = ::NetUserSetInfo(
       domain, username, 1008, reinterpret_cast<LPBYTE>(&info1008), &error);
   if (nsts != NERR_Success) {
     LOGFN(ERROR) << "NetUserSetInfo(set password policies) nsts=" << nsts;
   }
   return HRESULT_FROM_WIN32(nsts);
+}
+
+HRESULT OSUserManager::SetDefaultPasswordChangePolicies(
+    const wchar_t* domain,
+    const wchar_t* username) {
+  DWORD existing_flags = 0;
+  HRESULT hr = GetUserFlags(domain, username, &existing_flags);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  DWORD new_flags = existing_flags | UF_PASSWD_CANT_CHANGE |
+                    UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT;
+  return SetUserFlags(domain, username, new_flags);
 }
 
 HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,

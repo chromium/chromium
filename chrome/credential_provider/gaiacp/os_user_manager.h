@@ -141,6 +141,17 @@ class [[clang::lto_visibility_public]] OSUserManager {
 
   // Returns the storage used for the instance pointer.
   static OSUserManager** GetInstanceStorage();
+
+ private:
+  // Gets the account control flags (usri1_flags) of the user.
+  virtual HRESULT GetUserFlags(const wchar_t* domain,
+                               const wchar_t* username,
+                               DWORD* flags);
+
+  // Sets the account control flags (usri1008_flags) of the user.
+  virtual HRESULT SetUserFlags(const wchar_t* domain,
+                               const wchar_t* username,
+                               DWORD flags);
 };
 
 }  // namespace credential_provider

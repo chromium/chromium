@@ -169,8 +169,13 @@ class FakeOSUserManager : public OSUserManager {
                                          const wchar_t* username,
                                          bool allow) override;
 
-  HRESULT SetDefaultPasswordChangePolicies(const wchar_t* domain,
-                                           const wchar_t* username) override;
+  HRESULT GetUserFlagsFake(const wchar_t* domain,
+                           const wchar_t* username,
+                           DWORD* flags);
+
+  HRESULT SetUserFlagsFake(const wchar_t* domain,
+                           const wchar_t* username,
+                           DWORD flags);
 
   bool IsDeviceDomainJoined() override;
 
@@ -197,6 +202,7 @@ class FakeOSUserManager : public OSUserManager {
     std::wstring fullname;
     std::wstring comment;
     std::wstring sid;
+    DWORD flags = 0;
   };
   const UserInfo GetUserInfo(const wchar_t* username);
 
@@ -245,6 +251,14 @@ class FakeOSUserManager : public OSUserManager {
   void RestoreOperation(FAILEDOPERATIONS op) { failure_reasons_.erase(op); }
 
  private:
+  HRESULT GetUserFlags(const wchar_t* domain,
+                       const wchar_t* username,
+                       DWORD* flags) override;
+
+  HRESULT SetUserFlags(const wchar_t* domain,
+                       const wchar_t* username,
+                       DWORD flags) override;
+
   raw_ptr<OSUserManager> original_manager_;
   DWORD next_rid_ = 0;
   std::map<std::wstring, UserInfo> username_to_info_;
