@@ -3881,12 +3881,14 @@ TEST_F(DeviceStatusCollectorTest, DemoModeDimensions) {
 }
 
 struct FakeSimSlotInfo {
-  std::string object_path;
-  std::string eid;
+  const char* object_path;
+  const char* eid;
   bool is_active;
   uint32_t physical_slot;
-} kFakeSimSlots[] = {{"euicc_path", "123", true, 1},
-                     {"euicc_path2", "234", false, 2}};
+};
+
+constexpr FakeSimSlotInfo kFakeSimSlots[] = {{"euicc_path", "123", true, 1},
+                                             {"euicc_path2", "234", false, 2}};
 
 // Fake device state.
 struct FakeDeviceData {

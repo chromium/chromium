@@ -121,50 +121,48 @@ struct Params {
 };
 
 // Defines the test cases that will be executed.
-const Params kTestCases[] = {
-    // 0. No site isolation in device or user policy - no restart expected.
-    Params(std::string() /* login_screen_isolate_origins */,
-           std::string() /* user_policy_isolate_origins */,
-           false /* user_policy_site_per_process */,
-           {} /* user_flag_internal_names */,
-           false /* ephemeral_users */,
-           false /* expected_request_restart */,
-           {} /* expected_switches_for_user */),
+std::vector<Params> GetTestCases() {
+  return {
+      // 0. No site isolation in device or user policy - no restart expected.
+      Params(std::string() /* login_screen_isolate_origins */,
+             std::string() /* user_policy_isolate_origins */,
+             false /* user_policy_site_per_process */,
+             {} /* user_flag_internal_names */, false /* ephemeral_users */,
+             false /* expected_request_restart */,
+             {} /* expected_switches_for_user */),
 
-    // 1. SitePerProcess opt-out through about://flags - restart expected.
-    Params(
-        std::string() /* login_screen_isolate_origins */,
-        std::string() /* user_policy_isolate_origins */,
-        false /* user_policy_site_per_process */,
-        /* user_flag_internal_names */
-        {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
-        false /* ephemeral_users */,
-        true /* expected_request_restart */,
-        {"--disable-site-isolation-trials"} /* expected_switches_for_user */),
+      // 1. SitePerProcess opt-out through about://flags - restart expected.
+      Params(
+          std::string() /* login_screen_isolate_origins */,
+          std::string() /* user_policy_isolate_origins */,
+          false /* user_policy_site_per_process */,
+          /* user_flag_internal_names */
+          {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
+          false /* ephemeral_users */, true /* expected_request_restart */,
+          {"--disable-site-isolation-trials"} /* expected_switches_for_user */),
 
-    // 2. SitePerProcess forced through user policy - opt-out through
-    // about://flags entry expected to be ignored.
-    Params(std::string() /* login_screen_isolate_origins */,
-           std::string() /* user_policy_isolate_origins */,
-           true /* user_policy_site_per_process */,
-           /* user_flag_internal_names */
-           {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
-           false /* ephemeral_users */,
-           false /* expected_request_restart */,
-           {} /* expected_switches_for_user */),
+      // 2. SitePerProcess forced through user policy - opt-out through
+      // about://flags entry expected to be ignored.
+      Params(std::string() /* login_screen_isolate_origins */,
+             std::string() /* user_policy_isolate_origins */,
+             true /* user_policy_site_per_process */,
+             /* user_flag_internal_names */
+             {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
+             false /* ephemeral_users */, false /* expected_request_restart */,
+             {} /* expected_switches_for_user */),
 
-    // 3. IsolateOrigins in user policy only - no restart expected, because
-    //    IsolateOrigins from the user policy should be picked up by
-    //    SiteIsolationPrefsObserver (without requiring injection of the
-    //    --isolate-origins cmdline switch).
-    Params(std::string() /* login_screen_isolate_origins */,
-           "https://example.com" /* user_policy_isolate_origins */,
-           false /* user_policy_site_per_process */,
-           {} /* user_flag_internal_names */,
-           false /* ephemeral_users */,
-           false /* expected_request_restart */,
-           {} /* expected_switches_for_user */,
-           {"https://example.com"} /* expected_isolated_origins */)};
+      // 3. IsolateOrigins in user policy only - no restart expected, because
+      //    IsolateOrigins from the user policy should be picked up by
+      //    SiteIsolationPrefsObserver (without requiring injection of the
+      //    --isolate-origins cmdline switch).
+      Params(std::string() /* login_screen_isolate_origins */,
+             "https://example.com" /* user_policy_isolate_origins */,
+             false /* user_policy_site_per_process */,
+             {} /* user_flag_internal_names */, false /* ephemeral_users */,
+             false /* expected_request_restart */,
+             {} /* expected_switches_for_user */,
+             {"https://example.com"} /* expected_isolated_origins */)};
+}
 
 class SiteIsolationFlagHandlingTest
     : public ash::OobeBaseTest,
@@ -337,6 +335,6 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SiteIsolationFlagHandlingTest,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(GetTestCases()));
 
 }  // namespace policy

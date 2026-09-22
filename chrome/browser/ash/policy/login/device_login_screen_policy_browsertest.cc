@@ -116,10 +116,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
   ASSERT_TRUE(prefs);
 
   PrefChangeRegistrar registrar;
-  // This instance needs to be declared as static because EXPECT_FATAL_FAILURE
-  // only works on static objects. This macro lets us exhaust the timeout on
-  // the future to verify that the pref was not modified.
-  static base::test::RepeatingTestFuture<const char*> pref_changed_future;
+  base::test::RepeatingTestFuture<const char*> pref_changed_future;
   registrar.Init(prefs);
   registrar.Add(ash::prefs::kPrimaryMouseButtonRight,
                 base::BindRepeating(pref_changed_future.GetCallback(),
@@ -149,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest,
   prefs->SetBoolean(ash::prefs::kPrimaryMouseButtonRight, true);
   // Browser tests use a `ScopedRunLoopTimeout` to automatically fail a test
   // when a timeout happens, so we use EXPECT_NONFATAL_FAILURE to handle it.
-  static bool success = false;
+  bool success = false;
   EXPECT_NONFATAL_FAILURE({ success = pref_changed_future.Wait(); },
                           "timed out");
   EXPECT_FALSE(success);
