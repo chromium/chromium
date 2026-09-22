@@ -30,10 +30,12 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -551,6 +553,10 @@ class UntrustedWebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::SetUpOnMainThread();
   }
 
+  GURL GetTestUrl(const std::string& path) const {
+    return embedded_test_server()->base_url().Resolve(path);
+  }
+
   content::WebContents* GetWebContentsForTesting() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -566,6 +572,27 @@ IN_PROC_BROWSER_TEST_F(UntrustedWebUIWebViewBrowserTest, BannedApisThrow) {
                                    "runMochaTest('WebviewUntrustedBasicTest', "
                                    "'BannedApisThrowInUntrusted')",
                                    true));
+}
+
+IN_PROC_BROWSER_TEST_F(UntrustedWebUIWebViewBrowserTest,
+                       PermissionRequestAutoDeny) {
+  EXPECT_TRUE(RunTestOnWebContents(
+      GetWebContentsForTesting(), "webview/webview_untrusted_test.js",
+      base::StringPrintf("window.downloadUrl = '%s'; "
+                         "runMochaTest('WebviewUntrustedBasicTest', "
+                         "'PermissionRequestAutoDenyInUntrusted');",
+                         GetTestUrl("download-test3.gif").spec().c_str()),
+      true));
+
+  content::DownloadManager::DownloadVector downloads;
+  browser()->GetProfile()->GetDownloadManager()->GetAllDownloads(&downloads);
+  EXPECT_TRUE(downloads.empty());
+  // If the test fails and a download was started, cancel it so that an
+  // in-progress download prompt does not block browser shutdown during test
+  // teardown.
+  for (download::DownloadItem* download : downloads) {
+    download->Cancel(false);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

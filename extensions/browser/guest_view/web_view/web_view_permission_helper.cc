@@ -440,6 +440,19 @@ void WebViewPermissionHelper::RequestPermission(
     return;
   }
 
+  // A chrome-untrusted embedder can't be trusted to approve permissions.
+  // New Window and Dialog are excluded, since they reuse this path but aren't
+  // really permissions.
+  if (permission_type != WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW &&
+      permission_type != WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG &&
+      web_view_guest_->GetOwnerSiteURL().SchemeIs(
+          content::kChromeUIUntrustedScheme)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), allowed_by_default, std::string()));
+    return;
+  }
+
   int request_id = next_permission_request_id_++;
   pending_permission_requests_[request_id] = PermissionResponseInfo(
       std::move(callback), permission_type, allowed_by_default);

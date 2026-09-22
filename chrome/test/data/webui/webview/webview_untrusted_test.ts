@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertThrows} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertFalse, assertThrows} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('WebviewUntrustedBasicTest', function() {
   function createWebview(): chrome.webviewTag.WebView {
@@ -10,6 +10,10 @@ suite('WebviewUntrustedBasicTest', function() {
         document.createElement('webview') as chrome.webviewTag.WebView;
     document.body.appendChild(webview);
     return webview;
+  }
+
+  function getDownloadUrl(): string {
+    return (window as unknown as Window & {downloadUrl: string}).downloadUrl;
   }
 
   test('BannedApisThrowInUntrusted', async () => {
@@ -36,5 +40,22 @@ suite('WebviewUntrustedBasicTest', function() {
     assertThrows(() => {
       webview.loadDataWithBaseUrl('data:text/html,test', 'https://example.com');
     });
+  });
+
+  test('PermissionRequestAutoDenyInUntrusted', async () => {
+    const webview = createWebview();
+    let receivedPermissionRequest = false;
+    webview.addEventListener('permissionrequest', event => {
+      receivedPermissionRequest = true;
+      const e = event as chrome.webviewTag.PermissionRequestEvent;
+      e.request.allow();
+    });
+
+    await new Promise(resolve => {
+      webview.src = getDownloadUrl();
+      webview.addEventListener('loadstop', resolve);
+    });
+
+    assertFalse(receivedPermissionRequest);
   });
 });
