@@ -1124,8 +1124,6 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   SnackbarMessage* message = [[SnackbarMessage alloc]
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE)];
-  message.subtitle =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_SUBTITLE);
   message.action = action;
 
   [snackbarHandler showSnackbarMessage:message];

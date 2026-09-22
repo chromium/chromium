@@ -754,28 +754,19 @@
       <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_TITLE" desc="Title of the bottom sheet notice for Autofill AI Private Inference. [iOS only]">
         Smarter autofill, kept private
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_ACTION" desc="Context menu option to remove an Autofill AI suggestion from personal context. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_ACTION" desc="Context menu option to remove an Autofill AI suggestion from personal context. [iOS only]">
         Remove
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_MESSAGE" desc="Message of the confirmation alert dialog shown when the user chooses to remove an Autofill AI suggestion from personal context. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        Chrome will stop suggesting this info. Your original source won't be deleted. You can change this in settings.
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_MESSAGE" desc="Message of the confirmation alert dialog shown when the user chooses to remove an Autofill AI suggestion from personal context. [iOS only]">
+        Chrome will stop suggesting this info. Your original source won't be deleted.
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_TITLE" desc="Title of the confirmation alert dialog shown when the user chooses to remove an Autofill AI suggestion from personal context. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_CONFIRMATION_TITLE" desc="Title of the confirmation alert dialog shown when the user chooses to remove an Autofill AI suggestion from personal context. [iOS only]">
         Remove from Chrome?
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_SUBTITLE" desc="Subtitle of the snackbar shown after removing an Autofill AI suggestion. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        Your original source won't be deleted.
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE" desc="Title of the snackbar shown after removing an Autofill AI suggestion. [iOS only]">
+        Suggestion removed from Chrome
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE" desc="Title of the snackbar shown after removing an Autofill AI suggestion. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        Suggestion removed
-      </message>
-      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_UNDO_ACTION" desc="Button text on the snackbar to undo removing an Autofill AI suggestion. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_UNDO_ACTION" desc="Button text on the snackbar to undo removing an Autofill AI suggestion. [iOS only]">
         Undo
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER" desc="The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) is saved locally. [iOS only]">
@@ -814,25 +805,20 @@
       <message name="IDS_IOS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
       Save vehicle
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE" desc="Fallback label for a Gmail source in the Autofill AI sources bottom sheet when the email subject is unavailable. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        TEST - Gmail message <ph name="INDEX">$1<ex>1</ex></ph>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE" desc="Fallback label for a Gmail source in the Autofill AI sources bottom sheet when the email subject is unavailable. [iOS only]">
+        Gmail message <ph name="INDEX">$1<ex>1</ex></ph>
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO" desc="Fallback label for a Google Photos source in the Autofill AI sources bottom sheet when the photo title is unavailable. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        TEST - Saved photo <ph name="INDEX">$1<ex>1</ex></ph>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO" desc="Fallback label for a Google Photos source in the Autofill AI sources bottom sheet when the photo title is unavailable. [iOS only]">
+        Saved photo <ph name="INDEX">$1<ex>1</ex></ph>
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_GMAIL_SECTION_TITLE" desc="Section title for Gmail sources in the Autofill AI sources bottom sheet. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        TEST - Gmail
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_GMAIL_SECTION_TITLE" desc="Section title for Gmail sources in the Autofill AI sources bottom sheet. [iOS only]">
+        Gmail
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_PHOTOS_SECTION_TITLE" desc="Section title for Google Photos sources in the Autofill AI sources bottom sheet. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        TEST - Photos
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_PHOTOS_SECTION_TITLE" desc="Section title for Google Photos sources in the Autofill AI sources bottom sheet. [iOS only]">
+        Photos
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_TITLE" desc="Title of the bottom sheet displaying the sources (such as Gmail or Google Photos) of an Autofill AI suggestion. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
-        TEST - Sources
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_TITLE" desc="Title of the bottom sheet displaying the sources (such as Gmail or Google Photos) of an Autofill AI suggestion. [iOS only]">
+        Sources
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
       Update driver's license
@@ -858,8 +844,7 @@
       <message name="IDS_IOS_AUTOFILL_AI_VEHICLE_VIN_NAME" desc="The display name for the vehicle identification number (VIN) in Autofill AI. [iOS only]">
         VIN
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_VIEW_SOURCES" desc="Context menu option to view the source documents or origins (such as Gmail or Google Photos) of an Autofill AI suggestion. [iOS only]" translateable="false">
-        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+      <message name="IDS_IOS_AUTOFILL_AI_VIEW_SOURCES" desc="Context menu option to view the source documents or origins (such as Gmail or Google Photos) of an Autofill AI suggestion. [iOS only]">
         View sources
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_WALLET_CONNECTION_FAILURE" desc="Instructions for the user displayed in the error dialog if they attempt to access or autofill information but the request fails due to network connectivity issues.">
