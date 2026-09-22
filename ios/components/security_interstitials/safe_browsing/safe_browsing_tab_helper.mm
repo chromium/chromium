@@ -248,15 +248,11 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
          !GetOldestPendingCommittedQuery(query_data);
 }
 
-bool SafeBrowsingTabHelper::PolicyDecider::ShouldReloadOnCommit() {
-  bool should_reload = reload_page_on_commit_;
-
-  // Flip bit to signify a reload has been triggered.
-  if (reload_page_on_commit_) {
-    reload_page_on_commit_ = false;
-  }
-
-  return should_reload;
+std::optional<GURL>
+SafeBrowsingTabHelper::PolicyDecider::TakeReloadUrlOnCommit() {
+  std::optional<GURL> reload_url = reload_url_on_commit_;
+  reload_url_on_commit_ = std::nullopt;
+  return reload_url;
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
@@ -289,31 +285,55 @@ std::vector<GURL> SafeBrowsingTabHelper::PolicyDecider::GetRedirectChain()
   return redirect_chain;
 }
 
-void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
+bool SafeBrowsingTabHelper::PolicyDecider::IsReloadWithPendingUnsafeDecision(
+    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    const GURL& request_url) const {
+  // Only reloads and back/forward navigations can be repair loads. Regular
+  // navigations and redirects on an unsafe host must stay allowed here; they
+  // are evaluated in `ShouldAllowResponse()` once their check completes.
+  bool is_reload_or_back_forward =
+      ui::PageTransitionCoreTypeIs(request_info.transition_type,
+                                   ui::PAGE_TRANSITION_RELOAD) ||
+      (request_info.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK);
+  if (!is_reload_or_back_forward) {
+    return false;
+  }
+
+  // The flagged document cannot be recognized by URL: `history.replaceState()`
+  // rewrites both its NavigationItem and its WKBackForwardList item to an
+  // attacker-chosen URL before the web layer re-loads it. Since
+  // SafeBrowsingUrlAllowList keys decisions per origin, a decision still
+  // pending for `request_url` means this reload targets the origin Safe
+  // Browsing flagged, so it is blocked in favor of the stored resource.
+  SafeBrowsingUrlAllowList* allow_list =
+      SafeBrowsingUrlAllowList::FromWebState(web_state());
+  return allow_list &&
+         allow_list->IsUnsafeNavigationDecisionPending(request_url);
+}
+
+void SafeBrowsingTabHelper::PolicyDecider::ReloadPage(const GURL& url) {
   web::NavigationManager* navigation_manager =
       web_state()->GetNavigationManager();
   navigation_manager->DiscardNonCommittedItems();
 
-  web::NavigationItem* last_committed_item =
-      navigation_manager->GetLastCommittedItem();
-  if (last_committed_item) {
-    // A standard `navigation_manager->Reload()` call does nothing on iOS
-    // if the WKWebView is currently displaying a custom HTML string. Since
-    // this method is frequently called to swap out a local error page with
-    // a Safe Browsing interstitial, we must force a brand new navigation to
-    // the original URL instead of relying on the native reload command.
-    //
-    // The `last_committed_item` is used because the local error page actually
-    // commits to the navigation history using the malicious URL as its base.
-    web::NavigationManager::WebLoadParams params(last_committed_item->GetURL());
-    params.transition_type = ui::PAGE_TRANSITION_RELOAD;
-    navigation_manager->LoadURLWithParams(params);
-  } else {
-    // If there is no committed item, we cannot force a new load via URL.
-    // Fall back to the standard reload.
+  if (!navigation_manager->GetLastCommittedItem()) {
+    // Without a committed item there is nothing to swap out, so fall back to
+    // the standard reload.
     navigation_manager->Reload(web::ReloadType::NORMAL,
                                /*check_for_repost=*/false);
+    return;
   }
+
+  // A standard `navigation_manager->Reload()` call does nothing on iOS
+  // if the WKWebView is currently displaying a custom HTML string. Since
+  // this method is frequently called to swap out a local error page or a
+  // committed page with a Safe Browsing interstitial, we must force a brand
+  // new navigation to `url` instead of relying on the native reload command
+  // or the last committed item URL (which may have been rewritten by
+  // same-document history operations such as `history.replaceState()`).
+  web::NavigationManager::WebLoadParams params(url);
+  params.transition_type = ui::PAGE_TRANSITION_RELOAD;
+  navigation_manager->LoadURLWithParams(params);
 }
 
 web::WebStatePolicyDecider::PolicyDecision
@@ -373,8 +393,8 @@ void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameDocumentChange() {
-  if (ShouldReloadOnCommit()) {
-    ReloadPage();
+  if (std::optional<GURL> reload_url = TakeReloadUrlOnCommit()) {
+    ReloadPage(*reload_url);
   } else {
     SetCommittedRedirectChain();
   }
@@ -425,16 +445,19 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   pending_main_frame_query_ = MainFrameUrlQuery(
       request_url, base::SysNSStringToUTF8([request HTTPMethod]));
 
-  // If there is a pre-existing main frame unsafe resource for `request_url`
-  // that haven't yet resulted in an error page, this resource can be used to
-  // show the error page for the current load.  This can occur in back/forward
-  // navigations to safe browsing error pages, where ShouldAllowRequest() is
-  // called multiple times consecutively for the same URL.
+  // If there is a pre-existing main frame unsafe resource that hasn't yet
+  // resulted in an error page, this resource can be used to show the error page
+  // for the current load. This can occur in back/forward navigations to safe
+  // browsing error pages, where `ShouldAllowRequest()` is called multiple times
+  // consecutively for the same URL, or when the web layer re-loads a committed
+  // document whose URL was rewritten by history.replaceState().
   SafeBrowsingUnsafeResourceContainer* unsafe_resource_container =
       SafeBrowsingUnsafeResourceContainer::FromWebState(web_state());
   const security_interstitials::UnsafeResource* main_frame_resource =
       unsafe_resource_container->GetMainFrameUnsafeResource();
-  if (main_frame_resource && main_frame_resource->url == request_url) {
+  if (main_frame_resource &&
+      (main_frame_resource->url == request_url ||
+       IsReloadWithPendingUnsafeDecision(request_info, request_url))) {
     return std::move(callback).Run(
         CreateSafeBrowsingErrorDecision(*main_frame_resource));
   }
@@ -725,7 +748,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
     }
 
     if (should_display_error && decision.ShouldDisplayError()) {
-      ReloadPage();
+      ReloadPage(url);
     }
     return;
   }
@@ -741,7 +764,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
     }
 
     if (should_display_error && decision.ShouldDisplayError()) {
-      reload_page_on_commit_ = true;
+      reload_url_on_commit_ = url;
     }
     return;
   }
@@ -759,22 +782,11 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
       std::move(response_callback).Run(decision);
       pending_main_frame_redirect_chain_.clear();
     } else if (response_callback.is_null() && decision.ShouldDisplayError()) {
-      reload_page_on_commit_ = true;
+      reload_url_on_commit_ = url;
     }
 
     if (decision.ShouldCancelNavigation()) {
       client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
-    }
-  } else if (decision.ShouldDisplayError()) {
-    // The query may be missing if it was clobbered by a subsequent navigation
-    // loop, such as the one used to load a local HTML error page after an early
-    // navigation failure.
-    // If the WebState is currently trying to display the malicious URL
-    // (meaning the user is looking at an error page for that site), we must
-    // force a fresh navigation so the Safe Browsing interstitial is displayed.
-    if (web_state()->GetVisibleURL() == url ||
-        web_state()->GetLastCommittedURL() == url) {
-      ReloadPage();
     }
   }
 }

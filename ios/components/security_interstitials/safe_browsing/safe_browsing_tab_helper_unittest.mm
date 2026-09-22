@@ -1050,6 +1050,184 @@ TEST_P(SafeBrowsingTabHelperTest,
   EXPECT_TRUE(main_frame_reload_request_decision.ShouldDisplayError());
 }
 
+// This is a control case for
+// `PostCommitAsyncVerdictReloadShowsInterstitialWithReplaceState` below.
+//
+// Tests that without a `history.replaceState()` rewrite, the forced reload
+// issued when a late async verdict flags an already-committed page targets
+// the flagged URL itself, and the reload request is immediately cancelled
+// to show the Safe Browsing interstitial.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitAsyncVerdictReloadShowsInterstitialWithoutReplaceState) {
+  GURL phishing_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                    "/phishing.html");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Navigation to the phishing URL starts; the sync (local database) check
+  // finds nothing, so the response is allowed while the async
+  // (hash-real-time / URL-real-time) check is still in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(phishing_url).ShouldAllowNavigation());
+  // The sync check callback is queued by the request above; run it from a
+  // posted task so that it completes asynchronously, as in production.
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(phishing_url).ShouldAllowNavigation());
+
+  // The phishing page commits with a last-committed NavigationItem.
+  navigation_manager_->AddItem(phishing_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(phishing_url);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  // The async verdict for the phishing URL arrives: unsafe. This triggers
+  // ReloadPage(), which issues a fresh navigation to the last-committed
+  // item's URL — still the phishing URL.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(phishing_url, last_params->url);
+
+  // The reload request matches the stored UnsafeResource exactly, so it is
+  // cancelled and the error page (interstitial) is displayed.
+  auto reload_decision =
+      ShouldAllowRequestUrl(phishing_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(reload_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(reload_decision.ShouldDisplayError());
+}
+
+// Tests that `history.replaceState()` cannot bypass a late async Safe Browsing
+// verdict:
+// 1. The page commits while the async check is in flight (sync check clean).
+// 2. The page runs history.replaceState({}, '', '/innocent.html'), rewriting
+//    the last-committed NavigationItem's URL.
+// 3. The async verdict arrives (unsafe) and ReloadPage() navigates to the
+//    flagged URL rather than the attacker-chosen replaceState URL.
+// 4. The reload request for the flagged URL is cancelled with an error page
+//    (interstitial).
+// 5. In the residual weakness scenario where the tab's back/forward history
+//    already contains the replaceState target and the web-layer error /
+//    back-forward repair machinery tries to reload the current WebKit
+//    back-forward item (whose URL was updated by replaceState to innocent_url),
+//    ShouldAllowRequest() also cancels and displays the error page because
+//    an unsafe navigation decision is pending for the host.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitAsyncVerdictReloadShowsInterstitialWithReplaceState) {
+  GURL phishing_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                    "/phishing.html");
+  GURL innocent_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                    "/innocent.html");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Navigation to the phishing URL starts; the sync (local database) check
+  // finds nothing, so the response is allowed while the async
+  // (hash-real-time / URL-real-time) check is still in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(phishing_url).ShouldAllowNavigation());
+  // The sync check callback is queued by the request above; run it from a
+  // posted task so that it completes asynchronously, as in production.
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(phishing_url).ShouldAllowNavigation());
+
+  // The phishing page commits with a last-committed NavigationItem.
+  navigation_manager_->AddItem(phishing_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(phishing_url);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  // The committed page runs `history.replaceState({}, '', '/innocent.html')`.
+  // `NavigationManagerImpl::UpdateCurrentItemForReplaceState()` rewrites the
+  // last-committed NavigationItem's URL in place, and the resulting
+  // same-document navigation is ignored by DidFinishNavigation(), so the
+  // committed redirect chain (with its pending async query for the phishing
+  // URL) is preserved.
+  item->SetURL(innocent_url);
+  web::FakeNavigationContext replace_state_context;
+  replace_state_context.SetUrl(innocent_url);
+  replace_state_context.SetHasCommitted(true);
+  replace_state_context.SetIsSameDocument(true);
+  web_state_.OnNavigationFinished(&replace_state_context);
+
+  // The async verdict for the phishing URL arrives: unsafe. This triggers
+  // `ReloadPage()`, which issues a fresh navigation to the flagged URL.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+
+  // The forced navigation targets the flagged URL, not the attacker-chosen
+  // replaceState URL.
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(phishing_url, last_params->url);
+
+  // The reload request for the flagged URL matches the stored UnsafeResource,
+  // so it is cancelled and the error page (interstitial) is displayed.
+  auto reload_decision =
+      ShouldAllowRequestUrl(phishing_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(reload_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(reload_decision.ShouldDisplayError());
+
+  // When web-layer error / back-forward repair machinery tries to reload the
+  // current WebKit back-forward item (rewritten to innocent_url),
+  // `ShouldAllowRequest()` must also cancel and display the error page because
+  // an unsafe navigation decision is pending for the host.
+  auto repair_decision =
+      ShouldAllowRequestUrl(innocent_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(repair_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(repair_decision.ShouldDisplayError());
+
+  // That blocked repair load commits its own error page, which rebuilds the
+  // decider's committed navigation state. A further repair load must still be
+  // blocked, so the block must not depend on state that this commit replaces.
+  web::FakeNavigationContext error_commit_context;
+  error_commit_context.SetUrl(innocent_url);
+  error_commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&error_commit_context);
+  auto second_repair_decision =
+      ShouldAllowRequestUrl(innocent_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(second_repair_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(second_repair_decision.ShouldDisplayError());
+
+  // However, an unrelated clean origin without a pending decision is not
+  // blocked.
+  GURL clean_url("http://safe.chromium.test/clean.html");
+  auto clean_decision =
+      ShouldAllowRequestUrl(clean_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+  EXPECT_TRUE(clean_decision.ShouldAllowNavigation());
+  EXPECT_FALSE(clean_decision.ShouldDisplayError());
+}
+
 // Tests that an early navigation failure (simulating a local error) correctly
 // caches the Safe Browsing state for a subsequent back/forward navigation.
 TEST_P(SafeBrowsingTabHelperTest,
