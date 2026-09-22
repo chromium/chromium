@@ -9,23 +9,27 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrInputElement, SettingsSimpleConfirmationDialogElement, SettingsCreditCardEditDialogElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createEmptyCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_page_test_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot, setupPaymentsPrefs} from './payments_page_test_utils.js';
 
 // clang-format on
 
 suite('PaymentsPageCardDialogs', function() {
-  setup(function() {
+  let prefService: PrefService;
+
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       migrationEnabled: true,
       showIbansSettings: true,
     });
+    await setupPaymentsPrefs();
+    prefService = PrefService.getInstance();
   });
 
   /**
@@ -42,10 +46,13 @@ suite('PaymentsPageCardDialogs', function() {
    */
   function createCreditCardDialogWithPrefs(
       creditCardItem: chrome.autofillPrivate.CreditCardEntry,
-      prefsValues: unknown): SettingsCreditCardEditDialogElement {
+      prefsValues: Record<string, {value: unknown}>):
+      SettingsCreditCardEditDialogElement {
+    for (const [key, pref] of Object.entries(prefsValues)) {
+      prefService.setPrefValue(`autofill.${key}`, pref.value);
+    }
     const dialog = document.createElement('settings-credit-card-edit-dialog');
     dialog.creditCard = creditCardItem;
-    dialog.prefs = {autofill: prefsValues};
     document.body.appendChild(dialog);
     flush();
     return dialog;

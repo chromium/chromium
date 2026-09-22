@@ -10,16 +10,17 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createIbanEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod} from './payments_page_test_utils.js';
+import {createPaymentsPage, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod, setupPaymentsPrefs} from './payments_page_test_utils.js';
 
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('PaymentsPageFocusTest', function() {
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       showIbansSettings: true,
     });
+    await setupPaymentsPrefs();
   });
 
   test('FocusLocationAfterDeletion', async function() {

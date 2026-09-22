@@ -114,7 +114,7 @@
         <div id="expiredError">$i18n{creditCardExpired}</div>
         <template is="dom-if"
             if="[[checkIfCvcStorageIsAvailable_(
-                  prefs.autofill.payment_cvc_storage.value,
+                  cvcStoragePref_.value,
                   cvcStorageAvailable_)]]">
           <cr-input id="cvcInput" label="$i18n{creditCardCvcInputTitle}"
               placeholder="$i18n{creditCardCvcInputPlaceholder}"

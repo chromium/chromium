@@ -15,7 +15,7 @@ import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webu
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
-import {verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
+import {setupPaymentsPrefs, verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
@@ -39,12 +39,13 @@ async function ibanValidated(paymentsManager: TestPaymentsManager) {
 }
 
 suite('PaymentsPageCreditCardEditDialogTest', function() {
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       showIbansSettings: true,
       cvcStorageAvailable: true,
     });
+    await setupPaymentsPrefs();
   });
 
   /**
@@ -60,15 +61,14 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
     paymentsManager.data.ibans = ibans;
     PaymentsManagerImpl.setInstance(paymentsManager);
 
+    await setupPaymentsPrefs({
+      credit_card_enabled: {value: true},
+      payment_methods_mandatory_reauth: {value: true},
+      payment_cvc_storage: {value: true},
+      types_blocked: {value: []},
+    });
+
     const page = document.createElement('settings-payments-page');
-    page.prefs = {
-      autofill: {
-        credit_card_enabled: {value: true},
-        payment_methods_mandatory_reauth: {value: true},
-        payment_cvc_storage: {value: true},
-        types_blocked: {value: []},
-      },
-    };
     document.body.appendChild(page);
     await flushTasks();
     return page;

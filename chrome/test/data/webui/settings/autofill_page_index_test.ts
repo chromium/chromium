@@ -13,13 +13,18 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-te
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {setupPaymentsPrefs} from './payments_page_test_utils.js';
+
 suite('AutofillPageIndex', function() {
   let index: SettingsAutofillPageIndexElement;
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
+  suiteSetup(async function() {
     settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    await Promise.all([
+      CrSettingsPrefs.initialized,
+      setupPaymentsPrefs(),
+    ]);
   });
 
   setup(function() {

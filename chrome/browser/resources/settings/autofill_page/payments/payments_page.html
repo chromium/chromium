@@ -39,15 +39,15 @@
 <!-- Extension-override indicator for payments autofill enable/disable; this
      MUST come immediately after the autofillCreditCardToggle toggle. -->
 <template is="dom-if"
-    if="[[prefs.autofill.credit_card_enabled.extensionId]]">
+    if="[[creditCardEnabledSyntheticPref_.extensionId]]">
   <div class="cr-row continuation">
     <extension-controlled-indicator class="flex"
         id="autofillExtensionIndicator"
-        extension-id="[[prefs.autofill.credit_card_enabled.extensionId]]"
+        extension-id="[[creditCardEnabledSyntheticPref_.extensionId]]"
         extension-name="[[
-            prefs.autofill.credit_card_enabled.controlledByName]]"
+            creditCardEnabledSyntheticPref_.controlledByName]]"
         extension-can-be-disabled="[[
-            prefs.autofill.credit_card_enabled.extensionCanBeDisabled]]">
+            creditCardEnabledSyntheticPref_.extensionCanBeDisabled]]">
     </extension-controlled-indicator>
   </div>
 </template>
@@ -59,7 +59,7 @@
   <settings-toggle-button id="mandatoryAuthToggle"
       no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
       sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
-      pref="{{prefs.autofill.payment_methods_mandatory_reauth}}" no-set-pref
+      pref-key="autofill.payment_methods_mandatory_reauth" no-set-pref
       disabled="[[shouldDisableAuthToggle_(
           creditCardEnabledSyntheticPref_.value, deviceAuthAvailable_,
           prefsInitialized_)]]"
@@ -76,7 +76,7 @@
         sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
         disabled="[[!creditCardEnabledSyntheticPref_.value]]"
         on-sub-label-link-clicked="onBulkRemoveCvcClick_"
-        pref="{{prefs.autofill.payment_cvc_storage}}">
+        pref-key="autofill.payment_cvc_storage">
     </settings-toggle-button>
 </template>
 
@@ -86,7 +86,7 @@
     sub-label-with-link="[[cardBenefitsSublabel_]]"
     on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
     disabled="[[!creditCardEnabledSyntheticPref_.value]]"
-    pref="{{prefs.autofill.payment_card_benefits}}">
+    pref-key="autofill.payment_card_benefits">
 </settings-toggle-button>
 
 <!-- Toggle to enable/disable Buy Now, Pay Later (BNPL) in autofill. -->
@@ -96,7 +96,7 @@
       sub-label-with-link="[[payOverTimeSublabel_]]"
       on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
       disabled="[[!creditCardEnabledSyntheticPref_.value]]"
-      pref="{{prefs.autofill.bnpl_enabled}}">
+      pref-key="autofill.bnpl_enabled">
   </settings-toggle-button>
 </template>
 
@@ -107,7 +107,7 @@
 <settings-toggle-button id="canMakePaymentToggle"
     aria-label="$i18n{canMakePaymentToggleLabel}"
     label="$i18n{canMakePaymentToggleLabel}"
-    pref="{{prefs.payments.can_make_payment_enabled}}"
+    pref-key="payments.can_make_payment_enabled"
     on-settings-boolean-control-change="onCanMakePaymentChange_">
 </settings-toggle-button>
 
@@ -205,8 +205,7 @@
 
 <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
   <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
-      on-close="onCreditCardDialogClose_" on-save-credit-card="saveCreditCard_"
-      prefs="{{prefs}}">
+      on-close="onCreditCardDialogClose_" on-save-credit-card="saveCreditCard_">
   </settings-credit-card-edit-dialog>
 </template>
 <template is="dom-if" if="[[showIbanDialog_]]" restamp>

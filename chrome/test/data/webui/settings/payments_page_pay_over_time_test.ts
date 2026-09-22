@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -14,14 +14,14 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
-import {createPaymentsPage} from './payments_page_test_utils.js';
+import {createPaymentsPage, setupPaymentsPrefs} from './payments_page_test_utils.js';
 
 // clang-format on
 
 suite('PaymentsPagePayOverTime', function() {
   let openWindowProxy: TestOpenWindowProxy;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       shouldShowPayOverTimeSettings: true,
@@ -30,6 +30,7 @@ suite('PaymentsPagePayOverTime', function() {
     });
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    await setupPaymentsPrefs();
   });
 
   async function createPayOverTimeIssuerListEntry(
@@ -127,7 +128,9 @@ suite('PaymentsPagePayOverTime', function() {
     payOverTimeToggle.click();
 
     assertFalse(payOverTimeToggle.checked);
-    assertFalse(payOverTimeToggle.pref!.value);
+    assertFalse(PrefService.getInstance()
+                    .getPref<boolean>('autofill.bnpl_enabled')
+                    .value);
   });
 
   test('verifyPayOverTimeLinkToGPay', async function() {

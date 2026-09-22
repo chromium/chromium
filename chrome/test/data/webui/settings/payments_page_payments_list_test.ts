@@ -12,17 +12,19 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
+import {setupPaymentsPrefs} from './payments_page_test_utils.js';
 // clang-format on
 
 suite('PaymentsPagePaymentsList', function() {
   let paymentsList: SettingsPaymentsListElement;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
     });
+    await setupPaymentsPrefs();
   });
 
   async function createPaymentsList(

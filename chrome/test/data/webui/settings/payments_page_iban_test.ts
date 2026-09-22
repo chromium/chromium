@@ -15,7 +15,7 @@ import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'ch
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createIbanEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getDefaultExpectations} from './payments_page_test_utils.js';
+import {createPaymentsPage, getDefaultExpectations, setupPaymentsPrefs} from './payments_page_test_utils.js';
 
 // clang-format on
 
@@ -40,7 +40,7 @@ async function ibanValidated(paymentsManager: TestPaymentsManager) {
 }
 
 suite('PaymentsPageIban', function() {
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       migrationEnabled: true,
@@ -48,6 +48,7 @@ suite('PaymentsPageIban', function() {
       autofillEnableWalletBranding: true,
       autofillEnableGradientGoogleLogos: false,
     });
+    await setupPaymentsPrefs();
   });
 
   /**

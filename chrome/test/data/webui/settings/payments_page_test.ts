@@ -6,15 +6,15 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import type {CrButtonElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="not is_chromeos">
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 // </if>
 import {createCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot, verifyBooleanHistogramRecorded, verifyBooleanHistogramNotRecorded} from './payments_page_test_utils.js';
+import {createPaymentsPage, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot, setupPaymentsPrefs, verifyBooleanHistogramRecorded, verifyBooleanHistogramNotRecorded} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -29,20 +29,20 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('PaymentsPageUiTest', function() {
-  test('AutofillExtensionIndicator', function() {
+  test('AutofillExtensionIndicator', async function() {
     // Initializing with fake prefs
+    const prefsBrowserProxy = await setupPaymentsPrefs();
     const page = document.createElement('settings-payments-page');
-    page.prefs = {
-      autofill: {
-        credit_card_enabled: {},
-        types_blocked: {value: []},
-      },
-    };
     document.body.appendChild(page);
 
     assertFalse(
         !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
-    page.set('prefs.autofill.credit_card_enabled.extensionId', 'test-id-1');
+    prefsBrowserProxy.fakeApi.sendPrefChanges([
+      {
+        key: 'autofill.credit_card_enabled',
+        extensionId: 'test-id-1',
+      },
+    ]);
     flush();
 
     assertTrue(!!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
@@ -51,7 +51,6 @@ suite('PaymentsPageUiTest', function() {
 
 suite('PaymentsPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
-  let settingsPrefs: SettingsPrefsElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -63,14 +62,7 @@ suite('PaymentsPage', function() {
       deviceAuthAvailable: true,
       mandatoryReauthFeatureFlagEnabled: true,
     });
-
-    settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
-  });
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
+    await setupPaymentsPrefs();
   });
 
   test('ManagePaymentMethodsLink_RecordsMetrics', async function() {
@@ -552,14 +544,12 @@ suite('PaymentsPage', function() {
     paymentsManager.checkIfDeviceAuthAvailable = () => Promise.resolve(true);
     PaymentsManagerImpl.setInstance(paymentsManager);
 
+    await setupPaymentsPrefs({
+      credit_card_enabled: {value: true},
+      types_blocked: {value: []},
+      payment_methods_mandatory_reauth: {value: false},
+    });
     const page = document.createElement('settings-payments-page');
-    page.prefs = {
-      autofill: {
-        credit_card_enabled: {value: true},
-        types_blocked: {value: []},
-        payment_methods_mandatory_reauth: {value: false},
-      },
-    };
     document.body.appendChild(page);
     await flushTasks();
     const mandatoryAuthToggle =
@@ -917,6 +907,8 @@ suite('PaymentsPage', function() {
     cardBenefitsToggle.click();
 
     assertFalse(cardBenefitsToggle.checked);
-    assertFalse(cardBenefitsToggle.pref!.value);
+    assertFalse(PrefService.getInstance()
+                    .getPref<boolean>('autofill.payment_card_benefits')
+                    .value);
   });
 });

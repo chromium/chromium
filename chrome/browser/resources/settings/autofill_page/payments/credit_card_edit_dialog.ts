@@ -7,7 +7,6 @@
  * editing or creating a credit card entry.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -17,6 +16,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -67,7 +67,8 @@ export interface SettingsCreditCardEditDialogElement {
   };
 }
 
-const SettingsCreditCardEditDialogElementBase = I18nMixin(PolymerElement);
+const SettingsCreditCardEditDialogElementBase =
+    PrefServiceObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsCreditCardEditDialogElement extends
     SettingsCreditCardEditDialogElementBase {
@@ -81,10 +82,7 @@ export class SettingsCreditCardEditDialogElement extends
 
   static get properties() {
     return {
-      /**
-       * User preferences state.
-       */
-      prefs: Object,
+      cvcStoragePref_: Object,
 
       /**
        * The underlying credit card object for the dialog. After initialization
@@ -182,7 +180,8 @@ export class SettingsCreditCardEditDialogElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare private cvcStoragePref_: chrome.settingsPrivate.PrefObject<boolean>|
+      undefined;
   declare creditCard: chrome.autofillPrivate.CreditCardEntry;
   declare private title_: string;
   declare private monthList_: string[];
@@ -201,6 +200,7 @@ export class SettingsCreditCardEditDialogElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    this.mirrorPref('autofill.payment_cvc_storage', 'cvcStoragePref_');
 
     this.title_ = this.i18n(
         this.creditCard.guid ? 'editCreditCardTitle' : 'addCreditCardTitle');

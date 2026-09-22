@@ -6,6 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPaymentsPageElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -16,8 +17,69 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 
 import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_data.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
+
+export async function setupPaymentsPrefs(
+    prefValues:
+        Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {}):
+    Promise<TestPrefsBrowserProxy> {
+  const prefs: chrome.settingsPrivate.PrefObject[] = [
+    {
+      key: 'autofill.credit_card_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['credit_card_enabled'],
+    },
+    {
+      key: 'autofill.types_blocked',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [],
+      ...prefValues['types_blocked'],
+    },
+    {
+      key: 'autofill.payment_methods_mandatory_reauth',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      ...prefValues['payment_methods_mandatory_reauth'],
+    },
+    {
+      key: 'autofill.payment_cvc_storage',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['payment_cvc_storage'],
+    },
+    {
+      key: 'autofill.payment_card_benefits',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['payment_card_benefits'],
+    },
+    {
+      key: 'autofill.bnpl_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['bnpl_enabled'],
+    },
+    {
+      key: 'payments.can_make_payment_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['can_make_payment_enabled'],
+    },
+    {
+      key: 'signin.allowed_on_next_startup',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+  const prefsBrowserProxy = new TestPrefsBrowserProxy(prefs);
+  PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+  PrefService.resetInstanceForTesting();
+  await PrefService.getInstance().whenInitialized();
+  return prefsBrowserProxy;
+}
 
 /**
  * Creates the payments autofill page for the given list.
@@ -27,7 +89,9 @@ export async function createPaymentsPage(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
-    prefValues: unknown): Promise<SettingsPaymentsPageElement> {
+    prefValues:
+        Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {}):
+    Promise<SettingsPaymentsPageElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
@@ -39,20 +103,9 @@ export async function createPaymentsPage(
   // </if>
   PaymentsManagerImpl.setInstance(paymentsManager);
 
+  await setupPaymentsPrefs(prefValues);
+
   const page = document.createElement('settings-payments-page');
-  page.prefs = {
-    autofill: {
-      credit_card_enabled: {
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
-      types_blocked: {
-        type: chrome.settingsPrivate.PrefType.LIST,
-        value: [],
-      },
-      ...(prefValues as Record<string, unknown>),
-    },
-  };
   document.body.appendChild(page);
   await flushTasks();
 

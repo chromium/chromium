@@ -11,7 +11,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
-import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_page_test_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot, setupPaymentsPrefs} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -30,6 +30,7 @@ suite('PaymentsPageCardRows', function() {
         .replace(/\s+/g, ' ')
         .replace(/\n/g, '');
   }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -40,6 +41,7 @@ suite('PaymentsPageCardRows', function() {
     });
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    return setupPaymentsPrefs();
   });
 
   test('verifyCreditCardFields', async function() {

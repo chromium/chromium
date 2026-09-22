@@ -14,7 +14,6 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
@@ -25,8 +24,8 @@ import './iban_edit_dialog.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -85,7 +84,7 @@ export interface SettingsPaymentsPageElement {
 }
 
 const SettingsPaymentsPageElementBase =
-    PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
+    PrefServiceObserverMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
 export class SettingsPaymentsPageElement extends
     SettingsPaymentsPageElementBase {
@@ -97,19 +96,16 @@ export class SettingsPaymentsPageElement extends
     return getTemplate();
   }
 
-  static get observers() {
-    return [
-      `updateCreditCardEnabledSyntheticPref_(
-          prefs.autofill.credit_card_enabled.*,
-          prefs.autofill.types_blocked.*)`,
-    ];
-  }
   static get properties() {
     return {
       creditCardEnabledSyntheticPref_: {
         type: Object,
+        value: () => ({
+          key: 'autofill.credit_card_enabled',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        }),
       },
-      prefs: Object,
 
       /**
        * An array of all saved credit cards.
@@ -247,7 +243,6 @@ export class SettingsPaymentsPageElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
   declare ibans: chrome.autofillPrivate.IbanEntry[];
   declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
@@ -276,8 +271,10 @@ export class SettingsPaymentsPageElement extends
    */
   private updateCreditCardEnabledSyntheticPref_() {
     this.creditCardEnabledSyntheticPref_ = computeEffectiveAutofillPref(
-        this.getPref<boolean>('autofill.credit_card_enabled'),
-        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        PrefService.getInstance().getPref<boolean>(
+            'autofill.credit_card_enabled'),
+        PrefService.getInstance().getPref<TypesBlockedEntry[]>(
+            'autofill.types_blocked'),
         AutofillPolicyDataCategory.PAYMENTS);
   }
 
@@ -295,7 +292,8 @@ export class SettingsPaymentsPageElement extends
       return;
     }
     const toggle = event.target as SettingsToggleButtonElement;
-    this.setPrefValue('autofill.credit_card_enabled', toggle.checked);
+    PrefService.getInstance().setPrefValue(
+        'autofill.credit_card_enabled', toggle.checked);
   }
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -309,7 +307,14 @@ export class SettingsPaymentsPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    CrSettingsPrefs.initialized.then(() => {
+    this.addPrefObserver(
+        'autofill.credit_card_enabled',
+        () => this.updateCreditCardEnabledSyntheticPref_());
+    this.addPrefObserver(
+        'autofill.types_blocked',
+        () => this.updateCreditCardEnabledSyntheticPref_());
+
+    PrefService.getInstance().whenInitialized().then(() => {
       this.prefsInitialized_ = true;
     });
 
@@ -383,7 +388,9 @@ export class SettingsPaymentsPageElement extends
     // enabled.
     if (this.prefsInitialized_ &&
         (this.creditCardEnabledSyntheticPref_?.value ??
-         this.getPref<boolean>('autofill.credit_card_enabled').value)) {
+         PrefService.getInstance()
+             .getPref<boolean>('autofill.credit_card_enabled')
+             .value)) {
       MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
           'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
           this.creditCards.length === 0);
@@ -683,7 +690,9 @@ export class SettingsPaymentsPageElement extends
     }
 
     const creditCardEnabled = this.creditCardEnabledSyntheticPref_?.value ??
-        this.getPref<boolean>('autofill.credit_card_enabled').value;
+        PrefService.getInstance()
+            .getPref<boolean>('autofill.credit_card_enabled')
+            .value;
     return !creditCardEnabled || !this.deviceAuthAvailable_;
   }
   // </if>
