@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -40,7 +41,8 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
 
     @CalledByNative
     public static @Nullable AuthenticatorSelectionDialogBridge create(
-            long nativeAuthenticatorSelectionDialogView, WindowAndroid windowAndroid) {
+            long nativeAuthenticatorSelectionDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (context == null || modalDialogManager == null) {
@@ -68,14 +70,14 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
      * @param identifier id of {@link AuthenticatorOption}.
      * @param description Description of {@link AuthenticatorOption}.
      * @param type type of {@link CardUnmaskChallengeOptionType}. Used to determine the icon that
-     *         should be shown.
+     *     should be shown.
      */
     @CalledByNative
     private static void createAuthenticatorOptionAndAddToList(
             List<AuthenticatorOption> list,
-            String title,
-            String identifier,
-            String description,
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String identifier,
+            @JniType("std::u16string") String description,
             @CardUnmaskChallengeOptionType int type) {
         if (list == null) {
             return;
@@ -153,7 +155,7 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
     interface Natives {
         void onOptionSelected(
                 long nativeAuthenticatorSelectionDialogViewAndroid,
-                String authenticatorOptionIdentifier);
+                @JniType("std::string") String authenticatorOptionIdentifier);
 
         void onDismissed(long nativeAuthenticatorSelectionDialogViewAndroid);
     }

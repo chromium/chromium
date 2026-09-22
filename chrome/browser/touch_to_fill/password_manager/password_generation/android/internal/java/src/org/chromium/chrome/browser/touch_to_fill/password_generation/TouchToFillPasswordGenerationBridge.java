@@ -28,8 +28,8 @@ class TouchToFillPasswordGenerationBridge
 
     @CalledByNative
     private static TouchToFillPasswordGenerationBridge create(
-            WindowAndroid windowAndroid,
-            WebContents webContents,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("content::WebContents*") WebContents webContents,
             @JniType("PrefService*") PrefService prefService,
             long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
@@ -61,7 +61,9 @@ class TouchToFillPasswordGenerationBridge
     }
 
     @CalledByNative
-    public boolean show(String generatedPassword, String account) {
+    public boolean show(
+            @JniType("std::u16string") String generatedPassword,
+            @JniType("std::string") String account) {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return false;
 
@@ -108,7 +110,8 @@ class TouchToFillPasswordGenerationBridge
         void onDismissed(long nativeTouchToFillPasswordGenerationBridge, boolean passwordAccepted);
 
         void onGeneratedPasswordAccepted(
-                long nativeTouchToFillPasswordGenerationBridge, String password);
+                long nativeTouchToFillPasswordGenerationBridge,
+                @JniType("std::u16string") String password);
 
         void onGeneratedPasswordRejected(long nativeTouchToFillPasswordGenerationBridge);
     }

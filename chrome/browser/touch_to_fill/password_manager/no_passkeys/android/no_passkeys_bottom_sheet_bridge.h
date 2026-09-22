@@ -58,10 +58,10 @@ class NoPasskeysBottomSheetBridge {
   void Dismiss();
 
   // Called via JNI when the sheet is dismissed.
-  void OnDismissed(JNIEnv* env);
+  void OnDismissed();
 
   // Called via JNI when the user selected the hybrid login option.
-  void OnClickUseAnotherDevice(JNIEnv* env);
+  void OnClickUseAnotherDevice();
 
  private:
   // Forwards all requests to JNI. Can be replaced in tests.

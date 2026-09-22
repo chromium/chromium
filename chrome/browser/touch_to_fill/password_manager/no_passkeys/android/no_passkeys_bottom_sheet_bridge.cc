@@ -4,8 +4,11 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
-// Must come after all headers that specialize FromJniType() / ToJniType().
+
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
 
 namespace {
@@ -23,14 +26,12 @@ class JniDelegateImpl : public JniDelegate {
   void Create(ui::WindowAndroid& window_android) override {
     java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
         jni_zero::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge_.get()),
-        window_android.GetJavaObject()));
+        reinterpret_cast<intptr_t>(bridge_.get()), &window_android));
   }
 
   void Show(const std::string& origin) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
-    Java_NoPasskeysBottomSheetBridge_show(
-        env, java_object_, base::android::ConvertUTF8ToJavaString(env, origin));
+    Java_NoPasskeysBottomSheetBridge_show(env, java_object_, origin);
   }
 
   void Dismiss() override {
@@ -40,7 +41,7 @@ class JniDelegateImpl : public JniDelegate {
 
  private:
   // The corresponding Java NoPasskeysBottomSheetBridge.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
   // The owning native NoPasskeysBottomSheetBridge.
   raw_ptr<NoPasskeysBottomSheetBridge> bridge_;
 };
@@ -90,12 +91,12 @@ void NoPasskeysBottomSheetBridge::Dismiss() {
   }
 }
 
-void NoPasskeysBottomSheetBridge::OnDismissed(JNIEnv* env) {
+void NoPasskeysBottomSheetBridge::OnDismissed() {
   CHECK(on_dismissed_callback_);
   std::move(on_dismissed_callback_).Run();
 }
 
-void NoPasskeysBottomSheetBridge::OnClickUseAnotherDevice(JNIEnv* env) {
+void NoPasskeysBottomSheetBridge::OnClickUseAnotherDevice() {
   CHECK(on_click_use_another_device_callback_);
   std::move(on_click_use_another_device_callback_).Run();
 }

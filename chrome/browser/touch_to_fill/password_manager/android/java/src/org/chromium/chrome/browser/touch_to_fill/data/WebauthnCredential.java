@@ -34,7 +34,7 @@ public class WebauthnCredential implements CredentialBase {
     }
 
     @CalledByNative
-    public String getRpId() {
+    public @JniType("std::string") String getRpId() {
         return mRpId;
     }
 
@@ -49,7 +49,7 @@ public class WebauthnCredential implements CredentialBase {
     }
 
     @CalledByNative
-    public String getUsername() {
+    public @JniType("std::string") String getUsername() {
         return mUsername;
     }
 }

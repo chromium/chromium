@@ -28,19 +28,18 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace autofill {
 
@@ -160,7 +159,7 @@ bool AutofillKeyboardAccessoryViewImpl::Initialize() {
   }
   Java_AutofillKeyboardAccessoryViewBridge_init(
       base::android::AttachCurrentThread(), java_object_,
-      reinterpret_cast<intptr_t>(this), window_android->GetJavaObject());
+      reinterpret_cast<intptr_t>(this), window_android);
   return true;
 }
 
@@ -226,7 +225,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
       }
     }
 
-    base::android::ScopedJavaLocalRef<jobject> payload;
+    ScopedJavaLocalRef<jobject> payload;
     if (const Suggestion::AutofillProfilePayload* profile_payload =
             std::get_if<Suggestion::AutofillProfilePayload>(
                 &suggestion.payload)) {
@@ -253,9 +252,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
                 ? suggestion.iph_metadata.feature->name
                 : "",
             suggestion.iph_description_text,
-            custom_icon_url
-                ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
-                : url::GURLAndroid::EmptyGURL(env),
+            custom_icon_url ? **custom_icon_url : GURL(),
             std::to_underlying(suggestion.acceptability),
             *suggestion.is_loading, payload, i));
   }
@@ -291,8 +288,7 @@ void AutofillKeyboardAccessoryViewImpl::ShowAutofillAiSuggestionDetails(
       env, java_object_, title, body, confirm_button_text, primary_button_text);
 }
 
-void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
-                                                           int32_t list_index) {
+void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(int32_t list_index) {
   if (controller_) {
     if (list_index >= 0 && list_index < controller_->GetLineCount()) {
       const Suggestion& suggestion = controller_->GetSuggestionAt(list_index);
@@ -316,7 +312,6 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
 }
 
 void AutofillKeyboardAccessoryViewImpl::SuggestionSelectionStateChanged(
-    JNIEnv* env,
     int32_t list_index,
     bool is_selected) {
   if (!controller_) {
@@ -329,15 +324,13 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionSelectionStateChanged(
   }
 }
 
-void AutofillKeyboardAccessoryViewImpl::DeletionRequested(JNIEnv* env,
-                                                          int32_t list_index) {
+void AutofillKeyboardAccessoryViewImpl::DeletionRequested(int32_t list_index) {
   if (controller_) {
     controller_->RemoveSuggestion(list_index);
   }
 }
 
-void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(JNIEnv* env,
-                                                               bool confirmed) {
+void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(bool confirmed) {
   if (deletion_callback_.is_null()) {
     LOG(DFATAL) << "OnDeletionDialogClosed called but no deletion is pending!";
     return;
@@ -346,7 +339,6 @@ void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(JNIEnv* env,
 }
 
 void AutofillKeyboardAccessoryViewImpl::AutofillAiSuggestionDetailsRequested(
-    JNIEnv* env,
     int32_t list_index) {
   if (controller_ && list_index >= 0) {
     controller_->ShowAutofillAiSuggestionDetails(
@@ -355,7 +347,6 @@ void AutofillKeyboardAccessoryViewImpl::AutofillAiSuggestionDetailsRequested(
 }
 
 void AutofillKeyboardAccessoryViewImpl::OnAutofillAiSuppressionDialogClosed(
-    JNIEnv* env,
     bool confirmed) {
   if (autofill_ai_suppression_callback_.is_null()) {
     LOG(DFATAL) << "OnAutofillAiSuppressionDialogClosed called but no dialog "
@@ -365,14 +356,13 @@ void AutofillKeyboardAccessoryViewImpl::OnAutofillAiSuppressionDialogClosed(
   std::move(autofill_ai_suppression_callback_).Run(confirmed);
 }
 
-void AutofillKeyboardAccessoryViewImpl::ViewDismissed(JNIEnv* env) {
+void AutofillKeyboardAccessoryViewImpl::ViewDismissed() {
   if (controller_) {
     controller_->ViewDestroyed();
   }
 }
 
 void AutofillKeyboardAccessoryViewImpl::OpenSettingsForEntityType(
-    JNIEnv* env,
     int32_t entity_type) {
   if (controller_) {
     controller_->OpenSettingsForEntityType(entity_type);

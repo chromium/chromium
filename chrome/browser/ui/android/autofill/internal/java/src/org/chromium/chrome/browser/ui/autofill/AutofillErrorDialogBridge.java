@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -66,7 +67,8 @@ public class AutofillErrorDialogBridge {
 
     @CalledByNative
     public static AutofillErrorDialogBridge create(
-            long nativeAutofillErrorDialogView, WindowAndroid windowAndroid) {
+            long nativeAutofillErrorDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         return new AutofillErrorDialogBridge(
                 nativeAutofillErrorDialogView,
                 assertNonNull(windowAndroid.getModalDialogManager()),
@@ -81,7 +83,10 @@ public class AutofillErrorDialogBridge {
      * @param buttonLabel Label for the positive button which acts as a cancel button.
      */
     @CalledByNative
-    public void show(String title, String description, String buttonLabel) {
+    public void show(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String description,
+            @JniType("std::u16string") String buttonLabel) {
         View errorDialogContentView =
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_error_dialog, null);
         ((TextView) errorDialogContentView.findViewById(R.id.error_message)).setText(description);

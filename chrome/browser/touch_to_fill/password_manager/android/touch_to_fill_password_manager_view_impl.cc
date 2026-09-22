@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -17,23 +18,20 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/touch_to_fill/password_manager/android/internal/jni/TouchToFillPasswordManagerBridge_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/Credential_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebauthnCredential_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
+using jni_zero::JavaRef;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 
@@ -42,14 +40,10 @@ namespace {
 UiCredential ConvertJavaCredential(JNIEnv* env,
                                    const JavaRef<jobject>& credential) {
   return UiCredential(
-      ConvertJavaStringToUTF16(env,
-                               Java_Credential_getUsername(env, credential)),
-      ConvertJavaStringToUTF16(env,
-                               Java_Credential_getPassword(env, credential)),
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(
-          env, Java_Credential_getOriginUrl(env, credential)))),
-      ConvertJavaStringToUTF8(env,
-                              Java_Credential_getDisplayName(env, credential)),
+      Java_Credential_getUsername(env, credential),
+      Java_Credential_getPassword(env, credential),
+      url::Origin::Create(GURL(Java_Credential_getOriginUrl(env, credential))),
+      Java_Credential_getDisplayName(env, credential),
       static_cast<password_manager_util::GetLoginMatchType>(
           Java_Credential_getMatchType(env, credential)),
       base::Time::FromMillisecondsSinceUnixEpoch(
@@ -63,14 +57,13 @@ PasskeyCredential ConvertJavaWebauthnCredential(
     const JavaRef<jobject>& credential) {
   return PasskeyCredential(
       PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId(ConvertJavaStringToUTF8(
-          Java_WebauthnCredential_getRpId(env, credential))),
+      PasskeyCredential::RpId(Java_WebauthnCredential_getRpId(env, credential)),
       PasskeyCredential::CredentialId(
           Java_WebauthnCredential_getCredentialId(env, credential)),
       PasskeyCredential::UserId(
           Java_WebauthnCredential_getUserId(env, credential)),
-      PasskeyCredential::Username(ConvertJavaStringToUTF8(
-          Java_WebauthnCredential_getUsername(env, credential))));
+      PasskeyCredential::Username(
+          Java_WebauthnCredential_getUsername(env, credential)));
 }
 
 }  // namespace
@@ -103,7 +96,7 @@ bool TouchToFillPasswordManagerViewImpl::Show(
   // Serialize the |credentials| span into a Java array and instruct the bridge
   // to show it together with |url| to the user.
   JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobjectArray> credential_array =
+  jni_zero::ScopedJavaLocalRef<jobjectArray> credential_array =
       Java_TouchToFillPasswordManagerBridge_createCredentialArray(
           env, credentials.size());
 
@@ -111,37 +104,28 @@ bool TouchToFillPasswordManagerViewImpl::Show(
     if (auto* credential =
             std::get_if<password_manager::UiCredential>(&credentials[i])) {
       Java_TouchToFillPasswordManagerBridge_insertCredential(
-          env, credential_array, i,
-          ConvertUTF16ToJavaString(env, credential->username()),
-          ConvertUTF16ToJavaString(env, credential->password()),
-          ConvertUTF16ToJavaString(env, GetDisplayUsername(*credential)),
-          ConvertUTF8ToJavaString(env, credential->origin().Serialize()),
-          ConvertUTF8ToJavaString(env, credential->display_name()),
+          env, credential_array, i, credential->username(),
+          credential->password(), GetDisplayUsername(*credential),
+          credential->origin().Serialize(), credential->display_name(),
           static_cast<int>(credential->match_type()),
           credential->last_used().InMillisecondsSinceUnixEpoch(),
-          credential->is_shared(),
-          ConvertUTF16ToJavaString(env, credential->sender_name()),
-          url::GURLAndroid::FromNativeGURL(
-              env, credential->sender_profile_image_url()),
+          credential->is_shared(), credential->sender_name(),
+          credential->sender_profile_image_url(),
           credential->sharing_notification_displayed(),
           credential->is_backup_credential().value());
     } else {
       const PasskeyCredential& passkey_credential =
           std::get<PasskeyCredential>(credentials[i]);
       Java_TouchToFillPasswordManagerBridge_insertWebAuthnCredential(
-          env, credential_array, i,
-          ConvertUTF8ToJavaString(env, passkey_credential.rp_id()),
-          base::android::ToJavaByteArray(env,
-                                         passkey_credential.credential_id()),
-          base::android::ToJavaByteArray(env, passkey_credential.user_id()),
-          ConvertUTF16ToJavaString(env, password_manager::ToUsernameString(
-                                            passkey_credential.username())));
+          env, credential_array, i, passkey_credential.rp_id(),
+          passkey_credential.credential_id(), passkey_credential.user_id(),
+          password_manager::ToUsernameString(passkey_credential.username()));
     }
   }
 
   Java_TouchToFillPasswordManagerBridge_showCredentials(
-      env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
-      is_origin_secure.value(), credential_array,
+      env, java_object_internal_, url, is_origin_secure.value(),
+      credential_array,
       !!(flags & TouchToFillPasswordManagerView::kTriggerSubmission),
       !!(flags & TouchToFillPasswordManagerView::kShouldShowHybridOption),
       !!(flags & TouchToFillPasswordManagerView::kShouldShowCredManEntry));
@@ -171,21 +155,16 @@ void TouchToFillPasswordManagerViewImpl::OnWebAuthnCredentialSelected(
 }
 
 void TouchToFillPasswordManagerViewImpl::OnManagePasswordsSelected(
-    JNIEnv* env,
     bool passkeys_shown) {
   controller_->OnManagePasswordsSelected(passkeys_shown);
 }
 
-void TouchToFillPasswordManagerViewImpl::OnHybridSignInSelected(JNIEnv* env) {
+void TouchToFillPasswordManagerViewImpl::OnHybridSignInSelected() {
   controller_->OnHybridSignInSelected();
 }
 
-void TouchToFillPasswordManagerViewImpl::OnShowCredManSelected(JNIEnv* env) {
+void TouchToFillPasswordManagerViewImpl::OnShowCredManSelected() {
   controller_->OnShowCredManSelected();
-}
-
-void TouchToFillPasswordManagerViewImpl::OnDismiss(JNIEnv* env) {
-  OnDismiss();
 }
 
 bool TouchToFillPasswordManagerViewImpl::RecreateJavaObject() {
@@ -199,8 +178,8 @@ bool TouchToFillPasswordManagerViewImpl::RecreateJavaObject() {
   }
   java_object_internal_ = Java_TouchToFillPasswordManagerBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      controller_->GetProfile()->GetJavaObject(),
-      controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
+      controller_->GetProfile(),
+      controller_->GetNativeView()->GetWindowAndroid());
   return !!java_object_internal_;
 }
 

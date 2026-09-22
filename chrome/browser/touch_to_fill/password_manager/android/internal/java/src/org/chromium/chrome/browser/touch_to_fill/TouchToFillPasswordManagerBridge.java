@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -52,7 +53,9 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
 
     @CalledByNative
     private static @Nullable TouchToFillPasswordManagerBridge create(
-            long nativeView, Profile profile, WindowAndroid windowAndroid) {
+            long nativeView,
+            @JniType("Profile*") Profile profile,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
@@ -75,16 +78,16 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
     private static void insertCredential(
             CredentialBase[] credentials,
             int index,
-            String username,
-            String password,
-            String formattedUsername,
-            String originUrl,
-            String displayName,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password,
+            @JniType("std::u16string") String formattedUsername,
+            @JniType("std::string") String originUrl,
+            @JniType("std::string") String displayName,
             @GetLoginMatchType int matchType,
             long lastUsedMsSinceEpoch,
             boolean isShared,
-            String senderName,
-            GURL senderProfileImageUrl,
+            @JniType("std::u16string") String senderName,
+            @JniType("GURL") GURL senderProfileImageUrl,
             boolean sharingNotificationDisplayed,
             boolean isBackupCredential) {
         credentials[index] =
@@ -108,16 +111,16 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
     private static void insertWebAuthnCredential(
             CredentialBase[] credentials,
             int index,
-            String rpId,
-            byte[] credentialId,
-            byte[] userId,
-            String username) {
+            @JniType("std::string") String rpId,
+            @JniType("std::vector<uint8_t>") byte[] credentialId,
+            @JniType("std::vector<uint8_t>") byte[] userId,
+            @JniType("std::u16string") String username) {
         credentials[index] = new WebauthnCredential(rpId, credentialId, userId, username);
     }
 
     @CalledByNative
     private void showCredentials(
-            GURL url,
+            @JniType("GURL") GURL url,
             boolean isOriginSecure,
             CredentialBase[] credentials,
             boolean submitCredential,

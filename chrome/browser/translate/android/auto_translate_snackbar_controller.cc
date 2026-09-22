@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/translate/android/auto_translate_snackbar_controller.h"
+
 #include <memory>
 #include <string>
 
-#include "chrome/browser/translate/android/auto_translate_snackbar_controller.h"
-
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +16,7 @@
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/translate/android/jni_headers/AutoTranslateSnackbarController_jni.h"
 
 namespace translate {
@@ -38,14 +37,12 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
     CHECK(!java_auto_translate_snackbar_controller_);
     java_auto_translate_snackbar_controller_ =
         Java_AutoTranslateSnackbarController_create(
-            env, web_contents->GetJavaWebContents(),
+            env, web_contents,
             reinterpret_cast<intptr_t>(native_auto_translate_snackbar));
     return bool(java_auto_translate_snackbar_controller_);
   }
 
-  void ShowSnackbar(
-      JNIEnv* env,
-      base::android::ScopedJavaLocalRef<jstring> target_language) override {
+  void ShowSnackbar(JNIEnv* env, std::string target_language) override {
     if (!CanShowSnackbar()) {
       return;
     }
@@ -73,7 +70,7 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
   }
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject>
+  jni_zero::ScopedJavaGlobalRef<jobject>
       java_auto_translate_snackbar_controller_;
   bool is_showing_;
 };
@@ -97,19 +94,16 @@ AutoTranslateSnackbarController::AutoTranslateSnackbarController(
     const base::WeakPtr<TranslateManager>& translate_manager)
     : AutoTranslateSnackbarController(web_contents,
                                       translate_manager,
-                                      std::make_unique<BridgeImpl>()) {
-}
+                                      std::make_unique<BridgeImpl>()) {}
 
 AutoTranslateSnackbarController::~AutoTranslateSnackbarController() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   bridge_->DismissSnackbar(env);
 }
 
 void AutoTranslateSnackbarController::ShowSnackbar(
     const std::string& target_language) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_target_langauge =
-      base::android::ConvertUTF8ToJavaString(env, target_language);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   // If this is the first time ShowSnackbar has been called or the Java
   // AutoTranslateSnackbar failed to be created last time, create it.
   if (!bridge_->CanShowSnackbar() &&
@@ -119,36 +113,32 @@ void AutoTranslateSnackbarController::ShowSnackbar(
     // when the activity is being destroyed, so there is no Snackbar to show.
     return;
   }
-  bridge_->ShowSnackbar(env, java_target_langauge);
+  bridge_->ShowSnackbar(env, target_language);
 }
 
 bool AutoTranslateSnackbarController::IsShowing() {
   return bridge_->IsSnackbarShowing();
 }
 
-void AutoTranslateSnackbarController::OnDismissNoAction(JNIEnv* env) {
+void AutoTranslateSnackbarController::OnDismissNoAction() {
   bridge_->WasDismissed();
 }
 
 void AutoTranslateSnackbarController::OnUndoActionPressed(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_target_language) {
-  const std::string target_code =
-      base::android::ConvertJavaStringToUTF8(env, j_target_language);
-
+    std::string target_language) {
   ReportCompactInfobarEvent(InfobarEvent::INFOBAR_REVERT);
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIInteraction(
       UIInteraction::kRevert);
   translate_manager_->RevertTranslation();
   translate_manager_->ShowTranslateUI(/* source_code */ std::nullopt,
-                                      target_code,
+                                      target_language,
                                       /* auto_translate */ false,
                                       /* triggered_from_menu */ false);
   bridge_->WasDismissed();
 }
 
 void AutoTranslateSnackbarController::NativeDismissSnackbar() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   bridge_->DismissSnackbar(env);
 }
 

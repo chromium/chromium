@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /** Bridge class that lets Android code access native code to execute translate on a tab. */
@@ -139,8 +138,7 @@ public class TranslateBridge {
      *     supported on Android.
      */
     public static List<String> getUserLanguageCodes(Profile profile) {
-        return new ArrayList<>(
-                Arrays.asList(TranslateBridgeJni.get().getUserAcceptLanguages(profile)));
+        return new ArrayList<>(TranslateBridgeJni.get().getUserAcceptLanguages(profile));
     }
 
     /**
@@ -148,8 +146,7 @@ public class TranslateBridge {
      * @return List of languages to always translate.
      */
     public static List<String> getAlwaysTranslateLanguages(Profile profile) {
-        return new ArrayList<>(
-                Arrays.asList(TranslateBridgeJni.get().getAlwaysTranslateLanguages(profile)));
+        return new ArrayList<>(TranslateBridgeJni.get().getAlwaysTranslateLanguages(profile));
     }
 
     /**
@@ -157,8 +154,7 @@ public class TranslateBridge {
      * @return List of languages that translation should not be prompted for.
      */
     public static List<String> getNeverTranslateLanguages(Profile profile) {
-        return new ArrayList<>(
-                Arrays.asList(TranslateBridgeJni.get().getNeverTranslateLanguages(profile)));
+        return new ArrayList<>(TranslateBridgeJni.get().getNeverTranslateLanguages(profile));
     }
 
     /**
@@ -294,66 +290,84 @@ public class TranslateBridge {
 
     @NativeMethods
     public interface Natives {
-        long addTranslationObserver(WebContents webContents, TranslationObserver observer);
+        long addTranslationObserver(
+                @JniType("content::WebContents*") WebContents webContents,
+                TranslationObserver observer);
 
-        void removeTranslationObserver(WebContents webContents, long observerNativePtr);
+        void removeTranslationObserver(
+                @JniType("content::WebContents*") WebContents webContents, long observerNativePtr);
 
-        void manualTranslateWhenReady(WebContents webContents);
+        void manualTranslateWhenReady(@JniType("content::WebContents*") WebContents webContents);
 
-        boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
+        boolean canManuallyTranslate(
+                @JniType("content::WebContents*") WebContents webContents, boolean menuLogging);
 
-        boolean shouldShowManualTranslateIph(WebContents webContents);
+        boolean shouldShowManualTranslateIph(
+                @JniType("content::WebContents*") WebContents webContents);
 
-        boolean isPageTranslated(WebContents webContents);
+        boolean isPageTranslated(@JniType("content::WebContents*") WebContents webContents);
 
         void setPredefinedTargetLanguage(
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 @JniType("std::string") String targetLanguage,
                 boolean shouldAutoTranslate);
 
         @JniType("std::string")
-        String getTargetLanguage(Profile profile);
+        String getTargetLanguage(@JniType("Profile*") Profile profile);
 
         void setDefaultTargetLanguage(
-                Profile profile, @JniType("std::string") @Nullable String targetLanguage);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String targetLanguage);
 
-        void resetAcceptLanguages(Profile profile, @JniType("std::string") String defaultLocale);
+        void resetAcceptLanguages(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String defaultLocale);
 
-        void getChromeAcceptLanguages(Profile profile, List<LanguageItem> list);
+        void getChromeAcceptLanguages(
+                @JniType("Profile*") Profile profile, List<LanguageItem> list);
 
-        String[] getUserAcceptLanguages(Profile profile);
+        @JniType("std::vector<std::string>")
+        List<String> getUserAcceptLanguages(@JniType("Profile*") Profile profile);
 
-        String[] getAlwaysTranslateLanguages(Profile profile);
+        @JniType("std::vector<std::string>")
+        List<String> getAlwaysTranslateLanguages(@JniType("Profile*") Profile profile);
 
-        String[] getNeverTranslateLanguages(Profile profile);
+        @JniType("std::vector<std::string>")
+        List<String> getNeverTranslateLanguages(@JniType("Profile*") Profile profile);
 
         void setLanguageAlwaysTranslateState(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 @JniType("std::string") @Nullable String language,
                 boolean alwaysTranslate);
 
         void updateUserAcceptLanguages(
-                Profile profile, @JniType("std::string") @Nullable String language, boolean add);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") @Nullable String language,
+                boolean add);
 
         void moveAcceptLanguage(
-                Profile profile, @JniType("std::string") String language, int offset);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String language,
+                int offset);
 
-        void setLanguageOrder(Profile profile, @JniType("std::vector<std::string>") String[] codes);
+        void setLanguageOrder(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::vector<std::string>") String[] codes);
 
-        boolean isBlockedLanguage(Profile profile, @JniType("std::string") String language);
+        boolean isBlockedLanguage(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String language);
 
         void setLanguageBlockedState(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 @JniType("std::string") @Nullable String language,
                 boolean blocked);
 
-        boolean getAppLanguagePromptShown(Profile profile);
+        boolean getAppLanguagePromptShown(@JniType("Profile*") Profile profile);
 
-        void setAppLanguagePromptShown(Profile profile);
+        void setAppLanguagePromptShown(@JniType("Profile*") Profile profile);
 
         void setIgnoreMissingKeyForTesting(boolean ignore);
 
         @JniType("std::string")
-        String getCurrentLanguage(WebContents webContents);
+        String getCurrentLanguage(@JniType("content::WebContents*") WebContents webContents);
     }
 }

@@ -7,6 +7,8 @@
 #include <jni.h>
 #include <stddef.h>
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -17,10 +19,8 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillErrorDialogBridge_jni.h"
-
-using base::android::ConvertUTF16ToJavaString;
 
 namespace autofill {
 
@@ -35,7 +35,7 @@ void AutofillErrorDialogViewAndroid::Dismiss() {
   if (!java_object_.is_null()) {
     Java_AutofillErrorDialogBridge_dismiss(env, java_object_);
   } else {
-    OnDismissed(env);
+    OnDismissed();
   }
 }
 
@@ -44,7 +44,7 @@ AutofillErrorDialogViewAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutofillErrorDialogViewAndroid::OnDismissed(JNIEnv* env) {
+void AutofillErrorDialogViewAndroid::OnDismissed() {
   if (controller_) {
     controller_->OnDismissed();
   }
@@ -64,16 +64,15 @@ void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
   }
 
   java_object_.Reset(Java_AutofillErrorDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
+      env, reinterpret_cast<intptr_t>(this), window_android));
 
   if (!controller_) {
     return;
   }
 
   Java_AutofillErrorDialogBridge_show(
-      env, java_object_, ConvertUTF16ToJavaString(env, controller_->GetTitle()),
-      ConvertUTF16ToJavaString(env, controller_->GetDescription()),
-      ConvertUTF16ToJavaString(env, controller_->GetButtonLabel()));
+      env, java_object_, controller_->GetTitle(), controller_->GetDescription(),
+      controller_->GetButtonLabel());
 }
 
 base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(

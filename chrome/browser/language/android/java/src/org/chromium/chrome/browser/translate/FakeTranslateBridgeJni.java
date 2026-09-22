@@ -72,8 +72,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String[] getUserAcceptLanguages(Profile profile) {
-        return mUserAcceptLanguages.toArray(new String[mUserAcceptLanguages.size()]);
+    public List<String> getUserAcceptLanguages(Profile profile) {
+        return mUserAcceptLanguages;
     }
 
     /**
@@ -114,8 +114,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String[] getAlwaysTranslateLanguages(Profile profile) {
-        return mAlwaysLanguages.toArray(new String[mAlwaysLanguages.size()]);
+    public List<String> getAlwaysTranslateLanguages(Profile profile) {
+        return new ArrayList<>(mAlwaysLanguages);
     }
 
     @Override
@@ -129,8 +129,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String[] getNeverTranslateLanguages(Profile profile) {
-        return mNeverLanguages.toArray(new String[mNeverLanguages.size()]);
+    public List<String> getNeverTranslateLanguages(Profile profile) {
+        return new ArrayList<>(mNeverLanguages);
     }
 
     @Override

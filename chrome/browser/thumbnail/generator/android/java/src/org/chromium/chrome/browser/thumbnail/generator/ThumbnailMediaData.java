@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.thumbnail.generator;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 /** Contains local media metadata and thumbnails. */
 public class ThumbnailMediaData {
@@ -26,7 +27,11 @@ public class ThumbnailMediaData {
     public final Bitmap thumbnail;
 
     @CalledByNative
-    private ThumbnailMediaData(double duration, String title, String artist, Bitmap thumbnail) {
+    private ThumbnailMediaData(
+            double duration,
+            @JniType("std::string") String title,
+            @JniType("std::string") String artist,
+            @JniType("SkBitmap") Bitmap thumbnail) {
         this.duration = duration;
         this.title = title;
         this.artist = artist;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/fake_touch_to_fill_password_generation_bridge.h"
+
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_delegate.h"
 
 FakeTouchToFillPasswordGenerationBridge::
@@ -22,18 +23,15 @@ bool FakeTouchToFillPasswordGenerationBridge::Show(
 }
 
 void FakeTouchToFillPasswordGenerationBridge::Hide() {
-  OnDismissed(/*env=*/nullptr, /*generated_password_accepted=*/false);
+  OnDismissed(/*generated_password_accepted=*/false);
 }
 
 void FakeTouchToFillPasswordGenerationBridge::OnDismissed(
-    JNIEnv* env,
     bool generated_password_accepted) {
   delegate_->OnDismissed(generated_password_accepted);
 }
 
 void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordAccepted(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& password) {}
+    const std::u16string& password) {}
 
-void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordRejected(
-    JNIEnv* env) {}
+void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordRejected() {}

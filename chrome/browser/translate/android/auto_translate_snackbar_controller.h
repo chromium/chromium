@@ -48,12 +48,10 @@ class AutoTranslateSnackbarController {
   bool IsShowing();
 
   // Called by Java when the snackbar is dismissed with no action.
-  void OnDismissNoAction(JNIEnv* env);
+  void OnDismissNoAction();
 
   // Called by Java when the Undo action is pressed.
-  void OnUndoActionPressed(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& target_language);
+  void OnUndoActionPressed(std::string target_language);
 
   // Called by native to manually dismiss the snackbar
   void NativeDismissSnackbar();
@@ -70,9 +68,7 @@ class AutoTranslateSnackbarController {
         content::WebContents* web_contents,
         AutoTranslateSnackbarController* native_auto_translate_snackbar) = 0;
 
-    virtual void ShowSnackbar(
-        JNIEnv* env,
-        base::android::ScopedJavaLocalRef<jstring> target_language) = 0;
+    virtual void ShowSnackbar(JNIEnv* env, std::string target_language) = 0;
     virtual bool CanShowSnackbar() = 0;
     virtual void WasDismissed() = 0;
     virtual bool IsSnackbarShowing() = 0;
@@ -89,7 +85,6 @@ class AutoTranslateSnackbarController {
  private:
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TranslateManager> translate_manager_;
-  base::android::ScopedJavaGlobalRef<jobject> java_auto_translate_snackbar_;
   std::unique_ptr<Bridge> bridge_;
 };
 

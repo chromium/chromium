@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
@@ -125,12 +126,12 @@ public class Credential implements CredentialBase {
     }
 
     @CalledByNative
-    public String getUsername() {
+    public @JniType("std::u16string") String getUsername() {
         return mUsername;
     }
 
     @CalledByNative
-    public String getPassword() {
+    public @JniType("std::u16string") String getPassword() {
         return mPassword;
     }
 
@@ -139,7 +140,7 @@ public class Credential implements CredentialBase {
     }
 
     @CalledByNative
-    public String getOriginUrl() {
+    public @JniType("std::string") String getOriginUrl() {
         return mOriginUrl;
     }
 
@@ -154,7 +155,7 @@ public class Credential implements CredentialBase {
     }
 
     @CalledByNative
-    public String getDisplayName() {
+    public @JniType("std::string") String getDisplayName() {
         return mDisplayName;
     }
 

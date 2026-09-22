@@ -33,7 +33,7 @@ class AutofillErrorDialogViewAndroid : public AutofillErrorDialogView {
   base::WeakPtr<AutofillErrorDialogView> GetWeakPtr() override;
 
   // Called by the Java code when the error dialog is dismissed.
-  void OnDismissed(JNIEnv* env);
+  void OnDismissed();
 
   // Show the dialog view.
   void Show(content::WebContents* web_contents);
@@ -42,7 +42,7 @@ class AutofillErrorDialogViewAndroid : public AutofillErrorDialogView {
   base::WeakPtr<AutofillErrorDialogController> controller_;
 
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 
   base::WeakPtrFactory<AutofillErrorDialogViewAndroid> weak_ptr_factory_{this};
 };

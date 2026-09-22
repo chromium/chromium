@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_THUMBNAIL_GENERATOR_ANDROID_THUMBNAIL_GENERATOR_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/memory/weak_ptr.h"
@@ -19,11 +20,11 @@ class ThumbnailMediaParser;
 // safely destroyed while a request is being processed.
 class ThumbnailGenerator {
  public:
-  explicit ThumbnailGenerator(const base::android::JavaRef<jobject>& jobj);
+  explicit ThumbnailGenerator(const jni_zero::JavaRef<jobject>& jobj);
 
   // Destroys the ThumbnailGenerator.  Any currently running ImageRequest will
   // delete itself when it has completed.
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   ThumbnailGenerator(const ThumbnailGenerator&) = delete;
   ThumbnailGenerator& operator=(const ThumbnailGenerator&) = delete;
@@ -32,12 +33,11 @@ class ThumbnailGenerator {
   // located at |file_path| with a max size of |icon_size| in each dimension.
   // Invokes the Java #onthumbnailRetrieved(String, int, Bitmap, boolean) method
   // when finished.
-  void RetrieveThumbnail(JNIEnv* env,
-                         const base::android::JavaRef<jstring>& jcontent_id,
-                         const base::android::JavaRef<jstring>& jfile_path,
-                         const base::android::JavaRef<jstring>& jmime_type,
+  void RetrieveThumbnail(const jni_zero::JavaRef<jstring>& jcontent_id,
+                         const std::string& file_path,
+                         const std::string& mime_type,
                          int32_t icon_size,
-                         const base::android::JavaRef<jobject>& callback);
+                         const jni_zero::JavaRef<jobject>& callback);
 
  private:
   ~ThumbnailGenerator();
@@ -59,7 +59,7 @@ class ThumbnailGenerator {
       SkBitmap thumbnail);
 
   // This is a {@link ThumbnailGenerator} Java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_delegate_;
   base::WeakPtrFactory<ThumbnailGenerator> weak_factory_{this};
 };
 

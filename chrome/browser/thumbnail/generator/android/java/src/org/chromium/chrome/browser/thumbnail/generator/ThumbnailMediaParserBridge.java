@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.thumbnail.generator;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -30,6 +31,9 @@ public class ThumbnailMediaParserBridge {
 
     @NativeMethods
     interface Natives {
-        void parse(String mimeType, String filePath, Callback<ThumbnailMediaData> callback);
+        void parse(
+                @JniType("std::string") String mimeType,
+                @JniType("std::string") String filePath,
+                Callback<ThumbnailMediaData> callback);
     }
 }

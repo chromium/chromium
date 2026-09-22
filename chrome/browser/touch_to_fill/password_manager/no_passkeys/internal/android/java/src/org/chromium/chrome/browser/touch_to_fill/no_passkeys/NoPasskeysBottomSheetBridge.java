@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -25,7 +26,9 @@ class NoPasskeysBottomSheetBridge implements NoPasskeysBottomSheetCoordinator.Na
     private long mNativeBridge;
 
     @CalledByNative
-    NoPasskeysBottomSheetBridge(long nativeNoPasskeysBottomSheetBridge, WindowAndroid window) {
+    NoPasskeysBottomSheetBridge(
+            long nativeNoPasskeysBottomSheetBridge,
+            @JniType("ui::WindowAndroid*") WindowAndroid window) {
         this(
                 nativeNoPasskeysBottomSheetBridge,
                 window.getContext(),
@@ -43,7 +46,7 @@ class NoPasskeysBottomSheetBridge implements NoPasskeysBottomSheetCoordinator.Na
     }
 
     @CalledByNative
-    void show(String origin) {
+    void show(@JniType("std::string") String origin) {
         mNoPasskeysSheet.show(origin);
     }
 

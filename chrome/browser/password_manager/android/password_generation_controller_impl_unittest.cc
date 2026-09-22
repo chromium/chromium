@@ -551,7 +551,7 @@ TEST_F(PasswordGenerationControllerTest,
                                      TouchToFillOutcome::kShown, 1);
 
   ttf_password_generation_bridge_ptr->OnDismissed(
-      /*env=*/nullptr, /*generated_password_accepted=*/false);
+      /*generated_password_accepted=*/false);
 
   // Keyboard accessory should be displayed.
   EXPECT_CALL(mock_manual_filling_controller_,

@@ -23,11 +23,9 @@ class FakeTouchToFillPasswordGenerationBridge
             std::u16string password,
             std::string account) override;
   void Hide() override;
-  void OnDismissed(JNIEnv* env, bool generated_password_accepted) override;
-  void OnGeneratedPasswordAccepted(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& password) override;
-  void OnGeneratedPasswordRejected(JNIEnv* env) override;
+  void OnDismissed(bool generated_password_accepted) override;
+  void OnGeneratedPasswordAccepted(const std::u16string& password) override;
+  void OnGeneratedPasswordRejected() override;
 
  private:
   raw_ptr<TouchToFillPasswordGenerationDelegate> delegate_;

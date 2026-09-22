@@ -4,6 +4,8 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
@@ -13,7 +15,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/internal/jni/TouchToFillPasswordGenerationBridge_jni.h"
 
 TouchToFillPasswordGenerationBridgeImpl::
@@ -35,20 +37,13 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
   delegate_ = delegate;
 
   CHECK(!java_object_);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
-      base::android::AttachCurrentThread(),
-      web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      web_contents->GetJavaWebContents(), pref_service,
-      reinterpret_cast<intptr_t>(this)));
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_password =
-      base::android::ConvertUTF16ToJavaString(env, password);
-  base::android::ScopedJavaLocalRef<jstring> j_account =
-      base::android::ConvertUTF8ToJavaString(env, account);
+      env, web_contents->GetNativeView()->GetWindowAndroid(), web_contents,
+      pref_service, reinterpret_cast<intptr_t>(this)));
 
   return Java_TouchToFillPasswordGenerationBridge_show(env, java_object_,
-                                                       j_password, j_account);
+                                                       password, account);
 }
 
 void TouchToFillPasswordGenerationBridgeImpl::Hide() {
@@ -57,11 +52,10 @@ void TouchToFillPasswordGenerationBridgeImpl::Hide() {
   }
 
   Java_TouchToFillPasswordGenerationBridge_hideFromNative(
-      base::android::AttachCurrentThread(), java_object_);
+      jni_zero::AttachCurrentThread(), java_object_);
 }
 
 void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(
-    JNIEnv* env,
     bool generated_password_accepted) {
   CHECK(delegate_);
 
@@ -74,15 +68,12 @@ void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(
 }
 
 void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordAccepted(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& password) {
+    const std::u16string& password) {
   CHECK(delegate_);
-  delegate_->OnGeneratedPasswordAccepted(
-      base::android::ConvertJavaStringToUTF16(env, password));
+  delegate_->OnGeneratedPasswordAccepted(password);
 }
 
-void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordRejected(
-    JNIEnv* env) {
+void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordRejected() {
   CHECK(delegate_);
   delegate_->OnGeneratedPasswordRejected();
 }

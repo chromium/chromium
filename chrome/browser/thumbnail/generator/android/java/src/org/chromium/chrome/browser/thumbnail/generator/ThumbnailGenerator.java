@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -65,9 +66,10 @@ public class ThumbnailGenerator {
 
     /**
      * Called when thumbnail has been generated.
+     *
      * @param contentId Content ID of the requested thumbnail.
      * @param requestedIconSizePx Requested size (maximum required dimension (pixel) of the smaller
-     * side) of the requested thumbnail.
+     *     side) of the requested thumbnail.
      * @param bitmap The requested thumbnail.
      * @param callback The class to call back to after thumbnail has been generated.
      */
@@ -76,7 +78,7 @@ public class ThumbnailGenerator {
     void onThumbnailRetrieved(
             String contentId,
             int requestedIconSizePx,
-            @Nullable Bitmap bitmap,
+            @JniType("SkBitmap") @Nullable Bitmap bitmap,
             ThumbnailGeneratorCallback callback) {
         // The bitmap returned here is retrieved from the native side. The image decoder there
         // scales down the image (if it is too big) so that one of its sides is smaller than or
@@ -97,8 +99,8 @@ public class ThumbnailGenerator {
         void retrieveThumbnail(
                 long nativeThumbnailGenerator,
                 @Nullable String contentId,
-                @Nullable String filePath,
-                @Nullable String mimeType,
+                @JniType("std::string") @Nullable String filePath,
+                @JniType("std::string") @Nullable String mimeType,
                 int thumbnailSize,
                 ThumbnailGeneratorCallback callback);
     }

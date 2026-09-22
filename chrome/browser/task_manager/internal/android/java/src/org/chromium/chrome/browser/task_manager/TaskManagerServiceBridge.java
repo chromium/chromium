@@ -8,7 +8,10 @@ import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class acts as a bridge between Java and the C++ task manager, providing the methods for
@@ -75,7 +78,7 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getTitle(taskId);
     }
 
-    public Bitmap getIcon(long taskId) {
+    public @Nullable Bitmap getIcon(long taskId) {
         return TaskManagerServiceBridgeJni.get().getIcon(taskId);
     }
 
@@ -130,9 +133,11 @@ public class TaskManagerServiceBridge {
 
         void removeObserver(long pointer);
 
+        @JniType("std::u16string")
         String getTitle(long taskid);
 
-        Bitmap getIcon(long taskId);
+        @JniType("SkBitmap")
+        @Nullable Bitmap getIcon(long taskId);
 
         long getMemoryFootprintUsage(long taskId);
 

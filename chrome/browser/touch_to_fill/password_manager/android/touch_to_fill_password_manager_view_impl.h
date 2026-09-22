@@ -35,14 +35,13 @@ class TouchToFillPasswordManagerViewImpl
   void OnDismiss() override;
 
   void OnCredentialSelected(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& credential);
+                            const jni_zero::JavaRef<jobject>& credential);
   void OnWebAuthnCredentialSelected(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& credential);
-  void OnManagePasswordsSelected(JNIEnv* env, bool passkeys_shown);
-  void OnHybridSignInSelected(JNIEnv* env);
-  void OnShowCredManSelected(JNIEnv* env);
-  void OnDismiss(JNIEnv* env);
+      const jni_zero::JavaRef<jobject>& credential);
+  void OnManagePasswordsSelected(bool passkeys_shown);
+  void OnHybridSignInSelected();
+  void OnShowCredManSelected();
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized
@@ -51,7 +50,7 @@ class TouchToFillPasswordManagerViewImpl
   bool RecreateJavaObject();
 
   raw_ptr<TouchToFillPasswordManagerController> controller_ = nullptr;
-  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_ANDROID_TOUCH_TO_FILL_PASSWORD_MANAGER_VIEW_IMPL_H_

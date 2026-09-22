@@ -29,17 +29,15 @@ class TouchToFillPasswordGenerationBridgeImpl
 
   void Hide() override;
 
-  void OnDismissed(JNIEnv* env, bool generated_password_accepted) override;
+  void OnDismissed(bool generated_password_accepted) override;
 
-  void OnGeneratedPasswordAccepted(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& password) override;
+  void OnGeneratedPasswordAccepted(const std::u16string& password) override;
 
-  void OnGeneratedPasswordRejected(JNIEnv* env) override;
+  void OnGeneratedPasswordRejected() override;
 
  private:
   // The corresponding Java TouchToFillCreditCardViewBridge.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
   // The `delegate_` is the owner of this bridge, so its lifetime is for sure
   // longer than this bridge's lifetime.
   raw_ptr<TouchToFillPasswordGenerationDelegate> delegate_ = nullptr;

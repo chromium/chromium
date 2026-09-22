@@ -15,7 +15,8 @@ import org.chromium.content_public.browser.WebContents;
 public interface TranslationObserver {
 
     @CalledByNative
-    default void onIsPageTranslatedChanged(WebContents contents) {}
+    default void onIsPageTranslatedChanged(
+            @JniType("content::WebContents*") WebContents contents) {}
 
     @CalledByNative
     default void onPageTranslated(

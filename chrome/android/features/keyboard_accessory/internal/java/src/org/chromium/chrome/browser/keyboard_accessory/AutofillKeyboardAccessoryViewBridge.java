@@ -124,7 +124,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param windowAndroid The window on which to show the suggestions.
      */
     @CalledByNative
-    private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid) {
+    private void init(
+            long nativeAutofillKeyboardAccessory,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
@@ -271,7 +273,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             boolean isDeletable,
             @JniType("std::string") String featureForIph,
             @JniType("std::u16string") String iphDescriptionText,
-            GURL customIconUrl,
+            @JniType("GURL") GURL customIconUrl,
             @Acceptability int acceptability,
             boolean isLoading,
             @Nullable Payload payload,
