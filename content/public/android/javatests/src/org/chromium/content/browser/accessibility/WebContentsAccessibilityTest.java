@@ -4793,6 +4793,35 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_CHILD);
     }
 
+    /**
+     * Test extended selection when an ignored tree position adjusts backward into a childless
+     * iframe root whose unignored parent within its own AXTree is null.
+     */
+    @Test
+    @SmallTest
+    public void testGetExtendedSelection_allDescendantsIgnored() throws Throwable {
+        setupTestWithHTML(
+                """
+                <iframe id='f'></iframe>
+                <p id='p' aria-hidden='true'>Hello</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+
+        mTestData.setReceivedSelectionEvent(false);
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(),
+                """
+                document.getElementById('f').contentDocument.documentElement.remove();
+                window.getSelection().collapse(document.getElementById('p'), 0);
+                """);
+        CriteriaHelper.pollUiThread(
+                () -> mTestData.hasReceivedSelectionEvent(), TEXT_SELECTION_ERROR);
+
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNull(selection);
+    }
+
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */
     @Test
     @SmallTest
