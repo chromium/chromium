@@ -65,15 +65,16 @@ PageContext ExtractFormFieldsFromWebState(web::WebState* web_state) {
   if (!web_state) {
     return PageContext();
   }
-
-  const url::Origin main_origin =
-      url::Origin::Create(web_state->GetLastCommittedURL());
-
   PageContext context;
 
   web::WebFramesManager* frames_manager =
       autofill::GetWebFramesManagerForAutofill(web_state);
+  if (!frames_manager) {
+    return context;
+  }
 
+  const url::Origin main_origin =
+      url::Origin::Create(web_state->GetLastCommittedURL());
   for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
     autofill::AutofillDriverIOS* driver =
         autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state, frame);

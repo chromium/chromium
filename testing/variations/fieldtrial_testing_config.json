@@ -11302,8 +11302,7 @@
                         "SendTabToSelfEnhancedBottomsheet",
                         "SendTabToSelfExtraEntryPoints",
                         "SendTabToSelfImprovedLastActiveLabels",
-                        "SendTabToSelfPostSendToast",
-                        "SendTabToSelfPropagateFormFields"
+                        "SendTabToSelfPostSendToast"
                     ]
                 }
             ]
