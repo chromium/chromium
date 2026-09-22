@@ -11,14 +11,18 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/common/observable_value.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_zoom_controller.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -34,6 +38,7 @@ class PrivilegedWebContents;
 
 namespace glic {
 
+class GlicEnabling;
 class Host;
 
 // Manages the WebContents instances for Glic.
@@ -57,10 +62,12 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Manages the lifetime, WebUI page handler bindings, and observer events
   // for the loading/error overlay WebContents (chrome://glic/overlay).
   class OverlayContentsManager : public content::WebContentsObserver,
-                                 public mojom::GlicOverlayPageHandler {
+                                 public mojom::GlicOverlayPageHandler,
+                                 public PanelStateObserver {
    public:
     OverlayContentsManager(Profile* profile,
-                           GlicNoWebviewContentsManager* owner);
+                           GlicNoWebviewContentsManager* owner,
+                           ObservableValueView<bool>& guest_ready);
     ~OverlayContentsManager() override;
 
     content::WebContents* EnsureWebContents();
@@ -70,9 +77,32 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     GlicOverlayUI* GetOverlayUI() const;
     std::optional<mojom::ErrorPanelType> error_type() const;
     void SetError(mojom::ErrorPanelType error_type);
+    void ClearError();
+    void AttachToHost(Host* host);
     void SetVisibility(content::Visibility visibility);
     const gfx::Size& cached_size() const;
     bool ShouldReloadOnShow() const;
+
+    // Determines what the overlay state should be based on explicit inputs:
+    // - `error_type`: If an error is active, the overlay shows that error
+    // panel.
+    // - `is_guest_ready`: If no error is active and the guest is ready, no
+    //   overlay state is needed (returns nullptr).
+    // - `panel_state_kind`: Detached panels show a floating loading skeleton;
+    //   otherwise, a side-panel loading skeleton is shown.
+    static mojom::OverlayStatePtr DetermineOverlayState(
+        std::optional<mojom::ErrorPanelType> error_type,
+        bool is_guest_ready,
+        std::optional<mojom::PanelStateKind> panel_state_kind);
+
+    // Evaluates current inputs to determine the desired overlay state.
+    mojom::OverlayStatePtr DetermineOverlayState();
+
+    // Applies the computed overlay state to the overlay WebUI.
+    void UpdateOverlayState();
+
+    // PanelStateObserver implementation:
+    void PanelStateChanged(const mojom::PanelState& panel_state) override;
 
     mojom::GlicOverlayPageHandler* GetPageHandlerForTesting() { return this; }
 
@@ -100,10 +130,16 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     raw_ptr<GlicNoWebviewContentsManager> owner_;
     std::unique_ptr<content::WebContents> web_contents_;
     std::optional<mojom::ErrorPanelType> error_type_;
+    const raw_ref<ObservableValueView<bool>> guest_ready_;
+    base::CallbackListSubscription guest_ready_subscription_;
+    base::ScopedObservation<GlicInstance, PanelStateObserver>
+        panel_state_observation_{this};
     gfx::Size cached_size_;
   };
 
-  GlicNoWebviewContentsManager(Profile* profile, bool initially_hidden);
+  GlicNoWebviewContentsManager(Profile* profile,
+                               GlicEnabling* enabling,
+                               bool initially_hidden);
   ~GlicNoWebviewContentsManager() override;
   GlicNoWebviewContentsManager(const GlicNoWebviewContentsManager&) = delete;
   GlicNoWebviewContentsManager& operator=(const GlicNoWebviewContentsManager&) =
@@ -156,8 +192,30 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // the error is recorded without creating the overlay WebContents until shown.
   void SetErrorState(mojom::ErrorPanelType error_type);
 
+  // Clears any active error state from the overlay UI and updates display
+  // state.
+  void ClearErrorState();
+
+  std::optional<mojom::ErrorPanelType> error_type() const {
+    return overlay_manager_.error_type();
+  }
+
+  ObservableValueView<bool>& guest_ready() { return guest_ready_; }
+
   // Returns the Mojo page handler for the overlay UI, used for testing.
   mojom::GlicOverlayPageHandler* GetOverlayPageHandlerForTesting() const;
+
+  mojom::OverlayStatePtr GetOverlayStateForTesting() {
+    return overlay_manager_.DetermineOverlayState();
+  }
+
+  mojom::LoadingStyle GetLoadingStyleForTesting() {
+    mojom::OverlayStatePtr state = GetOverlayStateForTesting();
+    if (state && state->is_loading()) {
+      return state->get_loading();
+    }
+    return mojom::LoadingStyle::kSidePanel;
+  }
 
   const base::OneShotTimer& overlay_deletion_timer_for_testing() const {
     return overlay_deletion_timer_;
@@ -200,6 +258,11 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // transitions and cleaning up overlay resources.
   void UpdateDisplayState();
 
+  // Clears transient/recoverable errors (e.g. network/offline or generic load
+  // errors) if one is active, while preserving policy/auth error states (e.g.
+  // sign-in required or disabled by admin).
+  void ClearTransientErrorState();
+
   // Applies the cached viewport size from the overlay/host to the guest view.
   void ApplySizeToGuest();
 
@@ -211,9 +274,16 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void UpdateActuationTracker();
 
   void OnZoomLevelChange();
+  void OnProfileReadyStateChanged();
+  void UpdateForProfileReadyState(bool is_initial);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<GlicEnabling> enabling_ = nullptr;
   raw_ptr<Host> host_ = nullptr;
+
+  // True if the guest WebContents is the currently active view presented by
+  // `active_web_contents()`.
+  ObservableValue<bool> guest_ready_{false};
 
   GlicWebClientManager web_client_manager_;
   OverlayContentsManager overlay_manager_;
@@ -225,10 +295,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   // True if Glic is currently visible to the user.
   bool is_visible_ = false;
-
-  // True if the guest WebContents is the currently active view presented by
-  // `active_web_contents()`.
-  bool is_guest_ready_ = false;
 
   // True if the guest navigated to an error page (e.g. /sorry/).
   bool is_guest_error_ = false;
@@ -243,6 +309,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::RepeatingCallbackList<void(content::WebContents*)>
       web_contents_changed_callbacks_;
+
+  base::CallbackListSubscription profile_ready_subscription_;
 
   base::OneShotTimer overlay_deletion_timer_;
 

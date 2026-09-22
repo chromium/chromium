@@ -29,6 +29,7 @@ namespace glic {
 
 BASE_DECLARE_FEATURE(kGlicReloadWebContentsAfterExpiry);
 
+class GlicEnabling;
 class GlicWebContentsManager;
 
 // A pool for pre-warming Glic WebContents.
@@ -51,7 +52,7 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 
-  explicit GlicWebContentsWarmingPool(Profile* profile);
+  explicit GlicWebContentsWarmingPool(Profile* profile, GlicEnabling* enabling);
   ~GlicWebContentsWarmingPool() override;
 
   // Retrieves a warmed GlicWebContentsManager from the pool. If no warmed
@@ -157,6 +158,7 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
   raw_ptr<Profile> profile_;
+  raw_ptr<GlicEnabling> enabling_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   std::unique_ptr<GlicWebContentsManager> warmed_container_;
 

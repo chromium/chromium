@@ -109,8 +109,10 @@ bool CanLiveModeBehaviorTakeEffect(const Target& target) {
 }  // namespace
 
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
-    Profile* profile, signin::IdentityManager* identity_manager,
-    GlicKeyedService* service, GlicEnabling* enabling,
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    GlicKeyedService* service,
+    GlicEnabling* enabling,
     ContextualCueingService* contextual_cueing_service)
     : coordinator_uid_(
           base::RandGenerator(std::numeric_limits<int64_t>::max())),
@@ -118,10 +120,12 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       service_(service),
       contextual_cueing_service_(contextual_cueing_service),
       memory_pressure_listener_registration_(
-          FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService, this),
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kGlicKeyedService,
+          this),
       metrics_(this),
       web_contents_warming_pool_(
-          std::make_unique<GlicWebContentsWarmingPool>(profile)),
+          std::make_unique<GlicWebContentsWarmingPool>(profile, enabling)),
       active_instance_sharing_manager_(
           std::make_unique<GlicActiveInstanceSharingManager>(profile,
                                                              enabling)) {

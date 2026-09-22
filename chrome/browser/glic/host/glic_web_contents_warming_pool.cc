@@ -140,8 +140,10 @@ class GlicWebContentsWarmingPool::Metrics {
   std::optional<base::TimeTicks> warmed_container_creation_time_;
 };
 
-GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile)
+GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile,
+                                                       GlicEnabling* enabling)
     : profile_(profile),
+      enabling_(enabling),
       backfill_scheduler_(GlicWarmingScheduler::Options{
           .use_performance_manager = base::FeatureList::IsEnabled(
               features::kGlicBackfillWarmingUsePerformanceManager),
@@ -151,6 +153,7 @@ GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile)
                   : base::Seconds(20),
       }),
       metrics_(std::make_unique<Metrics>()) {
+  CHECK(enabling_);
   profile_observation_.Observe(profile_);
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     expiry_delay_ = features::kGlicWebContentsWarmingPoolExpiryDelay.Get();
@@ -207,7 +210,7 @@ GlicWebContentsWarmingPool::CreateContainer() {
   bool initially_hidden =
       base::FeatureList::IsEnabled(features::kGlicContentsInitiallyHidden);
   if (features::IsGlicNoWebviewEnabled()) {
-    return std::make_unique<GlicNoWebviewContentsManager>(profile_,
+    return std::make_unique<GlicNoWebviewContentsManager>(profile_, enabling_,
                                                           initially_hidden);
   }
   return std::make_unique<GlicWebUIContentsManager>(profile_, initially_hidden);

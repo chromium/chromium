@@ -1073,7 +1073,7 @@ class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayContextMenuBrowserTest,
                        OverlayContextMenuShowsReloadAndSuppressesPageItems) {
-  GlicNoWebviewContentsManager manager(GetProfile(),
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
                                        /*initially_hidden=*/false);
   manager.SetVisibility(content::Visibility::VISIBLE);
   content::WebContents* overlay = manager.overlay_contents();

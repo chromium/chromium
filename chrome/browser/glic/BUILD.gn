@@ -330,6 +330,7 @@ source_set("impl") {
     "common/instance_independent_hotkey_manager.cc",
     "common/instance_independent_hotkey_manager.h",
     "common/local_hotkey_manager.cc",
+    "common/observable_value.h",
     "common/panel_focus_dependent_hotkey_manager.cc",
     "common/panel_focus_dependent_hotkey_manager.h",
     "common/panel_visibility_dependent_hotkey_manager.cc",
@@ -794,6 +795,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "common/observable_value_unittest.cc",
     "experimental_triggering/glic_experimental_triggering_converters_unittest.cc",
     "experimental_triggering/glic_experimental_triggering_coordinator_unittest.cc",
     "experimental_triggering/glic_experimental_triggering_transport_handler_unittest.cc",

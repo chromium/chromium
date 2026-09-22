@@ -1739,10 +1739,12 @@ void GlicEnabling::UpdateEnabledStatus() {
       profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed, true);
     }
   }
-  if (ProfileAttributesEntry* entry =
-          profile_attributes_storage_->GetProfileAttributesWithPath(
-              profile_->GetPath())) {
-    entry->SetIsGlicEligible(IsAllowed());
+  if (profile_attributes_storage_) {
+    if (ProfileAttributesEntry* entry =
+            profile_attributes_storage_->GetProfileAttributesWithPath(
+                profile_->GetPath())) {
+      entry->SetIsGlicEligible(IsAllowed());
+    }
   }
   enable_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();

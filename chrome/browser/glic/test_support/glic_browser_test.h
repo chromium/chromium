@@ -30,6 +30,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
+#include "chrome/browser/glic/host/glic_overlay.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -979,6 +981,36 @@ class GlicBrowserTestMixin : public T {
           return state_to_string(instance->host().GetPrimaryWebUiState());
         },
         state_to_string(state));
+  }
+
+  [[nodiscard]] TestResult<> WaitForErrorPanelType(
+      std::optional<mojom::ErrorPanelType> expected_type,
+      GlicInstance* instance = nullptr) {
+    CHECK(features::IsGlicNoWebviewEnabled())
+        << "WaitForErrorPanelType only works with GlicNoWebview";
+    auto type_to_string =
+        [](std::optional<mojom::ErrorPanelType> type) -> std::string {
+      if (!type) {
+        return "none";
+      }
+      std::stringstream ss;
+      ss << *type;
+      return ss.str();
+    };
+    return RunUntilEqual(
+        [&, instance, type_to_string]() -> std::string {
+          GlicInstanceImpl* target = GetInstanceImpl(instance);
+          if (!target) {
+            return "no instance";
+          }
+          auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+              target->host().contents_manager());
+          if (!manager) {
+            return "no contents manager";
+          }
+          return type_to_string(manager->error_type());
+        },
+        type_to_string(expected_type), "Timeout waiting for error panel type");
   }
 
   GlicKeyedService* service() {
