@@ -63,6 +63,8 @@ IGNORED_TYPES = {
   "mojoBase.mojom.BigString16",
   "mojoBase.mojom.BigString",
   "mojoBase.mojom.Uint128",
+  "network.mojom.ConnectionInfo",
+  "network.mojom.EffectiveConnectionType",
   "skia.mojom.BitmapN32ImageInfo",
   "skia.mojom.AlphaType",
   "url.mojom.Url",

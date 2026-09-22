@@ -72,6 +72,10 @@ public enum CommonMojoStrings {
     static let mojoBaseMojomString16 = "mojoBase.mojom.String16"
     static let mojoBaseMojomUint128 = "mojoBase.mojom.Uint128"
 
+    // network
+    static let networkMojomConnectionInfo = "network.mojom.ConnectionInfo"
+    static let networkMojomEffectiveConnectionType = "network.mojom.EffectiveConnectionType"
+
     // skia
     static let skiaMojomBitmapN32ImageInfo = "skia.mojom.BitmapN32ImageInfo"
     static let skiaMojomAlphaType = "skia.mojom.AlphaType"
@@ -157,7 +161,14 @@ public let commonMojoObjectGroups: [ObjectGroup] = [
     .urlMojomUrl,
 ]
 
-public let commonMojoEnumerations: [ILType] = []
+public let commonMojoEnumerations: [ILType] = [
+    // network
+    .jsNetworkMojomConnectionInfo,
+    .jsNetworkMojomEffectiveConnectionType,
+
+    // skia
+    .jsSkiaMojomAlphaType,
+]
 
 public let commonMojoOptionsBags: [OptionsBag] = [
     // mojo
@@ -278,6 +289,14 @@ extension ILType {
     )
     public static let jsMojoBaseMojomUint128: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomUint128, withProperties: ["high", "low"])
+
+    // network
+    public static let jsNetworkMojomConnectionInfo: ILType = .intEnumeration(
+        ofName: CommonMojoStrings.networkMojomConnectionInfo, withValues: Array(0...42)
+    )
+    public static let jsNetworkMojomEffectiveConnectionType: ILType = .intEnumeration(
+        ofName: CommonMojoStrings.networkMojomEffectiveConnectionType, withValues: Array(0...5)
+    )
 
     // skia
     // TODO(crbug.com/546113480): Remove BitmapN32ImageInfo once fixed-size array generation
