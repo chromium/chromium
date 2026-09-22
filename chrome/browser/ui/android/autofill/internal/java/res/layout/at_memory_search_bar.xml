@@ -8,12 +8,12 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/at_memory_search_bar_height"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/at_memory_search_bar_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingStart="16dp"
     android:paddingEnd="4dp"
-    android:paddingVertical="12dp"
     android:background="@drawable/at_memory_search_bar_background">
 
     <FrameLayout
@@ -40,8 +40,9 @@ found in the LICENSE file.
     <EditText
         android:id="@+id/search_query_input"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:paddingVertical="12dp"
         android:background="@null"
         android:hint="@string/at_memory_search_hint"
         android:inputType="text"
