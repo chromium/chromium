@@ -14,4 +14,7 @@ BASE_FEATURE(kChoiceScreenEligibilityCheckAccountCapabilities,
 BASE_FEATURE(kChoiceScreenEligibilityCheckManagementStatus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSearchSettingsWithAllPrepopulatedEngines,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
