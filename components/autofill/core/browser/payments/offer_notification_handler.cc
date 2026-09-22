@@ -33,6 +33,13 @@ bool IsOfferValid(const AutofillOfferData* offer) {
     return false;
   }
 
+  if (offer->GetOfferType() ==
+          AutofillOfferData::OfferType::WALLET_DIRECT_OFFER &&
+      (!offer->GetOfferDetailsUrl().is_valid() ||
+       offer->GetOfferRewardAmount().empty())) {
+    return false;
+  }
+
   return true;
 }
 

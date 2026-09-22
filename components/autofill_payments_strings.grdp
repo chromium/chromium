@@ -1401,6 +1401,9 @@
     <message name="IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_VALUE_PROP_TEXT" desc="The first line of the GPay promo code notification bubble, consisting of the value prop text and a see details link">
       <ph name="VALUE_PROP">$1<ex>5% off on shoes. Up to $50.</ex></ph> <ph name="DETAILS">$2<ex>See Details</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT" desc="The body text of the bubble shown on the merchant website when an offer saved in the user's Google Wallet is available to use. It explains that the offer can be filled into the promo code field at checkout. The text between BEGIN_LINK and END_LINK is a link which opens a page describing the terms and conditions of the offer.">
+      Your saved offer will be available at checkout using autofill. <ph name="BEGIN_LINK">$1</ph>View terms and conditions<ph name="END_LINK">$2</ph>
+    </message>
   </if>
 
   <!-- Autofill Payments OTP verification dialog -->

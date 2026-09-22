@@ -97,8 +97,6 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
           {{&kLinkChromeRefreshOldIcon},
            {"webui-toolbar:link", IconType::kIconSet}},
           {{&kListAltIcon}, {"webui-toolbar:list_alt", IconType::kIconSet}},
-          {{&kLocalOfferFlippedRefreshOldIcon},
-           {"webui-toolbar:shoppingmode", IconType::kIconSet}},
           {{&kManageSearchIcon},
            {"webui-toolbar:manage_search", IconType::kIconSet}},
           {{&kMenuBookChromeRefreshOldIcon},

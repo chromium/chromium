@@ -5,7 +5,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,6 +36,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace autofill {
 
@@ -74,8 +74,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
-        // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
-        NOTIMPLEMENTED();
+        ShowBubbleForWalletDirectOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
@@ -108,6 +107,19 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
 
+  void ShowBubbleForWalletDirectOfferAndVerify() {
+    NavigateTo(chrome::ChromeUINewTabPageURLAsGURL());
+    // Set the initial origin that the bubble will be displayed on.
+    SetUpWalletDirectOfferDataWithDomains(
+        {GetUrl("www.merchantsite1.test", "/"),
+         GetUrl("www.merchantsite2.test", "/")});
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+    NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
+    ASSERT_TRUE(WaitForObservedEvent());
+    EXPECT_TRUE(IsIconVisible());
+    EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  }
+
   void CloseBubbleWithReason(views::Widget::ClosedReason closed_reason) {
     ASSERT_TRUE(GetOfferNotificationBubbleViews());
     auto* widget = GetOfferNotificationBubbleViews()->GetWidget();
@@ -129,21 +141,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
-  }
-
-  std::string GetSubhistogramNameForOfferType() const {
-    switch (test_offer_type_) {
-      case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-        return "CardLinkedOffer";
-      case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-        return "GPayPromoCodeOffer";
-      case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
-        // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
-        NOTIMPLEMENTED();
-        return std::string();
-      case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED();
-    }
   }
 
   void ClearNotificationActiveDomainsForTesting() {
@@ -184,6 +181,20 @@ INSTANTIATE_TEST_SUITE_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
+    &GetTestName);
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WalletDirectOffer DISABLED_WalletDirectOffer
+#else
+#define MAYBE_WalletDirectOffer WalletDirectOffer
+#endif
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_WalletDirectOffer,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "WalletDirectOffer",
+        AutofillOfferData::OfferType::WALLET_DIRECT_OFFER}),
     &GetTestName);
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
@@ -428,7 +439,43 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
             base::ASCIIToUTF16(GetDefaultTestUsageInstructionsText()));
 
   // Simulate clicking on see details part of the text.
-  GetOfferNotificationBubbleViews()->OnPromoCodeSeeDetailsClicked();
+  GetOfferNotificationBubbleViews()->OnOfferDetailsLinkClicked();
+  EXPECT_EQ(
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(GetDefaultTestDetailsUrlString()));
+}
+
+// TODO(crbug.com/416010106): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowWalletDirectOfferBubble DISABLED_ShowWalletDirectOfferBubble
+#else
+#define MAYBE_ShowWalletDirectOfferBubble ShowWalletDirectOfferBubble
+#endif
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       MAYBE_ShowWalletDirectOfferBubble) {
+  // Applies to Wallet direct offers only.
+  if (test_offer_type_ != AutofillOfferData::OfferType::WALLET_DIRECT_OFFER) {
+    return;
+  }
+
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  EXPECT_EQ(GetOfferNotificationBubbleViews()
+                ->GetWidget()
+                ->widget_delegate()
+                ->GetWindowTitle(),
+            base::ASCIIToUTF16(GetDefaultTestOfferShortTitle()));
+  std::vector<size_t> offsets;
+  EXPECT_EQ(
+      GetOfferNotificationBubbleViews()->wallet_direct_offer_label_->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT, std::u16string(),
+          std::u16string(), &offsets));
+
+  // Simulate clicking on the terms and conditions link.
+  GetOfferNotificationBubbleViews()->OnOfferDetailsLinkClicked();
   EXPECT_EQ(
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GURL(GetDefaultTestDetailsUrlString()));
@@ -445,13 +492,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
-  // Applies to GPay promo code offers and card linked offers only.
-  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER &&
-      test_offer_type_ !=
-          AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER) {
-    return;
-  }
-
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
   ASSERT_TRUE(IsIconVisible());
@@ -480,7 +520,21 @@ IN_PROC_BROWSER_TEST_P(
               base::ASCIIToUTF16(GetDefaultTestUsageInstructionsText()));
 
     // Simulate clicking on see details part of the text.
-    GetOfferNotificationBubbleViews()->OnPromoCodeSeeDetailsClicked();
+    GetOfferNotificationBubbleViews()->OnOfferDetailsLinkClicked();
+    EXPECT_EQ(
+        browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
+        GURL(GetDefaultTestDetailsUrlString()));
+  } else if (test_offer_type_ ==
+             AutofillOfferData::OfferType::WALLET_DIRECT_OFFER) {
+    std::vector<size_t> offsets;
+    EXPECT_EQ(GetOfferNotificationBubbleViews()
+                  ->wallet_direct_offer_label_->GetText(),
+              l10n_util::GetStringFUTF16(
+                  IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT,
+                  std::u16string(), std::u16string(), &offsets));
+
+    // Simulate clicking on the terms and conditions link.
+    GetOfferNotificationBubbleViews()->OnOfferDetailsLinkClicked();
     EXPECT_EQ(
         browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
         GURL(GetDefaultTestDetailsUrlString()));

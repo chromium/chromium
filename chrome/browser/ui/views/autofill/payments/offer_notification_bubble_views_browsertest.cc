@@ -64,13 +64,13 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/40205397): Disabled due to flakiness with linux-wayland-rel.
 // Tests that the offer notification bubble will not be shown if bubble has been
 // shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
 // opened another tab on the same website.
+// TODO(crbug.com/40205397): Disabled due to flakiness with linux-wayland-rel.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_BubbleNotShowingOnDuplicateTab) {
-  SetUpCardLinkedOfferDataWithDomains({GetUrl("www.example.com", "/")});
+  SetUpWalletDirectOfferDataWithDomains({GetUrl("www.example.com", "/")});
 
   TestAutofillClock test_clock;
   test_clock.SetNow(base::Time::Now());

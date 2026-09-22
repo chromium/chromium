@@ -184,6 +184,20 @@ class OfferNotificationBubbleControllerImplTest
         promo_code);
   }
 
+  AutofillOfferData CreateTestWalletDirectOffer(
+      const std::vector<GURL>& merchant_origins,
+      const std::string& offer_reward_amount = "5% off") {
+    int64_t offer_id = 3579;
+    base::Time expiry = base::Time::Now() + base::Days(2);
+    GURL offer_details_url = GURL("https://pay.google.com");
+    // TODO(crbug.com/546252995): Use `test::GetPromoCodeOfferData()` instead
+    // once it is converted to use the constructor, which takes the offer short
+    // title that the bubble uses as its title.
+    return AutofillOfferData(
+        offer_id, expiry, merchant_origins, offer_details_url, DisplayStrings(),
+        /*promo_code=*/"5PCTOFFSHOES", offer_reward_amount);
+  }
+
  private:
   CreditCard card_ = test::GetCreditCard();
   std::unique_ptr<tabs::TabInterface> tab_interface_;
@@ -250,6 +264,19 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
+}
+
+// Tests that the offer notification bubble will be shown for a wallet direct
+// offer, and that the bubble title is the offer's short title.
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       WalletDirectOffer_BubbleShown) {
+  AutofillOfferData offer = CreateTestWalletDirectOffer(
+      /*merchant_origins=*/{GURL("https://www.example.com")},
+      /*offer_reward_amount=*/"5% off");
+  ShowBubble(offer);
+
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"5% off");
 }
 
 }  // namespace autofill
