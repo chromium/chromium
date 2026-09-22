@@ -12985,29 +12985,6 @@
             ]
         }
     ],
-    "OmniboxOnDeviceHeadModelSelectionFix": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Fix",
-                    "params": {
-                        "SelectionFix ": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPastePromoExperiment": [
         {
             "platforms": [
