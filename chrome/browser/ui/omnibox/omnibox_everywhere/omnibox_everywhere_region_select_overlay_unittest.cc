@@ -654,16 +654,17 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_TRUE(cursor_chip->GetVisible());
   EXPECT_EQ(cursor_chip->width(), 56);
   EXPECT_EQ(cursor_chip->height(), 56);
-  EXPECT_EQ(cursor_chip->x(), 108);
-  EXPECT_EQ(cursor_chip->y(), 108);
+  EXPECT_EQ(cursor_chip->x(), 98);
+  EXPECT_EQ(cursor_chip->y(), 98);
 
-  // Moving mouse near bottom-right edge flips cursor chip.
+  // Moving mouse near bottom-right edge keeps constant offset and clips at
+  // edge.
   ui::MouseEvent move_edge(ui::EventType::kMouseMoved, gfx::Point(780, 580),
                            gfx::Point(780, 580), base::TimeTicks::Now(), 0, 0);
   contents_view->OnMouseMoved(move_edge);
   EXPECT_TRUE(cursor_chip->GetVisible());
-  EXPECT_LT(cursor_chip->x(), 780);
-  EXPECT_LT(cursor_chip->y(), 580);
+  EXPECT_EQ(cursor_chip->x(), 778);
+  EXPECT_EQ(cursor_chip->y(), 578);
 
   // Mouse leaving hides the cursor chip.
   ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
