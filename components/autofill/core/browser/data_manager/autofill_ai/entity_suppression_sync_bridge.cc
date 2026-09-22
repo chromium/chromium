@@ -180,6 +180,12 @@ EntitySuppressionSyncBridge::GetSuppressions() const {
                          [](const auto& pair) { return pair.first; })};
 }
 
+bool EntitySuppressionSyncBridge::IsSuppressed(
+    const EntitySuppressionEntry& entry) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return guids_by_entry_.contains(entry);
+}
+
 bool EntitySuppressionSyncBridge::IsLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_loaded_;

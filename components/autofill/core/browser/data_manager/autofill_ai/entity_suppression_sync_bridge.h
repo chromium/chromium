@@ -75,6 +75,9 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // Returns all currently active suppression entries.
   base::flat_set<EntitySuppressionEntry> GetSuppressions() const;
 
+  // Returns true if `entry` is currently suppressed.
+  bool IsSuppressed(const EntitySuppressionEntry& entry) const;
+
   bool IsLoaded() const;
 
   // Returns a weak pointer to the sync controller delegate.

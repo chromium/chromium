@@ -205,12 +205,14 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
+  EXPECT_FALSE(bridge().IsSuppressed(entry));
 
   EXPECT_CALL(mock_processor(), Put);
   EXPECT_CALL(observer(), OnSuppressionsChanged());
   EXPECT_TRUE(bridge().Suppress(entry));
 
   EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(entry));
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
 }
 
 // Tests that unsuppressing an entry deletes it from local state, commits
@@ -220,6 +222,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppressAndUnsuppress) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().Suppress(entry));
   ASSERT_THAT(bridge().GetSuppressions(), ElementsAre(entry));
+  EXPECT_TRUE(bridge().IsSuppressed(entry));
   std::string guid = GetFirstGuid();
 
   EXPECT_CALL(mock_processor(), Delete(guid, _, _));
@@ -227,6 +230,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppressAndUnsuppress) {
   EXPECT_TRUE(bridge().Unsuppress(entry));
 
   EXPECT_TRUE(bridge().GetSuppressions().empty());
+  EXPECT_FALSE(bridge().IsSuppressed(entry));
 }
 
 // Tests that unsuppressing a non-existing entry returns `false` without
