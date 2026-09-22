@@ -51,7 +51,7 @@ TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastCue) {
   GURL url("https://example.com");
 
   // Seeds state.
-  service()->OnCueShown(url, CueTargetType::kGlic);
+  service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   // Simulate enough page loads elapsing.
   for (int i = 0; i < kMinPageCountBetweenNudges.Get() + 1; ++i) {
@@ -69,7 +69,7 @@ TEST_F(ContextualCueingServiceV2Test, TooManyCuesForOriginOverTime) {
 
   for (int i = 0; i < kCueCapCountPerOrigin.Get(); ++i) {
     EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
-    service()->OnCueShown(url, CueTargetType::kGlic);
+    service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
     for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
       service()->ReportPageLoad();
     }
@@ -90,7 +90,7 @@ TEST_F(ContextualCueingServiceV2Test, TooManyCuesForUserOverTime) {
   for (int i = 0; i < kCueCapCount.Get(); ++i) {
     GURL url = urls[i % urls.size()];
     EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
-    service()->OnCueShown(url, CueTargetType::kGlic);
+    service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
     for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
       service()->ReportPageLoad();
     }
@@ -108,10 +108,10 @@ TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastDismissal) {
   GURL url("https://example.com");
 
   EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
-  service()->OnCueShown(url, CueTargetType::kGlic);
+  service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   // Simulate a dismissal.
-  service()->OnCueDismissed(CueTargetType::kGlic);
+  service()->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
     service()->ReportPageLoad();
@@ -127,10 +127,10 @@ TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastClick) {
   GURL url("https://example.com");
 
   EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
-  service()->OnCueShown(url, CueTargetType::kGlic);
+  service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   // Simulate a click.
-  service()->OnCueClicked(CueTargetType::kGlic);
+  service()->OnCueClicked(CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   for (int j = 0; j < kMinPageCountBetweenNudges.Get() + 1; ++j) {
     service()->ReportPageLoad();
@@ -157,7 +157,8 @@ TEST_F(ContextualCueingServiceV2Test, GetAllowedIntrusiveness_LoudWhenNoCaps) {
 TEST_F(ContextualCueingServiceV2Test,
        GetAllowedIntrusiveness_QuietWhenLoudCapsExceeded) {
   GURL url("https://example.com");
-  service()->OnCueShown(url, CueTargetType::kGlic, CueIntrusiveness::kLoud);
+  service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true,
+                        CueIntrusiveness::kLoud);
 
   // Loud cue is blocked by quiet page loads requirement.
   EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
@@ -177,7 +178,7 @@ TEST_F(ContextualCueingServiceV2Test,
   GURL url("https://example.com");
 
   // Dismissal blocks loud cue, but allows quiet cue.
-  service()->OnCueDismissed(CueTargetType::kGlic);
+  service()->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/true);
   EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
             ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
   EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kQuiet),
@@ -192,7 +193,7 @@ TEST_F(ContextualCueingServiceV2Test,
 
   // Fast forward past dismissal backoff and simulate a click.
   task_environment_.FastForwardBy(kDismissBackoffTime.Get() + base::Minutes(1));
-  service()->OnCueClicked(CueTargetType::kGlic);
+  service()->OnCueClicked(CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   // Click blocks loud cue, but allows quiet cue.
   EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
@@ -212,7 +213,7 @@ TEST_F(ContextualCueingServiceV2Test, QuietCueDoesNotTriggerLoudBackoff) {
   // Showing a quiet cue should not consume quiet page loads or loud frequency
   // caps.
   service()->OnCueShown(url, CueTargetType::kTestSource,
-                        CueIntrusiveness::kQuiet);
+                        /*record_ucb_stats=*/true, CueIntrusiveness::kQuiet);
 
   auto [tier, decision] = service()->GetAllowedIntrusiveness(url);
   EXPECT_EQ(tier, ContextualCueingService::AllowedIntrusivenessResult::kLoud);
@@ -230,10 +231,10 @@ TEST_F(ContextualCueingServiceV2Test, StatsRoundTripAcrossRestart) {
   GURL url("https://example.com");
   {
     auto svc = CreateService();
-    svc->OnCueShown(url, CueTargetType::kGlic);
-    svc->OnCueShown(url, CueTargetType::kGlic);
-    svc->OnCueClicked(CueTargetType::kGlic);
-    svc->OnCueDismissed(CueTargetType::kGlic);
+    svc->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
+    svc->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
+    svc->OnCueClicked(CueTargetType::kGlic, /*record_ucb_stats=*/true);
+    svc->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/true);
     // Service destroyed here; prefs should have been written.
   }
 
@@ -251,13 +252,33 @@ TEST_F(ContextualCueingServiceV2Test, TotalImpressionsAfterRestart) {
   GURL url("https://example.com");
   {
     auto svc = CreateService();
-    svc->OnCueShown(url, CueTargetType::kGlic);
-    svc->OnCueShown(url, CueTargetType::kGlic);
-    svc->OnCueShown(url, CueTargetType::kGlic);
+    svc->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
+    svc->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
+    svc->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
   }
 
   auto service2 = CreateService();
   EXPECT_EQ(service2->GetTotalImpressions(), 3);
+}
+
+TEST_F(ContextualCueingServiceV2Test, RespectsRecordUcbStatsFlag) {
+  GURL url("https://example.com");
+
+  // Show, click, and dismiss, but pass record_ucb_stats=false.
+  service()->OnCueShown(url, CueTargetType::kGlic,
+                        /*record_ucb_stats=*/false, CueIntrusiveness::kLoud);
+  service()->OnCueClicked(CueTargetType::kGlic, /*record_ucb_stats=*/false);
+  service()->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/false);
+
+  // The UCB stats should remain 0.
+  const TargetStats& stats = service()->GetStatsForTarget(CueTargetType::kGlic);
+  EXPECT_EQ(stats.impressions, 0);
+  EXPECT_EQ(stats.clicks, 0);
+  EXPECT_EQ(stats.dismissals, 0);
+
+  // But the global quota should STILL be affected.
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
+            ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
 }
 
 // Verifies that a service with zero interactions does not write or restore
@@ -301,7 +322,7 @@ TEST_F(ContextualCueingServiceDisableBackoffTest, BackoffDisabled) {
   GURL url("https://example.com");
 
   // Simulate a cue being shown.
-  service()->OnCueShown(url, CueTargetType::kGlic);
+  service()->OnCueShown(url, CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   // Should not be blocked by backoff.
   EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);

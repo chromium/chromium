@@ -2871,7 +2871,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   // Exhaust loud caps by showing a loud cue.
   service->OnCueShown(GURL("https://example.com"), CueTargetType::kGlic,
-                      CueIntrusiveness::kLoud);
+                      /*record_ucb_stats=*/true, CueIntrusiveness::kLoud);
 
   class TestObserver : public page_actions::PageActionModelObserver {
    public:
@@ -2920,7 +2920,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   // Exhaust loud caps by showing a loud cue.
   service->OnCueShown(GURL("https://example.com"), CueTargetType::kGlic,
-                      CueIntrusiveness::kLoud);
+                      /*record_ucb_stats=*/true, CueIntrusiveness::kLoud);
 
   class TestObserver : public page_actions::PageActionModelObserver {
    public:
@@ -2975,7 +2975,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                           std::move(non_mes_target));
 
   // User dismisses a cue.
-  service->OnCueDismissed(CueTargetType::kGlic);
+  service->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/true);
 
   class TestObserver : public page_actions::PageActionModelObserver {
    public:

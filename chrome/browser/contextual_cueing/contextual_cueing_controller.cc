@@ -1162,7 +1162,8 @@ void ContextualCueingController::ShowCue(
   contextual_cueing_service_->LogCueShownMetadata(std::move(cue_log));
 
   contextual_cueing_service_->OnCueShown(
-      tab_->GetContents()->GetLastCommittedURL(), cue_type, intrusiveness);
+      tab_->GetContents()->GetLastCommittedURL(), cue_type,
+      ShouldRecordUcbStats(cue_type), intrusiveness);
 #endif
 
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
@@ -1388,7 +1389,8 @@ void ContextualCueingController::OnCueInteraction(
 
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
-      contextual_cueing_service_->OnCueDismissed(cue_type);
+      contextual_cueing_service_->OnCueDismissed(
+          cue_type, ShouldRecordUcbStats(cue_type));
       break;
     case ContextualCueingInteraction::kCueEditPrompt:
       if (CueTarget* target = GetTarget(cue_type)) {
@@ -1405,7 +1407,8 @@ void ContextualCueingController::OnCueInteraction(
       if (CueTarget* target = GetTarget(cue_type)) {
         target->OnAnchoredMessageClicked(std::move(action));
       }
-      contextual_cueing_service_->OnCueClicked(cue_type);
+      contextual_cueing_service_->OnCueClicked(cue_type,
+                                               ShouldRecordUcbStats(cue_type));
       break;
   }
 }
@@ -1453,6 +1456,19 @@ void ContextualCueingController::ObserveSidePanel() {
 CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {
   auto iter = cue_targets_.find(type);
   return iter != cue_targets_.end() ? iter->second.get() : nullptr;
+}
+
+bool ContextualCueingController::ShouldRecordUcbStats(
+    CueTargetType type) const {
+  if (!base::FeatureList::IsEnabled(
+          kContextualCueingV2AllowOverridingUcbScoring)) {
+    return true;
+  }
+  auto iter = cue_targets_.find(type);
+  if (iter == cue_targets_.end()) {
+    return true;
+  }
+  return !iter->second->OverridesUcbScoring();
 }
 
 absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>

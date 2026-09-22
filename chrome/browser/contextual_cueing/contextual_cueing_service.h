@@ -50,14 +50,15 @@ class ContextualCueingService : public KeyedService {
   };
 
   // Called when the user clicks the cue action button.
-  void OnCueClicked(CueTargetType type);
+  void OnCueClicked(CueTargetType type, bool record_ucb_stats);
 
   // Called when the user dismisses the cue.
-  void OnCueDismissed(CueTargetType type);
+  void OnCueDismissed(CueTargetType type, bool record_ucb_stats);
 
   // Called when the cue is shown to the user.
   void OnCueShown(const GURL& url,
                   CueTargetType type,
+                  bool record_ucb_stats,
                   CueIntrusiveness intrusiveness = CueIntrusiveness::kLoud);
 
   // Returns true if a nudge can be shown at the specified intrusiveness level.
