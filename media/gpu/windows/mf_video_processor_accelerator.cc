@@ -179,7 +179,7 @@ HRESULT MediaFoundationVideoProcessorAccelerator::Convert(
 
   ComMFSample sample;
   HRESULT hr = GenerateSampleFromVideoFrame(
-      frame.get(), dxgi_device_manager_.get(), true, nullptr, 0, &sample);
+      frame.get(), dxgi_device_manager_.get(), 0, &sample);
   RETURN_ON_HR_FAILURE(hr, L"Couldn't generate MF sample from VideoFrame", hr);
 
   // The video processor will internally acquire the keyed mutex for the
