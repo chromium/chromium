@@ -9,32 +9,25 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.pb.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "content/public/test/render_frame_host_test_support.h"
-#include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
 // This fuzzer uses DomatoLPM to generate HTML based on an existing Domato
 // rule.
-class DomatoHtmlInProcessFuzzer : public InProcessFuzzer {
+class DomatoHtmlInProcessFuzzer
+    : public InProcessBinaryProtoFuzzer<
+          domatolpm::generated::domato_html_fuzzer_grammar::fuzzcase> {
  public:
   using FuzzCase = domatolpm::generated::domato_html_fuzzer_grammar::fuzzcase;
   DomatoHtmlInProcessFuzzer() = default;
 
-  int Fuzz(const uint8_t* data, size_t size) override;
+  int Fuzz(const FuzzCase& fuzz_case) override;
 };
 
-DEFINE_CUSTOM_PROTO_MUTATOR_IMPL(true, DomatoHtmlInProcessFuzzer::FuzzCase)
-DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(true, DomatoHtmlInProcessFuzzer::FuzzCase)
-DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(DomatoHtmlInProcessFuzzer::FuzzCase)
-REGISTER_IN_PROCESS_FUZZER(DomatoHtmlInProcessFuzzer)
+REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(DomatoHtmlInProcessFuzzer)
 
-int DomatoHtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
-  FuzzCase fuzz_case;
-  if (!protobuf_mutator::libfuzzer::LoadProtoInput(false, data, size,
-                                                   &fuzz_case)) {
-    return -1;
-  }
+int DomatoHtmlInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   domatolpm::Context ctx;
   CHECK(domatolpm::domato_html_fuzzer_grammar::handle_fuzzer(&ctx, fuzz_case));
   std::string_view html_string(ctx.GetBuilder()->view());

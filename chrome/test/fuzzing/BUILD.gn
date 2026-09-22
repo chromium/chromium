@@ -148,6 +148,7 @@ if (!is_android) {
 
       deps = [
         ":domato_html_fuzzer_grammar",
+        ":in_process_proto_fuzzer_runner",
         "//testing/libfuzzer/research/domatolpm:domatolpm_context",
         "//third_party/libprotobuf-mutator",
       ]
@@ -162,7 +163,7 @@ if (!is_android) {
       sources = [ "geolocation_element_css_fuzzer.cc" ]
       deps = [
         ":geolocation_element_css_fuzzer_grammar",
-        "//chrome/test/fuzzing:in_process_fuzzer_runner",
+        ":in_process_proto_fuzzer_runner",
         "//components/viz/common",
         "//content/public/browser",
         "//testing/libfuzzer/research/domatolpm:domatolpm_context",

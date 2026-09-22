@@ -26,13 +26,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/geolocation_element_css_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/geolocation_element_css_fuzzer_grammar.pb.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
+#include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
-#include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -164,13 +163,16 @@ int CountColorIslands(const SkBitmap& bitmap,
 }  // namespace
 
 // This fuzzer uses DomatoLPM to generate CSS to style a geolocation element.
-class GeolocationElementCssFuzzer : public InProcessFuzzer {
+class GeolocationElementCssFuzzer
+    : public InProcessBinaryProtoFuzzer<
+          domatolpm::generated::geolocation_element_css_fuzzer_grammar::
+              fuzzcase> {
  public:
   using FuzzCase =
       domatolpm::generated::geolocation_element_css_fuzzer_grammar::fuzzcase;
   GeolocationElementCssFuzzer() = default;
 
-  int Fuzz(const uint8_t* data, size_t size) override;
+  int Fuzz(const FuzzCase& fuzz_case) override;
 
  private:
   void OnScreenshotCaptured(base::OnceClosure quit_closure,
@@ -179,20 +181,9 @@ class GeolocationElementCssFuzzer : public InProcessFuzzer {
                             const content::CopyFromSurfaceResult& result);
 };
 
-DEFINE_CUSTOM_PROTO_MUTATOR_IMPL(true, GeolocationElementCssFuzzer::FuzzCase)
-DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(true, GeolocationElementCssFuzzer::FuzzCase)
-DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(GeolocationElementCssFuzzer::FuzzCase)
+REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(GeolocationElementCssFuzzer)
 
-REGISTER_IN_PROCESS_FUZZER(GeolocationElementCssFuzzer)
-
-int GeolocationElementCssFuzzer::Fuzz(const uint8_t* data, size_t size) {
-  FuzzCase fuzz_case;
-  if (!protobuf_mutator::libfuzzer::LoadProtoInput(false, data, size,
-                                                   &fuzz_case)) {
-    LOG(ERROR) << "Protobuf mutator failed to load proto input";
-    return 0;
-  }
-
+int GeolocationElementCssFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   domatolpm::Context ctx;
   CHECK(domatolpm::geolocation_element_css_fuzzer_grammar::handle_fuzzer(
       &ctx, fuzz_case));
