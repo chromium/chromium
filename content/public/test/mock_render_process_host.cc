@@ -133,6 +133,10 @@ void MockRenderProcessHost::SimulateReady() {
     observer.RenderProcessReady(this);
 }
 
+bool MockRenderProcessHost::IsMock() const {
+  return true;
+}
+
 bool MockRenderProcessHost::Init() {
   has_connection_ = true;
   return true;

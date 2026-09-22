@@ -1876,6 +1876,10 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   ClearAllUserData();
 }
 
+bool RenderProcessHostImpl::IsMock() const {
+  return false;
+}
+
 bool RenderProcessHostImpl::Init() {
   // calling Init() more than once does nothing, this makes it more convenient
   // for the view host which may not be sure in some cases

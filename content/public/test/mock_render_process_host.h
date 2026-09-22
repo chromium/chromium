@@ -79,6 +79,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void SimulateReady();
 
   // RenderProcessHost implementation (public portion).
+  bool IsMock() const override;
   bool Init() override;
   void EnableSendQueue() override;
   int GetNextRoutingID() override;

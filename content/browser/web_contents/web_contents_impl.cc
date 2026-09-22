@@ -11374,10 +11374,11 @@ void WebContentsImpl::RendererUnresponsive(
           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports) &&
       this->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     RenderProcessHost* rph = render_widget_host->GetProcess();
-    if (rph) {
-      RenderProcessHostImpl* process_host =
-          static_cast<RenderProcessHostImpl*>(rph);
-      process_host->InterruptJavaScriptIsolateAndCollectCallStack();
+    // Tests get here with a MockRenderProcessHost, which cannot be cast
+    // to RenderProcessHostImpl and has no isolate to interrupt.
+    if (rph && !rph->IsMock()) {
+      To<RenderProcessHostImpl>(rph)
+          ->InterruptJavaScriptIsolateAndCollectCallStack();
     }
   }
 

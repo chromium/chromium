@@ -156,6 +156,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
 
   ~RenderProcessHost() override {}
 
+  // Returns true if this is a test fake, such as MockRenderProcessHost, rather
+  // than the production RenderProcessHostImpl.
+  virtual bool IsMock() const = 0;
+
   // Initialize the new renderer process, returning true on success. This must
   // be called once before the object can be used, but can be called after
   // that with no effect. Therefore, if the caller isn't sure about whether

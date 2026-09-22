@@ -8,12 +8,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -233,6 +235,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   RenderProcessHostImpl& operator=(const RenderProcessHostImpl& other) = delete;
 
   // RenderProcessHost implementation (public portion).
+  bool IsMock() const override;
   bool Init() override;
   void EnableSendQueue() override;
   int GetNextRoutingID() override;
@@ -1723,6 +1726,19 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // doesn't get reset until this RenderProcessHost object is actually deleted.
   base::WeakPtrFactory<RenderProcessHostImpl> safe_ref_factory_{this};
 };
+
+// Downcasts `rph` to a RenderProcessHostImpl. Every RenderProcessHost in
+// //content is one except MockRenderProcessHost, which derives straight from
+// the public interface, so this CHECKs rather than letting a test fake through
+// as undefined behavior.
+template <typename T>
+  requires std::derived_from<T, RenderProcessHostImpl>
+T* To(RenderProcessHost* rph) {
+  // Null passes through, like the static_cast this stands in for.
+  CHECK(!rph || !rph->IsMock())
+      << "A test fake cannot be cast to RenderProcessHostImpl";
+  return static_cast<T*>(rph);
+}
 
 }  // namespace content
 

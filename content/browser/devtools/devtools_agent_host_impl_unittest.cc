@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/input/input_constants.h"
+#include "components/input/render_input_router.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -159,7 +159,9 @@ TEST_F(DevToolsAgentHostImplTest, NoUnresponsiveDialogInInspectedContents) {
   client_host.InspectAgentHost(agent_host.get());
 
   // Start a timeout.
-  inspected_rvh->GetWidget()->StartInputEventAckTimeout();
+  inspected_rvh->GetWidget()
+      ->GetRenderInputRouter()
+      ->StartInputEventAckTimeoutForTesting();
   task_environment()->FastForwardBy(input::kHungRendererDelay +
                                     base::Milliseconds(10));
   EXPECT_FALSE(delegate.renderer_unresponsive_received());
@@ -167,7 +169,9 @@ TEST_F(DevToolsAgentHostImplTest, NoUnresponsiveDialogInInspectedContents) {
   // Now close devtools and check that the notification is delivered.
   client_host.Close();
   // Start a timeout.
-  inspected_rvh->GetWidget()->StartInputEventAckTimeout();
+  inspected_rvh->GetWidget()
+      ->GetRenderInputRouter()
+      ->StartInputEventAckTimeoutForTesting();
   task_environment()->FastForwardBy(input::kHungRendererDelay +
                                     base::Milliseconds(10));
   EXPECT_TRUE(delegate.renderer_unresponsive_received());
@@ -190,7 +194,7 @@ class TestExternalAgentDelegate : public DevToolsExternalAgentProxyDelegate {
   std::map<std::string, int> event_counter_;
 
   void recordEvent(const std::string& name) {
-    if (!std::ranges::contains(event_counter_, name)) {
+    if (!event_counter_.contains(name)) {
       event_counter_[name] = 0;
     }
     event_counter_[name] = event_counter_[name] + 1;
