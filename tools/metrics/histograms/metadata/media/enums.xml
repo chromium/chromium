@@ -2579,7 +2579,9 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer"/>
   <int value="48" label="kCrosHalV3BufferManagerUnsupportedVideoPixelFormat"/>
   <int value="49" label="kCrosHalV3BufferManagerFailedToDupFd"/>
-  <int value="50" label="kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle"/>
+  <int value="50"
+      label="(Obsolete) kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle.
+             Removed in 2026/09."/>
   <int value="51" label="kCrosHalV3BufferManagerFailedToRegisterBuffer"/>
   <int value="52" label="kCrosHalV3BufferManagerProcessCaptureRequestFailed"/>
   <int value="53" label="kCrosHalV3BufferManagerInvalidPendingResultId"/>
@@ -2596,7 +2598,9 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="kCrosHalV3BufferManagerReceivedInvalidShutterTime"/>
   <int value="60" label="kCrosHalV3BufferManagerFatalDeviceError"/>
   <int value="61" label="kCrosHalV3BufferManagerReceivedFrameIsOutOfOrder"/>
-  <int value="62" label="kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd"/>
+  <int value="62"
+      label="(Obsolete) kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd.
+             Removed in 2026/09."/>
   <int value="63"
       label="kCrosHalV3BufferManagerSyncWaitOnReleaseFenceTimedOut"/>
   <int value="64" label="kCrosHalV3BufferManagerInvalidJpegBlob"/>

@@ -112,7 +112,7 @@ enum class VideoCaptureError {
   kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer = 47,
   kCrosHalV3BufferManagerUnsupportedVideoPixelFormat = 48,
   kCrosHalV3BufferManagerFailedToDupFd = 49,
-  kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle = 50,
+  // kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle = 50,  // Removed.
   kCrosHalV3BufferManagerFailedToRegisterBuffer = 51,
   kCrosHalV3BufferManagerProcessCaptureRequestFailed = 52,
   kCrosHalV3BufferManagerInvalidPendingResultId = 53,
@@ -124,7 +124,7 @@ enum class VideoCaptureError {
   kCrosHalV3BufferManagerReceivedInvalidShutterTime = 59,
   kCrosHalV3BufferManagerFatalDeviceError = 60,
   kCrosHalV3BufferManagerReceivedFrameIsOutOfOrder = 61,
-  kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd = 62,
+  // kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd = 62,  // Removed.
   kCrosHalV3BufferManagerSyncWaitOnReleaseFenceTimedOut = 63,
   kCrosHalV3BufferManagerInvalidJpegBlob = 64,
   kAndroidFailedToAllocate = 65,

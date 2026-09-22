@@ -59,13 +59,13 @@ enum ResolutionChangePolicy {
 enum PowerLineFrequency {
   DEFAULT,
   HZ_50,
-  HZ_60
+  HZ_60,
 };
 
 enum VideoFacingMode {
   NONE,
   USER,
-  ENVIRONMENT
+  ENVIRONMENT,
 };
 
 enum CameraAvailability {
@@ -91,15 +91,15 @@ enum VideoCaptureApi {
 };
 
 enum VideoCaptureTransportType {
-// For AVFoundation Api, identify devices that are built-in or USB.
+  // For AVFoundation Api, identify devices that are built-in or USB.
   APPLE_USB_OR_BUILT_IN,
-  OTHER_TRANSPORT
+  OTHER_TRANSPORT,
 };
 
 enum VideoCaptureBufferType {
   kSharedMemory,
   kGpuMemoryBuffer,
-  kSharedImage
+  kSharedImage,
 };
 
 // Represents capture device's support for different controls.
@@ -159,7 +159,6 @@ enum VideoCaptureError {
   kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer,
   kCrosHalV3BufferManagerUnsupportedVideoPixelFormat,
   kCrosHalV3BufferManagerFailedToDupFd,
-  kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle,
   kCrosHalV3BufferManagerFailedToRegisterBuffer,
   kCrosHalV3BufferManagerProcessCaptureRequestFailed,
   kCrosHalV3BufferManagerInvalidPendingResultId,
@@ -171,7 +170,6 @@ enum VideoCaptureError {
   kCrosHalV3BufferManagerReceivedInvalidShutterTime,
   kCrosHalV3BufferManagerFatalDeviceError,
   kCrosHalV3BufferManagerReceivedFrameIsOutOfOrder,
-  kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd,
   kCrosHalV3BufferManagerSyncWaitOnReleaseFenceTimedOut,
   kCrosHalV3BufferManagerInvalidJpegBlob,
   kAndroidFailedToAllocate,
@@ -196,8 +194,8 @@ enum VideoCaptureError {
   kWinDirectShowFailedToStartTheCaptureDevice,
   kWinDirectShowFailedToStopTheCaptureGraph,
   kWinMediaFoundationEngineIsNull,
-  kWinMediaFoundationEngineGetSourceFailed ,
-  kWinMediaFoundationFillPhotoCapabilitiesFailed ,
+  kWinMediaFoundationEngineGetSourceFailed,
+  kWinMediaFoundationFillPhotoCapabilitiesFailed,
   kWinMediaFoundationFillVideoCapabilitiesFailed,
   kWinMediaFoundationNoVideoCapabilityFound,
   kWinMediaFoundationGetAvailableDeviceMediaTypeFailed,
@@ -312,7 +310,7 @@ struct VideoCaptureFormat {
 enum CaptureSourceRequestType {
   [Default] kUnknown,
   kGetUserMedia,
-  kGetDisplayMedia
+  kGetDisplayMedia,
 };
 
 struct VideoCaptureParams {
@@ -406,7 +404,7 @@ struct VideoCaptureDeviceInfo {
 
 enum SubCaptureTargetType {
   kCropTarget,
-  kRestrictionTarget
+  kRestrictionTarget,
 };
 
 // The result of an attempt by the client to start/stop cropping,
@@ -425,5 +423,5 @@ enum DeviceEnumerationResult {
   kSuccess,
   kUnknownError,
   kErrorCaptureServiceCrash,
-  kErrorCaptureServiceDroppedRequest
+  kErrorCaptureServiceDroppedRequest,
 };
