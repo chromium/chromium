@@ -11,11 +11,19 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "services/network/public/cpp/resource_request.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace android_webview {
+namespace prefs {
+inline constexpr char kContentRestrictionEnabled[] =
+    "android_webview.content_restriction_enabled";
+}  // namespace prefs
 
 // Client implementation for managing interactions with the
 // `ContentRestrictionManager` system service via the
@@ -46,9 +54,13 @@ class AwContentRestrictionManagerClient {
     base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   };
 
+  // Static factory helpers.
   static std::unique_ptr<AwContentRestrictionManagerClient> Create();
   static std::unique_ptr<AwContentRestrictionManagerClient> CreateForTesting(
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> delegate,
+      PrefService* pref_service = nullptr);
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   AwContentRestrictionManagerClient(const AwContentRestrictionManagerClient&) =
       delete;
@@ -111,12 +123,20 @@ class AwContentRestrictionManagerClient {
     base::WeakPtrFactory<ClassificationRequestTracker> weak_ptr_factory_{this};
   };
 
-  explicit AwContentRestrictionManagerClient(
-      std::unique_ptr<Delegate> delegate);
+  AwContentRestrictionManagerClient(std::unique_ptr<Delegate> delegate,
+                                    PrefService* pref_service);
+
+  // Synchronizes and updates the cached content restriction enabled state to
+  // minimize subsequent IPC hops. Triggered asynchronously on session startup.
+  void SyncContentRestrictionEnabledState();
 
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   const std::unique_ptr<Delegate> delegate_;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   ClassificationRequestTracker request_tracker_;
+
+  base::WeakPtrFactory<AwContentRestrictionManagerClient> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace android_webview

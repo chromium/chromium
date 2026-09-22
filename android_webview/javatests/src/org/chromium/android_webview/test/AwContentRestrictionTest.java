@@ -19,8 +19,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -42,6 +45,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test integration with content restriction on WebViews. */
 @RunWith(Parameterized.class)
@@ -64,16 +68,25 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
 
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+    private static TestAconfigDelegate sTestAconfigDelegate;
     private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     /**
      * Test implementation of {@link AconfigFlaggedApiDelegate} to mock out Android platform
-     * dependencies for the content restriction feature.
+     * dependencies for the content restriction feature. This is marked static to simplify
+     * registration before app process startup that is shared across all tests.
      */
-    private class TestAconfigDelegate implements AconfigFlaggedApiDelegate {
+    private static class TestAconfigDelegate implements AconfigFlaggedApiDelegate {
+        private final AtomicInteger mIsContentRestrictionEnabledCallCount = new AtomicInteger(0);
+
         @Override
         public boolean isContentRestrictionEnabled() {
+            mIsContentRestrictionEnabledCallCount.incrementAndGet();
             return true;
+        }
+
+        public int getIsContentRestrictionEnabledCallCount() {
+            return mIsContentRestrictionEnabledCallCount.get();
         }
 
         @Override
@@ -111,9 +124,21 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
         public boolean sendShowRestrictedContentIntent(Uri uri) {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mActivityTestRule.getActivity().startActivity(intent);
+            ContextUtils.getApplicationContext().startActivity(intent);
             return true;
         }
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+        sTestAconfigDelegate = new TestAconfigDelegate();
+        AconfigFlaggedApiDelegate.setInstanceForTesting(sTestAconfigDelegate);
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        sTestAconfigDelegate = null;
     }
 
     public AwContentRestrictionTest(AwSettingsMutation param) {
@@ -123,7 +148,6 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
-        AconfigFlaggedApiDelegate.setInstanceForTesting(new TestAconfigDelegate());
 
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -134,7 +158,6 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
 
     @After
     public void tearDown() throws Exception {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
         mWebServer.shutdown();
     }
@@ -347,5 +370,42 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
         Assert.assertEquals(initialHistoryCount, getNavigationHistoryEntryCount());
         Assert.assertEquals(
                 ALLOWED_SITE_2_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testContentRestrictionEnabledCached() throws Throwable {
+        // Ensure the initial asynchronous check on startup has completed.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> sTestAconfigDelegate.getIsContentRestrictionEnabledCallCount() > 0,
+                "Initial content restriction check should complete");
+        int initialCallCount = sTestAconfigDelegate.getIsContentRestrictionEnabledCallCount();
+
+        // Perform multiple navigations (both allowed and blocked sites) to track JNI call count.
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH));
+        Assert.assertEquals(
+                ALLOWED_SITE_1_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_2_PATH));
+        Assert.assertEquals(
+                ALLOWED_SITE_2_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
+
+        mActivityTestRule.loadUrlAsync(mAwContents, mWebServer.getResponseUrl(BLOCKED_SITE_PATH));
+        waitForInterstitialPageLoad();
+
+        // Ensure that the cached value of the content restriction enabled state is used across all
+        // navigations.
+        Assert.assertEquals(
+                "isContentRestrictionEnabled JNI should not be queried during navigations",
+                initialCallCount,
+                sTestAconfigDelegate.getIsContentRestrictionEnabledCallCount());
     }
 }

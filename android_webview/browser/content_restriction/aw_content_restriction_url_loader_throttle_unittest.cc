@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 using testing::_;
+using testing::AtMost;
 using testing::Return;
 using testing::WithArgs;
 
@@ -155,11 +157,21 @@ class FakeChunkedDataPipeGetter : public network::mojom::ChunkedDataPipeGetter {
 class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
  protected:
   void SetUp() override {
+    AwContentRestrictionManagerClient::RegisterPrefs(pref_service_.registry());
+    pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, true);
     auto client_delegate =
         std::make_unique<MockContentRestrictionManagerClientDelegate>();
     mock_client_delegate_ = client_delegate.get();
+
+    // The client caches the content restriction enabled state asynchronously
+    // on session startup. Depending on whether the test pumps the task
+    // environment, this may be called 0 times or 1 time, but should never be
+    // called more than once.
+    EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
+        .Times(AtMost(1))
+        .WillRepeatedly(Return(true));
     client_ = AwContentRestrictionManagerClient::CreateForTesting(
-        std::move(client_delegate));
+        std::move(client_delegate), &pref_service_);
     throttle_ = std::make_unique<AwContentRestrictionURLLoaderThrottle>(
         client_.get(), &tracker_, kTestNavigationId);
     throttle_->set_delegate(&delegate_);
@@ -309,6 +321,7 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AwContentRestrictionManagerClient> client_;
   raw_ptr<MockContentRestrictionManagerClientDelegate> mock_client_delegate_;
   AwContentRestrictionBlockedNavigationTracker tracker_;
@@ -318,8 +331,8 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        AllowRequestsWhenContentRestrictionDisabled) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(false));
+  // Update the cached content restriction enabled state to disable it.
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, false);
 
   network::ResourceRequest request =
       CreateTestResourceRequest(/*method=*/"GET");
@@ -351,8 +364,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
   MockRequestContentClassification(true);
 
   network::ResourceRequest request =
@@ -366,8 +377,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
   MockRequestContentClassification(false);
 
   network::ResourceRequest request =
@@ -383,9 +392,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBody) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(false);
 
@@ -405,9 +411,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBody) {
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyFile) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   // Create a temporary file on disk with mock content.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -442,9 +445,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyFile) {
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyInvalidFile) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -464,9 +464,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyClosedPipe) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   int raw_write_fd = -1;
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe(&raw_write_fd);
   MockRequestContentClassification(true);
@@ -491,9 +488,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyClosedPipe) {
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyDataPipe) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -523,9 +517,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, StreamRequestBodyDataPipe) {
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyStandardDataPipeReadError) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -548,9 +539,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyStandardDataPipeClosedEarly) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -586,9 +574,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyStandardDataPipeDisconnectedEarly) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -614,9 +599,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyChunkedDataPipe) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -647,9 +629,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyChunkedDataPipeClosedEarly) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -671,9 +650,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyChunkedDataPipeGetSizeError) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -695,9 +671,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyChunkedDataPipeClassificationCompletesBeforeStreaming) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -742,9 +715,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        StreamRequestBodyMultipleDataElements) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   base::ScopedFD read_fd = CreateAndMockRequestBodyPipe();
   MockRequestContentClassification(true);
 
@@ -780,8 +750,8 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
        AllowRedirectsWhenContentRestrictionDisabled) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(false));
+  // Update the cached content restriction enabled state to disable it.
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, false);
 
   net::RedirectInfo redirect_info = CreateTestRedirectRequest();
   bool defer = false;
@@ -795,9 +765,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRedirectRequest) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   net::RedirectInfo redirect_info = CreateTestRedirectRequest();
   MockRedirectRequestContentClassification(/*is_allowed=*/true);
   bool defer = false;
@@ -811,9 +778,6 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRedirectRequest) {
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRedirectRequest) {
-  EXPECT_CALL(*mock_client_delegate_, IsContentRestrictionEnabled())
-      .WillOnce(Return(true));
-
   net::RedirectInfo redirect_info = CreateTestRedirectRequest();
   MockRedirectRequestContentClassification(/*is_allowed=*/false);
   bool defer = false;

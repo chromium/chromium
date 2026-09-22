@@ -7715,6 +7715,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ContentRestriction.ApiCallMatchesDiskCache"
+    enum="BooleanMatched" expires_after="2027-04-01">
+  <owner>vshenvi@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the
+    AwContentRestrictionManagerBridge.IsContentRestrictionEnabled API call
+    returns a result which matches our disk cache. This does not record the
+    actual value of that call: a log of &quot;true&quot; means that the return
+    value matches the disk cache and a log of &quot;false&quot; means that the
+    disk cache didn't match.
+
+    This histogram is recorded when content restriction status is synced.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.CookieFixup.Url" enum="FixupResult"
     expires_after="2027-01-05">
   <owner>torne@chromium.org</owner>

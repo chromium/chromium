@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_entropy_state_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -153,6 +154,9 @@ const char* const kPersistentPrefsAllowlist[] = {
     // Records about profiles/contexts and their stored data
     prefs::kProfileListPref,
     prefs::kProfileCounterPref,
+
+    // Content restriction enabled state.
+    android_webview::prefs::kContentRestrictionEnabled,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -214,6 +218,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   AwBrowserContextStore::RegisterPrefs(pref_registry.get());
   AwSupervisedUserUrlClassifier::RegisterPrefs(pref_registry.get());
   AwUrlCheckerDelegateImpl::RegisterPrefs(pref_registry.get());
+  AwContentRestrictionManagerClient::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 

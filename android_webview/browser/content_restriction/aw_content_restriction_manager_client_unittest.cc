@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +25,8 @@ namespace {
 constexpr char kTestUrl[] = "https://www.example.test/";
 constexpr int64_t kTestNavigationId = 123;
 constexpr base::TimeDelta kTestContentClassificationTimeout = base::Seconds(5);
+constexpr char kContentRestrictionApiCallMatchesDiskCacheHistogramName[] =
+    "Android.WebView.ContentRestriction.ApiCallMatchesDiskCache";
 
 class MockContentRestrictionManagerClientDelegate
     : public AwContentRestrictionManagerClient::Delegate {
@@ -30,6 +34,15 @@ class MockContentRestrictionManagerClientDelegate
   MockContentRestrictionManagerClientDelegate()
       : AwContentRestrictionManagerClient::Delegate(nullptr) {}
   ~MockContentRestrictionManagerClientDelegate() override = default;
+
+  bool IsContentRestrictionEnabled() override {
+    is_content_restriction_enabled_call_count_++;
+    return true;
+  }
+
+  size_t is_content_restriction_enabled_call_count() const {
+    return is_content_restriction_enabled_call_count_;
+  }
 
   void RequestContentClassification(
       int64_t navigation_id,
@@ -57,6 +70,7 @@ class MockContentRestrictionManagerClientDelegate
   bool has_pending_callback() const { return !last_callback_.is_null(); }
 
  private:
+  size_t is_content_restriction_enabled_call_count_ = 0;
   int64_t last_navigation_id_ = 0;
   std::string last_url_;
   size_t classification_call_count_ = 0;
@@ -74,11 +88,12 @@ class AwContentRestrictionManagerClientTest : public testing::Test {
   }
 
   void SetUp() override {
+    AwContentRestrictionManagerClient::RegisterPrefs(pref_service_.registry());
     auto delegate =
         std::make_unique<MockContentRestrictionManagerClientDelegate>();
     mock_delegate_ = delegate.get();
     client_ = AwContentRestrictionManagerClient::CreateForTesting(
-        std::move(delegate));
+        std::move(delegate), &pref_service_);
   }
 
   void RequestContentClassification(bool* callback_run, bool* callback_result) {
@@ -104,9 +119,49 @@ class AwContentRestrictionManagerClientTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AwContentRestrictionManagerClient> client_;
   raw_ptr<MockContentRestrictionManagerClientDelegate> mock_delegate_;
 };
+
+TEST_F(AwContentRestrictionManagerClientTest,
+       RepurposeCachedContentRestrictionEnabledState) {
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, false);
+  EXPECT_FALSE(client_->IsContentRestrictionEnabled());
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, true);
+  EXPECT_TRUE(client_->IsContentRestrictionEnabled());
+}
+
+TEST_F(AwContentRestrictionManagerClientTest,
+       ContentRestrictionEnabledStateDiskCacheMatch) {
+  base::HistogramTester histogram_tester;
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, true);
+  ASSERT_EQ(mock_delegate_->is_content_restriction_enabled_call_count(), 0u);
+  histogram_tester.ExpectTotalCount(
+      kContentRestrictionApiCallMatchesDiskCacheHistogramName, 0);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      kContentRestrictionApiCallMatchesDiskCacheHistogramName, true, 1);
+  EXPECT_TRUE(client_->IsContentRestrictionEnabled());
+  EXPECT_EQ(mock_delegate_->is_content_restriction_enabled_call_count(), 1u);
+}
+
+TEST_F(AwContentRestrictionManagerClientTest,
+       ContentRestrictionEnabledStateDiskCacheMismatch) {
+  base::HistogramTester histogram_tester;
+  pref_service_.SetBoolean(prefs::kContentRestrictionEnabled, false);
+  ASSERT_EQ(mock_delegate_->is_content_restriction_enabled_call_count(), 0u);
+  EXPECT_FALSE(client_->IsContentRestrictionEnabled());
+  histogram_tester.ExpectTotalCount(
+      kContentRestrictionApiCallMatchesDiskCacheHistogramName, 0);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(mock_delegate_->is_content_restriction_enabled_call_count(), 1u);
+  EXPECT_TRUE(client_->IsContentRestrictionEnabled());
+  histogram_tester.ExpectUniqueSample(
+      kContentRestrictionApiCallMatchesDiskCacheHistogramName, false, 1);
+}
 
 TEST_F(AwContentRestrictionManagerClientTest, RequestClassification) {
   bool callback_run = false;
