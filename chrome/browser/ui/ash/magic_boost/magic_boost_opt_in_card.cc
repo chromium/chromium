@@ -66,17 +66,9 @@ constexpr int kBetweenImageAndTextSpacing = 16;
 constexpr int kBetweenContentsAndButtonsSpacing = 16;
 constexpr int kBetweenLabelsSpacing = 4;
 
-// Font lists
-const gfx::FontList kBodyTextFontList =
-    gfx::FontList({"Google Sans", "Roboto"},
-                  gfx::Font::NORMAL,
-                  /*font_size=*/12,
-                  gfx::Font::Weight::NORMAL);
-const gfx::FontList kTitleTextFontList =
-    gfx::FontList({"Google Sans", "Roboto"},
-                  gfx::Font::NORMAL,
-                  /*font_size=*/14,
-                  gfx::Font::Weight::MEDIUM);
+// Font constants
+constexpr int kBodyTextFontSize = 12;
+constexpr int kTitleTextFontSize = 14;
 
 }  // namespace
 
@@ -172,7 +164,9 @@ MagicBoostOptInCard::MagicBoostOptInCard(
                       include_orca
                           ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
                           : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE))
-                  .SetFontList(kTitleTextFontList)
+                  .SetFontList(gfx::FontList(
+                      {"Google Sans", "Roboto"}, gfx::Font::NORMAL,
+                      kTitleTextFontSize, gfx::Font::Weight::MEDIUM))
                   .SetMultiLine(true)
                   .SetMaxLines(kTitleLabelMaxLines),
               views::Builder<views::Label>()
@@ -188,7 +182,9 @@ MagicBoostOptInCard::MagicBoostOptInCard(
                       include_orca
                           ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
                           : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY))
-                  .SetFontList(kBodyTextFontList)
+                  .SetFontList(gfx::FontList(
+                      {"Google Sans", "Roboto"}, gfx::Font::NORMAL,
+                      kBodyTextFontSize, gfx::Font::Weight::NORMAL))
                   .SetMultiLine(true)
                   .SetMaxLines(kBodyLabelMaxLines))
           .Build());
