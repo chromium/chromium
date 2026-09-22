@@ -159,15 +159,13 @@ public class TabListRecyclerView extends RecyclerView
 
     /**
      * @param tabIndex The index in the RecyclerView of the tab.
-     * @param tabId The tab ID of the tab.
      * @return The {@link Rect} of the thumbnail of the tab in global coordinates.
      */
-    Rect getRectOfTabThumbnail(int tabIndex, int tabId) {
+    Rect getRectOfTabThumbnail(int tabIndex) {
         SimpleRecyclerViewAdapter.ViewHolder holder =
                 (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
         Rect rect = new Rect();
         if (holder == null || tabIndex == TabModel.INVALID_TAB_INDEX) return rect;
-        assert assumeNonNull(holder.model).get(TabProperties.TAB_ID) == tabId;
         ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
         View v = root.fastFindViewById(R.id.tab_thumbnail);
         if (v != null) v.getGlobalVisibleRect(rect);
@@ -176,17 +174,14 @@ public class TabListRecyclerView extends RecyclerView
 
     /**
      * @param selectedTabIndex The index in the RecyclerView of the selected tab.
-     * @param selectedTabId The tab ID of the selected tab.
-     * @return The {@link Rect} of the thumbnail of the current tab, relative to the
-     *         {@link TabListRecyclerView} coordinates.
+     * @return The {@link Rect} of the thumbnail of the current tab, relative to the {@link
+     *     TabListRecyclerView} coordinates.
      */
-    @Nullable
-    Rect getRectOfCurrentThumbnail(int selectedTabIndex, int selectedTabId) {
+    @Nullable Rect getRectOfCurrentThumbnail(int selectedTabIndex) {
         SimpleRecyclerViewAdapter.ViewHolder holder =
                 (SimpleRecyclerViewAdapter.ViewHolder)
                         findViewHolderForAdapterPosition(selectedTabIndex);
         if (holder == null || selectedTabIndex == TabModel.INVALID_TAB_INDEX) return null;
-        assert assumeNonNull(holder.model).get(TabProperties.TAB_ID) == selectedTabId;
         ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
         return getRectOfComponent(root.fastFindViewById(R.id.tab_thumbnail));
     }

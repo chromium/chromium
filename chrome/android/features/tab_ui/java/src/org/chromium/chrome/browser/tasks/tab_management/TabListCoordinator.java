@@ -548,8 +548,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         int index = getIndexFromTabId(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) return new Rect();
 
-        return mRecyclerView.getRectOfTabThumbnail(
-                index, mModelList.get(index).model.get(TabProperties.TAB_ID));
+        return mRecyclerView.getRectOfTabThumbnail(index);
     }
 
     Size getThumbnailSize() {

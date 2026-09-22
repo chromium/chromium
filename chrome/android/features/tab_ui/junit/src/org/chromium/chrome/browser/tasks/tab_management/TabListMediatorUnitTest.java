@@ -4233,6 +4233,89 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testTabGroup_SelectionAndDescriptions() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        when(mTabListItemOnClickListenerProvider.isTabGroupSelected(any(), any())).thenReturn(null);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabModel.index()).thenReturn(2);
+        List<Tab> groupTabs = List.of(mTab2, tab3);
+        createTabGroup(groupTabs, TAB_GROUP_ID);
+        mockRepresentativeTabs(mTab1, mTab2);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+        assertEquals(2, mModelList.size());
+
+        PropertyModel groupCardModel = mModelList.get(1).model;
+        assertEquals(TAB_GROUP, groupCardModel.get(CARD_TYPE));
+        assertEquals(TAB_GROUP_ID, groupCardModel.get(TabProperties.TAB_GROUP_HEADER_ID));
+
+        // Child tab3 is active: group card should show as selected via isTabSelected.
+        assertTrue(groupCardModel.get(TabProperties.IS_SELECTED));
+        assertFalse(mModelList.get(0).model.get(TabProperties.IS_SELECTED));
+
+        final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
+        final @StringRes int colorDesc =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        defaultColor);
+
+        // Content description string verification (updateDescriptionString token lookup).
+        assertEquals(
+                String.format(
+                        "Expand tab group with 2 tabs, color %s.", mResources.getString(colorDesc)),
+                groupCardModel
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        // Action button description string verification (updateActionButtonDescriptionString token
+        // lookup).
+        String expectedActionString =
+                String.format(
+                        "Open the tab group action menu for tab group 2 tabs, color %s.",
+                        mResources.getString(colorDesc));
+        assertEquals(
+                expectedActionString,
+                groupCardModel
+                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.updateTabGroupTitle(TAB_GROUP_ID);
+
+        assertEquals(
+                String.format(
+                        "Expand %s tab group with 2 tabs, color %s.",
+                        CUSTOMIZED_DIALOG_TITLE1, mResources.getString(colorDesc)),
+                groupCardModel
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        String expectedCustomActionString =
+                String.format(
+                        "Open the tab group action menu for tab group %s, color %s.",
+                        CUSTOMIZED_DIALOG_TITLE1, mResources.getString(colorDesc));
+        assertEquals(
+                expectedCustomActionString,
+                groupCardModel
+                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        // Switch active tab to standalone tab1: group card should show as unselected via
+        // isTabSelected on reset and via didSelectTab.
+        when(mTabModel.index()).thenReturn(0);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+        assertFalse(groupCardModel.get(TabProperties.IS_SELECTED));
+        assertTrue(mModelList.get(0).model.get(TabProperties.IS_SELECTED));
+
+        mTabModelObserverCaptor.getValue().didSelectTab(tab3, TabSelectionType.FROM_USER, TAB1_ID);
+        assertTrue(groupCardModel.get(TabProperties.IS_SELECTED));
+        assertFalse(mModelList.get(0).model.get(TabProperties.IS_SELECTED));
+    }
+
+    @Test
     public void testActionButtonDescriptionString_SingleTab_EmptyTitle() {
         Tab newTab = prepareTab(TAB3_ID, "", TAB3_URL);
         List<Tab> tabs = List.of(newTab);
@@ -5387,22 +5470,82 @@ public class TabListMediatorUnitTest {
 
         Rect tab1Rect = new Rect();
         tab1Rect.bottom = 1;
-        when(mTabListRecyclerView.getRectOfCurrentThumbnail(0, TAB1_ID)).thenReturn(tab1Rect);
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(0)).thenReturn(tab1Rect);
 
         Rect tab2Rect = new Rect();
         tab2Rect.bottom = 1;
-        when(mTabListRecyclerView.getRectOfCurrentThumbnail(1, TAB2_ID)).thenReturn(tab2Rect);
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(1)).thenReturn(tab2Rect);
 
         Rect tab3Rect = new Rect();
         tab3Rect.bottom = 2;
-        when(mTabListRecyclerView.getRectOfCurrentThumbnail(2, TAB3_ID)).thenReturn(tab3Rect);
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(2)).thenReturn(tab3Rect);
 
         Rect tab5Rect = new Rect();
         tab5Rect.bottom = 2;
-        when(mTabListRecyclerView.getRectOfCurrentThumbnail(3, TAB5_ID)).thenReturn(tab5Rect);
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(3)).thenReturn(tab5Rect);
 
         // Mock tab7 is outside the screen view.
-        when(mTabListRecyclerView.getRectOfCurrentThumbnail(4, TAB7_ID)).thenReturn(null);
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(4)).thenReturn(null);
+
+        List<Tab> tabs = List.of(mTab1, mTab2, tab3, tab5, tab7);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+        assertThat(mModelList.size(), equalTo(5));
+
+        TreeMap<Integer, List<PropertyModel>> resultMap = new TreeMap<>();
+
+        List<Tab> tabsToFade = List.of(mTab1, tab4, tab6, tab5, tab7);
+
+        mMediator.getOrderOfTabsForQuickDeleteAnimation(
+                mTabListRecyclerView, tabsToFade, resultMap);
+
+        assertThat(resultMap.keySet(), contains(1, 2));
+
+        // Tab 1 and group tab 5 & 6 should be filtered for animation.
+        assertThat(resultMap.get(1), contains(mModelList.get(0).model));
+        assertThat(resultMap.get(2), contains(mModelList.get(3).model));
+        verify(mTabListRecyclerView).getRectOfCurrentThumbnail(3);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testQuickDeleteAnimationTabFiltering_RefactorDisabled() {
+        // Add five more tabs.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        Tab tab5 = prepareTab(TAB5_ID, TAB5_TITLE, TAB5_URL);
+        Tab tab6 = prepareTab(TAB6_ID, TAB6_TITLE, TAB6_URL);
+        Tab tab7 = prepareTab(TAB7_ID, TAB7_TITLE, TAB7_URL);
+        when(mTabModel.getTabAt(4)).thenReturn(tab7);
+
+        // Mock that tab3 and tab4 are in the same group and group root id is TAB3_ID.
+        List<Tab> groupTabs1 = List.of(tab3, tab4);
+        createTabGroup(groupTabs1, TAB_GROUP_ID, 2);
+
+        Token otherGroupId = new Token(74893L, 8490L);
+        // Mock that tab5 and tab6 are in the same group and group root id is TAB5_ID.
+        List<Tab> groupTabs2 = List.of(tab5, tab6);
+        createTabGroup(groupTabs2, otherGroupId, 3);
+
+        mockRepresentativeTabs(mTab1, mTab2, tab3, tab5, tab7);
+
+        Rect tab1Rect = new Rect();
+        tab1Rect.bottom = 1;
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(0)).thenReturn(tab1Rect);
+
+        Rect tab2Rect = new Rect();
+        tab2Rect.bottom = 1;
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(1)).thenReturn(tab2Rect);
+
+        Rect tab3Rect = new Rect();
+        tab3Rect.bottom = 2;
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(2)).thenReturn(tab3Rect);
+
+        Rect tab5Rect = new Rect();
+        tab5Rect.bottom = 2;
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(3)).thenReturn(tab5Rect);
+
+        // Mock tab7 is outside the screen view.
+        when(mTabListRecyclerView.getRectOfCurrentThumbnail(4)).thenReturn(null);
 
         List<Tab> tabs = List.of(mTab1, mTab2, tab3, tab5, tab7);
         mMediator.resetWithListOfTabs(tabs, null, false);
@@ -5423,6 +5566,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testQuickDeleteAnimationTabFiltering_nullGroupRepresentativeTab() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> groupTabs1 = List.of(tab3);
@@ -6328,6 +6472,8 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
         when(mTabModel.getGroupLastShownTabId(any())).thenReturn(TAB1_ID);
+        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(groupTabs);
 
         setUpActorState(mTab1, TabIndicatorStatus.NONE);
         setUpActorState(mTab2, TabIndicatorStatus.NONE);
