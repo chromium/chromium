@@ -15,6 +15,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -27,19 +28,19 @@ namespace base::internal {
 
 // Helper trait for deducing the boundary value for enums.
 template <typename Enum>
-  requires(std::is_enum_v<Enum>)
 struct EnumSizeTraits {
   static constexpr uintmax_t Count() {
-    if constexpr (requires { Enum::kMaxValue; }) {
+    if constexpr (base::metrics_internal::HasKMaxValue<Enum>) {
       // Since the UMA histogram macros expect a value one larger than the max
       // defined enumerator value, add one.
-      return static_cast<uintmax_t>(std::to_underlying(Enum::kMaxValue) + 1);
-    } else {
+      return static_cast<uintmax_t>(std::to_underlying(Enum::kMaxValue)) + 1;
+    } else if constexpr (std::is_enum_v<Enum>) {
       static_assert(
           sizeof(Enum) == 0,
-          "enumerator must define kMaxValue enumerator to use this macro!");
-      return 0;
+          "`Enum` must define a `kMaxValue` enumerator to use this macro");
     }
+    // Return a placeholder size here to avoid cascading errors in the caller.
+    return 1;
   }
 };
 
@@ -170,65 +171,98 @@ struct EnumSizeTraits {
 // arguments.
 #define INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(_1, _2, NAME, ...) NAME
 
-#define INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY(name, sample,       \
-                                                           flags)              \
-  INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(                                    \
-      name, sample,                                                            \
-      base::internal::EnumSizeTraits<std::decay_t<decltype(sample)>>::Count(), \
-      flags)
+#define INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY(name, sample,   \
+                                                           flags)          \
+  do {                                                                     \
+    using InternalHistogramDecayedSample = std::decay_t<decltype(sample)>; \
+    static_assert(std::is_enum_v<InternalHistogramDecayedSample>,          \
+                  "`sample` is not an enum.");                             \
+    INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(                              \
+        name, sample,                                                      \
+        base::internal::EnumSizeTraits<                                    \
+            InternalHistogramDecayedSample>::Count(),                      \
+        flags);                                                            \
+  } while (0)
 
 // Note: The value in `sample` must be strictly less than `enum_size`.
+//
+// TODO(dcheng): The assertions below only require that `sample` and `enum_size`
+// are consistent; integral arguments are still accepted for legacy callers.
+// Both should eventually be required to be enums.
 #define INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY(name, sample,     \
                                                             enum_size, flags) \
-  INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(name, sample, enum_size, flags)
+  do {                                                                        \
+    using InternalHistogramDecayedSample = std::decay_t<decltype(sample)>;    \
+    using InternalHistogramDecayedBoundary =                                  \
+        std::decay_t<decltype(enum_size)>;                                    \
+    static_assert(                                                            \
+        !base::metrics_internal::HasKMaxValue<                                \
+            InternalHistogramDecayedSample> &&                                \
+            !base::metrics_internal::HasKMaxValue<                            \
+                InternalHistogramDecayedBoundary>,                            \
+        "Do not explicitly specify the boundary value for an enum that "      \
+        "defines `kMaxValue`; omit the boundary argument so it is deduced "   \
+        "from `kMaxValue`.");                                                 \
+    static_assert(!std::is_enum_v<InternalHistogramDecayedBoundary> ||        \
+                      std::is_enum_v<InternalHistogramDecayedSample>,         \
+                  "`boundary` is enum, but `sample` is not.");                \
+    static_assert(!std::is_enum_v<InternalHistogramDecayedSample> ||          \
+                      !std::is_enum_v<InternalHistogramDecayedBoundary> ||    \
+                      std::is_same_v<InternalHistogramDecayedSample,          \
+                                     InternalHistogramDecayedBoundary>,       \
+                  "`sample` and `boundary` shouldn't be of different enums"); \
+    INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(name, sample, enum_size, flags); \
+  } while (0)
 
-// Similar to the previous macro but intended for enumerations. This delegates
-// the work to the previous macro, but supports scoped enumerations as well by
-// forcing an explicit cast to the HistogramBase::Sample32 integral type.
+// Similar to `INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG`, but intended for
+// enumerations. This delegates to `INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG`,
+// but supports scoped enumerations as well by forcing an explicit cast to the
+// `HistogramBase::Sample32` integral type.
 //
-// Note the range checks verify two separate issues:
-// - that the declared enum size isn't out of range of HistogramBase::Sample32
-// - that the declared enum size is > 0
-//
-// TODO(dcheng): This should assert that the passed in types are actually enum
-// types.
+// Note that the declared enum size is checked for two separate issues:
+// - that it is > 0, i.e. the histogram has at least one valid bucket
+// - that it isn't out of range of `HistogramBase::Sample32`
 #define INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(name, sample, boundary, flag) \
   do {                                                                         \
-    using decayed_sample = std::decay<decltype(sample)>::type;                 \
-    using decayed_boundary = std::decay<decltype(boundary)>::type;             \
+    constexpr uintmax_t kInternalHistogramBoundary =                           \
+        static_cast<uintmax_t>(boundary);                                      \
     static_assert(                                                             \
-        !std::is_enum_v<decayed_boundary> || std::is_enum_v<decayed_sample>,   \
-        "Unexpected: |boundary| is enum, but |sample| is not.");               \
-    static_assert(!std::is_enum_v<decayed_sample> ||                           \
-                      !std::is_enum_v<decayed_boundary> ||                     \
-                      std::is_same_v<decayed_sample, decayed_boundary>,        \
-                  "|sample| and |boundary| shouldn't be of different enums");  \
+        kInternalHistogramBoundary > 0,                                        \
+        "`boundary` must be greater than 0: an enumerated histogram "          \
+        "needs at least one valid bucket");                                    \
     static_assert(                                                             \
-        static_cast<uintmax_t>(boundary) <                                     \
-            static_cast<uintmax_t>(                                            \
-                std::numeric_limits<base::HistogramBase::Sample32>::max()),    \
-        "|boundary| is out of range of HistogramBase::Sample32");              \
+        kInternalHistogramBoundary <                                           \
+            std::numeric_limits<base::HistogramBase::Sample32>::max(),         \
+        "`boundary` is out of range of HistogramBase::Sample32");              \
     INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG(                                 \
         name, static_cast<base::HistogramBase::Sample32>(sample),              \
-        static_cast<base::HistogramBase::Sample32>(boundary), flag);           \
+        static_cast<base::HistogramBase::Sample32>(                            \
+            kInternalHistogramBoundary),                                       \
+        flag);                                                                 \
   } while (0)
 
 #define INTERNAL_HISTOGRAM_SCALED_ENUMERATION_WITH_FLAG(name, sample, count, \
                                                         scale, flag)         \
   do {                                                                       \
-    using decayed_sample = std::decay<decltype(sample)>::type;               \
-    static_assert(std::is_enum_v<decayed_sample>,                            \
-                  "Unexpected: |sample| is not at enum.");                   \
-    constexpr auto boundary = base::internal::EnumSizeTraits<                \
-        std::decay_t<decltype(sample)>>::Count();                            \
+    using InternalHistogramDecayedSample = std::decay_t<decltype(sample)>;   \
+    static_assert(std::is_enum_v<InternalHistogramDecayedSample>,            \
+                  "`sample` is not an enum.");                               \
+    constexpr auto kInternalHistogramBoundary =                              \
+        base::internal::EnumSizeTraits<                                      \
+            InternalHistogramDecayedSample>::Count();                        \
     static_assert(                                                           \
-        static_cast<uintmax_t>(boundary) <                                   \
-            static_cast<uintmax_t>(                                          \
-                std::numeric_limits<base::HistogramBase::Sample32>::max()),  \
-        "|boundary| is out of range of HistogramBase::Sample32");            \
+        kInternalHistogramBoundary > 0,                                      \
+        "`boundary` must be greater than 0: an enumerated histogram "        \
+        "needs at least one valid bucket");                                  \
+    static_assert(                                                           \
+        kInternalHistogramBoundary <                                         \
+            std::numeric_limits<base::HistogramBase::Sample32>::max(),       \
+        "`boundary` is out of range of HistogramBase::Sample32");            \
     INTERNAL_HISTOGRAM_SCALED_EXACT_LINEAR_WITH_FLAG(                        \
         name, static_cast<base::HistogramBase::Sample32>(sample), count,     \
-        static_cast<base::HistogramBase::Sample32>(boundary), scale, flag);  \
+        static_cast<base::HistogramBase::Sample32>(                          \
+            kInternalHistogramBoundary),                                     \
+        scale, flag);                                                        \
   } while (0)
 
 // This is a helper macro used by other macros and shouldn't be used directly.

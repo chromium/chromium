@@ -32,13 +32,13 @@
 // related but not directly connected data as enums within the same histogram.
 // You should be defining an associated Enum, and the input sample should be
 // an element of the Enum.
-// All of these macros must be called with |name| as a runtime constant.
+// All of these macros must be called with `name` as a runtime constant.
 
-// The first variant of UMA_HISTOGRAM_ENUMERATION accepts two arguments: the
-// histogram name and the enum sample. It deduces the correct boundary value to
-// use by looking for an enumerator with the name kMaxValue. kMaxValue should
-// share the value of the highest enumerator: this avoids switch statements
-// having to handle a sentinel no-op value.
+// The first (and preferred) variant of UMA_HISTOGRAM_ENUMERATION accepts two
+// arguments: the histogram name and the enum sample. It automatically deduces
+// the correct boundary value using `Enum::kMaxValue`; `kMaxValue` should share
+// the value of the highest enumerator(s): Chrome's clang plugins ensure that
+// `kMaxValue` is correctly defined.
 //
 // Sample usage:
 //   // These values are logged to UMA. Entries should not be renumbered and
@@ -53,10 +53,15 @@
 //   };
 //   UMA_HISTOGRAM_ENUMERATION("My.Enumeration", MyEnum::kSomeValue);
 //
+// If the enum defines `kMaxValue`, this 2-argument variant must be used.
+//
 // The second variant requires three arguments: the first two are the same as
 // before, and the third argument is the enum boundary: this must be strictly
 // greater than any other enumerator that will be sampled. This only works for
 // enums with a fixed underlying type.
+//
+// Note: the 3-argument variant may not be used with an enum that defines
+// `kMaxValue`; omit the boundary argument so it is deduced from `kMaxValue`.
 //
 // Sample usage:
 //   // These values are logged to UMA. Entries should not be renumbered and
@@ -86,12 +91,11 @@
 
 // As above but "scaled" count to avoid overflows caused by increments of
 // large amounts. See UMA_HISTOGRAM_SCALED_EXACT_LINEAR for more information.
-// Only the new format utilizing an internal kMaxValue is supported.
-// It'll be necessary to #include "base/lazy_instance.h" to use this macro.
+// Only the new format utilizing an internal `kMaxValue` is supported.
 //   name: Full constant name of the histogram (must not change between calls).
 //   sample: Bucket to be incremented.
 //   count: Amount by which to increment.
-//   scale: Amount by which |count| is divided.
+//   scale: Amount by which `count` is divided.
 
 // Sample usage:
 //    UMA_HISTOGRAM_SCALED_ENUMERATION("FooKiB", kEnumValue, byte_count, 1024)

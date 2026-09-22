@@ -15,6 +15,7 @@
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions_internal_overloads.h"  // IWYU pragma: export
 #include "base/time/time.h"
 
@@ -58,6 +59,7 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramExactLinear)
 
 // For adding a sample to an enumerated histogram.
+//
 // Sample usage:
 //   // These values are persisted to logs. Entries should not be renumbered and
 //   // numeric values should never be reused.
@@ -71,8 +73,9 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle);
 //
-// `kMaxValue` should be 1000 or less. If it is greater than 100, please
-// escalate by assigning to chromium-metrics-reviews@google.com.
+// Chrome's clang plugins ensure that `kMaxValue` is correctly defined. For
+// histograms, `kMaxValue` should be 1000 or less. If it is greater than 100,
+// please escalate by assigning to chromium-metrics-reviews@google.com.
 template <typename StringType, typename T>
 void UmaHistogramEnumeration(const StringType& name, T sample) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
@@ -93,8 +96,9 @@ void UmaHistogramEnumeration(const StringType& name, T sample) {
   return UmaHistogramExactLinear(name, static_cast<int>(sample), kBucketCount);
 }
 
-// Some legacy histograms may manually specify the enum size, with a kCount,
-// COUNT, kMaxValue, or MAX_VALUE sentinel like so:
+// The previous overload should be preferred, but some legacy histograms
+// manually specify the enum size with a `kCount` or `COUNT` sentinel instead:
+//
 //   // These values are persisted to logs. Entries should not be renumbered and
 //   // numeric values should never be reused.
 //   enum class NewTabPageAction {
@@ -106,14 +110,23 @@ void UmaHistogramEnumeration(const StringType& name, T sample) {
 //   };
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle,
-//                                 kCount);
-// Note: The value in |sample| must be strictly less than |enum_size|. This is
-// otherwise functionally equivalent to the above.
+//                                 NewTabPageAction::kCount);
+//
+// Note: The value in `sample` must be strictly less than `enum_size`. This
+// is otherwise equivalent to the above. This function may not be used with an
+// enum that defines `kMaxValue`; use `UmaHistogramEnumeration(name, sample)`
+// instead.
+//
 // `enum_size` must be less than or equal to 1001. If it is greater than 100,
 // please escalate by assigning to chromium-metrics-reviews@google.com.
 template <typename StringType, typename T>
 void UmaHistogramEnumeration(const StringType& name, T sample, T enum_size) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
+  static_assert(
+      !base::metrics_internal::HasKMaxValue<T>,
+      "Do not explicitly specify the boundary value for an enum that defines "
+      "`kMaxValue`; use `base::UmaHistogramEnumeration(name, sample)` "
+      "instead.");
   constexpr auto kBucketCountMax =
       static_cast<uintmax_t>(LinearHistogram::kBucketCount_MAX);
   // Note: UmaHistogramExactLinear() adds 1 to the bucket count for the overflow

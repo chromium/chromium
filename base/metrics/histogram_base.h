@@ -14,6 +14,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
@@ -23,6 +24,17 @@
 #include "base/values.h"
 
 namespace base {
+
+namespace metrics_internal {
+
+// UMA provides helper macros/functions for recording enum histograms which
+// understand the conventions around `Enum::kMaxValue` and ensure the use of the
+// correct boundary value (which defines the range of the overflow bucket). See
+// crbug.com/40512541 for more background.
+template <typename T>
+concept HasKMaxValue = std::is_enum_v<T> && requires { T::kMaxValue; };
+
+}  // namespace metrics_internal
 
 class HistogramBase;
 class HistogramSamples;
