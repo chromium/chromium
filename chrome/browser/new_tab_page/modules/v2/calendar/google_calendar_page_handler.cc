@@ -208,14 +208,35 @@ void GoogleCalendarPageHandler::OnRequestComplete(
           google_apis::calendar::CalendarEvent::ResponseStatus::kDeclined) {
         continue;
       }
+      GURL event_url = GURL(event->html_link());
+      if (!event_url.is_valid() || !event_url.SchemeIsHTTPOrHTTPS()) {
+        return;
+      }
+
+      if (!event->conference_data_uri().is_empty() &&
+          (!event->conference_data_uri().is_valid() ||
+           !event->conference_data_uri().SchemeIsHTTPOrHTTPS())) {
+        return;
+      }
+
       ntp::calendar::mojom::CalendarEventPtr formatted_event =
           ntp::calendar::mojom::CalendarEvent::New();
       formatted_event->title = event->summary();
       formatted_event->start_time = event->start_time().date_time();
       formatted_event->end_time = event->end_time().date_time();
-      formatted_event->url = GURL(event->html_link());
+      formatted_event->url = event_url;
       formatted_event->location = event->location();
       for (const auto& attachment : event->attachments()) {
+        if (!attachment.icon_link().is_valid() ||
+            !attachment.icon_link().SchemeIsHTTPOrHTTPS()) {
+          return;
+        }
+        if (!attachment.file_url().is_empty() &&
+            (!attachment.file_url().is_valid() ||
+             !attachment.file_url().SchemeIsHTTPOrHTTPS())) {
+          return;
+        }
+
         ntp::calendar::mojom::AttachmentPtr formatted_attachment =
             ntp::calendar::mojom::Attachment::New();
         formatted_attachment->title = attachment.title();
