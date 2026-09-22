@@ -201,27 +201,26 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   }
 
   async function setAutomaticTimeZoneEnabled(enabled: boolean) {
-    privacyHubGeolocationSubpage.set(
-        'prefs.generated.resolve_timezone_by_geolocation_on_off.value',
-        enabled);
+    privacyHubGeolocationSubpage.setPrefValue(
+        'generated.resolve_timezone_by_geolocation_on_off', enabled);
     await flushTasks();
   }
 
   async function setNightLightScheduleType(scheduleType: ScheduleType) {
-    privacyHubGeolocationSubpage.set(
-        'prefs.ash.night_light.schedule_type.value', scheduleType);
+    privacyHubGeolocationSubpage.setPrefValue(
+        'ash.night_light.schedule_type', scheduleType);
     await flushTasks();
   }
 
   async function setLocalWeatherEnabled(enabled: boolean) {
-    privacyHubGeolocationSubpage.set(
-        'prefs.settings.ambient_mode.enabled.value', enabled);
+    privacyHubGeolocationSubpage.setPrefValue(
+        'settings.ambient_mode.enabled', enabled);
     await flushTasks();
   }
 
   async function setDarkThemeScheduleType(scheduleType: ScheduleType) {
-    privacyHubGeolocationSubpage.set(
-        'prefs.ash.dark_mode.schedule_type.value', scheduleType);
+    privacyHubGeolocationSubpage.setPrefValue(
+        'ash.dark_mode.schedule_type', scheduleType);
     await flushTasks();
   }
 

@@ -493,8 +493,8 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
   });
 
   function setGeolocationAccessLevel(accessLevel: GeolocationAccessLevel) {
-    privacyHubSubpage.set(
-        'prefs.ash.user.geolocation_access_level.value', accessLevel);
+    privacyHubSubpage.setPrefValue(
+        'ash.user.geolocation_access_level', accessLevel);
   }
 
   test('Camera toggle initially force disabled', async () => {
