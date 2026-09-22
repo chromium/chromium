@@ -114,6 +114,11 @@ class PageSpecificContentSettingsDelegate
   // The previous protocol handler to be replaced by
   // the pending_protocol_handler_, if there is one. Empty if
   // there is no handler which would be replaced.
+  // TODO(crbug.com/553146562): No longer read. ContentSettingRPHBubbleModel
+  // takes the handler being replaced from the registry when it opens, since
+  // this snapshot went stale whenever the registry changed while the request
+  // was pending. Remove it, its accessors, and the write in
+  // BrowserWebContentsDelegate::RegisterProtocolHandler().
   custom_handlers::ProtocolHandler previous_protocol_handler_ =
       custom_handlers::ProtocolHandler::EmptyProtocolHandler();
 

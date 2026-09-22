@@ -373,14 +373,11 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
 
  private:
   void RegisterProtocolHandler();
-  void UnregisterProtocolHandler();
   void IgnoreProtocolHandler();
-  void ClearOrSetPreviousHandler();
   void PerformActionForSelectedItem();
 
   raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   custom_handlers::ProtocolHandler pending_handler_;
-  custom_handlers::ProtocolHandler previous_handler_;
 };
 
 // The model of the content settings bubble for media settings.

@@ -22,6 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
+#include "chrome/browser/ui/content_settings/fake_owner.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -290,6 +292,87 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
 
   // Verify the handler registration is pending.
   ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
+}
+
+// A registration made without a user gesture is parked on the page as a
+// pending handler. Removing the scheme's default handler while that request is
+// still pending must survive the user disposing of the bubble: neither denying
+// the request nor dismissing the bubble may bring the removed handler back.
+IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
+                       DenyingPendingRegistrationDoesNotRestoreRemovedHandler) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  // The accepted handler is registered from a different origin than the page
+  // below, so the page's registration is not silently replaced.
+  const std::string protocol = "web+search";
+  AddProtocolHandler(protocol, GURL("https://accepted.example/?q=%s"));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* content_settings =
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
+
+  // The user removes the accepted handler while the request is pending.
+  ProtocolHandlerRegistry* registry = GetRegistry();
+  registry->RemoveDefaultHandler(protocol);
+  ASSERT_FALSE(registry->IsHandledProtocol(protocol));
+
+  // The user denies the pending registration in the bubble.
+  ContentSettingRPHBubbleModel bubble_model(
+      nullptr, web_contents->GetPrimaryPage(), registry);
+  std::unique_ptr<FakeOwner> owner = FakeOwner::Create(bubble_model, 0);
+  // "1" is the "Deny" radio button.
+  owner->SetSelectedRadioOptionAndCommit(1);
+
+  const ProtocolHandler& handler = registry->GetHandlerFor(protocol);
+  EXPECT_TRUE(handler.IsEmpty()) << "handler left behind: " << handler.url();
+  EXPECT_FALSE(registry->IsHandledProtocol(protocol));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeRegisterProtocolHandlerBrowserTest,
+    DismissingPendingRegistrationDoesNotRestoreRemovedHandler) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  const std::string protocol = "web+search";
+  AddProtocolHandler(protocol, GURL("https://accepted.example/?q=%s"));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* content_settings =
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(content_settings->pending_protocol_handler().IsValid());
+
+  ProtocolHandlerRegistry* registry = GetRegistry();
+  registry->RemoveDefaultHandler(protocol);
+  ASSERT_FALSE(registry->IsHandledProtocol(protocol));
+
+  // Dismissing the bubble commits its default radio button, as
+  // ContentSettingBubbleContents::WindowClosing() does.
+  ContentSettingRPHBubbleModel bubble_model(
+      nullptr, web_contents->GetPrimaryPage(), registry);
+  std::unique_ptr<FakeOwner> owner = FakeOwner::Create(
+      bubble_model, bubble_model.bubble_content().radio_group.default_item);
+  bubble_model.CommitChanges();
+
+  const ProtocolHandler& handler = registry->GetHandlerFor(protocol);
+  EXPECT_TRUE(handler.IsEmpty()) << "handler left behind: " << handler.url();
+  EXPECT_FALSE(registry->IsHandledProtocol(protocol));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,

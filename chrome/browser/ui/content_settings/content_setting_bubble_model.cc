@@ -523,12 +523,20 @@ void ContentSettingMixedScriptBubbleModel::SetManageText() {
 
 namespace {
 
-// These states must match the order of appearance of the radio buttons
-// in the XIB file for the Mac port.
+// These states must match the order of the radio buttons.
+//
+// TODO(crbug.com/553146562): The bubble offers only "Allow" (register as the
+// default) and "Deny" (refuse). The registry also supports registering a
+// handler as a non-default option the user can pick later in settings
+// (OnDenyRegisterProtocolHandler(), despite its name); the bubble used to
+// reach it through a button labelled "Deny", a grant under a refusal's name.
+// Offering it again needs an honestly labelled third option, i.e. new
+// strings. Until then IDS_REGISTER_PROTOCOL_HANDLER_IGNORE has no user, and
+// the names below predate the change: RPH_BLOCK is the "Deny" radio, and
+// IgnoreProtocolHandler() performs its refusal.
 enum RPHState {
   RPH_ALLOW = 0,
   RPH_BLOCK,
-  RPH_IGNORE,
 };
 
 }  // namespace
@@ -542,18 +550,21 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
                                       ContentSettingsType::PROTOCOL_HANDLERS),
       registry_(registry),
       pending_handler_(
-          custom_handlers::ProtocolHandler::EmptyProtocolHandler()),
-      previous_handler_(
           custom_handlers::ProtocolHandler::EmptyProtocolHandler()) {
   auto* content_settings =
       PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   pending_handler_ = content_settings->pending_protocol_handler();
-  previous_handler_ = content_settings->previous_protocol_handler();
 
   std::u16string protocol = pending_handler_.GetProtocolDisplayName();
 
-  // Note that we ignore the |title| parameter.
-  if (previous_handler_.IsEmpty()) {
+  // The handler being replaced is read from the registry rather than
+  // remembered from when the request arrived: the registry may have changed
+  // since, for instance through chrome://settings/handlers. Note that we
+  // ignore the |title| parameter.
+  const custom_handlers::ProtocolHandler& current_default =
+      registry_ ? registry_->GetHandlerFor(pending_handler_.protocol())
+                : custom_handlers::ProtocolHandler::EmptyProtocolHandler();
+  if (current_default.IsEmpty()) {
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM,
         base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol));
@@ -561,29 +572,24 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE,
         base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol,
-        base::UTF8ToUTF16(previous_handler_.url().GetHost())));
+        base::UTF8ToUTF16(current_default.url().GetHost())));
   }
 
   std::u16string radio_allow_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_ACCEPT);
   std::u16string radio_deny_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_DENY);
-  std::u16string radio_ignore_label =
-      l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_IGNORE);
 
   const GURL& url = GetPage().GetMainDocument().GetLastCommittedURL();
   RadioGroup radio_group;
   radio_group.url = url;
 
-  radio_group.radio_items = {radio_allow_label, radio_deny_label,
-                             radio_ignore_label};
+  radio_group.radio_items = {radio_allow_label, radio_deny_label};
   ContentSetting setting = content_settings->pending_protocol_handler_setting();
   if (setting == CONTENT_SETTING_ALLOW) {
     radio_group.default_item = RPH_ALLOW;
-  } else if (setting == CONTENT_SETTING_BLOCK) {
-    radio_group.default_item = RPH_BLOCK;
   } else {
-    radio_group.default_item = RPH_IGNORE;
+    radio_group.default_item = RPH_BLOCK;
   }
 
   set_radio_group(radio_group);
@@ -604,6 +610,10 @@ void ContentSettingRPHBubbleModel::CommitChanges() {
 void ContentSettingRPHBubbleModel::RegisterProtocolHandler() {
   // A no-op if the handler hasn't been ignored, but needed in case the user
   // selects sequences like register/ignore/register.
+  // TODO(crbug.com/553146562): Move this into
+  // OnAcceptRegisterProtocolHandler(), so that accepting revokes an earlier
+  // refusal from any surface, e.g. "Set as default" in
+  // chrome://settings/handlers, and not only from this bubble.
   registry_->RemoveIgnoredHandler(pending_handler_);
 
   registry_->OnAcceptRegisterProtocolHandler(pending_handler_);
@@ -611,34 +621,19 @@ void ContentSettingRPHBubbleModel::RegisterProtocolHandler() {
       ->set_pending_protocol_handler_setting(CONTENT_SETTING_ALLOW);
 }
 
-void ContentSettingRPHBubbleModel::UnregisterProtocolHandler() {
-  registry_->OnDenyRegisterProtocolHandler(pending_handler_);
-  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
-      ->set_pending_protocol_handler_setting(CONTENT_SETTING_BLOCK);
-  ClearOrSetPreviousHandler();
-}
-
 void ContentSettingRPHBubbleModel::IgnoreProtocolHandler() {
+  // Refusing also undoes an "Allow" chosen earlier in the same bubble: the
+  // registry removes the handler and hands the default back to the previous
+  // one, so nothing has to be remembered or restored here.
   registry_->OnIgnoreRegisterProtocolHandler(pending_handler_);
   PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
-      ->set_pending_protocol_handler_setting(CONTENT_SETTING_DEFAULT);
-  ClearOrSetPreviousHandler();
-}
-
-void ContentSettingRPHBubbleModel::ClearOrSetPreviousHandler() {
-  if (previous_handler_.IsEmpty()) {
-    registry_->ClearDefault(pending_handler_.protocol());
-  } else {
-    registry_->OnAcceptRegisterProtocolHandler(previous_handler_);
-  }
+      ->set_pending_protocol_handler_setting(CONTENT_SETTING_BLOCK);
 }
 
 void ContentSettingRPHBubbleModel::PerformActionForSelectedItem() {
   if (selected_item() == RPH_ALLOW) {
     RegisterProtocolHandler();
   } else if (selected_item() == RPH_BLOCK) {
-    UnregisterProtocolHandler();
-  } else if (selected_item() == RPH_IGNORE) {
     IgnoreProtocolHandler();
   } else {
     NOTREACHED();

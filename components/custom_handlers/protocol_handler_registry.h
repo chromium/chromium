@@ -110,14 +110,27 @@ class ProtocolHandlerRegistry : public KeyedService {
   // function returns false the user needs to be prompted for confirmation.
   bool SilentlyHandleRegisterHandlerRequest(const ProtocolHandler& handler);
 
-  // Called when the user accepts the registration of a given protocol handler.
+  // Called when the user accepts the registration of a given protocol handler,
+  // which becomes the default one for its protocol.
+  // TODO(crbug.com/553146562): Revoke an earlier refusal here
+  // (RemoveIgnoredHandler()) once the registration succeeded, instead of
+  // leaving that to the content setting bubble; "Set as default" in
+  // chrome://settings/handlers reaches this too.
   void OnAcceptRegisterProtocolHandler(const ProtocolHandler& handler);
 
-  // Called when the user denies the registration of a given protocol handler.
+  // Registers the given protocol handler without making it the default: the
+  // user allowed it as an option to pick later in settings. Despite its name
+  // this is a grant, not a refusal; the refusal is
+  // OnIgnoreRegisterProtocolHandler().
+  // TODO(crbug.com/553146562): Rename it after what it does, e.g.
+  // OnAcceptRegisterProtocolHandlerAsCandidate(), and stop content shell from
+  // calling it for requests made without a user gesture, which nobody granted;
+  // those should be refused.
   void OnDenyRegisterProtocolHandler(const ProtocolHandler& handler);
 
-  // Called when the user indicates that they don't want to be asked about the
-  // given protocol handler again.
+  // Called when the user refuses the registration of a given protocol handler
+  // and doesn't want to be asked about it again. A registration the handler
+  // already had, e.g. from an earlier choice in the same bubble, is removed.
   void OnIgnoreRegisterProtocolHandler(const ProtocolHandler& handler);
 
   // Removes all handlers that have the same origin and protocol as the given

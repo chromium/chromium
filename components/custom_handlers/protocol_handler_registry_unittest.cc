@@ -277,6 +277,42 @@ TEST_F(ProtocolHandlerRegistryTest, DeniedProtocolIsntHandledUntilAccepted) {
   ASSERT_TRUE(registry()->IsHandledProtocol("news"));
 }
 
+// A refused handler must not be offered for the scheme, nor be promoted when
+// the accepted handler is removed.
+TEST_F(ProtocolHandlerRegistryTest,
+       IgnoredHandlerIsNotAllowedToHandleProtocol) {
+  ProtocolHandler accepted = CreateProtocolHandler("news", "accepted");
+  ProtocolHandler refused = CreateProtocolHandler("news", "refused");
+  registry()->OnAcceptRegisterProtocolHandler(accepted);
+  registry()->OnIgnoreRegisterProtocolHandler(refused);
+
+  EXPECT_FALSE(registry()->IsRegistered(refused));
+  EXPECT_TRUE(registry()->IsIgnored(refused));
+
+  registry()->RemoveDefaultHandler("news");
+
+  EXPECT_FALSE(registry()->IsDefault(refused));
+  EXPECT_TRUE(registry()->GetHandlerFor("news").IsEmpty());
+  EXPECT_FALSE(registry()->IsHandledProtocol("news"));
+}
+
+// Refusing a handler that is currently the default, e.g. after "Allow" then
+// "Deny" in the same bubble, removes it and hands the default back to the
+// handler that had it before.
+TEST_F(ProtocolHandlerRegistryTest, IgnoringTheDefaultFallsBackToOldDefault) {
+  ProtocolHandler ph1 = CreateProtocolHandler("news", "test1");
+  ProtocolHandler ph2 = CreateProtocolHandler("news", "test2");
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+  registry()->OnAcceptRegisterProtocolHandler(ph2);
+  ASSERT_TRUE(registry()->IsDefault(ph2));
+
+  registry()->OnIgnoreRegisterProtocolHandler(ph2);
+
+  EXPECT_TRUE(registry()->IsDefault(ph1));
+  EXPECT_FALSE(registry()->IsRegistered(ph2));
+  EXPECT_TRUE(registry()->IsIgnored(ph2));
+}
+
 TEST_F(ProtocolHandlerRegistryTest, ClearDefaultMakesProtocolNotHandled) {
   registry()->OnAcceptRegisterProtocolHandler(test_protocol_handler());
   registry()->ClearDefault("news");

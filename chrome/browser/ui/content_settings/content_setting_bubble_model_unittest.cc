@@ -986,8 +986,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
       FakeOwner::Create(content_setting_bubble_model, 0);
 
   {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    EXPECT_TRUE(handler.IsEmpty());
+    EXPECT_TRUE(registry.GetHandlerFor("mailto").IsEmpty());
     EXPECT_EQ(CONTENT_SETTING_DEFAULT,
               content_settings->pending_protocol_handler_setting());
   }
@@ -995,39 +994,29 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   // "0" is the "Allow" radio button.
   owner->SetSelectedRadioOptionAndCommit(0);
   {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    ASSERT_FALSE(handler.IsEmpty());
+    EXPECT_TRUE(registry.IsDefault(test_handler));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               content_settings->pending_protocol_handler_setting());
   }
 
-  // "1" is the "Deny" radio button.
+  // "1" is the "Deny" radio button. Refusing after allowing must leave no
+  // trace of the handler among the registered ones, only among the ignored.
   owner->SetSelectedRadioOptionAndCommit(1);
   {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    EXPECT_TRUE(handler.IsEmpty());
+    EXPECT_TRUE(registry.GetHandlerFor("mailto").IsEmpty());
+    EXPECT_FALSE(registry.IsRegistered(test_handler));
+    EXPECT_TRUE(registry.IsIgnored(test_handler));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               content_settings->pending_protocol_handler_setting());
   }
 
-  // "2" is the "Ignore button.
-  owner->SetSelectedRadioOptionAndCommit(2);
-  {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    EXPECT_TRUE(handler.IsEmpty());
-    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-              content_settings->pending_protocol_handler_setting());
-    EXPECT_TRUE(registry.IsIgnored(test_handler));
-  }
-
   // "0" is the "Allow" radio button.
   owner->SetSelectedRadioOptionAndCommit(0);
   {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    ASSERT_FALSE(handler.IsEmpty());
+    EXPECT_TRUE(registry.IsDefault(test_handler));
+    EXPECT_FALSE(registry.IsIgnored(test_handler));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               content_settings->pending_protocol_handler_setting());
-    EXPECT_FALSE(registry.IsIgnored(test_handler));
   }
 
   registry.Shutdown();
@@ -1053,14 +1042,58 @@ TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
       content_setting_bubble_model,
       content_setting_bubble_model.bubble_content().radio_group.default_item);
 
-  // If nothing is selected, the default action "Ignore" should be performed.
+  // If nothing is selected, the default action "Deny" should be performed:
+  // dismissing the bubble grants nothing.
   content_setting_bubble_model.CommitChanges();
   {
-    ProtocolHandler handler = registry.GetHandlerFor("mailto");
-    EXPECT_TRUE(handler.IsEmpty());
-    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-              content_settings->pending_protocol_handler_setting());
+    EXPECT_TRUE(registry.GetHandlerFor("mailto").IsEmpty());
+    EXPECT_FALSE(registry.IsRegistered(test_handler));
     EXPECT_TRUE(registry.IsIgnored(test_handler));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              content_settings->pending_protocol_handler_setting());
+  }
+
+  registry.Shutdown();
+}
+
+// The handler named as being replaced is the registry's current default, not
+// whatever was the default when the registration request arrived.
+TEST_F(ContentSettingBubbleModelTest, RPHTitleNamesCurrentDefaultHandler) {
+  custom_handlers::ProtocolHandlerRegistry registry(
+      profile()->GetPrefs(),
+      std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
+  registry.InitProtocolSettings();
+  registry.OnAcceptRegisterProtocolHandler(
+      ProtocolHandler::CreateProtocolHandler(
+          "mailto", GURL("https://installed.example/?u=%s")));
+
+  const GURL page_url("https://toplevel.example/");
+  NavigateAndCommit(page_url);
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+      ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
+          "mailto", GURL("https://www.toplevel.example/?u=%s")));
+
+  {
+    ContentSettingRPHBubbleModel content_setting_bubble_model(nullptr, page(),
+                                                              &registry);
+    EXPECT_EQ(content_setting_bubble_model.bubble_content().title,
+              l10n_util::GetStringFUTF16(
+                  IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE,
+                  u"www.toplevel.example",
+                  ProtocolHandler::GetProtocolDisplayName("mailto"),
+                  u"installed.example"));
+  }
+
+  // Once the installed handler is gone there is nothing left to replace.
+  registry.RemoveDefaultHandler("mailto");
+  {
+    ContentSettingRPHBubbleModel content_setting_bubble_model(nullptr, page(),
+                                                              &registry);
+    EXPECT_EQ(
+        content_setting_bubble_model.bubble_content().title,
+        l10n_util::GetStringFUTF16(
+            IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM, u"www.toplevel.example",
+            ProtocolHandler::GetProtocolDisplayName("mailto")));
   }
 
   registry.Shutdown();

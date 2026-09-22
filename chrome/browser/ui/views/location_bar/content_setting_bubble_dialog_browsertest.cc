@@ -372,6 +372,7 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
 
 IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
                        InvokeUi_protocol_handlers) {
+  set_baseline("553146562");
   ShowAndVerifyUi();
 }
 
