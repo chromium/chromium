@@ -8,6 +8,7 @@
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -18,7 +19,6 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -28,14 +28,10 @@ const char kExtensionID[] = "eplckmlabaanikjjcgnigddmagoglhmp";
 
 class ActivityLogEnabledTest : public ChromeRenderViewHostTestHarness {
  protected:
-  ActivityLogEnabledTest() {
-    // Allow unpacked extensions without developer mode for testing.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionDisableUnsupportedDeveloper);
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    allow_unpacked_without_developer_mode_ =
+        ExtensionManagement::AllowUnpackedWithoutDeveloperModeForTesting();
     SetActivityLogTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
   }
@@ -45,7 +41,8 @@ class ActivityLogEnabledTest : public ChromeRenderViewHostTestHarness {
     SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+ private:
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
 };
 
 TEST_F(ActivityLogEnabledTest, NoSwitch) {

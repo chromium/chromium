@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -61,7 +62,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -270,11 +270,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   ExtensionGCMAppHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
-            /*is_sync_for_unittests=*/true)) {
-    // Allow unpacked extensions without developer mode for testing.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionDisableUnsupportedDeveloper);
-  }
+            /*is_sync_for_unittests=*/true)) {}
 
   ExtensionGCMAppHandlerTest(const ExtensionGCMAppHandlerTest&) = delete;
   ExtensionGCMAppHandlerTest& operator=(const ExtensionGCMAppHandlerTest&) =
@@ -301,6 +297,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     // Create a new profile.
     TestingProfile::Builder builder;
     profile_ = builder.Build();
+    allow_unpacked_without_developer_mode_ =
+        ExtensionManagement::AllowUnpackedWithoutDeveloperModeForTesting();
 
     // Create extension service in order to uninstall the extension.
     TestExtensionSystem* extension_system(
@@ -445,7 +443,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
@@ -467,6 +464,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   // TODO(https://crbug.com/40804030): Migrate this to only rely on MV3
   // extensions.
   ScopedTestMV2Enabler mv2_enabler_;
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
 };
 
 TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {

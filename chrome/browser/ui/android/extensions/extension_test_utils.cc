@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
@@ -37,6 +38,7 @@ static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
     Profile* profile,
     const std::string& root_dir,
     const base::android::JavaRef<jobject>& callback) {
+  ExtensionManagement::SetAllowUnpackedWithoutDeveloperModeForTesting(true);
   ChromeTestExtensionLoader loader(profile);
   loader.LoadUnpackedExtensionAsync(
       FilePath::FromUTF8Unsafe(root_dir),
@@ -46,6 +48,13 @@ static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
             base::android::RunStringCallbackAndroid(callback, extension->id());
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
+}
+
+static void
+JNI_ExtensionTestUtils_SetAllowUnpackedWithoutDeveloperModeForTesting(
+    JNIEnv* env,
+    bool allow) {
+  ExtensionManagement::SetAllowUnpackedWithoutDeveloperModeForTesting(allow);
 }
 
 static void JNI_ExtensionTestUtils_EnableExtension(

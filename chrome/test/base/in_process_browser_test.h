@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test_base.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
@@ -455,6 +458,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // testing, when the full restore feature is enabled.
   std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
       launch_browser_for_testing_;
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
 #endif
 };
 

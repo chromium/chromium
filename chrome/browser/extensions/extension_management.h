@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -140,6 +141,19 @@ class ExtensionManagement : public KeyedService,
   // Returns false if the extension is loaded as unpacked and the developer mode
   // is OFF.
   bool IsAllowedByUnpackedDeveloperModePolicy(const Extension& extension);
+
+  // Allows unpacked extensions to be enabled without developer mode. Used in
+  // testing environments where developer mode is not explicitly enabled.
+  // The returned AutoReset restores the previous value when it goes out of
+  // scope.
+  [[nodiscard]] static base::AutoReset<bool>
+  AllowUnpackedWithoutDeveloperModeForTesting(bool allow = true);
+
+  // Directly sets whether unpacked extensions are allowed without developer
+  // mode for testing without RAII scoping. Intended for JNI / Java test callers
+  // or environments where AutoReset cannot cross boundaries; callers should
+  // ensure the value is reset after the test.
+  static void SetAllowUnpackedWithoutDeveloperModeForTesting(bool allow);
 
   // Returns true if a greylisted extension is force-installed in a low-trust
   // environment. Only applies to Windows and MacOS.

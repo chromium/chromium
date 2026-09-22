@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -39,7 +40,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,11 +96,7 @@ class UserScriptListenerTest : public testing::Test {
   UserScriptListenerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         profile_manager_(std::make_unique<TestingProfileManager>(
-            TestingBrowserProcess::GetGlobal())) {
-    // Allow unpacked extensions without developer mode for testing.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionDisableUnsupportedDeveloper);
-  }
+            TestingBrowserProcess::GetGlobal())) {}
 
   UserScriptListenerTest(const UserScriptListenerTest&) = delete;
   UserScriptListenerTest& operator=(const UserScriptListenerTest&) = delete;
@@ -118,6 +114,8 @@ class UserScriptListenerTest : public testing::Test {
     listener_ = std::make_unique<UserScriptListener>();
     profile_ = profile_manager_->CreateTestingProfile("test-profile");
     ASSERT_TRUE(profile_);
+    allow_unpacked_without_developer_mode_ =
+        ExtensionManagement::AllowUnpackedWithoutDeveloperModeForTesting();
     TestExtensionSystem* test_extension_system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_));
     test_extension_system->CreateExtensionService(
@@ -180,7 +178,6 @@ class UserScriptListenerTest : public testing::Test {
                                               persistent_urls);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -194,6 +191,7 @@ class UserScriptListenerTest : public testing::Test {
   // TODO(https://crbug.com/40804030): Migrate this to only rely on MV3
   // extensions.
   ScopedTestMV2Enabler mv2_enabler_;
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
 };
 
 TEST_F(UserScriptListenerTest, DelayAndUpdate) {

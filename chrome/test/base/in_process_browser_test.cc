@@ -95,7 +95,6 @@
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -127,6 +126,10 @@
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_service.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_management.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -375,9 +378,6 @@ void InProcessBrowserTest::Initialize() {
   disabled_features.push_back(
       features::kRestartNetworkServiceUnsandboxedForFailedLaunch);
 
-  // Allow unpacked extensions without developer mode for testing.
-  disabled_features.push_back(
-      extensions_features::kExtensionDisableUnsupportedDeveloper);
 
   // Disable TransientKeepAlivePolicy in tests by default since it delays
   // renderer process cleanup, breaking tests checking process counts or
@@ -404,6 +404,10 @@ void InProcessBrowserTest::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS)
   launch_browser_for_testing_ =
       std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  allow_unpacked_without_developer_mode_ = extensions::ExtensionManagement::
+      AllowUnpackedWithoutDeveloperModeForTesting();
 #endif
 #if BUILDFLAG(IS_WIN)
   base::GetPathsAllowedToLeak() = {L"\\Sync Data", L"\\Local Storage\\leveldb",

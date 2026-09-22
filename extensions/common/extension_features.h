@@ -182,9 +182,6 @@ BASE_DECLARE_FEATURE(kExtensionAutoRejectIncognitoConnectability);
 // See https://developer.chrome.com/blog/debugger-enterprise-policy-restrictions.
 BASE_DECLARE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions);
 
-// If enabled, disables unpacked extensions if developer mode is off.
-BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
-
 // Allow e.g. .css files to use default_locale messages in WAR files via GUID.
 // TODO(crbug.com/435609878): Remove after m142. It's for safe m141 back merge.
 BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);

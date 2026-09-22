@@ -1317,7 +1317,7 @@ if (is_android) {
       "//extensions/buildflags",
     ]
     if (enable_extensions_core) {
-      deps += [ "//extensions/common:extension_features" ]
+      deps += [ "//chrome/browser/extensions" ]
     }
   }
 

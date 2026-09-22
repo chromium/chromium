@@ -5,11 +5,15 @@
 #ifndef CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test_base.h"
+#include "extensions/buildflags/buildflags.h"
 
 class BrowserWindowInterface;
 class PrefService;
@@ -94,10 +98,12 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // specified in the command line.
   base::ScopedTempDir temp_user_data_dir_;
 
-  base::test::ScopedFeatureList feature_list_;
-
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
+#endif
 };
 
 #endif  // CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_

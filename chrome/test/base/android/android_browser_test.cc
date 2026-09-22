@@ -21,7 +21,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "extensions/common/extension_features.h"
+#include "chrome/browser/extensions/extension_management.h"
 #endif
 
 namespace {
@@ -38,9 +38,8 @@ AndroidBrowserTest::AndroidBrowserTest() {
 
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // Allow unpacked extensions without developer mode for testing.
-  feature_list_.InitAndDisableFeature(
-      extensions_features::kExtensionDisableUnsupportedDeveloper);
+  allow_unpacked_without_developer_mode_ = extensions::ExtensionManagement::
+      AllowUnpackedWithoutDeveloperModeForTesting();
 #endif
   g_current_test = this;
 

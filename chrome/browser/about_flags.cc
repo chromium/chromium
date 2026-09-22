@@ -9948,12 +9948,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCWSInfoFastCheckDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions::kCWSInfoFastCheck)},
 
-    {"extension-disable-unsupported-developer-mode-extensions",
-     flag_descriptions::kExtensionDisableUnsupportedDeveloperName,
-     flag_descriptions::kExtensionDisableUnsupportedDeveloperDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         extensions_features::kExtensionDisableUnsupportedDeveloper)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)

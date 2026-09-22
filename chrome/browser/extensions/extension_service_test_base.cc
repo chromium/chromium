@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
@@ -62,7 +63,6 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/shared_module_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -285,8 +285,6 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{
-          // Allow unpacked extensions without developer mode for testing.
-          extensions_features::kExtensionDisableUnsupportedDeveloper,
           // Background Host creates a renderer host and holds it,
           // but this test is configured to use in-process renderers.
           // This combination is problematic on destruction order,
@@ -320,6 +318,11 @@ void ExtensionServiceTestBase::InitializeExtensionService(
 }
 
 bool ExtensionServiceTestBase::ShouldAllowMV2Extensions() {
+  return true;
+}
+
+bool ExtensionServiceTestBase::
+    ShouldAllowUnpackedExtensionsWithoutDeveloperMode() {
   return true;
 }
 
@@ -458,6 +461,11 @@ void ExtensionServiceTestBase::SetUp() {
 
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
+  }
+
+  if (ShouldAllowUnpackedExtensionsWithoutDeveloperMode()) {
+    allow_unpacked_without_developer_mode_ =
+        ExtensionManagement::AllowUnpackedWithoutDeveloperModeForTesting();
   }
 }
 

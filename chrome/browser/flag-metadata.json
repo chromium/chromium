@@ -4912,11 +4912,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "extension-disable-unsupported-developer-mode-extensions",
-    "owners": [ "richche@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "extension-tab-context-menu",
     "owners": [ "migueloruiz@google.com" ],
     "expiry_milestone": 152

@@ -56,7 +56,6 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
             ExtensionsMenuView::AllowInstancesForTesting()) {
     scoped_feature_list_.InitWithFeatures(
         {}, {extensions_features::kExtensionsMenuAccessControl,
-             extensions_features::kExtensionDisableUnsupportedDeveloper,
              features::kExtensionsPinnedByDefault});
   }
 

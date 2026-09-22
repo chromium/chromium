@@ -31,7 +31,6 @@
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "net/dns/mock_host_resolver.h"
@@ -48,13 +47,7 @@ ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest()
 ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest(
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features) {
-  // Allow unpacked extensions without developer mode for testing.
-  std::vector<base::test::FeatureRef> actual_disabled_features =
-      disabled_features;
-  actual_disabled_features.push_back(
-      extensions_features::kExtensionDisableUnsupportedDeveloper);
-  scoped_feature_list_.InitWithFeatures(enabled_features,
-                                        actual_disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 ExtensionsToolbarBrowserTest::~ExtensionsToolbarBrowserTest() = default;

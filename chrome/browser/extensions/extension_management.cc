@@ -58,7 +58,6 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
@@ -89,6 +88,10 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+
+namespace {
+bool g_allow_unpacked_without_developer_mode_for_testing = false;
+}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Disables off-store force-installed extensions in low trust environments.
@@ -433,8 +436,7 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
 
 bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
     const Extension& extension) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDisableUnsupportedDeveloper)) {
+  if (g_allow_unpacked_without_developer_mode_for_testing) {
     return true;
   }
   if (!extension.is_extension()) {
@@ -451,6 +453,19 @@ bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
   bool in_developer_mode =
       profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
   return in_developer_mode;
+}
+
+// static
+base::AutoReset<bool>
+ExtensionManagement::AllowUnpackedWithoutDeveloperModeForTesting(bool allow) {
+  return base::AutoReset<bool>(
+      &g_allow_unpacked_without_developer_mode_for_testing, allow);
+}
+
+// static
+void ExtensionManagement::SetAllowUnpackedWithoutDeveloperModeForTesting(
+    bool allow) {
+  g_allow_unpacked_without_developer_mode_for_testing = allow;
 }
 
 bool ExtensionManagement::IsGreylistedForceInstalledInLowTrustEnvironment(

@@ -20,7 +20,6 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,16 +40,9 @@ namespace ash::boca {
 namespace {
 
 class OnTaskExtensionsManagerImplTest : public ::testing::Test {
- public:
-  OnTaskExtensionsManagerImplTest() {
-    // Allow unpacked extensions without developer mode for testing.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionDisableUnsupportedDeveloper);
-  }
-
  protected:
   const Extension* AddExtension(
-      ManifestLocation location = ManifestLocation::kUnpacked) {
+      ManifestLocation location = ManifestLocation::kInternal) {
     scoped_refptr<const Extension> extension =
         extensions::ExtensionBuilder("Extension").SetLocation(location).Build();
     extension_environment_.GetExtensionRegistrar()->AddExtension(
@@ -65,7 +57,6 @@ class OnTaskExtensionsManagerImplTest : public ::testing::Test {
 
   TestingProfile* profile() { return extension_environment_.profile(); }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestExtensionEnvironment extension_environment_;
 };
 

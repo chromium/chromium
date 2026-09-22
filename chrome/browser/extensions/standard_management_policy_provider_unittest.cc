@@ -30,7 +30,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -190,8 +189,6 @@ TEST_F(StandardManagementPolicyProviderTest,
 }
 
 TEST_F(StandardManagementPolicyProviderTest, UnsupportedDeveloperExtension) {
-  base::test::ScopedFeatureList feature_list(
-      extensions_features::kExtensionDisableUnsupportedDeveloper);
   // Disable developer mode.
   util::SetDeveloperModeForProfile(&profile_, false);
   auto extension = CreateExtension(ManifestLocation::kUnpacked);

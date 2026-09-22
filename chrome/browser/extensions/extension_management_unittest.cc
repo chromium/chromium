@@ -36,7 +36,6 @@
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -1400,8 +1399,6 @@ TEST_F(ExtensionManagementServiceTest, ToolbarPinModeParsingFailsForInvalid) {
 }
 
 TEST_F(ExtensionManagementServiceTest, IsAllowedByUnpackedDeveloperModePolicy) {
-  base::test::ScopedFeatureList feature_list(
-      extensions_features::kExtensionDisableUnsupportedDeveloper);
   scoped_refptr<const Extension> unpacked_extension =
       CreateOffstoreExtension(kNonExistingExtension);
 

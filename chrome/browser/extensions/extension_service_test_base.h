@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -143,6 +144,10 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Whether MV2 extensions should be allowed. Defaults to true.
   virtual bool ShouldAllowMV2Extensions();
+
+  // Whether unpacked extensions should be allowed without developer mode.
+  // Defaults to true.
+  virtual bool ShouldAllowUnpackedExtensionsWithoutDeveloperMode();
 
   // Initialize an empty ExtensionService using a production, on-disk pref file.
   // See documentation for `prefs_content`.
@@ -284,6 +289,9 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // An override that allows MV2 extensions to be loaded.
   std::optional<ScopedTestMV2Enabler> mv2_enabler_;
+
+  // An override that allows unpacked extensions without developer mode.
+  std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
 };
 
 }  // namespace extensions

@@ -2627,10 +2627,6 @@ inline constexpr char kCWSReviewPromptingNativeUIDescription[] =
     "management page) for leaving reviews on installed Chrome Web Store "
     "extensions.";
 
-inline constexpr char kExtensionDisableUnsupportedDeveloperName[] =
-    "Extension Disable Unsupported Developer";
-inline constexpr char kExtensionDisableUnsupportedDeveloperDescription[] =
-    "When enabled, disable unpacked extensions if developer mode is off.";
 
 inline constexpr char kExtensionsOnChromeUrlsName[] =
     "Extensions on chrome:// URLs";
