@@ -62,8 +62,8 @@ def main(args):
     )
 
     # Geometry arguments
-    parser.add_argument("--window-width", type=int, default=480)
-    parser.add_argument("--window-height", type=int, default=540)
+    parser.add_argument("--window-width", type=int, default=633)
+    parser.add_argument("--window-height", type=int, default=320)
     parser.add_argument("--window-x", type=int, default=240)
     parser.add_argument("--window-y", type=int, default=180)
 
@@ -71,10 +71,10 @@ def main(args):
     parser.add_argument("--text-size", type=int, default=12)
 
     # Icon positions
-    parser.add_argument("--app-x", type=int, default=240)
-    parser.add_argument("--app-y", type=int, default=122)
-    parser.add_argument("--link-x", type=int, default=240)
-    parser.add_argument("--link-y", type=int, default=387)
+    parser.add_argument("--app-x", type=int, default=163)
+    parser.add_argument("--app-y", type=int, default=148)
+    parser.add_argument("--link-x", type=int, default=470)
+    parser.add_argument("--link-y", type=int, default=148)
 
     args = parser.parse_args(args)
 
