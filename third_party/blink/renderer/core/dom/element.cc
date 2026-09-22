@@ -12234,6 +12234,7 @@ void Element::DidMoveToNewDocument(Document& old_document) {
   if (auto* context = GetDisplayLockContext()) {
     context->DidMoveToNewDocument(old_document);
   }
+  ContainerQueryListController::DidMoveToNewDocument(*this, old_document);
 }
 
 void Element::UpdateNamedItemRegistration(NamedItemType type,

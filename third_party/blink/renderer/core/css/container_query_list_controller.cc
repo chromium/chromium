@@ -71,6 +71,27 @@ void ContainerQueryListController::InvalidateSelectorCacheFor(
   }
 }
 
+void ContainerQueryListController::DidMoveToNewDocument(
+    Element& element,
+    Document& old_document) {
+  if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
+    return;
+  }
+  ContainerQueryListController* old_controller = FromIfExists(old_document);
+  if (!old_controller) {
+    return;
+  }
+  Member<ListSet> lists = old_controller->lists_by_element_.Take(&element);
+  if (!lists) {
+    return;
+  }
+  old_controller->elements_.erase(&element);
+
+  auto* new_controller = From(element.GetDocument());
+  new_controller->elements_.insert(&element);
+  new_controller->lists_by_element_.Set(&element, lists);
+}
+
 bool ContainerQueryListController::NotifyChanges() {
   bool dispatched = false;
   HeapVector<Member<Element>> elements(elements_);

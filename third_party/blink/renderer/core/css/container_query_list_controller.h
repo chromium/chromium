@@ -36,6 +36,7 @@ class CORE_EXPORT ContainerQueryListController final
   }
   static void InvalidateSelectorCache(Document&);
   static void InvalidateSelectorCacheFor(Element&);
+  static void DidMoveToNewDocument(Element&, Document& old_document);
 
   void Trace(Visitor*) const override;
 

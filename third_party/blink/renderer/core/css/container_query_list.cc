@@ -92,15 +92,10 @@ bool ContainerQueryList::ComputeMatches() {
 }
 
 void ContainerQueryList::InvalidateCacheIfStale() {
-  std::optional<uint64_t> cache_generation;
-  if (auto* controller =
-          ContainerQueryListController::FromIfExists(element_->GetDocument())) {
-    cache_generation = controller->SelectorCacheGeneration();
-  }
-  // No controller: element_ was adopted into another document, where no
-  // invalidation can reach this list. Treat the cache as always stale.
-  if (!cache_generation.has_value() ||
-      selector_cache_generation_ != cache_generation) {
+  uint64_t cache_generation =
+      ContainerQueryListController::From(element_->GetDocument())
+          ->SelectorCacheGeneration();
+  if (selector_cache_generation_ != cache_generation) {
     selector_cache_.clear();
   }
   selector_cache_generation_ = cache_generation;
