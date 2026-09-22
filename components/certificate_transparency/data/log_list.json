@@ -1,6 +1,6 @@
 {
-  "version": "91.12",
-  "log_list_timestamp": "2026-09-21T13:40:03Z",
+  "version": "92.0",
+  "log_list_timestamp": "2026-09-22T13:42:43Z",
   "operators": [
     {
       "name": "Google",
@@ -1055,6 +1055,100 @@
           "state": {
             "qualified": {
               "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Microsec",
+      "email": [
+        "ct-log-op@microsec.hu"
+      ],
+      "logs": [],
+      "tiled_logs": [
+        {
+          "description": "Microsec Eszigno2026h2",
+          "log_id": "KNPGjqGDY293g5DLHjiKzpOgTpFpnQdXNunGFtEf4Gc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvBcE01QW9mpuRViHPCs6zNADkGj+nIM9hHSdqBlWPNIOZDr9Zb9hhUTB/9W5eqRlfynSmrnl1AKTPF836w3J6g==",
+          "submission_url": "https://eszigno2026h2.log.ct.e-szigno.hu/",
+          "monitoring_url": "https://eszigno2026h2.mon.ct.e-szigno.hu/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-22T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Microsec Eszigno2027h1",
+          "log_id": "eBAmYgxXrnCeBgs/iwSfqrh6aXhhDP+YpDWqAgNwe9k=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhuG9m7D8nlSquWGaAF0NXc0ClYZYpEipNa/NeThGlber9tzMoHLRQXncwNBBqcxbXOannRTI/+utdT7wP9S7Jw==",
+          "submission_url": "https://eszigno2027h1.log.ct.e-szigno.hu/",
+          "monitoring_url": "https://eszigno2027h1.mon.ct.e-szigno.hu/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-22T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Microsec Eszigno2027h2",
+          "log_id": "GrnppF/Ct4QLH+fciv7lRpXau5p8I9NfpTclu4k6md0=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/XDM4otADNamGuQ1qjcAy+VMdPw75EQtjCEZTBnmJy5QhzHpPReQjYGrLhKuWGXlQJ2AxeVl6/0vm/aRcpsBlg==",
+          "submission_url": "https://eszigno2027h2.log.ct.e-szigno.hu/",
+          "monitoring_url": "https://eszigno2027h2.mon.ct.e-szigno.hu/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-22T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Microsec Eszigno2028h1",
+          "log_id": "bdyd6YsZgQp1oXcR+tZVoOVbdYzpKkXZg27d9PznIBM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaYdzBFWDI3Mf74StObgh3wImAflYLO9aM62xwivJX5pAAXfMEEfImBihn/IfkknTuKOIqeHfxVd/sCAfiN5CLQ==",
+          "submission_url": "https://eszigno2028h1.log.ct.e-szigno.hu/",
+          "monitoring_url": "https://eszigno2028h1.mon.ct.e-szigno.hu/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-22T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Microsec Eszigno2028h2",
+          "log_id": "2iKjSO8buzFuV+ARSkqcdAe1DxOmJTk9JtLe4joj4hY=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFNithqA5EW7rjf1HswV8jLvzqWZeA4kM4UMvR8PMrOtY6izw7fO159pjewHRu36fEsbcjUf/q2ujFbnpJavWaQ==",
+          "submission_url": "https://eszigno2028h2.log.ct.e-szigno.hu/",
+          "monitoring_url": "https://eszigno2028h2.mon.ct.e-szigno.hu/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-22T13:45:00Z"
             }
           },
           "temporal_interval": {
