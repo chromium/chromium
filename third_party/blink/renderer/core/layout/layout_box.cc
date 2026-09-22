@@ -2464,23 +2464,6 @@ bool LayoutBox::PhysicalFragmentList::SlowHasFragmentItems() const {
   return false;
 }
 
-wtf_size_t LayoutBox::PhysicalFragmentList::IndexOf(
-    const PhysicalBoxFragment& fragment) const {
-  wtf_size_t index = 0;
-  for (const auto& result : layout_results_) {
-    if (&result->GetPhysicalFragment() == &fragment) {
-      return index;
-    }
-    ++index;
-  }
-  return kNotFound;
-}
-
-bool LayoutBox::PhysicalFragmentList::Contains(
-    const PhysicalBoxFragment& fragment) const {
-  return IndexOf(fragment) != kNotFound;
-}
-
 void LayoutBox::AddMeasureLayoutResult(const LayoutResult* result) {
   NOT_DESTROYED();
   // Ensure the given result is valid for the measure cache.

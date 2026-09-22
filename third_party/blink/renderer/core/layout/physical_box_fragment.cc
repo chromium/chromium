@@ -515,7 +515,8 @@ const LayoutBox* PhysicalBoxFragment::OwnerLayoutBox() const {
     }
   } else {
     // Check |this| and the |LayoutBox| that produced it are in sync.
-    DCHECK(owner_box->PhysicalFragments().Contains(*this));
+    DCHECK(std::ranges::contains(owner_box->PhysicalFragments(), this,
+                                 [](const auto& f) { return &f; }));
     DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
   }
 #endif
@@ -536,7 +537,8 @@ PhysicalOffset PhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
 
   const LayoutBox* owner_box = OwnerLayoutBox();
   DCHECK(owner_box);
-  DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  DCHECK(std::ranges::contains(owner_box->PhysicalFragments(), this,
+                               [](const auto& f) { return &f; }));
   if (owner_box->PhysicalFragmentCount() <= 1)
     return PhysicalOffset();
 
@@ -1004,7 +1006,8 @@ void PhysicalBoxFragment::RecalcInkOverflow() {
   DCHECK_EQ(MutableOwnerLayoutBox(), GetMutableLayoutObject());
   LayoutBox* owner_box = To<LayoutBox>(GetMutableLayoutObject());
   DCHECK(owner_box);
-  DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  DCHECK(std::ranges::contains(owner_box->PhysicalFragments(), this,
+                               [](const auto& f) { return &f; }));
   owner_box->CopyVisualOverflowFromFragments();
 }
 

@@ -530,9 +530,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
     bool SlowHasFragmentItems() const;
 
-    wtf_size_t IndexOf(const PhysicalBoxFragment& fragment) const;
-    bool Contains(const PhysicalBoxFragment& fragment) const;
-
     // Note: We can't use std::views.  It's banned in Chromium.
     class CORE_EXPORT Iterator {
       STACK_ALLOCATED();
