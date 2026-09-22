@@ -65,19 +65,16 @@
 
 namespace {
 
-// Defines a report-level restriction type for screen captures.
-const policy::DlpContentRestrictionSet kScreenCaptureReported{
-    policy::DlpContentRestriction::kScreenshot,
-    policy::DlpRulesManager::Level::kReport};
-// Defines a warning-level restriction type for screen captures.
-const policy::DlpContentRestrictionSet kScreenCaptureWarned{
-    policy::DlpContentRestriction::kScreenshot,
-    policy::DlpRulesManager::Level::kWarn};
-
 constexpr char kSrcPattern[] = "example.com";
 constexpr char kRuleName[] = "rule #1";
 constexpr char kRuleId[] = "testid1";
-const policy::DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
+
+// Returns a screen capture restriction set at the given enforcement `level`.
+policy::DlpContentRestrictionSet ScreenCaptureRestriction(
+    policy::DlpRulesManager::Level level) {
+  return policy::DlpContentRestrictionSet(
+      policy::DlpContentRestriction::kScreenshot, level);
+}
 
 // Returns the native window of the given `browser`.
 aura::Window* GetBrowserWindow(BrowserWindowInterface* browser) {
@@ -143,8 +140,9 @@ void MarkActiveTabAsDlpWarnedForScreenCapture(BrowserWindowInterface* browser) {
   content::WebContents* web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  dlp_content_observer->OnConfidentialityChanged(web_contents,
-                                                 kScreenCaptureWarned);
+  dlp_content_observer->OnConfidentialityChanged(
+      web_contents,
+      ScreenCaptureRestriction(policy::DlpRulesManager::Level::kWarn));
 }
 
 // Waits for video record countdown to be finished.
@@ -181,8 +179,10 @@ std::unique_ptr<KeyedService> SetDlpRulesManager(
       std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
           Profile::FromBrowserContext(context));
   ON_CALL(*dlp_rules_manager, GetSourceUrlPattern)
-      .WillByDefault(testing::DoAll(testing::SetArgPointee<3>(kRuleMetadata),
-                                    testing::Return(kSrcPattern)));
+      .WillByDefault(testing::DoAll(
+          testing::SetArgPointee<3>(
+              policy::DlpRulesManager::RuleMetadata(kRuleName, kRuleId)),
+          testing::Return(kSrcPattern)));
   return dlp_rules_manager;
 }
 
@@ -274,8 +274,9 @@ IN_PROC_BROWSER_TEST_F(CaptureModeDlpBrowserTest, DlpReportingVideoCapture) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  dlp_content_observer->OnConfidentialityChanged(web_contents,
-                                                 kScreenCaptureReported);
+  dlp_content_observer->OnConfidentialityChanged(
+      web_contents,
+      ScreenCaptureRestriction(policy::DlpRulesManager::Level::kReport));
 
   ash::CaptureModeTestApi test_api;
 
@@ -327,8 +328,9 @@ IN_PROC_BROWSER_TEST_F(CaptureModeDlpBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  dlp_content_observer->OnConfidentialityChanged(web_contents,
-                                                 kScreenCaptureReported);
+  dlp_content_observer->OnConfidentialityChanged(
+      web_contents,
+      ScreenCaptureRestriction(policy::DlpRulesManager::Level::kReport));
 
   // Set up a waiter to wait for the file to be saved.
   base::RunLoop loop;
