@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -183,6 +184,14 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("stepperA11yLabel",
                              IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL);
+
+  if (base::FeatureList::IsEnabled(
+          switches::kDisableFirstRunAnimationsForTesting)) {
+    CHECK_IS_TEST();
+    source->AddBoolean("disableAnimations", true);
+  } else {
+    source->AddBoolean("disableAnimations", false);
+  }
 
   AddDefaultBrowserStepResources(source);
   AddGeminiStepResources(source, glic::GlicEnabling::IsEnterpriseAccount(

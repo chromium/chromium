@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_components/cr_lottie/cr_lottie.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './feature_showcase_stepper.css.js';
@@ -31,11 +33,69 @@ export class FeatureShowcaseStepperElement extends
     return {
       steps: {type: Array},
       activeIndex: {type: Number},
+      completedAnimationIndex_: {type: Number},
+      useStaticCheck_: {type: Boolean},
     };
   }
 
   accessor steps: string[] = [];
   accessor activeIndex: number = 0;
+
+  private forcedColorsQuery_ = window.matchMedia('(forced-colors: active)');
+
+  /**
+   * Whether to force a static checkmark in place of the animation - either for
+   * testing or for a11y reasons when forced colors mode is active.
+   */
+  protected accessor useStaticCheck_: boolean =
+      loadTimeData.getBoolean('disableAnimations') ||
+      this.forcedColorsQuery_.matches;
+
+  /**
+   * Steps are completed in order, so every index at or below this one is done.
+   * These steps render a static checkmark.
+   */
+  protected accessor completedAnimationIndex_: number = -1;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.forcedColorsQuery_.addEventListener(
+        'change', this.onForcedColorsChanged_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.forcedColorsQuery_.removeEventListener(
+        'change', this.onForcedColorsChanged_);
+  }
+
+  private onForcedColorsChanged_ = (e: MediaQueryListEvent) => {
+    if (e.matches) {
+      this.useStaticCheck_ = true;
+    }
+  };
+
+  /**
+   * Only the step that just completed animates; any earlier one is already
+   * static, so at most one animation runs at a time. Every operand is
+   * monotonic, so a static checkmark never reverts to the animation.
+   */
+  protected shouldShowStaticCheck_(index: number): boolean {
+    return this.useStaticCheck_ || index < this.activeIndex - 1 ||
+        index <= this.completedAnimationIndex_;
+  }
+
+  // TODO(crbug.com/553315776): Proceed to the next view once last animation
+  // finishes.
+  protected onCrLottieCompleted_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    if (Number.isNaN(index)) {
+      return;
+    }
+
+    this.completedAnimationIndex_ =
+        Math.max(this.completedAnimationIndex_, index);
+  }
 }
 
 declare global {

@@ -7,6 +7,19 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+/* The animation's final checkmark is smaller and thinner than 'cr:check' and
+ * sits slightly above its artboard centre, these are arbitrary values to
+ * minimize visual "jump" on the swap on completion. */
+:host {
+  --check-animation-y-offset: 0.55px;
+  --check-icon-size: 16.3px;
+}
+
+:host-context([webui-rounded-icons]) {
+  --check-animation-y-offset: 0.35px;
+  --check-icon-size: 21.5px;
+}
+
 #container {
   align-items: center;
   display: flex;
@@ -28,7 +41,16 @@ img {
 }
 
 cr-icon {
+  --iron-icon-height: var(--check-icon-size);
+  --iron-icon-width: var(--check-icon-size);
   color: var(--color-feature-showcase-stepper-check);
+}
+
+.check-animation {
+  height: 24px;
+  position: relative;
+  top: var(--check-animation-y-offset);
+  width: 24px;
 }
 
 .dot {

@@ -10,6 +10,7 @@ build_webui("build") {
   grd_prefix = "feature_showcase"
 
   static_files = [
+    "animations/showcase_stepper.json",
     "animations/showcase_transition_bottom.json",
     "animations/showcase_transition_bottom_dark.json",
     "animations/showcase_transition_right.json",

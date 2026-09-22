@@ -23,7 +23,18 @@ export function getHtml(this: FeatureShowcaseStepperElement) {
   ` : html`${this.steps.map((_item, index) => html`
     <div class="step">
       ${index < this.activeIndex ? html`
-        <cr-icon icon="cr:check"></cr-icon>
+        ${this.shouldShowStaticCheck_(index) ? html`
+          <cr-icon icon="cr:check"></cr-icon>
+        ` : html`
+          <cr-lottie class="check-animation"
+              data-index="${index}"
+              animation-url="chrome://feature-showcase/animations/showcase_stepper.json"
+              autoplay
+              single-loop
+              dynamic
+              @cr-lottie-completed="${this.onCrLottieCompleted_}">
+          </cr-lottie>
+        `}
       ` : html`
         ${index === this.activeIndex ? html`
           <img src="/images/product-logo.svg" alt="">
