@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_io.h"
@@ -99,7 +99,7 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
 
   AmplitudePeakDetector peak_detector_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

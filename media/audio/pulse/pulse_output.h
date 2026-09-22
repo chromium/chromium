@@ -26,7 +26,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -115,7 +115,7 @@ class PulseAudioOutputStream : public AudioOutputStream {
 
   AmplitudePeakDetector peak_detector_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

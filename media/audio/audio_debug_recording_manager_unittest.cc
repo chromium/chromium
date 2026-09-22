@@ -158,6 +158,7 @@ TEST_F(AudioDebugRecordingManagerTest, RegisterAutomaticUnregisterAtDelete) {
   recorders.push_back(RegisterDebugRecordingSource(params));
   recorders.push_back(RegisterDebugRecordingSource(params));
   EXPECT_EQ(3ul, recorders.size());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager_.sequence_checker_);
   EXPECT_EQ(recorders.size(), manager_.debug_recording_helpers_.size());
 
   while (!recorders.empty()) {
@@ -178,6 +179,7 @@ TEST_F(AudioDebugRecordingManagerTest, RegisterEnableDisable) {
   recorders.push_back(RegisterDebugRecordingSource(params));
   recorders.push_back(RegisterDebugRecordingSource(params));
   EXPECT_EQ(3ul, recorders.size());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager_.sequence_checker_);
   EXPECT_EQ(recorders.size(), manager_.debug_recording_helpers_.size());
 
   for (const auto& recorder : recorders) {
@@ -209,6 +211,7 @@ TEST_F(AudioDebugRecordingManagerTest, EnableRegisterDisable) {
   recorders.push_back(RegisterDebugRecordingSource(params));
   recorders.push_back(RegisterDebugRecordingSource(params));
   EXPECT_EQ(3ul, recorders.size());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager_.sequence_checker_);
   EXPECT_EQ(recorders.size(), manager_.debug_recording_helpers_.size());
 
   for (const auto& recorder : recorders) {

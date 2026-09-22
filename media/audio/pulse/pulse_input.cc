@@ -76,7 +76,7 @@ PulseAudioInputStream::~PulseAudioInputStream() {
 }
 
 AudioInputStream::OpenOutcome PulseAudioInputStream::Open() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -105,7 +105,7 @@ AudioInputStream::OpenOutcome PulseAudioInputStream::Open() {
 }
 
 void PulseAudioInputStream::Start(AudioInputCallback* callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   DCHECK(handle_);
   if (ShouldLog()) {
@@ -136,7 +136,7 @@ void PulseAudioInputStream::Start(AudioInputCallback* callback) {
 }
 
 void PulseAudioInputStream::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -172,7 +172,7 @@ void PulseAudioInputStream::Stop() {
 }
 
 void PulseAudioInputStream::Close() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -264,7 +264,7 @@ double PulseAudioInputStream::GetVolume() {
 }
 
 bool PulseAudioInputStream::IsMuted() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GetSourceInformation(&MuteCallback);
   return muted_;
 }

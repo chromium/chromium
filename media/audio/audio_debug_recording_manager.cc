@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
-#include "base/threading/thread_checker.h"
 
 namespace media {
 

@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_checker.h"
 #include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"

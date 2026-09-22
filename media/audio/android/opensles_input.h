@@ -16,8 +16,9 @@
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/android/opensles_util.h"
 #include "media/audio/audio_io.h"
@@ -76,9 +77,10 @@ class OpenSLESInputStream : public AudioInputStream {
 
   // If OpenSLES reports an error this function handles it and passes it to
   // the attached AudioInputCallback::OnError().
-  void HandleError(SLresult error, Error error_code);
+  void HandleError(SLresult error, Error error_code)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   AmplitudePeakDetector peak_detector_;
 
@@ -88,7 +90,7 @@ class OpenSLESInputStream : public AudioInputStream {
 
   raw_ref<AudioManagerAndroid> audio_manager_;
 
-  raw_ptr<AudioInputCallback> callback_ = nullptr;
+  raw_ptr<AudioInputCallback> callback_ GUARDED_BY(lock_) = nullptr;
 
   // Shared engine interfaces for the app.
   media::ScopedSLObjectItf recorder_object_;

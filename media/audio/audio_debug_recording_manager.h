@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/thread_checker.h"
+#include "base/thread_annotations.h"
 #include "media/audio/audio_debug_recording_helper.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -103,11 +103,13 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
   bool IsDebugRecordingEnabled();
 
   // Recorders, one per source.
-  DebugRecordingHelperMap debug_recording_helpers_;
+  DebugRecordingHelperMap debug_recording_helpers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback for creating debug recording files. When this is not null, debug
   // recording is enabled.
-  CreateWavFileCallback create_file_callback_;
+  CreateWavFileCallback create_file_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

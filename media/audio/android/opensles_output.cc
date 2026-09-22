@@ -65,7 +65,7 @@ OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
 
 OpenSLESOutputStream::~OpenSLESOutputStream() {
   DVLOG(2) << "OpenSLESOutputStream::~OpenSLESOutputStream()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!engine_object_.Get());
   DCHECK(!player_object_.Get());
   DCHECK(!output_mixer_.Get());
@@ -75,7 +75,7 @@ OpenSLESOutputStream::~OpenSLESOutputStream() {
 
 bool OpenSLESOutputStream::Open() {
   DVLOG(2) << "OpenSLESOutputStream::Open()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_object_.Get())
     return false;
 
@@ -90,7 +90,7 @@ bool OpenSLESOutputStream::Open() {
 
 void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   DVLOG(2) << "OpenSLESOutputStream::Start()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   DCHECK(player_);
   DCHECK(simple_buffer_queue_);
@@ -133,7 +133,7 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
 
 void OpenSLESOutputStream::Stop() {
   DVLOG(2) << "OpenSLESOutputStream::Stop()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!started_)
     return;
 
@@ -163,7 +163,7 @@ void OpenSLESOutputStream::Stop() {
 
 void OpenSLESOutputStream::Close() {
   DVLOG(2) << "OpenSLESOutputStream::Close()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Stop the stream if it is still playing.
   Stop();
@@ -192,7 +192,7 @@ void OpenSLESOutputStream::Flush() {}
 
 void OpenSLESOutputStream::SetVolume(double volume) {
   DVLOG(2) << "OpenSLESOutputStream::SetVolume(" << volume << ")";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   double volume_override = 0;
   if (audio_manager_->HasOutputVolumeOverride(&volume_override)) {
@@ -207,18 +207,18 @@ void OpenSLESOutputStream::SetVolume(double volume) {
 }
 
 void OpenSLESOutputStream::GetVolume(double* volume) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   *volume = static_cast<double>(volume_);
 }
 
 void OpenSLESOutputStream::SetMute(bool muted) {
   DVLOG(2) << "OpenSLESOutputStream::SetMute(" << muted << ")";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   muted_ = muted;
 }
 
 bool OpenSLESOutputStream::CreatePlayer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!engine_object_.Get());
   DCHECK(!player_object_.Get());
   DCHECK(!output_mixer_.Get());
@@ -421,7 +421,7 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
 }
 
 void OpenSLESOutputStream::SetupAudioBuffer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_data_[0].empty());
   std::ranges::generate(
       audio_data_, [buffer_size_bytes = buffer_size_bytes_]() {

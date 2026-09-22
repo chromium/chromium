@@ -26,13 +26,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/thread_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/apple/audio_auhal.h"
 #include "media/audio/apple/audio_low_latency_input.h"
@@ -496,7 +497,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
   AudioPowerObserver& operator=(const AudioPowerObserver&) = delete;
 
   ~AudioPowerObserver() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!is_monitoring_) {
       return;
     }
@@ -504,33 +505,33 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
   }
 
   bool IsSuspending() const {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_suspending_;
   }
 
   size_t num_resume_notifications() const { return num_resume_notifications_; }
 
   bool ShouldDeferStreamStart() const {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Start() should be deferred if the system is in the middle of a suspend or
     // has recently started the process of resuming.
     return is_suspending_ || base::TimeTicks::Now() < earliest_start_time_;
   }
 
   bool IsOnBatteryPower() const {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return base::PowerMonitor::GetInstance()->IsOnBatteryPower();
   }
 
  private:
   void OnSuspend() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DVLOG(1) << "AudioPowerObserver::" << __FUNCTION__;
     is_suspending_ = true;
   }
 
   void OnResume() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DVLOG(1) << "AudioPowerObserver::" << __FUNCTION__;
     ++num_resume_notifications_;
     is_suspending_ = false;
@@ -539,10 +540,10 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
         base::Seconds(std::to_underlying(kStartDelayInSecsForPowerEvents));
   }
 
-  bool is_suspending_;
+  bool is_suspending_ GUARDED_BY_CONTEXT(sequence_checker_);
   const bool is_monitoring_;
-  base::TimeTicks earliest_start_time_;
-  base::ThreadChecker thread_checker_;
+  base::TimeTicks earliest_start_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   size_t num_resume_notifications_;
 };
 

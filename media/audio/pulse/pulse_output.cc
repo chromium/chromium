@@ -108,7 +108,7 @@ PulseAudioOutputStream::~PulseAudioOutputStream() {
 }
 
 bool PulseAudioOutputStream::Open() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -165,7 +165,7 @@ void PulseAudioOutputStream::Reset() {
 }
 
 void PulseAudioOutputStream::Close() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -295,7 +295,7 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
 }
 
 void PulseAudioOutputStream::Start(AudioSourceCallback* callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
   CHECK(pa_stream_);
   if (ShouldLog()) {
@@ -323,7 +323,7 @@ void PulseAudioOutputStream::Start(AudioSourceCallback* callback) {
 }
 
 void PulseAudioOutputStream::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldLog()) {
     SendLogMessage(base::StringPrintf("%s()", __func__));
   }
@@ -359,7 +359,7 @@ void PulseAudioOutputStream::Stop() {
 }
 
 void PulseAudioOutputStream::SetVolume(double volume) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Waiting for the main loop lock will ensure outstanding callbacks have
   // completed and |volume_| is not accessed from them.
@@ -368,7 +368,7 @@ void PulseAudioOutputStream::SetVolume(double volume) {
 }
 
 void PulseAudioOutputStream::GetVolume(double* volume) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   *volume = volume_;
 }
