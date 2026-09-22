@@ -1,5 +1,8 @@
 oshima@chromium.org
 
+# graphics/occlusion
+zoraiznaeem@chromium.org
+
 per-file *x11.cc=file://ui/ozone/platform/x11/OWNERS
 per-file *x11.h=file://ui/ozone/platform/x11/OWNERS
 per-file *occlusion*=fdoray@chromium.org
