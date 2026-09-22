@@ -13,8 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
+class GURL;
 class Profile;
 class TabAndroid;
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace glic {
 
@@ -59,6 +64,10 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
                               TabAndroid* tab,
                               std::string glic_conversation_id,
                               int32_t source);
+  void ShareContextImage(JNIEnv* env,
+                         TabAndroid* tab,
+                         content::RenderFrameHost* frame,
+                         const GURL& src_url);
 
   void ShowExperimentalOptInDialogForTesting(JNIEnv* env, TabAndroid* tab);
 

@@ -207,6 +207,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGlicAndroidTablet,
     &features::kGlicBackgroundActuation,
     &features::kGlicBackgroundTriggering,
+    &features::kGlicShareImage,
     &features::kHttpsFirstBalancedMode,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
     &features::kMigrateManagementPageToWebUIOnMobile,

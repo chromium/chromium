@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.url.GURL;
 
 /** Handler for GLIC keyed service actions. */
 @NullMarked
@@ -136,6 +138,31 @@ public final class GlicKeyedServiceHandler {
         }
 
         service.invokeWithConversation(tab, glicConversationId, invocationSource);
+        return true;
+    }
+
+    /**
+     * Shares the image at {@code srcUrl} with the GLIC service, opening the panel with the image
+     * attached as context (no auto-submit).
+     *
+     * @param profile The current profile.
+     * @param tab The {@link Tab} to target.
+     * @param renderFrameHost The {@link RenderFrameHost} that hosts the image.
+     * @param srcUrl The source URL of the image.
+     * @return true if the service was successfully invoked.
+     */
+    public static boolean shareContextImage(
+            Profile profile, Tab tab, @Nullable RenderFrameHost renderFrameHost, GURL srcUrl) {
+        if (renderFrameHost == null) {
+            return false;
+        }
+
+        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+        if (service == null) {
+            return false;
+        }
+
+        service.shareContextImage(tab, renderFrameHost, srcUrl);
         return true;
     }
 }

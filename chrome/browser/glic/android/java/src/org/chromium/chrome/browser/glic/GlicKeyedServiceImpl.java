@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,6 +151,13 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
 
         GlicKeyedServiceImplJni.get()
                 .showExperimentalOptInDialogForTesting(mNativePtr, tab); // IN-TEST
+    }
+
+    @Override
+    public void shareContextImage(Tab tab, @Nullable RenderFrameHost renderFrameHost, GURL srcUrl) {
+        if (mNativePtr == 0 || renderFrameHost == null) return;
+
+        GlicKeyedServiceImplJni.get().shareContextImage(mNativePtr, tab, renderFrameHost, srcUrl);
     }
 
     @Override
@@ -310,6 +319,12 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 @JniType("TabAndroid*") @Nullable Tab tab,
                 @JniType("std::string") String glicConversationId,
                 @GlicInvocationSource int source);
+
+        void shareContextImage(
+                long nativeGlicKeyedServiceAndroid,
+                @JniType("TabAndroid*") Tab tab,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost renderFrameHost,
+                @JniType("GURL") GURL srcUrl);
 
         boolean isPanelShowingForBrowser(long nativeGlicKeyedServiceAndroid, long browserWindowPtr);
 

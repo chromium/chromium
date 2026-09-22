@@ -258,6 +258,7 @@ source_set("android") {
     "//skia",
     "//third_party/jni_zero",
     "//ui/android",
+    "//url",
   ]
 }
 

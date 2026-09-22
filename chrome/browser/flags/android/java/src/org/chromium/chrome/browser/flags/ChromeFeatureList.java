@@ -617,6 +617,7 @@ public abstract class ChromeFeatureList {
     public static final String GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC =
             "GlicBackgroundActuationTabGroupSync";
     public static final String GLIC_BACKGROUND_TRIGGERING = "GlicBackgroundTriggering";
+    public static final String GLIC_SHARE_IMAGE = "GlicShareImage";
     public static final String GMSCORE_BIND_SERVICE_OPTIMIZATION = "GmsCoreBindServiceOptimization";
     public static final String GMS_CORE_ULP = "GmsCoreUlp";
     public static final String GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE =

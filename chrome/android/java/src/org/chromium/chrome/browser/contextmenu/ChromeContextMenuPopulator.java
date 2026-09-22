@@ -145,6 +145,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_LINK = "show_on_link";
     @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_PAGE = "show_on_page";
 
+    @VisibleForTesting
+    static final String PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE = "show_on_image_mobile";
+
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
     private final List<CustomContentAction> mCustomContentActions;
@@ -269,6 +272,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.TRANSLATE,
             Action.CREATE_QR_CODE,
             Action.ASK_GEMINI,
+            Action.ASK_GEMINI_IMAGE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -332,7 +336,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int TRANSLATE = 57;
             int CREATE_QR_CODE = 58;
             int ASK_GEMINI = 59;
-            int NUM_ENTRIES = 60;
+            int ASK_GEMINI_IMAGE = 60;
+            int NUM_ENTRIES = 61;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -506,35 +511,41 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 mContext, getProfile(), mItemDelegate.getWebContents());
     }
 
-    @VisibleForTesting
-    boolean shouldShowAskGeminiForLink() {
-        // Enable on desktop if side panel is enabled, and enable on mobile if
-        // bottom sheet is enabled.
+    private boolean isGlicContextMenuEligible(String paramName, boolean defaultValue) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
-                        PARAM_SHOW_ASK_GEMINI_ON_LINK,
-                        true)
-                && (AndroidSidePanelEnabledFn.isEnabled()
-                        || TabBottomSheetUtils.isTabBottomSheetEnabled())
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, paramName, defaultValue)
                 && !DeviceInfo.isAutomotive()
                 && !mItemDelegate.isIncognito()
                 && GlicEnabling.isEnabledForProfile(getProfile());
     }
 
     @VisibleForTesting
+    boolean shouldShowAskGeminiForLink() {
+        // Enable on desktop if side panel is enabled, and enable on mobile if
+        // bottom sheet is enabled.
+        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_LINK, true)
+                && (AndroidSidePanelEnabledFn.isEnabled()
+                        || TabBottomSheetUtils.isTabBottomSheetEnabled());
+    }
+
+    @VisibleForTesting
     boolean shouldShowAskGeminiForPage() {
         // The empty-space (page) entry point is desktop Android only, where
         // Glic is presented in the side panel.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
-                        PARAM_SHOW_ASK_GEMINI_ON_PAGE,
-                        false)
-                && AndroidSidePanelEnabledFn.isEnabled()
-                && !DeviceInfo.isAutomotive()
-                && !mItemDelegate.isIncognito()
-                && GlicEnabling.isEnabledForProfile(getProfile());
+        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_PAGE, false)
+                && AndroidSidePanelEnabledFn.isEnabled();
+    }
+
+    @VisibleForTesting
+    boolean shouldShowAskGeminiForImage() {
+        // The mobile image "Ask Gemini" entry point is mobile-only,
+        // where Glic is presented in the bottom sheet. It requires the native
+        // GlicShareImage feature, otherwise invoking it would crash (the
+        // native share-image handler is gated on that feature).
+        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE, false)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_SHARE_IMAGE)
+                && TabBottomSheetUtils.isTabBottomSheetEnabled();
     }
 
     @Override
@@ -872,6 +883,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
             if (enableShareFromContextMenu()) {
                 imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
+            }
+
+            if (shouldShowAskGeminiForImage()) {
+                imageGroup.add(createListItem(Item.ASK_GEMINI_IMAGE));
             }
 
             groupedItems.add(imageGroup);
@@ -1459,6 +1474,16 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (askGeminiTab != null) {
                 GlicKeyedServiceHandler.invoke(
                         getProfile(), askGeminiTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+            }
+        } else if (itemId == R.id.contextmenu_ask_gemini_image) {
+            recordContextMenuSelection(ContextMenuUma.Action.ASK_GEMINI_IMAGE);
+            Tab askGeminiImageTab = getTab();
+            if (askGeminiImageTab != null) {
+                GlicKeyedServiceHandler.shareContextImage(
+                        getProfile(),
+                        askGeminiImageTab,
+                        mNativeDelegate.getRenderFrameHost(),
+                        mParams.getSrcUrl());
             }
         } else {
             onTabBackedItemSelected(itemId);

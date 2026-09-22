@@ -105,6 +105,7 @@ found in the LICENSE file.
 
     <!--Image Group -->
     <!-- go/keep-sorted start -->
+    <item type="id" name="contextmenu_ask_gemini_image" />
     <item type="id" name="contextmenu_copy_image" />
     <item type="id" name="contextmenu_direct_share_image" />
     <item type="id" name="contextmenu_load_original_image" />

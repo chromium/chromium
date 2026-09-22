@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -168,6 +170,16 @@ public interface GlicKeyedService {
      * @param tab The target {@link Tab}.
      */
     void showExperimentalOptInDialogForTesting(Tab tab); // IN-TEST
+
+    /**
+     * Shares the image at {@code srcUrl} (hosted in {@code renderFrameHost}) with Glic, opening the
+     * panel with the image attached as context (no auto-submit).
+     *
+     * @param tab The {@link Tab} to target.
+     * @param renderFrameHost The {@link RenderFrameHost} that hosts the image.
+     * @param srcUrl The source URL of the image.
+     */
+    void shareContextImage(Tab tab, @Nullable RenderFrameHost renderFrameHost, GURL srcUrl);
 
     /** Observer for global show/hide events. */
     interface GlobalShowHideObserver {

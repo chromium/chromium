@@ -87,7 +87,8 @@ class ChromeContextMenuItem {
         Item.SEND_TAB_TO_SELF,
         Item.TRANSLATE,
         Item.CREATE_QR_CODE,
-        Item.ASK_GEMINI
+        Item.ASK_GEMINI,
+        Item.ASK_GEMINI_IMAGE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
@@ -156,8 +157,9 @@ class ChromeContextMenuItem {
         int TRANSLATE = 51;
         int CREATE_QR_CODE = 52;
         int ASK_GEMINI = 53;
+        int ASK_GEMINI_IMAGE = 54;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 54;
+        int NUM_ENTRIES = 55;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -216,6 +218,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_translate, // Item.TRANSLATE
         R.id.contextmenu_create_qr_code, // Item.CREATE_QR_CODE
         R.id.contextmenu_ask_gemini, // Item.ASK_GEMINI
+        R.id.contextmenu_ask_gemini_image, // Item.ASK_GEMINI_IMAGE
     };
 
     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
@@ -274,6 +277,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_translate, // Item.TRANSLATE
         R.string.contextmenu_create_qr_code, // Item.CREATE_QR_CODE
         R.string.glic_button_entrypoint_ask_gemini_label, // Item.ASK_GEMINI
+        R.string.glic_button_entrypoint_ask_gemini_label, // Item.ASK_GEMINI_IMAGE
     };
 
     /**

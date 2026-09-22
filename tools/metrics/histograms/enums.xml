@@ -2496,6 +2496,7 @@ Called by update_net_error_codes.py.-->
   <int value="57" label="Translate page"/>
   <int value="58" label="Create QR code for this page"/>
   <int value="59" label="Ask Gemini"/>
+  <int value="60" label="Ask Gemini (Image)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->
