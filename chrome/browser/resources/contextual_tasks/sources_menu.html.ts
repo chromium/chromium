@@ -9,7 +9,7 @@ import type {SourcesMenuElement} from './sources_menu.js';
 export function getHtml(this: SourcesMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <cr-action-menu id="menu">
+    <cr-action-menu id="menu" @open-changed="${this.onOpenChanged_}">
       <div class="header">$i18n{sourcesMenuTitle}</div>
       ${this.contextInfos.map((item, index) => html`
         ${item.tab ? html`

@@ -17,6 +17,66 @@ export interface UnboundedDialog extends HTMLDialogElement {
   hideUnboundedElement?: () => Promise<void>;
 }
 
+const toggleListeners = new WeakMap<UnboundedDialog, (event: Event) => void>();
+
+interface MenuWithDialog {
+  getDialog(): HTMLDialogElement;
+  close(): void;
+}
+
+export function showUnboundedMenu(
+    menu: MenuWithDialog, enabled: boolean, menuName: string) {
+  const dialogEl = menu.getDialog() as UnboundedDialog;
+  if (enabled && dialogEl.showUnboundedElement) {
+    const existingListener = toggleListeners.get(dialogEl);
+    if (existingListener) {
+      dialogEl.removeEventListener('beforetoggle', existingListener);
+    }
+
+    dialogEl.setAttribute('unbounded', '');
+
+    const onUnboundedToggle = (event: Event) => {
+      const toggleEvent = event as ToggleEvent;
+      if (toggleEvent.newState === 'closed') {
+        menu.close();
+      }
+    };
+    toggleListeners.set(dialogEl, onUnboundedToggle);
+    dialogEl.addEventListener('beforetoggle', onUnboundedToggle);
+
+    dialogEl.showUnboundedElement().catch((err: unknown) => {
+      console.warn(`Failed to show unbounded ${menuName} menu:`, err);
+      if (toggleListeners.get(dialogEl) === onUnboundedToggle) {
+        dialogEl.removeAttribute('unbounded');
+        dialogEl.removeEventListener('beforetoggle', onUnboundedToggle);
+        toggleListeners.delete(dialogEl);
+      }
+    });
+  }
+}
+
+export function hideUnboundedMenu(
+    menu: MenuWithDialog, enabled: boolean, isOpen: boolean,
+    menuName: string) {
+  const dialogEl = menu.getDialog() as UnboundedDialog;
+  if (!isOpen && dialogEl) {
+    const listener = toggleListeners.get(dialogEl);
+    if (listener) {
+      dialogEl.removeEventListener('beforetoggle', listener);
+      toggleListeners.delete(dialogEl);
+    }
+    const wasUnbounded = dialogEl.hasAttribute('unbounded');
+    if (wasUnbounded) {
+      dialogEl.removeAttribute('unbounded');
+      if (enabled && dialogEl.hideUnboundedElement) {
+        dialogEl.hideUnboundedElement().catch((err: unknown) => {
+          console.warn(`Failed to hide unbounded ${menuName} menu:`, err);
+        });
+      }
+    }
+  }
+}
+
 export function isGoogleOrigin(origin: string): boolean {
   // <if expr="not is_official_build">
   if (origin === 'http://localhost' || origin.startsWith('http://localhost:') ||
