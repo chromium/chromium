@@ -43,6 +43,7 @@
 #include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
@@ -142,8 +143,12 @@ bool IsGuestModeActive() {
 
 // Get the euicc path for reset euicc operation. Return std::nullopt if the
 // reset euicc is not allowed, i.e: the user is in guest mode, admin enables
-// restrict cellular network policy or a managed eSIM profile already installed.
+// restrict cellular network policy or a managed eSIM profile already installed
 std::optional<dbus::ObjectPath> GetEuiccResetPath() {
+  if (!NetworkHandler::IsInitialized()) {
+    return std::nullopt;
+  }
+
   if (IsGuestModeActive()) {
     NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
     return std::nullopt;
@@ -166,6 +171,7 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
         << "Couldn't reset EUICC if admin restricts cellular networks.";
     return std::nullopt;
   }
+
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
   if (!network_state_handler) {
@@ -177,13 +183,53 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
                                               /*visible_only=*/false,
                                               /*limit=*/0, &state_list);
 
+  HermesEuiccClient* client = HermesEuiccClient::Get();
   HermesEuiccClient::Properties* euicc_properties =
-      HermesEuiccClient::Get()->GetProperties(*euicc_path);
+      client ? client->GetProperties(*euicc_path) : nullptr;
+
+  if (!euicc_properties || euicc_properties->eid().value().empty()) {
+    NET_LOG(ERROR)
+        << "EUICC properties or EID not available. Blocking EUICC reset.";
+    return std::nullopt;
+  }
+
   const std::string& eid = euicc_properties->eid().value();
+
   for (const NetworkState* network : state_list) {
     if (network->eid() == eid && network->IsManagedByPolicy()) {
       NET_LOG(ERROR)
-          << "Couldn't reset EUICC if a managed eSIM profile is installed.";
+          << "Couldn't reset EUICC: A managed eSIM profile is installed.";
+      return std::nullopt;
+    }
+  }
+
+  CellularESimProfileHandler* esim_profile_handler =
+      NetworkHandler::Get()->cellular_esim_profile_handler();
+  ManagedCellularPrefHandler* managed_pref_handler =
+      NetworkHandler::Get()->managed_cellular_pref_handler();
+
+  // Fail-Closed: If handlers aren't ready yet (e.g. during initialization or
+  // modem reset) or profiles are not refreshed, we cannot verify management
+  // status. Block the reset.
+  if (!esim_profile_handler || !managed_pref_handler ||
+      !esim_profile_handler->HasRefreshedProfilesForEuicc(eid)) {
+    NET_LOG(ERROR) << "Cellular handlers not ready or profiles not refreshed. "
+                   << "Blocking EUICC reset.";
+    return std::nullopt;
+  }
+
+  // Get the list of all eSIM profiles known to the device.
+  std::vector<CellularESimProfile> esim_profiles =
+      esim_profile_handler->GetESimProfiles();
+
+  // Check the persistent preferences to see if any profiles on this eUICC
+  // are managed.
+  for (const auto& profile : esim_profiles) {
+    // Only check profiles that physically reside on the eUICC being reset.
+    if (profile.eid() == eid &&
+        managed_pref_handler->IsESimManaged(profile.iccid())) {
+      NET_LOG(ERROR)
+          << "Couldn't reset EUICC: A managed eSIM profile is installed.";
       return std::nullopt;
     }
   }
@@ -463,6 +509,12 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                                         /*visible_only=*/false,
                                         /*limit=*/0, &state_list);
 
+    ManagedCellularPrefHandler* managed_pref_handler =
+        NetworkHandler::Get()->managed_cellular_pref_handler();
+    if (!managed_pref_handler) {
+      return;
+    }
+
     // Use CellularESimProfileHandler (which wraps Hermes) as the source of
     // truth for active profiles, as Shill's connection state drops when the
     // network is not visible.
@@ -478,6 +530,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
               << "Couldn't disable active eSIM profile; managed by policy.";
           return;
         }
+      }
+      if (managed_pref_handler->IsESimManaged(profile.iccid())) {
+        NET_LOG(ERROR)
+            << "Couldn't disable active eSIM profile; managed by policy.";
+        return;
       }
     }
 
