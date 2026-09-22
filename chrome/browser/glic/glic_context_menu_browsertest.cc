@@ -978,9 +978,9 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
                        GuestContextMenuReloadReloadsContents) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
-  content::WebContents* initial_guest_contents =
-      instance->host().web_client_contents();
-  ASSERT_TRUE(initial_guest_contents);
+  ASSERT_TRUE(instance->host().web_client_contents());
+  base::WeakPtr<content::WebContents> initial_guest_contents =
+      instance->host().web_client_contents()->GetWeakPtr();
 
   content::ContextMenuParams params;
   params.page_url = initial_guest_contents->GetVisibleURL();
@@ -996,7 +996,8 @@ IN_PROC_BROWSER_TEST_P(GlicInternalContextMenuBrowserTest,
   ASSERT_OK(connection_observer.WaitForConnected());
   EXPECT_OK(
       WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
-  EXPECT_NE(initial_guest_contents, instance->host().web_client_contents());
+  EXPECT_NE(initial_guest_contents.get(),
+            instance->host().web_client_contents());
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
