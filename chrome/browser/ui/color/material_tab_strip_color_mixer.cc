@@ -54,6 +54,7 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
         ui::SetAlpha(ui::GetResultingPaintColor(ui::kColorSysStateHeaderSelect,
                                                 ui::kColorSysHeaderInactive),
                      kSelectedTabOpacity)};
+    mixer[kColorTabStripScrollButtonBackground] = {SK_ColorTRANSPARENT};
   } else {
     mixer[kColorTabBackgroundSelectedFrameActive] = {
         ui::GetResultingPaintColor(ui::kColorSysStateHeaderSelect,
@@ -61,6 +62,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
     mixer[kColorTabBackgroundSelectedFrameInactive] = {
         ui::GetResultingPaintColor(ui::kColorSysStateHeaderSelect,
                                    kColorTabBackgroundInactiveFrameInactive)};
+    mixer[kColorTabStripScrollButtonBackground] = {
+        kColorTabBackgroundInactiveFrameActive};
   }
   mixer[kColorTabBackgroundSelectedHoverFrameActive] = {
       ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
@@ -100,4 +103,6 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfacePrimary};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       ui::kColorSysOnSurfacePrimaryInactive};
+
+  mixer[kColorTabStripScrollButtonIcon] = {ui::kColorSysOnSurfaceSecondary};
 }

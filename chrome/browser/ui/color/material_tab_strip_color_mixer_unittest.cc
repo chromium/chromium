@@ -23,6 +23,8 @@ TEST(MaterialTabStripColorMixerTest, DefaultFrameStyleDoesNotOverride) {
   // In standard non-glass frame, inactive tab background is not transparent.
   EXPECT_NE(provider.GetColor(kColorTabBackgroundInactiveFrameActive),
             SK_ColorTRANSPARENT);
+  EXPECT_NE(provider.GetColor(kColorTabStripScrollButtonBackground),
+            SK_ColorTRANSPARENT);
 }
 
 TEST(MaterialTabStripColorMixerTest, GlassFrameStyleOverridesColors) {
@@ -40,6 +42,10 @@ TEST(MaterialTabStripColorMixerTest, GlassFrameStyleOverridesColors) {
   EXPECT_EQ(
       SkColorGetA(provider.GetColor(kColorTabBackgroundSelectedFrameInactive)),
       kExpectedAlpha);
+
+  // In glass frame, scroll button background is transparent.
+  EXPECT_EQ(provider.GetColor(kColorTabStripScrollButtonBackground),
+            SK_ColorTRANSPARENT);
 }
 
 }  // namespace
