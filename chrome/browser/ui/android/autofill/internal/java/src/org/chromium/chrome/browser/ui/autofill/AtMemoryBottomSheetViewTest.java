@@ -219,6 +219,9 @@ public class AtMemoryBottomSheetViewTest {
 
         View noticeOkButton = noticeView.findViewById(R.id.notice_ok_button);
         assertNotNull(noticeOkButton);
+        assertEquals(
+                mContext.getString(R.string.at_memory_notice_ok_button_a11y_label),
+                noticeOkButton.getContentDescription());
         noticeOkButton.performClick();
         verify(okClicked).run();
     }

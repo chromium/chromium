@@ -45,6 +45,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:text="@string/at_memory_notice_ok_button"
+        android:contentDescription=
+            "@string/at_memory_notice_ok_button_a11y_label"
         android:textAppearance=
             "@style/TextAppearance.TextMediumThick.Accent1"
         android:background="?attr/selectableItemBackgroundBorderless"
