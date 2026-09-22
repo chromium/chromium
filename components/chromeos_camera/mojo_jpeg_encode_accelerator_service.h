@@ -14,6 +14,7 @@
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace chromeos_camera {
 
@@ -65,13 +66,13 @@ class MojoJpegEncodeAcceleratorService
 
   // TODO(wtlee): To be deprecated. (crbug.com/944705)
   void EncodeWithFD(int32_t task_id,
-                    mojo::ScopedHandle input_fd,
+                    mojo::PlatformHandle input_fd,
                     uint32_t input_buffer_size,
                     int32_t coded_size_width,
                     int32_t coded_size_height,
-                    mojo::ScopedHandle exif_fd,
+                    mojo::PlatformHandle exif_fd,
                     uint32_t exif_buffer_size,
-                    mojo::ScopedHandle output_fd,
+                    mojo::PlatformHandle output_fd,
                     uint32_t output_buffer_size,
                     EncodeWithFDCallback callback) override;
 
@@ -80,7 +81,7 @@ class MojoJpegEncodeAcceleratorService
       uint32_t input_format,
       std::vector<chromeos_camera::mojom::DmaBufPlanePtr> input_planes,
       std::vector<chromeos_camera::mojom::DmaBufPlanePtr> output_planes,
-      mojo::ScopedHandle exif_handle,
+      mojo::PlatformHandle exif_handle,
       uint32_t exif_buffer_size,
       int32_t coded_size_width,
       int32_t coded_size_height,

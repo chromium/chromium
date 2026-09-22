@@ -17,6 +17,7 @@
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace chromeos_camera {
 
@@ -67,7 +68,7 @@ class MojoMjpegDecodeAcceleratorService
               uint32_t output_buffer_size,
               DecodeCallback callback) override;
   void DecodeWithDmaBuf(int32_t task_id,
-                        mojo::ScopedHandle src_dmabuf_fd,
+                        mojo::PlatformHandle src_handle,
                         uint32_t src_size,
                         uint32_t src_offset,
                         mojom::DmaBufVideoFramePtr dst_frame,

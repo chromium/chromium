@@ -90,15 +90,15 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
                void(cros::mojom::Camera3CaptureRequestPtr& request,
                     ProcessCaptureRequestCallback& callback));
 
-  void Dump(mojo::ScopedHandle fd) override { DoDump(fd); }
-  MOCK_METHOD1(DoDump, void(mojo::ScopedHandle& fd));
+  void Dump(mojo::PlatformHandle fd) override { DoDump(fd); }
+  MOCK_METHOD1(DoDump, void(mojo::PlatformHandle& fd));
 
   void Flush(FlushCallback callback) override { DoFlush(callback); }
   MOCK_METHOD1(DoFlush, void(FlushCallback& callback));
 
   void RegisterBuffer(uint64_t buffer_id,
                       cros::mojom::Camera3DeviceOps::BufferType type,
-                      std::vector<mojo::ScopedHandle> fds,
+                      std::vector<mojo::PlatformHandle> fds,
                       uint32_t drm_format,
                       cros::mojom::HalPixelFormat hal_pixel_format,
                       uint32_t width,

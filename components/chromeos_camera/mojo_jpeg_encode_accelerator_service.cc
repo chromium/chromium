@@ -25,7 +25,7 @@
 #include "components/chromeos_camera/dmabuf_utils.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 
@@ -153,13 +153,13 @@ void MojoJpegEncodeAcceleratorService::OnInitialize(
 
 void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     int32_t task_id,
-    mojo::ScopedHandle input_handle,
+    mojo::PlatformHandle input_handle,
     uint32_t input_buffer_size,
     int32_t coded_size_width,
     int32_t coded_size_height,
-    mojo::ScopedHandle exif_handle,
+    mojo::PlatformHandle exif_handle,
     uint32_t exif_buffer_size,
-    mojo::ScopedHandle output_handle,
+    mojo::PlatformHandle output_handle,
     uint32_t output_buffer_size,
     EncodeWithFDCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -171,11 +171,6 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     return;
   }
 
-  base::ScopedPlatformFile input_fd;
-  base::ScopedPlatformFile exif_fd;
-  base::ScopedPlatformFile output_fd;
-  MojoResult result;
-
   if (coded_size_width <= 0 || coded_size_height <= 0) {
     std::move(callback).Run(
         task_id, 0,
@@ -183,29 +178,17 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     return;
   }
 
-  result = mojo::UnwrapPlatformFile(std::move(input_handle), &input_fd);
-  if (result != MOJO_RESULT_OK) {
+  if (!input_handle.is_valid() || !exif_handle.is_valid() ||
+      !output_handle.is_valid()) {
     std::move(callback).Run(
         task_id, 0,
         ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
     return;
   }
 
-  result = mojo::UnwrapPlatformFile(std::move(exif_handle), &exif_fd);
-  if (result != MOJO_RESULT_OK) {
-    std::move(callback).Run(
-        task_id, 0,
-        ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
-    return;
-  }
-
-  result = mojo::UnwrapPlatformFile(std::move(output_handle), &output_fd);
-  if (result != MOJO_RESULT_OK) {
-    std::move(callback).Run(
-        task_id, 0,
-        ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
-    return;
-  }
+  base::ScopedPlatformFile input_fd = input_handle.TakeFD();
+  base::ScopedPlatformFile exif_fd = exif_handle.TakeFD();
+  base::ScopedPlatformFile output_fd = output_handle.TakeFD();
   // TODO(b/3832599): Make |input_region| read-only.
   base::WritableSharedMemoryRegion writable_input_region =
       base::WritableSharedMemoryRegion::Deserialize(
@@ -289,7 +272,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     uint32_t input_format,
     std::vector<chromeos_camera::mojom::DmaBufPlanePtr> input_planes,
     std::vector<chromeos_camera::mojom::DmaBufPlanePtr> output_planes,
-    mojo::ScopedHandle exif_handle,
+    mojo::PlatformHandle exif_handle,
     uint32_t exif_buffer_size,
     int32_t coded_size_width,
     int32_t coded_size_height,
@@ -316,13 +299,12 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     return;
   }
 
-  base::ScopedPlatformFile exif_fd;
-  auto result = mojo::UnwrapPlatformFile(std::move(exif_handle), &exif_fd);
-  if (result != MOJO_RESULT_OK) {
+  if (!exif_handle.is_valid()) {
     std::move(callback).Run(
         0, ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
     return;
   }
+  base::ScopedPlatformFile exif_fd = exif_handle.TakeFD();
 
   auto input_video_frame = ConstructVideoFrame(
       std::move(input_planes), ToVideoPixelFormat(input_format), coded_size,

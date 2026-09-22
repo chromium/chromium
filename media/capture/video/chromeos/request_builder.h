@@ -10,15 +10,12 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace media {
-
-class CameraDeviceContext;
 
 // BufferInfo is used to store information about the buffer that is needed when
 // building buffers.
@@ -38,11 +35,10 @@ class CAPTURE_EXPORT RequestBuilder {
   using RequestBufferCallback =
       base::RepeatingCallback<std::optional<BufferInfo>(StreamType)>;
 
-  RequestBuilder(CameraDeviceContext* device_context,
-                 // Callback to request buffer from StreamBufferManager. Having
-                 // this callback, we do not need to include StreamBufferManager
-                 // when requesting buffer.
-                 RequestBufferCallback request_buffer_callback,
+  // `request_buffer_callback` is used to request a buffer from
+  // StreamBufferManager. Having this callback, we do not need to include
+  // StreamBufferManager when requesting buffer.
+  RequestBuilder(RequestBufferCallback request_buffer_callback,
                  bool use_buffer_management_apis);
   ~RequestBuilder();
 
@@ -61,8 +57,6 @@ class CAPTURE_EXPORT RequestBuilder {
   cros::mojom::CameraBufferHandlePtr CreateCameraBufferHandle(
       StreamType stream_type,
       BufferInfo buffer_info);
-
-  raw_ptr<CameraDeviceContext> device_context_;
 
   // The frame number. Increased by one for each capture request sent.
   uint32_t frame_number_;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Next min version: 2
-
 module chromeos_camera.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
@@ -11,7 +10,7 @@ import "media/mojo/mojom/media_types.mojom";
 // This structure defines a DMA-buf buffer plane. |fd_handle| holds the DMA-buf
 // file descriptor. The layout is specified by |stride|, |offset| and |size|.
 struct DmaBufPlane {
-  handle fd_handle;
+  handle<platform> fd_handle;
   int32 stride;
   uint32 offset;
   uint32 size;
@@ -27,6 +26,10 @@ struct DmaBufVideoFrame {
   uint32 coded_width;
   uint32 coded_height;
   array<DmaBufPlane> planes;
-  [MinVersion=1] bool has_modifier;
-  [MinVersion=1] uint64 modifier;
+
+  [MinVersion=1]
+  bool has_modifier;
+
+  [MinVersion=1]
+  uint64 modifier;
 };

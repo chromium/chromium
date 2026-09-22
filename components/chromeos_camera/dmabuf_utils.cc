@@ -16,7 +16,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/buffer_validation.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos_camera {
@@ -74,8 +74,7 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrame(
   native_pixmap_handle.planes.resize(num_planes);
   native_pixmap_handle.modifier = modifier;
   for (size_t i = 0; i < num_planes; ++i) {
-    mojo::PlatformHandle handle =
-        mojo::UnwrapPlatformHandle(std::move(dma_buf_planes[i]->fd_handle));
+    mojo::PlatformHandle handle = std::move(dma_buf_planes[i]->fd_handle);
     if (!handle.is_valid()) {
       DLOG(ERROR) << "Invalid DMA buf file descriptor";
       return nullptr;

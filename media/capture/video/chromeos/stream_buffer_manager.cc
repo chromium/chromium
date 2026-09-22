@@ -22,7 +22,6 @@
 #include "media/capture/video/chromeos/request_manager.h"
 #include "media/capture/video/video_capture_buffer_pool_constants.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -520,15 +519,8 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
     size_t num_planes = native_pixmap_handle.planes.size();
     std::vector<StreamCaptureInterface::Plane> planes(num_planes);
     for (size_t i = 0; i < num_planes; ++i) {
-      mojo::ScopedHandle mojo_fd = mojo::WrapPlatformHandle(
-          mojo::PlatformHandle(std::move(native_pixmap_handle.planes[i].fd)));
-      if (!mojo_fd.is_valid()) {
-        device_context_->SetErrorState(
-            media::VideoCaptureError::
-                kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle,
-            FROM_HERE, "Failed to wrap gpu memory handle");
-      }
-      buffer_handle->fds.push_back(std::move(mojo_fd));
+      buffer_handle->fds.emplace_back(
+          std::move(native_pixmap_handle.planes[i].fd));
       buffer_handle->strides.push_back(native_pixmap_handle.planes[i].stride);
       buffer_handle->offsets.push_back(native_pixmap_handle.planes[i].offset);
     }

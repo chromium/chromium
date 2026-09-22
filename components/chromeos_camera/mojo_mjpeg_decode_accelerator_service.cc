@@ -273,7 +273,7 @@ void MojoMjpegDecodeAcceleratorService::Decode(
 
 void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBuf(
     int32_t task_id,
-    mojo::ScopedHandle src_dmabuf_fd,
+    mojo::PlatformHandle src_handle,
     uint32_t src_size,
     uint32_t src_offset,
     mojom::DmaBufVideoFramePtr dst_frame,
@@ -287,8 +287,6 @@ void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBuf(
         ::chromeos_camera::MjpegDecodeAccelerator::Error::INVALID_ARGUMENT);
     return;
   }
-  mojo::PlatformHandle src_handle =
-      mojo::UnwrapPlatformHandle(std::move(src_dmabuf_fd));
   if (!src_handle.is_valid()) {
     LOG(ERROR) << "Invalid input DMA-buf FD";
     std::move(callback).Run(

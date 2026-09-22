@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Next min version: 9
-
 module cros.mojom;
 
 import "media/capture/video/chromeos/mojom/camera_features.mojom";
@@ -13,17 +12,26 @@ import "media/capture/video/chromeos/mojom/camera_metadata.mojom";
 // the buffers allocated by gralloc. Read more on:
 // https://source.android.com/devices/graphics/arch-bq-gralloc#gralloc_HAL
 const uint32 GRALLOC_USAGE_SW_READ_NEVER = 0x00000000;
+
 const uint32 GRALLOC_USAGE_SW_READ_OFTEN = 0x00000003;
+
 const uint32 GRALLOC_USAGE_SW_WRITE_NEVER = 0x00000000;
+
 const uint32 GRALLOC_USAGE_SW_WRITE_OFTEN = 0x00000030;
+
 const uint32 GRALLOC_USAGE_HW_COMPOSER = 0x00000800;
+
 const uint32 GRALLOC_USAGE_HW_VIDEO_ENCODER = 0x00010000;
+
 const uint32 GRALLOC_USAGE_HW_CAMERA_WRITE = 0x00020000;
+
 const uint32 GRALLOC_USAGE_HW_CAMERA_READ = 0x00040000;
+
 // A private gralloc usage flag to force allocation of YUV420 buffer.  This
 // usage flag is only valid when allocating HAL_PIXEL_FORMAT_YCbCr_420_888
 // flexible YUV buffers.
 const uint32 GRALLOC_USAGE_FORCE_I420 = 0x10000000;
+
 // Setting this flag means this stream is intended for still capture. We're
 // using the usage flag as an indicator for an output stream that can be split
 // into a new HAL request for Zero-Shutter Lag (ZSL). See crrev.com/c/1877636
@@ -52,11 +60,10 @@ struct CropRotateScaleInfo {
 
 // The following enums are from Android's camera HAL v3 API header
 // (https://goo.gl/jciSjC).
-
 enum Camera3StreamType {
   CAMERA3_STREAM_OUTPUT = 0,
   CAMERA3_STREAM_INPUT = 1,
-  CAMERA3_STREAM_BIDIRECTIONAL = 2
+  CAMERA3_STREAM_BIDIRECTIONAL = 2,
 };
 
 enum Camera3StreamRotation {
@@ -68,7 +75,7 @@ enum Camera3StreamRotation {
 
 enum Camera3StreamConfigurationMode {
   CAMERA3_STREAM_CONFIGURATION_NORMAL_MODE = 0,
-  CAMERA3_STREAM_CONFIGURATION_CONSTRAINED_HIGH_SPEED_MODE =1,
+  CAMERA3_STREAM_CONFIGURATION_CONSTRAINED_HIGH_SPEED_MODE = 1,
 };
 
 struct Camera3Stream {
@@ -85,17 +92,23 @@ struct Camera3Stream {
   uint32 max_buffers;
   uint32 data_space;
   Camera3StreamRotation rotation;
-  [MinVersion=1] CropRotateScaleInfo? crop_rotate_scale_info;
+
+  [MinVersion=1]
+  CropRotateScaleInfo? crop_rotate_scale_info;
   // Required for camera HAL device API versions >= 3.5.
-  [MinVersion=4] string? physical_camera_id;
-  [MinVersion=6] array<Camera3StreamEffect>? effects;
+  [MinVersion=4]
+  string? physical_camera_id;
+
+  [MinVersion=6]
+  array<Camera3StreamEffect>? effects;
 };
 
 struct Camera3StreamConfiguration {
   array<Camera3Stream> streams;
   Camera3StreamConfigurationMode operation_mode;
   // Required for camera HAL device API versions >= 3.5.
-  [MinVersion=4] CameraMetadata? session_parameters;
+  [MinVersion=4]
+  CameraMetadata? session_parameters;
 };
 
 enum Camera3BufferStatus {
@@ -107,16 +120,22 @@ enum Camera3BufferStatus {
 // be used to map in userspace.
 struct CameraBufferHandle {
   uint64 buffer_id;
-  array<handle> fds;
+  array<handle<platform>> fds;
   uint32 drm_format;
   HalPixelFormat hal_pixel_format;
   uint32 width;
   uint32 height;
   array<uint32> strides;
   array<uint32> offsets;
-  [MinVersion=3] array<uint32>? sizes;
-  [MinVersion=7] bool has_modifier;
-  [MinVersion=7] uint64 modifier;
+
+  [MinVersion=3]
+  array<uint32>? sizes;
+
+  [MinVersion=7]
+  bool has_modifier;
+
+  [MinVersion=7]
+  uint64 modifier;
 };
 
 // When this is used for |buffer_id| in Camera3StreamBuffer, this indicates that
@@ -127,21 +146,23 @@ struct Camera3StreamBuffer {
   uint64 stream_id;
   uint64 buffer_id;
   Camera3BufferStatus status;
-  handle? acquire_fence;
-  handle? release_fence;
-  [MinVersion=2] CameraBufferHandle? buffer_handle;
+  handle<platform>? acquire_fence;
+  handle<platform>? release_fence;
+
+  [MinVersion=2]
+  CameraBufferHandle? buffer_handle;
 };
 
 enum Camera3MsgType {
   CAMERA3_MSG_ERROR = 1,
-  CAMERA3_MSG_SHUTTER = 2
+  CAMERA3_MSG_SHUTTER = 2,
 };
 
 enum Camera3ErrorMsgCode {
   CAMERA3_MSG_ERROR_DEVICE = 1,
   CAMERA3_MSG_ERROR_REQUEST = 2,
   CAMERA3_MSG_ERROR_RESULT = 3,
-  CAMERA3_MSG_ERROR_BUFFER = 4
+  CAMERA3_MSG_ERROR_BUFFER = 4,
 };
 
 struct Camera3ErrorMsg {
@@ -171,7 +192,7 @@ enum Camera3BufferRequestStatus {
   CAMERA3_BUF_REQ_FAILED_PARTIAL = 1,
   CAMERA3_BUF_REQ_FAILED_CONFIGURING = 2,
   CAMERA3_BUF_REQ_FAILED_ILLEGAL_ARGUMENTS = 3,
-  CAMERA3_BUF_REQ_FAILED_UNKNOWN = 4
+  CAMERA3_BUF_REQ_FAILED_UNKNOWN = 4,
 };
 
 enum Camera3StreamBufferReqStatus {
@@ -179,7 +200,7 @@ enum Camera3StreamBufferReqStatus {
   CAMERA3_PS_BUF_REQ_NO_BUFFER_AVAILABLE = 1,
   CAMERA3_PS_BUF_REQ_MAX_BUFFER_EXCEEDED = 2,
   CAMERA3_PS_BUF_REQ_STREAM_DISCONNECTED = 3,
-  CAMERA3_PS_BUF_REQ_UNKNOWN_ERROR = 4
+  CAMERA3_PS_BUF_REQ_UNKNOWN_ERROR = 4,
 };
 
 struct Camera3BufferRequest {
@@ -217,7 +238,8 @@ struct Camera3CaptureRequest {
   Camera3StreamBuffer? input_buffer;
   array<Camera3StreamBuffer> output_buffers;
   // Required for camera HAL device API versions >= 3.5.
-  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_settings;
+  [MinVersion=4]
+  array<Camera3PhyscamMetadata>? physcam_settings;
 };
 
 struct Camera3CaptureResult {
@@ -227,7 +249,8 @@ struct Camera3CaptureResult {
   Camera3StreamBuffer? input_buffer;
   uint32 partial_result;
   // Required for camera HAL device API versions >= 3.5.
-  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_metadata;
+  [MinVersion=4]
+  array<Camera3PhyscamMetadata>? physcam_metadata;
 };
 
 // Camera3CallbackOps is a translation of the camera3_callback_ops_t API
@@ -247,9 +270,9 @@ interface Camera3CallbackOps {
   // RequestStreamBuffers() is called by the camera HAL to request output
   // buffers from the client.
   [MinVersion=5]
-  RequestStreamBuffers@2(array<Camera3BufferRequest> buffer_reqs) =>
-      (Camera3BufferRequestStatus result,
-       array<Camera3StreamBufferRet> returned_buf_reqs);
+  RequestStreamBuffers@2(array<Camera3BufferRequest> buffer_reqs)
+      => (Camera3BufferRequestStatus result,
+          array<Camera3StreamBufferRet> returned_buf_reqs);
 
   // ReturnStreamBuffers() is called by the camera HAL to return output buffers
   // to the client.
@@ -320,13 +343,13 @@ interface Camera3DeviceOps {
 
   // ConfigureStreams() is called every time the client needs to set up new set
   // of streams.
-  ConfigureStreams@1(Camera3StreamConfiguration config) =>
-      (int32 result, Camera3StreamConfiguration? updated_config);
+  ConfigureStreams@1(Camera3StreamConfiguration config)
+      => (int32 result, Camera3StreamConfiguration? updated_config);
 
   // ConstructDefaultRequestSettings() is called to get the request settings for
   // common use cases, e.g. preview, still capture, video recording...etc.
-  ConstructDefaultRequestSettings@2(Camera3RequestTemplate type) =>
-      (CameraMetadata? settings);
+  ConstructDefaultRequestSettings@2(Camera3RequestTemplate type)
+      => (CameraMetadata? settings);
 
   // ProcessCaptureRequest() is the core method and is called for every captured
   // frame to provide the camera HAL with the capture settings and the
@@ -335,7 +358,7 @@ interface Camera3DeviceOps {
 
   // Dump() is called to gather various states and information about the camera
   // HAL; it is mainly for debug purpose.
-  Dump@4(handle fd);
+  Dump@4(handle<platform> fd);
 
   // Flush() is called to clear out any in-progress captures and return the
   // camera HAL to idle state.
@@ -347,8 +370,8 @@ interface Camera3DeviceOps {
   // DMABUF is for the DMA buffer allocated through GBM.
   // SHM is for the shared memory buffer allocated by Chrome. Deprecated.
   enum BufferType {
-    DMABUF = 0,   // DMA buffer. Needs to be imported through GBM.
-    SHM = 1,      // Shared memory buffer. Deprecated and not used.
+    DMABUF = 0,  // DMA buffer. Needs to be imported through GBM.
+    SHM = 1,  // Shared memory buffer. Deprecated and not used.
   };
 
   // [Deprecated in version 2]
@@ -358,11 +381,15 @@ interface Camera3DeviceOps {
   // camera HAL to fill captured frame.  RegisterBuffer() is not part of the
   // Android camera HAL v3 API; it is added for CrOS camera service to pass
   // buffer handles across different processes.
-  RegisterBuffer@6(uint64 buffer_id, BufferType type, array<handle> fds,
-                   uint32 drm_format, HalPixelFormat hal_pixel_format,
-                   uint32 width, uint32 height, array<uint32> strides,
-                   array<uint32> offsets) =>
-      (int32 result);
+  RegisterBuffer@6(uint64 buffer_id,
+                   BufferType type,
+                   array<handle<platform>> fds,
+                   uint32 drm_format,
+                   HalPixelFormat hal_pixel_format,
+                   uint32 width,
+                   uint32 height,
+                   array<uint32> strides,
+                   array<uint32> offsets) => (int32 result);
 
   // Close() is called to close the camera device.
   Close@7() => (int32 result);
@@ -371,9 +398,11 @@ interface Camera3DeviceOps {
   // needs to set up new set of streams. Also allocated buffers for clients that
   // do not have capabilities to allocate DMA-bufs.
   [MinVersion=3]
-  ConfigureStreamsAndGetAllocatedBuffers@8(Camera3StreamConfiguration config) =>
-      (int32 result, Camera3StreamConfiguration? updated_config,
-       map<uint64, array<Camera3StreamBuffer>> allocated_buffers);
+  ConfigureStreamsAndGetAllocatedBuffers@8(
+      Camera3StreamConfiguration config)
+      => (int32 result,
+          Camera3StreamConfiguration? updated_config,
+          map<uint64, array<Camera3StreamBuffer>> allocated_buffers);
 
   // SignalStreamFlush() can be called when the client is about to call
   // ConfigureStreams(). The camera HAL must finish in-flight requests normally

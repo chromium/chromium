@@ -30,7 +30,6 @@
 #include "media/capture/video/chromeos/stream_buffer_manager.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace media {
@@ -155,8 +154,7 @@ RequestManager::RequestManager(
       base::BindRepeating(&StreamBufferManager::RequestBufferForCaptureRequest,
                           base::Unretained(stream_buffer_manager_.get()));
   request_builder_ = std::make_unique<RequestBuilder>(
-      device_context_, std::move(request_buffer_callback),
-      use_buffer_management_apis_);
+      std::move(request_buffer_callback), use_buffer_management_apis_);
 }
 
 RequestManager::~RequestManager() = default;
@@ -1028,15 +1026,7 @@ void RequestManager::SubmitCaptureResult(
   // Wait on release fence before delivering the result buffer to client.
   if (stream_buffer->release_fence.is_valid()) {
     const int kSyncWaitTimeoutMs = 1000;
-    mojo::PlatformHandle fence =
-        mojo::UnwrapPlatformHandle(std::move(stream_buffer->release_fence));
-    if (!fence.is_valid()) {
-      device_context_->SetErrorState(
-          media::VideoCaptureError::
-              kCrosHalV3BufferManagerFailedToUnwrapReleaseFenceFd,
-          FROM_HERE, "Failed to unwrap release fence fd");
-      return;
-    }
+    mojo::PlatformHandle fence = std::move(stream_buffer->release_fence);
     if (sync_wait(fence.GetFD().get(), kSyncWaitTimeoutMs)) {
       device_context_->SetErrorState(
           media::VideoCaptureError::
