@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "cc/base/region.h"
+#include "cc/cc_export.h"
 
 namespace viz {
 struct HitTestRegionList;
@@ -20,7 +21,7 @@ class LayerImpl;
 class LayerTreeImpl;
 class SurfaceLayerImpl;
 
-class HitTestDataBuilder {
+class CC_EXPORT HitTestDataBuilder {
  public:
   explicit HitTestDataBuilder(const LayerTreeImpl& active_tree);
 
