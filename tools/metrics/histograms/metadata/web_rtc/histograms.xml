@@ -638,6 +638,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.NeuralResidualEchoEstimator.InitDurationMs"
+    units="ms" expires_after="2027-09-01">
+  <owner>saza@chromium.org</owner>
+  <owner>devicentepena@webrtc.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logged when the neural residual echo estimator (ML-REE) successfully
+    finishes asynchronous model loading and tensor setup. Measures the
+    wall-clock time from task post to model bundle readiness. Logged strictly on
+    successful loads; failed or abandoned loads do not emit duration samples.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.NeuralResidualEchoEstimator.InitResult"
+    enum="WebRtcNeuralResidualEchoEstimatorInitResult"
+    expires_after="2027-09-01">
+  <owner>saza@chromium.org</owner>
+  <owner>devicentepena@webrtc.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Tracks the initialization result of off-thread neural residual echo
+    estimator (ML-REE) model initialization (success, model load failure, or
+    destroyed before initialization resolved). Logged on resolution (immediately
+    after success or failure, or at end of estimator lifetime if never
+    resolved).
+  </summary>
+</histogram>
+
+<histogram
+    name="WebRTC.Audio.NeuralResidualEchoEstimator.LinearModeBlocksUntilInit"
+    units="Blocks" expires_after="2027-09-01">
+  <owner>saza@chromium.org</owner>
+  <owner>devicentepena@webrtc.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Measures the number of 4 ms capture blocks processed in linear mode before
+    the neural residual echo estimator (ML-REE) is initialized. Reports 0 if it
+    was ready when first needed, a positive integer if linear mode had to run
+    while waiting for the estimator to initialize, or lands in the overflow
+    bucket if initialization was very late. Logged when first linear mode block
+    is processed; intentionally omitted if the stream closes before nonlinear
+    mode is exited, or if the estimator never initializes.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.ReceiverDelayEstimateMs" units="ms"
     expires_after="2026-05-11">
   <owner>hlundin@chromium.org</owner>

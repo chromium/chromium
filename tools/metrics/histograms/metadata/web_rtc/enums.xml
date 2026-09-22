@@ -533,6 +533,12 @@ chromium-metrics-reviews@google.com.
   <int value="2102772693" label="Duo"/>
 </enum>
 
+<enum name="WebRtcNeuralResidualEchoEstimatorInitResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model load failed"/>
+  <int value="2" label="Destroyed before resolved"/>
+</enum>
+
 <enum name="WebRtcPeerConnectionUsagePattern">
   <summary>
     These values are integers representing a set of flags indicating how the
