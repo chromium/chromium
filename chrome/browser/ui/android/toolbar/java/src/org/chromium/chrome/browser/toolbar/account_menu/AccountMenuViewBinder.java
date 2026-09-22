@@ -49,6 +49,9 @@ public class AccountMenuViewBinder {
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         badgedIcon, null, null, null);
             } else {
+                textView.setCompoundDrawableTintList(
+                        AppCompatResources.getColorStateList(
+                                textView.getContext(), R.color.default_icon_color_tint_list));
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconId, 0, 0, 0);
             }
         } else if (propertyKey == MenuItemProperties.CLICK_LISTENER) {
