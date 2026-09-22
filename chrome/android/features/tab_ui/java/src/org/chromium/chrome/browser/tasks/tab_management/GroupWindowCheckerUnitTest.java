@@ -626,4 +626,56 @@ public class GroupWindowCheckerUnitTest {
         assertEquals(TabGroupColorId.RED, groups.get(0).color);
         assertEquals(1, groups.get(0).tabCount);
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @DisableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations")
+    public void testHasOtherGroups_hiddenGroupInHeadlessWindow_remoteDisabled_returnsFalse() {
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        Token token1 = Token.createRandom();
+        SavedTabGroup hiddenGroup = createSavedTabGroup(token1, "headlessGroupTitle");
+        hiddenGroup.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"syncId1"});
+        when(mSyncService.getGroup("syncId1")).thenReturn(hiddenGroup);
+
+        when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+
+        assertEquals(GroupWindowState.HIDDEN, mSyncUtils.getState(hiddenGroup));
+        assertFalse(mSyncUtils.hasOtherGroups(null));
+        assertFalse(mSyncUtils.hasOtherGroups(Token.createRandom()));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testHasOtherGroups_hiddenGroupInHeadlessWindow_remoteEnabled_returnsTrue() {
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        Token token1 = Token.createRandom();
+        SavedTabGroup hiddenGroup = createSavedTabGroup(token1, "headlessGroupTitle");
+        hiddenGroup.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"syncId1"});
+        when(mSyncService.getGroup("syncId1")).thenReturn(hiddenGroup);
+
+        when(mTabList.iterator()).thenAnswer(invocation -> Collections.emptyIterator());
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+
+        assertEquals(GroupWindowState.HIDDEN, mSyncUtils.getState(hiddenGroup));
+        assertTrue(mSyncUtils.hasOtherGroups(null));
+        assertTrue(mSyncUtils.hasOtherGroups(Token.createRandom()));
+        assertFalse(mSyncUtils.hasOtherGroups(token1));
+    }
 }

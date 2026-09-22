@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -211,9 +210,13 @@ public class GroupWindowChecker {
     }
 
     private static boolean isOtherGroup(GroupWindowInfo group, @Nullable Token currentGroupId) {
-        return group.localId == null
-                ? TabGroupUiUtils.isRemoteGroupOperationsEnabled()
-                : !Objects.equals(group.localId, currentGroupId);
+        if (currentGroupId != null && currentGroupId.equals(group.localId)) {
+            return false;
+        }
+        if (group.localId == null || group.groupWindowState == GroupWindowState.HIDDEN) {
+            return TabGroupUiUtils.isRemoteGroupOperationsEnabled();
+        }
+        return true;
     }
 
     private boolean containsGroup(Token groupId) {

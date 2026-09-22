@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowInfo;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -207,7 +208,8 @@ import java.util.function.Supplier;
         List<GroupWindowInfo> sortedGroups = windowChecker.getDefaultSortedGroupList();
 
         for (GroupWindowInfo tabGroup : sortedGroups) {
-            if (tabGroup.localId == null && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
+            if ((tabGroup.localId == null || tabGroup.groupWindowState == GroupWindowState.HIDDEN)
+                    && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
                 continue;
             }
             if (currentGroupId != null && Objects.equals(currentGroupId, tabGroup.localId)) {
@@ -305,6 +307,21 @@ import java.util.function.Supplier;
             return submenuItems;
         }
 
+        List<ListItem> groupItems = new ArrayList<>();
+        for (GroupWindowInfo tabGroup : sortedGroups) {
+            if ((tabGroup.localId == null || tabGroup.groupWindowState == GroupWindowState.HIDDEN)
+                    && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
+                continue;
+            }
+            groupItems.add(buildTabGroupParentSubmenuItem(tabGroup, showIcons, tabModel));
+        }
+        if (groupItems.isEmpty()) {
+            if (submenuItems.isEmpty()) {
+                submenuItems.add(AppMenuItemUtils.buildEmptySubmenuItem());
+            }
+            return submenuItems;
+        }
+
         submenuItems.add(
                 new ListItem(
                         AppMenuHandler.AppMenuItemType.DIVIDER,
@@ -316,13 +333,7 @@ import java.util.function.Supplier;
                         R.id.tab_groups_header_menu_id,
                         R.string.menu_tab_groups,
                         mIsMenuIconAtStart));
-
-        for (GroupWindowInfo tabGroup : sortedGroups) {
-            if (tabGroup.localId == null && !TabGroupUiUtils.isRemoteGroupOperationsEnabled()) {
-                continue;
-            }
-            submenuItems.add(buildTabGroupParentSubmenuItem(tabGroup, showIcons, tabModel));
-        }
+        submenuItems.addAll(groupItems);
         return submenuItems;
     }
 
@@ -364,10 +375,11 @@ import java.util.function.Supplier;
 
         Token groupId = tabGroup.localId;
         List<Tab> tabs = TabGroupUiUtils.getLocalOrCrossWindowTabsInGroup(tabModel, groupId);
-        if (tabs.isEmpty()
-                && TabGroupUiUtils.isRemoteGroupOperationsEnabled()
-                && tabGroup.syncId != null) {
-            return buildSubmenuForRemoteGroup(tabGroup, tabModel);
+        if (tabs.isEmpty()) {
+            if (TabGroupUiUtils.isRemoteGroupOperationsEnabled() && tabGroup.syncId != null) {
+                return buildSubmenuForRemoteGroup(tabGroup, tabModel);
+            }
+            return Collections.emptyList();
         }
         Profile profile = tabModel.getProfile();
         assert profile != null;
