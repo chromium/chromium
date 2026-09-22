@@ -58,6 +58,7 @@ source_set("types") {
 
 source_set("public") {
   sources = [
+    "skills_constants.h",
     "skill_data_type_controller.cc",
     "skill_data_type_controller.h",
     "skills_features.cc",

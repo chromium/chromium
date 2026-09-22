@@ -96,6 +96,7 @@ TEST_F(EnterpriseSkillsProviderTest, ValidSkillIsParsed) {
   EXPECT_EQ(skill->curated_by, "your organization");
   EXPECT_EQ(skill->prompt, "Prompt goes here");
   EXPECT_EQ(skill->icon, "💼");
+  EXPECT_EQ(skill->category, "From your organization");
   EXPECT_EQ(skill->source, sync_pb::SkillSource::SKILL_SOURCE_ENTERPRISE);
 }
 
