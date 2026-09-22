@@ -175,9 +175,13 @@ const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
   return &recorder->getRecordingCanvas();
 }
 
-void BaseRenderingContext2D::CreateRecorder(const gfx::Size& size,
-                                            bool is_graphite) {
-  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
+void BaseRenderingContext2D::ConfigureRecorder(const gfx::Size& size,
+                                               bool is_graphite) {
+  if (!recorder_) {
+    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
+  } else {
+    CHECK_EQ(recorder_->size(), size);
+  }
   if (is_graphite) {
     recorder_->DisableLineDrawingAsPaths();
   }

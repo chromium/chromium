@@ -1197,8 +1197,9 @@ void CanvasRenderingContext2D::CreateProvider() {
         canvas());
   }
   if (shared_image_provider_ || bitmap_provider_) {
-    CreateRecorder(canvas()->Size(), shared_image_provider_ &&
-                                         shared_image_provider_->IsGraphite());
+    ConfigureRecorder(
+        canvas()->Size(),
+        shared_image_provider_ && shared_image_provider_->IsGraphite());
   }
 }
 
@@ -1440,7 +1441,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   ResetResourceProvider();
   shared_image_provider_ = std::move(provider);
   if (shared_image_provider_) {
-    CreateRecorder(size, shared_image_provider_->IsGraphite());
+    ConfigureRecorder(size, shared_image_provider_->IsGraphite());
   }
 }
 
@@ -1453,7 +1454,7 @@ void CanvasRenderingContext2D::SetBitmapProviderForTesting(
   ResetResourceProvider();
   bitmap_provider_ = std::move(provider);
   if (bitmap_provider_) {
-    CreateRecorder(size, /*is_graphite=*/false);
+    ConfigureRecorder(size, /*is_graphite=*/false);
   }
 }
 

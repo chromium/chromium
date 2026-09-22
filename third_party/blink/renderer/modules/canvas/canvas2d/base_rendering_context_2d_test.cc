@@ -84,7 +84,7 @@ class TestRenderingContext2D final
             CanvasContextCreationAttributesCore(),
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
-    CreateRecorder(gfx::Size(Width(), Height()), /*is_graphite=*/false);
+    ConfigureRecorder(gfx::Size(Width(), Height()), /*is_graphite=*/false);
   }
   ~TestRenderingContext2D() override = default;
 
@@ -108,7 +108,7 @@ class TestRenderingContext2D final
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() override {
     return GetPaintCanvas();
   }
-  using BaseRenderingContext2D::CreateRecorder;
+  using BaseRenderingContext2D::ConfigureRecorder;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
@@ -273,19 +273,23 @@ TEST(BaseRenderingContext2DTest, RecordingLimits) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  const MemoryManagedPaintRecorder* initial_recorder = context->Recorder();
+  EXPECT_NE(initial_recorder, nullptr);
   EXPECT_EQ(context->max_recorded_op_bytes(),
             static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
   EXPECT_EQ(context->max_pinned_image_bytes(),
             static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
 
-  context->CreateRecorder(gfx::Size(300, 300), /*is_graphite=*/true);
+  context->ConfigureRecorder(gfx::Size(300, 300), /*is_graphite=*/true);
+  EXPECT_EQ(context->Recorder(), initial_recorder);
   EXPECT_EQ(
       context->max_recorded_op_bytes(),
       static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024);
   EXPECT_EQ(context->max_pinned_image_bytes(),
             static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
 
-  context->CreateRecorder(gfx::Size(300, 300), /*is_graphite=*/false);
+  context->ConfigureRecorder(gfx::Size(300, 300), /*is_graphite=*/false);
+  EXPECT_EQ(context->Recorder(), initial_recorder);
   EXPECT_EQ(context->max_recorded_op_bytes(),
             static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
 }

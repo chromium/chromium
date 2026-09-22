@@ -301,7 +301,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void FlushIfRecordingLimitExceeded();
 
-  void CreateRecorder(const gfx::Size& size, bool is_graphite);
+  void ConfigureRecorder(const gfx::Size& size, bool is_graphite);
   void ResetRecorder();
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
   void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder,

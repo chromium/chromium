@@ -47,6 +47,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   void SetClient(Client* client);
 
+  const gfx::Size& size() const { return size_; }
+
   // See comments around `RecordPaintCanvas::maybe_draw_lines_as_paths_` for
   // details.
   void DisableLineDrawingAsPaths();
