@@ -226,7 +226,7 @@ public class StripLayoutHelperManager
     private float mTopPadding; // in dp units
     private final float mDensity;
     private int mOrientation;
-    private final StripLayoutTrailingButtonsCoordinator mTrailingButtonsCoordinator;
+    private StripLayoutTrailingButtonsCoordinator mTrailingButtonsCoordinator;
     private final Context mContext;
     private float mStripTransitionScrimOpacity;
     private @Nullable Animator mFadeTransitionAnimator;
@@ -1640,6 +1640,15 @@ public class StripLayoutHelperManager
                         getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabCreated(
                                         time(), tab.getId(), markedForSelection, false, onStartup);
+                        // When all tabs are closed, trailing buttons like Glic are hidden because
+                        // side UI cannot be shown without a current tab. When the first tab is
+                        // added back, update trailing buttons to restore them. On startup, trailing
+                        // buttons are updated in onTabStateInitialized().
+                        if (!onStartup
+                                && mTabModelSelector.getModel(tab.isIncognitoBranded()).getCount()
+                                        == 1) {
+                            mTrailingButtonsCoordinator.updateTrailingButtons();
+                        }
                     }
                 };
 
@@ -1896,6 +1905,11 @@ public class StripLayoutHelperManager
 
     void setTabStripTreeProviderForTesting(TabStripSceneLayer tabStripTreeProvider) {
         mTabStripTreeProvider = tabStripTreeProvider;
+    }
+
+    void setTrailingButtonsCoordinatorForTesting(
+            StripLayoutTrailingButtonsCoordinator trailingButtonsCoordinator) {
+        mTrailingButtonsCoordinator = trailingButtonsCoordinator;
     }
 
     ViewStub getTabHoverCardViewStubForTesting() {

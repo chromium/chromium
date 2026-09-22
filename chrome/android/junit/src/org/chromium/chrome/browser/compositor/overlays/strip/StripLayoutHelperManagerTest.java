@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -112,6 +113,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -215,6 +217,8 @@ public class StripLayoutHelperManagerTest {
     private static final int ORIENTATION = 2;
     private static final int TAB_STRIP_HEIGHT_PX = 40;
     private static final int FADE_TRANSITION_DURATION_MS = 200;
+    private static final int FIRST_TAB_ID = 1;
+    private static final int SECOND_TAB_ID = 2;
 
     @Before
     public void beforeTest() {
@@ -1539,5 +1543,32 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Strip motion event should be handled when controls are scrolled back on.",
                 motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+    }
+
+    @Test
+    public void testUpdateTrailingButtonsOnTabAddAndRemove() {
+        MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(tabModel));
+        mStripLayoutHelperManager.destroy();
+        initializeTest();
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
+
+        StripLayoutTrailingButtonsCoordinator trailingButtonsCoordinator =
+                mock(StripLayoutTrailingButtonsCoordinator.class);
+        mStripLayoutHelperManager.setTrailingButtonsCoordinatorForTesting(
+                trailingButtonsCoordinator);
+
+        // Adding the first tab to an empty model should update the trailing buttons.
+        Tab tab = tabModel.addTab(FIRST_TAB_ID);
+        verify(trailingButtonsCoordinator).updateTrailingButtons();
+
+        // Adding subsequent tabs should not trigger another trailing button update.
+        clearInvocations(trailingButtonsCoordinator);
+        tabModel.addTab(SECOND_TAB_ID);
+        verify(trailingButtonsCoordinator, never()).updateTrailingButtons();
+
+        // Closing a tab should update the trailing buttons.
+        tabModel.removeTab(tab);
+        verify(trailingButtonsCoordinator).updateTrailingButtons();
     }
 }
