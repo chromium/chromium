@@ -1273,6 +1273,7 @@ suite('OmniboxEverywhereAppTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       smallLoomnibox: true,
+      isPersistentMode: true,
       omniboxEverywhereMostVisitedHideTitle: true,
       initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
@@ -2730,6 +2731,29 @@ suite('OmniboxEverywhereAppTest', () => {
           document.hasFocus = nativeHasFocus;
         }
       });
+
+  test('inactive state on blur is gated by isPersistentMode', async () => {
+    // In persistent mode (default in setup), blur removes is-active.
+    window.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('is-active'));
+
+    window.dispatchEvent(new Event('blur'));
+    await microtasksFinished();
+    assertFalse(app.hasAttribute('is-active'));
+
+    // In ephemeral mode, blur never removes is-active.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({isPersistentMode: false});
+    const ephemeralApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(ephemeralApp);
+    await microtasksFinished();
+    assertTrue(ephemeralApp.hasAttribute('is-active'));
+
+    window.dispatchEvent(new Event('blur'));
+    await microtasksFinished();
+    assertTrue(ephemeralApp.hasAttribute('is-active'));
+  });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {
@@ -2838,6 +2862,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       searchboxLayoutMode: 'TallBottomContext',
+      isPersistentMode: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);

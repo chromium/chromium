@@ -173,6 +173,9 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.valueExists('initialHotkeyTokens') ?
       loadTimeData.getValue('initialHotkeyTokens') :
       [];
+
+  private isPersistentMode_: boolean =
+      loadTimeData.getBoolean('isPersistentMode');
   private eventTracker_ = new EventTracker();
   private mostVisitedListenerId_: number|null = null;
   private searchboxListenerIds_: number[] = [];
@@ -182,7 +185,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.isActive_ = document.hasFocus();
+    this.isActive_ = !this.isPersistentMode_ || document.hasFocus();
     this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
     this.eventTracker_.add(window, 'click', this.onAppClick_.bind(this));
@@ -446,7 +449,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       // before sampling document focus.
       setTimeout(() => {
         if (this.isConnected && !this.isHotkeyDropdownOpen_) {
-          this.isActive_ = document.hasFocus();
+          this.isActive_ = !this.isPersistentMode_ || document.hasFocus();
         }
       }, 0);
     }
@@ -558,7 +561,9 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     if (this.isHotkeyDropdownOpen_) {
       return;
     }
-    this.isActive_ = false;
+    if (this.isPersistentMode_) {
+      this.isActive_ = false;
+    }
     this.clearActivationTimeout_();
   }
 
