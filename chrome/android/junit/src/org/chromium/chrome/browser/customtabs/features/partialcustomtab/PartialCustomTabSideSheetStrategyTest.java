@@ -47,10 +47,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.ui.base.LocalizationUtils;
@@ -420,9 +421,9 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @Test
-    @DisabledTest // This needs to be re-worked for Q.
-    public void drawDividerLine_OverrideWithOldOS() {
+    public void drawDividerLine_OverrideWithLowEndDevice() {
         doReturn(10)
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
