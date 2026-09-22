@@ -761,6 +761,10 @@
     'cbb_ref_info': {
       'filepath': 'testing/perf/cbb_ref_info/'
     },
+    'cbe_productivity_ai': {
+      'filepath': 'chrome/browser/geic/|' \
+                  'chrome/browser/glic/gemini_enterprise/',
+    },
     'cc': {
       'filepath': 'cc/'\
                   '|components/viz/'
@@ -2887,6 +2891,7 @@
                        'jophba+watch@chromium.org',
                        'mfoltz+watch-media@chromium.org'],
     'cbb_ref_info': ['johnchen+watch@chromium.org'],
+    'cbe_productivity_ai': ['cbe-productivity-cls@google.com'],
     'cc': ['cc-bugs@chromium.org'],
     'cc-animation': ['gerchiko@microsoft.com'],
     'cc-display': ['penghuang+viz@chromium.org'],
