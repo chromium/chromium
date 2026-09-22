@@ -32,8 +32,6 @@ source_set("lib") {
   deps = [
     "//base",
     "//build:blink_buildflags",
-    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
-    "//components/facilitated_payments/core/validation",
     "//components/web_package",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -62,7 +60,6 @@ source_set("tests") {
 
   sources = [
     "gzipper_unittest.cc",
-    "public/cpp/data_decoder_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
     "public/cpp/xml_dom_unittest.cc",

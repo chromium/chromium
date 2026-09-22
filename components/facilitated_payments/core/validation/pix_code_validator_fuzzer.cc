@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/validation/pix_code_validator.h"
-
 #include <string>
 
+#include "base/strings/string_view_rust.h"
 #include "components/facilitated_payments/core/validation/pix_code_validator_fuzzer_util.h"
+#include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace payments::facilitated {
 
 void GetPixQrCodeTypeCanParseAnyString(const std::string& input) {
-  PixCodeValidator::GetPixQrCodeType(input);
+  get_pix_qr_code_type(base::StringViewToRustSlice(input));
 }
 
 FUZZ_TEST(GetPixQrCodeTypeTest, GetPixQrCodeTypeCanParseAnyString)

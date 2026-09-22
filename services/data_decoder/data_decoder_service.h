@@ -5,7 +5,6 @@
 #ifndef SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
-#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -44,9 +43,6 @@ class DataDecoderService : public mojom::DataDecoderService {
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) override;
   void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
-  void BindPixCodeValidator(
-      mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
-          receiver) override;
 
   // In-process instances (e.g. on iOS or in tests) may have multiple concurrent
   // remote DataDecoderService clients.

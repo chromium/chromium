@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
@@ -359,22 +358,6 @@ void DataDecoder::GzipUncompress(base::span<const uint8_t> data,
       base::BindOnce(&ValueParseRequest<mojom::Gzipper,
                                         mojo_base::BigBuffer>::OnServiceValue,
                      request));
-}
-
-void DataDecoder::ValidatePixCode(const std::string& pix_code,
-                                  ValidationCallback callback) {
-  auto request = base::MakeRefCounted<
-      ValueParseRequest<payments::facilitated::mojom::PixCodeValidator,
-                        payments::facilitated::mojom::PixQrCodeType>>(
-      std::move(callback), cancel_requests_);
-  GetService()->BindPixCodeValidator(request->BindRemote());
-  request->remote()->ValidatePixCode(
-      pix_code,
-      base::BindOnce(
-          &ValueParseRequest<
-              payments::facilitated::mojom::PixCodeValidator,
-              payments::facilitated::mojom::PixQrCodeType>::OnServiceValue,
-          request));
 }
 
 }  // namespace data_decoder

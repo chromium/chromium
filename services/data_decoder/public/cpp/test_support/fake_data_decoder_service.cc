@@ -39,10 +39,4 @@ void FakeDataDecoderService::BindGzipper(
   FAIL();
 }
 
-void FakeDataDecoderService::BindPixCodeValidator(
-    mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
-        receiver) {
-  FAIL();
-}
-
 }  // namespace data_decoder
