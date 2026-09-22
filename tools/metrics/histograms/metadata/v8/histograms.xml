@@ -48,21 +48,6 @@ chromium-metrics-reviews@google.com.
   <summary>Array buffer sizes for which V8 failed to allocate memory.</summary>
 </histogram>
 
-<histogram name="V8.AsmjsInstantiateResult" enum="AsmJsInstantiateResult"
-    expires_after="2027-03-07">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-runtime@google.com</owner>
-  <summary>
-    Counter of succeeded and failed asm.js instantiations with the asm.js
-    pipeline. Success means that the asm.js pipeline is used to execute the
-    asm.js module. Failure means that the asm.js module gets executed with the
-    normal JavaScript pipeline. Reasons for failed instantiations can be that
-    the asm.js module gets instantiated with an invalid memory type like a
-    WebAssembly memory. Recorded after each attempt to instantiate asm.js module
-    with the asm.js pipeline.
-  </summary>
-</histogram>
-
 <histogram name="V8.CFIPageSizeMismatch" enum="BooleanOccurred"
     expires_after="2027-05-01">
   <owner>emaxx@google.com</owner>
