@@ -560,9 +560,12 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     if (num_samples == kAccessUnitSamples &&
         source_offset * sizeof(float) % AudioBus::kChannelAlignment == 0) {
       DCHECK_EQ(buffer_fill_offset, 0);
-      input_bus_->SetAllChannels(audio_bus->AllChannelsSubspan(
-          base::checked_cast<size_t>(source_offset),
-          static_cast<size_t>(kAccessUnitSamples)));
+      const size_t offset = base::checked_cast<size_t>(source_offset);
+      const size_t count = static_cast<size_t>(kAccessUnitSamples);
+      int ch = 0;
+      for (auto channel : audio_bus->AllChannels()) {
+        input_bus_->SetChannelData(ch++, channel.subspan(offset, count));
+      }
       return;
     }
 

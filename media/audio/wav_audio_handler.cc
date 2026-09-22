@@ -274,15 +274,16 @@ void InterleavedBytesToAudioBus(AudioBus* bus,
     return;
   }
 
-  auto channels = bus->AllChannelsSubspan(dest_start_frame, frames);
-  const size_t num_channels = channels.size();
   const size_t sample_size = sizeof(SampleType);
-  const size_t frame_size_in_bytes = num_channels * sample_size;
+  const size_t frame_size_in_bytes =
+      static_cast<size_t>(bus->channels()) * sample_size;
+  const size_t dest_offset = base::checked_cast<size_t>(dest_start_frame);
 
-  for (size_t ch = 0; ch < num_channels; ++ch) {
+  size_t ch = 0;
+  for (auto channel : bus->AllChannels()) {
     base::span<const uint8_t> source = source_data;
-    const size_t channel_offset = ch * sample_size;
-    for (float& dest_sample : channels[ch]) {
+    const size_t channel_offset = ch++ * sample_size;
+    for (float& dest_sample : channel.subspan(dest_offset, frames)) {
       // Load the next frame
       auto frame = source.take_first(frame_size_in_bytes);
       dest_sample = Traits::ToFloat(ReadLittleEndian<SampleType>(

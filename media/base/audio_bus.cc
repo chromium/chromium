@@ -324,14 +324,10 @@ void AudioBus::CopyPartialFramesTo(int source_start_frame,
   const size_t dest_offset = base::checked_cast<size_t>(dest_start_frame);
   const size_t count = base::checked_cast<size_t>(frame_count);
 
-  ChannelVector src_channels = AllChannelsSubspan(source_offset, count);
-  ChannelVector dest_channels = dest->AllChannelsSubspan(dest_offset, count);
-
-  // Since we don't know if the other AudioBus is wrapped or not (and we don't
-  // want to care), just copy using the channel accessors.
-  for (auto [src_span, dest_span] :
-       std::views::zip(src_channels, dest_channels)) {
-    dest_span.copy_from_nonoverlapping(src_span);
+  for (auto [src_channel, dest_channel] :
+       std::views::zip(AllChannels(), dest->AllChannels())) {
+    dest_channel.subspan(dest_offset, count)
+        .copy_from_nonoverlapping(src_channel.subspan(source_offset, count));
   }
 }
 
@@ -356,17 +352,6 @@ void AudioBus::SwapChannels(int a, int b) {
 
 const AudioBus::ChannelVector& AudioBus::AllChannels() const {
   return channel_data_;
-}
-
-AudioBus::ChannelVector AudioBus::AllChannelsSubspan(size_t offset,
-                                                     size_t count) const {
-  ChannelVector sub_channels;
-
-  for (Channel channel : channel_data_) {
-    sub_channels.push_back(channel.subspan(offset, count));
-  }
-
-  return sub_channels;
 }
 
 }  // namespace media

@@ -40,9 +40,10 @@ bool AudioBusAreEqual(AudioBus* a, AudioBus* b) {
   return true;
 }
 
-void SetFirstNFrames(AudioBus* bus, const int number_of_frames, float value) {
-  for (auto first_frames : bus->AllChannelsSubspan(0, number_of_frames)) {
-    std::ranges::fill(first_frames, value);
+template <size_t NumberOfFrames>
+void SetFirstNFrames(AudioBus* bus, float value) {
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel.template first<NumberOfFrames>(), value);
   }
 }
 }  // namespace
@@ -435,13 +436,13 @@ TEST_F(LimiterTest, EdgeCaseNumbers) {
       std::numeric_limits<float>::infinity(),
       -std::numeric_limits<float>::infinity()};
 
-  constexpr int kNumberFrames = 5;
+  constexpr size_t kNumberFrames = 5;
 
   for (float special_number : special_numbers) {
     SCOPED_TRACE(special_number);
     FillWithSine(source_bus_.get());
     // Set an edge-case number in the first few frames.
-    SetFirstNFrames(source_bus_.get(), kNumberFrames, special_number);
+    SetFirstNFrames<kNumberFrames>(source_bus_.get(), special_number);
 
     limiter_ = std::make_unique<AudioLimiter>(kSampleRate, kChannels);
 
@@ -452,7 +453,7 @@ TEST_F(LimiterTest, EdgeCaseNumbers) {
 
     // We expect the edge-case numbers to be treated as zeros. Update the input
     // for ease of comparison.
-    SetFirstNFrames(source_bus_.get(), kNumberFrames, 0.0f);
+    SetFirstNFrames<kNumberFrames>(source_bus_.get(), 0.0f);
 
     EXPECT_TRUE(AudioBusAreEqual(source_bus_.get(), destination_bus_.get()));
   }

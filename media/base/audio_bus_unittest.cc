@@ -223,39 +223,6 @@ TEST_F(AudioBusTest, AllChannels) {
   EXPECT_EQ(current_channel, kDefaultChannels);
 }
 
-TEST_F(AudioBusTest, AllChannelsSubspan) {
-  AllocateDataPerChannel();
-
-  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kDefaultChannels);
-  bus->set_frames(kFrameCount);
-  AudioBus::ChannelVector channels;
-  int value = 1;
-  for (AlignedFloatArray& data : data_) {
-    AudioBus::Channel channel(data);
-
-    // Fill each sample with a different value.
-    for (float& sample : channel) {
-      sample = value++;
-    }
-
-    channels.push_back(channel);
-  }
-
-  bus->SetAllChannels(channels);
-
-  // Verify looping through `AllChannelsSubspan()` is equivalent to getting each
-  // channel individually and applying `subspan()` to them.
-  int current_channel = 0;
-  constexpr size_t kOffset = 3;
-  constexpr size_t kCount = 25;
-  for (auto channel : bus->AllChannelsSubspan(kOffset, kCount)) {
-    EXPECT_EQ(channel,
-              bus->channel(current_channel++).subspan(kOffset, kCount));
-  }
-
-  EXPECT_EQ(current_channel, kDefaultChannels);
-}
-
 // Verify an AudioBus created via wrapping a memory block works as advertised.
 TEST_F(AudioBusTest, WrapMemory) {
   auto verify_wrapped_memory = [&](bool use_byte_span) {

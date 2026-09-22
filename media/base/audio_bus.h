@@ -200,10 +200,6 @@ class MEDIA_EXPORT AudioBus {
   // Convenience function to allow range-based for-loops.
   const ChannelVector& AllChannels() const;
 
-  // Returns a copy of `channels_`, with `subspan()` applied to each channel.
-  // Note: The returned channels might not be aligned, depending on `offset`.
-  ChannelVector AllChannelsSubspan(size_t offset, size_t count) const;
-
   // Returns the number of channels.
   int channels() const { return static_cast<int>(channel_data_.size()); }
   // Returns the number of frames.

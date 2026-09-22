@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/audio_hash.h"
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
-#include "media/base/audio_hash.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,8 +138,11 @@ TEST_F(AudioHashTest, HashIgnoresUpdateOrder) {
   const int channels = bus_one_->channels();
   std::unique_ptr<AudioBus> half_bus = AudioBus::CreateWrapper(channels);
   half_bus->set_frames(half_frames);
-  half_bus->SetAllChannels(
-      bus_one_->AllChannelsSubspan(half_frames, half_frames));
+  const size_t half_offset = base::checked_cast<size_t>(half_frames);
+  for (int i = 0; i < channels; ++i) {
+    half_bus->SetChannelData(
+        i, bus_one_->channel(i).subspan(half_offset, half_offset));
+  }
 
   half_hash.Update(half_bus.get(), half_bus->frames());
   EXPECT_EQ(full_hash.ToString(), half_hash.ToString());

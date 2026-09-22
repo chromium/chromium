@@ -207,8 +207,8 @@ class AudioRendererAlgorithmTest : public testing::Test {
                        size_t offset,
                        size_t frames,
                        const float value) {
-    for (auto channel_subspan : bus->AllChannelsSubspan(offset, frames)) {
-      if (!std::ranges::all_of(channel_subspan,
+    for (auto channel : bus->AllChannels()) {
+      if (!std::ranges::all_of(channel.subspan(offset, frames),
                                [=](auto s) { return s == value; })) {
         return false;
       }
