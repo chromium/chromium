@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_node_options.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param_map.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
@@ -20,7 +21,7 @@ namespace blink {
 class AudioNodeInput;
 class AudioWorkletProcessor;
 
-class AudioWorkletHandler final : public AudioHandler {
+class MODULES_EXPORT AudioWorkletHandler final : public AudioHandler {
  public:
   static scoped_refptr<AudioWorkletHandler> Create(
       AudioNode&,
@@ -47,6 +48,7 @@ class AudioWorkletHandler final : public AudioHandler {
   void SetProcessorOnRenderThread(AudioWorkletProcessor*);
 
   bool IsProcessorActive() { return is_processor_active_; }
+  void MarkProcessorInactiveOnMainThread();
 
  private:
   AudioWorkletHandler(
@@ -63,8 +65,6 @@ class AudioWorkletHandler final : public AudioHandler {
 
   void NotifyProcessorError(
       const AudioWorkletProcessorErrorDetails& error_details);
-
-  void MarkProcessorInactiveOnMainThread();
 
   bool HasActiveInputs();
   void FinishProcessorOnRenderThread();
