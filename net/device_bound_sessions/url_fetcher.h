@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
+#include "net/base/request_priority.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "url/origin.h"
@@ -32,13 +33,15 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
              const url::Origin& referring_origin,
              std::optional<net::NetLogSource> net_log_source,
              bool is_refresh,
-             base::TimeDelta timeout = base::TimeDelta());
+             net::RequestPriority priority,
+             base::TimeDelta timeout);
   ~URLFetcher() override;
 
   void Start(base::OnceClosure complete_callback);
   std::string TakeDataReceived();
 
   URLRequest& request() { return *request_; }
+  net::RequestPriority priority() const { return request_->priority(); }
   const std::string& data_received() const { return data_received_; }
   int net_error() const { return net_error_; }
   const CookieAndLineAccessResultList& maybe_stored_cookies() const {

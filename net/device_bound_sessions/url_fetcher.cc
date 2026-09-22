@@ -68,9 +68,10 @@ URLFetcher::URLFetcher(const URLRequestContext* context,
                        const url::Origin& referring_origin,
                        std::optional<net::NetLogSource> net_log_source,
                        bool is_refresh,
+                       net::RequestPriority priority,
                        base::TimeDelta timeout)
     : request_(context->CreateRequest(url,
-                                      IDLE,
+                                      priority,
                                       this,
                                       kRegistrationTrafficAnnotation,
                                       // TODO(crbug.com/533319700): Support

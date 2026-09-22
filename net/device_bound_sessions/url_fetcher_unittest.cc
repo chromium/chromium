@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -56,6 +57,25 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+struct FetcherParams {
+  raw_ptr<const URLRequestContext> context = nullptr;
+  GURL url;
+  std::optional<url::Origin> referring_origin = std::nullopt;
+  std::optional<net::NetLogSource> net_log_source = std::nullopt;
+  bool is_refresh = false;
+  net::RequestPriority priority = net::IDLE;
+  base::TimeDelta timeout = base::TimeDelta();
+};
+
+std::unique_ptr<URLFetcher> CreateFetcher(FetcherParams params) {
+  url::Origin origin =
+      params.referring_origin.value_or(url::Origin::Create(params.url));
+  return std::make_unique<URLFetcher>(
+      params.context, std::move(params.url), std::move(origin),
+      std::move(params.net_log_source), params.is_refresh, params.priority,
+      params.timeout);
+}
+
 // Note: This fixture runs an `EmbeddedTestServer` on a background thread in
 // several of its tests and therefore uses the default `TimeSource::SYSTEM_TIME`
 // (see the note on `URLFetcherWatchdogTest` for why mock time and real sockets
@@ -90,9 +110,7 @@ TEST_F(URLFetcherTest, BasicSuccess) {
   ASSERT_TRUE(server.Start());
 
   GURL url = server.GetURL("/");
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -102,12 +120,23 @@ TEST_F(URLFetcherTest, BasicSuccess) {
   EXPECT_EQ(fetcher->data_received(), "test data");
 }
 
+TEST_F(URLFetcherTest, RequestPriority) {
+  GURL url("https://example.test/");
+  auto default_fetcher = CreateFetcher({.context = context(), .url = url});
+  EXPECT_EQ(default_fetcher->priority(), IDLE);
+
+  auto high_priority_fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .priority = HIGHEST,
+  });
+  EXPECT_EQ(high_priority_fetcher->priority(), HIGHEST);
+}
+
 TEST_F(URLFetcherTest, AsyncErrorOnRead) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::READ_ASYNC, ERR_FAILED);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -120,9 +149,7 @@ TEST_F(URLFetcherTest, AsyncErrorOnRead) {
 TEST_F(URLFetcherTest, SyncErrorOnRead) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::READ_SYNC, ERR_FAILED);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -145,9 +172,7 @@ TEST_F(URLFetcherTest, Non2xxResponse) {
   ASSERT_TRUE(server.Start());
 
   GURL url = server.GetURL("/");
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -178,9 +203,7 @@ TEST_F(URLFetcherTest, FollowRedirect) {
   ASSERT_TRUE(server.Start());
 
   GURL url = server.GetURL("/redirect");
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -229,9 +252,11 @@ TEST_F(URLFetcherTest, RedirectSecureSpecCompliantMetadataSynchronization) {
   // the EmbeddedTestServer boundary (yielding "same-origin" or "same-site").
   url::Origin referring_origin = url::Origin::Create(initial_url);
 
-  auto fetcher = std::make_unique<URLFetcher>(context(), initial_url,
-                                              referring_origin, std::nullopt,
-                                              /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = initial_url,
+      .referring_origin = referring_origin,
+  });
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -270,9 +295,7 @@ TEST_F(URLFetcherTest, RedirectInsecureProtocolDowngradeBlocked) {
   ASSERT_TRUE(server.Start());
 
   GURL initial_url = server.GetURL("/trigger-insecure-downgrade");
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), initial_url, url::Origin::Create(initial_url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = initial_url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -290,9 +313,7 @@ TEST_F(URLFetcherTest, RedirectInsecureProtocolDowngradeBlocked) {
 TEST_F(URLFetcherTest, ImmediateErrorInOnResponseStarted) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::READ_SYNC, ERR_FAILED);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::RunLoop run_loop;
   fetcher->Start(run_loop.QuitClosure());
@@ -313,9 +334,11 @@ class URLFetcherDeferralBypassTest : public base::test::WithFeatureOverride,
 
 TEST_P(URLFetcherDeferralBypassTest, ModeIsCorrectForRefresh) {
   GURL url("http://example.com");
-  auto fetcher =
-      std::make_unique<URLFetcher>(context(), url, url::Origin::Create(url),
-                                   std::nullopt, /*is_refresh=*/true);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .is_refresh = true,
+  });
   net::DeviceBoundSessionMode expected_mode =
       IsParamFeatureEnabled() ? net::DeviceBoundSessionMode::kBypassDeferral
                               : net::DeviceBoundSessionMode::kAllowed;
@@ -324,9 +347,7 @@ TEST_P(URLFetcherDeferralBypassTest, ModeIsCorrectForRefresh) {
 
 TEST_P(URLFetcherDeferralBypassTest, ModeIsAllowedWhenNotRefresh) {
   GURL url("http://example.com");
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false);
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
   EXPECT_EQ(fetcher->request().device_bound_session_mode(),
             net::DeviceBoundSessionMode::kAllowed);
 }
@@ -402,9 +423,11 @@ TEST_F(URLFetcherWatchdogTest, Start_WatchdogTimeout_HeadersStalled) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::START, ERR_IO_PENDING);
   constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -421,9 +444,11 @@ TEST_F(URLFetcherWatchdogTest, Start_WatchdogTimeout_BodyStalled) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::READ_ASYNC, ERR_IO_PENDING);
   constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -440,9 +465,11 @@ TEST_F(URLFetcherWatchdogTest, Start_WatchdogTimeout_AcrossRedirect) {
   GURL hung_url = URLRequestFailedJob::GetMockHttpsUrl(ERR_IO_PENDING);
   GURL initial_url = AddRedirectTo(hung_url);
   constexpr base::TimeDelta kTimeout = base::Seconds(2);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), initial_url, url::Origin::Create(initial_url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = initial_url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -458,9 +485,11 @@ TEST_F(URLFetcherWatchdogTest, Start_WatchdogTimeout_AcrossRedirect) {
 TEST_F(URLFetcherWatchdogTest, Start_SuccessfulFetch_DisarmsWatchdog) {
   GURL url = URLRequestMockDataJob::GetMockHttpUrl("hello", /*repeat_count=*/1);
   constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -475,9 +504,11 @@ TEST_F(URLFetcherWatchdogTest, Start_SuccessfulFetch_DisarmsWatchdog) {
 TEST_F(URLFetcherWatchdogTest, Start_NetworkError_DisarmsWatchdog) {
   GURL url = URLRequestFailedJob::GetMockHttpUrl(ERR_CONNECTION_FAILED);
   constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -493,9 +524,11 @@ TEST_F(URLFetcherWatchdogTest,
   GURL initial_url =
       AddRedirectTo(GURL("http://non-secure.example.org/plaintext"));
   constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), initial_url, url::Origin::Create(initial_url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = initial_url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -518,9 +551,11 @@ TEST_F(URLFetcherWatchdogTest,
   static_assert(kShortTimeout == (kShortTimeout / 2) * 2,
                 "kShortTimeout is not divisible by 2");
 
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kShortTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context(),
+      .url = url,
+      .timeout = kShortTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -537,9 +572,7 @@ TEST_F(URLFetcherWatchdogTest,
 TEST_F(URLFetcherWatchdogTest, Start_ZeroTimeout_WatchdogDisabled) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::START, ERR_IO_PENDING);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, /*timeout=*/base::TimeDelta());
+  auto fetcher = CreateFetcher({.context = context(), .url = url});
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -575,9 +608,11 @@ TEST_F(URLFetcherWatchdogTest, Start_WatchdogTimeout_CertSelectionStalled) {
 
   constexpr base::TimeDelta kTimeout = base::Seconds(20);
   GURL url = URLRequestMockDataJob::GetMockUrlForClientCertificateRequest();
-  auto fetcher = std::make_unique<URLFetcher>(
-      context.get(), url, url::Origin::Create(url),
-      /*net_log_source=*/std::nullopt, /*is_refresh=*/false, kTimeout);
+  auto fetcher = CreateFetcher({
+      .context = context.get(),
+      .url = url,
+      .timeout = kTimeout,
+  });
 
   base::test::TestFuture<void> future;
   fetcher->Start(future.GetCallback());
@@ -640,10 +675,10 @@ class URLFetcherClientCertTest : public TestWithTaskEnvironment {
   EmbeddedTestServer& test_server() { return test_server_; }
 
   std::unique_ptr<URLFetcher> CreateDefaultFetcher() {
-    GURL url = test_server_.GetURL("/");
-    return std::make_unique<URLFetcher>(
-        context(), url, url::Origin::Create(url),
-        /*net_log_source=*/std::nullopt, /*is_refresh=*/false);
+    return CreateFetcher({
+        .context = context(),
+        .url = test_server_.GetURL("/"),
+    });
   }
 
  private:
