@@ -26,14 +26,6 @@
 #include "ui/views/test/button_test_api.h"
 
 namespace ash {
-namespace {
-ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
-                             gfx::Point(),
-                             gfx::Point(),
-                             ui::EventTimeForNow(),
-                             ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-}  // namespace
 
 class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
  public:
@@ -78,6 +70,10 @@ class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
 
   void SelectDevice(MediaItemUIDeviceSelectorView* selector_view,
                     const std::string& device_id) {
+    const ui::MouseEvent pressed_event(
+        ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+        ui::EF_LEFT_MOUSE_BUTTON);
     views::test::ButtonTestApi(
         selector_view->GetCastDeviceEntryViewsForTesting().at(0))
         .NotifyClick(pressed_event);
