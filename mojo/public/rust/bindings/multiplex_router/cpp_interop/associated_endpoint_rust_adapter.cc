@@ -15,13 +15,46 @@
 
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/interface_endpoint_client_adapter.h"
 
 namespace mojo::rust::bindings {
+
+std::unique_ptr<mojo::Message> CreateOutgoingMessage(
+    ::rust::Slice<const uint8_t> payload,
+    ::rust::Vec<MojoHandle> handles) {
+  base::span<const uint8_t> payload_span =
+      // Safety: we're constructing the span from a valid rust slice
+      UNSAFE_BUFFERS(base::span<const uint8_t>(payload.data(), payload.size()));
+  std::vector<mojo::ScopedHandle> raw_handles;
+  raw_handles.reserve(handles.size());
+  for (const auto handle_val : handles) {
+    raw_handles.emplace_back(mojo::Handle(handle_val));
+  }
+  return std::make_unique<mojo::Message>(payload_span, base::span(raw_handles));
+}
+
+std::unique_ptr<mojo::Message> CreateIncomingMessage(
+    std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> raw_handle,
+    ::rust::Vec<MojoHandle> handles) {
+  std::vector<mojo::ScopedHandle> raw_handles;
+  raw_handles.reserve(handles.size());
+  for (const auto handle_val : handles) {
+    raw_handles.emplace_back(mojo::Handle(handle_val));
+  }
+  CHECK(raw_handle);
+  return std::make_unique<mojo::Message>(raw_handle->take_handle(),
+                                         std::move(raw_handles));
+}
 
 AssociatedEndpointRustAdapter::AssociatedEndpointRustAdapter(
     mojo::ScopedInterfaceEndpointHandle handle)
@@ -75,10 +108,9 @@ uint32_t AssociatedEndpointRustAdapter::GetInterfaceId() const {
 // Forwards an outgoing IPC message from Rust to the bound C++ endpoint client.
 // Fills the role of MultiplexRouterHandle::send_message().
 void AssociatedEndpointRustAdapter::SendMessage(
-    std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper)
-    const {
+    std::unique_ptr<mojo::Message> message) const {
   CHECK(client_adapter_);
-  client_adapter_->SendMessage(std::move(message_wrapper));
+  client_adapter_->SendMessage(std::move(message));
 }
 
 // Allocates a new nested associated endpoint on this routing group and returns

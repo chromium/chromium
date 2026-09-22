@@ -47,10 +47,9 @@ class MojoResponderWrapper {
   MojoResponderWrapper& operator=(const MojoResponderWrapper&) = delete;
 
   // Sends a response message using the wrapped C++ responder.
-  // `CanSendResponse()` must be true, and `message_wrapper` must not be null.
+  // `CanSendResponse()` must be true, and `message` must not be null.
   // May only be called once.
-  void Accept(std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper>
-                  message_wrapper) const;
+  void Accept(std::unique_ptr<mojo::Message> message) const;
 
   // Returns true if this wrapper can be used to send a response message.
   // If false, it can only be used to register new endpoints.

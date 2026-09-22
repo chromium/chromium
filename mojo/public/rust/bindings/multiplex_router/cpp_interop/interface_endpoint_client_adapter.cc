@@ -17,6 +17,7 @@
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/interface_endpoint_client_adapter.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
+#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/mojo_responder_wrapper.h"
 
 // Dummy functions to provide our contained `InterfaceEndpointClient`
 namespace {
@@ -98,24 +100,13 @@ InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
 InterfaceEndpointClientAdapter::~InterfaceEndpointClientAdapter() = default;
 
 // Receives an incoming one-way IPC message from InterfaceEndpointClient, and
-// invokes the Rust incoming callback without a responder. We still pass
-// the responder wrapper so that we can use it to register new endpoints.
+// invokes the Rust incoming callback without a responder.
 bool InterfaceEndpointClientAdapter::Accept(mojo::Message* message) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!info_.has_value()) {
-    return false;
-  }
-  return cxx_incoming_handler(
-      *info_.value(),
-      std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
-          message->TakeMojoMessage()),
-      std::make_unique<MojoResponderWrapper>(
-          nullptr, task_runner_, base::WrapRefCounted(group_controller())));
+  return AcceptWithResponder(message, nullptr);
 }
 
 // Receives an incoming request IPC message from InterfaceEndpointClient with
-// a responder, and invokes the Rust incoming callback with the responder
-// wrapper.
+// an optional responder, and invokes the Rust incoming callback.
 bool InterfaceEndpointClientAdapter::AcceptWithResponder(
     mojo::Message* message,
     std::unique_ptr<mojo::internal::ResponderThunk> responder) {
@@ -123,13 +114,31 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
   if (!info_.has_value()) {
     return false;
   }
-  return cxx_incoming_handler(
-      *info_.value(),
-      std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
-          message->TakeMojoMessage()),
-      std::make_unique<MojoResponderWrapper>(
-          std::move(responder), task_runner_,
-          base::WrapRefCounted(group_controller())));
+
+  std::vector<mojo::ScopedHandle> handles =
+      std::move(*message->mutable_handles());
+  ::rust::Vec<MojoHandle> handle_values;
+  handle_values.reserve(handles.size());
+  for (auto& handle : handles) {
+    handle_values.push_back(handle.release().value());
+  }
+  ::rust::Slice<const uint8_t> payload(message->data(),
+                                       message->data_num_bytes());
+  // This transfers message by value into Rust, so don't touch it after this
+  // point. Note that the slice above remains valid because the memory is owned
+  // by the raw message handle, not the message object.
+  auto raw_wrapper = std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
+      message->TakeMessageHandleForRust());
+
+  // It's technically possible for the Rust handler to drop `this` while
+  // it's running, so make sure we stay alive until the end of the handler.
+  scoped_refptr<InterfaceEndpointClientAdapter> keep_alive(this);
+  auto responder_wrapper = std::make_unique<MojoResponderWrapper>(
+      std::move(responder), task_runner_,
+      base::WrapRefCounted(group_controller()));
+  return run_rust_incoming_handler(
+      *info_.value(), payload, std::move(handle_values), std::move(raw_wrapper),
+      std::move(responder_wrapper));
 }
 
 // Invoked by InterfaceEndpointClient on pipe disconnection or error; calls
@@ -138,37 +147,41 @@ void InterfaceEndpointClientAdapter::OnConnectionError() {
   if (info_.has_value()) {
     auto info = std::move(info_.value());
     info_.reset();
-    cxx_disconnect_handler(std::move(info));
+    run_rust_disconnect_handler(std::move(info));
   }
 }
 
-// Unwraps an outgoing message handle from Rust and passes it to
-// InterfaceEndpointClient::Accept() to send over the pipe.
+// Forwards an outgoing message from Rust to
+// InterfaceEndpointClient::SendMessage().
 void InterfaceEndpointClientAdapter::SendMessage(
-    std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper) {
+    std::unique_ptr<mojo::Message> message) {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&InterfaceEndpointClientAdapter::SendMessage,
                        scoped_refptr<InterfaceEndpointClientAdapter>(this),
-                       std::move(message_wrapper)));
+                       std::move(message)));
     return;
   }
 
   if (!info_.has_value()) {
+    // Mojo cleans up regular handles, but we need to manually clean up
+    // associated interfaces. Note that we're in an equivalent state to
+    // having called `SerializeHandles` on the message; Rust did all of
+    // that work already.
+    if (auto* controller = group_controller()) {
+      message->NotifyPeerClosureForSerializedHandles(controller);
+    }
     return;
   }
 
-  mojo::ScopedMessageHandle handle = message_wrapper->take_handle();
-  mojo::Message message = mojo::Message::CreateFromMessageHandle(&handle);
-
-  if (message.has_flag(mojo::Message::kFlagExpectsResponse)) {
-    uint64_t rust_request_id = message.request_id();
+  if (message->has_flag(mojo::Message::kFlagExpectsResponse)) {
+    uint64_t rust_request_id = message->request_id();
     client_.AcceptWithResponder(
-        &message, std::make_unique<RustResponder>(
-                      weak_ptr_factory_.GetWeakPtr(), rust_request_id));
+        message.get(), std::make_unique<RustResponder>(
+                           weak_ptr_factory_.GetWeakPtr(), rust_request_id));
   } else {
-    client_.Accept(&message);
+    client_.Accept(message.get());
   }
 }
 

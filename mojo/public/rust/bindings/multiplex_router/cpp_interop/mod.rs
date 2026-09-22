@@ -4,6 +4,7 @@
 
 pub mod cpp_router_handle;
 pub mod cxx;
+pub mod cxx_shim;
 pub use cxx::ffi;
 
 pub use cpp_router_handle::{CppResponseSender, CppRouterHandle};

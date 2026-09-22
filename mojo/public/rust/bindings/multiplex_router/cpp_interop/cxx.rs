@@ -7,11 +7,17 @@ chromium::import! {
   "//mojo/public/rust/system";
 }
 
-use super::cpp_router_handle::{cxx_disconnect_handler, cxx_incoming_handler};
+use super::cpp_router_handle::{run_rust_disconnect_handler, run_rust_incoming_handler};
 use crate::multiplex_router::EndpointInfo;
 
 #[cxx::bridge(namespace = "mojo::rust::bindings")]
 pub mod ffi {
+    #[namespace = "mojo"]
+    unsafe extern "C++" {
+        include!("mojo/public/cpp/bindings/message.h");
+        type Message;
+    }
+
     #[namespace = "mojo::rust"]
     unsafe extern "C++" {
         include!("mojo/public/rust/system/scoped_handle_interop.h");
@@ -28,20 +34,52 @@ pub mod ffi {
     extern "Rust" {
         type EndpointInfo;
 
-        /// Called by C++ to invoke the user-provided Rust message handler
-        fn cxx_incoming_handler(
+        /// Called by C++ when an incoming message arrives for a Rust-bound
+        /// associated endpoint. Returns true if the message was successfully
+        /// dispatched to the Rust handler, or false on deserialization failure.
+        ///
+        /// # Safety
+        /// `handles` must contain only live, unowned raw handle values.
+        /// Ownership of those handles is transferred to Rust.
+        /// Its type really should be Vec<UntypedHandle>, but cxx won't have it
+        unsafe fn run_rust_incoming_handler(
             info: &EndpointInfo,
-            wrapper: UniquePtr<ScopedMessageHandleWrapper>,
+            payload: &[u8],
+            handles: Vec<usize>,
+            raw_message_handle: UniquePtr<ScopedMessageHandleWrapper>,
             responder: UniquePtr<MojoResponderWrapper>,
         ) -> bool;
 
         /// Called by C++ to invoke the user-provided Rust disconnect handler
-        fn cxx_disconnect_handler(info: Box<EndpointInfo>);
+        fn run_rust_disconnect_handler(info: Box<EndpointInfo>);
     }
 
     unsafe extern "C++" {
         include!("mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h");
         type AssociatedEndpointRustAdapter;
+
+        /// Constructs a fresh C++ `mojo::Message` with the given payload,
+        /// and attaches the handles to it.
+        ///
+        /// # Safety
+        /// `handles` must contain only live, unowned raw handle values.
+        /// Ownership of those handles is transferred to C++.
+        /// Its type really should be Vec<UntypedHandle>, but cxx won't have it
+        #[allow(clippy::missing_safety_doc)]
+        unsafe fn CreateOutgoingMessage(payload: &[u8], handles: Vec<usize>) -> UniquePtr<Message>;
+
+        /// Constructs a C++ `mojo::Message` from an existing incoming message,
+        /// from which we already extracted the attached handles.
+        ///
+        /// # Safety
+        /// `handles` must contain only live, unowned raw handle values.
+        /// Ownership of those handles is transferred to C++.
+        /// Its type really should be Vec<UntypedHandle>, but cxx won't have it
+        #[allow(clippy::missing_safety_doc)]
+        unsafe fn CreateIncomingMessage(
+            raw_handle: UniquePtr<ScopedMessageHandleWrapper>,
+            handles: Vec<usize>,
+        ) -> UniquePtr<Message>;
 
         /// Creates a pair of entangled C++ pending associated endpoints.
         fn CreatePairPendingAssociation(
@@ -61,10 +99,7 @@ pub mod ffi {
         fn GetInterfaceId(self: &AssociatedEndpointRustAdapter) -> u32;
 
         /// Sends an outgoing Mojom IPC message through the C++ endpoint.
-        fn SendMessage(
-            self: &AssociatedEndpointRustAdapter,
-            message_wrapper: UniquePtr<ScopedMessageHandleWrapper>,
-        );
+        fn SendMessage(self: &AssociatedEndpointRustAdapter, message: UniquePtr<Message>);
 
         /// Registers a nested associated interface endpoint with the C++ group
         /// controller.
@@ -81,10 +116,7 @@ pub mod ffi {
         /// Sends a reply message through the C++ responder object.
         /// May only be called once.
         /// The name is counterintuitive, but that's the C++ naming scheme.
-        fn Accept(
-            self: &MojoResponderWrapper,
-            message_wrapper: UniquePtr<ScopedMessageHandleWrapper>,
-        );
+        fn Accept(self: &MojoResponderWrapper, message: UniquePtr<Message>);
 
         /// Returns true if this responder can send messages.
         fn CanSendResponse(self: &MojoResponderWrapper) -> bool;

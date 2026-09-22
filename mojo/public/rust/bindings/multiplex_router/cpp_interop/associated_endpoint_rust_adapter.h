@@ -10,13 +10,13 @@
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/sequence_bound.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/mojo_responder_wrapper.h"
+#include "mojo/public/rust/system/scoped_handle_interop.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace mojo::rust::bindings {
@@ -24,6 +24,18 @@ namespace mojo::rust::bindings {
 // Defined in Rust, exposed in the cxx bridge
 struct EndpointInfo;
 class InterfaceEndpointClientAdapter;
+
+// Constructs a fresh C++ `mojo::Message` with the given payload,
+// and attaches the provided handles to it.
+std::unique_ptr<mojo::Message> CreateOutgoingMessage(
+    ::rust::Slice<const uint8_t> payload,
+    ::rust::Vec<MojoHandle> handles);
+
+// Constructs a C++ `mojo::Message` from an existing incoming message handle,
+// from which we already extracted the attached handles.
+std::unique_ptr<mojo::Message> CreateIncomingMessage(
+    std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> raw_handle,
+    ::rust::Vec<MojoHandle> handles);
 
 // This file defines the C++ side of the interop layer that enables Rust to
 // attach Mojo associated interfaces to a C++ message pipe.
@@ -74,8 +86,7 @@ class AssociatedEndpointRustAdapter {
 
   // Forwards an outgoing IPC message from Rust to the bound C++ endpoint
   // client.
-  void SendMessage(std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper>
-                       message_wrapper) const;
+  void SendMessage(std::unique_ptr<mojo::Message> message) const;
 
   // Allocates a new associated endpoint on the underlying pipe, and
   // returns a new adapter wrapping it. If |interface_id| is

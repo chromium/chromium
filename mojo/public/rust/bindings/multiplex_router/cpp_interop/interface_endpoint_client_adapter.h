@@ -66,10 +66,9 @@ class InterfaceEndpointClientAdapter
   // the Rust disconnect callback.
   void OnConnectionError();
 
-  // Unwraps an outgoing message handle from Rust and passes it to
-  // InterfaceEndpointClient::Accept() to send over the pipe.
-  void SendMessage(
-      std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper);
+  // Forwards an outgoing message from Rust to
+  // InterfaceEndpointClient::SendMessage().
+  void SendMessage(std::unique_ptr<mojo::Message> message);
 
   // An endpoint may be bound before it is associated with a message pipe, in
   // which case neither the interface ID nor the group controller exists yet.

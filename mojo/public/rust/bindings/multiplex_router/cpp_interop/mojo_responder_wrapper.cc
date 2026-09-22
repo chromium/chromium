@@ -25,14 +25,9 @@ class MojoResponderWrapper::ResponderHolder {
       std::unique_ptr<mojo::internal::ResponderThunk> responder)
       : responder_(std::move(responder)) {}
 
-  void Accept(
-      std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> msg_wrapper) {
-    if (!responder_ || !msg_wrapper) {
-      return;
-    }
-    mojo::ScopedMessageHandle handle = msg_wrapper->take_handle();
-    mojo::Message message = mojo::Message::CreateFromMessageHandle(&handle);
-    std::ignore = responder_->Accept(&message);
+  void Accept(std::unique_ptr<mojo::Message> message) {
+    auto responder = std::move(responder_);
+    std::ignore = responder->Accept(message.get());
   }
 
  private:
@@ -53,12 +48,9 @@ MojoResponderWrapper::~MojoResponderWrapper() = default;
 
 // Sends a response message using the wrapped C++ responder.
 void MojoResponderWrapper::Accept(
-    std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper)
-    const {
-  CHECK(message_wrapper);
+    std::unique_ptr<mojo::Message> message) const {
   CHECK(responder_);
-  responder_.AsyncCall(&ResponderHolder::Accept)
-      .WithArgs(std::move(message_wrapper));
+  responder_.AsyncCall(&ResponderHolder::Accept).WithArgs(std::move(message));
   responder_.Reset();
 }
 

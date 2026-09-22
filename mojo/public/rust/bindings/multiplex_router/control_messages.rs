@@ -108,7 +108,7 @@ pub fn parse_incoming_control_message(mut message: MojomMessage) -> Option<RunOr
     }
 
     let mut opt_handles: Vec<Option<system::mojo_types::UntypedHandle>> =
-        message.handles.into_iter().map(Some).collect();
+        std::mem::take(&mut message.handles).into_iter().map(Some).collect();
 
     let params: RunOrClosePipeMessageParams = match mojom_value_parser::deserialize_exact(
         &message.payload,
@@ -118,10 +118,7 @@ pub fn parse_incoming_control_message(mut message: MojomMessage) -> Option<RunOr
     ) {
         Ok(p) => p,
         Err(_) => {
-            let _ = message
-                .raw_message_handle
-                .unwrap()
-                .report_bad_message("Control message failed deserialization");
+            let _ = message.report_bad_message("Control message failed deserialization");
             return None;
         }
     };

@@ -13,6 +13,7 @@ rust_static_library("bindings") {
     "multiplex_router/control_messages.rs",
     "multiplex_router/cpp_interop/cpp_router_handle.rs",
     "multiplex_router/cpp_interop/cxx.rs",
+    "multiplex_router/cpp_interop/cxx_shim.rs",
     "multiplex_router/cpp_interop/mod.rs",
     "multiplex_router/endpoint_registry.rs",
     "multiplex_router/mod.rs",
