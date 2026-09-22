@@ -132,13 +132,10 @@ bool SetActionBehavior(const NsswitchReader::ServiceAction& action,
       }
     }
   } else {
-    if (auto it = in_out_parsed_behavior.find(action.status);
-        it != in_out_parsed_behavior.end()) {
-      if (it->second != action.action) {
-        return false;
-      }
-    } else {
-      in_out_parsed_behavior.emplace(action.status, action.action);
+    auto [it, inserted] =
+        in_out_parsed_behavior.try_emplace(action.status, action.action);
+    if (!inserted && it->second != action.action) {
+      return false;
     }
   }
 
@@ -151,7 +148,7 @@ bool SetActionBehavior(const NsswitchReader::ServiceAction& action,
 // `actions`.
 bool AreActionsCompatible(
     const std::vector<NsswitchReader::ServiceAction>& actions,
-    const std::map<NsswitchReader::Status, NsswitchReader::Action>
+    const std::map<NsswitchReader::Status, NsswitchReader::Action>&
         expected_actions) {
   std::map<NsswitchReader::Status, NsswitchReader::Action> parsed_behavior;
 
@@ -166,23 +163,19 @@ bool AreActionsCompatible(
   }
 
   // Default behavior if not configured.
-  if (parsed_behavior.count(NsswitchReader::Status::kSuccess) == 0)
-    parsed_behavior[NsswitchReader::Status::kSuccess] =
-        NsswitchReader::Action::kReturn;
-  if (parsed_behavior.count(NsswitchReader::Status::kNotFound) == 0)
-    parsed_behavior[NsswitchReader::Status::kNotFound] =
-        NsswitchReader::Action::kContinue;
-  if (parsed_behavior.count(NsswitchReader::Status::kUnavailable) == 0)
-    parsed_behavior[NsswitchReader::Status::kUnavailable] =
-        NsswitchReader::Action::kContinue;
-  if (parsed_behavior.count(NsswitchReader::Status::kTryAgain) == 0)
-    parsed_behavior[NsswitchReader::Status::kTryAgain] =
-        NsswitchReader::Action::kContinue;
+  parsed_behavior.try_emplace(NsswitchReader::Status::kSuccess,
+                              NsswitchReader::Action::kReturn);
+  parsed_behavior.try_emplace(NsswitchReader::Status::kNotFound,
+                              NsswitchReader::Action::kContinue);
+  parsed_behavior.try_emplace(NsswitchReader::Status::kUnavailable,
+                              NsswitchReader::Action::kContinue);
+  parsed_behavior.try_emplace(NsswitchReader::Status::kTryAgain,
+                              NsswitchReader::Action::kContinue);
 
-  for (const std::pair<const NsswitchReader::Status, NsswitchReader::Action>&
-           expected : expected_actions) {
-    if (parsed_behavior[expected.first] != expected.second)
+  for (const auto& [status, action] : expected_actions) {
+    if (parsed_behavior[status] != action) {
       return false;
+    }
   }
 
   return true;
