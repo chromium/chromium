@@ -44,6 +44,12 @@ extern const CGFloat kQuickActionsTopPaddingControl;
 extern const CGFloat kMostVisitedTopPaddingControl;
 extern const CGFloat kReducedModuleSpacingControl;
 
+// Regular x Regular (iPad) Padding.
+extern const CGFloat kLogoTopPaddingRegularXRegular;
+extern const CGFloat kDoodleTopPaddingRegularXRegular;
+extern const CGFloat kLogoToFakeboxPaddingRegularXRegular;
+extern const CGFloat kQuickActionsTopPaddingRegularXRegular;
+
 // Shared spacing constants.
 extern const CGFloat kQuickActionsTopPadding;
 extern const CGFloat kReducedModuleSpacing;
@@ -93,8 +99,9 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
 // enabled arm and size class.
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
                              UITraitCollection* trait_collection);
-// Returns top padding for Quick Actions based on the enabled arm.
-CGFloat QuickActionsTopPadding();
+// Returns top padding for Quick Actions based on the enabled arm and size
+// class.
+CGFloat QuickActionsTopPadding(UITraitCollection* trait_collection);
 // Returns top padding for Most Visited Tiles based on the
 // enabled arm and size class.
 CGFloat MostVisitedTopPadding(UITraitCollection* trait_collection);

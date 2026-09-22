@@ -362,7 +362,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   if (IsAimEnabledInNtp()) {
     _qaTopConstraint = [_quickActionsViewController.view.topAnchor
         constraintEqualToAnchor:_fakeLocationBar.bottomAnchor
-                       constant:content_suggestions::QuickActionsTopPadding()];
+                       constant:content_suggestions::QuickActionsTopPadding(
+                                    self.traitCollection)];
 
     [NSLayoutConstraint activateConstraints:@[
       _qaTopConstraint,
@@ -562,7 +563,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
   _fakeLocationBarWidthConstraint.constant = [self fakeLocationBarWidth];
   if (_qaTopConstraint) {
-    _qaTopConstraint.constant = content_suggestions::QuickActionsTopPadding();
+    _qaTopConstraint.constant =
+        content_suggestions::QuickActionsTopPadding(self.traitCollection);
   }
   if (_mvtTopConstraint) {
     _mvtTopConstraint.constant =
@@ -1166,7 +1168,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   CGFloat height = content_suggestions::FakeOmniboxHeight();
 
   if (self.quickActionsVisible && _quickActionsViewController) {
-    height += content_suggestions::QuickActionsTopPadding();
+    height += content_suggestions::QuickActionsTopPadding(self.traitCollection);
     height += _quickActionsViewController.preferredContentSize.height;
     height += content_suggestions::MostVisitedTopPadding(self.traitCollection);
   } else {
