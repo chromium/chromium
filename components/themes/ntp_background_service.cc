@@ -138,7 +138,7 @@ void NtpBackgroundService::FetchCollectionInfo(
 
   ntp::background::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   request.add_filtering_label(filtering_label);
   // Add some extra filtering information in case we need to target a specific
   // milestone post release.
@@ -512,7 +512,7 @@ void NtpBackgroundService::FetchNextCollectionImage(
   *request.add_collection_ids() = requested_next_image_collection_id_;
   request.set_resume_token(requested_next_image_resume_token_);
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
@@ -632,7 +632,7 @@ void NtpBackgroundService::FetchCollectionImageInfoInternal(
   ntp::background::GetImagesInCollectionRequest request;
   request.set_collection_id(collection_id);
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(application_locale_storage_->Get());
+  request.set_language(application_locale_storage_->GetTag().tag_string());
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
   collection_image_info_loader_ptr->AttachStringForUpload(serialized_proto,
