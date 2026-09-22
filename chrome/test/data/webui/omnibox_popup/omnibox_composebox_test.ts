@@ -81,6 +81,13 @@ suite('OmniboxComposeboxTest', () => {
     }
   });
 
+  // The box grows and the dropdown fades, so an animation on either one means
+  // the load-in animation ran.
+  function loadInAnimationCount(): number {
+    return omniboxComposebox.$.composebox.getAnimations().length +
+        omniboxComposebox.$.matches.getAnimations().length;
+  }
+
   test(
       'Shift+Enter allows inserting a newline when input is focused and not empty',
       async () => {
@@ -442,6 +449,83 @@ suite('OmniboxComposeboxTest', () => {
         assertEquals(
             initialCallCount + 1,
             testProxy.handler.getCallCount('queryAutocomplete'));
+      });
+
+  test(
+      'contextual suggestions animate in after a blocked zero state',
+      async () => {
+        loadTimeData.overrideValues(
+            {askGBlockAutoTabZeroStateSuggestions: true});
+
+        const context = {
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 42,
+              title: 'Google',
+              url: 'https://google.com',
+              source: TabAttachmentSource.kAutoAdded,
+            },
+          }],
+          toolMode: 0,
+        };
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        // The zero state query was skipped, so there is nothing to animate yet.
+        assertFalse(omniboxComposebox.showDropdown);
+        assertEquals(0, loadInAnimationCount());
+
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: omniboxComposebox.activeQueryId,
+              matches: [createSearchMatchForTesting({
+                allowedToBeDefaultMatch: false,
+              })],
+            }));
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(omniboxComposebox.showDropdown);
+        assertNotEquals(0, loadInAnimationCount());
+      });
+
+  test(
+      'contextual suggestions do not animate when the zero state query was' +
+          ' not blocked',
+      async () => {
+        loadTimeData.overrideValues(
+            {askGBlockAutoTabZeroStateSuggestions: false});
+
+        const context = {
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 42,
+              title: 'Google',
+              url: 'https://google.com',
+              source: TabAttachmentSource.kAutoAdded,
+            },
+          }],
+          toolMode: 0,
+        };
+        omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+        await microtasksFinished();
+
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: omniboxComposebox.activeQueryId,
+              matches: [createSearchMatchForTesting({
+                allowedToBeDefaultMatch: false,
+              })],
+            }));
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        // Suggestions were never withheld, so the dropdown appearing is the
+        // ordinary zero state and must not animate.
+        assertTrue(omniboxComposebox.showDropdown);
+        assertEquals(0, loadInAnimationCount());
       });
 
   test(

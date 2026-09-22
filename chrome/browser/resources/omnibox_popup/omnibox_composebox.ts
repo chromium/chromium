@@ -36,6 +36,11 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import {getCss} from './omnibox_composebox.css.js';
 import {getHtml} from './omnibox_composebox.html.js';
 
+const CONTEXTUAL_SUGGESTIONS_POSITION_DURATION_MS = 250;
+const CONTEXTUAL_SUGGESTIONS_POSITION_CURVE = 'cubic-bezier(0.2, 0, 0, 1)';
+const CONTEXTUAL_SUGGESTIONS_OPACITY_DELAY_MS = 50;
+const CONTEXTUAL_SUGGESTIONS_OPACITY_DURATION_MS = 150;
+
 export interface OmniboxComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
@@ -116,6 +121,12 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private listenerIds_: number[] = [];
+  /**
+   * Whether this session opened the composebox without suggestions and is
+   * waiting for contextual ones. Set in `addSearchContext()` and consumed
+   * exactly once, on the `showDropdown` when the results come in.
+   */
+  private awaitingBlockedZeroStateSuggestions_: boolean = false;
 
   constructor() {
     super();
@@ -206,6 +217,60 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('result')) {
       this.toggleAttribute('has-grid', this.hasGridSuggestionsGroup_());
+    }
+
+    // Animate once, when the contextual suggestions arrive. Consuming
+    // `awaitingBlockedZeroStateSuggestions_` stops later results from
+    // retriggering the animation.
+    // `lastQueriedInput` is empty only on the zero state path. A typed query
+    // can open the dropdown too and we want to make sure we are not animating
+    // that.
+    if (this.awaitingBlockedZeroStateSuggestions_ && !this.lastQueriedInput &&
+        changedPrivateProperties.has('showDropdown') && this.showDropdown) {
+      this.awaitingBlockedZeroStateSuggestions_ = false;
+      this.animateContextualSuggestions_();
+    }
+  }
+
+  /**
+   * Plays the load-in animation: the box grows to fit the arriving
+   * suggestions, which fade in as it opens.
+   */
+  private async animateContextualSuggestions_() {
+    const dropdown = this.getDropdownElement();
+    const box = this.$.composebox;
+    const startHeight = box.getBoundingClientRect().height;
+
+    await dropdown.updateComplete;
+
+    const endHeight = box.getBoundingClientRect().height;
+
+    // `fill` is set to backwards to keep the rows transparent until the fade
+    // starts.
+    dropdown.animate(
+        [
+          {opacity: 0},
+          {opacity: 1},
+        ],
+        {
+          duration: CONTEXTUAL_SUGGESTIONS_OPACITY_DURATION_MS,
+          delay: CONTEXTUAL_SUGGESTIONS_OPACITY_DELAY_MS,
+          easing: 'linear',
+          fill: 'backwards',
+        });
+
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReducedMotion && startHeight !== endHeight) {
+      box.animate(
+          [
+            {height: `${startHeight}px`},
+            {height: `${endHeight}px`},
+          ],
+          {
+            duration: CONTEXTUAL_SUGGESTIONS_POSITION_DURATION_MS,
+            easing: CONTEXTUAL_SUGGESTIONS_POSITION_CURVE,
+          });
     }
   }
 
@@ -298,6 +363,13 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       // a file after having uploaded an invalid file earlier in the session.
       this.queryAutocomplete(/* clearMatches= */ true);
     }
+
+    // Skipping the query is what makes the composebox open empty and expand
+    // later, so it is the precondition for the animation. This requires both
+    // `askGBlockAutoTabZeroStateSuggestions` to be enabled AND the tab
+    // attachment to be auto-added (context-menu-added tabs query immediately
+    // and do not animate).
+    this.awaitingBlockedZeroStateSuggestions_ = skipImmediateQuery;
   }
 
   playGlowAnimation() {
