@@ -35,12 +35,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +95,18 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.value()));
     }
 
-    /** Finds a suggestion in the suggestions list. */
-    public SuggestionFacility findSuggestion(
-            @Nullable Integer index, @Nullable String title, @Nullable String text) {
-        return noopTo().enterFacility(new SuggestionFacility(index, title, text));
+    /** Finds a tab suggestion (open tab or history) in the suggestions list. */
+    public TabSuggestionFacility findTabSuggestion(
+            @Nullable Integer index, @Nullable String title, @Nullable String urlSubstring) {
+        return noopTo().enterFacility(new TabSuggestionFacility(index, title, urlSubstring));
+    }
+
+    /** Finds a tab group suggestion in the suggestions list. */
+    public TabGroupSuggestionFacility findTabGroupSuggestion(
+            @Nullable Integer index, @Nullable String groupTitle) {
+        return noopTo().enterFacility(
+                        new TabGroupSuggestionFacility(
+                                index, groupTitle, /* groupSubtitle= */ null));
     }
 
     /** Dismisses the overlay by clicking on the scrim background. */
@@ -116,15 +124,18 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         pressBackTo().exitFacility();
     }
 
-    /** A suggestion in the Tab Search results list. */
-    public class SuggestionFacility extends Facility<HostStationT> {
-        private final @Nullable String mTitle;
-        private final @Nullable String mText;
+    /** Base class for a suggestion in the Tab Search results list. */
+    public abstract class BaseSuggestionFacility extends Facility<HostStationT> {
+        protected final @Nullable String mTitle;
+        protected final @Nullable String mText;
         public ViewElement<BaseSuggestionView> suggestionElement;
 
-        public SuggestionFacility(
-                @Nullable Integer index, @Nullable String title, @Nullable String text) {
-            super("SuggestionFacility");
+        public BaseSuggestionFacility(
+                String facilityName,
+                @Nullable Integer index,
+                @Nullable String title,
+                @Nullable String text) {
+            super(facilityName);
             assertTrue(
                     "At least one criteria (index, title, or text) must be provided",
                     index != null || title != null || text != null);
@@ -136,10 +147,7 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
                 matchers.add(withParentIndex(index));
             }
             if (title != null) {
-                var titleMatcher =
-                        OmniboxCapabilities.isDesktopPlatform()
-                                ? Matchers.startsWith(title)
-                                : Matchers.equalTo(title);
+                Matcher<String> titleMatcher = Matchers.containsString(title);
 
                 matchers.add(
                         hasDescendant(
@@ -171,10 +179,23 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
                     declareView(
                             viewSpec(BaseSuggestionView.class, matchersArray), unscopedOption());
         }
+    }
+
+    /** A suggestion representing an individual tab (open tab or history navigation). */
+    public class TabSuggestionFacility extends BaseSuggestionFacility {
+        public TabSuggestionFacility(
+                @Nullable Integer index, @Nullable String title, @Nullable String urlSubstring) {
+            super("TabSuggestionFacility", index, title, urlSubstring);
+        }
 
         /** Clicks the suggestion to select the tab and arrive at a WebPageStation. */
         public WebPageStation clickToSelectTab() {
             return suggestionElement.clickTo().arriveAt(buildSelectedTabStation());
+        }
+
+        /** Clicks the suggestion to open in a new tab and arrive at a WebPageStation. */
+        public WebPageStation clickToOpenNewTab() {
+            return suggestionElement.clickTo().arriveAt(buildNewTabStation());
         }
 
         /**
@@ -190,7 +211,7 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         }
 
         private WebPageStation buildSelectedTabStation() {
-            var builder =
+            BasePageStation.Builder<WebPageStation> builder =
                     WebPageStation.newBuilder()
                             .withIncognito(mHostStation.isIncognito())
                             .initSelectingExistingTab();
@@ -201,6 +222,59 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
                 builder.withExpectedUrlSubstring(mText);
             }
             return builder.build();
+        }
+
+        private WebPageStation buildNewTabStation() {
+            BasePageStation.Builder<WebPageStation> builder =
+                    WebPageStation.newBuilder()
+                            .withIncognito(mHostStation.isIncognito())
+                            .initOpeningNewTab();
+            if (mTitle != null) {
+                builder.withExpectedTitle(mTitle);
+            }
+            if (mText != null) {
+                builder.withExpectedUrlSubstring(mText);
+            }
+            return builder.build();
+        }
+    }
+
+    /** A suggestion representing a tab group in the Tab Search results list. */
+    public class TabGroupSuggestionFacility extends BaseSuggestionFacility {
+        public TabGroupSuggestionFacility(
+                @Nullable Integer index,
+                @Nullable String groupTitle,
+                @Nullable String groupSubtitle) {
+            super("TabGroupSuggestionFacility", index, groupTitle, groupSubtitle);
+        }
+
+        /**
+         * Clicks the tab group suggestion to switch to the group and arrive at a WebPageStation.
+         *
+         * <p>Note: Does not match against the tab group's title because the destination tab's web
+         * page title does not necessarily equal the group title.
+         */
+        public WebPageStation clickToSelectTabGroup() {
+            return suggestionElement.clickTo().arriveAt(buildTabGroupStation());
+        }
+
+        /**
+         * Presses Enter while the suggestion is focused to switch to the group and arrive at a
+         * WebPageStation.
+         */
+        public WebPageStation pressEnterToSelectTabGroup() {
+            UrlBar urlBar = urlBarElement.value();
+            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar));
+            return urlBarElement
+                    .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
+                    .arriveAt(buildTabGroupStation());
+        }
+
+        private WebPageStation buildTabGroupStation() {
+            return WebPageStation.newBuilder()
+                    .withIncognito(mHostStation.isIncognito())
+                    .initSelectingExistingTab()
+                    .build();
         }
     }
 }

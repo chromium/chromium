@@ -14,6 +14,7 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -189,6 +190,35 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                                     tabSearchButton,
                                     InstrumentationRegistry.getInstrumentation(),
                                     activity);
+                        })
+                .enterFacility(new TabSearchOverlayFacility<>());
+    }
+
+    /** Opens the Tab Search overlay via keyboard shortcut (Alt+Shift+A). */
+    public TabSearchOverlayFacility<CtaPageStation> openTabSearchOverlayViaShortcut() {
+        recheckActiveConditions();
+        assert ChromeFeatureList.sTabSearchForDesktop.isEnabled();
+        return runOnUiThreadTo(
+                        () -> {
+                            ChromeTabbedActivity activity = getActivity();
+                            long now = SystemClock.uptimeMillis();
+                            int metaState = KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON;
+                            activity.dispatchKeyEvent(
+                                    new KeyEvent(
+                                            now,
+                                            now,
+                                            KeyEvent.ACTION_DOWN,
+                                            KeyEvent.KEYCODE_A,
+                                            0,
+                                            metaState));
+                            activity.dispatchKeyEvent(
+                                    new KeyEvent(
+                                            now,
+                                            now,
+                                            KeyEvent.ACTION_UP,
+                                            KeyEvent.KEYCODE_A,
+                                            0,
+                                            metaState));
                         })
                 .enterFacility(new TabSearchOverlayFacility<>());
     }
