@@ -62,11 +62,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Annotated"/>
 </enum>
 
-<enum name="BooleanStored">
-  <int value="0" label="Not Stored"/>
-  <int value="1" label="Stored"/>
-</enum>
-
 <enum name="FeatureCurrentlyEnabledResult">
   <summary>Records whether a feature is currently enabled.</summary>
   <int value="0" label="Unknown"/>

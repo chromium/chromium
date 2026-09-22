@@ -1158,18 +1158,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.HintsManager.PageNavigationHintsReturnedBeforeDataFlushed"
-    enum="BooleanStored" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Records whether a page navigation hints fetch returned before navigation
-    data used to record additional page load metrics is flushed. Recorded only
-    for navigations that have a hints fetch initiated for it.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus"
     enum="OptimizationGuideRaceNavigationFetchAttemptStatus"
     expires_after="2027-04-14">
