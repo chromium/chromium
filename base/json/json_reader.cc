@@ -46,7 +46,7 @@ void list_append_f64(base::ListValue& ctx, double val) {
 }
 
 void list_append_str(base::ListValue& ctx, rust::Str val) {
-  ctx.Append(std::string(val));
+  ctx.Append(base::RustStrToStringView(val));
 }
 
 base::ListValue& dict_set_list(base::DictValue& ctx, rust::Str key) {
@@ -78,7 +78,7 @@ void dict_set_f64(base::DictValue& ctx, rust::Str key, double val) {
 }
 
 void dict_set_str(base::DictValue& ctx, rust::Str key, rust::Str val) {
-  ctx.Set(base::RustStrToStringView(key), std::string(val));
+  ctx.Set(base::RustStrToStringView(key), base::RustStrToStringView(val));
 }
 
 namespace {

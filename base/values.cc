@@ -528,19 +528,29 @@ ListValue* DictValue::FindList(std::string_view key) {
 }
 
 DictValue* DictValue::EnsureDict(std::string_view key) {
-  DictValue* dict = FindDict(key);
-  if (dict) {
-    return dict;
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
+  auto it = storage_.try_emplace(key, nullptr).first;
+  if (it->second) {
+    if (auto* dict = it->second->GetIfDict()) {
+      return dict;
+    }
   }
-  return &Set(key, DictValue())->GetDict();
+  it->second = std::make_unique<Value>(DictValue());
+  return &it->second->GetDict();
 }
 
 ListValue* DictValue::EnsureList(std::string_view key) {
-  ListValue* list = FindList(key);
-  if (list) {
-    return list;
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
+  auto it = storage_.try_emplace(key, nullptr).first;
+  if (it->second) {
+    if (auto* list = it->second->GetIfList()) {
+      return list;
+    }
   }
-  return &Set(key, ListValue())->GetList();
+  it->second = std::make_unique<Value>(ListValue());
+  return &it->second->GetList();
 }
 
 Value* DictValue::Set(std::string_view key, Value&& value) & {
@@ -621,8 +631,7 @@ DictValue&& DictValue::Set(std::string_view key, Value&& value) && {
   // DictValue::Set_HintAtEnd(std::string_view key, Value&& value) &
   // DictValue&& DictValue::Set(std::string_view key, Value&& value) &&
 
-  DCHECK(IsStringUTF8AllowingNoncharacters(key));
-  storage_.insert_or_assign(key, std::make_unique<Value>(std::move(value)));
+  Set(key, std::move(value));
   return std::move(*this);
 }
 
@@ -1095,35 +1104,35 @@ Value& ListValue::operator[](size_t index) {
 }
 
 bool ListValue::contains(bool val) const {
-  return contains(val, &Value::is_bool, &Value::GetBool);
+  return contains(val, &Value::GetIfBool);
 }
 
 bool ListValue::contains(int val) const {
-  return contains(val, &Value::is_int, &Value::GetInt);
+  return contains(val, &Value::GetIfInt);
 }
 
 bool ListValue::contains(double val) const {
-  return contains(val, &Value::is_double, &Value::GetDouble);
+  return contains(val, &Value::GetIfDouble);
 }
 
 bool ListValue::contains(std::string_view val) const {
-  return contains(val, &Value::is_string, &Value::GetString);
+  return contains(val, &Value::GetIfString);
 }
 
 bool ListValue::contains(const char* val) const {
-  return contains(std::string_view(val), &Value::is_string, &Value::GetString);
+  return contains(std::string_view(val));
 }
 
 bool ListValue::contains(const BlobStorage& val) const {
-  return contains(val, &Value::is_blob, &Value::GetBlob);
+  return contains(val, &Value::GetIfBlob);
 }
 
 bool ListValue::contains(const DictValue& val) const {
-  return contains(val, &Value::is_dict, &Value::GetDict);
+  return contains(val, &Value::GetIfDict);
 }
 
 bool ListValue::contains(const ListValue& val) const {
-  return contains(val, &Value::is_list, &Value::GetList);
+  return contains(val, &Value::Value::GetIfList);
 }
 
 void ListValue::clear() {
