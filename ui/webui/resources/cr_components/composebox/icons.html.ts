@@ -198,7 +198,10 @@ if (document.documentElement.hasAttribute('webui-rounded-icons')) {
         <path d="M740-40q-1 0-8-6-16-61-60.5-105.5T566-212q-2-1-6-8 0-2 6-8 61-16 105.5-60.5T732-394q1-2 8-6 2 0 8 6 17 61 61 105.5T914-228q2 0 6 8 0 1-6 8-61 16-105.5 60.5T748-46q0 2-8 6ZM120-280v-80h360v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" fill="currentColor"/>
       </g>
       <g id="stop-filled" viewBox="0 0 12 12">
-        <path d="M0 12V0H12V12H0Z" fill="currentColor"/>
+        <path
+            d="M2 0H10A2 2 0 0 1 12 2V10A2 2 0 0 1 10 12
+               H2A2 2 0 0 1 0 10V2A2 2 0 0 1 2 0Z"
+            fill="currentColor"/>
       </g>
       <g id="tab" viewBox="0 -960 960 960">
         <path d="M160-240h640v-320H520v-160H160v480Zm0 80q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80v-480 480Z" fill="currentColor"/>
