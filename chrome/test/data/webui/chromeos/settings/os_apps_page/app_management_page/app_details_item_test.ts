@@ -720,9 +720,11 @@ suite('<app-management-app-details-item>', () => {
         dialog.querySelector<HTMLElement>('#confirmFound');
     assertTrue(!!confirmFoundButton);
 
+    const whenClosed = eventToPromise('close', dialog);
     fakeHandler.applyUpdateSuccess = false;
     confirmFoundButton.click();
 
+    await whenClosed;
     await fakeHandler.whenCalled('applyIsolatedWebAppUpdate');
     await fakeHandler.flushPipesForTesting();
     await flushTasks();
