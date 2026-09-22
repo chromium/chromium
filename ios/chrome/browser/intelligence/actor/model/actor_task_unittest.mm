@@ -1092,6 +1092,7 @@ TEST_F(ActorTaskTest, BackgroundTaskContextUsesCachedTaskUpdateOnRegistration) {
   BackgroundContinuedProcessingTaskConfiguration* config =
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Test Task"
+                   subtitle:@""
           expirationHandler:^{
           }];
   TestBackgroundContinuedProcessingTaskContext* context =
