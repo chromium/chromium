@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 using base::MatcherStringPattern;
@@ -1348,12 +1349,19 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
                 kRuleHasNoSpecialState, nullptr /* container_queries */,
                 cascade_layer, style_scope, apply_mixins_stack);
 
+  if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    return;
+  }
+
   // Need to do this for every style sheet, since each may add their own
   // anonymous routes.
   //
   // TODO(crbug.com/436805487): See if we can find a better place for this.
   // Maybe RuleSet isn't the right place. DidRoutesChange() was modeled after
-  // DidMediaQueryResultsChange(), but maybe there's a better way.
+  // DidMediaQueryResultsChange(), but maybe there's a better way. Making a copy
+  // of NavigationState is a bad idea, since it has a reference to Document (and
+  // other things, too), which means that the Document object may live longer
+  // than necessary.
   if (const auto* new_state = NavigationState::Get(medium.GetDocument())) {
     navigation_state_ = MakeGarbageCollected<NavigationState>(*new_state);
   } else {
@@ -1867,6 +1875,9 @@ bool RuleSet::DidMediaQueryResultsChange(
 }
 
 bool RuleSet::DidRoutesChange(const Document* document) const {
+  if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    return false;
+  }
   const auto* current_state = NavigationState::Get(document);
   if (!current_state != !navigation_state_) {
     return true;

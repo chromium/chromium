@@ -39,6 +39,7 @@ NavigationState* NavigationState::Create(Document& document,
 }
 
 NavigationState* NavigationState::CreateFromActivation(Document& document) {
+  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
   NavigationActivation* activation =
       document.domWindow()->navigation()->activation();
   if (!activation) {
@@ -87,14 +88,21 @@ void NavigationState::AttemptFinishNavigationAndDestroy(Document* document) {
 }
 
 void NavigationState::SetNavigationStarted() {
-  // Need to update active style right away, or view transitions might glitch.
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
+  if (!style_engine.NeedsStyleUpdateOnNavigation()) {
+    return;
+  }
+  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
+  // Need to update active style right away, or view transitions might glitch.
   style_engine.SetNeedsActiveStyleUpdate(GetDocument());
   style_engine.UpdateActiveStyle();
 }
 
 void NavigationState::SetCommitted() {
   phase_ = NavigationPhase::kCommitted;
+  if (!RuntimeEnabledFeatures::NavigationTypeAndPhaseEnabled()) {
+    return;
+  }
   NotifyStyleEngineIfNeeded();
 }
 
