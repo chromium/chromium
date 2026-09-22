@@ -19,26 +19,6 @@ namespace net {
 class QuicChromiumPacketReader;
 class QuicChromiumPacketWriter;
 
-// The cause of connection migration.
-//
-// Deprecated: To be removed. Use QuicMigrationAttemptCause instead.
-enum MigrationCause {
-  UNKNOWN_CAUSE,
-  ON_NETWORK_CONNECTED,                       // Direct migration.
-  ON_NETWORK_DISCONNECTED,                    // Direct migration.
-  ON_WRITE_ERROR,                             // Direct migration.
-  ON_NETWORK_MADE_DEFAULT,                    // With probing.
-  ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,         // With probing.
-  CHANGE_NETWORK_ON_PATH_DEGRADING,           // With probing.
-  CHANGE_PORT_ON_PATH_DEGRADING,              // With probing.
-  NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING,  // With probing.
-  ON_SERVER_PREFERRED_ADDRESS_AVAILABLE,      // With probing.
-  MULTI_PORT_PATH,
-  MIGRATION_CAUSE_MAX
-};
-
-NET_EXPORT_PRIVATE std::string MigrationCauseToString(MigrationCause cause);
-
 // The cause of a connection migration attempt.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -59,8 +39,8 @@ enum class QuicMigrationAttemptCause {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicMigrationAttemptCause,//tools/metrics/histograms/metadata/net/histograms.xml:QuicMigrationAttemptCause)
 
-NET_EXPORT_PRIVATE QuicMigrationAttemptCause
-ToQuicMigrationAttemptCause(MigrationCause cause);
+NET_EXPORT_PRIVATE std::string QuicMigrationAttemptCauseToString(
+    QuicMigrationAttemptCause cause);
 
 // Reasons why an eligible migration attempt failed.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -116,7 +96,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
 
   // Records an ineligible migration when an attempt is classified as such
   // without a context having been created.
-  static void RecordIneligible(MigrationCause cause,
+  static void RecordIneligible(QuicMigrationAttemptCause cause,
                                QuicMigrationAttemptIneligibleReason reason);
 
   // Note: This does not accept a `self_address` because that is not known until
@@ -129,7 +109,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   // explicit dependency on QuicChromiumClientSession, which simplifies unit
   // testing this class.
   QuicMigrationAttemptContext(
-      MigrationCause cause,
+      QuicMigrationAttemptCause cause,
       handles::NetworkHandle from_network,
       handles::NetworkHandle target_network,
       const quic::QuicSocketAddress& target_peer_address,
@@ -147,7 +127,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   void SetIneligible(QuicMigrationAttemptIneligibleReason reason);
   void SetSuperseded(QuicMigrationAttemptCause cause);
 
-  MigrationCause cause() const { return cause_; }
+  QuicMigrationAttemptCause cause() const { return cause_; }
   handles::NetworkHandle from_network() const { return from_network_; }
   handles::NetworkHandle target_network() const { return target_network_; }
   const quic::QuicSocketAddress& target_peer_address() const {
@@ -165,7 +145,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   }
 
  private:
-  const MigrationCause cause_;
+  const QuicMigrationAttemptCause cause_;
   const handles::NetworkHandle from_network_;
   const handles::NetworkHandle target_network_;
   const quic::QuicSocketAddress target_peer_address_;

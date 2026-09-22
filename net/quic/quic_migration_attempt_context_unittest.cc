@@ -35,7 +35,7 @@ const IPEndPoint kIpEndPoint{IPAddress::IPv4Localhost(), 443};
 class QuicMigrationAttemptContextTest : public ::testing::Test {
  public:
   std::unique_ptr<QuicMigrationAttemptContext> CreateAttemptContext(
-      MigrationCause cause,
+      QuicMigrationAttemptCause cause,
       base::RepeatingCallback<bool()> is_session_alive =
           base::BindRepeating([]() { return true; })) {
     auto reads = std::make_unique<std::vector<MockRead>>();
@@ -81,7 +81,7 @@ TEST_F(QuicMigrationAttemptContextTest, DestructorFallbackSessionDestroyed) {
   bool session_alive = true;
   {
     auto context = CreateAttemptContext(
-        ON_NETWORK_DISCONNECTED,
+        QuicMigrationAttemptCause::kOnNetworkDisconnected,
         base::BindRepeating([](bool* alive) { return *alive; },
                             base::Unretained(&session_alive)));
     // Simulate session destruction before the migration attempt completes.
@@ -106,8 +106,9 @@ TEST_F(QuicMigrationAttemptContextTest, DestructorFallbackSessionDestroyed) {
 TEST_F(QuicMigrationAttemptContextTest, DestructorSessionAlive) {
   base::HistogramTester histogram_tester;
   {
-    auto context = CreateAttemptContext(
-        ON_NETWORK_DISCONNECTED, base::BindRepeating([]() { return true; }));
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkDisconnected,
+                             base::BindRepeating([]() { return true; }));
     // Context destructs while in flight, but session is still alive.
   }
 
@@ -123,26 +124,29 @@ TEST_F(QuicMigrationAttemptContextTest, DestructorSessionAlive) {
 TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
   base::HistogramTester histogram_tester;
   {
-    auto context = CreateAttemptContext(CHANGE_NETWORK_ON_PATH_DEGRADING);
+    auto context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading);
     context->SetIneligible(
         QuicMigrationAttemptIneligibleReason::kSessionBecameIdleDuringProbing);
   }
 
   QuicMigrationAttemptContext::RecordIneligible(
-      ON_WRITE_ERROR, QuicMigrationAttemptIneligibleReason::kDisabledByServer);
+      QuicMigrationAttemptCause::kOnWriteError,
+      QuicMigrationAttemptIneligibleReason::kDisabledByServer);
   QuicMigrationAttemptContext::RecordIneligible(
-      ON_SERVER_PREFERRED_ADDRESS_AVAILABLE,
+      QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable,
       QuicMigrationAttemptIneligibleReason::kDisabledByClient);
   QuicMigrationAttemptContext::RecordIneligible(
-      ON_NETWORK_DISCONNECTED,
+      QuicMigrationAttemptCause::kOnNetworkDisconnected,
       QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams);
   QuicMigrationAttemptContext::RecordIneligible(
-      ON_NETWORK_DISCONNECTED,
+      QuicMigrationAttemptCause::kOnNetworkDisconnected,
       QuicMigrationAttemptIneligibleReason::kHandshakeNotConfirmed);
   QuicMigrationAttemptContext::RecordIneligible(
-      ON_WRITE_ERROR, QuicMigrationAttemptIneligibleReason::kTooManyMigrations);
+      QuicMigrationAttemptCause::kOnWriteError,
+      QuicMigrationAttemptIneligibleReason::kTooManyMigrations);
   QuicMigrationAttemptContext::RecordIneligible(
-      CHANGE_PORT_ON_PATH_DEGRADING,
+      QuicMigrationAttemptCause::kChangePortOnPathDegrading,
       QuicMigrationAttemptIneligibleReason::kTooManyPacketReaders);
 
   histogram_tester.ExpectBucketCount(
@@ -200,7 +204,8 @@ TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
 TEST_F(QuicMigrationAttemptContextTest, SetSuperseded) {
   base::HistogramTester histogram_tester;
   {
-    auto context = CreateAttemptContext(CHANGE_NETWORK_ON_PATH_DEGRADING);
+    auto context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading);
     context->SetSuperseded(QuicMigrationAttemptCause::kOnNetworkDisconnected);
   }
 
@@ -216,11 +221,13 @@ TEST_F(QuicMigrationAttemptContextTest, SetSuperseded) {
 TEST_F(QuicMigrationAttemptContextTest, MultiPortPathSkipped) {
   base::HistogramTester histogram_tester;
   {
-    auto context = CreateAttemptContext(MULTI_PORT_PATH);
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kMultiPortPath);
     context->SetSuccess();
   }
   {
-    auto context = CreateAttemptContext(MULTI_PORT_PATH);
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kMultiPortPath);
     // Leaves in flight.
   }
 
@@ -232,7 +239,8 @@ TEST_F(QuicMigrationAttemptContextTest, MultiPortPathSkipped) {
 }
 
 TEST_F(QuicMigrationAttemptContextTest, SpuriousOutcome) {
-  auto context = CreateAttemptContext(ON_NETWORK_DISCONNECTED);
+  auto context =
+      CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkDisconnected);
 
   base::HistogramTester histogram_tester;
   context->SetSuccess();
@@ -252,7 +260,8 @@ TEST_F(QuicMigrationAttemptContextTest, SpuriousOutcome) {
 TEST_F(QuicMigrationAttemptContextTest, SetSuccess) {
   base::HistogramTester histogram_tester;
   {
-    auto context = CreateAttemptContext(ON_NETWORK_MADE_DEFAULT);
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkMadeDefault);
     context->SetSuccess();
   }
 
@@ -273,19 +282,21 @@ TEST_F(QuicMigrationAttemptContextTest, SetSuccess) {
 
 TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
   struct TestCase {
-    MigrationCause cause;
+    QuicMigrationAttemptCause cause;
     const char* trigger_name;
     QuicMigrationAttemptFailureReason failure_reason;
   } test_cases[] = {
-      {ON_WRITE_ERROR, "OnWriteError",
+      {QuicMigrationAttemptCause::kOnWriteError, "OnWriteError",
        QuicMigrationAttemptFailureReason::kSocketConfigFailed},
-      {ON_NETWORK_MADE_DEFAULT, "OnNetworkMadeDefault",
+      {QuicMigrationAttemptCause::kOnNetworkMadeDefault, "OnNetworkMadeDefault",
        QuicMigrationAttemptFailureReason::kProbeTimeout},
-      {ON_NETWORK_DISCONNECTED, "OnNetworkDisconnected",
+      {QuicMigrationAttemptCause::kOnNetworkDisconnected,
+       "OnNetworkDisconnected",
        QuicMigrationAttemptFailureReason::kNoUnusedConnectionId},
-      {CHANGE_NETWORK_ON_PATH_DEGRADING, "ChangeNetworkOnPathDegrading",
+      {QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+       "ChangeNetworkOnPathDegrading",
        QuicMigrationAttemptFailureReason::kStatelessReset},
-      {ON_NETWORK_MADE_DEFAULT, "OnNetworkMadeDefault",
+      {QuicMigrationAttemptCause::kOnNetworkMadeDefault, "OnNetworkMadeDefault",
        QuicMigrationAttemptFailureReason::kProbeFailed},
   };
 

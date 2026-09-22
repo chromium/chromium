@@ -7011,7 +7011,7 @@ TEST_P(QuicSessionPoolTest,
       /*yield_after_packets=*/100, quic::QuicTime::Delta::Infinite(),
       session->net_log());
   auto context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session->GetCurrentNetwork(),
+      QuicMigrationAttemptCause::kUnknown, session->GetCurrentNetwork(),
       handles::kInvalidNetworkHandle, quic::QuicSocketAddress(),
       std::move(reader), std::move(writer),
       session->CreateSessionAliveCallback());
@@ -7085,8 +7085,9 @@ TEST_P(QuicSessionPoolTest,
       handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
   DatagramClientSocket* socket_ptr = socket.get();
   auto context = std::make_unique<QuicMigrationAttemptContext>(
-      ON_NETWORK_DISCONNECTED, session->GetCurrentNetwork(),
-      kNewNetworkForTests, session->connection()->peer_address(),
+      QuicMigrationAttemptCause::kOnNetworkDisconnected,
+      session->GetCurrentNetwork(), kNewNetworkForTests,
+      session->connection()->peer_address(),
       std::make_unique<QuicChromiumPacketReader>(
           std::move(socket), session->connection()->clock(), session,
           /*yield_after_packets=*/kQuicYieldAfterPacketsRead,

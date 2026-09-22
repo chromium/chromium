@@ -57,7 +57,8 @@ bool QuicChromiumClientSessionPeer::GetSessionGoingAway(
 }
 
 // static
-MigrationCause QuicChromiumClientSessionPeer::GetCurrentMigrationCause(
+QuicMigrationAttemptCause
+QuicChromiumClientSessionPeer::GetCurrentMigrationCause(
     QuicChromiumClientSession* session) {
   return session->current_migration_cause_;
 }

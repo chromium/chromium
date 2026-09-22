@@ -389,10 +389,9 @@ class QuicChromiumClientSessionTest
   }
 
   std::unique_ptr<QuicMigrationAttemptContext> CreateMigrationAttemptContext(
-      MigrationCause cause,
+      QuicMigrationAttemptCause cause,
       SocketDataProvider* socket_data,
-      base::RepeatingCallback<bool()> is_session_alive =
-          base::NullCallback()) {
+      base::RepeatingCallback<bool()> is_session_alive = base::NullCallback()) {
     if (socket_data) {
       socket_factory_.AddSocketDataProvider(socket_data);
     }
@@ -2064,10 +2063,10 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
   auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      ON_NETWORK_DISCONNECTED, session_->GetCurrentNetwork(),
-      session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
-      std::move(new_reader), std::move(new_writer),
-      session_->CreateSessionAliveCallback());
+      QuicMigrationAttemptCause::kOnNetworkDisconnected,
+      session_->GetCurrentNetwork(), session_->GetCurrentNetwork(),
+      ToQuicSocketAddress(peer_address), std::move(new_reader),
+      std::move(new_writer), session_->CreateSessionAliveCallback());
   EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
   histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
                                       true, 1);
@@ -2171,7 +2170,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
     EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
     auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-        UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
+        QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
         session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
         std::move(new_reader), std::move(new_writer),
         session_->CreateSessionAliveCallback());
@@ -2215,7 +2214,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   IPEndPoint peer_address;
   new_reader->socket()->GetPeerAddress(&peer_address);
   auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
+      QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
       session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
       std::move(new_reader), std::move(new_writer),
       session_->CreateSessionAliveCallback());
@@ -2293,7 +2292,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
   auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
+      QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
       session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
       std::move(new_reader), std::move(new_writer),
       session_->CreateSessionAliveCallback());
@@ -2336,8 +2335,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketNoConnectionId) {
 
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   SequencedSocketData socket_data(reads, base::span<MockWrite>());
-  auto migration_context =
-      CreateMigrationAttemptContext(ON_NETWORK_DISCONNECTED, &socket_data);
+  auto migration_context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkDisconnected, &socket_data);
 
   base::HistogramTester histogram_tester;
   // Migrate session without receiving a new connection ID.
@@ -2387,8 +2386,8 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_InFlightAttemptFails) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   SequencedSocketData socket_data(reads, writes);
-  auto context =
-      CreateMigrationAttemptContext(ON_NETWORK_MADE_DEFAULT, &socket_data);
+  auto context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &socket_data);
 
   IPEndPoint local_address;
   context->reader()->socket()->GetLocalAddress(&local_address);
@@ -2457,8 +2456,8 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   SequencedSocketData socket_data(reads, writes);
-  auto context =
-      CreateMigrationAttemptContext(ON_NETWORK_MADE_DEFAULT, &socket_data);
+  auto context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &socket_data);
 
   IPEndPoint local_address;
   context->reader()->socket()->GetLocalAddress(&local_address);
@@ -2525,8 +2524,8 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   SequencedSocketData socket_data(reads, writes);
-  auto context =
-      CreateMigrationAttemptContext(ON_NETWORK_MADE_DEFAULT, &socket_data);
+  auto context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &socket_data);
 
   IPEndPoint local_address;
   context->reader()->socket()->GetLocalAddress(&local_address);
@@ -2592,8 +2591,8 @@ TEST_P(QuicChromiumClientSessionTest, PathValidationFailure_RetryTimeout) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   SequencedSocketData socket_data(reads, writes);
-  auto context =
-      CreateMigrationAttemptContext(ON_NETWORK_MADE_DEFAULT, &socket_data);
+  auto context = CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, &socket_data);
 
   IPEndPoint local_address;
   context->reader()->socket()->GetLocalAddress(&local_address);
@@ -2797,7 +2796,7 @@ TEST_P(QuicChromiumClientSessionTest, DegradingWithMultiPortEnabled) {
   EXPECT_EQ(1u, connectivity_monitor_->GetNumDegradingSessions());
 
   EXPECT_EQ(
-      UNKNOWN_CAUSE,
+      QuicMigrationAttemptCause::kUnknown,
       QuicChromiumClientSessionPeer::GetCurrentMigrationCause(session_.get()));
 }
 

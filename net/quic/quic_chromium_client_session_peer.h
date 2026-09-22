@@ -36,7 +36,7 @@ class QuicChromiumClientSessionPeer {
 
   static bool GetSessionGoingAway(QuicChromiumClientSession* session);
 
-  static MigrationCause GetCurrentMigrationCause(
+  static QuicMigrationAttemptCause GetCurrentMigrationCause(
       QuicChromiumClientSession* session);
 
   static void DisableConnectionMigration(QuicChromiumClientSession* session);
