@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,18 +19,22 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -41,6 +45,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -64,19 +70,22 @@ constexpr char kUnmappedUuid[] = "41976e88-b067-476f-9e1e-3ec47b6959af";
 }  // namespace
 
 class TelemetryExtensionDiagnosticRoutinesManagerTest
-    : public BrowserWithTestWindowTest {
+    : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    ash::cros_healthd::FakeCrosHealthd::Initialize();
-    BrowserWithTestWindowTest::SetUp();
-  }
-
-  void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
-    ash::cros_healthd::FakeCrosHealthd::Shutdown();
-  }
+  TelemetryExtensionDiagnosticRoutinesManagerTest() = default;
+  ~TelemetryExtensionDiagnosticRoutinesManagerTest() override = default;
 
  protected:
+  Profile* profile() { return GetProfile(); }
+
+  void AddTab(BrowserWindowInterface* target_browser, const GURL& url) {
+    NavigateParams params(target_browser, url, ui::PAGE_TRANSITION_TYPED);
+    params.tabstrip_index = 0;
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+    content::WaitForLoadStop(params.navigated_or_inserted_contents);
+  }
+
   void OpenAppUiUrlAndSetCertificateWithStatus(const GURL& url,
                                                net::CertStatus cert_status) {
     const base::FilePath certs_dir = net::GetTestCertsDirectory();
@@ -111,6 +120,10 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();
     extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+    extensions::ExtensionRegistry::Get(profile())->TriggerOnLoaded(
+        extension.get());
+    extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+        ->OnExtensionLoaded(*extension);
 
     return extension;
   }
@@ -149,19 +162,17 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
   }
 
  private:
-  ash::BrowserControllerImpl browser_controller_;
-  ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       CreateRoutineNoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CreateRoutineNoExtension) {
   EXPECT_EQ(
       base::unexpected(DiagnosticRoutineManager::kExtensionUnloaded),
       routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       CreateRoutineAppUiClosed) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CreateRoutineAppUiClosed) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   EXPECT_EQ(
@@ -169,7 +180,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
       routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CreateRoutineSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CreateRoutineSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -206,8 +218,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CreateRoutineSuccess) {
   EXPECT_TRUE(future.Wait());
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       CreateRoutineTwoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CreateRoutineTwoExtension) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   CreateExtension(kExtensionId2, {kPwaPattern2});
 
@@ -255,8 +267,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
       IsUuidRegisteredForExtension(kExtensionId2, create_result_id2.value()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       CreateRoutineMultipleTabsOpen) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CreateRoutineMultipleTabsOpen) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -286,8 +298,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
       IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       UnloadExtensionSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       UnloadExtensionSuccess) {
   auto extension = CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -316,6 +328,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
       kExtensionId1));
   extensions::ExtensionRegistry::Get(profile())->TriggerOnUnloaded(
       extension.get(), extensions::UnloadedExtensionReason::TERMINATE);
+  extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->OnExtensionUnloaded(*extension);
 
   EXPECT_TRUE(future.Wait());
 
@@ -328,20 +342,22 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
   EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       StartRoutineNoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       StartRoutineNoExtension) {
   EXPECT_FALSE(routine_manager().StartRoutineForExtension(
       kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid)));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, StartRoutineNoRoutine) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       StartRoutineNoRoutine) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   EXPECT_FALSE(routine_manager().StartRoutineForExtension(
       kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid)));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, StartRoutineSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       StartRoutineSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
@@ -354,7 +370,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, StartRoutineSuccess) {
       kExtensionId1, create_result.value()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CancelRoutineSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       CancelRoutineSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
@@ -372,16 +389,16 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CancelRoutineSuccess) {
       IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       ReplyToRoutineInquiryNoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       ReplyToRoutineInquiryNoExtension) {
   EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
       kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
       ash::cros_healthd::mojom::RoutineInquiryReply::NewUnrecognizedReply(
           true)));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       ReplyToRoutineInquiryNoRoutine) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       ReplyToRoutineInquiryNoRoutine) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
@@ -390,8 +407,8 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
           true)));
 }
 
-TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
-       ReplyToRoutineInquirySuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+                       ReplyToRoutineInquirySuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);

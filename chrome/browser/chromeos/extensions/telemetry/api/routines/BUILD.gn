@@ -50,25 +50,14 @@ source_set("routine_manager") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "diagnostic_routine_converters_unittest.cc",
-    "diagnostic_routine_manager_unittest.cc",
-  ]
+  sources = [ "diagnostic_routine_converters_unittest.cc" ]
 
   deps = [
     ":routine_manager",
     ":routines",
-    "//chrome/browser/ash/browser_delegate:impl",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
-    "//chrome/test:test_support",
-    "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -77,18 +66,36 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "diagnostic_routine_observation_browsertest.cc" ]
+  sources = [
+    "diagnostic_routine_manager_browsertest.cc",
+    "diagnostic_routine_observation_browsertest.cc",
+  ]
 
   deps = [
+    ":routine_manager",
     ":routines",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
+    "//net",
+    "//net:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 
   data = [ "//chrome/test/data" ]

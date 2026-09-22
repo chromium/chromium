@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,26 +10,28 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -63,14 +65,22 @@ constexpr char kNotMatchedPwaUrl[] = "https://example.com";
 
 }  // namespace
 
-class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
- public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+class TelemetryExtensionEventManagerTest : public InProcessBrowserTest {
+ protected:
+  Profile* profile() { return GetProfile(); }
+
+  void AddTab(BrowserWindowInterface* target_browser, const GURL& url) {
+    NavigateParams params(target_browser, url, ui::PAGE_TRANSITION_TYPED);
+    params.tabstrip_index = 0;
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+    content::WaitForLoadStop(params.navigated_or_inserted_contents);
   }
 
- protected:
+  void NavigateAndCommitActiveTab(const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  }
+
   void OpenAppUiUrlAndSetCertificateWithStatus(const GURL& url,
                                                net::CertStatus cert_status) {
     AddTab(browser(), url);
@@ -110,6 +120,10 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();
     extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+    extensions::ExtensionRegistry::Get(profile())->TriggerOnLoaded(
+        extension.get());
+    extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+        ->OnExtensionLoaded(*extension);
 
     return extension;
   }
@@ -142,20 +156,18 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
   }
 
   EventRouter& event_router() { return event_manager()->event_router_; }
-
- private:
-  ash::BrowserControllerImpl browser_controller_;
-  ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterEventNoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterEventNoExtension) {
   EXPECT_EQ(
       EventManager::kAppUiClosed,
       event_manager()->RegisterExtensionForEvent(
           kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiClosed) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterEventAppUiClosed) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   EXPECT_EQ(
@@ -164,7 +176,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiClosed) {
           kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterEventSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterEventSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -183,8 +196,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventSuccess) {
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiOpenButUnfocusByNewTabSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventAppUiOpenButUnfocusByNewTabSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -206,15 +219,15 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiOpenButUnfocusByNewWindowSuccess) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventManagerTest,
+    RegisterRegularEventAppUiOpenButUnfocusByNewWindowSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
-  auto new_browser = CreateBrowser(
-      GetProfile(), BrowserWindowInterface::Type::TYPE_NORMAL, false);
-  ActivateBrowser(new_browser.get());
+  BrowserWindowInterface* new_browser = CreateBrowser(GetProfile());
+  ActivateBrowser(new_browser);
 
   EXPECT_EQ(
       EventManager::kSuccess,
@@ -230,12 +243,11 @@ TEST_F(TelemetryExtensionEventManagerTest,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
-
-  new_browser.reset();
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewTabFail) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventManagerTest,
+    RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewTabFail) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -255,15 +267,15 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewWindowFail) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventManagerTest,
+    RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewWindowFail) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
-  auto new_browser = CreateBrowser(
-      GetProfile(), BrowserWindowInterface::Type::TYPE_NORMAL, false);
-  ActivateBrowser(new_browser.get());
+  BrowserWindowInterface* new_browser = CreateBrowser(GetProfile());
+  ActivateBrowser(new_browser);
 
   EXPECT_EQ(EventManager::kAppUiNotFocused,
             event_manager()->RegisterExtensionForEvent(
@@ -277,12 +289,10 @@ TEST_F(TelemetryExtensionEventManagerTest,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
-
-  new_browser.reset();
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiSwitchFocusSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventAppUiSwitchFocusSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -316,8 +326,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiSwitchFocusSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterFocusRestrictedEventAppUiSwitchFocusSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -353,8 +363,9 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularAndFocusRestrictedEventWithAppUiSwitchFocusSuccess) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventManagerTest,
+    RegisterRegularAndFocusRestrictedEventWithAppUiSwitchFocusSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   auto regular_event_type = chromeos::api::os_events::EventCategory::kAudioJack;
@@ -399,8 +410,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventTwoTimesSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventTwoTimesSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -421,8 +432,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
           kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventTwoTimesSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterFocusRestrictedEventTwoTimesSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -444,8 +455,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
                 chromeos::api::os_events::EventCategory::kTouchpadConnected));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventMultipleTabsOpenSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventMultipleTabsOpenSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -481,8 +492,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestricedEventMultipleTabsOpenSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterFocusRestricedEventMultipleTabsOpenSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -536,8 +547,9 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularAndFocusRestricedEventMultipleTabsOpenSuccess) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventManagerTest,
+    RegisterRegularAndFocusRestricedEventMultipleTabsOpenSuccess) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   auto regular_event_type = chromeos::api::os_events::EventCategory::kAudioJack;
@@ -586,7 +598,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiNotSecure) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterEventAppUiNotSecure) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   // This not secure page shouldn't allow the event to be observed.
@@ -619,7 +632,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventAppUiNotSecure) {
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventNavigateOut) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventNavigateOut) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -646,8 +660,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventNavigateOut) {
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventNavigateOut) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterFocusRestrictedEventNavigateOut) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -676,7 +690,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterRegularEventTwoExtension) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   CreateExtension(kExtensionId2, {kPwaPattern2});
 
@@ -734,8 +749,8 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterRegularEventTwoExtension) {
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId2));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventTwoExtension) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterFocusRestrictedEventTwoExtension) {
   CreateExtension(kExtensionId1, {kPwaPattern1});
   CreateExtension(kExtensionId2, {kPwaPattern2});
 
@@ -797,7 +812,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId2));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RemoveExtensionCutsConnection) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RemoveExtensionCutsConnection) {
   auto extension = CreateExtension(kExtensionId1, {kPwaPattern1});
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
@@ -813,64 +829,62 @@ TEST_F(TelemetryExtensionEventManagerTest, RemoveExtensionCutsConnection) {
       kExtensionId1));
   extensions::ExtensionRegistry::Get(profile())->TriggerOnUnloaded(
       extension.get(), extensions::UnloadedExtensionReason::TERMINATE);
+  extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->OnExtensionUnloaded(*extension);
 
   EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
   EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
 }
 
-TEST_F(TelemetryExtensionEventManagerTest, RegisterEventIWASuccess) {
-  auto info = ScopedChromeOSSystemExtensionInfo::CreateForTesting();
-  // TODO(b/293560424): Remove this override after we add some valid IWA id to
-  // the allowlist.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      chromeos::switches::kTelemetryExtensionIwaIdOverrideForTesting,
-      "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic");
-  info->ApplyCommandLineSwitchesForTesting();
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventManagerTest,
+                       RegisterEventIWASuccess) {
+  constexpr char kIwaExtensionId[] = "mconamggkmbalafmibfjlcmimnlbgmlb";
+  constexpr char kIwaPwaPattern[] = "https://chromebookdiags.lenovo.com/*";
+  constexpr char kIwaPwaUrl[] = "https://chromebookdiags.lenovo.com";
+  constexpr char kIwaPattern[] =
+      "isolated-app://"
+      "huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic/*";
+  constexpr char kIwaUrl[] =
+      "isolated-app://"
+      "huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic";
 
-  CreateExtension(
-      kExtensionId1,
-      {kPwaPattern1,
-       "isolated-app://"
-       "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*"});
+  CreateExtension(kIwaExtensionId, {kIwaPwaPattern, kIwaPattern});
 
   // Open PWA and start observing events.
-  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
+  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kIwaPwaUrl),
                                           /*cert_status=*/net::OK);
-  EXPECT_EQ(
-      EventManager::kSuccess,
-      event_manager()->RegisterExtensionForEvent(
-          kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
-  EXPECT_TRUE(app_ui_observers().contains(kExtensionId1));
-  EXPECT_TRUE(event_router().IsExtensionObserving(kExtensionId1));
+  EXPECT_EQ(EventManager::kSuccess,
+            event_manager()->RegisterExtensionForEvent(
+                kIwaExtensionId,
+                chromeos::api::os_events::EventCategory::kAudioJack));
+  EXPECT_TRUE(app_ui_observers().contains(kIwaExtensionId));
+  EXPECT_TRUE(event_router().IsExtensionObserving(kIwaExtensionId));
   EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
+      kIwaExtensionId, chromeos::api::os_events::EventCategory::kAudioJack));
 
   // Open IWA.
   AddTab(browser(), GURL("about:blank"));
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-  web_app::SimulateIsolatedWebAppNavigation(
-      web_contents,
-      GURL("isolated-app://"
-           "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic"));
+  std::ignore = content::NavigateToURL(web_contents, GURL(kIwaUrl));
   SetCertificateWithStatus(web_contents, net::OK);
-  EXPECT_TRUE(app_ui_observers().contains(kExtensionId1));
-  EXPECT_TRUE(event_router().IsExtensionObserving(kExtensionId1));
+  EXPECT_TRUE(app_ui_observers().contains(kIwaExtensionId));
+  EXPECT_TRUE(event_router().IsExtensionObserving(kIwaExtensionId));
   EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
+      kIwaExtensionId, chromeos::api::os_events::EventCategory::kAudioJack));
 
   // Close the PWA. This shouldn't affect the observation.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_TRUE(app_ui_observers().contains(kExtensionId1));
-  EXPECT_TRUE(event_router().IsExtensionObserving(kExtensionId1));
+  EXPECT_TRUE(app_ui_observers().contains(kIwaExtensionId));
+  EXPECT_TRUE(event_router().IsExtensionObserving(kIwaExtensionId));
   EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
-      kExtensionId1, chromeos::api::os_events::EventCategory::kAudioJack));
+      kIwaExtensionId, chromeos::api::os_events::EventCategory::kAudioJack));
 
   // Close the IWA (last tab) should cut the observation.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
-  EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
-  EXPECT_FALSE(event_router().IsExtensionObserving(kExtensionId1));
+  EXPECT_FALSE(app_ui_observers().contains(kIwaExtensionId));
+  EXPECT_FALSE(event_router().IsExtensionObserving(kIwaExtensionId));
 }
 
 }  // namespace chromeos
