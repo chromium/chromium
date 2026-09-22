@@ -95,7 +95,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/net/proxy_error_utils.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
-#include "components/enterprise/browser/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -261,6 +260,7 @@
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/browser/reporting/prefs.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
@@ -386,7 +386,7 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/url_utils.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
@@ -890,7 +890,12 @@ bool IsIsolatedWebAppOrigin(const url::Origin& origin) {
 }
 
 bool IsClipboardFocusExemptOrigin(const url::Origin& main_frame_origin) {
-  return content::HasWebUIOrigin(main_frame_origin) ||
+  // chrome-untrusted:// pages are not exempted: they render untrustworthy
+  // content and must not get more clipboard access than a standard web page
+  // with the same granted permission (see docs/webui/chrome_untrusted.md),
+  // so they fall through to the frame focus requirement.
+  return (main_frame_origin.scheme() == content::kChromeUIScheme ||
+          main_frame_origin.scheme() == content::kChromeDevToolsScheme) ||
          IsIsolatedWebAppOrigin(main_frame_origin);
 }
 
@@ -7966,6 +7971,11 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   // and DevTools are exempted because they often invoke clipboard commands
   // via context menus, background UIs, or standalone windows where the page
   // lacks focus (including in automated browser tests).
+  //
+  // chrome-untrusted:// pages are not exempted: they render untrustworthy
+  // content and must not get more clipboard access than a standard web page
+  // with the same granted permission (see docs/webui/chrome_untrusted.md),
+  // so they fall through to the frame focus requirement below.
   const url::Origin& main_frame_origin =
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   const bool is_focused_or_is_trusted_origin =

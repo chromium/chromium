@@ -100,6 +100,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_ui_browsertest_util.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -124,6 +125,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -2040,6 +2042,75 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
   EXPECT_FALSE(parent_rfh->IsFocused());
   EXPECT_FALSE(IsClipboardPasteAllowed(parent_rfh));
+}
+
+// Verifies that chrome-untrusted:// pages holding an auto-granted clipboard
+// permission are subject to the same frame focus requirement as standard web
+// pages. chrome-untrusted:// pages render untrustworthy content and must not
+// get more clipboard access than an ordinary page with the same grant
+// (see docs/webui/chrome_untrusted.md).
+IN_PROC_BROWSER_TEST_F(
+    ChromeContentBrowserClientClipboardTest,
+    PasteAllowedByPermission_UntrustedWebUIRequiresFrameFocus) {
+  content::AddUntrustedDataSource(browser()->GetProfile(), "test-host");
+  GURL untrusted_url =
+      content::GetChromeUntrustedUIURL("test-host/title1.html");
+
+  // Grant the clipboard permission the same way production untrusted WebUIs
+  // receive it (e.g. TerminalSource): auto-granted via WebUIAllowlist.
+  WebUIAllowlist::GetOrCreate(browser()->GetProfile())
+      ->RegisterAutoGrantedPermission(
+          url::Origin::Create(untrusted_url),
+          ContentSettingsType::CLIPBOARD_READ_WRITE);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_url));
+  content::RenderFrameHost* rfh = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame();
+  ASSERT_FALSE(rfh->HasTransientUserActivation());
+
+  // The granted permission allows clipboard access while focused.
+  rfh->GetRenderWidgetHost()->Focus();
+  EXPECT_TRUE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+
+  // Unlike trusted WebUI pages, chrome-untrusted:// pages are not exempt from
+  // the focus requirement, so clipboard access is disallowed while unfocused.
+  rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(rfh->IsFocused());
+  EXPECT_FALSE(IsClipboardPasteAllowed(rfh));
+
+  // Restoring focus allows clipboard access again.
+  rfh->GetRenderWidgetHost()->Focus();
+  EXPECT_TRUE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
+}
+
+// Verifies that trusted WebUI pages (chrome://) with a granted clipboard
+// permission may access clipboard data without frame focus. Trusted WebUI
+// system apps invoke clipboard commands via context menus, background UIs,
+// or standalone windows where the page lacks focus.
+IN_PROC_BROWSER_TEST_F(
+    ChromeContentBrowserClientClipboardTest,
+    PasteAllowedByPermission_TrustedWebUIDoesNotRequireFrameFocus) {
+  GURL webui_url(chrome::kChromeUIVersionURL);
+  WebUIAllowlist::GetOrCreate(browser()->GetProfile())
+      ->RegisterAutoGrantedPermission(
+          url::Origin::Create(webui_url),
+          ContentSettingsType::CLIPBOARD_READ_WRITE);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
+  content::RenderFrameHost* rfh = browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame();
+  ASSERT_FALSE(rfh->HasTransientUserActivation());
+
+  // Trusted WebUI pages may access the clipboard even while unfocused.
+  rfh->GetRenderWidgetHost()->Blur();
+  EXPECT_FALSE(rfh->IsFocused());
+  EXPECT_TRUE(IsClipboardPasteAllowed(rfh));
 }
 
 class TopChromeChromeContentBrowserClientTest
