@@ -43,11 +43,11 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/search_box/search_box_constants.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -544,8 +544,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       // Setup right to left environment if necessary.
       is_rtl_ = GetParam();
-      if (is_rtl_)
-        base::i18n::SetICUDefaultLocale("he");
+      rtl_override_.emplace(is_rtl_);
     }
 
     views::ViewsTestBase::SetUp();
@@ -579,6 +578,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->GetWidget()->Close();
     view_ = nullptr;
     views::ViewsTestBase::TearDown();
+    rtl_override_.reset();
   }
 
   void SetAppListState(ash::AppListViewState state) {
@@ -823,8 +823,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
-  // Restores the locale to default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+  // Restores the text direction and the locale when destroyed.
+  std::optional<base::i18n::ScopedRTLForTesting> rtl_override_;
 
   // Used by AppListFolderView::UpdatePreferredBounds.
   keyboard::KeyboardUIController keyboard_ui_controller_;

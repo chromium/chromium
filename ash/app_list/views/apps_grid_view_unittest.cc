@@ -64,12 +64,12 @@
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/callback_list.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -321,8 +321,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // testing::Test overrides:
   void SetUp() override {
-    if (is_rtl_)
-      base::i18n::SetICUDefaultLocale("he");
+    rtl_override_.emplace(is_rtl_);
 
     AshTestBase::SetUp();
 
@@ -393,6 +392,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     app_list_folder_view_ = nullptr;
     app_list_view_ = nullptr;
     AshTestBase::TearDown();
+    rtl_override_.reset();
   }
 
   // views::WidgetObserver:
@@ -780,8 +780,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
 
  private:
-  // Restores the locale to default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+  // Restores the text direction and the locale when destroyed.
+  std::optional<base::i18n::ScopedRTLForTesting> rtl_override_;
 
   // Used to track haptics events sent during drag.
   std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
