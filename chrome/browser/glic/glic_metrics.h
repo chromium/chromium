@@ -201,7 +201,8 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
                             mojom::PromptType prompt_type) override;
   void OnResponseStarted() override;
   void OnResponseStopped(mojom::ResponseStopCause cause) override;
-  void DidRequestContextFromTab(tabs::TabInterface& tab) override;
+
+  void DidRequestContextFromTab(tabs::TabInterface& tab);
 
   // See glic.mojom for details. These are events from the web client. The
   // lifetime of the web client is scoped to that of the window, so if these

@@ -8,10 +8,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
-namespace tabs {
-class TabInterface;
-}
-
 namespace glic {
 
 // Interface that's compatible for both `GlicInstanceMetrics` and
@@ -24,7 +20,6 @@ class GlicInstanceMetricsBackwardsCompatibility {
 
   virtual void OnUserInputSubmitted(mojom::WebClientMode mode,
                                     mojom::PromptType prompt_type) = 0;
-  virtual void DidRequestContextFromTab(tabs::TabInterface& tab) = 0;
   virtual void OnResponseStarted() = 0;
   virtual void OnResponseStopped(mojom::ResponseStopCause cause) = 0;
 };

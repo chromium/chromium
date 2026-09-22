@@ -845,9 +845,7 @@ class GlicWebClientHandler
 
     tabs::TabInterface* tab = ftd.focus();
     if (tab) {
-      host()
-          .instance_metrics_backwards_compatibility()
-          .DidRequestContextFromTab(*tab);
+      host().instance_metrics().DidRequestContextFromFocusedTab();
     }
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
     GetSharingManagerInternal().GetContextFromTab(
@@ -863,6 +861,7 @@ class GlicWebClientHandler
                          glic::mojom::TabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
     // Extra activation gating is done in this function.
+    host().instance_metrics().DidRequestContextFromTab();
     GetSharingManagerInternal().GetContextFromTab(
         tabs::TabHandle(tab_id), *options,
         base::BindOnce(

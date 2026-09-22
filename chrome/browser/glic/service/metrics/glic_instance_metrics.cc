@@ -1175,8 +1175,13 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   inputs_modes_used_.Put(mode);
 }
 
-void GlicInstanceMetrics::DidRequestContextFromTab(tabs::TabInterface& tab) {
-  LogEvent(GlicInstanceEvent::kContextRequested);
+void GlicInstanceMetrics::DidRequestContextFromFocusedTab() {
+  LogEvent(GlicInstanceEvent::kFocusedTabContextRequested);
+  DidRequestContextFromTab();
+}
+
+void GlicInstanceMetrics::DidRequestContextFromTab() {
+  LogEvent(GlicInstanceEvent::kTabContextRequested);
   turn_.did_request_context_ = true;
 }
 

@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="WebUI State Disabled By Admin"/>
   <int value="40" label="Unbind Embedder From Instance"/>
   <int value="41" label="User Input Submitted"/>
-  <int value="42" label="Context Requested"/>
+  <int value="42" label="Focused Tab Context Requested"/>
   <int value="43" label="Response Started"/>
   <int value="44" label="Response Stopped"/>
   <int value="45" label="Turn Completed"/>
@@ -599,6 +599,7 @@ chromium-metrics-reviews@google.com.
   <int value="51" label="WebUI State Location Mismatch"/>
   <int value="52" label="WebUI State Ineligible Account"/>
   <int value="53" label="Client Ready"/>
+  <int value="54" label="Tab Context Requested"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->

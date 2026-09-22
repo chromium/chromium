@@ -1212,4 +1212,54 @@ TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_RecordsPromptType) {
   histogram_tester_.ExpectTotalCount("Glic.Turn.PromptType", 5);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       DidRequestContextFromFocusedTab_LogsFocusedAndGeneralContextEvents) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
+
+  metrics_.DidRequestContextFromFocusedTab();
+  metrics_.OnResponseStarted();
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.EventCounts",
+      GlicInstanceEvent::kFocusedTabContextRequested, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.HadEvent", GlicInstanceEvent::kFocusedTabContextRequested,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.EventCounts", GlicInstanceEvent::kTabContextRequested, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.HadEvent", GlicInstanceEvent::kTabContextRequested, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ResponseStartTime.WithContext",
+                                     1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       DidRequestContextFromTab_LogsOnlyGeneralTabContextEvent) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
+
+  metrics_.DidRequestContextFromTab();
+  metrics_.OnResponseStarted();
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.EventCounts",
+      GlicInstanceEvent::kFocusedTabContextRequested, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.HadEvent", GlicInstanceEvent::kFocusedTabContextRequested,
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.EventCounts", GlicInstanceEvent::kTabContextRequested, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Instance.HadEvent", GlicInstanceEvent::kTabContextRequested, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ResponseStartTime.WithContext",
+                                     1);
+}
+
 }  // namespace glic
