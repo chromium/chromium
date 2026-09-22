@@ -177,15 +177,24 @@ TEST_F(ConversationImplTest, InterruptionClearsAudioQueue) {
   EXPECT_FALSE(audio_controller().is_playing());
 }
 
-TEST_F(ConversationImplTest, TransportDisconnectionFinishesSession) {
+TEST_F(ConversationImplTest, ApplicationErrorFinishesSession) {
   ConversationImpl& conversation = CreateConversation();
 
-  // The transport connecting doesn't make the session usable on its own.
-  conversation.OnTransportStateChanged(true, "sess_123", "");
   EXPECT_EQ(session_controller_.GetSessionLifecycle(),
             SessionLifecycle::kInitializing);
 
-  conversation.OnTransportStateChanged(false, "sess_123", "some error");
+  conversation.OnApplicationError(ErrorCode::kUnknown);
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
+}
+
+TEST_F(ConversationImplTest, ApplicationClosedFinishesSession) {
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.OnApplicationInitialized();
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
+
+  conversation.OnApplicationClosed();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(),
             SessionLifecycle::kFinished);
 }
@@ -289,25 +298,24 @@ TEST_F(ConversationImplTest, ApplicationInitializedSendsToolSetUpdate) {
   EXPECT_THAT(sent_tool_names, testing::ElementsAre("navigate"));
 }
 
-TEST_F(ConversationImplTest, TransportConnectionSkipsToolSetUpdate) {
+TEST_F(ConversationImplTest, ApplicationShutdownDoesNotSendToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
 
-  // The transport can connect before the application on the backend is set up,
-  // at which point there is no session to send the tool set for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnTransportStateChanged(/*connected=*/true, "sess_123", "");
+  conversation.OnApplicationClosed();
 }
 
-TEST_F(ConversationImplTest, DisconnectionDoesNotSendToolSetUpdate) {
+TEST_F(ConversationImplTest, ApplicationErrorDoesNotSendToolSetUpdate) {
   session_controller_.AddToolDefinition("navigate");
 
   ConversationImpl& conversation = CreateConversation();
 
+  // The tool set is only sent once the application is initialized; a session
+  // that closes or fails has nothing to send it for.
   EXPECT_CALL(backend(), SendToolSetUpdate(testing::_)).Times(0);
-  conversation.OnTransportStateChanged(/*connected=*/false, "sess_123",
-                                       "some error");
+  conversation.OnApplicationError(ErrorCode::kUnknown);
 }
 
 }  // namespace ttc

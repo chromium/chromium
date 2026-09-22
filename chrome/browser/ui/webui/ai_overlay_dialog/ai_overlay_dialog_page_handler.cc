@@ -591,12 +591,28 @@ void AiOverlayDialogPageHandler::StopStreamingSession() {
   }
 }
 
-void AiOverlayDialogPageHandler::OnTransportStateChanged(
-    bool connected,
-    const std::string& session_id,
-    const std::string& error_message) {
+void AiOverlayDialogPageHandler::OnApplicationInitialized() {
   if (page_.is_bound()) {
-    page_->OnStreamingSessionStateChanged(connected, session_id, error_message);
+    page_->OnStreamingSessionStateChanged(/*connected=*/true,
+                                          /*session_id=*/"",
+                                          /*error_message=*/"");
+  }
+}
+
+void AiOverlayDialogPageHandler::OnApplicationClosed() {
+  if (page_.is_bound()) {
+    page_->OnStreamingSessionStateChanged(/*connected=*/false,
+                                          /*session_id=*/"",
+                                          /*error_message=*/"");
+  }
+}
+
+void AiOverlayDialogPageHandler::OnApplicationError(ErrorCode error) {
+  if (page_.is_bound()) {
+    page_->OnStreamingSessionStateChanged(
+        /*connected=*/false, /*session_id=*/"",
+        base::StrCat({"TTC error code ",
+                      base::NumberToString(static_cast<int>(error))}));
   }
 }
 

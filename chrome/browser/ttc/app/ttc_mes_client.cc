@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -146,9 +145,10 @@ void TtcMesClient::OnConnectionStateChanged(
 void TtcMesClient::OnStreamingResult(
     optimization_guide::OptimizationGuideModelStreamingResult result) {
   if (!result.response.has_value()) {
-    observer_->OnTransportStateChanged(false, session_id_,
-                                       base::NumberToString(static_cast<int>(
-                                           result.response.error().error())));
+    // TODO(b/564241442): Propagate a better error code.
+    VLOG(1) << "Model execution failed with error "
+            << static_cast<int>(result.response.error().error());
+    observer_->OnApplicationError(ErrorCode::kUnknown);
     return;
   }
 

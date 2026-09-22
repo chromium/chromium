@@ -42,9 +42,6 @@ class TtcBackend {
     // session can no longer be interacted with.
     virtual void OnApplicationError(ErrorCode error) = 0;
 
-    virtual void OnTransportStateChanged(bool connected,
-                                         const std::string& session_id,
-                                         const std::string& error_message) = 0;
     virtual void OnTranscriptions(const std::string& input_transcription,
                                   const std::string& output_transcription) = 0;
     // `audio_data` holds signed 16-bit PCM samples. The buffer is only valid

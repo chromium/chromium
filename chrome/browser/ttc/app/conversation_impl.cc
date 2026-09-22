@@ -105,21 +105,6 @@ void ConversationImpl::OnApplicationError(ErrorCode error) {
   session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
 }
 
-void ConversationImpl::OnTransportStateChanged(
-    bool connected,
-    const std::string& session_id,
-    const std::string& error_message) {
-  // Connecting the transport doesn't make the session usable; that happens
-  // once the backend reports the application is initialized.
-  if (connected) {
-    return;
-  }
-
-  // TODO(b/561677132): Show an error in some way.
-
-  session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
-}
-
 void ConversationImpl::OnTranscriptions(
     const std::string& input_transcription,
     const std::string& output_transcription) {
