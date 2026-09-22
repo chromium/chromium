@@ -533,28 +533,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 CustomTabActivity.showInfoPage(
                                         getActivity(),
                                         AutofillPaymentMethodsConstants.WALLET_SETTINGS_URL));
-        ChromeClickableSpan paymentMethodsLink =
-                new ChromeClickableSpan(
-                        getContext(),
-                        view ->
-                                CustomTabActivity.showInfoPage(
-                                        getActivity(),
-                                        AutofillPaymentMethodsConstants
-                                                .WALLET_PAYMENT_METHODS_URL));
-        ChromeClickableSpan passesLink =
-                new ChromeClickableSpan(
-                        getContext(),
-                        view ->
-                                CustomTabActivity.showInfoPage(
-                                        getActivity(),
-                                        AutofillPaymentMethodsConstants.WALLET_PASSES_URL));
 
         SpannableString summary =
                 SpanApplier.applySpans(
                         getString(R.string.autofill_payment_methods_wallet_reminder_notice),
-                        new SpanApplier.SpanInfo("<link1>", "</link1>", dataAndPrivacyLink),
-                        new SpanApplier.SpanInfo("<link2>", "</link2>", paymentMethodsLink),
-                        new SpanApplier.SpanInfo("<link3>", "</link3>", passesLink));
+                        new SpanApplier.SpanInfo("<link>", "</link>", dataAndPrivacyLink));
         noticePref.setSummary(summary);
         noticePref.setKey(PREF_WALLET_REMINDER_NOTICE);
         noticePref.setDividerAllowedAbove(false);

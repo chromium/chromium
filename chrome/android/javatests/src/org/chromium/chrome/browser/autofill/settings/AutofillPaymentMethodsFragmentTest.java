@@ -12,6 +12,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -20,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,6 +39,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.pm.ActivityInfo;
@@ -44,6 +48,7 @@ import android.content.pm.ResolveInfo;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -106,6 +111,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1704,6 +1710,20 @@ public class AutofillPaymentMethodsFragmentTest {
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_WALLET_REMINDER_NOTICE);
         assertNotNull(noticePref);
+        String expectedSummary =
+                SpanApplier.applySpans(
+                                activity.getString(
+                                        R.string.autofill_payment_methods_wallet_reminder_notice),
+                                new SpanApplier.SpanInfo("<link>", "</link>", new Object()))
+                        .toString();
+
+        var intentMatcher = hasData(AutofillPaymentMethodsConstants.WALLET_SETTINGS_URL);
+        intending(intentMatcher)
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+        onView(is(mSettingsTestRule.getFragment().getListView()))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(expectedSummary))));
+        onView(withText(expectedSummary)).perform(clickOnClickableSpan(0));
+        intended(intentMatcher);
     }
 
     @Test

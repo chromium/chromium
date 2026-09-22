@@ -40,6 +40,7 @@ const char kProdWalletManageSettingsUrl[] =
 const char kSandboxWalletManageSettingsUrl[] =
     "https://wallet-web.sandbox.google.com/wallet?"
     "p=settings&utm_source=chrome&utm_medium=settings&utm_campaign=settings";
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsConstants.java:WALLET_REMINDER_NOTICE_URLS)
 
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.
@@ -63,7 +64,6 @@ const char kSandboxManagePassesUrl[] =
 const char kManageLoyaltyCardsUrl[] =
     "https://wallet.google.com/wallet?"
     "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=loyalty";
-// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsConstants.java)
 
 // LINT.IfChange
 const char kVirtualCardEnrollmentSupportUrl[] =

@@ -1431,8 +1431,8 @@
   </if>
 
   <!-- Payments Wallet Reminder Notice strings -->
-  <message name="IDS_AUTOFILL_PAYMENT_METHODS_WALLET_REMINDER_NOTICE" desc="Shown in the payments section of settings. Descriptive text to inform the user that data and privacy preferences, payment methods, and passes can be accessed via link. Google Wallet should not be translated because it is the product name. Has three links that open different pages on Google Wallet." formatter_data="android_java">
-    Visit Google Wallet to control <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>data and privacy preferences<ph name="END_LINK1">&lt;/link1&gt;</ph> or manage <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>payment methods<ph name="END_LINK2">&lt;/link2&gt;</ph> and <ph name="BEGIN_LINK3">&lt;link3&gt;</ph>passes<ph name="END_LINK3">&lt;/link3&gt;</ph> like loyalty cards and IDs
+  <message name="IDS_AUTOFILL_PAYMENT_METHODS_WALLET_REMINDER_NOTICE" desc="Shown in the payments section of settings. Descriptive text to inform the user that data and privacy preferences can be accessed via link. Google Wallet should not be translated because it is the product name." formatter_data="android_java">
+    Visit Google Wallet to manage <ph name="BEGIN_LINK">&lt;link&gt;</ph>data and privacy preferences<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
 
   <!-- Autofill credit card preferences -->
