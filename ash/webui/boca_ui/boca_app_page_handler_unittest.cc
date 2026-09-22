@@ -2883,6 +2883,22 @@ TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetterAndSetter) {
                /*value=*/base::Value(nav_map.Clone()));
 }
 
+TEST_F(BocaAppPageHandlerProducerTest, TestSetUserPrefDisallowedType) {
+  boca_app_handler()->SetPrefForTesting(pref_service());
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&bad_message](const std::string& error) { bad_message = error; }));
+
+  remote()->SetUserPref(mojom::BocaValidPref::kNavigationSetting,
+                        base::Value(42), base::DoNothing());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
+  EXPECT_EQ("Using disallowed type for pref.", bad_message);
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
 TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
   const std::string student_id = "123";
   EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(1);

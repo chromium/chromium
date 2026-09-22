@@ -794,8 +794,15 @@ void BocaAppHandler::SetUserPref(mojom::BocaValidPref pref,
                                  SetUserPrefCallback callback) {
   // Boca should only get but not set kDefaultMediaStreamSetting.
   if (pref == mojom::BocaValidPref::kDefaultMediaStreamSetting) {
-    mojo::ReportBadMessage(
+    receiver_.ReportBadMessage(
         "Attempted to set kDefaultMediaStreamSetting user pref.");
+    return;
+  }
+
+  const PrefService::Preference* const preference =
+      pref_service_->FindPreference(GetPrefName(pref));
+  if (!preference || preference->GetType() != value.type()) {
+    receiver_.ReportBadMessage("Using disallowed type for pref.");
     return;
   }
 
