@@ -87,7 +87,7 @@
 <translation id="1143142264369994168">Signaturgeber des Zertifikats</translation>
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
-<translation id="1151858212483238980">In Google Wallet gespeicherte Karteninformaitonen können automatisch eingefügt werden</translation>
+<translation id="1151858212483238980">In Google Wallet gespeicherte Karteninformationen können automatisch eingefügt werden</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Du siehst dir eine lokale oder freigegebene Datei an</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> hat die Verbindung unerwartet geschlossen.</translation>
@@ -2066,7 +2066,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4480760608050410381">MP4-Video</translation>
 <translation id="4489023393592172404">Umschlag Kaku 4</translation>
-<translation id="4489977488133295402">Vor Autofill-Nutzung Identität bestätigen</translation>
+<translation id="4489977488133295402">Vor Autofill für Zahlungsmethoden Identität bestätigen</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
@@ -2436,7 +2436,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
-<translation id="5116015291385561204">Vor Autofill-Nutzung Identität bestätigen</translation>
+<translation id="5116015291385561204">Vor Autofill von vertraulichen Daten Identität bestätigen</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5124797626438336458">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
@@ -4638,7 +4638,7 @@ Weitere Details:
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8918062451146297192">CVC für virtuelle Karte</translation>
 <translation id="8919895429178014996">Alle Elemente ausblenden</translation>
-<translation id="8919989290032064330">Identität bestätigen, um Zahlungsmethoden automatisch auszufüllen?</translation>
+<translation id="8919989290032064330">Vor Autofill für Zahlungsmethoden Identität bestätigen?</translation>
 <translation id="8922013791253848639">Werbung auf dieser Website immer zulassen</translation>
 <translation id="8922734931659847428">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>
