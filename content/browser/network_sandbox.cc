@@ -395,7 +395,11 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     //
     // Cache/
     // |-- Cache_Data/ <- `http_cache_directory`
-    // \-- No_Vary_Search/ <- `no_vary_search_directory`
+    // |-- No_Vary_Search/ <- `no_vary_search_directory`
+    // \-- Logical_Invalidation/ <- `logical_invalidation_directory`
+    //
+    // `Logical_Invalidation` is created lazily on first write by
+    // `LogicalInvalidationStore` and inherits the parent directory's ACL.
     //
     // The path must exist for the cache ACL to be set. Create if needed.
     if (base::CreateDirectory(
@@ -426,6 +430,16 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // have already been emplaced above.
       base::CreateDirectory(
           params->file_paths->no_vary_search_directory.value().path());
+    }
+
+    // Not created here: `LogicalInvalidationStore` does that on its first
+    // write, because Android skips this function entirely. It still has to be
+    // a sibling so that the ACL emplaced on the shared parent above covers it.
+    if (params->file_paths->logical_invalidation_directory) {
+      CHECK_EQ(
+          params->file_paths->logical_invalidation_directory->path().DirName(),
+          params->file_paths->http_cache_directory->path().DirName())
+          << "Logical Invalidation and Cache must be siblings.";
     }
   }
   if (params->file_paths->shared_dictionary_directory &&

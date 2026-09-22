@@ -2741,6 +2741,7 @@ std::vector<net::HttpCache::InvalidationFilter> LoadFiltersFromStore(
 }  // namespace
 
 TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupPurge) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
 
@@ -2823,9 +2824,81 @@ TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupPurge) {
   // filters.
   EXPECT_TRUE(LoadFiltersFromStore(network_context->logical_invalidation_store())
                   .empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", true, 1);
+}
+
+TEST_F(NetworkContextTestWithMockTime,
+       LogicalInvalidationStartupPurgeMultiple) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  auto make_filter = [](const char* url) {
+    net::HttpCache::InvalidationFilter filter;
+    filter.begin_time = base::Time();
+    filter.end_time = base::Time::Max();
+    filter.filter_type = net::UrlFilterType::kTrueIfMatches;
+    filter.origins.insert(url::Origin::Create(GURL(url)));
+    return filter;
+  };
+
+  base::FilePath invalidation_file =
+      temp_dir.GetPath().AppendASCII("invalidation_filters");
+  WritePickleFiltersToFile(invalidation_file,
+                           {make_filter("https://stale1.example.com"),
+                            make_filter("https://stale2.example.com")});
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->http_cache_enabled = true;
+  context_params->file_paths->logical_invalidation_directory =
+      temp_dir.GetPath();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  net::HttpCache* cache = network_context->url_request_context()
+                              ->http_transaction_factory()
+                              ->GetCache();
+  ASSERT_TRUE(cache);
+
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  std::string url1 = GetRequestCacheKey("https://stale1.example.com/a.html");
+  std::string url2 = GetRequestCacheKey("https://stale2.example.com/b.html");
+  std::string url3 = GetRequestCacheKey("https://fresh.example.com/c.html");
+  CreateCacheEntry(backend, url1);
+  CreateCacheEntry(backend, url2);
+  CreateCacheEntry(backend, url3);
+
+  // Let the startup Load() finish and run its reply.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop_load;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_load.QuitClosure());
+  run_loop_load.Run();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return cache->GetInvalidationFilterCountForTesting() == 0u; }));
+
+  EXPECT_EQ(net::ERR_FAILED, OpenEntryError(backend, url1));
+  EXPECT_EQ(net::ERR_FAILED, OpenEntryError(backend, url2));
+  EXPECT_EQ(net::OK, OpenEntryError(backend, url3));
+
+  EXPECT_EQ(0u, cache->GetInvalidationFilterCountForTesting());
+  EXPECT_TRUE(
+      LoadFiltersFromStore(network_context->logical_invalidation_store())
+          .empty());
 }
 
 TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupAddRace) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
 
@@ -2915,9 +2988,13 @@ TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupAddRace) {
   // Verify disk file is updated and empty.
   EXPECT_TRUE(LoadFiltersFromStore(network_context->logical_invalidation_store())
                   .empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", false, 1);
 }
 
 TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupRemoveRace) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
 
@@ -3003,6 +3080,57 @@ TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupRemoveRace) {
   // Verify disk file is clean.
   EXPECT_TRUE(LoadFiltersFromStore(network_context->logical_invalidation_store())
                   .empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", false, 1);
+}
+
+// A load that fails to parse must not be answered by blanking the file. The
+// unreadable bytes may encode a deletion that has not been replayed yet, so
+// overwriting them with an empty list would silently drop it.
+TEST_F(NetworkContextTestWithMockTime,
+       LogicalInvalidationStartupCorruptFilePreserved) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath invalidation_file =
+      temp_dir.GetPath().AppendASCII("invalidation_filters");
+  const std::string corrupt_bytes = "this is not a valid pickle";
+  ASSERT_TRUE(base::WriteFile(invalidation_file, corrupt_bytes));
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->http_cache_enabled = true;
+  context_params->file_paths->logical_invalidation_directory =
+      temp_dir.GetPath();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  ASSERT_TRUE(WaitForCacheBackend(*network_context));
+
+  // Let the startup Load() fail and run its reply. The failure path is silent
+  // apart from the histogram, so that is what we wait on.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !histogram_tester
+                .GetAllSamples(
+                    "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped")
+                .empty();
+  }));
+
+  // Nothing was queued during the load, so no save should have been issued.
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", true, 1);
+
+  // The corrupt bytes must survive untouched.
+  std::string on_disk;
+  ASSERT_TRUE(base::ReadFileToString(invalidation_file, &on_disk));
+  EXPECT_EQ(corrupt_bytes, on_disk);
 }
 
 TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupBatchSaves) {

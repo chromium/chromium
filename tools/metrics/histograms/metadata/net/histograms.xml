@@ -3589,6 +3589,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpCache.LogicalInvalidation.StartupSaveSkipped"
+    enum="BooleanSkipped" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether the save that follows the startup load of the logical HTTP cache
+    invalidation filters was skipped because the stored list was already
+    current. Recorded once per network context that has a persistence directory,
+    when the initial load completes. A save is only required when a filter was
+    added or removed while that load was still in flight, so this is expected to
+    be overwhelmingly &quot;Skipped&quot;; a low skip rate would mean the
+    startup write is not in fact avoidable.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
     expires_after="2027-03-07">
   <owner>ashleynewson@chromium.org</owner>

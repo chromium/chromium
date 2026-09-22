@@ -1022,6 +1022,34 @@ void SetCertVerifierServiceFactoryForTesting(
   g_cert_verifier_service_factory_for_testing = service_factory;
 }
 
+void PopulateHttpCacheDirectories(
+    network::mojom::NetworkContextParams* params) {
+  CHECK(params);
+  // An empty path would turn the appends below into CWD-relative paths, and
+  // the caller treats a non-empty `http_cache_directory` as a valid one.
+  if (!params->http_cache_enabled || !params->file_paths ||
+      !params->file_paths->http_cache_directory ||
+      params->file_paths->http_cache_directory->path().empty()) {
+    return;
+  }
+
+  const base::FilePath cache_parent =
+      params->file_paths->http_cache_directory->path();
+
+  if (!params->file_paths->no_vary_search_directory.has_value()) {
+    params->file_paths->no_vary_search_directory =
+        cache_parent.Append(kNoVarySearchDirectoryName);
+  }
+
+  if (!params->file_paths->logical_invalidation_directory.has_value()) {
+    params->file_paths->logical_invalidation_directory =
+        cache_parent.Append(kLogicalInvalidationDirectoryName);
+  }
+
+  params->file_paths->http_cache_directory =
+      cache_parent.Append(kCacheDataDirectoryName);
+}
+
 void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params) {
@@ -1030,20 +1058,7 @@ void CreateNetworkContextInNetworkService(
             BrowserThread::CurrentlyOn(BrowserThread::UI),
         base::NotFatalUntil::M160);
 
-  if (params->http_cache_enabled && params->file_paths &&
-      params->file_paths->http_cache_directory) {
-    if (!params->file_paths->no_vary_search_directory.has_value()) {
-      static constexpr base::FilePath::CharType kNoVarySearchDirectoryName[] =
-          FILE_PATH_LITERAL("No_Vary_Search");
-
-      params->file_paths->no_vary_search_directory =
-          params->file_paths->http_cache_directory->path().Append(
-              kNoVarySearchDirectoryName);
-    }
-    params->file_paths->http_cache_directory =
-        params->file_paths->http_cache_directory->path().Append(
-            kCacheDataDirectoryName);
-  }
+  PopulateHttpCacheDirectories(params.get());
 
   const bool has_valid_http_cache_path =
       params->http_cache_enabled && params->file_paths &&

@@ -4138,19 +4138,28 @@ void NetworkContext::OnInvalidationFiltersLoaded(
     return;
   }
 
-  // 1. Determine and save the final list of filters in O(N log N) time.
+  // 1. Determine and save the final list of filters.
   if (logical_invalidation_store_) {
-    std::vector<net::HttpCache::InvalidationFilter> filters_to_save(
-        loaded_filters);
-    filters_to_save.append_range(pending_additions_);
-    std::erase_if(filters_to_save, [&](const auto& filter) {
-      return std::ranges::contains(pending_removals_, filter);
-    });
-    std::ranges::sort(filters_to_save, std::less<>());
-    auto [first, last] =
-        std::ranges::unique(filters_to_save, std::equal_to<>());
-    filters_to_save.erase(first, last);
-    logical_invalidation_store_->Save(std::move(filters_to_save));
+    // Skip saving if no filters were added or removed during load, avoiding a
+    // redundant startup write (and avoiding overwriting an unparsable file
+    // with an empty list).
+    const bool skipped =
+        pending_additions_.empty() && pending_removals_.empty();
+    base::UmaHistogramBoolean(
+        "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", skipped);
+    if (!skipped) {
+      std::vector<net::HttpCache::InvalidationFilter> filters_to_save(
+          loaded_filters);
+      filters_to_save.append_range(pending_additions_);
+      std::erase_if(filters_to_save, [&](const auto& filter) {
+        return std::ranges::contains(pending_removals_, filter);
+      });
+      std::ranges::sort(filters_to_save, std::less<>());
+      auto [first, last] =
+          std::ranges::unique(filters_to_save, std::equal_to<>());
+      filters_to_save.erase(first, last);
+      logical_invalidation_store_->Save(std::move(filters_to_save));
+    }
   }
 
   // 2. Determine which loaded filters need to be registered logically in
