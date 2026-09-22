@@ -467,19 +467,25 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                                              GLsizei restore_scissor_width,
                                              GLsizei restore_scissor_height);
 
-  void SetupExpectationsForFramebufferClearing(GLenum target,
-                                               GLuint clear_bits,
-                                               GLclampf restore_red,
-                                               GLclampf restore_green,
-                                               GLclampf restore_blue,
-                                               GLclampf restore_alpha,
-                                               GLuint restore_stencil,
-                                               GLclampf restore_depth,
-                                               bool restore_scissor_test,
-                                               GLint restore_scissor_x,
-                                               GLint restore_scissor_y,
-                                               GLsizei restore_scissor_width,
-                                               GLsizei restore_scissor_height);
+  // |clear_error| is the error reported by the post-clear glGetError() that
+  // GLES2DecoderImpl::ClearUnclearedAttachments uses to decide whether the
+  // clear landed. Pass something other than GL_NO_ERROR to simulate a driver
+  // that failed the clear (e.g. GL_OUT_OF_MEMORY).
+  void SetupExpectationsForFramebufferClearing(
+      GLenum target,
+      GLuint clear_bits,
+      GLclampf restore_red,
+      GLclampf restore_green,
+      GLclampf restore_blue,
+      GLclampf restore_alpha,
+      GLuint restore_stencil,
+      GLclampf restore_depth,
+      bool restore_scissor_test,
+      GLint restore_scissor_x,
+      GLint restore_scissor_y,
+      GLsizei restore_scissor_width,
+      GLsizei restore_scissor_height,
+      GLenum clear_error = GL_NO_ERROR);
 
   void SetupExpectationsForFramebufferClearingMulti(
       GLuint read_framebuffer_service_id,
@@ -496,7 +502,8 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
       GLint restore_scissor_x,
       GLint restore_scissor_y,
       GLsizei restore_scissor_width,
-      GLsizei restore_scissor_height);
+      GLsizei restore_scissor_height,
+      GLenum clear_error = GL_NO_ERROR);
 
   void SetupExpectationsForDepthMask(bool mask);
   void SetupExpectationsForEnableDisable(GLenum cap, bool enable);

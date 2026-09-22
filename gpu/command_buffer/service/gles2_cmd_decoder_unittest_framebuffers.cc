@@ -2498,6 +2498,110 @@ TEST_P(GLES2DecoderWithShaderTest, UnClearedAttachmentsGetClearedOnReadPixels) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+// Regression test for crbug.com/559727039: if the lazy clear of a never-written
+// attachment fails (GL_OUT_OF_MEMORY is permitted for any command by ES 3.2
+// section 2.3.1, and leaves the attachment holding a previous consumer's GPU
+// memory), the attachment must not be recorded as cleared and the read must not
+// return that memory to the client.
+TEST_P(GLES2DecoderWithShaderTest,
+       UnClearedAttachmentsNotMarkedClearedWhenClearFailsOnReadPixels) {
+  const GLuint kFBOClientTextureId = 4100;
+  const GLuint kFBOServiceTextureId = 4101;
+
+  // Register a texture id.
+  EXPECT_CALL(*gl_, GenTextures(_, _))
+      .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
+
+  // Setup "render to" texture.
+  DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+  DoBindFramebuffer(GL_FRAMEBUFFER, client_framebuffer_id_,
+                    kServiceFramebufferId);
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         kFBOClientTextureId, kFBOServiceTextureId, 0,
+                         GL_NO_ERROR);
+  DoEnableDisable(GL_SCISSOR_TEST, false);
+  DoScissor(0, 0, 1, 1);
+
+  // Setup "render from" texture.
+  SetupTexture();
+
+  FramebufferManager* framebuffer_manager = GetFramebufferManager();
+  Framebuffer* framebuffer =
+      framebuffer_manager->GetFramebuffer(client_framebuffer_id_);
+  ASSERT_TRUE(framebuffer != nullptr);
+  EXPECT_FALSE(framebuffer->IsCleared());
+
+  // The driver fails the lazy clear with GL_OUT_OF_MEMORY.
+  SetupExpectationsForFramebufferClearing(GL_FRAMEBUFFER,       // target
+                                          GL_COLOR_BUFFER_BIT,  // clear bits
+                                          0, 0, 0,
+                                          0,      // color
+                                          0,      // stencil
+                                          1.0f,   // depth
+                                          false,  // scissor test
+                                          0, 0, 1, 1,
+                                          GL_OUT_OF_MEMORY);  // clear error
+
+  // The read must be abandoned rather than copying the uncleared attachment
+  // into the client's shared memory.
+  EXPECT_CALL(*gl_, ReadPixels(_, _, _, _, _, _, _)).Times(0);
+
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t pixels_shm_id = shared_memory_id_;
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
+  cmds::ReadPixels cmd;
+  cmd.Init(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
+           pixels_shm_offset, result_shm_id, result_shm_offset, false);
+  result->success = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  // The out of memory must be surfaced rather than swallowed, and the
+  // attachment must still be uncleared so a later access retries the clear.
+  // Note GetGLError() reuses the shared memory that |result| points at.
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+  EXPECT_FALSE(framebuffer->IsCleared());
+
+  // A subsequent read retries the clear; when it succeeds the attachment is
+  // marked cleared and the read proceeds normally. These expectations mirror
+  // SetupExpectationsForFramebufferClearing() minus the completeness query,
+  // which is not repeated because the first read already cached the result.
+  EXPECT_CALL(*gl_, ClearColor(0.0f, 0.0f, 0.0f, 0.0f))
+      .Times(1)
+      .RetiresOnSaturation();
+  SetupExpectationsForColorMask(true, true, true, true);
+  SetupExpectationsForEnableDisable(GL_SCISSOR_TEST, false);
+  if (feature_info()->feature_flags().ext_window_rectangles) {
+    EXPECT_CALL(*gl_, WindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, Clear(GL_COLOR_BUFFER_BIT)).Times(1).RetiresOnSaturation();
+  SetupExpectationsForRestoreClearState(0, 0, 0, 0, 0, 1.0f, false, 0, 0, 1, 1);
+
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, ReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, _))
+      .Times(1)
+      .RetiresOnSaturation();
+  result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+  result->success = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(framebuffer->IsCleared());
+}
+
 TEST_P(GLES3DecoderTest, CopyTexImage2DValidInternalFormat) {
   const GLuint kFBOClientTextureId = 4100;
   const GLuint kFBOServiceTextureId = 4101;
