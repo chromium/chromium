@@ -10,11 +10,11 @@
 #include "base/no_destructor.h"
 #include "build/buildflag.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -104,7 +104,11 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
               .Build()) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
-  DependsOn(glic::GlicKeyedServiceFactory::GetInstance());
+  // Add a dependency on SubscriptionEligibilityServiceFactory since
+  // GlicEnabling::IsEnabledForProfile() can potentially call
+  // SubscriptionEligibilityServiceFactory::GetForProfile.
+  DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
+            GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
