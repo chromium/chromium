@@ -15,6 +15,7 @@
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
@@ -69,7 +70,7 @@ class MockPixManager : public PixManager {
                const std::optional<GURL>&,
                const url::Origin&,
                bool,
-               std::optional<PixCodeRustValidationResult>,
+               PixCodeRustValidationResult,
                std::string,
                ukm::SourceId),
               (override));

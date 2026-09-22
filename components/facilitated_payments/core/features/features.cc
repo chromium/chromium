@@ -73,7 +73,4 @@ BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Use the Rust implementation of the Pix code validator.
-BASE_FEATURE(kUseRustPixCodeValidator, base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace payments::facilitated

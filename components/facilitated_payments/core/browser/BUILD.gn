@@ -50,13 +50,11 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/metrics",
-    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
     "//components/facilitated_payments/core/utils",
     "//components/facilitated_payments/core/validation",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//components/strike_database",
-    "//services/data_decoder/public/cpp",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
     "//url",
@@ -95,7 +93,6 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }

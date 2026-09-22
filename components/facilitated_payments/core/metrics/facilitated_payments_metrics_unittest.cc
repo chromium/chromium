@@ -217,94 +217,6 @@ TEST(FacilitatedPaymentsMetricsTest, LogEwalletFopSelected) {
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
-     LogPaymentCodeValidationResultAndLatency_ValidatorFailed) {
-  base::HistogramTester histogram_tester;
-
-  LogPaymentCodeValidationResultAndLatency(
-      PixCodeValidationResult::kValidatorFailed, std::nullopt,
-      base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
-      /*sample=*/PixCodeValidationResult::kValidatorFailed,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.ValidatorFailed."
-      "ResultVsRust",
-      /*sample=*/PixCodeValidationResult::kInvalid,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.ValidatorFailed.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest,
-     LogPaymentCodeValidationResultAndLatency_InvalidCode) {
-  base::HistogramTester histogram_tester;
-
-  LogPaymentCodeValidationResultAndLatency(
-      PixCodeValidationResult::kInvalid, std::nullopt, base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
-      /*sample=*/PixCodeValidationResult::kInvalid,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.InvalidCode.ResultVsRust",
-      /*sample=*/PixCodeValidationResult::kInvalid,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.InvalidCode.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest,
-     LogPaymentCodeValidationResultAndLatency_DynamicCode) {
-  base::HistogramTester histogram_tester;
-
-  LogPaymentCodeValidationResultAndLatency(
-      PixCodeValidationResult::kDynamic, PixCodeRustValidationResult::kDynamic,
-      base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
-      /*sample=*/PixCodeValidationResult::kDynamic,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.DynamicCode.ResultVsRust",
-      /*sample=*/PixCodeValidationResult::kDynamic,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.DynamicCode.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest,
-     LogPaymentCodeValidationResultAndLatency_StaticCode) {
-  base::HistogramTester histogram_tester;
-
-  LogPaymentCodeValidationResultAndLatency(PixCodeValidationResult::kStatic,
-                                           PixCodeRustValidationResult::kStatic,
-                                           base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.Result",
-      /*sample=*/PixCodeValidationResult::kStatic,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.StaticCode.ResultVsRust",
-      /*sample=*/PixCodeValidationResult::kStatic,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentCodeValidation.StaticCode.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-  }
-
-TEST(FacilitatedPaymentsMetricsTest,
      LogPixInitiatePurchaseActionResultAndLatency) {
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
@@ -625,8 +537,7 @@ TEST_P(FacilitatedPaymentsMetricsPixExitedReasonTest, LogPixFlowExitedReason) {
 INSTANTIATE_TEST_SUITE_P(
     FacilitatedPaymentsMetricsTest,
     FacilitatedPaymentsMetricsPixExitedReasonTest,
-    testing::Values(PixFlowExitedReason::kCodeValidatorFailed,
-                    PixFlowExitedReason::kInvalidCode,
+    testing::Values(PixFlowExitedReason::kInvalidCode,
                     PixFlowExitedReason::kUserOptedOut,
                     PixFlowExitedReason::kNoLinkedAccount,
                     PixFlowExitedReason::kLandscapeScreenOrientation,

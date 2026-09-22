@@ -7,8 +7,6 @@
 
 #include <optional>
 
-#include "base/types/expected.h"
-#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -156,8 +154,9 @@ enum class EwalletNewAccountLinkingFlowExitedReason {
 //
 // LINT.IfChange(PixFlowExitedReason)
 enum class PixFlowExitedReason {
-  // The code validator encountered an error.
-  kCodeValidatorFailed = 0,
+  // Obsolete: Pix codes are validated in-process by the Rust validator, which
+  // cannot fail this way.
+  // kCodeValidatorFailed = 0,
   // The code for the payflow is not valid.
   kInvalidCode = 1,
   // The user has opted out of the payflow.
@@ -239,8 +238,10 @@ enum class AccountLinkingFlowExitedReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.AccountLinking.FlowExitedReason)
 
-// This contains a subset of the variants in the Rust `PixQrCodeResult` enum, as
-// some values are not interesting for metrics, e.g. they'd be too noisy/spammy.
+// A subset of the variants in the Rust `PixQrCodeResult` enum. Variants that
+// indicate the text was not a payment code at all are omitted, as random text
+// copied by the user is likely to end up classified into one of the "not a
+// payment code" buckets and make the resulting metrics much noisier.
 // LINT.IfChange(PixCodeRustValidationResult)
 enum class PixCodeRustValidationResult {
   // The input was successfully parsed as a dynamic Pix code.
@@ -262,20 +263,6 @@ enum class PixCodeRustValidationResult {
   kMaxValue = kUnknownPixCodeType,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.PaymentCodeValidation.RustResult)
-
-// LINT.IfChange(PixCodeValidationResult)
-enum class PixCodeValidationResult {
-  // The code is dynamic.
-  kDynamic = 0,
-  // The code is static.
-  kStatic = 1,
-  // The code is invalid.
-  kInvalid = 2,
-  // The validator failed to validate the code.
-  kValidatorFailed = 3,
-  kMaxValue = kValidatorFailed
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixCodeValidationResult)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -355,17 +342,8 @@ void LogNonCardPaymentMethodsFopSelected(
     PaymentLinkFopSelectorAction payment_link_fop_selector_action,
     std::optional<PaymentLinkValidator::Scheme> scheme);
 
-// Logs the result of the Rust Pix code validator. Always logged, even when the
-// C++ validator is in use.
+// Logs the result of the Rust Pix code validator.
 void LogPaymentCodeRustValidationResult(PixCodeRustValidationResult result);
-
-// Log the result and latency for validating a payment code using
-// `data_decoder::DataDecoder`, as well as whether the C++ validator agrees with
-// the Rust validator.
-void LogPaymentCodeValidationResultAndLatency(
-    PixCodeValidationResult result,
-    std::optional<PixCodeRustValidationResult> rust_result,
-    base::TimeDelta duration);
 
 // Log the result of whether the facilitated payments is available or not and
 // the check's latency.

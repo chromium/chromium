@@ -17,18 +17,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
-#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -54,18 +51,16 @@ class PixManager {
   void Reset();
 
   // Checks whether the `main_frame_url` or the `iframe_url` (if present) is
-  // allowlisted and validates the `pix_code` before triggering the Pix payments
-  // flow. Note: If the Pix payment flow has already been triggered by the other
-  // code detection methods like DOM search then this method is a no-op.
-  //
-  // If Rust Pix code validation is enabled, `rust_validation_result` will
-  // always have a value.
+  // allowlisted and that `validation_result` indicates a valid Pix code before
+  // triggering the Pix payments flow for `pix_code`. Note: If the Pix payment
+  // flow has already been triggered by the other code detection methods like
+  // DOM search then this method is a no-op.
   virtual void OnPixCodeCopiedToClipboard(
       const GURL& main_frame_url,
       const std::optional<GURL>& iframe_url,
       const url::Origin& main_frame_origin,
       bool is_same_origin,
-      std::optional<PixCodeRustValidationResult> rust_validation_result,
+      PixCodeRustValidationResult validation_result,
       std::string pix_code,
       ukm::SourceId ukm_source_id);
 
@@ -92,22 +87,10 @@ class PixManager {
   // Returns true if the URL is in the PSP allowlist.
   bool IsIframeUrlAllowlisted(const GURL& url) const;
 
-  // Called by the utility process after validation of the `pix_code`. If the
-  // utility processes has disconnected (e.g., due to a crash in the validation
-  // code), then `pix_qr_code_type` contains an error string instead of the
-  // PixQrCodeType result. The call to validate the Pix code was made at
-  // `start_time`.
-  void OnPixCodeValidated(
-      std::optional<PixCodeRustValidationResult> rust_validation_result,
-      std::string pix_code,
-      base::TimeTicks start_time,
-      base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type);
-
-  // Processes a fully-validated Pix code. Exposed separately from
-  // `OnPixCodeValidated()` since the Rust validator does not need to go to the
-  // utility process at all.
+  // Processes a Pix code that was successfully parsed as either a static or a
+  // dynamic code.
   void OnValidPixCode(std::string pix_code,
-                      mojom::PixQrCodeType pix_qr_code_type);
+                      PixCodeRustValidationResult validation_result);
 
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The
@@ -217,9 +200,6 @@ class PixManager {
   // to categorize transaction result logging by frame type (Iframe vs.
   // MainFrame).
   bool pix_code_is_in_iframe_ = false;
-
-  // Utility process validator for Pix code strings.
-  data_decoder::DataDecoder utility_process_validator_;
 
   // Represents the current state of the UI or the UI state that is intended. In
   // the latter case, the UI state is always updated to reflect the current

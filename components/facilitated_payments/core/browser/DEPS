@@ -5,7 +5,6 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/signin/public",
   "+components/strike_database",
-  "+services/data_decoder/public/cpp",
   "+services/metrics/public",
   "+services/network/public/cpp",
 ]

@@ -33,7 +33,6 @@ BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
 BASE_DECLARE_FEATURE(kEwalletPayments);
 BASE_DECLARE_FEATURE(kFacilitatedPaymentsEnableA2APayment);
 #endif  // BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kUseRustPixCodeValidator);
 
 }  // namespace payments::facilitated
 

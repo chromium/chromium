@@ -8,16 +8,13 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
-#include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -26,6 +23,9 @@
 namespace payments::facilitated {
 
 namespace {
+
+constexpr char kRustValidationResultHistogram[] =
+    "FacilitatedPayments.Pix.PaymentCodeValidation.RustResult";
 
 struct IframeUrlTypeTestCase {
   std::string iframe_url;
@@ -55,7 +55,7 @@ class MockPixManager : public PixManager {
                const std::optional<GURL>&,
                const url::Origin&,
                bool,
-               std::optional<PixCodeRustValidationResult>,
+               PixCodeRustValidationResult,
                std::string,
                ukm::SourceId),
               (override));
@@ -87,55 +87,37 @@ class FacilitatedPaymentsDriverTestBase : public testing::Test {
     driver_->SetPixManagerForTesting(std::move(pix_manager));
   }
 
-  explicit FacilitatedPaymentsDriverTestBase(bool use_rust_validator)
-      : FacilitatedPaymentsDriverTestBase() {
-    scoped_feature_list_.InitWithFeatureState(kUseRustPixCodeValidator,
-                                              use_rust_validator);
-  }
-
   ~FacilitatedPaymentsDriverTestBase() override = default;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::TestOptimizationGuideDecider decider_;
   MockFacilitatedPaymentsClient client_;
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   raw_ptr<MockPixManager> pix_manager_;
 };
 
-class FacilitatedPaymentsDriverTest : public FacilitatedPaymentsDriverTestBase,
-                                      public testing::WithParamInterface<bool> {
- public:
-  FacilitatedPaymentsDriverTest()
-      : FacilitatedPaymentsDriverTestBase(GetParam()) {}
-};
+using FacilitatedPaymentsDriverTest = FacilitatedPaymentsDriverTestBase;
 
 class FacilitatedPaymentsDriverIframeUrlTypeTest
     : public FacilitatedPaymentsDriverTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, IframeUrlTypeTestCase>> {
- public:
-  FacilitatedPaymentsDriverIframeUrlTypeTest()
-      : FacilitatedPaymentsDriverTestBase(std::get<0>(GetParam())) {}
-};
+      public testing::WithParamInterface<IframeUrlTypeTestCase> {};
 
 class FacilitatedPaymentsDriverIframeIsSameOriginTest
     : public FacilitatedPaymentsDriverTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, IframeIsSameOriginTestCase>> {
- public:
-  FacilitatedPaymentsDriverIframeIsSameOriginTest()
-      : FacilitatedPaymentsDriverTestBase(std::get<0>(GetParam())) {}
-};
+      public testing::WithParamInterface<IframeIsSameOriginTestCase> {};
 
-TEST_P(FacilitatedPaymentsDriverTest,
-       PixIdentifierExists_OnPixCodeCopiedToClipboardTriggered) {
+TEST_F(FacilitatedPaymentsDriverTest,
+       DynamicCode_OnPixCodeCopiedToClipboardTriggered) {
   GURL url("https://example.com/");
   url::Origin origin = url::Origin::Create(url);
 
-  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard);
+  base::HistogramTester histogram_tester;
 
-  // "0014br.gov.bcb.pix" is the Pix identifier.
+  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard(
+                                 testing::_, testing::_, testing::_, testing::_,
+                                 PixCodeRustValidationResult::kDynamic,
+                                 testing::_, testing::_));
+
   driver_->OnTextCopiedToClipboard(
       /*main_frame_url=*/url,
       /*iframe_url=*/std::nullopt,
@@ -143,12 +125,76 @@ TEST_P(FacilitatedPaymentsDriverTest,
       u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       /*ukm_source_id=*/123,
       /*is_same_origin=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kRustValidationResultHistogram,
+      /*sample=*/PixCodeRustValidationResult::kDynamic,
+      /*expected_bucket_count=*/1);
 }
 
-TEST_P(FacilitatedPaymentsDriverTest,
-       PixIdentifierAbsent_OnPixCodeCopiedToClipboardNotTriggered) {
+TEST_F(FacilitatedPaymentsDriverTest,
+       StaticCode_OnPixCodeCopiedToClipboardTriggered) {
   GURL url("https://example.com/");
   url::Origin origin = url::Origin::Create(url);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard(
+                                 testing::_, testing::_, testing::_, testing::_,
+                                 PixCodeRustValidationResult::kStatic,
+                                 testing::_, testing::_));
+
+  driver_->OnTextCopiedToClipboard(
+      /*main_frame_url=*/url,
+      /*iframe_url=*/std::nullopt,
+      /*main_frame_origin=*/origin, /*copied_text=*/
+      u"00020126270014br.gov.bcb.pix0105ABCDE63041D3D",
+      /*ukm_source_id=*/123,
+      /*is_same_origin=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kRustValidationResultHistogram,
+      /*sample=*/PixCodeRustValidationResult::kStatic,
+      /*expected_bucket_count=*/1);
+}
+
+// Codes that fail validation, but could plausibly be unsupported Pix codes,
+// are forwarded to `PixManager`, which is responsible for ending the payflow.
+TEST_F(FacilitatedPaymentsDriverTest,
+       MalformedPixCode_OnPixCodeCopiedToClipboardTriggered) {
+  GURL url("https://example.com/");
+  url::Origin origin = url::Origin::Create(url);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard(
+                                 testing::_, testing::_, testing::_, testing::_,
+                                 PixCodeRustValidationResult::kNonFinalCrc,
+                                 testing::_, testing::_));
+
+  // The CRC data object is not the final data object in this code.
+  driver_->OnTextCopiedToClipboard(
+      /*main_frame_url=*/url,
+      /*iframe_url=*/std::nullopt,
+      /*main_frame_origin=*/origin, /*copied_text=*/
+      u"00020126370014br.gov.bcb.pix2515www.example.com63021D3",
+      /*ukm_source_id=*/123,
+      /*is_same_origin=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      kRustValidationResultHistogram,
+      /*sample=*/PixCodeRustValidationResult::kNonFinalCrc,
+      /*expected_bucket_count=*/1);
+}
+
+// Text that is not recognizable as a payment code is dropped by the driver,
+// without recording any metrics, which would be too noisy.
+TEST_F(FacilitatedPaymentsDriverTest,
+       NotAPaymentCode_OnPixCodeCopiedToClipboardNotTriggered) {
+  GURL url("https://example.com/");
+  url::Origin origin = url::Origin::Create(url);
+
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
 
@@ -157,9 +203,11 @@ TEST_P(FacilitatedPaymentsDriverTest,
       /*main_frame_origin=*/origin, /*copied_text=*/u"notAValidPixIdentifier",
       /*ukm_source_id=*/123,
       /*is_same_origin=*/false);
+
+  histogram_tester.ExpectTotalCount(kRustValidationResultHistogram, 0);
 }
 
-TEST_P(FacilitatedPaymentsDriverTest,
+TEST_F(FacilitatedPaymentsDriverTest,
        InsecureContext_OnPixCodeCopiedToClipboardNotTriggered) {
   GURL url("http://example.com/");
   url::Origin origin = url::Origin::Create(url);
@@ -169,7 +217,7 @@ TEST_P(FacilitatedPaymentsDriverTest,
 
   EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
 
-  // "0014br.gov.bcb.pix" is the Pix identifier.
+  // A valid dynamic Pix code.
   driver_->OnTextCopiedToClipboard(
       /*main_frame_url=*/url,
       /*iframe_url=*/std::nullopt,
@@ -180,7 +228,7 @@ TEST_P(FacilitatedPaymentsDriverTest,
 }
 
 TEST_P(FacilitatedPaymentsDriverIframeUrlTypeTest, UrlTypeLogged) {
-  const IframeUrlTypeTestCase& test_case = std::get<1>(GetParam());
+  const IframeUrlTypeTestCase& test_case = GetParam();
 
   GURL url("https://example.com/");
   url::Origin origin = url::Origin::Create(url);
@@ -203,7 +251,7 @@ TEST_P(FacilitatedPaymentsDriverIframeUrlTypeTest, UrlTypeLogged) {
 }
 
 TEST_P(FacilitatedPaymentsDriverIframeIsSameOriginTest, IsSameOriginLogged) {
-  const IframeIsSameOriginTestCase& test_case = std::get<1>(GetParam());
+  const IframeIsSameOriginTestCase& test_case = GetParam();
 
   GURL url("https://example.com/");
   url::Origin origin = url::Origin::Create(url);
@@ -230,45 +278,36 @@ TEST_P(FacilitatedPaymentsDriverIframeIsSameOriginTest, IsSameOriginLogged) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FacilitatedPaymentsDriverTest,
-                         testing::Values(false, true));
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     FacilitatedPaymentsDriverIframeUrlTypeTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(
-            IframeUrlTypeTestCase{"https://psp.com",
-                                  PixIframeUrlType::kOtherNonEmptyUrl},
-            IframeUrlTypeTestCase{"about:blank", PixIframeUrlType::kAboutBlank},
-            IframeUrlTypeTestCase{"", PixIframeUrlType::kEmpty},
-            IframeUrlTypeTestCase{"about:srcdoc",
-                                  PixIframeUrlType::kAboutSrcDoc},
-            IframeUrlTypeTestCase{
-                "https://example.com/",
-                PixIframeUrlType::kNonEmptyAndSameOriginAsMainFrame})));
+    testing::Values(
+        IframeUrlTypeTestCase{"https://psp.com",
+                              PixIframeUrlType::kOtherNonEmptyUrl},
+        IframeUrlTypeTestCase{"about:blank", PixIframeUrlType::kAboutBlank},
+        IframeUrlTypeTestCase{"", PixIframeUrlType::kEmpty},
+        IframeUrlTypeTestCase{"about:srcdoc", PixIframeUrlType::kAboutSrcDoc},
+        IframeUrlTypeTestCase{
+            "https://example.com/",
+            PixIframeUrlType::kNonEmptyAndSameOriginAsMainFrame}));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     FacilitatedPaymentsDriverIframeIsSameOriginTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(
-            // For empty, about:blank, about:srcdoc, we log the is_same_origin
-            // value.
-            IframeIsSameOriginTestCase{"about:blank", true, true},
-            IframeIsSameOriginTestCase{"about:blank", false, true},
-            IframeIsSameOriginTestCase{"", true, true},
-            IframeIsSameOriginTestCase{"", false, true},
-            IframeIsSameOriginTestCase{"about:srcdoc", true, true},
-            IframeIsSameOriginTestCase{"about:srcdoc", false, true},
-            // For standard URLs, we do not log the IsSameOrigin metric.
-            IframeIsSameOriginTestCase{"https://example.com/", true, false},
-            IframeIsSameOriginTestCase{"https://example.com/", false, false},
-            IframeIsSameOriginTestCase{"https://psp.com/", true, false},
-            IframeIsSameOriginTestCase{"https://psp.com/", false, false})));
+    testing::Values(
+        // For empty, about:blank, about:srcdoc, we log the is_same_origin
+        // value.
+        IframeIsSameOriginTestCase{"about:blank", true, true},
+        IframeIsSameOriginTestCase{"about:blank", false, true},
+        IframeIsSameOriginTestCase{"", true, true},
+        IframeIsSameOriginTestCase{"", false, true},
+        IframeIsSameOriginTestCase{"about:srcdoc", true, true},
+        IframeIsSameOriginTestCase{"about:srcdoc", false, true},
+        // For standard URLs, we do not log the IsSameOrigin metric.
+        IframeIsSameOriginTestCase{"https://example.com/", true, false},
+        IframeIsSameOriginTestCase{"https://example.com/", false, false},
+        IframeIsSameOriginTestCase{"https://psp.com/", true, false},
+        IframeIsSameOriginTestCase{"https://psp.com/", false, false}));
 }  // namespace
 
 }  // namespace payments::facilitated

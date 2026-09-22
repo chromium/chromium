@@ -181,21 +181,10 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixCodeRustValidationResult) -->
 
-<!-- LINT.IfChange(FacilitatedPayments.PixCodeValidationResult) -->
-
-<enum name="FacilitatedPayments.PixCodeValidationResult">
-  <int value="0" label="Dynamic"/>
-  <int value="1" label="Static"/>
-  <int value="2" label="Invalid"/>
-  <int value="3" label="Validator failed"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixCodeValidationResult) -->
-
 <!-- LINT.IfChange(FacilitatedPayments.PixFlowExitedReason) -->
 
 <enum name="FacilitatedPayments.PixFlowExitedReason">
-  <int value="0" label="Code validator failed"/>
+  <int value="0" label="(Obsolete) Code validator failed. Removed in M156."/>
   <int value="1" label="Invalid code"/>
   <int value="2"
       label="User opted out of the flow using the Settings page pref"/>

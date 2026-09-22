@@ -11,9 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/types/expected.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
-#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 
 namespace payments::facilitated {
 
@@ -22,13 +20,9 @@ class PixManagerTestApi {
   explicit PixManagerTestApi(PixManager& manager) : manager_(manager) {}
   ~PixManagerTestApi() = default;
 
-  void OnPixCodeValidated(
-      std::optional<PixCodeRustValidationResult> rust_validation_result,
-      std::string pix_code,
-      base::TimeTicks start_time,
-      base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type) {
-    manager_->OnPixCodeValidated(rust_validation_result, std::move(pix_code),
-                                 start_time, std::move(pix_qr_code_type));
+  void OnValidPixCode(std::string pix_code,
+                      PixCodeRustValidationResult validation_result) {
+    manager_->OnValidPixCode(std::move(pix_code), validation_result);
   }
 
   void OnApiAvailabilityReceived(base::TimeTicks start_time,
