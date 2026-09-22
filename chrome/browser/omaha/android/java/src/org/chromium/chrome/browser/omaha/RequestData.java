@@ -31,8 +31,8 @@ public class RequestData {
     }
 
     /**
-     * Whether or not we are telling the server about a new install.
-     * False indicates a ping/updatecheck.
+     * Whether or not we are telling the server about a new install. False indicates a
+     * ping/updatecheck.
      */
     public boolean isSendInstallEvent() {
         return mSendInstallEvent;

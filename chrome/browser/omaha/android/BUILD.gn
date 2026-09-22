@@ -9,7 +9,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omaha/ExponentialBackoffScheduler.java",
     "java/src/org/chromium/chrome/browser/omaha/MarketURLGetter.java",
     "java/src/org/chromium/chrome/browser/omaha/OmahaPrefUtils.java",
+    "java/src/org/chromium/chrome/browser/omaha/RequestData.java",
     "java/src/org/chromium/chrome/browser/omaha/RequestFailureException.java",
+    "java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java",
     "java/src/org/chromium/chrome/browser/omaha/StringSanitizer.java",
     "java/src/org/chromium/chrome/browser/omaha/UpdateConfigs.java",
     "java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java",
@@ -27,6 +29,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/uid/android:java",
     "//components/browser_ui/util/android:java",
     "//components/cached_flags:java",
     "//components/variations/android:variations_java",
@@ -34,6 +37,7 @@ android_library("java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

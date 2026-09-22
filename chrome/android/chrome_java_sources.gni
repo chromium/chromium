@@ -971,8 +971,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omaha/OmahaDelegate.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaDelegateBase.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaService.java",
-  "java/src/org/chromium/chrome/browser/omaha/RequestData.java",
-  "java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java",
   "java/src/org/chromium/chrome/browser/omaha/ResponseParser.java",
   "java/src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelper.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfo.java",

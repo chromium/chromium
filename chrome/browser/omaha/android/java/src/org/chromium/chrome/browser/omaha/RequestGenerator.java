@@ -43,7 +43,7 @@ public abstract class RequestGenerator {
     }
 
     /**
-     * Determine how long it's been since Chrome was first installed.  Note that this may not
+     * Determine how long it's been since Chrome was first installed. Note that this may not
      * accurate for various reasons, but it shouldn't affect stats too much.
      */
     public static long installAge(
@@ -57,8 +57,8 @@ public abstract class RequestGenerator {
 
     /**
      * Generates the XML for the current request. Follows the format laid out at
-     * https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-     * with some additional placeholder values supplied.
+     * https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md with some additional
+     * placeholder values supplied.
      */
     public String generateXML(
             String sessionID,
@@ -144,7 +144,7 @@ public abstract class RequestGenerator {
     /**
      * Returns the current Android language and region code (e.g. en-GB or de-DE).
      *
-     * Note: the region code depends only on the language the user selected in Android settings.
+     * <p>Note: the region code depends only on the language the user selected in Android settings.
      * It doesn't depend on the user's physical location.
      */
     public String getLanguage() {
