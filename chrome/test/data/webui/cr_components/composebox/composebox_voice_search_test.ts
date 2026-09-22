@@ -1525,6 +1525,33 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test(
+      'voice search text color can be overridden via css variable',
+      async () => {
+        await createComposeboxElement();
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        mockSpeechRecognition.onerror!
+            ({error: 'network'} as SpeechRecognitionErrorEvent);
+        voiceSearchElement.liveTranscriptEnabled = true;
+        await microtasksFinished();
+        await voiceSearchElement.updateComplete;
+
+        const input =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
+        const errorContainer =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#error-container')!;
+
+        // The default comes from a var() fallback chain, so verify embedders
+        // can still override it via --color-composebox-voice-search-font.
+        composeboxElement.style.setProperty(
+            '--color-composebox-voice-search-font', 'rgb(10, 10, 10)');
+        assertEquals('rgb(10, 10, 10)', window.getComputedStyle(input).color);
+        assertEquals(
+            'rgb(10, 10, 10)', window.getComputedStyle(errorContainer).color);
+      });
+
+  test(
       'multiline transcript behavior when wave and live transcript enabled',
       async () => {
         await createComposeboxElement();
