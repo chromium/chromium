@@ -135,7 +135,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     }
   }
 
-  if (!lease->GetSharedImage()) {
+  if (context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
   }
 

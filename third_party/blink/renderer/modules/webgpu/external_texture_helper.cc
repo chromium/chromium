@@ -470,9 +470,8 @@ std::optional<ExternalTexture> CreateExternalTexture(
     }
   }
 
-  // The copy or draw operation above might have encountered GPU context loss,
-  // in which case GetSharedImage() returns null.
-  if (!lease->GetSharedImage()) {
+  // The copy or draw operation above might have encountered GPU context loss.
+  if (context_provider_wrapper->ContextProvider().IsContextLost()) {
     return {};
   }
 
