@@ -228,6 +228,7 @@ class OmniboxEverywhereUI
       int command_id,
       base::WeakPtr<ContextualSearchboxScreenshareController> controller);
   void ResetScreenshotMenu();
+  void SynthesizeMouseMoveEvent();
 
   // Buffers upload status notifications that arrive while the WebUI is
   // transitioning to composebox mode before `composebox_handler_` is bound.

@@ -46,6 +46,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -333,6 +334,55 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, FocusAndActivationState) {
 
   ui_manager.Close();
   EXPECT_FALSE(widget->IsVisible());
+  ui_manager.Shutdown();
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       SynthesizesMouseEventOnMenuClosed) {
+  OmniboxEverywhereUIManager ui_manager;
+
+  ui_manager.ShowForProfile(browser()->GetProfile(),
+                            browser()->GetWindow()->GetNativeWindow());
+  views::Widget* widget = ui_manager.widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  ASSERT_TRUE(ui_manager.contents_wrapper_for_testing());
+  content::WebContents* web_contents =
+      ui_manager.contents_wrapper_for_testing()->web_contents();
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  auto* rwh = web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  ASSERT_TRUE(web_contents->GetWebUI());
+  auto* controller =
+      web_contents->GetWebUI()->GetController()->GetAs<OmniboxEverywhereUI>();
+  ASSERT_TRUE(controller);
+
+  // 1. Verify OnContextMenuClosed forwards a synthetic mouse event to the host.
+  {
+    content::RenderWidgetHostMouseEventMonitor monitor(rwh);
+    controller->OnContextMenuClosed();
+    EXPECT_TRUE(monitor.EventWasReceived());
+    EXPECT_TRUE(
+        monitor.event().GetType() == blink::WebInputEvent::Type::kMouseMove ||
+        monitor.event().GetType() == blink::WebInputEvent::Type::kMouseLeave);
+  }
+
+  // 2. Verify OnScreenshotMenuClosed forwards a synthetic mouse event to the
+  // host.
+  {
+    content::RenderWidgetHostMouseEventMonitor monitor(rwh);
+    controller->OnScreenshotMenuClosed();
+    EXPECT_TRUE(monitor.EventWasReceived());
+    EXPECT_TRUE(
+        monitor.event().GetType() == blink::WebInputEvent::Type::kMouseMove ||
+        monitor.event().GetType() == blink::WebInputEvent::Type::kMouseLeave);
+  }
+
+  ui_manager.Close();
   ui_manager.Shutdown();
 }
 
