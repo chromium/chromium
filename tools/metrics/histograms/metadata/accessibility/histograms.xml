@@ -2527,7 +2527,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PDF.OpenedWith{A11yFeature}.PdfOcr"
-    enum="BooleanExists" expires_after="2026-10-04">
+    enum="BooleanExists" expires_after="2027-09-01">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
