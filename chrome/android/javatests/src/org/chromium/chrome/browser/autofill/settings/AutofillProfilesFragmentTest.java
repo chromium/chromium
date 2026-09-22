@@ -411,7 +411,9 @@ public class AutofillProfilesFragmentTest {
 
         // Click the "Edit" link and verify the correct intent was sent.
         Context context = fragment.getContext();
-        onView(withText(context.getString(R.string.autofill_edit_address_label))).perform(click());
+        onView(withText(context.getString(R.string.autofill_edit_address_label)))
+                .inRoot(isDialog())
+                .perform(click());
         intended(intentMatcher);
     }
 
