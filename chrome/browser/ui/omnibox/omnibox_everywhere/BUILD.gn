@@ -164,6 +164,9 @@ if (is_mac || is_win) {
     if (is_win) {
       sources += [ "omnibox_everywhere_shortcut_win_unittest.cc" ]
     }
+    if (is_mac) {
+      sources += [ "mac_window_util_unittest.mm" ]
+    }
     deps = [
       ":impl",
       ":omnibox_everywhere",
