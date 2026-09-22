@@ -94,10 +94,10 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
   fn handle_incoming_message(
       &mut self,
       mut message: bindings::message::MojomMessage,
-      sender: ResponseSender,
-      send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static)
+      sender: ResponseSender)
     where Self: Sized
   {
+    let request_id = message.header.request_id;
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe, and the compiler can figure it out anyway.
     let mut handles = std::mem::take(&mut message.handles).into_iter().map(|h| Some(h)).collect::<Vec<_>>();
@@ -120,7 +120,9 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
         };
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
-          send_response({{response_struct(method)}}::serialize_from_parts(&sender, {{field_names(method.response_param_struct.fields)}}))
+          let mut msg = {{response_struct(method)}}::serialize_from_parts(&sender, {{field_names(method.response_param_struct.fields)}});
+          msg.header.request_id = request_id;
+          sender.send_message(msg);
         };
         {%- endif %}
         self.{{method.name}}(
@@ -194,8 +196,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
   fn handle_incoming_message(
       &mut self,
       _message: bindings::message::MojomMessage,
-      _sender: ResponseSender,
-      _send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static) {
+      _sender: ResponseSender) {
     unimplemented!("Call the appropriate trait method directly on the Remote object instead")
   }
 }

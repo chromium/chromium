@@ -302,42 +302,16 @@ where
         state_weak: &Weak<Mutex<StateTy>>,
         sender: ResponseSender,
     ) {
-        let expects_response = message
-            .header
-            .flags
-            .contains(crate::message_header::MessageHeaderFlags::EXPECTS_RESPONSE);
-
         let Some(state) = state_weak.upgrade() else {
             // If we can't get the state, then the receiver must have just been
             // unbound, so there's nothing more for us to do.
             return;
         };
 
-        // Call our internal state object's message handler, and provide a
-        // callback that either sends the response or panics because no response
-        // was expected.
-        // We might be able to make this more readable by moving the state calls
-        // out of the if statement using a type like itertools::Either, if we
-        // get that approved for use in chromium.
-        if expects_response {
-            // Make sure the request ID in the response header matches the
-            // request.
-            let request_id = message.header.request_id;
-            state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
-                message,
-                sender.registrar_only(),
-                move |mut response: MojomMessage| {
-                    response.header.request_id = request_id;
-                    sender.send_message(response);
-                },
-            );
-        } else {
-            state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
-                message,
-                sender,
-                |_| panic!("Tried to send a response to a message that didn't expect one!"),
-            )
-        };
+        state
+            .lock()
+            .expect("Mutex should never be poisoned")
+            .handle_incoming_message(message, sender);
     }
 
     // We deliberately do not implement `From` and `Into` for

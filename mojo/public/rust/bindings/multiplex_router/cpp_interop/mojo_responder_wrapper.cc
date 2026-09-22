@@ -52,15 +52,14 @@ MojoResponderWrapper::MojoResponderWrapper(
 MojoResponderWrapper::~MojoResponderWrapper() = default;
 
 // Sends a response message using the wrapped C++ responder.
-bool MojoResponderWrapper::Accept(
+void MojoResponderWrapper::Accept(
     std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper> message_wrapper)
     const {
-  if (!message_wrapper || !responder_) {
-    return false;
-  }
+  CHECK(message_wrapper);
+  CHECK(responder_);
   responder_.AsyncCall(&ResponderHolder::Accept)
       .WithArgs(std::move(message_wrapper));
-  return true;
+  responder_.Reset();
 }
 
 // Returns true if this wrapper can be used to send a response message.
@@ -95,14 +94,6 @@ MojoResponderWrapper::RegisterNewEndpoint(uint32_t interface_id) const {
     return nullptr;
   }
   return std::make_unique<AssociatedEndpointRustAdapter>(std::move(new_handle));
-}
-
-// Returns a copy of this wrapper that can register new endpoints on the
-// message pipe but can't send response messages.
-std::unique_ptr<MojoResponderWrapper> MojoResponderWrapper::CloneAsRegistrar()
-    const {
-  return std::make_unique<MojoResponderWrapper>(
-      nullptr, scoped_refptr<base::SequencedTaskRunner>(), group_controller_);
 }
 
 }  // namespace mojo::rust::bindings

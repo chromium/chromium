@@ -117,18 +117,10 @@ impl CppResponseSender {
         Self { responder }
     }
 
-    /// Create a copy of this sender which can be used to register new
-    /// endpoints, but can't be used to send messages (since the underlying
-    /// C++ message sending part can't be cloned).
-    pub(crate) fn registrar_only(&self) -> Self {
-        Self::new(self.responder.CloneAsRegistrar())
-    }
-
-    pub(crate) fn send_message(&self, msg: MojomMessage) {
+    pub(crate) fn send_message(self, msg: MojomMessage) {
         assert!(
-            self.responder.CanSendResponse(),
-            "Tried to send a response to a message that didn't expect one \
-            (or via a ResponseSender that was cloned as registrar-only)."
+            !self.responder.is_null() && self.responder.CanSendResponse(),
+            "Tried to send a response to a message that didn't expect one."
         );
         let sendable: SendableMessage = msg.into();
         let handle = MessageHandle::from(sendable);

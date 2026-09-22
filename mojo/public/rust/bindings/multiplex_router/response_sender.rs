@@ -17,8 +17,7 @@ use super::AssociatedRouterHandle;
 /// This type serves a similar purpose to a `MultiplexRouterHandle` but
 /// abstracts over the underlying router implementation (Rust or C++). It is
 /// passed into handlers so they can send responses and register new associated
-/// endpoints. Unlike `MultiplexRouterHandle`, it does not implement `Drop`
-/// because it is short-lived and frequently copied.
+/// endpoints. Unlike `MultiplexRouterHandle`, it does not implement `Drop`.
 pub enum ResponseSender {
     Rust(MultiplexRouter, InterfaceId),
     // The C++ responder object encapsulates the interface ID already
@@ -34,27 +33,16 @@ impl ResponseSender {
         Self::Cpp(cpp_sender)
     }
 
-    /// Creates a copy of this `ResponseSender` that can be used as a
-    /// `Registrar` but does not guarantee that trying to send a response will
-    /// succeed.
-    pub fn registrar_only(&self) -> Self {
-        match self {
-            Self::Rust(multiplex_router, interface_id) => {
-                Self::Rust(multiplex_router.clone(), *interface_id)
-            }
-            Self::Cpp(cpp_sender) => Self::Cpp(cpp_sender.registrar_only()),
-        }
-    }
-
     /// Send a response message through the router with the same interface ID
     /// as the incoming message.
     ///
-    /// This function returns `false` if the message wasn't sent, because one
-    /// end of the pipe was closed.
-    pub fn send_message(&self, msg: MojomMessage) {
+    /// This consumes `self`, since a response may only be sent once.
+    ///
+    /// The message is silently dropped if one end of the pipe has been closed.
+    pub fn send_message(self, msg: MojomMessage) {
         match self {
             Self::Rust(multiplex_router, interface_id) => {
-                multiplex_router.send_message(msg, *interface_id)
+                multiplex_router.send_message(msg, interface_id)
             }
             Self::Cpp(cpp_sender) => cpp_sender.send_message(msg),
         }

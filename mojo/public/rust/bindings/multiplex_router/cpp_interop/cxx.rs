@@ -79,15 +79,12 @@ pub mod ffi {
         type MojoResponderWrapper;
 
         /// Sends a reply message through the C++ responder object.
+        /// May only be called once.
         /// The name is counterintuitive, but that's the C++ naming scheme.
         fn Accept(
             self: &MojoResponderWrapper,
             message_wrapper: UniquePtr<ScopedMessageHandleWrapper>,
-        ) -> bool;
-
-        /// Creates a copy of the responder that cannot send messages, but can
-        /// still register new associated endpoints.
-        fn CloneAsRegistrar(self: &MojoResponderWrapper) -> UniquePtr<MojoResponderWrapper>;
+        );
 
         /// Returns true if this responder can send messages.
         fn CanSendResponse(self: &MojoResponderWrapper) -> bool;
@@ -111,7 +108,5 @@ unsafe impl Send for ffi::AssociatedEndpointRustAdapter {}
 unsafe impl Sync for ffi::AssociatedEndpointRustAdapter {}
 
 // SAFETY: `MojoResponderWrapper` wraps a C++ `base::SequenceBound`, so
-// all its methods are thread-safe by design.
+// it can be safely transferred across threads.
 unsafe impl Send for ffi::MojoResponderWrapper {}
-// SAFETY: As Above
-unsafe impl Sync for ffi::MojoResponderWrapper {}

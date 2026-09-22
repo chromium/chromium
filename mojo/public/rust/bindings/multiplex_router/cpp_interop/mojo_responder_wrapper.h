@@ -47,7 +47,9 @@ class MojoResponderWrapper {
   MojoResponderWrapper& operator=(const MojoResponderWrapper&) = delete;
 
   // Sends a response message using the wrapped C++ responder.
-  bool Accept(std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper>
+  // `CanSendResponse()` must be true, and `message_wrapper` must not be null.
+  // May only be called once.
+  void Accept(std::unique_ptr<mojo::rust::ScopedMessageHandleWrapper>
                   message_wrapper) const;
 
   // Returns true if this wrapper can be used to send a response message.
@@ -60,13 +62,14 @@ class MojoResponderWrapper {
   std::unique_ptr<AssociatedEndpointRustAdapter> RegisterNewEndpoint(
       uint32_t interface_id) const;
 
-  // Returns a copy of this wrapper that can register new endpoints with
-  // the underlying router, but can't send response messages.
-  std::unique_ptr<MojoResponderWrapper> CloneAsRegistrar() const;
-
  private:
   class ResponderHolder;
-  base::SequenceBound<ResponderHolder> responder_;
+
+  // Mutable so that we don't need to plumb through a mutable
+  // reference in Rust. To avoid races, it's important that
+  // MojoResponderWrapper doesn't implement `Sync` in Rust
+  // (though `Send` is okay).
+  mutable base::SequenceBound<ResponderHolder> responder_;
   scoped_refptr<mojo::AssociatedGroupController> group_controller_;
 };
 
