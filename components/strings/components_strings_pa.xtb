@@ -2411,7 +2411,6 @@
 <translation id="5052488928733955073">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਭਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="5053116470141135293">ਤੁਹਾਡੇ ਅਸਲ ਵੇਰਵਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਇਸ ਕਾਰਡ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਵੇਲੇ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਜਾਵੇਗਾ। Google Wallet ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਹ ਫ਼ਾਈਲ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}one{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਹ ਫ਼ਾਈਲ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}other{ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਭੇਜਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ (<ph name="DISK_SPACE_SIZE" />) ਖਾਲੀ ਕਰੋ}}</translation>
-<translation id="5056587122125565772">ਚਿੱਤਰ ਬਣਾਓ</translation>
 <translation id="505757197798929356">ਖੋਲ੍ਹਣ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
 <translation id="5058282932481719070">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5061227663725596739">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="LOOKALIKE_DOMAIN" /> ਤੋਂ ਸੀ?</translation>

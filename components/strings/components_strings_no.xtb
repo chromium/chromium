@@ -2414,7 +2414,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5052488928733955073">Kunne ikke fylle ut informasjonen din. Sjekk tilkoblingen.</translation>
 <translation id="5053116470141135293">Når du betaler med dette kortet, fylles et virtuelt kortnummer inn for å beskytte kortopplysningene dine. Administrer dette i Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
-<translation id="5056587122125565772">Lag bilde</translation>
 <translation id="505757197798929356">Oppgi årsaken til åpningen (obligatorisk)</translation>
 <translation id="5058282932481719070">finn ut mer om utvidet autofyll i innstillingene</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>

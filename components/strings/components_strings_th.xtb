@@ -2413,7 +2413,6 @@
 <translation id="5052488928733955073">เกิดปัญหาในการกรอกข้อมูล โปรดตรวจสอบการเชื่อมต่อ</translation>
 <translation id="5053116470141135293">ระบบจะกรอกหมายเลขบัตรเสมือนเมื่อคุณชำระเงินด้วยบัตรนี้เพื่อปกป้องรายละเอียดบัตรจริงของคุณ จัดการใน Google Wallet <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{หากต้องการส่งไฟล์นี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}other{หากต้องการส่งไฟล์เหล่านี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}}</translation>
-<translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="505757197798929356">ระบุเหตุผลในการเปิด (ต้องระบุ)</translation>
 <translation id="5058282932481719070">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นในการตั้งค่า</translation>
 <translation id="5061227663725596739">หรือคุณหมายถึง <ph name="LOOKALIKE_DOMAIN" /></translation>

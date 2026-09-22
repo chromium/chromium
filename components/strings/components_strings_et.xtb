@@ -2414,7 +2414,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5052488928733955073">Teie teabe täitmisel tekkis probleem. Kontrollige oma ühendust.</translation>
 <translation id="5053116470141135293">Kui maksate selle kaardiga, sisestatakse virtuaalkaardi number, et kaitsta teie tegelikke andmeid. Hallake Google Walletis. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Selle faili saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}other{Nende failide saatmiseks funktsiooni Läheduses jagamine kaudu vabastage seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Loo pilt</translation>
 <translation id="505757197798929356">Esitage avamise põhjus (nõutav)</translation>
 <translation id="5058282932481719070">lisateave täiustatud automaattäite kohta seadetes</translation>
 <translation id="5061227663725596739">Kas mõtlesite domeeni <ph name="LOOKALIKE_DOMAIN" />?</translation>

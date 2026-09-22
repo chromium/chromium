@@ -2410,7 +2410,6 @@
 <translation id="5052488928733955073">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆ. ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="5053116470141135293">ನಿಮ್ಮ ನೈಜ ವಿವರಗಳನ್ನು ರಕ್ಷಿಸಲು ಈ ಕಾರ್ಡ್ ಮೂಲಕ ನೀವು ಚೆಕ್ ಔಟ್ ಮಾಡಿದಾಗ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ. Google Wallet ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್ ಅನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}one{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}other{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}}</translation>
-<translation id="5056587122125565772">ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="505757197798929356">ತೆರೆಯಲು ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="5058282932481719070">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವರ್ಧಿತ ಆಟೋಫಿಲ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5061227663725596739">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="LOOKALIKE_DOMAIN" /> ತಾನೇ?</translation>

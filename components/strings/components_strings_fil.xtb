@@ -2414,7 +2414,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5052488928733955073">Nagkaproblema sa paglalagay ng iyong impormasyon. Suriin ang koneksyon mo.</translation>
 <translation id="5053116470141135293">May ilalagay na numero ng virtual card kapag nag-check out ka gamit ang card na ito para protektahan ang iyong mga aktwal na detalye. Pamahalaan sa Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para ipadala ang file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}one{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}other{Para ipadala ang mga file na ito gamit ang Nearby Share, magbakante ng espasyo (<ph name="DISK_SPACE_SIZE" />) sa iyong device}}</translation>
-<translation id="5056587122125565772">Gumawa ng larawan</translation>
 <translation id="505757197798929356">Magbigay ng dahilan para sa pagbubukas (nire-require)</translation>
 <translation id="5058282932481719070">matuto pa tungkol sa pinahusay na autofill sa mga setting</translation>
 <translation id="5061227663725596739">Ang ibig mo bang sabihin ay <ph name="LOOKALIKE_DOMAIN" />?</translation>

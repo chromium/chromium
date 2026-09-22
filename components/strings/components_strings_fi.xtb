@@ -2415,7 +2415,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5052488928733955073">Tietojen täyttämisessä on ongelma. Tarkista yhteys.</translation>
 <translation id="5053116470141135293">Virtuaalikortin numero täytetään, kun maksat tällä kortilla, jotta todelliset tietosi pysyvät turvassa. Muokkaa Google Walletissa. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jos haluat lähettää tiedoston käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}other{Jos haluat lähettää tiedostot käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}}</translation>
-<translation id="5056587122125565772">Luo kuva</translation>
 <translation id="505757197798929356">Lisää avaamisen syy (pakollinen)</translation>
 <translation id="5058282932481719070">lue lisää parannetusta automaattisesta täytöstä asetuksista</translation>
 <translation id="5061227663725596739">Tarkoititko: <ph name="LOOKALIKE_DOMAIN" />?</translation>

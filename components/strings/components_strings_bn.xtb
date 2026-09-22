@@ -2415,7 +2415,6 @@
 <translation id="5052488928733955073">তথ্য পূরণ করতে সমস্যা হচ্ছে। আপনার কানেকশন চেক করুন।</translation>
 <translation id="5053116470141135293">আপনার আসল বিশদ তথ্য বিবরণ সুরক্ষিত রাখতে, এই কার্ড দিয়ে চেক-আউট করার সময় একটি ভার্চুয়াল কার্ড নম্বর পূরণ করা হবে। Google Wallet-এ ম্যানেজ করুন। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
-<translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="505757197798929356">খোলার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="5058282932481719070">সেটিংস থেকে উন্নত অটোফিল করার সুবিধা সম্পর্কে আরও জানুন</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>

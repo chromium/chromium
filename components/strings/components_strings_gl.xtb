@@ -2414,7 +2414,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5052488928733955073">Produciuse un problema ao completar a túa información. Comproba a conexión.</translation>
 <translation id="5053116470141135293">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
-<translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
 <translation id="5058282932481719070">máis información sobre a función de autocompletar mellorada en Configuración</translation>
 <translation id="5061227663725596739">Querías dicir "<ph name="LOOKALIKE_DOMAIN" />"?</translation>

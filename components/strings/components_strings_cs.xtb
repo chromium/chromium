@@ -2410,7 +2410,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5052488928733955073">Při vyplňování údajů došlo k potížím. Zkontrolujte připojení.</translation>
 <translation id="5053116470141135293">Při placení touto kartou se vyplní číslo virtuální karty, aby byly vaše skutečné údaje chráněny. Tuto funkci můžete spravovat v Peněžence Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="505757197798929356">Uveďte důvod otevření (povinné)</translation>
 <translation id="5058282932481719070">další informace o vylepšeném automatickém vyplňování v nastavení</translation>
 <translation id="5061227663725596739">Měli jste na mysli <ph name="LOOKALIKE_DOMAIN" />?</translation>

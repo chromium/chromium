@@ -2413,7 +2413,6 @@
 <translation id="5052488928733955073">Маалымат толтурулбай жатат. Байланышыңызды текшериңиз.</translation>
 <translation id="5053116470141135293">Чыныгы маалыматыңызды коргоо үчүн бул карта менен төлөгөнүңүздө виртуалдык картанын номери толтурулат. Параметрлерди Google Капчыктан өзгөртө аласыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бул файлды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}other{Бул файлдарды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}}</translation>
-<translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="505757197798929356">Ачуунун себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="5058282932481719070">параметрлерде жакшыртылган автотолтуруу жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> эмес беле?</translation>

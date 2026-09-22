@@ -4086,7 +4086,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4089235344645910861">Einstellungen gespeichert. Synchronisation gestartet.</translation>
 <translation id="4089817585533500276">Umschalttaste + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Bestätigten Zugriff aktivieren</translation>
-<translation id="4092709865241032354">Nutzername für diese Website hinzufügen, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
+<translation id="4092709865241032354">Füge deinen Nutzernamen für diese Website hinzu, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4093173301198419723">Muss Groß- und Kleinbuchstaben, Ziffern und Symbole enthalten</translation>
 <translation id="4093955363990068916">Lokale Datei:</translation>
 <translation id="4094647278880271855">Du verwendest eine nicht unterstützte Umgebungsvariable: <ph name="BAD_VAR" />. Dadurch werden Stabilität und Sicherheit beeinträchtigt.</translation>

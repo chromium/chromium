@@ -2410,7 +2410,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5052488928733955073">Ezin da egiaztatu zure informazioa. Egiaztatu konektatuta zaudela.</translation>
 <translation id="5053116470141135293">Txartel honekin ordaintzen duzunean, txartel birtualaren zenbaki bat beteko da, zure benetako xehetasunak babesteko. Kudeatu Google Diru-zorroa zerbitzuan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Fitxategia Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
-<translation id="5056587122125565772">Sortu irudi bat</translation>
 <translation id="505757197798929356">Irekitzeko arrazoia (beharrezkoa)</translation>
 <translation id="5058282932481719070">lortu betetze automatiko hobetuari buruzko informazio gehiago ezarpenetan</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> esan nahi al zenuen?</translation>

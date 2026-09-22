@@ -2414,7 +2414,6 @@
 <translation id="5052488928733955073">ເກີດບັນຫາໃນການຕື່ມຂໍ້ມູນຂອງທ່ານ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="5053116470141135293">ລະບົບຈະຕື່ມໝາຍເລກບັດສະເໝືອນເມື່ອທ່ານຈ່າຍເງິນດ້ວຍບັດນີ້ເພື່ອປົກປ້ອງລາຍລະອຽດບັດແທ້ຂອງທ່ານ. ຈັດການໃນ Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ເພື່ອສົ່ງໄຟລ໌ນີ້ໂດຍໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ໃຫ້ສ້າງພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ}other{ເພື່ອສົ່ງໄຟລ໌ເຫຼົ່ານີ້ໂດຍໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ໃຫ້ສ້າງພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ}}</translation>
-<translation id="5056587122125565772">ສ້າງຮູບ</translation>
 <translation id="505757197798929356">ໃຫ້ເຫດຜົນສໍາລັບການເປີດ (ຈຳເປັນ)</translation>
 <translation id="5058282932481719070">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນໃນການຕັ້ງຄ່າ</translation>
 <translation id="5061227663725596739">ທ່ານໝາຍເຖິງ <ph name="LOOKALIKE_DOMAIN" /> ບໍ?</translation>

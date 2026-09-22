@@ -2414,7 +2414,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5052488928733955073">Problème lors de la saisie de vos informations. Vérifiez votre connexion.</translation>
 <translation id="5053116470141135293">Un numéro de carte virtuelle sera rempli lorsque vous paierez avec cette carte pour protéger vos informations. Gérez dans Google Portefeuille. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
-<translation id="5056587122125565772">Créer une image</translation>
 <translation id="505757197798929356">Fournir la raison de l'ouverture (obligatoire)</translation>
 <translation id="5058282932481719070">en savoir plus sur le remplissage automatique amélioré dans les paramètres</translation>
 <translation id="5061227663725596739">Vouliez-vous dire <ph name="LOOKALIKE_DOMAIN" />?</translation>

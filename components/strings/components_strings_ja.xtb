@@ -2414,7 +2414,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5052488928733955073">情報を入力できません。接続をご確認ください。</translation>
 <translation id="5053116470141135293">このカードでご購入手続きを行う際に仮想カード番号が入力され、実際のカード情報が保護されます。管理は Google ウォレットで行います。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
-<translation id="5056587122125565772">画像を作成</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
 <translation id="5058282932481719070">高精度の自動入力の設定で詳細をご確認ください</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>

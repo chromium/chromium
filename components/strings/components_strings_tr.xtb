@@ -2414,7 +2414,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5052488928733955073">Bilgileriniz girilemedi. Bağlantınızı kontrol edin.</translation>
 <translation id="5053116470141135293">Bu kartla ödeme yaptığınızda gerçek bilgilerinizin korunması için sanal kart numarası girilir. Google Cüzdan'da yönetin. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Bu dosyayı Yakındakilerle Paylaş özelliğini kullanarak göndermek için cihazınızda yer açın (<ph name="DISK_SPACE_SIZE" />)}other{Bu dosyaları Yakındakilerle Paylaş özelliğini kullanarak göndermek için cihazınızda yer açın (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Resim oluştur</translation>
 <translation id="505757197798929356">Açma nedenini belirtin (zorunlu)</translation>
 <translation id="5058282932481719070">Ayarlarda gelişmiş otomatik doldurma hakkında daha fazla bilgi</translation>
 <translation id="5061227663725596739">Şunu mu demek istediniz: <ph name="LOOKALIKE_DOMAIN" />?</translation>

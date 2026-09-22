@@ -2414,7 +2414,6 @@
 <translation id="5052488928733955073">ඔබේ තතු පිරවීමේ ගැටලුවකි. ඔබේ සම්බන්ධතාවය පරීක්ෂා කරන්න.</translation>
 <translation id="5053116470141135293">ඔබේ සැබෑ විස්තර ආරක්ෂා කිරීමට ඔබ මෙම කාඩ්පත සමග පිටවන විට අතථ්‍ය කාඩ්පත් අංකයක් පුරවනු ලැබේ. Google Wallet තුළ කළමනාකරණය කරන්න. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනුව යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}one{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}other{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}}</translation>
-<translation id="5056587122125565772">රූපයක් සාදන්න</translation>
 <translation id="505757197798929356">විවෘත කිරීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
 <translation id="5058282932481719070">සැකසීම් තුළ ඉහළ නැංවූ ස්වයං පිරවුම පිළිබඳ තව දැන ගන්න</translation>
 <translation id="5061227663725596739">ඔබ අදහස් කළේ <ph name="LOOKALIKE_DOMAIN" /> ද?</translation>

@@ -2412,7 +2412,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5052488928733955073">Nevar aizpildīt jūsu informāciju. Pārbaudiet savienojumu.</translation>
 <translation id="5053116470141135293">Kad norēķināsieties, izmantojot šo karti, tiks ievadīts virtuālās kartes numurs, lai aizsargātu jūsu faktiskās kartes informāciju. Pārvaldiet to lietotnē Google maks. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="505757197798929356">Norādiet atvēršanas iemeslu (obligāti)</translation>
 <translation id="5058282932481719070">uzzināt vairāk par uzlabotu automātisko aizpildi iestatījumos</translation>
 <translation id="5061227663725596739">Vai domājāt <ph name="LOOKALIKE_DOMAIN" />?</translation>

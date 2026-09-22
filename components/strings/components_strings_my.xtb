@@ -2415,7 +2415,6 @@
 <translation id="5052488928733955073">သင့်အချက်အလက်ကို ဖြည့်ရာတွင် ပြဿနာရှိနေသည်။ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="5053116470141135293">သင့်အချက်အလက်အစစ်များကို ကာကွယ်ရန် ဤကတ်ဖြင့် ငွေရှင်းသောအခါ ပကတိအသွင်ကတ် နံပါတ်ကို ဖြည့်ပါမည်။ Google Wallet တွင် စီမံပါ။ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
-<translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="505757197798929356">ဖွင့်ရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
 <translation id="5058282932481719070">အဆင့်မြင့် အော်တိုဖြည့်အကြောင်း ဆက်တင်များတွင် ပိုလေ့လာရန်</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ကို ဆိုလိုခြင်းဖြစ်ပါသလား။</translation>

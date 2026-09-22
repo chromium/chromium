@@ -2415,7 +2415,6 @@
 <translation id="5052488928733955073">Мэдээллээ бөглөхөд асуудал гарлаа. Холболтоо шалгана уу.</translation>
 <translation id="5053116470141135293">Таныг энэ картаар тооцоо хийхэд таны бодит дэлгэрэнгүй мэдээллийг хамгаалахын тулд виртуал картын дугаарыг бөглөнө. Google Wallet-с удирдана уу. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ойролцоо хуваалцахыг ашиглан энэ файлыг илгээхийн тулд төхөөрөмж дээрээ сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}other{Ойролцоо хуваалцахыг ашиглан эдгээр файлыг илгээхийн тулд төхөөрөмж дээрээ сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}}</translation>
-<translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="505757197798929356">Нээж буй шалтгаанаар хангана уу (шаардлагатай)</translation>
 <translation id="5058282932481719070">тохиргооноос сайжруулсан автоматаар бөглөх хэсгийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5061227663725596739">Та <ph name="LOOKALIKE_DOMAIN" />-г хайсан уу?</translation>

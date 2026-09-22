@@ -2409,7 +2409,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5052488928733955073">Axborot kiritilmadi. Aloqani tekshiring.</translation>
 <translation id="5053116470141135293">Haqiqiy tafsilotlaringizni himoya qilish uchun bu karta bilan toʻlov qilganingizda virtual karta raqami kiritiladi. Google Wallet orqali boshqarish. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}other{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}}</translation>
-<translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="505757197798929356">Ochish sababini yozing (majburiy)</translation>
 <translation id="5058282932481719070">sozlamalarda yaxshilangan avtomatik kiritish haqida batafsil</translation>
 <translation id="5061227663725596739">Buni nazarda tutdingizmi: <ph name="LOOKALIKE_DOMAIN" />?</translation>

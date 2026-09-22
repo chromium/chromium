@@ -2411,7 +2411,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5052488928733955073">Probléma adódott az adatok kitöltésekor. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="5053116470141135293">A tényleges adatok védelme érdekében a rendszer egy virtuális kártyaszámot ír be, amikor ezzel a kártyával fizet. Ezt a Google Walletben kezelheti. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
-<translation id="5056587122125565772">Kép létrehozása</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
 <translation id="5058282932481719070">További információ a továbbfejlesztett automatikus kitöltésről a beállításokban</translation>
 <translation id="5061227663725596739">Erre gondolt: <ph name="LOOKALIKE_DOMAIN" />?</translation>

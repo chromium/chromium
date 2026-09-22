@@ -2414,7 +2414,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5052488928733955073">Eroare la completarea informațiilor. Verifică-ți conexiunea.</translation>
 <translation id="5053116470141135293">Un număr de card virtual va fi completat când finalizezi achiziția cu acest card pentru a-ți proteja detaliile reale. Gestionează în Portofelul Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pentru a trimite fișierul prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}few{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}other{Pentru a trimite fișierele prin Trimitere în apropiere, eliberează spațiu (<ph name="DISK_SPACE_SIZE" />) pe dispozitiv}}</translation>
-<translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="505757197798929356">Specifică motivul deschiderii (obligatoriu)</translation>
 <translation id="5058282932481719070">află mai multe despre completarea automată îmbunătățită în setări</translation>
 <translation id="5061227663725596739">Ai vrut să scrii <ph name="LOOKALIKE_DOMAIN" />?</translation>

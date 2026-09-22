@@ -87,7 +87,7 @@
 <translation id="1143142264369994168">Người ký Chứng chỉ</translation>
 <translation id="1149617035358809955">xác minh danh tính của bạn để Chrome có thể giúp bạn điền thông tin thanh toán</translation>
 <translation id="1150979032973867961">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không được hệ điều hành máy tính của bạn tin cậy. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
-<translation id="1151858212483238980">Bạn có thể tự động điền thông tin thẻ đã lưu trong Google Wallet</translation>
+<translation id="1151858212483238980">Bạn có thể tự động điền bằng những thẻ đã lưu trong Google Wallet</translation>
 <translation id="1151972924205500581">Cần có mật khẩu</translation>
 <translation id="1156303062776767266">Bạn đang xem tệp trên máy hoặc tệp được chia sẻ</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> đã bất ngờ đóng kết nối.</translation>
@@ -124,7 +124,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1201895884277373915">Thêm từ trang web này</translation>
 <translation id="1204184165594298176">{0,plural, =1{Tệp đã bị chặn không cho sao chép}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho sao chép}}</translation>
-<translation id="1205344127823614428">Bạn có thể tự động điền thông tin thẻ đã lưu trong Google Wallet.</translation>
+<translation id="1205344127823614428">Bạn có thể tự động điền bằng những thẻ đã lưu trong Google Wallet.</translation>
 <translation id="1206967143813997005">Chữ ký ban đầu không hợp lệ</translation>
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
 <translation id="121201262018556460">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình chứng chỉ chứa khóa yếu. Kẻ tấn công có thể đã phá khóa cá nhân và máy chủ đó có thể không phải là máy chủ bạn mong đợi (bạn có thể đang giao tiếp với một kẻ tấn công).</translation>
@@ -2414,7 +2414,6 @@ Bạn có thể xoá đề xuất này khỏi Chrome. Nguồn ban đầu của b
 <translation id="5052488928733955073">Đã xảy ra lỗi khi điền thông tin của bạn. Hãy kiểm tra kết nối.</translation>
 <translation id="5053116470141135293">Khi bạn thanh toán bằng thẻ này, số thẻ ảo sẽ được điền để bảo vệ thông tin thật của bạn. Quản lý trong Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Để gửi tệp này bằng tính năng Chia sẻ lân cận, hãy giải phóng dung lượng (<ph name="DISK_SPACE_SIZE" />) trên thiết bị của bạn}other{Để gửi các tệp này bằng tính năng Chia sẻ lân cận, hãy giải phóng dung lượng (<ph name="DISK_SPACE_SIZE" />) trên thiết bị của bạn}}</translation>
-<translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="505757197798929356">Cung cấp lý do mở tệp (bắt buộc)</translation>
 <translation id="5058282932481719070">tìm hiểu thêm về tính năng tự động điền nâng cao trong phần cài đặt</translation>
 <translation id="5061227663725596739">Ý của bạn là <ph name="LOOKALIKE_DOMAIN" /> phải không?</translation>

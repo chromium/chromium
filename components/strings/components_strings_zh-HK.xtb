@@ -2413,7 +2413,6 @@
 <translation id="5052488928733955073">無法填寫資料，請檢查網絡連線。</translation>
 <translation id="5053116470141135293">使用此卡結帳時，系統會填入虛擬卡號以保護你的真實資料。你可以在「Google 錢包」中管理。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
-<translation id="5056587122125565772">製作圖像</translation>
 <translation id="505757197798929356">請提供開啟的原因 (必填)</translation>
 <translation id="5058282932481719070">前往設定進一步瞭解強化版自動填入功能</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>

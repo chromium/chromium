@@ -2410,7 +2410,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5052488928733955073">Məlumatlarınızı doldurarkən xəta baş verdi. Bağlantınızı yoxlayın.</translation>
 <translation id="5053116470141135293">Faktiki məlumatlarınızı qorumaq üçün bu kartla ödəniş edərkən virtual kart nömrəsi doldurulacaq. Google Pulqabıda idarə edin. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Yaxınlıqda Paylaşım ilə bu faylı göndərmək üçün cihazınızda (<ph name="DISK_SPACE_SIZE" />) yer boşaldın}other{Yaxınlıqda Paylaşım ilə bu faylları göndərmək üçün cihazınızda (<ph name="DISK_SPACE_SIZE" />) yer boşaldın}}</translation>
-<translation id="5056587122125565772">Şəkil yaradın</translation>
 <translation id="505757197798929356">Açma səbəbini bildirin (tələb edilir)</translation>
 <translation id="5058282932481719070">ayarlarda təkmilləşdirilmiş avto-doldurma haqqında ətraflı məlumat</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> nəzərdə tuturdunuz?</translation>

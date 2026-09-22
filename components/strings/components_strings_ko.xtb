@@ -2414,7 +2414,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="5052488928733955073">정보를 입력하는 중에 문제가 발생했습니다. 연결 상태를 확인하세요.</translation>
 <translation id="5053116470141135293">이 카드로 결제하면 실제 정보를 보호하기 위해 가상 카드 번호가 입력됩니다. Google 월렛에서 관리하세요. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
-<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="505757197798929356">열려는 이유 입력(필수)</translation>
 <translation id="5058282932481719070">설정에서 향상된 자동 완성에 관해 자세히 알아보기</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>

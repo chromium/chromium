@@ -2414,7 +2414,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5052488928733955073">Ocorreu um problema ao preencher as informações. Verifique a sua ligação.</translation>
 <translation id="5053116470141135293">É preenchido um número de cartão virtual quando faz pagamentos com este cartão para proteger os seus detalhes reais. Faça a gestão na Carteira do Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
-<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="505757197798929356">Indique o motivo para a abertura (obrigatório)</translation>
 <translation id="5058282932481719070">saiba mais sobre o preenchimento automático melhorado nas definições</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>

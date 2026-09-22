@@ -2415,7 +2415,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5052488928733955073">Terdapat masalah semasa mengisi maklumat anda. Semak sambungan anda.</translation>
 <translation id="5053116470141135293">Nombor kad maya akan diisi apabila anda menyemak keluar dengan kad ini untuk melindungi butiran sebenar anda. Urus dalam Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
-<translation id="5056587122125565772">Buat imej</translation>
 <translation id="505757197798929356">Berikan sebab untuk membuka fail (diperlukan)</translation>
 <translation id="5058282932481719070">ketahui autolengkap yang dipertingkatkan dengan lebih lanjut dalam tetapan</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>

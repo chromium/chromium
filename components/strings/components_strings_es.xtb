@@ -51,7 +51,7 @@
 <translation id="1074497978438210769">No es seguro</translation>
 <translation id="1074779248866616641">Resultado</translation>
 <translation id="1075364221219156102">Usa una llave de acceso</translation>
-<translation id="1080116354587839789">Se ajusta al ancho</translation>
+<translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y ampliar el contenido de tu pestaña compartida</translation>
 <translation id="108859316315249327">Reintentar</translation>
@@ -2414,7 +2414,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5052488928733955073">No se ha podido rellenar tu información. Comprueba tu conexión.</translation>
 <translation id="5053116470141135293">Se rellenará un número de tarjeta virtual cuando pagues con esta tarjeta para proteger tus datos reales. Gestiónala en Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo usando Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}other{Para enviar estos archivos usando Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}}</translation>
-<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="505757197798929356">Indica el motivo por el que lo abres (obligatorio)</translation>
 <translation id="5058282932481719070">Consulta más información sobre la función Autocompletar mejorada en los ajustes</translation>
 <translation id="5061227663725596739">¿Querías decir <ph name="LOOKALIKE_DOMAIN" />?</translation>

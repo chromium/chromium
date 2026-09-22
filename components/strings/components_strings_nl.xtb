@@ -2408,7 +2408,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5052488928733955073">Er is een probleem bij het invullen van je gegevens. Check je verbinding.</translation>
 <translation id="5053116470141135293">Er wordt een virtueel kaartnummer ingevuld als u afrekent met deze kaart om uw daadwerkelijke gegevens te beschermen. Beheren in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
-<translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
 <translation id="5058282932481719070">meer informatie over verbeterd automatisch invullen in instellingen</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>

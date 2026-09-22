@@ -2414,7 +2414,6 @@
 <translation id="5052488928733955073">તમારી માહિતી ભરવામાં સમસ્યા આવી. તમારું કનેક્શન ચેક કરો.</translation>
 <translation id="5053116470141135293">તમારી વાસ્તવિક વિગતોનું રક્ષણ કરવા માટે, જ્યારે તમે આ કાર્ડ વડે ચેકઆઉટ કરશો ત્યારે વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવશે. Google Walletમાં મેનેજ કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
-<translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
 <translation id="5058282932481719070">સેટિંગમાં વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા વિશે વધુ જાણો</translation>
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>

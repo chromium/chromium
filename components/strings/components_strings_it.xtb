@@ -2411,7 +2411,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5052488928733955073">Si è verificato un problema durante l'inserimento delle informazioni. Controlla la connessione.</translation>
 <translation id="5053116470141135293">Quando effettui un pagamento con questa carta, verrà inserito un numero di carta virtuale per proteggere i tuoi dati effettivi. Gestisci in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
-<translation id="5056587122125565772">Crea immagine</translation>
 <translation id="505757197798929356">Specifica il motivo dell'apertura (obbligatorio)</translation>
 <translation id="5058282932481719070">Scopri di più sulla compilazione automatica avanzata nelle impostazioni</translation>
 <translation id="5061227663725596739">Forse cercavi: <ph name="LOOKALIKE_DOMAIN" /></translation>
@@ -3640,7 +3639,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> altro}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">È richiesto l'aggiornamento del server a TLS 1.2 o versione successiva.</translation>
 <translation id="7156885531105222428">Impossibile trovare la pagina richiesta nell'applicazione</translation>
-<translation id="7157447397944182926">Chiedi a <ph name="AI_ENGINE_NAME" /> nella Ricerca di <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7157447397944182926">Chiedi ad <ph name="AI_ENGINE_NAME" /> nella Ricerca <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Per inviare questo file usando <ph name="FEATURE_NAME" />, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file utilizzando <ph name="FEATURE_NAME" />, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
 <translation id="7162277662076933695">Lettore di smart card</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vuoi copiare il file riservato?}other{Vuoi copiare i file riservati?}}</translation>
