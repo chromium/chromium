@@ -342,6 +342,86 @@ TEST(BrowserAccessibilityStateImplWinTest, RejectsNonJawsHookModules) {
 }
 
 TEST(BrowserAccessibilityStateImplWinTest,
+     DetectsNvdaModulesCaseInsensitively) {
+  EXPECT_TRUE(internal::IsNvdaModule("vbufbackend_gecko_ia2.dll"));
+  EXPECT_TRUE(internal::IsNvdaModule("VBUFBackend_Gecko_IA2.DLL"));
+  EXPECT_TRUE(internal::IsNvdaModule("nvdahelperremote.dll"));
+  EXPECT_TRUE(internal::IsNvdaModule("NVDAHelperRemote.DLL"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonNvdaModules) {
+  EXPECT_FALSE(internal::IsNvdaModule(""));
+  EXPECT_FALSE(internal::IsNvdaModule("jhook.dll"));
+  EXPECT_FALSE(internal::IsNvdaModule("vbufbackend_gecko_ia2.dll.bak"));
+  EXPECT_FALSE(internal::IsNvdaModule("notvbufbackend_gecko_ia2.dll"));
+  EXPECT_FALSE(internal::IsNvdaModule("nvdahelperremote.dll.bak"));
+  EXPECT_FALSE(internal::IsNvdaModule("notnvdahelperremote.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DetectsSupernovaModuleCaseInsensitively) {
+  EXPECT_TRUE(internal::IsSupernovaModule("dolwinhk.dll"));
+  EXPECT_TRUE(internal::IsSupernovaModule("DolWinHk.DLL"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonSupernovaModules) {
+  EXPECT_FALSE(internal::IsSupernovaModule(""));
+  EXPECT_FALSE(internal::IsSupernovaModule("jhook.dll"));
+  EXPECT_FALSE(internal::IsSupernovaModule("dolwinhk.dll.bak"));
+  EXPECT_FALSE(internal::IsSupernovaModule("notdolwinhk.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DetectsZdsrModulesCaseInsensitively) {
+  EXPECT_TRUE(internal::IsZdsrModule("outhelper.dll"));
+  EXPECT_TRUE(internal::IsZdsrModule("OutHelper.DLL"));
+  EXPECT_TRUE(internal::IsZdsrModule("outhelper_x64.dll"));
+  EXPECT_TRUE(internal::IsZdsrModule("OutHelper_X64.DLL"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonZdsrModules) {
+  EXPECT_FALSE(internal::IsZdsrModule(""));
+  EXPECT_FALSE(internal::IsZdsrModule("jhook.dll"));
+  EXPECT_FALSE(internal::IsZdsrModule("outhelper.dll.bak"));
+  EXPECT_FALSE(internal::IsZdsrModule("notouthelper.dll"));
+  EXPECT_FALSE(internal::IsZdsrModule("outhelper_x64.dll.bak"));
+  EXPECT_FALSE(internal::IsZdsrModule("notouthelper_x64.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DetectsZoomTextModulesCaseInsensitively) {
+  EXPECT_TRUE(internal::IsZoomTextModule("zslhook.dll"));
+  EXPECT_TRUE(internal::IsZoomTextModule("ZslHook.DLL"));
+  EXPECT_TRUE(internal::IsZoomTextModule("zslhook64.dll"));
+  EXPECT_TRUE(internal::IsZoomTextModule("ZslHook64.DLL"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonZoomTextModules) {
+  EXPECT_FALSE(internal::IsZoomTextModule(""));
+  EXPECT_FALSE(internal::IsZoomTextModule("jhook.dll"));
+  EXPECT_FALSE(internal::IsZoomTextModule("zslhook.dll.bak"));
+  EXPECT_FALSE(internal::IsZoomTextModule("notzslhook.dll"));
+  EXPECT_FALSE(internal::IsZoomTextModule("zslhook64.dll.bak"));
+  EXPECT_FALSE(internal::IsZoomTextModule("notzslhook64.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, DetectsUiaModulesCaseInsensitively) {
+  EXPECT_TRUE(internal::IsUiaModule("uiautomation.dll"));
+  EXPECT_TRUE(internal::IsUiaModule("UIAutomation.DLL"));
+  EXPECT_TRUE(internal::IsUiaModule("uiautomationcore.dll"));
+  EXPECT_TRUE(internal::IsUiaModule("UIAutomationCore.DLL"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RejectsNonUiaModules) {
+  EXPECT_FALSE(internal::IsUiaModule(""));
+  EXPECT_FALSE(internal::IsUiaModule("jhook.dll"));
+  EXPECT_FALSE(internal::IsUiaModule("uiautomation.dll.bak"));
+  EXPECT_FALSE(internal::IsUiaModule("notuiautomation.dll"));
+  EXPECT_FALSE(internal::IsUiaModule("uiautomationcore.dll.bak"));
+  EXPECT_FALSE(internal::IsUiaModule("notuiautomationcore.dll"));
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
      JawsVersionNeedsTabSelectionEventForOlderVersions) {
   // Versions older than 2026.2606.132 still rely on the synthetic event.
   EXPECT_TRUE(internal::DoesJawsVersionNeedTabSelectionEvent(2022, 0, 0));

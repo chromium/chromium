@@ -24,6 +24,11 @@ CONTENT_EXPORT void RecordUiaClientProcessHistogramsForModeChange(
     std::vector<std::string> process_names);
 
 CONTENT_EXPORT bool IsJawsHookModule(std::string_view module_name);
+CONTENT_EXPORT bool IsNvdaModule(std::string_view module_name);
+CONTENT_EXPORT bool IsSupernovaModule(std::string_view module_name);
+CONTENT_EXPORT bool IsZdsrModule(std::string_view module_name);
+CONTENT_EXPORT bool IsZoomTextModule(std::string_view module_name);
+CONTENT_EXPORT bool IsUiaModule(std::string_view module_name);
 
 // Returns true if the specified JAWS version (from `jhook.dll`'s product
 // version, e.g. 2026.2606.132) still relies on the synthetic tab selection

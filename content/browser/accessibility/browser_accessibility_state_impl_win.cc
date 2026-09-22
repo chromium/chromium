@@ -161,6 +161,31 @@ bool IsJawsHookModule(std::string_view module_name) {
   return base::EqualsCaseInsensitiveASCII(module_name, "jhook.dll");
 }
 
+bool IsNvdaModule(std::string_view module_name) {
+  return base::EqualsCaseInsensitiveASCII(module_name,
+                                          "vbufbackend_gecko_ia2.dll") ||
+         base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll");
+}
+
+bool IsSupernovaModule(std::string_view module_name) {
+  return base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll");
+}
+
+bool IsZdsrModule(std::string_view module_name) {
+  return base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
+         base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll");
+}
+
+bool IsZoomTextModule(std::string_view module_name) {
+  return base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
+         base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll");
+}
+
+bool IsUiaModule(std::string_view module_name) {
+  return base::EqualsCaseInsensitiveASCII(module_name, "uiautomation.dll") ||
+         base::EqualsCaseInsensitiveASCII(module_name, "uiautomationcore.dll");
+}
+
 bool DoesJawsVersionNeedTabSelectionEvent(uint16_t major,
                                           uint16_t minor,
                                           uint16_t build) {
@@ -400,28 +425,23 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
       discovered_ats.push_back(
           {AccessibilityTarget::kJaws, GetModuleVersion(filename)});
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name,
-                                         "vbufbackend_gecko_ia2.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
+    if (internal::IsNvdaModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kNvda, GetModuleVersion(filename)});
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
+    if (internal::IsSupernovaModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kSupernova, GetModuleVersion(filename)});
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll")) {
+    if (internal::IsZdsrModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kZdsr, GetModuleVersion(filename)});
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
+    if (internal::IsZoomTextModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kZoomText, GetModuleVersion(filename)});
     }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "uiautomation.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "uiautomationcore.dll")) {
+    if (internal::IsUiaModule(module_name)) {
       discovered_ats.push_back(
           {AccessibilityTarget::kUia, GetModuleVersion(filename)});
     }
