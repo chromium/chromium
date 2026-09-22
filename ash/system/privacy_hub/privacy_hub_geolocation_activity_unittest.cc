@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
-
 #include <utility>
 #include <vector>
 
@@ -14,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
@@ -26,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -285,5 +285,104 @@ BooleanSyncTransitionTable GenerateTransitionTable() {
 INSTANTIATE_TEST_SUITE_P(AllCombinations,
                          PrivacyHubGeolocationApplyArcLocationUpdatesTest,
                          testing::ValuesIn(GenerateTransitionTable()));
+
+// Regression test for crbug.com/558527652:
+// Verify that `ApplyArcLocationUpdate(false)` does not crash if
+// `kUserPreviousGeolocationAccessLevel` equals `AccessLevel()` (`kAllowed`).
+TEST_F(PrivacyHubGeolocationTestBase,
+       ApplyArcLocationUpdateWhenPreviousEqualsCurrent) {
+  PrefService* const prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetInteger(prefs::kUserGeolocationAccessLevel,
+                    static_cast<int>(GeolocationAccessLevel::kAllowed));
+  prefs->SetInteger(prefs::kUserPreviousGeolocationAccessLevel,
+                    static_cast<int>(GeolocationAccessLevel::kAllowed));
+
+  EXPECT_EQ(GeolocationAccessLevel::kAllowed, controller_->AccessLevel());
+
+  // Without the fix, this crashes with CHECK_NE(previous_level, AccessLevel())
+  // inside PreviousAccessLevel() called from ApplyArcLocationUpdate(false).
+  controller_->ApplyArcLocationUpdate(false);
+  EXPECT_EQ(GeolocationAccessLevel::kDisallowed, controller_->AccessLevel());
+  EXPECT_EQ(GeolocationAccessLevel::kAllowed,
+            controller_->PreviousAccessLevel());
+}
+
+// Verify that `SetAccessLevel` and `ApplyArcLocationUpdate` do not mutate user
+// prefs when `kUserGeolocationAccessLevel` is managed by enterprise policy.
+TEST_F(PrivacyHubGeolocationTestBase,
+       ManagedPreferenceIgnoresSetAccessLevelAndArcUpdates) {
+  auto* const prefs = static_cast<TestingPrefServiceSimple*>(
+      Shell::Get()->session_controller()->GetActivePrefService());
+
+  // User sets location to kDisallowed (so user pref has current=kDisallowed,
+  // previous=kAllowed).
+  controller_->SetAccessLevel(GeolocationAccessLevel::kDisallowed);
+  EXPECT_EQ(GeolocationAccessLevel::kDisallowed, controller_->AccessLevel());
+  EXPECT_EQ(GeolocationAccessLevel::kAllowed,
+            controller_->PreviousAccessLevel());
+
+  // Enterprise policy enforces kDisallowed.
+  prefs->SetManagedPref(
+      prefs::kUserGeolocationAccessLevel,
+      base::Value(static_cast<int>(GeolocationAccessLevel::kDisallowed)));
+  ASSERT_TRUE(prefs->IsManagedPreference(prefs::kUserGeolocationAccessLevel));
+
+  // Attempt to enable via ARC update while managed by policy.
+  controller_->ApplyArcLocationUpdate(true);
+  EXPECT_EQ(GeolocationAccessLevel::kDisallowed, controller_->AccessLevel());
+
+  // The underlying user pref must not be mutated to kAllowed (which would
+  // corrupt UserPrefStore so both current and previous user prefs equal
+  // kAllowed).
+  EXPECT_EQ(
+      static_cast<int>(GeolocationAccessLevel::kDisallowed),
+      prefs->GetUserPrefValue(prefs::kUserGeolocationAccessLevel)->GetInt());
+  EXPECT_NE(
+      prefs->GetUserPrefValue(prefs::kUserGeolocationAccessLevel)->GetInt(),
+      prefs->GetUserPrefValue(prefs::kUserPreviousGeolocationAccessLevel)
+          ->GetInt());
+}
+
+class PrivacyHubGeolocationNoSessionTest : public NoSessionAshTestBase {
+ public:
+  PrivacyHubGeolocationNoSessionTest() {
+    scoped_feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that `OnActiveUserPrefServiceChanged` repairs
+// `kUserPreviousGeolocationAccessLevel` if it equals
+// `kUserGeolocationAccessLevel` at session startup.
+TEST_F(PrivacyHubGeolocationNoSessionTest,
+       OnActiveUserPrefServiceChangedRepairsMatchingPreviousAccessLevel) {
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  PrivacyHubController::RegisterProfilePrefs(pref_service->registry());
+
+  // Simulate a profile where both current and previous access levels are stored
+  // as `kAllowed` on disk.
+  pref_service->SetInteger(prefs::kUserGeolocationAccessLevel,
+                           static_cast<int>(GeolocationAccessLevel::kAllowed));
+  pref_service->SetInteger(prefs::kUserPreviousGeolocationAccessLevel,
+                           static_cast<int>(GeolocationAccessLevel::kAllowed));
+
+  auto* const controller = GeolocationPrivacySwitchController::Get();
+  ASSERT_TRUE(controller);
+
+  controller->OnActiveUserPrefServiceChanged(pref_service.get());
+
+  EXPECT_EQ(GeolocationAccessLevel::kAllowed, controller->AccessLevel());
+  EXPECT_EQ(GeolocationAccessLevel::kDisallowed,
+            controller->PreviousAccessLevel());
+
+  // Subsequent ARC disable update should cleanly restore to kDisallowed.
+  controller->ApplyArcLocationUpdate(false);
+  EXPECT_EQ(GeolocationAccessLevel::kDisallowed, controller->AccessLevel());
+  EXPECT_EQ(GeolocationAccessLevel::kAllowed,
+            controller->PreviousAccessLevel());
+}
 
 }  // namespace ash
