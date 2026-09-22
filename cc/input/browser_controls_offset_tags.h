@@ -17,6 +17,11 @@ struct CC_EXPORT BrowserControlsOffsetTags {
   viz::OffsetTag top_controls_offset_tag;
   viz::OffsetTag content_offset_tag;
   viz::OffsetTag bottom_controls_offset_tag;
+
+  bool IsEmpty() const {
+    return !top_controls_offset_tag && !content_offset_tag &&
+           !bottom_controls_offset_tag;
+  }
 };
 
 }  // namespace cc

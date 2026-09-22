@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -59,7 +60,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float TopControlsShownRatio() const;
   float TopControlsHeight() const;
   float TopControlsMinHeight() const;
-  int TopControlsAdditionalHeight() const;
 
   // The minimum shown ratio top controls can have.
   float TopControlsMinShownRatio() const;
@@ -70,9 +70,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // this will return the same value as |TopControlsMinHeight()|.
   float TopControlsMinHeightOffset() const;
 
-  viz::OffsetTag ContentOffsetTag() const;
-  viz::OffsetTag TopControlsOffsetTag() const;
-
   // The amount of offset of the web content area, calculating from the bottom.
   // Same as the current shown height of the bottom controls.
   float ContentBottomOffset() const;
@@ -82,7 +79,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float BottomControlsHeight() const;
   float BottomControlsMinHeight() const;
   float BottomControlsShownRatio() const;
-  int BottomControlsAdditionalHeight() const;
 
   // The minimum shown ratio bottom controls can have.
   float BottomControlsMinShownRatio() const;
@@ -93,7 +89,9 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // Otherwise, this will return the same value as |BottomControlsMinHeight()|.
   float BottomControlsMinHeightOffset() const;
 
-  viz::OffsetTag BottomControlsOffsetTag() const;
+  // Returns the current offset tag values for the browser controls. Currently
+  // used only on Android.
+  std::vector<viz::OffsetTagValue> GetOffsetTagValues() const;
 
   // Valid shown ratio range for the top controls. The values will be (0, 1) if
   // there is no animation running.

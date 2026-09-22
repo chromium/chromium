@@ -7,9 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <numbers>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -17,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
@@ -124,26 +127,6 @@ float BrowserControlsOffsetManager::TopControlsMinHeight() const {
   return client_->TopControlsMinHeight();
 }
 
-int BrowserControlsOffsetManager::TopControlsAdditionalHeight() const {
-  return offset_tag_modifications_.top_controls_additional_height;
-}
-
-int BrowserControlsOffsetManager::BottomControlsAdditionalHeight() const {
-  return offset_tag_modifications_.bottom_controls_additional_height;
-}
-
-viz::OffsetTag BrowserControlsOffsetManager::BottomControlsOffsetTag() const {
-  return offset_tag_modifications_.tags.bottom_controls_offset_tag;
-}
-
-viz::OffsetTag BrowserControlsOffsetManager::ContentOffsetTag() const {
-  return offset_tag_modifications_.tags.content_offset_tag;
-}
-
-viz::OffsetTag BrowserControlsOffsetManager::TopControlsOffsetTag() const {
-  return offset_tag_modifications_.tags.top_controls_offset_tag;
-}
-
 float BrowserControlsOffsetManager::TopControlsMinShownRatio() const {
   return TopControlsHeight() ? TopControlsMinHeight() / TopControlsHeight()
                              : 0.0f;
@@ -180,6 +163,68 @@ float BrowserControlsOffsetManager::BottomControlsMinHeightOffset() const {
   return bottom_controls_min_height_offset_;
 }
 
+std::vector<viz::OffsetTagValue>
+BrowserControlsOffsetManager::GetOffsetTagValues() const {
+  std::vector<viz::OffsetTagValue> offset_tag_values;
+
+  if (TopControlsHeight() > 0) {
+    const viz::OffsetTag& top_controls_offset_tag =
+        offset_tag_modifications_.tags.top_controls_offset_tag;
+    const viz::OffsetTag& content_offset_tag =
+        offset_tag_modifications_.tags.content_offset_tag;
+    float visible_height = ContentTopOffset();
+
+    if (top_controls_offset_tag) {
+      CHECK(!content_offset_tag.IsEmpty());
+
+      float offset = TopControlsHeight() - visible_height;
+      if (visible_height == 0) {
+        // The toolbar hairline is still shown after the top controls are
+        // completely scrolled off screen. Shift the top controls a bit more
+        // so that the hairline disappears.
+        offset += offset_tag_modifications_.top_controls_additional_height;
+      }
+
+      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+      // handing it off to Android.
+      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
+      offset_tag_values.emplace_back(top_controls_offset_tag, offset2d);
+    }
+
+    if (content_offset_tag) {
+      float offset = TopControlsHeight() - visible_height;
+
+      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+      // handing it off to Android.
+      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
+      offset_tag_values.emplace_back(content_offset_tag, offset2d);
+    }
+  }
+
+  if (BottomControlsHeight() > 0) {
+    const viz::OffsetTag& bottom_controls_offset_tag =
+        offset_tag_modifications_.tags.bottom_controls_offset_tag;
+    if (bottom_controls_offset_tag) {
+      float bottom_controls_visible_height = ContentBottomOffset();
+      float offset = BottomControlsHeight() - bottom_controls_visible_height;
+      if (bottom_controls_visible_height == 0) {
+        // Similar to the top toolbar hairline, there are visual effects
+        // on the top most bottom controls that are still shown after being
+        // completely scrolled off screen. Shift the bottom controls a bit
+        // more so that these visual effects disappear.
+        offset += offset_tag_modifications_.bottom_controls_additional_height;
+      }
+
+      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+      // handing it off to Android.
+      gfx::Vector2dF offset2d(0.0f, std::round(offset));
+      offset_tag_values.emplace_back(bottom_controls_offset_tag, offset2d);
+    }
+  }
+
+  return offset_tag_values;
+}
+
 BrowserControlsMetadata BrowserControlsOffsetManager::GetMetadata() const {
   BrowserControlsMetadata metadata;
   metadata.top_controls_height = TopControlsHeight();
@@ -191,8 +236,7 @@ BrowserControlsMetadata BrowserControlsOffsetManager::GetMetadata() const {
       std::clamp(BottomControlsShownRatio(), 0.f, 1.f);
   metadata.top_controls_min_height_offset = TopControlsMinHeightOffset();
   metadata.bottom_controls_min_height_offset = BottomControlsMinHeightOffset();
-  metadata.has_offset_tag =
-      BottomControlsOffsetTag() || ContentOffsetTag() || TopControlsOffsetTag();
+  metadata.has_offset_tag = !offset_tag_modifications_.tags.IsEmpty();
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return metadata;
 }

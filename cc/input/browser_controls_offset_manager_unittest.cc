@@ -22,6 +22,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -1753,6 +1754,70 @@ TEST_F(BrowserControlsOffsetManagerTest, ScrollWithLatencyCompensation) {
   }
   EXPECT_FALSE(manager->HasAnimation());
   EXPECT_FLOAT_EQ(manager->TopControlsShownRatio(), 1.0f);
+}
+
+TEST_F(BrowserControlsOffsetManagerTest, GetOffsetTagValues) {
+  MockBrowserControlsOffsetManagerClient client(100.0f, 0.5f, 0.5f);
+  client.SetBrowserControlsParams({100.0f, 0.0f, 50.0f, 0.0f, false, false});
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  viz::OffsetTag top_tag = viz::OffsetTag::CreateRandom();
+  viz::OffsetTag content_tag = viz::OffsetTag::CreateRandom();
+  viz::OffsetTag bottom_tag = viz::OffsetTag::CreateRandom();
+
+  BrowserControlsOffsetTagModifications modifications;
+  modifications.tags.top_controls_offset_tag = top_tag;
+  modifications.tags.content_offset_tag = content_tag;
+  modifications.tags.bottom_controls_offset_tag = bottom_tag;
+  modifications.top_controls_additional_height = 5;
+  modifications.bottom_controls_additional_height = 10;
+
+  manager->SetOffsetTagModifications(modifications);
+
+  // 1. Fully shown controls (top_ratio = 1.0, bottom_ratio = 1.0)
+  client.SetCurrentBrowserControlsShownRatio(1.0f, 1.0f);
+  {
+    std::vector<viz::OffsetTagValue> values = manager->GetOffsetTagValues();
+    ASSERT_EQ(3u, values.size());
+    EXPECT_EQ(top_tag, values[0].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, 0.0f), values[0].offset);
+    EXPECT_EQ(content_tag, values[1].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, 0.0f), values[1].offset);
+    EXPECT_EQ(bottom_tag, values[2].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, 0.0f), values[2].offset);
+  }
+
+  // 2. Partially shown controls (top_ratio = 0.5, bottom_ratio = 0.5)
+  // Top: visible_height = 50, offset = 100 - 50 = 50 -> offset2d = (0, -50)
+  // Content: offset = 100 - 50 = 50 -> offset2d = (0, -50)
+  // Bottom: visible_height = 25, offset = 50 - 25 = 25 -> offset2d = (0, 25)
+  client.SetCurrentBrowserControlsShownRatio(0.5f, 0.5f);
+  {
+    std::vector<viz::OffsetTagValue> values = manager->GetOffsetTagValues();
+    ASSERT_EQ(3u, values.size());
+    EXPECT_EQ(top_tag, values[0].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, -50.0f), values[0].offset);
+    EXPECT_EQ(content_tag, values[1].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, -50.0f), values[1].offset);
+    EXPECT_EQ(bottom_tag, values[2].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, 25.0f), values[2].offset);
+  }
+
+  // 3. Fully hidden controls (top_ratio = 0.0, bottom_ratio = 0.0)
+  // Top: visible_height = 0, offset = 100 - 0 + 5 = 105 -> offset2d = (0, -105)
+  // Content: offset = 100 - 0 = 100 -> offset2d = (0, -100)
+  // Bottom: visible_height = 0, offset = 50 - 0 + 10 = 60 -> offset2d = (0, 60)
+  client.SetCurrentBrowserControlsShownRatio(0.0f, 0.0f);
+  {
+    std::vector<viz::OffsetTagValue> values = manager->GetOffsetTagValues();
+    ASSERT_EQ(3u, values.size());
+    EXPECT_EQ(top_tag, values[0].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, -105.0f), values[0].offset);
+    EXPECT_EQ(content_tag, values[1].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, -100.0f), values[1].offset);
+    EXPECT_EQ(bottom_tag, values[2].tag);
+    EXPECT_EQ(gfx::Vector2dF(0.0f, 60.0f), values[2].offset);
+  }
 }
 
 class BrowserControlsOffsetManagerCancelAnimationTest : public testing::Test {

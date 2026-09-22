@@ -2545,71 +2545,11 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata(
         browser_controls_offset_manager_->TopControlsHeight() *
         browser_controls_offset_manager_->TopControlsShownRatio();
     metadata.top_controls_visible_height.emplace(visible_height);
-
-#if BUILDFLAG(IS_ANDROID)
-    const viz::OffsetTag& top_controls_offset_tag =
-        browser_controls_offset_manager_->TopControlsOffsetTag();
-    const viz::OffsetTag& content_offset_tag =
-        browser_controls_offset_manager_->ContentOffsetTag();
-
-    if (top_controls_offset_tag) {
-      CHECK(!content_offset_tag.IsEmpty());
-
-      float offset = browser_controls_offset_manager_->TopControlsHeight() -
-                     visible_height;
-      if (visible_height == 0) {
-        // The toolbar hairline is still shown after the top controls are
-        // completely scrolled off screen. Shift the top controls a bit more
-        // so that the hairline disappears.
-        offset +=
-            browser_controls_offset_manager_->TopControlsAdditionalHeight();
-      }
-
-      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
-      // handing it off to Android.
-      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
-      metadata.offset_tag_values.emplace_back(top_controls_offset_tag,
-                                              offset2d);
-    }
-
-    if (content_offset_tag) {
-      float offset = browser_controls_offset_manager_->TopControlsHeight() -
-                     visible_height;
-
-      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
-      // handing it off to Android.
-      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
-      metadata.offset_tag_values.emplace_back(content_offset_tag, offset2d);
-    }
-#endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (browser_controls_offset_manager_->BottomControlsHeight() > 0) {
-    const viz::OffsetTag& bottom_controls_offset_tag =
-        browser_controls_offset_manager_->BottomControlsOffsetTag();
-    if (bottom_controls_offset_tag) {
-      float bottom_controls_visible_height =
-          browser_controls_offset_manager_->BottomControlsHeight() *
-          browser_controls_offset_manager_->BottomControlsShownRatio();
-      float offset = browser_controls_offset_manager_->BottomControlsHeight() -
-                     bottom_controls_visible_height;
-      if (bottom_controls_visible_height == 0) {
-        // Similar to the top toolbar hairline, there are visual effects
-        // on the top most bottom controls that are still shown after being
-        // completely scrolled off screen. Shift the bottom controls a bit
-        // more so that these visual effects disappear.
-        offset +=
-            browser_controls_offset_manager_->BottomControlsAdditionalHeight();
-      }
-
-      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
-      // handing it off to Android.
-      gfx::Vector2dF offset2d(0.0f, std::round(offset));
-      metadata.offset_tag_values.emplace_back(bottom_controls_offset_tag,
-                                              offset2d);
-    }
-  }
+  metadata.offset_tag_values =
+      browser_controls_offset_manager_->GetOffsetTagValues();
 #endif
 
   if (InnerViewportScrollNode()) {
