@@ -455,7 +455,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/545268511
     public void testHistoryOptInDoNotCarryOverFromOneUserToAnother() {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -469,6 +468,10 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(historyAndTabsToggle.isChecked());
 
         mSyncTestRule.signOut();
+        // Signing out indirectly closes the settings activity (when ManageSyncSettings detects the
+        // primary account change). Wait for this to complete before signing in again and
+        // re-starting the settings activity.
+        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
 
         // Add a different account, and open the sync settings to check that history opt-in did not
         // carry over from one user to another.
@@ -503,7 +506,6 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "crbug.com/544726018")
     public void testRemoveAccountFromDeviceShouldClearSyncPrefs() {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         signinTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -518,6 +520,11 @@ public class ManageSyncSettingsTest {
         Assert.assertFalse(passwordsToggle.isChecked());
 
         mSyncTestRule.signOut();
+        // Signing out indirectly closes the settings activity (when ManageSyncSettings detects the
+        // primary account change). Wait for this to complete before signing in again and
+        // re-starting the settings activity.
+        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+
         signinTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         // Add the same account again, and open the sync settings to check that prefs was cleared
