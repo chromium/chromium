@@ -36,7 +36,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -45,7 +44,6 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -56,7 +54,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288344
 public class FullScreenIncognitoReauthViewTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
