@@ -2642,10 +2642,7 @@ HRESULT CGaiaCredentialBase::ReportError(LONG status,
 }
 
 bool CGaiaCredentialBase::UpdateSubmitButtonInteractiveState() {
-  bool should_enable =
-      logon_ui_process_ == INVALID_HANDLE_VALUE &&
-      ((!needs_windows_password_ || current_windows_password_.Length()) ||
-       (needs_windows_password_ && request_force_password_change_));
+  bool should_enable = logon_ui_process_ == INVALID_HANDLE_VALUE;
   if (events_) {
     events_->SetFieldInteractiveState(
         this, FID_SUBMIT, should_enable ? CPFIS_NONE : CPFIS_DISABLED);
@@ -2656,6 +2653,9 @@ bool CGaiaCredentialBase::UpdateSubmitButtonInteractiveState() {
 
 void CGaiaCredentialBase::DisplayPasswordField(int password_message) {
   needs_windows_password_ = true;
+
+  bool is_linking_flow = GetUserEmailFromSid(get_sid().Get()).empty();
+
   if (events_) {
     if (request_force_password_change_) {
       events_->SetFieldState(this, FID_CURRENT_PASSWORD_FIELD, CPFS_HIDDEN);
@@ -2672,15 +2672,19 @@ void CGaiaCredentialBase::DisplayPasswordField(int password_message) {
       if (!BlockingPasswordError(password_message)) {
         events_->SetFieldState(this, FID_CURRENT_PASSWORD_FIELD,
                                CPFS_DISPLAY_IN_SELECTED_TILE);
+
         // Force password link won't be displayed if the machine is domain
         // joined or force reset password is disabled through registry.
+        // If it is during linking scenario.
         if (!OSUserManager::Get()->IsUserDomainJoined(get_sid().Get()) &&
-            GetGlobalFlagOrDefault(kRegMdmEnableForcePasswordReset, 1)) {
+            GetGlobalFlagOrDefault(kRegMdmEnableForcePasswordReset, 1) &&
+            !is_linking_flow) {
           events_->SetFieldState(this, FID_FORGOT_PASSWORD_LINK,
                                  CPFS_DISPLAY_IN_SELECTED_TILE);
           events_->SetFieldString(
               this, FID_FORGOT_PASSWORD_LINK,
               GetStringResource(IDS_FORGOT_PASSWORD_LINK_BASE).c_str());
+          LOGFN(VERBOSE) << "Forgot password link is made available.";
         }
         events_->SetFieldInteractiveState(this, FID_CURRENT_PASSWORD_FIELD,
                                           CPFIS_FOCUSED);

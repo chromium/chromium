@@ -217,6 +217,7 @@ HRESULT FakeCredentialProviderCredentialEvents::SetFieldInteractiveState(
     ICredentialProviderCredential* pcpc,
     DWORD dwFieldID,
     CREDENTIAL_PROVIDER_FIELD_INTERACTIVE_STATE cpfis) {
+  field_interactive_states_[pcpc][dwFieldID] = cpfis;
   return S_OK;
 }
 
@@ -254,6 +255,16 @@ FakeCredentialProviderCredentialEvents::GetFieldState(
   DCHECK(field_states_[pcpc].count(dwFieldID));
 
   return field_states_[pcpc][dwFieldID];
+}
+
+CREDENTIAL_PROVIDER_FIELD_INTERACTIVE_STATE
+FakeCredentialProviderCredentialEvents::GetFieldInteractiveState(
+    ICredentialProviderCredential* pcpc,
+    DWORD dwFieldID) {
+  DCHECK(field_interactive_states_.count(pcpc));
+  DCHECK(field_interactive_states_[pcpc].count(dwFieldID));
+
+  return field_interactive_states_[pcpc][dwFieldID];
 }
 
 LPCWSTR FakeCredentialProviderCredentialEvents::GetFieldString(

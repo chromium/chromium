@@ -424,6 +424,13 @@ HRESULT GlsRunnerTestBase::InternalInitializeProvider(
           current_credential.Get(), fieldID, cpfs);
       if (FAILED(hr))
         return hr;
+
+      hr = fake_credential_provider_credential_events()
+               ->SetFieldInteractiveState(current_credential.Get(), fieldID,
+                                          cpfis);
+      if (FAILED(hr)) {
+        return hr;
+      }
     }
   }
 

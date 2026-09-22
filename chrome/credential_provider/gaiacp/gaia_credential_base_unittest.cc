@@ -4259,5 +4259,129 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(0, 1, 2),
                        ::testing::Values(L"", L"acme.com,acme.org")));
 
+TEST_F(GcpGaiaCredentialBaseTest, LinkingFlowHidesForgotPassword) {
+  // 1. Enable cloud association and force password reset in registry before
+  // starting the logon process.
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"enable_cloud_association", 1));
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmEnableForcePasswordReset, 1));
+
+  // 2. Create a local OS user with a different Windows password and NO email
+  // or Gaia ID in the registry initially, simulating an existing Windows
+  // profile being linked to a new GCPW user.
+  base::win::ScopedBstr sid;
+  DWORD error = 0;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->AddUser(L"foo", L"old_password",
+                                                  L"Full Name", L"comment",
+                                                  true, sid.Receive(), &error));
+
+  // Set up Admin SDK response to link the Gaia user to the existing local OS
+  // account "foo".
+  GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(gaia_urls->oauth2_token_url().spec().c_str()),
+      FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+  std::string get_cd_user_url = base::StringPrintf(
+      "https://www.googleapis.com/admin/directory/v1/users/"
+      "%s?projection=full&viewType=domain_public",
+      base::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(get_cd_user_url.c_str()), FakeWinHttpUrlFetcher::Headers(),
+      "{\"customSchemas\": {\"Enhanced_desktop_security\": "
+      "{\"Local_Windows_accounts\": [{\"value\": \"un:foo\"}]}}}");
+
+  // 3. Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  // Ensure "Forgot Password" link is initially hidden.
+  ASSERT_EQ(CPFS_HIDDEN,
+            fake_credential_provider_credential_events()->GetFieldState(
+                cred.Get(), FID_FORGOT_PASSWORD_LINK));
+
+  // 4. Start logon process and wait.
+  // The GLS finishes and calls OnUserAuthenticated. GetUserConfigsIfStale()
+  // writes kUserId into the registry, but kUserEmail is still empty. Since the
+  // existing OS user's password ("old_password") doesn't match the GLS
+  // password ("password"), DisplayPasswordField is called.
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  // In the linking flow, FID_CURRENT_PASSWORD_FIELD should be displayed, and
+  // FID_FORGOT_PASSWORD_LINK should remain hidden even though
+  // kRegMdmEnableForcePasswordReset is enabled.
+  ASSERT_EQ(CPFS_DISPLAY_IN_SELECTED_TILE,
+            fake_credential_provider_credential_events()->GetFieldState(
+                cred.Get(), FID_CURRENT_PASSWORD_FIELD));
+  ASSERT_EQ(CPFS_HIDDEN,
+            fake_credential_provider_credential_events()->GetFieldState(
+                cred.Get(), FID_FORGOT_PASSWORD_LINK));
+
+  // 5. Provide the old Windows password and complete the logon process.
+  ASSERT_EQ(S_OK,
+            cred->SetStringValue(FID_CURRENT_PASSWORD_FIELD, L"old_password"));
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, false, 0));
+}
+
+TEST_F(GcpGaiaCredentialBaseTest, SubmitButtonAlwaysEnabled) {
+  // Create a fake user whose Windows password does not match the GLS password
+  // so that needs_windows_password_ becomes true after GLS finishes.
+  base::win::ScopedBstr sid;
+  base::win::ScopedBstr windows_password(L"password2");
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo", windows_password.Get(), L"Full Name", L"comment",
+                      kDefaultGaiaId, L"foo@gmail.com", sid.Receive()));
+
+  // Create provider and credential.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  // 1. The submit button should be enabled initially when the logon process is
+  // not running.
+  ASSERT_EQ(
+      CPFIS_NONE,
+      fake_credential_provider_credential_events()->GetFieldInteractiveState(
+          cred.Get(), FID_SUBMIT));
+
+  // 2. Start the logon process. While the logon UI process is running
+  // (logon_ui_process_ != INVALID_HANDLE_VALUE), the submit button should be
+  // disabled.
+  ASSERT_EQ(S_OK, StartLogonProcess(/*succeeds=*/true));
+  ASSERT_EQ(
+      CPFIS_DISABLED,
+      fake_credential_provider_credential_events()->GetFieldInteractiveState(
+          cred.Get(), FID_SUBMIT));
+
+  // Wait for the logon UI process to finish.
+  ASSERT_EQ(S_OK, WaitForLogonProcess());
+
+  // 3. When GetSerialization is called while waiting for the Windows password
+  // (needs_windows_password_ is true and current_windows_password_ is empty),
+  // UpdateSubmitButtonInteractiveState() should enable the submit button
+  // because logon_ui_process_ is no longer running.
+  CREDENTIAL_PROVIDER_GET_SERIALIZATION_RESPONSE cpgsr;
+  CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION cpcs;
+  wchar_t* status_text = nullptr;
+  CREDENTIAL_PROVIDER_STATUS_ICON status_icon;
+  ASSERT_EQ(S_OK,
+            cred->GetSerialization(&cpgsr, &cpcs, &status_text, &status_icon));
+  EXPECT_EQ(CPGSR_NO_CREDENTIAL_NOT_FINISHED, cpgsr);
+  ASSERT_EQ(
+      CPFIS_NONE,
+      fake_credential_provider_credential_events()->GetFieldInteractiveState(
+          cred.Get(), FID_SUBMIT));
+
+  // Setting an empty password in FID_CURRENT_PASSWORD_FIELD should also keep
+  // the submit button enabled.
+  ASSERT_EQ(S_OK, cred->SetStringValue(FID_CURRENT_PASSWORD_FIELD, L""));
+  ASSERT_EQ(
+      CPFIS_NONE,
+      fake_credential_provider_credential_events()->GetFieldInteractiveState(
+          cred.Get(), FID_SUBMIT));
+
+  // 4. Enter the correct Windows password and finish logon.
+  ASSERT_EQ(S_OK, cred->SetStringValue(FID_CURRENT_PASSWORD_FIELD,
+                                       windows_password.Get()));
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, false, 0));
+}
+
 }  // namespace testing
 }  // namespace credential_provider
