@@ -491,6 +491,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "src/org/chromium/chrome/browser/ExampleUiCaptureTest.java",
     "src/org/chromium/chrome/browser/FeaturesAnnotationsTest.java",
     "src/org/chromium/chrome/browser/FocusedEditableTextFieldZoomTest.java",
+    "src/org/chromium/chrome/browser/GamepadTabNavigationTest.java",
     "src/org/chromium/chrome/browser/HTTPSTabsOpenedFromExternalAppTest.java",
     "src/org/chromium/chrome/browser/ImageFetcherIntegrationTest.java",
     "src/org/chromium/chrome/browser/InputHintCheckerTest.java",
@@ -528,6 +529,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "//chrome/browser/actor/android:java",
     "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/bars_common:java",
+    "//device/gamepad:java",
   ]
 }
 

@@ -73,6 +73,7 @@ include_rules = [
   "+content/public/test/android/javatests",
 
   "+services/device/public/java",
+  "+device/gamepad/android/java",
 ]
 
 specific_include_rules = {
