@@ -118,6 +118,8 @@ public class VariationsSeedFetcher {
     public static final String SEED_FETCH_DELTA_COMPRESSION =
             "Variations.FirstRun.DeltaCompression";
 
+    public static final String SEED_DATE_MISSING_HISTOGRAM = "Variations.SeedDateMissing";
+
     // UMA constant for logging the request and response status of delta compression when requesting
     // a finch seed.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -579,6 +581,10 @@ public class VariationsSeedFetcher {
                 "Variations.FirstRun.SeedConnectTime", timeDeltaMillis);
     }
 
+    private void recordSeedDateMissing(boolean isDateMissing) {
+        RecordHistogram.recordBooleanHistogram(SEED_DATE_MISSING_HISTOGRAM, isDateMissing);
+    }
+
     /**
      * Download the variations seed data with platform and restrictMode.
      *
@@ -616,6 +622,7 @@ public class VariationsSeedFetcher {
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
                 seedInfo.date = connection.getHeaderFieldDate("Date", 0);
+                recordSeedDateMissing(seedInfo.date == 0);
 
                 InstanceManipulations receivedIm =
                         VariationsCompressionUtils.getInstanceManipulations(
@@ -656,6 +663,7 @@ public class VariationsSeedFetcher {
                 // seed, so it's appropriate to always modify the latest seed's date.
                 fetchInfo.seedInfo = assumeNonNull(currInfo);
                 fetchInfo.seedInfo.date = connection.getHeaderFieldDate("Date", 0);
+                recordSeedDateMissing(fetchInfo.seedInfo.date == 0);
             } else {
                 String errorMsg = "Non-OK response code = " + responseCode;
                 Log.w(TAG, errorMsg);

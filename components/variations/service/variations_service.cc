@@ -1183,6 +1183,10 @@ void VariationsService::OnSimpleLoaderComplete(
   // Ignore the Date header value from HTTP as it cannot be trusted.
   const std::optional<base::Time> response_date =
       last_request_was_http_retry_ ? std::nullopt : headers->GetDateValue();
+  if (!last_request_was_http_retry_) {
+    base::UmaHistogramBoolean("Variations.SeedDateMissing",
+                              !response_date.has_value());
+  }
   // If the seed was fetched securely, opportunistically update the network time
   // tracker with the headers time.
   if (response_date) {

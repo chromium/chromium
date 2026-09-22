@@ -284,6 +284,7 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
   base::Time date;
   BOOL dateParsed = base::Time::FromUTCString(
       base::SysNSStringToUTF8(dateString).c_str(), &date);
+  base::UmaHistogramBoolean("Variations.SeedDateMissing", !dateParsed);
 
   // Returned seed should have been gzip compressed.
   NSCharacterSet* whitespace = [NSCharacterSet whitespaceCharacterSet];

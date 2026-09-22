@@ -62,9 +62,6 @@ public class AwVariationsSeedFetcher extends JobService {
     @VisibleForTesting public static final String PERIODIC_FAST_MODE = "PeriodicFastMode";
 
     @VisibleForTesting
-    public static final String SEED_DATE_MISSING_HISTOGRAM_NAME = "Variations.SeedDateMissing";
-
-    @VisibleForTesting
     public static final String SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME = "Variations.SeedDateClockSkew";
 
     private static final String TAG = "AwVariationsSeedFet-";
@@ -515,9 +512,7 @@ public class AwVariationsSeedFetcher extends JobService {
     }
 
     public static void recordSeedDateMetrics(SeedInfo seedInfo) {
-        boolean isDateMissing = (seedInfo.date == 0);
-        RecordHistogram.recordBooleanHistogram(SEED_DATE_MISSING_HISTOGRAM_NAME, isDateMissing);
-        if (!isDateMissing) {
+        if (seedInfo.date != 0) {
             long diffMillis = Math.abs(currentTimeMillis() - seedInfo.date);
             RecordHistogram.recordCustomCountHistogram(
                     SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME,
