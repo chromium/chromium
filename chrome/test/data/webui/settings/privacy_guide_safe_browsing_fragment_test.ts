@@ -56,8 +56,7 @@ suite('SafeBrowsingFragment', function() {
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.
-    fragment.dispatchEvent(
-        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+    fragment.fire('view-enter-start');
 
     if (changeSetting) {
       const radio = fragment.shadowRoot.querySelector<HTMLElement>(
@@ -77,8 +76,7 @@ suite('SafeBrowsingFragment', function() {
 
     // The fragment is informed that it becomes invisible by
     // receiving a view-enter-finish event.
-    fragment.dispatchEvent(
-        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    fragment.fire('view-exit-finish');
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideSettingsStatesHistogram');

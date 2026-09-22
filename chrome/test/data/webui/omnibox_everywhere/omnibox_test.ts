@@ -2314,11 +2314,8 @@ suite('OmniboxEverywhereAppTest', () => {
       async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
-        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: '', files: [], mode: 0, model: 0},
-          bubbles: true,
-          composed: true,
-        }));
+        searchbox.fire(
+            'open-composebox', {text: '', files: [], mode: 0, model: 0});
         await microtasksFinished();
 
         window.dispatchEvent(new Event('focus'));
@@ -2416,8 +2413,7 @@ suite('OmniboxEverywhereAppTest', () => {
       async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
-        searchbox.dispatchEvent(new CustomEvent(
-            'open-voice-search', {bubbles: true, composed: true}));
+        searchbox.fire('open-voice-search');
         await microtasksFinished();
 
         window.dispatchEvent(new Event('focus'));
@@ -2569,11 +2565,9 @@ suite('OmniboxEverywhereAppTest', () => {
       async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
-        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: 'hello world', files: [], mode: 0, model: 0},
-          bubbles: true,
-          composed: true,
-        }));
+        searchbox.fire(
+            'open-composebox',
+            {text: 'hello world', files: [], mode: 0, model: 0});
         await microtasksFinished();
 
         const composebox =
@@ -2596,11 +2590,8 @@ suite('OmniboxEverywhereAppTest', () => {
       async () => {
         const searchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
-        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: '', files: [], mode: 0, model: 0},
-          bubbles: true,
-          composed: true,
-        }));
+        searchbox.fire(
+            'open-composebox', {text: '', files: [], mode: 0, model: 0});
         await microtasksFinished();
 
         const composebox =

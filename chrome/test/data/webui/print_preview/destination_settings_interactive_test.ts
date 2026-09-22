@@ -71,11 +71,8 @@ suite('DestinationSettingsInteractiveTest', function() {
     const whenCapabilitiesReady = eventToPromise(
         DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         destinationSettings.getDestinationStoreForTest());
-    dropdown.dispatchEvent(new CustomEvent('selected-option-change', {
-      bubbles: true,
-      composed: true,
-      detail: `BarDevice/${DestinationOrigin.LOCAL}/`,
-    }));
+    dropdown.fire(
+        'selected-option-change', `BarDevice/${DestinationOrigin.LOCAL}/`);
     await whenCapabilitiesReady;
     await microtasksFinished();
 

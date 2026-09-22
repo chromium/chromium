@@ -78,8 +78,7 @@ suite('CookiesFragment', function() {
 
     // The fragment is informed that it becomes invisible by
     // receiving a view-enter-finish event.
-    fragment.dispatchEvent(
-        new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
+    fragment.fire('view-exit-finish');
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideSettingsStatesHistogram');
