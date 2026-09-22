@@ -210,7 +210,7 @@ Verify correctness locally in the worktree before uploading to Gerrit:
 
    ```bash
    autoninja -C out/release chrome chromedriver
-   ./third_party/crossbench/cb.py speedometer_3.1 --browser=out/release/chrome --driver-path=out/release/chromedriver --stories=<TargetStory> --headless
+   tools/perf/cb speedometer_3.1 --browser=out/release/chrome --driver-path=out/release/chromedriver --stories=<TargetStory> --headless
    ```
 
 ______________________________________________________________________

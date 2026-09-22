@@ -108,7 +108,7 @@ ______________________________________________________________________
   3. Compile and verify locally:
      - Unit tests: `autoninja -C out/release blink_unittests` (or `v8:d8` for V8) and run relevant test filters.
      - Web tests (if rendering/DOM): `./third_party/blink/tools/run_web_tests.py -t release <path>`
-     - Crossbench smoke test: `./third_party/crossbench/cb.py speedometer_3.1 --browser=out/release/chrome --driver-path=out/release/chromedriver --stories=<Story> --headless`
+     - Crossbench smoke test: `tools/perf/cb speedometer_3.1 --browser=out/release/chrome --driver-path=out/release/chromedriver --stories=<Story> --headless`
   4. If tests fail, diagnose and fix, or conclude failure if unviable.
   5. If all tests pass, report back with:
      - Branch name and list of modified files
