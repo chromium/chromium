@@ -15,6 +15,8 @@ source_set("model") {
     "ttc_audio_recorder.h",
     "ttc_audio_recorder.mm",
     "ttc_audio_recorder_delegate.h",
+    "ttc_audio_session_manager.h",
+    "ttc_audio_session_manager.mm",
   ]
   deps = [
     "//base",
@@ -34,6 +36,7 @@ source_set("unit_tests") {
     "ttc_audio_metrics_unittest.mm",
     "ttc_audio_player_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
+    "ttc_audio_session_manager_unittest.mm",
   ]
   deps = [
     ":model",
