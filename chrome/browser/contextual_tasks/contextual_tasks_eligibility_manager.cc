@@ -4,10 +4,14 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -108,6 +112,36 @@ bool ContextualTasksEligibilityManager::IsEligibleWithoutIdentity() const {
   }
 
   return true;
+}
+
+// static
+ContextualTasksEligibilityManager*
+ContextualTasksEligibilityManager::GetForProfile(Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+
+  ContextualTasksUiService* const ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile);
+  if (!ui_service) {
+    return nullptr;
+  }
+
+  return ui_service->GetEligibilityManager();
+}
+
+bool ContextualTasksEligibilityManager::IsSidePanelAvailable() const {
+  if (base::FeatureList::IsEnabled(
+          kContextualTasksForceEntryPointEligibility)) {
+    return true;
+  }
+
+  if (IsEligible()) {
+    return true;
+  }
+
+  return IsEligibleWithoutIdentity() &&
+         lens::features::IsLensSidePanelUnificationAllowSignedOut();
 }
 
 base::CallbackListSubscription

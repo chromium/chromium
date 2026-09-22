@@ -9,6 +9,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -253,6 +254,76 @@ TEST_F(ContextualTasksEligibilityManagerTest, Transition_RefreshTokensLoaded) {
   // Trigger OnRefreshTokensLoaded directly on Observer interface.
   manager_->OnRefreshTokensLoaded();
   EXPECT_TRUE(manager_->IsEligible());
+}
+
+TEST_F(ContextualTasksEligibilityManagerTest,
+       IsSidePanelAvailable_True_SignedIn_UnificationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(lens::features::kLensSidePanelUnification);
+
+  auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env_->SetCookieAccounts(
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
+
+  CreateManager();
+  EXPECT_TRUE(manager_->IsEligible());
+  EXPECT_TRUE(manager_->IsSidePanelAvailable());
+}
+
+TEST_F(ContextualTasksEligibilityManagerTest,
+       IsSidePanelAvailable_False_SignedOut_UnificationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(lens::features::kLensSidePanelUnification);
+
+  CreateManager();
+  EXPECT_FALSE(manager_->IsEligible());
+  EXPECT_TRUE(manager_->IsEligibleWithoutIdentity());
+  EXPECT_FALSE(manager_->IsSidePanelAvailable());
+}
+
+TEST_F(ContextualTasksEligibilityManagerTest,
+       IsSidePanelAvailable_True_SignedOut_UnificationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensSidePanelUnification,
+      {{"allow-signed-out", "true"}});
+
+  CreateManager();
+  EXPECT_FALSE(manager_->IsEligible());
+  EXPECT_TRUE(manager_->IsEligibleWithoutIdentity());
+  EXPECT_TRUE(manager_->IsSidePanelAvailable());
+}
+
+TEST_F(ContextualTasksEligibilityManagerTest,
+       IsSidePanelAvailable_False_SignedOut_UnificationAllowSignedOutDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensSidePanelUnification,
+      {{"allow-signed-out", "false"}});
+
+  CreateManager();
+  EXPECT_FALSE(manager_->IsEligible());
+  EXPECT_TRUE(manager_->IsEligibleWithoutIdentity());
+  EXPECT_FALSE(manager_->IsSidePanelAvailable());
+}
+
+TEST_F(
+    ContextualTasksEligibilityManagerTest,
+    IsSidePanelAvailable_False_SignedOut_UnificationEnabled_OtherConditionsFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensSidePanelUnification,
+      {{"allow-signed-out", "true"}});
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(false));
+
+  CreateManager();
+  EXPECT_FALSE(manager_->IsEligible());
+  EXPECT_FALSE(manager_->IsEligibleWithoutIdentity());
+  EXPECT_FALSE(manager_->IsSidePanelAvailable());
 }
 
 }  // namespace contextual_tasks

@@ -28,6 +28,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_context_scoring_utils.h",
     "contextual_tasks_context_service.h",
     "contextual_tasks_context_service_factory.h",
+    "contextual_tasks_eligibility_manager.h",
     "contextual_tasks_panel_controller.h",
     "contextual_tasks_panel_host.h",
     "contextual_tasks_service_factory.h",
@@ -68,6 +69,8 @@ source_set("contextual_tasks") {
     "//components/page_content_annotations/content:page_embeddings",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core:passage_embeddings_types",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
@@ -232,7 +235,6 @@ source_set("ui") {
   sources = [
     "contextual_tasks_composebox_handler.h",
     "contextual_tasks_cookie_synchronizer.h",
-    "contextual_tasks_eligibility_manager.h",
     "contextual_tasks_internals_page_handler.h",
     "contextual_tasks_navigation_throttle.h",
     "contextual_tasks_page_handler.h",
@@ -869,6 +871,7 @@ source_set("interactive_ui_tests") {
       # TabUnderlineView currently resides under glic/browser_ui.
       "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/tab_list",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",

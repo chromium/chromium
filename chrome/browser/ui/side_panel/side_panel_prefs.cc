@@ -20,8 +20,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-// gn check does not evaluate the guard above, and browser_actions is only
+// gn check does not evaluate the guard above, and these dependencies are only
 // defined for non-Android.
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"  // nogncheck
 #include "chrome/browser/ui/browser_actions.h"  // nogncheck crbug.com/428946261
 #endif
 
@@ -80,7 +81,25 @@ base::ListValue GetConfigurableSidePanelAlignments(Profile* profile) {
     }
     actions::ActionItem* action_item =
         actions::ActionManager::Get().FindAction(*action_id, root_action_item);
-    if (!action_item || !action_item->GetVisible()) {
+    bool is_configurable = false;
+    switch (*id) {
+      case SidePanelEntryId::kContextualTasks: {
+        // `kActionSidePanelShowContextualTasks` visibility gates toolbar button
+        // pinning (which requires sign-in). However, signed-out users can still
+        // open the Contextual Tasks side panel via Lens side panel unification
+        // and need to be able to configure its alignment in Settings.
+        auto* manager =
+            contextual_tasks::ContextualTasksEligibilityManager::GetForProfile(
+                profile);
+        is_configurable =
+            action_item && manager && manager->IsSidePanelAvailable();
+        break;
+      }
+      default:
+        is_configurable = action_item && action_item->GetVisible();
+        break;
+    }
+    if (!is_configurable) {
       continue;
     }
 

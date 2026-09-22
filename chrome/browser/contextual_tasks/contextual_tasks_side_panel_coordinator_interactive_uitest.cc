@@ -4,19 +4,26 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
+#include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -24,9 +31,13 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -35,6 +46,9 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1381,6 +1395,105 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                 "  const app = document.querySelector('contextual-tasks-app');"
                 "  return app.isComposeboxHidden_();"
                 "})()"));
+      }));
+}
+
+class ContextualTasksSignedOutAlignmentInteractiveUiTest
+    : public ContextualTasksInteractiveTestBase {
+ public:
+  ContextualTasksSignedOutAlignmentInteractiveUiTest() = default;
+  ~ContextualTasksSignedOutAlignmentInteractiveUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    for (const auto& feature : GetDefaultEnabledFeatures()) {
+      if (feature.feature == lens::features::kLensSidePanelUnification) {
+        base::FieldTrialParams params = feature.params;
+        params["allow-signed-out"] = "true";
+        enabled_features.emplace_back(lens::features::kLensSidePanelUnification,
+                                      params);
+      } else {
+        enabled_features.push_back(feature);
+      }
+    }
+    std::vector<base::test::FeatureRef> disabled_features =
+        GetDefaultDisabledFeatures();
+    disabled_features.push_back(kContextualTasksForceEntryPointEligibility);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  std::unique_ptr<KeyedService> BuildMockContextualTasksUiServiceInstance(
+      content::BrowserContext* context) override {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<TestContextualTasksUiService>(
+        profile, ContextualTasksServiceFactory::GetForProfile(profile),
+        AimEligibilityServiceFactory::GetForProfile(profile),
+        IdentityManagerFactory::GetForProfile(profile),
+        /*is_signed_in=*/false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSignedOutAlignmentInteractiveUiTest,
+                       SignedOutUserCanChangeSidePanelAlignmentInSettings) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabId);
+  const WebContentsInteractionTestUtil::DeepQuery
+      kContextualTasksAlignmentSelect = {
+          "settings-ui",
+          "settings-main",
+          "settings-appearance-page-index",
+          "settings-appearance-page",
+          "settings-dropdown-menu[data-entry-id=\"kContextualTasks\"]",
+          "select#dropdownMenu"};
+
+  Profile* profile = browser()->GetProfile();
+  ASSERT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile));
+  auto* eligibility_manager =
+      ContextualTasksEligibilityManager::GetForProfile(profile);
+  ASSERT_TRUE(eligibility_manager &&
+              eligibility_manager->IsSidePanelAvailable());
+
+  actions::ActionItem* root_action_item =
+      BrowserActions::From(browser())->root_action_item();
+  actions::ActionItem* contextual_tasks_action =
+      actions::ActionManager::Get().FindAction(
+          kActionSidePanelShowContextualTasks, root_action_item);
+  ASSERT_NE(contextual_tasks_action, nullptr);
+  EXPECT_FALSE(contextual_tasks_action->GetVisible());
+
+  SidePanel* side_panel =
+      BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+  side_panel->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
+  EXPECT_EQ(side_panel->horizontal_alignment(),
+            SidePanel::HorizontalAlignment::kLeft);
+
+  RunTestSequence(
+      InstrumentTab(kSettingsTabId),
+      NavigateWebContents(kSettingsTabId, GURL("chrome://settings/appearance")),
+      WaitForJsResultAt(kSettingsTabId, kContextualTasksAlignmentSelect,
+                        "el => !!el"),
+      ScrollIntoView(kSettingsTabId, kContextualTasksAlignmentSelect),
+      WaitForElementVisible(kSettingsTabId, kContextualTasksAlignmentSelect),
+      CheckJsResultAt(kSettingsTabId, kContextualTasksAlignmentSelect,
+                      "el => el.value", "false"),
+      ExecuteJsAt(kSettingsTabId, kContextualTasksAlignmentSelect,
+                  "el => { el.value = 'true'; el.dispatchEvent(new "
+                  "Event('change')); }"),
+      CheckResult(
+          [&]() {
+            const base::DictValue& overrides = profile->GetPrefs()->GetDict(
+                prefs::kSidePanelAlignmentOverrides);
+            return overrides
+                .FindBool(SidePanelEntryIdToString(
+                    SidePanelEntryId::kContextualTasks))
+                .value_or(false);
+          },
+          true),
+      Do([&]() {
+        side_panel->UpdateHorizontalAlignment(
+            SidePanelEntryId::kContextualTasks);
+        EXPECT_EQ(side_panel->horizontal_alignment(),
+                  SidePanel::HorizontalAlignment::kRight);
       }));
 }
 

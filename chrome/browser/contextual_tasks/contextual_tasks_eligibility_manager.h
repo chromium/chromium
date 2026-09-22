@@ -13,6 +13,7 @@
 
 class AimEligibilityService;
 class PrefService;
+class Profile;
 
 namespace contextual_tasks {
 
@@ -55,6 +56,15 @@ class ContextualTasksEligibilityManager
   // Returns true if the user is eligible for Contextual Tasks, excluding
   // identity and signed in checks.
   virtual bool IsEligibleWithoutIdentity() const;
+
+  // Returns the ContextualTasksEligibilityManager for `profile`, or nullptr if
+  // unavailable.
+  static ContextualTasksEligibilityManager* GetForProfile(Profile* profile);
+
+  // Returns true if the Contextual Tasks side panel is available to the user
+  // (either fully eligible for direct entry points, or eligible without
+  // identity when Lens side panel unification is enabled for signed-out users).
+  virtual bool IsSidePanelAvailable() const;
 
   // Runs `callback` with the eligibility status when the eligibility changes.
   using EligibilityChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
