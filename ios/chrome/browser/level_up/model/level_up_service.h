@@ -126,7 +126,7 @@ class LevelUpService : public KeyedService {
   // tasks received via sync from newer versions of the app.
   std::vector<std::string> completed_tasks_;
   int current_level_ = 1;
-  bool is_ui_enabled_ = false;
+  bool is_ui_enabled_ = true;
 };
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_LEVEL_UP_SERVICE_H_

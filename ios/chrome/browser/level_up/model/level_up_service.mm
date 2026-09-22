@@ -570,7 +570,7 @@ void LevelUpService::RegisterProfilePrefs(
       prefs::kLevelUpHighestLevel, 1,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kLevelUpUIEnabled, false,
+      prefs::kLevelUpUIEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLevelUpOptIn, false,

@@ -89,7 +89,7 @@ class LevelUpSceneAgentTest : public PlatformTest {
 // snackbar when progress updates are disabled.
 TEST_F(LevelUpSceneAgentTest,
        TestActionTriggersCompletionWithoutSnackbarWhenProgressUpdatesDisabled) {
-  // Progress updates are disabled by default.
+  service_->SetUIEnabled(false);
   EXPECT_FALSE(service_->IsUIEnabled());
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
 
@@ -112,7 +112,7 @@ TEST_F(LevelUpSceneAgentTest,
 // progress updates are enabled.
 TEST_F(LevelUpSceneAgentTest,
        TestActionTriggersCompletionWithSnackbarWhenProgressUpdatesEnabled) {
-  service_->SetUIEnabled(true);
+  // Progress updates are enabled by default.
   EXPECT_TRUE(service_->IsUIEnabled());
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
 

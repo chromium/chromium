@@ -48,7 +48,7 @@ class LevelUpServiceTest : public PlatformTest {
 
 // Tests the initial default state of the service.
 TEST_F(LevelUpServiceTest, TestDefaultState) {
-  EXPECT_FALSE(service_->IsUIEnabled());
+  EXPECT_TRUE(service_->IsUIEnabled());
   EXPECT_EQ(service_->GetCurrentLevel(), 1);
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), std::make_pair(3, 3));
 
@@ -254,13 +254,13 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
 
 // Tests that changing the UI enabled preference updates IsUIEnabled().
 TEST_F(LevelUpServiceTest, TestUIEnabledPrefObservation) {
-  EXPECT_FALSE(service_->IsUIEnabled());
-
-  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, true);
   EXPECT_TRUE(service_->IsUIEnabled());
 
   profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, false);
   EXPECT_FALSE(service_->IsUIEnabled());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpUIEnabled, true);
+  EXPECT_TRUE(service_->IsUIEnabled());
 }
 
 // Tests that tasks and stats are not tracked when the opt-in preference is
