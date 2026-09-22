@@ -1613,6 +1613,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @DisabledTest(message = "https://crbug.com/564972133")
     public void testAutofillAiEntities_opensEditorOnClick() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
