@@ -378,6 +378,12 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
   const bool param1_is_none = Param1IsNone();
   const bool param2_is_none = Param2IsNone();
 
+  // If all color components are missing in the source space, they should be
+  // missing in the destination space as well.
+  if (param0_is_none && param1_is_none && param2_is_none) {
+    return {param0_is_none, param1_is_none, param2_is_none};
+  }
+
   switch (color_space_) {
     case ColorSpace::kSRGB:
     case ColorSpace::kSRGBLinear:
@@ -404,11 +410,15 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
       }
       // Lightness carries forward to *lch (component 0).
       if (is_lch(interpolation_space)) {
-        return {param0_is_none, false, false};
+        // The analogous set is a and b.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {param0_is_none, analogous_set_missing, analogous_set_missing};
       }
       // Lightness carries forward to hsl (component 2).
       if (interpolation_space == ColorSpace::kHSL) {
-        return {false, false, param0_is_none};
+        // The analogous set is a and b.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {analogous_set_missing, analogous_set_missing, param0_is_none};
       }
       break;
     case ColorSpace::kLch:
@@ -422,9 +432,17 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
       if (interpolation_space == ColorSpace::kHSL) {
         return {param2_is_none, param1_is_none, param0_is_none};
       }
+      // Hue carry forward to hwb, swapping component 0 with component 2.
+      if (interpolation_space == ColorSpace::kHWB) {
+        // The analogous set is L and C.
+        const bool analogous_set_missing = param0_is_none && param1_is_none;
+        return {param2_is_none, analogous_set_missing, analogous_set_missing};
+      }
       // Lightness carries forward to *Lab (component 0).
       if (is_lab(interpolation_space)) {
-        return {param0_is_none, false, false};
+        // The analogous set is C and H.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {param0_is_none, analogous_set_missing, analogous_set_missing};
       }
       break;
     case ColorSpace::kHSL:
@@ -435,21 +453,29 @@ std::array<bool, 3> Color::GetAnalogousMissingComponents(
       }
       // Lightness carries forward to *Lab (component 0).
       if (is_lab(interpolation_space)) {
-        return {param2_is_none, false, false};
+        // The analogous set is H and S.
+        const bool analogous_set_missing = param0_is_none && param1_is_none;
+        return {param2_is_none, analogous_set_missing, analogous_set_missing};
       }
       // Hue carries forward to hwb (component 0).
       if (interpolation_space == ColorSpace::kHWB) {
-        return {param0_is_none, false, false};
+        // The analogous set is S and L.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {param0_is_none, analogous_set_missing, analogous_set_missing};
       }
       break;
     case ColorSpace::kHWB:
       // Hue carries forward to hsl (component 0).
       if (interpolation_space == ColorSpace::kHSL) {
-        return {param0_is_none, false, false};
+        // The analogous set is W and B.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {param0_is_none, analogous_set_missing, analogous_set_missing};
       }
       // Hue carries forward to *Lch (component 2).
       if (is_lch(interpolation_space)) {
-        return {false, false, param0_is_none};
+        // The analogous set is W and B.
+        const bool analogous_set_missing = param1_is_none && param2_is_none;
+        return {analogous_set_missing, analogous_set_missing, param0_is_none};
       }
       break;
     case ColorSpace::kNone:

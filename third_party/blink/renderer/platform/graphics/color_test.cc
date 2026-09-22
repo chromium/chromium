@@ -857,18 +857,20 @@ TEST(BlinkColor, CarryForwardAnalogousMissingComponents) {
                                 3.7738409f, std::nullopt),
       },
       {
-          // rgb(none none none) -> lch(0 0 none)
+          // rgb(none none none) -> lch(none none none)
           Color::ColorSpace::kLch,
           Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt,
                                 std::nullopt, std::nullopt),
-          Color::FromColorSpace(Color::ColorSpace::kLch, 0, 0, std::nullopt),
+          Color::FromColorSpace(Color::ColorSpace::kLch, std::nullopt,
+                                std::nullopt, std::nullopt),
       },
       {
-          // rgb(none none none) -> lab(0 0 0)
+          // rgb(none none none) -> lab(none none none)
           Color::ColorSpace::kLab,
           Color::FromColorSpace(Color::ColorSpace::kSRGB, std::nullopt,
                                 std::nullopt, std::nullopt),
-          Color::FromColorSpace(Color::ColorSpace::kLab, 0, 0, 0),
+          Color::FromColorSpace(Color::ColorSpace::kLab, std::nullopt,
+                                std::nullopt, std::nullopt),
       },
       {
           // rgb(0 0 0) -> lch(0 0 none)
