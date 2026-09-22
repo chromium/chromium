@@ -44,6 +44,12 @@ class AppMenuZoomView : public views::BoxLayoutView {
   ~AppMenuZoomView() override;
 
   views::Label* zoom_label_for_testing() const { return zoom_label_; }
+  views::ImageButton* zoom_minus_button_for_testing() const {
+    return zoom_minus_button_;
+  }
+  views::ImageButton* zoom_plus_button_for_testing() const {
+    return zoom_plus_button_;
+  }
 
  private:
   // Returns the maximum pixel width required to display any zoom percentage
@@ -67,6 +73,8 @@ class AppMenuZoomView : public views::BoxLayoutView {
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<views::Label> zoom_label_ = nullptr;
+  raw_ptr<views::ImageButton> zoom_minus_button_ = nullptr;
+  raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;
   base::CallbackListSubscription zoom_label_subscription_;
   std::vector<base::CallbackListSubscription> button_subscriptions_;
 };

@@ -66,27 +66,28 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/separator.h"
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
-#endif
-#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#endif
 
 namespace {
 
@@ -1256,6 +1257,77 @@ TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
   fullscreen_action->SetTooltipText(u"Exit full screen");
   EXPECT_EQ(fullscreen_button->GetViewAccessibility().GetCachedName(),
             u"Exit full screen");
+
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, ZoomButtonsInkDropAtLimits) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  zoom::ZoomController::CreateForWebContents(web_contents.get());
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  EXPECT_CALL(mock_window_interface_, GetActiveTabInterface())
+      .WillRepeatedly(testing::Return(&mock_tab));
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* const root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  auto* minus_button = zoom_view->zoom_minus_button_for_testing();
+  auto* plus_button = zoom_view->zoom_plus_button_for_testing();
+  ASSERT_TRUE(minus_button);
+  ASSERT_TRUE(plus_button);
+
+  actions::ActionItem* minus_action =
+      actions::ActionManager::Get().FindAction(kActionZoomMinus);
+  ASSERT_TRUE(minus_action);
+  actions::ActionItem* plus_action =
+      actions::ActionManager::Get().FindAction(kActionZoomPlus);
+  ASSERT_TRUE(plus_action);
+
+  // At 100% zoom (default), both buttons are enabled with ink drop ON.
+  EXPECT_TRUE(minus_button->GetEnabled());
+  EXPECT_TRUE(plus_button->GetEnabled());
+  EXPECT_EQ(views::InkDrop::Get(minus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+  EXPECT_EQ(views::InkDrop::Get(plus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+
+  // Zoom to minimum: minus button should be disabled and its ink drop OFF.
+  minus_action->SetEnabled(false);
+  EXPECT_FALSE(minus_button->GetEnabled());
+  EXPECT_TRUE(plus_button->GetEnabled());
+  EXPECT_EQ(views::InkDrop::Get(minus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::OFF);
+  EXPECT_EQ(views::InkDrop::Get(plus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+
+  // Zoom to maximum: plus button should be disabled and its ink drop OFF.
+  minus_action->SetEnabled(true);
+  plus_action->SetEnabled(false);
+  EXPECT_TRUE(minus_button->GetEnabled());
+  EXPECT_FALSE(plus_button->GetEnabled());
+  EXPECT_EQ(views::InkDrop::Get(minus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+  EXPECT_EQ(views::InkDrop::Get(plus_button)->GetMode(),
+            views::InkDropHost::InkDropMode::OFF);
 
   menu.CloseMenu();
 }

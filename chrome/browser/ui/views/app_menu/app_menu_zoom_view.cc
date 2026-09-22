@@ -131,6 +131,12 @@ void AppMenuZoomView::BuildZoomChildControls(
       views::ImageButton* const zoom_child_button =
           AddChildView(CreateZoomButton(zoom_child));
 
+      if (zoom_action_id == kActionZoomMinus) {
+        zoom_minus_button_ = zoom_child_button;
+      } else if (zoom_action_id == kActionZoomPlus) {
+        zoom_plus_button_ = zoom_child_button;
+      }
+
       action_view_controller->CreateActionViewRelationship(
           zoom_child_button, zoom_child->GetAsWeakPtr());
 
@@ -167,8 +173,17 @@ std::unique_ptr<views::ImageButton> AppMenuZoomView::CreateZoomButton(
   button_subscriptions_.push_back(
       button->AddEnabledChangedCallback(base::BindRepeating(
           [](views::Button* button) {
-            button->SetBackground(
-                button->GetEnabled() ? CreateZoomButtonBackground() : nullptr);
+            const bool enabled = button->GetEnabled();
+            button->SetBackground(enabled ? CreateZoomButtonBackground()
+                                          : nullptr);
+            auto* const ink_drop_host = views::InkDrop::Get(button);
+            if (enabled) {
+              ink_drop_host->SetMode(views::InkDropHost::InkDropMode::ON);
+              auto* const ink_drop = ink_drop_host->GetInkDrop();
+              ink_drop->SetHovered(button->IsMouseHovered());
+            } else {
+              ink_drop_host->SetMode(views::InkDropHost::InkDropMode::OFF);
+            }
           },
           button.get())));
 
