@@ -322,7 +322,7 @@ HomeButton::HomeButton(Shelf* shelf)
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-  layer()->SetName("shelf/Homebutton");
+  layer()->SetName("HomeButton");
 
   // Added at 0 index to ensure it's painted below focus ring view.
   button_image_view_ =
@@ -632,7 +632,8 @@ void HomeButton::CreateExpandableContainer() {
   expandable_container_->SetBackground(views::CreateLayerBasedRoundedBackground(
       cros_tokens::kCrosSysSystemOnBase,
       gfx::RoundedCornersF(home_button_width / 2.f)));
-  expandable_container_->background()->SetInternalName("NudgeLabelContainer");
+  expandable_container_->background()->SetInternalName(
+      "HomeButton:NudgeLabelContainer");
 }
 
 void HomeButton::UpdateTooltipText() {
@@ -657,7 +658,7 @@ void HomeButton::CreateNudgeLabel() {
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 12, 0, 0)));
   label_mask->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   label_mask->layer()->SetMasksToBounds(true);
-  label_mask->layer()->SetName("NudgeLabelMask");
+  label_mask->layer()->SetName("HomeButton:NudgeLabelMask");
 
   nudge_label_ = label_mask->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SHELF_LAUNCHER_NUDGE_TEXT)));

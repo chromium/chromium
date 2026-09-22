@@ -136,7 +136,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     backdrop_view_->SetBackground(views::CreateLayerBasedRoundedBackground(
         cros_tokens::kCrosSysScrim, backdrop_radii));
     backdrop_view_->background()->SetInternalName(
-        "WindowMiniView/BackdropView");
+        "WindowMiniView:BackdropView");
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     DeprecatedLayoutImmediately();
   }
@@ -205,7 +205,7 @@ void WindowMiniView::SetShowPreview(bool show) {
       AddChildView(std::make_unique<WindowPreviewView>(source_window_));
   preview_view_->SetPaintToLayer();
   ui::Layer* preview_layer = preview_view_->layer();
-  preview_layer->SetName("PreviewView");
+  preview_layer->SetName("WindowMiniView:PreviewView");
   preview_layer->SetFillsBoundsOpaquely(false);
 
   // TODO(http://b/41495434): Consider redesigning `WindowCycleItemView` to

@@ -632,7 +632,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   icon_background_->SetBackground(
       views::CreateLayerBasedSolidBackground(GetBackgroundLayerColorId()));
   icon_background_->background()->SetInternalName(
-      "AppListItemView/icon-background");
+      "AppListItemView:IconBackground");
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 

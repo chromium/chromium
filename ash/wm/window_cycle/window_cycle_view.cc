@@ -194,7 +194,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
           .Build());
   mirror_container_->AddObserver(this);
-  mirror_container_->layer()->SetName("WindowCycleView/MirrorContainer");
+  mirror_container_->layer()->SetName("WindowCycleView:MirrorContainer");
 
   if (is_interactive_alt_tab_mode_allowed) {
     tab_slider_ = AddChildView(std::make_unique<TabSlider>(/*max_tab_num=*/2));

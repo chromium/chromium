@@ -486,7 +486,7 @@ protocol::Response OverlayAgentViews::HighlightNode(int node_id,
 
   if (!layer_for_highlighting_) {
     layer_for_highlighting_ = std::make_unique<ui::LayerTextured>();
-    layer_for_highlighting_->SetName("HighlightingLayer");
+    layer_for_highlighting_->SetName("OverlayAgentViews:Highlighting");
     layer_for_highlighting_->set_delegate(this);
     layer_for_highlighting_->SetFillsBoundsOpaquely(false);
   }

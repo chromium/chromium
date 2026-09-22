@@ -123,7 +123,7 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->AsSolidColor()->SetColor(SkColors::kBlack);
-    shield_view_->layer()->SetName("WallpaperViewShield");
+    shield_view_->layer()->SetName("WallpaperView:Shield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
     // Mark the layer transparent to make sure that the compositor will draw the
     // solid color even if the texture for the wallpaper is missing.  This will

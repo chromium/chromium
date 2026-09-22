@@ -581,7 +581,7 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
   layer->SetVisible(true);
   layer->SetOpacity(1.0);
   layer->SetMasksToBounds(false);
-  layer->SetName("PAINTED_SHAPE_COUNT:" + ToLayerName(painted_shape));
+  layer->SetName("SquareInkDropRipple:" + ToLayerName(painted_shape));
   callback_subscriptions_[painted_shape] =
       layer->GetAnimator()->AddSequenceScheduledCallback(base::BindRepeating(
           &SquareInkDropRipple::OnLayerAnimationSequenceScheduled,

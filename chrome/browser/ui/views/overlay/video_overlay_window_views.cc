@@ -1063,7 +1063,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   window_background_view->SetBackground(
       views::CreateLayerBasedSolidBackground(kColorPipWindowBackground));
   window_background_view->GetBackground()->SetInternalName(
-      "WindowBackgroundView");
+      "VideoOverlayWindowViews:WindowBackgroundView");
 
   auto video_view = std::make_unique<views::View>();
 
@@ -1289,35 +1289,39 @@ void VideoOverlayWindowViews::SetUpViews() {
   video_view->SetPaintToLayer(ui::LAYER_SURFACE);
   video_view->layer()->SetMasksToBounds(true);
   video_view->layer()->SetFillsBoundsOpaquely(false);
-  video_view->layer()->SetName("VideoView");
+  video_view->layer()->SetName("VideoOverlayWindowViews:VideoView");
 
   // views::View that holds the scrim, which appears with the controls. -------
   controls_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   controls_scrim_view->layer()->SetFillsBoundsOpaquely(false);
-  controls_scrim_view->layer()->SetName("ControlsScrimView");
+  controls_scrim_view->layer()->SetName(
+      "VideoOverlayWindowViews:ControlsScrimView");
 
   // views::View that is a parent of all the controls. Makes hiding and showing
   // all the controls at once easier.
   controls_container_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   controls_container_view->layer()->SetFillsBoundsOpaquely(false);
-  controls_container_view->layer()->SetName("ControlsContainerView");
+  controls_container_view->layer()->SetName(
+      "VideoOverlayWindowViews:ControlsContainerView");
 
   // The scrim for the top controls. ----------------------------------------
   controls_top_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   controls_top_scrim_view->layer()->SetFillsBoundsOpaquely(false);
-  controls_top_scrim_view->layer()->SetName("ControlsTopScrimView");
+  controls_top_scrim_view->layer()->SetName(
+      "VideoOverlayWindowViews:ControlsTopScrimView");
 
   // The scrim for the bottom controls. -------------------------------------
   controls_bottom_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   controls_bottom_scrim_view->layer()->SetFillsBoundsOpaquely(false);
-  controls_bottom_scrim_view->layer()->SetName("ControlsBottomScrimView");
+  controls_bottom_scrim_view->layer()->SetName(
+      "VideoOverlayWindowViews:ControlsBottomScrimView");
 
   // views::View that displays the window title. The window title consists of
   // the origin and favicon. Always displayed together with the controls top
   // scrim view.
   title_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   title_view->layer()->SetFillsBoundsOpaquely(false);
-  title_view->layer()->SetName("TitleView");
+  title_view->layer()->SetName("VideoOverlayWindowViews:TitleView");
 
   // Set up proper layer order. The scrims and title are on a separate layer
   // from the controls so we can animate their opacity individually (so that we
@@ -1408,7 +1412,7 @@ void VideoOverlayWindowViews::OnRootViewReady() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);
-  GetRootView()->layer()->SetName("RootView");
+  GetRootView()->layer()->SetName("VideoOverlayWindowViews:RootView");
   GetRootView()->layer()->SetMasksToBounds(true);
 
   views::View* const contents_view = GetContentsView();

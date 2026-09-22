@@ -29,7 +29,7 @@ class ASH_EXPORT WelcomeTourScrim : public ShellObserver {
  public:
   // Names for layers so they are easy to distinguish in debugging/testing.
   static constexpr char kLayerName[] = "WelcomeTourScrim";
-  static constexpr char kMaskLayerName[] = "WelcomeTourScrim::Mask";
+  static constexpr char kMaskLayerName[] = "WelcomeTourScrim:Mask";
 
   WelcomeTourScrim();
   WelcomeTourScrim(const WelcomeTourScrim&) = delete;

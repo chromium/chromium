@@ -251,7 +251,7 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
     // Enable background blur for ChromeOS system context menu.
     background_view_->SetPaintToLayer();
     auto* background_layer = background_view_->layer();
-    background_layer->SetName("MenuScrollViewContainer/background");
+    background_layer->SetName("MenuScrollViewContainer:Background");
     if (ShouldApplyBackgroundBlur()) {
       background_layer->SetFillsBoundsOpaquely(false);
       background_layer->SetBackgroundBlur(kBackgroundBlurSigma);

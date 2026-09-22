@@ -49,7 +49,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
       icon_background_->SetBackground(views::CreateLayerBasedSolidBackground(
           cros_tokens::kCrosSysSystemOnBaseOpaque));
       icon_background_->background()->SetInternalName(
-          "TopIconAnimationView/icon-background");
+          "TopIconAnimationView:IconBackground");
     } else {
       const int background_diameter =
           app_list_config->GetShortcutBackgroundContainerDimension();

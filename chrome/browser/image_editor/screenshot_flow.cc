@@ -112,7 +112,7 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   web_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
       web_contents_.get(), this);
   screen_capture_layer_ = std::make_unique<ui::LayerTextured>();
-  screen_capture_layer_->SetName("ScreenshotRegionSelectionLayer");
+  screen_capture_layer_->SetName("ScreenshotFlow:RegionSelection");
   screen_capture_layer_->SetFillsBoundsOpaquely(false);
   screen_capture_layer_->set_delegate(this);
 #if BUILDFLAG(IS_MAC)

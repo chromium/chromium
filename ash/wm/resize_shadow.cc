@@ -141,7 +141,7 @@ ResizeShadow::ResizeShadow(aura::Window* window,
   // Use a NinePatchLayer to tile the shadow image (which is simply a
   // roundrect).
   layer_ = std::make_unique<ui::LayerNinePatch>();
-  layer_->SetName("WindowResizeShadow");
+  layer_->SetName("ResizeShadow:WindowShadow");
   layer_->SetFillsBoundsOpaquely(false);
   layer_->SetOpacity(0.f);
   layer_->SetVisible(false);

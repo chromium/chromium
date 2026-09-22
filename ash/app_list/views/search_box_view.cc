@@ -446,7 +446,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
 class SearchBoxView::FocusRingLayer : public ui::LayerOwner, ui::LayerDelegate {
  public:
   FocusRingLayer() : LayerOwner(std::make_unique<ui::LayerTextured>()) {
-    layer()->SetName("search_box/FocusRing");
+    layer()->SetName("SearchBoxView:FocusRing");
     layer()->SetFillsBoundsOpaquely(false);
     layer()->set_delegate(this);
   }

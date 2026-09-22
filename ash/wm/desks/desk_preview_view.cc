@@ -412,7 +412,7 @@ DeskPreviewView::DeskPreviewView(
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ui::Layer* contents_view_layer = desk_mirrored_contents_view_->layer();
   contents_view_layer->SetMasksToBounds(true);
-  contents_view_layer->SetName("Desk mirrored contents view");
+  contents_view_layer->SetName("DeskPreviewView:DeskMirroredContents");
   contents_view_layer->SetRoundedCornerRadius(kCornerRadius);
   contents_view_layer->SetIsFastRoundedCorner(true);
   AddChildViewRaw(desk_mirrored_contents_view_.get());
@@ -421,7 +421,7 @@ DeskPreviewView::DeskPreviewView(
   highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   highlight_overlay_->SetVisible(false);
   ui::Layer* highlight_overlay_layer = highlight_overlay_->layer();
-  highlight_overlay_layer->SetName("DeskPreviewView highlight overlay");
+  highlight_overlay_layer->SetName("DeskPreviewView:HighlightOverlay");
   highlight_overlay_layer->SetRoundedCornerRadius(kCornerRadius);
   highlight_overlay_layer->SetIsFastRoundedCorner(true);
 
@@ -491,7 +491,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
 
   // Mirror the layer tree of the desk container.
   auto mirrored_content_root_layer = std::make_unique<ui::LayerNotDrawn>();
-  mirrored_content_root_layer->SetName("mirrored contents root layer");
+  mirrored_content_root_layer->SetName("DeskPreviewView:MirroredContentsRoot");
   base::flat_map<ui::Layer*, LayerData> layers_data;
   for (const auto& window : containers_to_mirror) {
     GetLayersData(window.get(), window_occlusion_calculator_.get(),

@@ -38,9 +38,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
  public:
   static constexpr char kClassName[] = "HoldingSpaceTrayIconPreview";
   static constexpr char kBackgroundLayerName[] =
-      "HoldingSpaceTrayIconPreview::Background";
-  static constexpr char kImageLayerName[] =
-      "HoldingSpaceTrayIconPreview::Image";
+      "HoldingSpaceTrayIconPreview:Background";
+  static constexpr char kImageLayerName[] = "HoldingSpaceTrayIconPreview:Image";
 
   HoldingSpaceTrayIconPreview(Shelf* shelf,
                               views::View* container,

@@ -74,7 +74,7 @@ constexpr float kFastSwipeVisibilityRatio = 0.1f;
 std::unique_ptr<ui::LayerTreeOwner> CreateAnimationLayerOwner(
     aura::Window* root) {
   auto animation_layer = std::make_unique<ui::LayerSolidColor>();
-  animation_layer->SetName("Desk switch animation layer");
+  animation_layer->SetName("RootWindowDeskSwitchAnimator:Animation");
   animation_layer->SetColor(SkColors::kBlack);
   return std::make_unique<ui::LayerTreeOwner>(std::move(animation_layer));
 }
@@ -101,7 +101,8 @@ void TakeScreenshot(
 }
 
 std::string GetScreenshotLayerName(int index) {
-  return "Desk " + base::NumberToString(index) + " screenshot layer";
+  return "RootWindowDeskSwitchAnimator:Desk" + base::NumberToString(index) +
+         "Screenshot";
 }
 
 // The values received from WmGestureHandler via DesksController are in touchpad

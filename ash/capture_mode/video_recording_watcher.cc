@@ -638,7 +638,7 @@ void VideoRecordingWatcher::SendThrottledWindowSizeChangedNowForTesting() {
 void VideoRecordingWatcher::SetLayer(std::unique_ptr<ui::Layer> layer) {
   if (layer) {
     layer->set_delegate(this);
-    layer->SetName("Recording Shield");
+    layer->SetName("VideoRecordingWatcher:RecordingShield");
   }
   LayerOwner::SetLayer(std::move(layer));
   UpdateShouldPaintLayer();

@@ -108,7 +108,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   void Initialize() {
     auto layer = std::make_unique<ui::LayerTextured>();
-    layer->SetName("shelf/Background");
+    layer->SetName("ShelfWidget:Background");
     layer->set_delegate(this);
     layer->SetFillsBoundsOpaquely(false);
     SetLayer(std::move(layer));

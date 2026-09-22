@@ -144,7 +144,7 @@ void WallpaperWidgetController::OnColorProviderChanged() {
 
 void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
   wallpaper_underlay_layer_ = std::make_unique<ui::LayerSolidColor>();
-  wallpaper_underlay_layer_->SetName("WallpaperUnderlayLayer");
+  wallpaper_underlay_layer_->SetName("WallpaperWidget:WallpaperUnderlay");
   auto* wallpaper_view_layer = wallpaper_view_->layer();
   auto* wallpaper_view_layer_parent = wallpaper_view_layer->parent();
   wallpaper_view_layer_parent->Add(wallpaper_underlay_layer_.get());
