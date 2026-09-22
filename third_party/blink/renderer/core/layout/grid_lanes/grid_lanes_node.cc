@@ -175,8 +175,8 @@ GridItems* GridLanesNode::ConstructGridItems(
   const bool is_for_columns = (grid_axis_direction == kForColumns);
   const auto& container_alignment =
       is_for_columns ? style.AlignItems() : style.JustifyItems();
-  if (container_alignment.GetPosition() != ItemPosition::kNormal &&
-      container_alignment.GetPosition() != ItemPosition::kLegacy) {
+  if (container_alignment.GetComputedPosition() != ItemPosition::kNormal &&
+      container_alignment.GetComputedPosition() != ItemPosition::kLegacy) {
     grid_lanes_items->SetHasStackingAxisAlignment();
   }
 
@@ -214,8 +214,8 @@ GridItems* GridLanesNode::ConstructGridItems(
         const auto& self_alignment = is_for_columns
                                          ? child.Style().AlignSelf()
                                          : child.Style().JustifySelf();
-        if (self_alignment.GetPosition() != ItemPosition::kAuto &&
-            self_alignment.GetPosition() != ItemPosition::kNormal) {
+        if (self_alignment.GetComputedPosition() != ItemPosition::kAuto &&
+            self_alignment.GetComputedPosition() != ItemPosition::kNormal) {
           grid_lanes_items->SetHasStackingAxisAlignment();
         }
       }

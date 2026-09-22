@@ -521,8 +521,8 @@ class ComputedStyle final : public ComputedStyleBase {
                StylePositionAnchor::Type::kAuto &&
            HasOutOfFlowPosition() &&
            (HasAnchorFunctions() ||
-            AlignSelf().GetPosition() == ItemPosition::kAnchorCenter ||
-            JustifySelf().GetPosition() == ItemPosition::kAnchorCenter);
+            AlignSelf().GetComputedPosition() == ItemPosition::kAnchorCenter ||
+            JustifySelf().GetComputedPosition() == ItemPosition::kAnchorCenter);
   }
 
   // For containing blocks, use |HasNonInitialBackdropFilter()| which includes

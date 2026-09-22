@@ -504,13 +504,13 @@ StyleSelfAlignmentData ResolvedSelfAlignment(
     const StyleSelfAlignmentData& value,
     const StyleSelfAlignmentData& normal_value_behavior,
     bool has_anchor_center_offset) {
-  if (value.GetPosition() == ItemPosition::kLegacy ||
-      value.GetPosition() == ItemPosition::kNormal ||
-      value.GetPosition() == ItemPosition::kAuto) {
+  if (value.GetComputedPosition() == ItemPosition::kLegacy ||
+      value.GetComputedPosition() == ItemPosition::kNormal ||
+      value.GetComputedPosition() == ItemPosition::kAuto) {
     return normal_value_behavior;
   }
   if (!has_anchor_center_offset &&
-      value.GetPosition() == ItemPosition::kAnchorCenter) {
+      value.GetComputedPosition() == ItemPosition::kAnchorCenter) {
     return {ItemPosition::kCenter, value.Overflow(), value.PositionType()};
   }
   return value;
@@ -521,7 +521,8 @@ StyleSelfAlignmentData ComputedStyle::ResolvedAlignSelf(
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
-  if (!parent_style || AlignSelf().GetPosition() != ItemPosition::kAuto) {
+  if (!parent_style ||
+      AlignSelf().GetComputedPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(AlignSelf(), normal_value_behavior,
                                  AnchorCenterOffset().has_value());
   }
@@ -537,7 +538,8 @@ StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
     const ComputedStyle* parent_style) const {
   // We will return the behaviour of 'normal' value if needed, which is specific
   // of each layout model.
-  if (!parent_style || JustifySelf().GetPosition() != ItemPosition::kAuto) {
+  if (!parent_style ||
+      JustifySelf().GetComputedPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(JustifySelf(), normal_value_behavior,
                                  AnchorCenterOffset().has_value());
   }

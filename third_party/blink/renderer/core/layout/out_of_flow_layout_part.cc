@@ -2397,10 +2397,12 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                ? AutoSizeBehavior::kStretchImplicit
                : AutoSizeBehavior::kFitContent;
   };
-  const AutoSizeBehavior inline_auto_size_behavior = auto_size_behavior(
-      alignment.inline_alignment.GetPosition(), imcb.has_auto_inline_inset);
-  const AutoSizeBehavior block_auto_size_behavior = auto_size_behavior(
-      alignment.block_alignment.GetPosition(), imcb.has_auto_block_inset);
+  const AutoSizeBehavior inline_auto_size_behavior =
+      auto_size_behavior(alignment.inline_alignment.GetComputedPosition(),
+                         imcb.has_auto_inline_inset);
+  const AutoSizeBehavior block_auto_size_behavior =
+      auto_size_behavior(alignment.block_alignment.GetComputedPosition(),
+                         imcb.has_auto_block_inset);
 
   std::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {

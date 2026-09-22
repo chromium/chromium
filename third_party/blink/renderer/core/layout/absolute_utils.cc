@@ -69,7 +69,7 @@ InsetBias GetAlignmentInsetBias(
         is_justify_axis ? bias.InlineStart() : bias.BlockStart();
   }
   if (alignment.Overflow() == OverflowAlignment::kDefault &&
-      alignment.GetPosition() != ItemPosition::kNormal) {
+      alignment.GetComputedPosition() != ItemPosition::kNormal) {
     *out_has_default_alignment_overflow = true;
   }
 
@@ -464,9 +464,9 @@ LogicalOofInsets ComputeOutOfFlowInsets(const ComputedStyle& style,
             position == ItemPosition::kAnchorCenter);
   };
   const bool force_inline_insets_to_zero =
-      force_insets_to_zero(alignment.inline_alignment.GetPosition());
+      force_insets_to_zero(alignment.inline_alignment.GetComputedPosition());
   const bool force_block_insets_to_zero =
-      force_insets_to_zero(alignment.block_alignment.GetPosition());
+      force_insets_to_zero(alignment.block_alignment.GetComputedPosition());
 
   auto resolve_inset =
       [](const Length& length, LayoutUnit available_size,
@@ -556,13 +556,14 @@ LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
   WritingModeConverter converter(style.GetWritingDirection(), available_size);
   const LogicalOffset offset =
       converter.ToLogical(*physical_offset, /*inner_size=*/PhysicalSize());
-  return {
-      alignment.inline_alignment.GetPosition() == ItemPosition::kAnchorCenter
-          ? std::make_optional(offset.inline_offset)
-          : std::nullopt,
-      alignment.block_alignment.GetPosition() == ItemPosition::kAnchorCenter
-          ? std::make_optional(offset.block_offset)
-          : std::nullopt};
+  return {alignment.inline_alignment.GetComputedPosition() ==
+                  ItemPosition::kAnchorCenter
+              ? std::make_optional(offset.inline_offset)
+              : std::nullopt,
+          alignment.block_alignment.GetComputedPosition() ==
+                  ItemPosition::kAnchorCenter
+              ? std::make_optional(offset.block_offset)
+              : std::nullopt};
 }
 
 InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(

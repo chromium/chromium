@@ -6298,7 +6298,7 @@ const CSSValue* JustifyItems::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForItemPositionWithOverflowAlignment(
-      style.JustifyItems().GetPosition() == ItemPosition::kAuto
+      style.JustifyItems().GetComputedPosition() == ItemPosition::kAuto
           ? ComputedStyleInitialValues::InitialDefaultAlignment()
           : style.JustifyItems());
 }

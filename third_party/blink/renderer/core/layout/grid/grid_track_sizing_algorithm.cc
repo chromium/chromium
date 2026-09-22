@@ -1070,7 +1070,7 @@ void GridTrackSizingAlgorithm::StretchAutoTracks(
   // (or default) content distribution in the respective axis.
   if (content_alignment.Distribution() != ContentDistributionType::kStretch &&
       (content_alignment.Distribution() != ContentDistributionType::kDefault ||
-       content_alignment.GetPosition() != ContentPosition::kNormal)) {
+       content_alignment.GetComputedPosition() != ContentPosition::kNormal)) {
     return;
   }
 

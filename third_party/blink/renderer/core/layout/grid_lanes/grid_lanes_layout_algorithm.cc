@@ -1182,7 +1182,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         is_for_columns ? item_style.ResolvedAlignSelf(normal_value, &style)
                        : item_style.ResolvedJustifySelf(normal_value, &style);
 
-    if (stacking_alignment.GetPosition() == ItemPosition::kStretch) {
+    if (stacking_alignment.GetComputedPosition() == ItemPosition::kStretch) {
       // TODO(celestepan): Whether or not the explicit size overrides stretch
       // alignment is still in discussion with the CSSWG:
       // https://github.com/w3c/csswg-drafts/issues/13950.

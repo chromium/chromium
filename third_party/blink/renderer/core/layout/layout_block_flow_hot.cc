@@ -39,7 +39,8 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   // https://drafts.csswg.org/css-align/#distribution-block
   // All values other than normal force the block container to establish an
   // independent formatting context.
-  if (StyleRef().AlignContent().GetPosition() != ContentPosition::kNormal ||
+  if (StyleRef().AlignContent().GetComputedPosition() !=
+          ContentPosition::kNormal ||
       StyleRef().AlignContent().Distribution() !=
           ContentDistributionType::kDefault) {
     return true;

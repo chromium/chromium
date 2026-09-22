@@ -925,29 +925,31 @@ CSSValue* ComputedStyleUtils::ValueForItemPositionWithOverflowAlignment(
     // Legacy is only for justify-items and may only be created with the
     // positions "left", "right", or "center". See
     // JustifyItems::ParseSingleValue.
-    DCHECK(data.GetPosition() == ItemPosition::kLeft ||
-           data.GetPosition() == ItemPosition::kRight ||
-           data.GetPosition() == ItemPosition::kCenter)
-        << "Unexpected position: " << static_cast<unsigned>(data.GetPosition());
+    DCHECK(data.GetComputedPosition() == ItemPosition::kLeft ||
+           data.GetComputedPosition() == ItemPosition::kRight ||
+           data.GetComputedPosition() == ItemPosition::kCenter)
+        << "Unexpected position: "
+        << static_cast<unsigned>(data.GetComputedPosition());
     DCHECK_EQ(data.Overflow(), OverflowAlignment::kDefault);
     return MakeGarbageCollected<CSSValuePair>(
         CSSIdentifierValue::Create(CSSValueID::kLegacy),
-        CSSIdentifierValue::Create(data.GetPosition()),
+        CSSIdentifierValue::Create(data.GetComputedPosition()),
         CSSValuePair::kDropIdenticalValues);
   }
 
-  if (data.GetPosition() == ItemPosition::kBaseline) {
+  if (data.GetComputedPosition() == ItemPosition::kBaseline) {
     return CSSIdentifierValue::Create(CSSValueID::kBaseline);
-  } else if (data.GetPosition() == ItemPosition::kLastBaseline) {
+  } else if (data.GetComputedPosition() == ItemPosition::kLastBaseline) {
     return MakeGarbageCollected<CSSValuePair>(
         CSSIdentifierValue::Create(CSSValueID::kLast),
         CSSIdentifierValue::Create(CSSValueID::kBaseline),
         CSSValuePair::kDropIdenticalValues);
   } else {
-    auto* position = data.GetPosition() == ItemPosition::kLegacy
-                         ? CSSIdentifierValue::Create(CSSValueID::kNormal)
-                         : CSSIdentifierValue::Create(data.GetPosition());
-    if (data.GetPosition() >= ItemPosition::kCenter &&
+    auto* position =
+        data.GetComputedPosition() == ItemPosition::kLegacy
+            ? CSSIdentifierValue::Create(CSSValueID::kNormal)
+            : CSSIdentifierValue::Create(data.GetComputedPosition());
+    if (data.GetComputedPosition() >= ItemPosition::kCenter &&
         data.Overflow() != OverflowAlignment::kDefault) {
       return MakeGarbageCollected<CSSValuePair>(
           CSSIdentifierValue::Create(data.Overflow()), position,
@@ -970,7 +972,7 @@ ComputedStyleUtils::ValueForContentPositionAndDistributionWithOverflowAlignment(
   }
 
   // Handle content-position values (either as fallback or actual value)
-  switch (data.GetPosition()) {
+  switch (data.GetComputedPosition()) {
     case ContentPosition::kNormal:
       // Handle 'normal' value, not valid as content-distribution fallback.
       if (data.Distribution() == ContentDistributionType::kDefault) {
@@ -982,12 +984,13 @@ ComputedStyleUtils::ValueForContentPositionAndDistributionWithOverflowAlignment(
       break;
     default:
       // Handle overflow-alignment (only allowed for content-position values)
-      if ((data.GetPosition() >= ContentPosition::kCenter ||
+      if ((data.GetComputedPosition() >= ContentPosition::kCenter ||
            data.Distribution() != ContentDistributionType::kDefault) &&
           data.Overflow() != OverflowAlignment::kDefault) {
         overflow = CSSIdentifierValue::Create(data.Overflow())->GetValueID();
       }
-      position = CSSIdentifierValue::Create(data.GetPosition())->GetValueID();
+      position =
+          CSSIdentifierValue::Create(data.GetComputedPosition())->GetValueID();
   }
 
   return MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(

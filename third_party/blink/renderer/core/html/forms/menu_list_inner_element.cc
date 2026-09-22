@@ -75,8 +75,10 @@ const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
   // when the content overflows, treat it the same as align-items: flex-start.
   // But we only do that for the cases where html.css would otherwise use
   // center.
-  if (parent_style.AlignItems().GetPosition() == ItemPosition::kCenter ||
-      parent_style.AlignItems().GetPosition() == ItemPosition::kAnchorCenter) {
+  if (parent_style.AlignItems().GetComputedPosition() ==
+          ItemPosition::kCenter ||
+      parent_style.AlignItems().GetComputedPosition() ==
+          ItemPosition::kAnchorCenter) {
     style_builder.SetMarginTop(Length());
     style_builder.SetMarginBottom(Length());
     style_builder.SetAlignSelf(StyleSelfAlignmentData(

@@ -1359,7 +1359,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // keyword (plus 'left', 'right' or 'center'), 'legacy' computes to
   // the the inherited value.  Otherwise, 'auto' computes to 'normal'.
   if (parent_style.JustifyItems().PositionType() == ItemPositionType::kLegacy &&
-      builder.JustifyItems().GetPosition() == ItemPosition::kLegacy) {
+      builder.JustifyItems().GetComputedPosition() == ItemPosition::kLegacy) {
     builder.SetJustifyItems(parent_style.JustifyItems());
   }
 

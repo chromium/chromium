@@ -3405,7 +3405,7 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
               .ResolvedJustifySelf(
                   {ItemPosition::kNormal, OverflowAlignment::kDefault},
                   &Style())
-              .GetPosition();
+              .GetComputedPosition();
 
       if (child.IsAnonymousBlockFlow()) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -3486,7 +3486,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         child_style
             .ResolvedJustifySelf(
                 {ItemPosition::kNormal, OverflowAlignment::kDefault}, &Style())
-            .GetPosition();
+            .GetComputedPosition();
 
     if (child.IsAnonymousBlockFlow()) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);

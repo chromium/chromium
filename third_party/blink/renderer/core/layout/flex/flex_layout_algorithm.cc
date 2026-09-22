@@ -458,7 +458,8 @@ enum AxisEdge { kStart, kCenter, kEnd };
 AxisEdge MainAxisStaticPositionEdge(
     const StyleContentAlignmentData& justify_content,
     bool is_reverse_direction) {
-  const ContentPosition content_position = justify_content.GetPosition();
+  const ContentPosition content_position =
+      justify_content.GetComputedPosition();
   DCHECK_NE(content_position, ContentPosition::kLeft);
   DCHECK_NE(content_position, ContentPosition::kRight);
   DCHECK_NE(content_position, ContentPosition::kFlexStart);
@@ -1783,7 +1784,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   const bool is_align_content_stretch =
       align_content.Distribution() == ContentDistributionType::kStretch ||
-      (align_content.GetPosition() == ContentPosition::kNormal &&
+      (align_content.GetComputedPosition() == ContentPosition::kNormal &&
        align_content.Distribution() == ContentDistributionType::kDefault);
   if (!is_multi_line_) {
     // A single line flexbox will always be the cross-axis content-size.
