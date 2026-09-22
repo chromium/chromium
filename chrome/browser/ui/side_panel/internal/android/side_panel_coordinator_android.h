@@ -196,11 +196,12 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
       SidePanelOpenTrigger open_trigger,
       std::unique_ptr<SidePanelNativeViewAndroid> native_view);
 
-  // Immediately ends all ongoing animations.
+  // Immediately completes any pending UI changes on the Java side, including
+  // ongoing open/close animations and pending content replacement.
   //
-  // This will also complete all state updates scheduled at the end of the
-  // animations and ensure the side panel is in a stable state.
-  void EndAnimations();
+  // This will also complete all state updates scheduled at the end of those UI
+  // changes and ensure the side panel is in a stable state.
+  void CompletePendingUiChanges();
 
   // Immediately completes any pending content replacement on the Java side.
   void CompletePendingContentReplacement();

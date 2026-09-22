@@ -3589,7 +3589,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    TestDeferredContentReplacement_RapidTabSwitchWithAutoOpenSidePanel) {
+    TestDeferredContentReplacement_RapidTabSwitchAutoOpensSidePanel) {
   // Arrange:
   coordinator_->PauseContentReplacementForTesting();
   AutoOpenSidePanelTabModelObserver observer(browser_, coordinator_);
@@ -3657,6 +3657,63 @@ IN_PROC_BROWSER_TEST_F(
 
   // Clean up.
   tab_model->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestDeferredContentReplacement_RapidTabSwitchClosesPanel) {
+  // Arrange: Set up 3 tabs:
+  // - Tab 0 (active): has an active tab-scoped entry (kAboutThisSite).
+  // - Tab 1: has an active tab-scoped entry (kTestTabScopedEntry).
+  // - Tab 2: has no side panel entry.
+  SetUpSidePanelEntriesForWindow(
+      browser_, /*window_scoped_entry_id=*/std::nullopt,
+      {SidePanelEntryId::kAboutThisSite, SidePanelEntryId::kTestTabScopedEntry,
+       std::nullopt},
+      /*active_tab_index=*/0);
+
+  auto* tab_0_entry =
+      SidePanelRegistry::From(tab_list_->GetTab(0))
+          ->GetEntryForKey(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
+  auto* tab_1_entry = SidePanelRegistry::From(tab_list_->GetTab(1))
+                          ->GetEntryForKey(SidePanelEntryKey(
+                              SidePanelEntryId::kTestTabScopedEntry));
+  TestSidePanelEntryObserver tab_0_entry_observer(tab_0_entry);
+  TestSidePanelEntryObserver tab_1_entry_observer(tab_1_entry);
+
+  // Act: Pause content replacement, then switch from Tab 0 to Tab 1.
+  // This starts replacing Tab 0's entry with Tab 1's entry.
+  coordinator_->PauseContentReplacementForTesting();
+  tab_list_->ActivateTab(tab_list_->GetTab(1)->GetHandle());
+
+  // Assert: Replacement is pending (Tab 0's entry received "will hide", but not
+  // "hidden" yet).
+  EXPECT_TRUE(coordinator_->HasPendingReplacedEntryForTesting());
+  EXPECT_EQ(1, tab_0_entry_observer.num_on_entry_will_hide_received_);
+  EXPECT_EQ(0, tab_0_entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, tab_1_entry_observer.num_on_entry_shown_received_);
+  EXPECT_EQ(0, tab_1_entry_observer.num_on_entry_will_hide_received_);
+  EXPECT_EQ(0, tab_1_entry_observer.num_on_entry_hidden_received_);
+
+  // Act: Switch from Tab 1 to Tab 2 (which has no side panel entry, closing the
+  // side panel) before the deferred content replacement finishes.
+  tab_list_->ActivateTab(tab_list_->GetTab(2)->GetHandle());
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  //
+  // Closing the side panel should immediately complete the pending content
+  // replacement (without calling ResumeContentReplacementForTesting), so both
+  // Tab 0's entry and Tab 1's entry have received "hidden".
+  EXPECT_FALSE(coordinator_->HasPendingReplacedEntryForTesting());
+  EXPECT_EQ(1, tab_0_entry_observer.num_on_entry_will_hide_received_);
+  EXPECT_EQ(1, tab_0_entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, tab_1_entry_observer.num_on_entry_shown_received_);
+  EXPECT_EQ(1, tab_1_entry_observer.num_on_entry_will_hide_received_);
+  EXPECT_EQ(1, tab_1_entry_observer.num_on_entry_hidden_received_);
+
+  // Clean up:
+  coordinator_->ResumeContentReplacementForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -233,10 +233,10 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
     return;
   }
 
-  // We are about to change `state_`, so end ongoing animations to reach a
-  // stable `state_` first. This includes notifying SidePanelEntries of the
-  // stable state.
-  EndAnimations();
+  // We are about to change `state_`, so complete any pending UI changes to
+  // reach a stable `state_` first. This includes notifying SidePanelEntries of
+  // the stable state.
+  CompletePendingUiChanges();
 
   StartClosingPanel(hide_reason, suppress_animations);
 }
@@ -678,10 +678,10 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
     return;
   }
 
-  // We are about to change `state_`, so end ongoing animations to reach a
-  // stable `state_` first. This includes notifying SidePanelEntries of the
-  // stable state.
-  EndAnimations();
+  // We are about to change `state_`, so complete any pending UI changes to
+  // reach a stable `state_` first. This includes notifying SidePanelEntries of
+  // the stable state.
+  CompletePendingUiChanges();
 
   if (!IsSidePanelShowing()) {
     StartOpeningPanel(entry, unique_key, suppress_animations,
@@ -805,14 +805,6 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
     std::unique_ptr<SidePanelNativeViewAndroid> native_view) {
   SPLOG("StartReplacingPanelContent.");
 
-  // If there is already a pending replacement waiting for Java to finish, we
-  // MUST synchronously complete it right now before we overwrite
-  // `pending_replaced_entry_` below. Otherwise, Java will synchronously
-  // complete it later during this function call, but it will incorrectly invoke
-  // OnEntryHidden() on the NEW pending_replaced_entry_ instead of the OLD one,
-  // permanently breaking state!
-  CompletePendingContentReplacement();
-
   // Always clear the current tab's active entry before replacing the current
   // entry.
   //
@@ -884,11 +876,13 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
   new_entry->CacheView(std::move(native_view));
 }
 
-void SidePanelCoordinatorAndroid::EndAnimations() {
+void SidePanelCoordinatorAndroid::CompletePendingUiChanges() {
   Java_SidePanelCoordinatorAndroidBridge_endAnimations(
       AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
   CHECK(state_ == SidePanelState::kClosed || state_ == SidePanelState::kShown)
       << "Side panel should be in a stable state after ending all animations.";
+
+  CompletePendingContentReplacement();
 }
 
 void SidePanelCoordinatorAndroid::CompletePendingContentReplacement() {
