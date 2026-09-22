@@ -187,7 +187,7 @@ class CORE_EXPORT MediaQueryExpValue {
 
   Type type_ = Type::kInvalid;
 
-  CSSValueID id_;
+  CSSValueID id_ = CSSValueID::kInvalid;
   Member<const CSSValue> value_;
   Member<const cssvalue::CSSRatioValue> ratio_;
 };
