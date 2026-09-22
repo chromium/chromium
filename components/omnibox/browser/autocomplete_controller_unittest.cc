@@ -1904,6 +1904,126 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NotifyingAndTimers) {
   }
 }
 
+TEST_F(AutocompleteControllerTest,
+       UpdateResult_ComposeboxSuppressesEmptySyncResult) {
+  auto create_composebox_input =
+      [](metrics::OmniboxEventProto::PageClassification classification) {
+        return AutocompleteInput(u"", classification, TestSchemeClassifier());
+      };
+
+  // Provider index 4 is TYPE_SEARCH, which runs for Composebox.
+  auto& search_provider = controller_.GetFakeProvider(4);
+
+  {
+    SCOPED_TRACE(
+        "NTP composebox: empty sync pass while not done should not notify; "
+        "async pass with matches should notify.");
+    controller_.internal_result_.Reset();
+    controller_.published_result_.Reset();
+    search_provider.done_ = false;
+    search_provider.matches_ = {};
+    controller_.Start(
+        create_composebox_input(metrics::OmniboxEventProto::NTP_COMPOSEBOX));
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 0);
+
+    search_provider.matches_ = {CreateSearchMatch("search", true, 900)};
+    search_provider.done_ = true;
+    controller_.OnProviderUpdate(true, &search_provider);
+    controller_.ExpectOnResultChanged(
+        0, AutocompleteController::UpdateType::kLastAsyncPass);
+    controller_.ExpectNoNotificationOrStop();
+  }
+  {
+    SCOPED_TRACE(
+        "Omnibox composebox: empty sync pass while not done should not notify; "
+        "final async pass with empty matches should notify.");
+    controller_.internal_result_.Reset();
+    controller_.published_result_.Reset();
+    search_provider.done_ = false;
+    search_provider.matches_ = {};
+    controller_.Start(create_composebox_input(
+        metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX));
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 0);
+
+    search_provider.done_ = true;
+    controller_.OnProviderUpdate(true, &search_provider);
+    controller_.ExpectOnResultChanged(
+        0, AutocompleteController::UpdateType::kLastAsyncPass);
+    controller_.ExpectNoNotificationOrStop();
+  }
+  {
+    SCOPED_TRACE(
+        "Composebox: empty sync pass while not done should notify if stop "
+        "timer triggers.");
+    controller_.internal_result_.Reset();
+    controller_.published_result_.Reset();
+    search_provider.done_ = false;
+    search_provider.matches_ = {};
+    controller_.Start(
+        create_composebox_input(metrics::OmniboxEventProto::NTP_COMPOSEBOX));
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 0);
+
+    task_environment_.FastForwardBy(base::Milliseconds(1500));
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 1);
+    EXPECT_EQ(
+        controller_.observer_->on_autocomplete_stop_timer_stopped_call_count,
+        1);
+    controller_.observer_->on_result_changed_call_count_ = 0;
+    controller_.observer_->on_autocomplete_stop_timer_stopped_call_count = 0;
+    controller_.ExpectNoNotificationOrStop();
+  }
+  {
+    SCOPED_TRACE("Composebox: non-empty sync pass should notify immediately.");
+    controller_.internal_result_.Reset();
+    controller_.published_result_.Reset();
+    search_provider.done_ = false;
+    search_provider.matches_ = {CreateSearchMatch("search", true, 900)};
+    controller_.Start(
+        create_composebox_input(metrics::OmniboxEventProto::NTP_COMPOSEBOX));
+    controller_.ExpectOnResultChanged(
+        0, AutocompleteController::UpdateType::kSyncPass);
+
+    search_provider.done_ = true;
+    controller_.OnProviderUpdate(true, &search_provider);
+    controller_.ExpectOnResultChanged(
+        0, AutocompleteController::UpdateType::kLastAsyncPass);
+    controller_.ExpectNoNotificationOrStop();
+  }
+  {
+    SCOPED_TRACE(
+        "Composebox: Stop(kClobbered) after suppressed empty sync pass should "
+        "clear published_result_ and notify observers.");
+    // Populate a SEARCH_WHAT_YOU_TYPED match on search_provider so it won't be
+    // transferred by TransferOldMatches when starting the next query.
+    AutocompleteMatch match = CreateSearchMatch("search", true, 900);
+    match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+    search_provider.done_ = true;
+    search_provider.matches_ = {match};
+    controller_.Start(
+        create_composebox_input(metrics::OmniboxEventProto::NTP_COMPOSEBOX));
+    controller_.ExpectOnResultChanged(
+        0, AutocompleteController::UpdateType::kSyncPassOnly);
+    EXPECT_FALSE(controller_.published_result_.empty());
+
+    // Start a new query where search_provider is empty and not done yet.
+    // Sync pass is empty and notification is suppressed, leaving
+    // internal_result_ empty while published_result_ still holds the previous
+    // query's match.
+    search_provider.matches_ = {};
+    search_provider.done_ = false;
+    controller_.Start(
+        create_composebox_input(metrics::OmniboxEventProto::NTP_COMPOSEBOX));
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 0);
+    EXPECT_TRUE(controller_.internal_result_.empty());
+    EXPECT_FALSE(controller_.published_result_.empty());
+
+    controller_.Stop(AutocompleteStopReason::kClobbered);
+    EXPECT_EQ(controller_.observer_->on_result_changed_call_count_, 1);
+    EXPECT_TRUE(controller_.published_result_.empty());
+    controller_.observer_->on_result_changed_call_count_ = 0;
+  }
+}
+
 TEST_F(AutocompleteControllerTest, ExplicitStop) {
   // Besides the `Stop()` fired by the timer, which is tested in
   // `UpdateResult_NotifyingAndTimers`, there's also user triggered `Stop()`s
