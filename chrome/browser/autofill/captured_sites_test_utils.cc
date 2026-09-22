@@ -1912,8 +1912,7 @@ bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
 
   // Most common scenario is validating that the password generation prompt is
   // being shown, so if unspecified default to true.
-  bool expect_to_be_shown = expect_to_be_shown =
-      action.FindBool("shouldBeShown").value_or(true);
+  bool expect_to_be_shown = action.FindBool("shouldBeShown").value_or(true);
 
   // First, execute a click to focus on the field in question.
   ExecuteClickAction(std::move(action));
