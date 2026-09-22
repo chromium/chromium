@@ -168,19 +168,25 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest, SimpleResults) {
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
-        "900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (99, 100)-(500, 33)\n"
-        "    id=-6 staticText name=Hello world child_ids=-7 (99, 100)-(500, "
-        "33) text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Hello world (99, 100)-(500, 28) "
-        "background_color=&FFFFFF00 color=&0 text_direction=ltr "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000007 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph child_ids=-1000000005 (99, 100)-(500, "
+        "33)\n"
+        "    id=-1000000005 staticText name=Hello world "
+        "child_ids=-1000000006 (99, 100)-(500, 33) text_direction=ltr "
+        "language=en\n"
+        "      id=-1000000006 inlineTextBox name=Hello world (99, 100)-(500, "
+        "28) background_color=&FFFFFF00 color=&0 text_direction=ltr "
         "word_starts=0,6 word_ends=5,10\n"
-        "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
-        "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000007 contentInfo child_ids=-1000000008 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000008 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -272,22 +278,28 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest, MultipleLanguages) {
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-9 (0, 0)-(800, "
-        "900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
-        "    id=-6 staticText name=Bonjour world child_ids=-7,-8 "
-        "(100, 100)-(500, 20) text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Bonjour  (100, 100)-(250, 20) "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000008 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph child_ids=-1000000005 (100, 100)-(500, "
+        "20)\n"
+        "    id=-1000000005 staticText name=Bonjour world "
+        "child_ids=-1000000006,-1000000007 (100, 100)-(500, 20) "
+        "text_direction=ltr language=en\n"
+        "      id=-1000000006 inlineTextBox name=Bonjour  (100, 100)-(250, 20) "
         "background_color=&FFFFFF00 color=&0 text_direction=ltr language=fr "
         "word_starts=0 word_ends=7\n"
-        "      id=-8 inlineTextBox name=world (350, 100)-(250, 20) "
+        "      id=-1000000007 inlineTextBox name=world (350, 100)-(250, 20) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
         "word_starts=0 word_ends=4\n"
-        "  id=-9 contentInfo child_ids=-10 (800, 900)-(1, 1)\n"
-        "    id=-10 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000008 contentInfo child_ids=-1000000009 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000009 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -406,19 +418,24 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
-        "900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(37, 20)\n"
-        "    id=-6 staticText name=روز خوش child_ids=-7 (100, 100)-(37, 20) "
-        "text_direction=rtl language=fa\n"
-        "      id=-7 inlineTextBox name=روز خوش (100, 100)-(37, 20) "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000007 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph child_ids=-1000000005 (100, 100)-(37, "
+        "20)\n"
+        "    id=-1000000005 staticText name=روز خوش child_ids=-1000000006 "
+        "(100, 100)-(37, 20) text_direction=rtl language=fa\n"
+        "      id=-1000000006 inlineTextBox name=روز خوش (100, 100)-(37, 20) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=rtl "
         "character_offsets=4,8,12,17,23,27,37 word_starts=0,4 word_ends=3,6\n"
-        "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
-        "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000007 contentInfo child_ids=-1000000008 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000008 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -496,19 +513,24 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
-        "900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (100, 100)-(41, 19)\n"
-        "    id=-6 staticText name=Day One child_ids=-7 (100, 100)-(41, 19) "
-        "text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Day One (100, 100)-(41, 19) "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000007 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph child_ids=-1000000005 (100, 100)-(41, "
+        "19)\n"
+        "    id=-1000000005 staticText name=Day One child_ids=-1000000006 "
+        "(100, 100)-(41, 19) text_direction=ltr language=en\n"
+        "      id=-1000000006 inlineTextBox name=Day One (100, 100)-(41, 19) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
         "character_offsets=4,10,19,22,26,32,41 word_starts=0,4 word_ends=3,6\n"
-        "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
-        "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000007 contentInfo child_ids=-1000000008 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000008 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
@@ -585,19 +607,23 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
-        "900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6 (59, 100)-(41, 19)\n"
-        "    id=-6 staticText name=Day One child_ids=-7 (59, 100)-(41, 19) "
-        "text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Day One (78, 100)-(22, 41) "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000007 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph child_ids=-1000000005 (59, 100)-(41, 19)\n"
+        "    id=-1000000005 staticText name=Day One child_ids=-1000000006 (59, "
+        "100)-(41, 19) text_direction=ltr language=en\n"
+        "      id=-1000000006 inlineTextBox name=Day One (78, 100)-(22, 41) "
         "background_color=&FFFFFF00 color=&FF000000 text_direction=ltr "
         "character_offsets=4,10,19,22,26,32,41 word_starts=0,4 word_ends=3,6\n"
-        "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
-        "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000007 contentInfo child_ids=-1000000008 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000008 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
@@ -670,46 +696,53 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest, Paragraphs) {
         VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "AXTreeUpdate: root id -2\n"
-        "id=-2 region class_name=ocred_page child_ids=-3,-5,-12,-17,-20 (0, "
-        "0)-(800, 900) is_page_breaking_object=true\n"
-        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
-        "  id=-5 paragraph child_ids=-6,-8,-10 (100, 100)-(100, 60)\n"
-        "    id=-6 staticText name=Jan child_ids=-7 (100, 100)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-7 inlineTextBox name=Jan (100, 100)-(100, 20) "
+        "AXTreeUpdate: root id -1000000001\n"
+        "id=-1000000001 region class_name=ocred_page "
+        "child_ids=-1000000002,-1000000004,-1000000011,-1000000016,-"
+        "1000000019 (0, 0)-(800, 900) is_page_breaking_object=true\n"
+        "  id=-1000000002 banner child_ids=-1000000003 (0, 0)-(1, 1)\n"
+        "    id=-1000000003 staticText name=Start of extracted text (0, 0)-(1, "
+        "1)\n"
+        "  id=-1000000004 paragraph "
+        "child_ids=-1000000005,-1000000007,-1000000009 (100, 100)-(100, 60)\n"
+        "    id=-1000000005 staticText name=Jan child_ids=-1000000006 (100, "
+        "100)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000006 inlineTextBox name=Jan (100, 100)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "    id=-8 staticText name=Feb child_ids=-9 (100, 120)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-9 inlineTextBox name=Feb (100, 120)-(100, 20) "
+        "    id=-1000000007 staticText name=Feb child_ids=-1000000008 (100, "
+        "120)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000008 inlineTextBox name=Feb (100, 120)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "    id=-10 staticText name=Mar child_ids=-11 (100, 140)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-11 inlineTextBox name=Mar (100, 140)-(100, 20) "
+        "    id=-1000000009 staticText name=Mar child_ids=-1000000010 (100, "
+        "140)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000010 inlineTextBox name=Mar (100, 140)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "  id=-12 paragraph child_ids=-13,-15 (100, 160)-(100, 40)\n"
-        "    id=-13 staticText name=Apr child_ids=-14 (100, 160)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-14 inlineTextBox name=Apr (100, 160)-(100, 20) "
+        "  id=-1000000011 paragraph child_ids=-1000000012,-1000000014 (100, "
+        "160)-(100, 40)\n"
+        "    id=-1000000012 staticText name=Apr child_ids=-1000000013 (100, "
+        "160)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000013 inlineTextBox name=Apr (100, 160)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "    id=-15 staticText name=May child_ids=-16 (100, 180)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-16 inlineTextBox name=May (100, 180)-(100, 20) "
+        "    id=-1000000014 staticText name=May child_ids=-1000000015 (100, "
+        "180)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000015 inlineTextBox name=May (100, 180)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "  id=-17 paragraph child_ids=-18 (100, 200)-(100, 20)\n"
-        "    id=-18 staticText name=Jun child_ids=-19 (100, 200)-(100, 20) "
-        "text_direction=ltr language=en\n"
-        "      id=-19 inlineTextBox name=Jun (100, 200)-(100, 20) "
+        "  id=-1000000016 paragraph child_ids=-1000000017 (100, 200)-(100, "
+        "20)\n"
+        "    id=-1000000017 staticText name=Jun child_ids=-1000000018 (100, "
+        "200)-(100, 20) text_direction=ltr language=en\n"
+        "      id=-1000000018 inlineTextBox name=Jun (100, 200)-(100, 20) "
         "background_color=&0 color=&0 text_direction=ltr word_starts=0 "
         "word_ends=2\n"
-        "  id=-20 contentInfo child_ids=-21 (800, 900)-(1, 1)\n"
-        "    id=-21 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+        "  id=-1000000019 contentInfo child_ids=-1000000020 (800, 900)-(1, "
+        "1)\n"
+        "    id=-1000000020 staticText name=End of extracted text (800, "
+        "900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

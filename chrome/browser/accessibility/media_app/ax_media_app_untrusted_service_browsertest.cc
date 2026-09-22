@@ -806,15 +806,15 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   }
 
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000002 staticText "
       "name=Testing (0, 10)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (0, 20)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
 
@@ -843,15 +843,15 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   }
 
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (-3, 0)-(3, 8) language=en-US\n",
       pages2.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000002 staticText "
       "name=Testing (-3, 10)-(8, 3) language=en-US\n",
       pages2.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (-3, 15)-(3, 8) language=en-US\n",
       pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
 }
@@ -976,19 +976,19 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   }
 
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000002 staticText "
       "name=Testing (0, 10)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (0, 20)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000004 staticText "
       "name=Testing (0, 30)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[3]->id)->ax_tree()->ToString());
 
@@ -1012,19 +1012,19 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[4]);
 
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000002 staticText "
       "name=Testing (0, 10)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-6 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000005 staticText "
       "name=Testing (0, 20)-(8, 3) language=en-US\n",
       pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000004 staticText "
       "name=Testing (0, 25)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[3]->id)->ax_tree()->ToString());
 }
@@ -1046,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   ASSERT_EQ(1u, pages.size());
   EXPECT_TRUE(pages.contains("PageA"));
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   ASSERT_EQ(1u, pages.size());
   EXPECT_TRUE(pages.contains("PageA"));
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(8, 3) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 
@@ -1086,11 +1086,11 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   EXPECT_TRUE(pages.contains("PageA"));
   EXPECT_TRUE(pages.contains("PageB"));
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (0, 0)-(8, 3) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000004 staticText "
       "name=Testing (0, 5)-(8, 3) language=en-US\n",
       pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
 }
@@ -1157,15 +1157,15 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   // We'll also use the locations of pages one and three as a proxy to determine
   // if their were in fact skipped.
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000002 staticText "
       "name=Testing (0, 10)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (0, 20)-(3, 8) language=en-US\n",
       pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
 }
@@ -1288,18 +1288,18 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   ASSERT_EQ(kTestNumPages + 1u, pending_serialized_updates.size());
   EXPECT_EQ(
       "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
-      "AXTreeUpdate: root id -2\n"
-      "id=-2 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000001\n"
+      "id=-1000000001 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
       pending_serialized_updates[0].ToString());
   EXPECT_EQ(
       "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
-      "AXTreeUpdate: root id -3\n"
-      "id=-3 staticText name=Testing (0, 10)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000002\n"
+      "id=-1000000002 staticText name=Testing (0, 10)-(3, 8) language=en-US\n",
       pending_serialized_updates[1].ToString());
   EXPECT_EQ(
       "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
-      "AXTreeUpdate: root id -4\n"
-      "id=-4 staticText name=Testing (0, 20)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000003\n"
+      "id=-1000000003 staticText name=Testing (0, 20)-(3, 8) language=en-US\n",
       pending_serialized_updates[2].ToString());
   // Note that the region nodes under the document root node have the (0,0)
   // offset. Each page will be correctly offset as the root node of its (child)
@@ -1342,16 +1342,16 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   // update for the document.
   ASSERT_EQ(kTestNumPages * 2u + 4u, pending_serialized_updates.size());
   EXPECT_EQ(
-      "AXTreeUpdate: root id -2\n"
-      "id=-2 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000001\n"
+      "id=-1000000001 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
       pending_serialized_updates[4].ToString());
   EXPECT_EQ(
-      "AXTreeUpdate: root id -3\n"
-      "id=-3 staticText name=Testing (0, 10)-(8, 3) language=en-US\n",
+      "AXTreeUpdate: root id -1000000002\n"
+      "id=-1000000002 staticText name=Testing (0, 10)-(8, 3) language=en-US\n",
       pending_serialized_updates[5].ToString());
   EXPECT_EQ(
-      "AXTreeUpdate: root id -4\n"
-      "id=-4 staticText name=Testing (0, 20)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000003\n"
+      "id=-1000000003 staticText name=Testing (0, 20)-(3, 8) language=en-US\n",
       pending_serialized_updates[6].ToString());
   EXPECT_EQ(
       "AXTreeUpdate: root id 1\n"
@@ -1372,9 +1372,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
       pending_serialized_updates[7].ToString());
   EXPECT_EQ(
       "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
-      "AXTreeUpdate: clear node -3\n"
-      "AXTreeUpdate: root id -5\n"
-      "id=-5 staticText name=Testing (0, 10)-(8, 3) language=en-US\n",
+      "AXTreeUpdate: clear node -1000000002\n"
+      "AXTreeUpdate: root id -1000000004\n"
+      "id=-1000000004 staticText name=Testing (0, 10)-(8, 3) language=en-US\n",
       pending_serialized_updates[8].ToString());
   EXPECT_EQ(
       "AXTreeUpdate: root id 1\n"
@@ -1889,12 +1889,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, SetSelection) {
       service_->GetPendingSerializedUpdatesForTesting();
   ASSERT_EQ(1u, pending_serialized_updates.size());
   EXPECT_EQ(
-      "AXTreeUpdate tree data: sel_is_backward=false sel_anchor_object_id=-2 "
+      "AXTreeUpdate tree data: sel_is_backward=false "
+      "sel_anchor_object_id=-1000000001 "
       "sel_anchor_offset=0 sel_anchor_affinity=downstream "
-      "sel_focus_object_id=-2 sel_focus_offset=7 "
+      "sel_focus_object_id=-1000000001 sel_focus_offset=7 "
       "sel_focus_affinity=downstream\n"
-      "AXTreeUpdate: root id -2\n"
-      "id=-2 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
+      "AXTreeUpdate: root id -1000000001\n"
+      "id=-1000000001 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
       pending_serialized_updates[0].ToString());
 
   // Make an invalid selection.
@@ -1921,7 +1922,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, HitTest) {
   service_->DisablePostamblePageForTesting();
   EnableSelectToSpeakForTesting();
   // The static text node on the second page.
-  constexpr ui::AXNodeID kHitNodeID = -3;
+  constexpr ui::AXNodeID kHitNodeID = ui::kFirstGeneratedRendererNodeID - 1;
   constexpr int kRequestID = 2;
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
@@ -2082,19 +2083,19 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, PageBatching) {
     ASSERT_NE(nullptr, page->ax_tree());
   }
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000001 staticText "
       "name=Testing (0, 0)-(3, 8) language=en-US\n",
       pages4.at(fake_metadata[0]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-6 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000005 staticText "
       "name=Testing (1, 2)-(3, 4) language=en-US\n",
       pages4.at(fake_metadata[1]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000003 staticText "
       "name=Testing (0, 20)-(3, 8) language=en-US\n",
       pages4.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree has_parent_tree title=Screen AI\nid=-5 staticText "
+      "AXTree has_parent_tree title=Screen AI\nid=-1000000004 staticText "
       "name=Testing (0, 30)-(3, 8) language=en-US\n",
       pages4.at(fake_metadata[3]->id)->ax_tree()->ToString());
 }
