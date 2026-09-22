@@ -11,9 +11,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -39,8 +37,8 @@ constexpr int kDefaultLineNumber3 = 200;
 class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
  public:
   void TearDown() override {
-    CloseAllTabs();
-    browsers_.clear();
+    logs_collector_.reset();
+    web_contents_list_.clear();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -48,6 +46,9 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
       KioskWebContentsObserver::LoggerCallback logger_callback) {
     logs_collector_ =
         std::make_unique<KioskBrowserLogsCollector>(std::move(logger_callback));
+    for (const auto& web_contents : web_contents_list_) {
+      tab_observer()->OnTabInserted(/*browser=*/nullptr, web_contents.get());
+    }
   }
 
   void AddMessageToConsole(
@@ -61,34 +62,25 @@ class KioskBrowserLogsCollectorTest : public BrowserWithTestWindowTest {
                                              source_id, untrusted_stack_trace);
   }
 
-  content::WebContentsTester* AddWebContentsToBrowser(
-      BrowserWindowInterface* browser) {
-    CHECK(browser);
-    std::unique_ptr<content::WebContents> web_contents(
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContentsTester* CreateWebContents() {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     auto* web_contents_tester =
         content::WebContentsTester::For(web_contents.get());
-    browser->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  true);
+    if (logs_collector_) {
+      tab_observer()->OnTabInserted(/*browser=*/nullptr, web_contents.get());
+    }
+    web_contents_list_.push_back(std::move(web_contents));
     return web_contents_tester;
   }
 
-  BrowserWindowInterface* CreateTestBrowser() {
-    browsers_.push_back(CreateBrowser(profile(),
-                                      BrowserWindowInterface::Type::TYPE_NORMAL,
-                                      /*hosted_app=*/false));
-    return browsers_.back().get();
-  }
-
-  void CloseAllTabs() {
-    for (auto& browser : browsers_) {
-      browser->tab_strip_model()->CloseAllTabs();
-    }
-  }
-
  private:
+  ash::BrowserController::TabObserver* tab_observer() {
+    return logs_collector_.get();
+  }
+
   ash::BrowserControllerImpl browser_controller_;
-  std::vector<std::unique_ptr<BrowserWindowInterface>> browsers_;
+  std::vector<std::unique_ptr<content::WebContents>> web_contents_list_;
   std::unique_ptr<KioskBrowserLogsCollector> logs_collector_;
 };
 
@@ -98,8 +90,7 @@ TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromMultipleBrowsers) {
       result_future;
   CreateLogsCollector(result_future.GetCallback());
 
-  BrowserWindowInterface* browser1 = CreateTestBrowser();
-  auto* web_contents1 = AddWebContentsToBrowser(browser1);
+  auto* web_contents1 = CreateWebContents();
   AddMessageToConsole(web_contents1, blink::mojom::ConsoleMessageLevel::kInfo,
                       kDefaultMessage, kDefaultLineNumber, kDefaultSource,
                       std::nullopt);
@@ -111,8 +102,7 @@ TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromMultipleBrowsers) {
   EXPECT_EQ(log.untrusted_stack_trace(), std::nullopt);
   EXPECT_EQ(log.severity(), blink::mojom::ConsoleMessageLevel::kInfo);
 
-  BrowserWindowInterface* browser2 = CreateTestBrowser();
-  auto* web_contents2 = AddWebContentsToBrowser(browser2);
+  auto* web_contents2 = CreateWebContents();
   AddMessageToConsole(web_contents2, blink::mojom::ConsoleMessageLevel::kError,
                       kDefaultMessage2, kDefaultLineNumber2, kDefaultSource2,
                       std::nullopt);
@@ -126,10 +116,8 @@ TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromMultipleBrowsers) {
 }
 
 TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromExistingBrowsers) {
-  BrowserWindowInterface* browser1 = CreateTestBrowser();
-  auto* web_contents1 = AddWebContentsToBrowser(browser1);
-  BrowserWindowInterface* browser2 = CreateTestBrowser();
-  auto* web_contents2 = AddWebContentsToBrowser(browser2);
+  auto* web_contents1 = CreateWebContents();
+  auto* web_contents2 = CreateWebContents();
 
   base::test::RepeatingTestFuture<
       const KioskAppLevelLogsSaver::KioskLogMessage&>
@@ -165,10 +153,9 @@ TEST_F(KioskBrowserLogsCollectorTest, ShouldObserveLogsFromMultipleTabs) {
       result_future;
   CreateLogsCollector(result_future.GetCallback());
 
-  BrowserWindowInterface* browser1 = CreateTestBrowser();
-  auto* tab1 = AddWebContentsToBrowser(browser1);
-  auto* tab2 = AddWebContentsToBrowser(browser1);
-  auto* tab3 = AddWebContentsToBrowser(browser1);
+  auto* tab1 = CreateWebContents();
+  auto* tab2 = CreateWebContents();
+  auto* tab3 = CreateWebContents();
 
   AddMessageToConsole(tab1, blink::mojom::ConsoleMessageLevel::kInfo,
                       kDefaultMessage, kDefaultLineNumber, kDefaultSource,
