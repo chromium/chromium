@@ -89,6 +89,7 @@ suite('OrganizerPanelAppTest', () => {
         assertEquals('1', listStyle.flexGrow);
         assertEquals('auto', listStyle.overflowY);
         assertEquals('hidden', listStyle.overflowX);
+        assertEquals('none', listStyle.overscrollBehavior);
         assertEquals('8px', listStyle.paddingLeft);
         assertEquals('8px', listStyle.paddingRight);
 
