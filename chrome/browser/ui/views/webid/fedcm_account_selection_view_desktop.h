@@ -128,8 +128,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            const IdentityRequestAccountPtr& account,
                            Account::SignInMode sign_in_mode,
                            blink::mojom::RpMode rp_mode) override;
-  bool ShowNativeAppUi(
-      const content::NativeAppRequestOptions& request_options) override;
 
   void SetCanShowUi(bool can_show_ui) override;
 

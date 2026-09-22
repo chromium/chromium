@@ -79,7 +79,8 @@ class MockIdentityRequestDialogController
               (override));
   MOCK_METHOD(bool,
               ShowNativeAppUi,
-              (const NativeAppRequestOptions&,
+              (const content::RelyingPartyData&,
+               const IdentityProviderData&,
                DismissCallback,
                NativeAppResultCallback),
               (override));

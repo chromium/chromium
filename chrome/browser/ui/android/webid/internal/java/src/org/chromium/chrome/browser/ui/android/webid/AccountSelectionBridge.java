@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.chrome.browser.ui.android.webid.data.NativeAppRequestOptions;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -210,11 +209,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private boolean showNativeAppUi(NativeAppRequestOptions requestOptions) {
-        return mAccountSelectionComponent.showNativeAppUi(requestOptions);
-    }
-
-    @CalledByNative
     private @JniType("std::string") String getTitle() {
         return mAccountSelectionComponent.getTitle();
     }
@@ -295,14 +289,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public void onNativeAppError(IdentityCredentialTokenError error) {
-        if (mNativeView != 0) {
-            AccountSelectionBridgeJni.get()
-                    .onNativeAppError(mNativeView, error.getCode(), error.getUrl());
-        }
-    }
-
-    @Override
     public void onNativeAppLoginFinished() {
         if (mNativeView != 0) {
             AccountSelectionBridgeJni.get().onNativeAppLoginFinished(mNativeView);
@@ -347,11 +333,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
         void onNativeAppResult(
                 long nativeAccountSelectionViewAndroid, @JniType("std::string") String token);
-
-        void onNativeAppError(
-                long nativeAccountSelectionViewAndroid,
-                @JniType("std::string") String code,
-                @JniType("GURL") GURL url);
 
         void onNativeAppLoginFinished(long nativeAccountSelectionViewAndroid);
     }
