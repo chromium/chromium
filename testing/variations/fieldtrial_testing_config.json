@@ -758,27 +758,6 @@
             ]
         }
     ],
-    "AndroidReaderModeImproveAppExperience": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledReadabilityDistillerWithNoTriggering",
-                    "params": {
-                        "min_content_length": "100",
-                        "show_cpa": "true",
-                        "use_distiller": "true",
-                        "use_heuristic": "false"
-                    },
-                    "enable_features": [
-                        "ReaderModeDistillInApp"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidResizeLargeNotificationBitmaps": [
         {
             "platforms": [

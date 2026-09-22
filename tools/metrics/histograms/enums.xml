@@ -7899,7 +7899,6 @@ from previous Chrome versions.
   <int value="-2117169027" label="UpdateHoverAtBeginFrame:enabled"/>
   <int value="-2117048251" label="MediaApp:enabled"/>
   <int value="-2116440101" label="EnablePenetratingImageSelection:enabled"/>
-  <int value="-2116226068" label="ReaderModeDistillInApp:disabled"/>
   <int value="-2116136566" label="glic-daisy-chain-new-tabs:disabled"/>
   <int value="-2116063296" label="DesktopPartialTranslate:disabled"/>
   <int value="-2115449643"
@@ -12585,7 +12584,6 @@ from previous Chrome versions.
   <int value="-703519655" label="SystemLiveCaption:enabled"/>
   <int value="-703236931" label="EnableUnexportableKeysSpareKeyPool:enabled"/>
   <int value="-703038214" label="ActorLiveNotification:enabled"/>
-  <int value="-702783087" label="ReaderModeDistillInApp:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-701652734" label="UnoPhase2FollowUp:enabled"/>
   <int value="-700762821" label="RequestDesktopSiteForTablets:disabled"/>
