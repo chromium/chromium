@@ -1399,6 +1399,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount"
+    units="counts" expires_after="2027-04-14">
+  <owner>holte@chromium.org</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the number of installed on-device model assets that are marked as
+    evictable (have not been required by any recently used use case within the
+    retention period). Recorded whenever asset registrations are updated.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.AtRegistration.DiskSpaceWhenNotEnoughAvailable"
     units="GB" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>

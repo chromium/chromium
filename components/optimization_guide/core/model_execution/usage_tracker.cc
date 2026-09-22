@@ -43,8 +43,6 @@ bool WasUsedWithin(std::optional<base::Time> last_use, base::TimeDelta period) {
 
 BASE_FEATURE(kOnDeviceModelUsageTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceModelEviction, base::FEATURE_DISABLED_BY_DEFAULT);
-
 const base::FeatureParam<base::TimeDelta> kRecentUsePeriod{
     &kOnDeviceModelUsageTracking, "recent_use_period", base::Days(30)};
 
@@ -96,8 +94,7 @@ UsageTracker::Priority UsageTracker::GetPriority(
     }
     return Priority::kBestEffort;
   }
-  if (!base::FeatureList::IsEnabled(kOnDeviceModelEviction) ||
-      WasUseCaseUsedWithin(use_case_name, kRetentionPeriod.Get())) {
+  if (WasUseCaseUsedWithin(use_case_name, kRetentionPeriod.Get())) {
     return Priority::kRetain;
   }
   return Priority::kEvictable;

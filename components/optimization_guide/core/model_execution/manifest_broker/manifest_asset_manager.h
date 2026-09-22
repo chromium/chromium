@@ -39,6 +39,10 @@ class PrefService;
 
 namespace optimization_guide {
 
+// Controls whether installed assets with `AssetPriority::kEvictable` are
+// uninstalled.
+BASE_DECLARE_FEATURE(kOnDeviceModelEviction);
+
 class UsageTracker;
 
 // Priorities for assets in the manifest.
@@ -161,12 +165,16 @@ class ManifestAssetManager : public UsageTracker::Observer {
                            const std::string& version,
                            bool is_already_installed);
 
-  // Uninstalls all models and clears active/background download requirements.
-  void UninstallModels();
-
   // Helper to resolve an asset name to its CRX ID.
   std::optional<std::string> GetCrxIdForAsset(
       const std::string& asset_name) const;
+
+  // Recomputes the priorities of assets required by use cases.
+  void RecomputeAssetPriorities();
+
+  // Forces eviction of evictable assets to be enabled regardless of the
+  // `kOnDeviceModelEviction` feature flag.
+  void EnableEviction();
 
  private:
   enum class ComponentState {
@@ -277,15 +285,18 @@ class ManifestAssetManager : public UsageTracker::Observer {
   void OnPriorityIncrease(const std::string& use_case_name,
                           UsageTracker::Priority previous_priority) override;
 
-  // Recomputes the priorities of assets required by use cases.
-  void RecomputeAssetPriorities();
-
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
 
   // Returns whether the asset should be installed.
   bool ShouldInstall(const ComponentContext& context,
                      const proto::OnDemandComponent* component) const;
+
+  bool IsEvictionEnabled() const;
+
+  void RecordEvictableAssetsCount() const;
+  void RecordUninstallReason(const ComponentContext& context,
+                             const proto::OnDemandComponent* component) const;
 
   // Updates each component to move towards it's intended state.
   // May defer actions due to pending operations, like disk space evaluation
@@ -340,6 +351,8 @@ class ManifestAssetManager : public UsageTracker::Observer {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   AssetPriorities asset_priorities_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool is_eviction_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};

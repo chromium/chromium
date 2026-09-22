@@ -54,7 +54,7 @@ class UsageTrackerTest : public testing::Test {
 };
 
 TEST_F(UsageTrackerTest, GetPriorityUserBlocking) {
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kRetain);
+  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
 
   usage_tracker().RaisePriority("test_use_case", Priority::kUserBlocking);
 
@@ -63,7 +63,7 @@ TEST_F(UsageTrackerTest, GetPriorityUserBlocking) {
 }
 
 TEST_F(UsageTrackerTest, GetPriorityBestEffort) {
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kRetain);
+  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
 
   usage_tracker().RaisePriority("test_use_case", Priority::kBestEffort);
 
@@ -108,9 +108,6 @@ TEST_F(UsageTrackerTest, PersistenceAcrossRestart) {
 }
 
 TEST_F(UsageTrackerTest, SetPriority) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
-
   usage_tracker().SetPriority("test_use_case", Priority::kUserBlocking);
   EXPECT_EQ(usage_tracker().GetPriority("test_use_case"),
             Priority::kUserBlocking);
@@ -129,7 +126,8 @@ TEST_F(UsageTrackerTest, ObserverNotified) {
   MockUsageTrackerObserver observer;
   usage_tracker().AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPriorityIncrease("test_use_case", Priority::kRetain))
+  EXPECT_CALL(observer,
+              OnPriorityIncrease("test_use_case", Priority::kEvictable))
       .Times(1);
   usage_tracker().RaisePriority("test_use_case", Priority::kBestEffort);
 
@@ -147,9 +145,6 @@ TEST_F(UsageTrackerTest, ObserverNotified) {
 }
 
 TEST_F(UsageTrackerTest, ClearAllUseCaseUsages) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
-
   usage_tracker().RaisePriority("use_case_1", Priority::kUserBlocking);
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
 
@@ -185,7 +180,7 @@ TEST_F(UsageTrackerTest, ScamDetectionObserverNotifiedWithBestEffort) {
   usage_tracker().AddObserver(&observer);
 
   EXPECT_CALL(observer,
-              OnPriorityIncrease(scam_detection_use_case, Priority::kRetain))
+              OnPriorityIncrease(scam_detection_use_case, Priority::kEvictable))
       .Times(1);
   usage_tracker().RaisePriority(scam_detection_use_case,
                                 Priority::kUserBlocking);
@@ -229,9 +224,6 @@ TEST_F(UsageTrackerTest, RetentionPeriodPriorityRetain) {
 }
 
 TEST_F(UsageTrackerTest, PrefPruningAfterRetentionPeriod) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
-
   usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
   task_environment().FastForwardBy(base::Days(31));
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
@@ -256,8 +248,7 @@ TEST_F(UsageTrackerTest, CustomFeatureParams) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{kOnDeviceModelUsageTracking,
-        {{"recent_use_period", "10d"}, {"retention_period", "20d"}}},
-       {kOnDeviceModelEviction, {}}},
+        {{"recent_use_period", "10d"}, {"retention_period", "20d"}}}},
       {});
 
   usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
@@ -273,24 +264,6 @@ TEST_F(UsageTrackerTest, CustomFeatureParams) {
   const auto& dict = local_state().GetDict(
       model_execution::prefs::localstate::kLastUsageByFeature);
   EXPECT_EQ(dict.Find("use_case_1"), nullptr);
-}
-
-TEST_F(UsageTrackerTest, EvictionFeatureFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
-
-  // When kOnDeviceModelEviction is enabled, unused use cases are kEvictable.
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
-
-  usage_tracker().RaisePriority("test_use_case", Priority::kBestEffort);
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"),
-            Priority::kBestEffort);
-
-  task_environment().FastForwardBy(base::Days(31));
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kRetain);
-
-  task_environment().FastForwardBy(base::Days(60));
-  EXPECT_EQ(usage_tracker().GetPriority("test_use_case"), Priority::kEvictable);
 }
 
 }  // namespace

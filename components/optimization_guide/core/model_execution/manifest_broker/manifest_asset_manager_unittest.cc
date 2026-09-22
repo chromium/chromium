@@ -56,7 +56,6 @@ struct DummyAsset {
   std::string asset_id;
   std::string public_key;
   std::string version = "1.0.0.0";
-  bool background_download = false;
 
   TestManifestAssetManagerComponentState::InstallTarget ToInstallTarget()
       const {
@@ -91,12 +90,6 @@ struct DummyAsset {
     copy.asset_id = std::move(new_asset_id);
     return copy;
   }
-
-  DummyAsset WithBackgroundDownload(bool bg) const {
-    DummyAsset copy = *this;
-    copy.background_download = bg;
-    return copy;
-  }
 };
 
 class DummyManifest {
@@ -128,16 +121,6 @@ class DummyManifest {
     }
 
     proto::Manifest manifest = builder.Build();
-    for (const auto& asset : assets_) {
-      if (asset.background_download) {
-        auto& category_config =
-            (*manifest.mutable_category_configs())["gpu_high_tier"];
-        auto& use_case_config =
-            (*category_config.mutable_use_cases())[asset.use_case];
-        use_case_config.set_background_download(true);
-      }
-    }
-
     auto component =
         std::make_unique<ManifestComponentDirectory>(std::move(manifest));
     component->Add("config.pb", proto::SolutionConfig());
@@ -942,15 +925,69 @@ TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledAfterRetentionPeriod) {
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   // Within the 90-day retention period, the asset should remain installed.
-  task_environment_.FastForwardBy(base::Days(31));
-  UpdateManifest(DummyManifest().Add(asset));
-  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Days(31));
+    UpdateManifest(DummyManifest().Add(asset));
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 0,
+        1);
+  }
 
-  // TODO(crbug.com/562713359): Expected behavior for 90 days will change to
-  // uninstall models after the retention period expires.
-  task_environment_.FastForwardBy(base::Days(60));
-  UpdateManifest(DummyManifest().Add(asset));
-  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+  // When kOnDeviceModelEviction is disabled (default), the asset remains
+  // installed even after the retention period expires, and is counted as
+  // evictable.
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Days(60));
+    UpdateManifest(DummyManifest().Add(asset));
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 1,
+        1);
+  }
+}
+
+TEST_F(ManifestAssetManagerTest,
+       UninstallsAfterRetentionPeriodWhenEvictionEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOnDeviceModelEviction);
+
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Within the 90-day retention period, the asset should remain installed.
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Days(31));
+    UpdateManifest(DummyManifest().Add(asset));
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 0,
+        1);
+  }
+
+  // After the 90-day retention period expires, the asset should be uninstalled.
+  {
+    base::HistogramTester histogram_tester;
+    task_environment_.FastForwardBy(base::Days(60));
+    UpdateManifest(DummyManifest().Add(asset));
+    EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+    histogram_tester.ExpectBucketCount(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 1,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+        Manifest::UninstallReason::kEvicted, 1);
+  }
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
@@ -964,28 +1001,6 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
   Startup();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
-}
-
-TEST_F(ManifestAssetManagerTest, BackgroundDownloadForManifestEnabledUseCase) {
-  base::test::ScopedPowerMonitorTestSource power_monitor_source;
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {features::kOptimizationGuideModelExecution,
-       features::kOnDeviceModelBackgroundDownload},
-      {});
-
-  component_state_.SetFreeDiskSpace(base::GiB(100));
-
-  DummyAsset compose_asset =
-      DummyAsset::For("compose").WithBackgroundDownload(true);
-  DummyAsset test_asset = DummyAsset::For("test").WithBackgroundDownload(false);
-
-  UpdateManifest(DummyManifest().Add(compose_asset).Add(test_asset));
-  Startup();
-
-  EXPECT_TRUE(
-      component_state_.WaitForRegistration(compose_asset.ToInstallTarget()));
-  EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallModels) {

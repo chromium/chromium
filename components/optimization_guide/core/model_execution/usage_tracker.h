@@ -25,11 +25,6 @@ namespace optimization_guide {
 
 BASE_DECLARE_FEATURE(kOnDeviceModelUsageTracking);
 
-// Controls whether use cases not used within `kRetentionPeriod` are marked
-// `Priority::kEvictable`, or if all use cases are `Priority::kRetain` at
-// minimum.
-BASE_DECLARE_FEATURE(kOnDeviceModelEviction);
-
 // The amount of grace period from the last time a use case was used to
 // consider it as recently used. Recent usage is one of the criteria for the
 // base and adaptation on-device models to be downloaded.
@@ -48,8 +43,7 @@ class UsageTracker {
     // Use case was used within `kRetentionPeriod`, but not within
     // `kRecentUsePeriod`. Cannot be passed to RaisePriority() or SetPriority();
     // use cases transition to this priority only when `kRecentUsePeriod`
-    // elapses since their last usage, or as the minimum priority when
-    // `kOnDeviceModelEviction` is disabled.
+    // elapses since their last usage.
     kRetain = 1,
     kBestEffort = 2,
     kUserBlocking = 3,

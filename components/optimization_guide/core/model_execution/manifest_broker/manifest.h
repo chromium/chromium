@@ -58,7 +58,8 @@ class Manifest final {
     kParseError = 4,
     kDisallowedByUser = 5,
     kObsolete = 6,
-    kMaxValue = kObsolete,
+    kEvicted = 7,
+    kMaxValue = kEvicted,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceModelUninstallReason)
 

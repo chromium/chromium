@@ -163,6 +163,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Parse error"/>
   <int value="5" label="Not allowed by user setting"/>
   <int value="6" label="The installed component is obsolete"/>
+  <int value="7" label="Evicted due to no recent usage"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest.h:UninstallReason) -->

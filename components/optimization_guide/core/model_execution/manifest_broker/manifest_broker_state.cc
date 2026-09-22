@@ -343,9 +343,10 @@ void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
 }
 
 void ManifestBrokerState::UninstallModels() {
+  usage_tracker_.ClearAllUseCaseUsages();
   if (asset_manager_) {
-    asset_manager_->UninstallModels();
-    OnManifestUpdated();
+    asset_manager_->EnableEviction();
+    asset_manager_->RecomputeAssetPriorities();
   }
 }
 
