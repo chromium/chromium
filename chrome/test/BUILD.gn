@@ -34,6 +34,7 @@ import("//content/browser/devtools/features.gni")
 import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//pdf/features.gni")
@@ -5685,6 +5686,10 @@ test("unit_tests") {
       "//ui/events/devices:test_support",
       "//ui/resources",
     ]
+
+    if (enable_media_remoting_redirection) {
+      deps += [ "//chrome/services/redirection:unit_tests" ]
+    }
 
     ldflags = [
       "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",

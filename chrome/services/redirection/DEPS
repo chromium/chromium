@@ -1,3 +1,6 @@
 include_rules = [
+  "+components/mirroring/service",
   "+media/mojo/mojom",
+  "+third_party/microsoft_multimedia_redirection",
+  "+third_party/openscreen/src/cast/streaming",
 ]

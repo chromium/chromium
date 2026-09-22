@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/mirroring/service/rpc_dispatcher.h"
+#include "components/mirroring/service/openscreen_rpc_dispatcher.h"
 
 #include <utility>
 #include <variant>
@@ -13,18 +13,18 @@
 
 namespace mirroring {
 
-RpcDispatcher::RpcDispatcher() = default;
+OpenscreenRpcDispatcher::OpenscreenRpcDispatcher() = default;
 
-RpcDispatcher::RpcDispatcher(
+OpenscreenRpcDispatcher::OpenscreenRpcDispatcher(
     openscreen::cast::SenderSessionMessenger& messenger)
     : messenger_(&messenger) {}
 
-RpcDispatcher::~RpcDispatcher() {
+OpenscreenRpcDispatcher::~OpenscreenRpcDispatcher() {
   Unsubscribe();
 }
 
-void RpcDispatcher::Subscribe(ResponseCallback callback,
-                              ErrorCallback error_callback) {
+void OpenscreenRpcDispatcher::Subscribe(ResponseCallback callback,
+                                        ErrorCallback error_callback) {
   callback_ = std::move(callback);
   error_callback_ = std::move(error_callback);
 
@@ -40,7 +40,7 @@ void RpcDispatcher::Subscribe(ResponseCallback callback,
   }
 }
 
-void RpcDispatcher::Unsubscribe() {
+void OpenscreenRpcDispatcher::Unsubscribe() {
   callback_.Reset();
   error_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
@@ -49,7 +49,8 @@ void RpcDispatcher::Unsubscribe() {
   }
 }
 
-bool RpcDispatcher::SendOutboundMessage(base::span<const uint8_t> message) {
+bool OpenscreenRpcDispatcher::SendOutboundMessage(
+    base::span<const uint8_t> message) {
   if (!messenger_) {
     return false;
   }
@@ -64,7 +65,7 @@ bool RpcDispatcher::SendOutboundMessage(base::span<const uint8_t> message) {
   return error.ok();
 }
 
-void RpcDispatcher::OnMessage(
+void OpenscreenRpcDispatcher::OnMessage(
     openscreen::ErrorOr<openscreen::cast::ReceiverMessage> message) {
   if (message.is_error()) {
     if (error_callback_) {

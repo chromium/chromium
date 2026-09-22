@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/mirroring/service/rpc_dispatcher.h"
+#include "components/mirroring/service/openscreen_rpc_dispatcher.h"
 
 #include <string>
 
@@ -20,7 +20,6 @@
 #include "third_party/openscreen/src/platform/base/error.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 namespace {
@@ -57,9 +56,9 @@ class MockMessagePort : public openscreen::cast::MessagePort {
 
 }  // namespace
 
-class RpcDispatcherTest : public ::testing::Test {
+class OpenscreenRpcDispatcherTest : public ::testing::Test {
  public:
-  RpcDispatcherTest()
+  OpenscreenRpcDispatcherTest()
       : task_environment_runner_(task_environment_.GetMainThreadTaskRunner()),
         messenger_(
             mock_message_port_,
@@ -69,7 +68,7 @@ class RpcDispatcherTest : public ::testing::Test {
             task_environment_runner_),
         dispatcher_(messenger_) {}
 
-  ~RpcDispatcherTest() override = default;
+  ~OpenscreenRpcDispatcherTest() override = default;
 
   MOCK_METHOD(void, OnMessengerError, (openscreen::Error), ());
   MOCK_METHOD(void, OnMessage, (const std::vector<uint8_t>&), ());
@@ -78,9 +77,7 @@ class RpcDispatcherTest : public ::testing::Test {
   openscreen::cast::SenderSessionMessenger& messenger() { return messenger_; }
 
  protected:
-  base::test::TaskEnvironment& task_environment() { return task_environment_; }
-
-  RpcDispatcher& dispatcher() { return dispatcher_; }
+  OpenscreenRpcDispatcher& dispatcher() { return dispatcher_; }
 
   MockMessagePort& message_port() { return mock_message_port_; }
 
@@ -89,10 +86,10 @@ class RpcDispatcherTest : public ::testing::Test {
   openscreen_platform::TaskRunner task_environment_runner_;
   testing::NiceMock<MockMessagePort> mock_message_port_;
   openscreen::cast::SenderSessionMessenger messenger_;
-  RpcDispatcher dispatcher_;
+  OpenscreenRpcDispatcher dispatcher_;
 };
 
-TEST_F(RpcDispatcherTest, ReceivesMessages) {
+TEST_F(OpenscreenRpcDispatcherTest, ReceivesMessages) {
   // Before we subscribe, messages should be ignored.
   EXPECT_CALL(*this, OnMessage(_)).Times(0);
   openscreen::cast::MessagePort::Client& client = messenger();
@@ -101,14 +98,15 @@ TEST_F(RpcDispatcherTest, ReceivesMessages) {
 
   EXPECT_CALL(*this, OnMessage(testing::ElementsAre(1, 2, 3, 4)));
   dispatcher().Subscribe(
-      base::BindRepeating(&RpcDispatcherTest::OnMessage,
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnMessage,
                           base::Unretained(this)),
-      base::BindRepeating(&RpcDispatcherTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnError,
+                          base::Unretained(this)));
   client.OnMessage(kReceiverId, openscreen::cast::kCastRemotingNamespace,
                    "{\"type\":\"RPC\",\"rpc\":\"AQIDBA==\"}");
 }
 
-TEST_F(RpcDispatcherTest, SendsMessages) {
+TEST_F(OpenscreenRpcDispatcherTest, SendsMessages) {
   static const std::vector<uint8_t> kMessage{1, 2, 3, 4};
 
   EXPECT_CALL(message_port(),
@@ -132,23 +130,26 @@ TEST_F(RpcDispatcherTest, SendsMessages) {
   EXPECT_EQ("AQIDBA==", *message_binary);
 }
 
-TEST_F(RpcDispatcherTest, DefaultConstructedDispatcherFailsGracefully) {
-  RpcDispatcher default_dispatcher;
+TEST_F(OpenscreenRpcDispatcherTest,
+       DefaultConstructedDispatcherFailsGracefully) {
+  OpenscreenRpcDispatcher default_dispatcher;
   static const std::vector<uint8_t> kMessage{1, 2, 3, 4};
   EXPECT_FALSE(default_dispatcher.SendOutboundMessage(kMessage));
 
   default_dispatcher.Subscribe(
-      base::BindRepeating(&RpcDispatcherTest::OnMessage,
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnMessage,
                           base::Unretained(this)),
-      base::BindRepeating(&RpcDispatcherTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnError,
+                          base::Unretained(this)));
   default_dispatcher.Unsubscribe();
 }
 
-TEST_F(RpcDispatcherTest, UnsubscribeStopsDeliveringMessages) {
+TEST_F(OpenscreenRpcDispatcherTest, UnsubscribeStopsDeliveringMessages) {
   dispatcher().Subscribe(
-      base::BindRepeating(&RpcDispatcherTest::OnMessage,
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnMessage,
                           base::Unretained(this)),
-      base::BindRepeating(&RpcDispatcherTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnError,
+                          base::Unretained(this)));
   dispatcher().Unsubscribe();
 
   EXPECT_CALL(*this, OnMessage(_)).Times(0);
@@ -159,28 +160,31 @@ TEST_F(RpcDispatcherTest, UnsubscribeStopsDeliveringMessages) {
                    "{\"type\":\"RPC\",\"rpc\":\"AQIDBA==\"}");
 }
 
-TEST_F(RpcDispatcherTest, CallbackCanUnsubscribeWithoutCrashing) {
+TEST_F(OpenscreenRpcDispatcherTest, CallbackCanUnsubscribeWithoutCrashing) {
   dispatcher().Subscribe(
       base::BindRepeating(
           [](RpcDispatcher* dispatcher, const std::vector<uint8_t>&) {
             dispatcher->Unsubscribe();
           },
           &dispatcher()),
-      base::BindRepeating(&RpcDispatcherTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnError,
+                          base::Unretained(this)));
 
   openscreen::cast::MessagePort::Client& client = messenger();
   client.OnMessage(kReceiverId, openscreen::cast::kCastRemotingNamespace,
                    "{\"type\":\"RPC\",\"rpc\":\"AQIDBA==\"}");
 }
 
-TEST_F(RpcDispatcherTest, DestructionSafelyUnregistersHandler) {
-  auto local_dispatcher = std::make_unique<RpcDispatcher>(messenger());
+TEST_F(OpenscreenRpcDispatcherTest, DestructionSafelyUnregistersHandler) {
+  auto local_dispatcher =
+      std::make_unique<OpenscreenRpcDispatcher>(messenger());
   EXPECT_CALL(*this, OnMessage(_)).Times(0);
   EXPECT_CALL(*this, OnError()).Times(0);
   local_dispatcher->Subscribe(
-      base::BindRepeating(&RpcDispatcherTest::OnMessage,
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnMessage,
                           base::Unretained(this)),
-      base::BindRepeating(&RpcDispatcherTest::OnError, base::Unretained(this)));
+      base::BindRepeating(&OpenscreenRpcDispatcherTest::OnError,
+                          base::Unretained(this)));
 
   local_dispatcher.reset();
 

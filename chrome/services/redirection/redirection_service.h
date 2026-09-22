@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_REDIRECTION_REDIRECTION_SERVICE_H_
 #define CHROME_SERVICES_REDIRECTION_REDIRECTION_SERVICE_H_
 
-#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/redirection/public/mojom/redirection_service.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -15,8 +14,7 @@
 
 namespace redirection {
 
-class COMPONENT_EXPORT(REDIRECTION_SERVICE) RedirectionService final
-    : public mojom::RedirectionService {
+class RedirectionService final : public mojom::RedirectionService {
  public:
   explicit RedirectionService(
       mojo::PendingReceiver<mojom::RedirectionService> receiver);

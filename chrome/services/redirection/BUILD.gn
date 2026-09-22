@@ -2,8 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("redirection_service") {
+import("//media/media_options.gni")
+
+# This service only exists to serve media remoting redirection.
+assert(enable_media_remoting_redirection)
+
+source_set("redirection_service") {
   sources = [
+    "redirection_rpc_dispatcher.cc",
+    "redirection_rpc_dispatcher.h",
     "redirection_service.cc",
     "redirection_service.h",
   ]
@@ -12,9 +19,30 @@ component("redirection_service") {
 
   deps = [
     "//chrome/services/redirection/public/mojom",
+    "//components/mirroring/service:mirroring_service",
     "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
+    "//third_party/microsoft_multimedia_redirection:mmr",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fake_mmr_objects.cc",
+    "fake_mmr_objects.h",
+    "redirection_rpc_dispatcher_unittest.cc",
   ]
 
-  defines = [ "IS_REDIRECTION_SERVICE_IMPL" ]
+  deps = [
+    ":redirection_service",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/microsoft_multimedia_redirection:mmr",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
 }
