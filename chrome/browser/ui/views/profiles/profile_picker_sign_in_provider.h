@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_
 
-#include <optional>
+#include <memory>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -80,9 +81,6 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   // Reloads the sign-in page if applicable.
   void ReloadSignInPage();
 
-  // Navigates back in the sign-in flow if applicable.
-  void NavigateBack();
-
   // Returns whether the flow is initialized (i.e. whether `profile_` has been
   // loaded).
   bool IsInitialized() const;
@@ -134,8 +132,6 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
                        content::WebContents* contents,
                        const SigninUIError& error);
 
-  void OnSignInContentsFreedUp();
-
   void ResetWebContentsDelegates();
 
   GURL BuildSigninURL() const;
@@ -181,11 +177,6 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   // The web contents backed by `profile_`. This is used for displaying the
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
-
-  // Because of ProfileOAuth2TokenService intricacies, the sign in should not
-  // finish before both the notification gets called.
-  // TODO(crbug.com/40791271): Remove this if the bug gets resolved.
-  bool refresh_token_updated_ = false;
 
   bool tab_helper_is_initialized_ = false;
 

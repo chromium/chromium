@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -38,12 +37,10 @@
 #include "components/sync/base/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -157,23 +154,6 @@ void ProfilePickerSignInProvider::ReloadSignInPage() {
     contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                        true);
   }
-}
-
-void ProfilePickerSignInProvider::NavigateBack() {
-  if (!IsInitialized() || !contents()) {
-    return;
-  }
-
-  if (contents()->GetController().CanGoBack()) {
-    contents()->GetController().GoBack();
-    return;
-  }
-
-  // Move from sign-in back to the previous screen of profile creation.
-  // Do not load any url because the desired screen is still loaded in the
-  // picker contents.
-  host_->ShowScreenInPickerContents(GURL(), base::OnceClosure());
-  host_->SetNativeToolbarSigninButtonsVisible(false);
 }
 
 bool ProfilePickerSignInProvider::HandleContextMenu(
