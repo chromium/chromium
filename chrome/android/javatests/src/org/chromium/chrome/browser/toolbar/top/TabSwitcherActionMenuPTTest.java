@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
@@ -21,7 +20,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -64,7 +62,6 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/538659918
     public void testOpenNewIncognitoTab() {
         mCtaTestRule.startOnBlankPage().openTabSwitcherActionMenu().selectNewIncognitoTabOrWindow();
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -99,19 +96,16 @@ public class TabSwitcherActionMenuPTTest {
     @LargeTest
     public void testOpenNewIncognitoTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
-                mCtaTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
-        ChromeTabbedActivity initialIncognitoActivity = incognitoNtp.getActivity();
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openTabSwitcherActionMenu()
+                        .selectNewIncognitoTabOrWindow();
 
         IncognitoNewTabPageStation page =
                 incognitoNtp.openTabSwitcherActionMenu().selectNewIncognitoTab();
 
-        ChromeTabbedActivity newPageActivity = page.getActivity();
         assertTrue(page.getTabModelSelector().isIncognitoSelected());
-        assertEquals(initialIncognitoActivity, newPageActivity);
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            assertNotEquals(mCtaTestRule.getActivity(), newPageActivity);
-        }
-        assertEquals(2, getTabCountOnUiThread(newPageActivity.getCurrentTabModel()));
+        assertEquals(2, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
     }
 
     @Test

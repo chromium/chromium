@@ -88,7 +88,7 @@ public class OverviewAppMenuTest {
     @Feature({"Browser", "Main"})
     public void testIncognitoAllMenuItems() {
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                mTabSwitcher.openNewIncognitoTabOrWindowFast().openIncognitoTabSwitcher();
+                mTabSwitcher.openAppMenu().openNewIncognitoTabOrWindow().openIncognitoTabSwitcher();
         TabSwitcherAppMenuFacility<IncognitoTabSwitcherStation> menu =
                 incognitoTabSwitcher.openAppMenu();
 
