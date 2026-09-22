@@ -60,8 +60,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace autofill {
 
@@ -414,13 +416,11 @@ void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
-  if (web_contents_) {
-    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-            ManualFillingController::GetOrCreate(web_contents_.get())) {
-      manual_filling_controller->UpdateSourceAvailability(
-          FillingSource::AUTOFILL,
-          /*has_suggestions=*/false);
-    }
+  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+          GetManualFillingController()) {
+    manual_filling_controller->UpdateSourceAvailability(
+        FillingSource::AUTOFILL,
+        /*has_suggestions=*/false);
   }
 
   // TODO(crbug.com/40230669, crbug.com/40207703): Move this into the
@@ -512,7 +512,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
   // Assume that suggestions are (still) available. If this is wrong, the method
   // `HideViewAndDie` will be called soon after and will hide all suggestions.
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-          ManualFillingController::GetOrCreate(web_contents_.get())) {
+          GetManualFillingController()) {
     manual_filling_controller->UpdateSourceAvailability(
         FillingSource::AUTOFILL,
         /*has_suggestions=*/true);
@@ -563,7 +563,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
   SetSelectedSuggestionIndex(std::nullopt);
 
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-          ManualFillingController::GetOrCreate(web_contents_.get())) {
+          GetManualFillingController()) {
     bool is_loading = false;
     if (const auto* ai_payload =
             std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
@@ -797,7 +797,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
       view_->Show();
     }
     if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-            ManualFillingController::GetOrCreate(web_contents_.get())) {
+            GetManualFillingController()) {
       manual_filling_controller->UpdateSourceAvailability(
           FillingSource::AUTOFILL, !suggestions_.empty());
     }
@@ -1061,16 +1061,31 @@ void AutofillKeyboardAccessoryControllerImpl::UnselectSuggestionIfSelected(
 
 void AutofillKeyboardAccessoryControllerImpl::SetSelectedSuggestionIndex(
     std::optional<int> index) {
+  is_suggestion_navigation_active_ = index.has_value();
   if (selected_suggestion_index_ == index) {
     return;
   }
   selected_suggestion_index_ = index;
-  if (web_contents_) {
-    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-            ManualFillingController::GetOrCreate(web_contents_.get())) {
-      manual_filling_controller->SetSelectedSuggestion(index);
-    }
+  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+          GetManualFillingController()) {
+    manual_filling_controller->SetSelectedSuggestion(index);
   }
+}
+
+base::WeakPtr<ManualFillingController>
+AutofillKeyboardAccessoryControllerImpl::GetManualFillingController() {
+  if (!web_contents_) {
+    return nullptr;
+  }
+  return ManualFillingController::GetOrCreate(web_contents_.get());
+}
+
+bool AutofillKeyboardAccessoryControllerImpl::TryNavigateSuggestions(
+    NavigationDirection direction) {
+  base::WeakPtr<ManualFillingController> manual_filling_controller =
+      GetManualFillingController();
+  return manual_filling_controller &&
+         manual_filling_controller->NavigateSuggestions(direction);
 }
 
 void AutofillKeyboardAccessoryControllerImpl::
@@ -1091,7 +1106,91 @@ void AutofillKeyboardAccessoryControllerImpl::
 
 bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
-  return false;
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAndroidKeyboardAccessoryHoverPreview)) {
+    return false;
+  }
+
+  const std::optional<int> selected_index =
+      selected_suggestion_index_.has_value() &&
+              base::checked_cast<size_t>(*selected_suggestion_index_) <
+                  suggestions_.size()
+          ? selected_suggestion_index_
+          : std::nullopt;
+
+  switch (event.windows_key_code) {
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN: {
+      // Arrow Up/Down toggles the suggestion navigation mode. This way arrow
+      // Left/Right keep their default behavior (moving the text caret between
+      // the characters of the typed text) until the user explicitly asks to
+      // navigate the suggestions.
+      if (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers) {
+        return false;
+      }
+      if (suggestions_.empty()) {
+        return false;
+      }
+      if (is_suggestion_navigation_active_) {
+        // Leave the navigation mode and restore the caret movement behavior.
+        UnselectSuggestion();
+        return true;
+      }
+      // Enter the navigation mode and select the first suggestion. If the
+      // accessory bar has nothing to navigate, the mode is not entered and the
+      // event is propagated so that it keeps its default behavior.
+      is_suggestion_navigation_active_ =
+          TryNavigateSuggestions(NavigationDirection::kForward);
+      return is_suggestion_navigation_active_;
+    }
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT: {
+      // Outside of the navigation mode, arrow Left/Right must move the text
+      // caret instead of the suggestion selection.
+      if (!is_suggestion_navigation_active_) {
+        return false;
+      }
+      return TryNavigateSuggestions(event.windows_key_code == ui::VKEY_RIGHT
+                                        ? NavigationDirection::kForward
+                                        : NavigationDirection::kBackward);
+    }
+    case ui::VKEY_TAB: {
+      // We want TAB or Shift+TAB press to cause the selected suggestion to be
+      // accepted, but still return false so the tab key press propagates and
+      // changes the cursor location.
+      // We do not want to handle Mod+TAB for other modifiers because this may
+      // have other purposes (e.g., change the tab).
+      const bool has_non_shift_modifier =
+          (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers &
+           ~blink::WebInputEvent::kShiftKey);
+      if (!has_non_shift_modifier && selected_index) {
+        AcceptSuggestion(*selected_index,
+                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
+      }
+      return false;
+    }
+    case ui::VKEY_RETURN: {
+      const bool has_modifier =
+          event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      if (!has_modifier && selected_index) {
+        AcceptSuggestion(*selected_index,
+                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
+        return true;
+      }
+      return false;
+    }
+    case ui::VKEY_ESCAPE: {
+      base::WeakPtr<ManualFillingController> manual_filling_controller =
+          GetManualFillingController();
+      Hide(SuggestionHidingReason::kUserAborted);
+      if (manual_filling_controller) {
+        manual_filling_controller->Hide();
+      }
+      return true;
+    }
+    default:
+      return false;
+  }
 }
 
 }  // namespace autofill

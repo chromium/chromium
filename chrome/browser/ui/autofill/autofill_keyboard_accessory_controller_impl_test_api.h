@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
+#include "components/input/native_web_keyboard_event.h"
 
 namespace autofill {
 
@@ -37,6 +38,14 @@ class AutofillKeyboardAccessoryControllerImplTestApi {
 
   AutofillKeyboardAccessoryView* view() const {
     return controller_->view_.get();
+  }
+
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) {
+    return controller_->HandleKeyPressEvent(event);
+  }
+
+  std::optional<int> selected_suggestion_index() const {
+    return controller_->selected_suggestion_index_;
   }
 
  private:

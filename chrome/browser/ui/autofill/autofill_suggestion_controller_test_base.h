@@ -121,12 +121,14 @@ class AutofillSuggestionControllerTestBase
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
 
 #if BUILDFLAG(IS_ANDROID)
+    auto mock_view =
+        std::make_unique<::testing::NiceMock<MockManualFillingView>>();
+    raw_mock_manual_filling_view_ = mock_view.get();
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
         mock_payment_method_controller_.AsWeakPtr(),
-        mock_at_memory_controller_.AsWeakPtr(),
-        std::make_unique<::testing::NiceMock<MockManualFillingView>>());
+        mock_at_memory_controller_.AsWeakPtr(), std::move(mock_view));
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -195,10 +197,11 @@ class AutofillSuggestionControllerTestBase
         /*search_bar_initial_value=*/{});
   }
 
-  input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
+  input::NativeWebKeyboardEvent CreateKeyPressEvent(
+      int windows_key_code,
+      int modifiers = blink::WebInputEvent::kNoModifiers) {
     input::NativeWebKeyboardEvent event(
-        blink::WebInputEvent::Type::kRawKeyDown,
-        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::Type::kRawKeyDown, modifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.windows_key_code = windows_key_code;
     return event;
@@ -238,6 +241,12 @@ class AutofillSuggestionControllerTestBase
     return simulator->GetFinalRenderFrameHost();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  MockManualFillingView* manual_filling_view() {
+    return raw_mock_manual_filling_view_;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 
@@ -252,6 +261,7 @@ class AutofillSuggestionControllerTestBase
       mock_payment_method_controller_;
   ::testing::NiceMock<MockAtMemoryAccessoryController>
       mock_at_memory_controller_;
+  raw_ptr<MockManualFillingView> raw_mock_manual_filling_view_ = nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

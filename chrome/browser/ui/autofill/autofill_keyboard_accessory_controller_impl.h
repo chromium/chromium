@@ -30,12 +30,14 @@ namespace input {
 struct NativeWebKeyboardEvent;
 }  // namespace input
 
+class ManualFillingController;
 class Profile;
 
 namespace autofill {
 
 class AutofillSuggestionDelegate;
 class AutofillKeyboardAccessoryView;
+enum class NavigationDirection;
 struct Suggestion;
 
 // Helper to record interaction milestones (shown, selected, accepted)
@@ -151,12 +153,22 @@ class AutofillKeyboardAccessoryControllerImpl
   // `ManualFillingController`.
   void SetSelectedSuggestionIndex(std::optional<int> index);
 
+  // Returns the `ManualFillingController` for `web_contents_`, creating it on
+  // first use. Returns null if the WebContents is gone.
+  base::WeakPtr<ManualFillingController> GetManualFillingController();
+
+  // Asks the keyboard accessory bar to move the selection one suggestion in
+  // `direction`, cycling at the ends of the list. Returns whether a suggestion
+  // was actually selected. This is false if the bar cannot navigate at all,
+  // i.e. if the accessory UI is unavailable or if the bar currently shows no
+  // enabled Autofill suggestions. Callers use this to decide whether to consume
+  // the key event or let it fall through to the renderer.
+  bool TryNavigateSuggestions(NavigationDirection direction);
+
   // Handles a key press `event` of the frame the suggestions belong to. It is
   // called for as long as `key_press_registration_` is registered. Returns true
   // if the event was consumed by the keyboard accessory and should not be
   // forwarded to the renderer.
-  // TODO(crbug.com/542535472): Handle arrow keys to preview suggestions. Until
-  // then, this is a no-op that never consumes an event.
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   // Keeps `HandleKeyPressEvent()` registered with the frame the suggestions
@@ -167,6 +179,14 @@ class AutofillKeyboardAccessoryControllerImpl
   // deduplicate redundant or stale select/unselect events from the Java
   // bridge and mirror the selection state to the `ManualFillingController.
   std::optional<int> selected_suggestion_index_;
+
+  // Whether the user is in the "suggestion navigation mode", i.e. whether
+  // arrow Left/Right keys move the selection between the keyboard accessory
+  // suggestions instead of moving the text caret inside the focused field.
+  // The mode is toggled by pressing arrow Up/Down or by selecting a
+  // suggestion (e.g. by hovering it with the mouse) and reset whenever the
+  // selection is cleared or the shown suggestions change.
+  bool is_suggestion_navigation_active_ = false;
 
   // Uniquely identifies the UI the controller is showing.
   UiSessionId ui_session_id_;
