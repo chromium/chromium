@@ -1842,19 +1842,6 @@
       },
     },
 
-    'gpu_webrtc_telemetry_test': {
-      'webrtc_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'gpu_integration_test_common_args',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'webrtc',
-      },
-    },
-
     'legacy_context_lost_passthrough_graphite_tests': {
       'context_lost_passthrough_graphite_tests': {
         'test_common': {
@@ -2133,6 +2120,19 @@
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
+      },
+    },
+
+    'legacy_webrtc_tests': {
+      'webrtc_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
+          ],
+          'module_scheme': 'flat',
+        },
+        'telemetry_test_name': 'webrtc',
       },
     },
 
@@ -2701,7 +2701,6 @@
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-      'gpu_webrtc_telemetry_test',
       'legacy_context_lost_passthrough_graphite_tests',
       'legacy_expected_color_pixel_passthrough_graphite_test',
       'legacy_info_collection_tests',
@@ -2709,6 +2708,7 @@
       'legacy_screenshot_sync_passthrough_graphite_tests',
       'legacy_trace_test',
       'legacy_webcodecs_tests',
+      'legacy_webrtc_tests',
     ],
 
     'legacy_gpu_all_linux_release_telemetry_tests': [

@@ -4371,11 +4371,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
-        "gpu_webrtc_telemetry_test",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_test",
         "gpu_process_launch_tests",
@@ -4387,6 +4382,7 @@ targets.bundle(
         "webcodecs_tests",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl_conformance_gles_passthrough_tests",
+        "webrtc_tests",
     ],
 )
 
@@ -4561,7 +4557,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_win_release_telemetry_tests",
     targets = [
-        "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
 
@@ -4573,6 +4568,7 @@ targets.bundle(
         "pixel_skia_gold_passthrough_graphite_test",
         "screenshot_sync_passthrough_graphite_tests",
         "webcodecs_tests",
+        "webrtc_tests",
     ],
 )
 

@@ -91,7 +91,6 @@ targets.legacy_compound_suite(
     name = "gpu_v8_win_release_telemetry_tests",
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
-        "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
@@ -106,6 +105,7 @@ targets.legacy_compound_suite(
         "legacy_screenshot_sync_passthrough_graphite_tests",
         "legacy_trace_test",
         "legacy_webcodecs_tests",
+        "legacy_webrtc_tests",
     ],
 )
 
