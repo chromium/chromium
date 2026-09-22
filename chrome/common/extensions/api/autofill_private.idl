@@ -440,6 +440,8 @@ namespace autofillPrivate {
     boolean? storedInWallet;
     // Whether the entity is read only.
     boolean? isReadOnly;
+    // The context token for upserting a pass to Google Wallet.
+    DOMString? contextToken;
   };
 
   // Contains the minimum amount of information needed to display an entity
@@ -484,6 +486,25 @@ namespace autofillPrivate {
     DOMString? imageSrcDark;
   };
 
+  // A link inside a legal message line.
+  dictionary LegalMessageLink {
+    long start;
+    long end;
+    DOMString url;
+  };
+
+  // A line of legal message text with embedded links.
+  dictionary LegalMessageLine {
+    DOMString text;
+    LegalMessageLink[] links;
+  };
+
+  // Details returned by GetDetailsForUpsertPass RPC for public pass disclosure.
+  dictionary UpsertPassDetails {
+    LegalMessageLine[] legalMessageLines;
+    DOMString contextToken;
+  };
+
   callback VoidCallback = void();
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
@@ -505,6 +526,7 @@ namespace autofillPrivate {
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
   callback AuthenticateUserBeforeViewingEntityDataCallback = void(boolean success);
   callback UserDataProcessingConsentCallback = void(UserDataProcessingConsentStates states);
+  callback GetDetailsForUpsertPassCallback = void(optional UpsertPassDetails details);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -683,6 +705,11 @@ namespace autofillPrivate {
     // Gets the user data processing consent states for the current user.
     static void fetchUserDataProcessingConsent(
       UserDataProcessingConsentCallback callback);
+
+    // Fetches legal disclosure lines and context token for upserting a
+    // public pass.
+    static void getDetailsForUpsertPass(
+      GetDetailsForUpsertPassCallback callback);
   };
 
   interface Events {

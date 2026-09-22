@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -1159,6 +1160,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   }
 
   const bool is_new_entity = private_api_entity_instance.guid.empty();
+
   if (is_new_entity) {
     autofill::LogEntityAddedFromSettings(entity_instance->type(),
                                          entity_instance->record_type());
@@ -1187,7 +1189,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   // Handles the following scenarios:
   // 1. Save/Update entity locally.
   // 2. Save entity to Wallet via Chrome sync.
-  edm->AddOrUpdateEntityInstance(entity_instance.value());
+  edm->AddOrUpdateEntityInstance(
+      std::move(entity_instance.value()),
+      std::move(parameters->entity_instance.context_token));
   if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
       !is_eligible_for_wallet_storage && autofill_client()) {
     autofill_client()->ShowAutofillAiLocalSaveNotification();
@@ -1391,6 +1395,69 @@ void AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted(
     return;
   }
   Respond(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetDetailsForUpsertPassFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetDetailsForUpsertPassFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletDisclosureNoticePublicPass)) {
+    return RespondNow(NoArguments());
+  }
+
+  autofill::WalletPassAccessManager* pass_manager =
+      autofill_client() ? autofill_client()->GetWalletPassAccessManager()
+                        : nullptr;
+  if (!pass_manager) {
+    return RespondNow(NoArguments());
+  }
+
+  // TODO(crbug.com/557059912): Pass the entity type from the caller instead of
+  // hardcoding vehicle.
+  pass_manager->GetDetailsForUpsertPass(
+      autofill::EntityType(autofill::EntityTypeName::kVehicle),
+      base::BindOnce(&AutofillPrivateGetDetailsForUpsertPassFunction::
+                         OnGetDetailsForUpsertPassResponse,
+                     base::RetainedRef(this)));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateGetDetailsForUpsertPassFunction::
+    OnGetDetailsForUpsertPassResponse(
+        base::expected<
+            autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse,
+            wallet::WalletHttpClient::WalletRequestError> response) {
+  if (!response.has_value() || response->context_token.empty()) {
+    Respond(NoArguments());
+    return;
+  }
+
+  api::autofill_private::UpsertPassDetails details;
+  details.context_token = std::move(response->context_token);
+  details.legal_message_lines.reserve(response->legal_message_lines.size());
+  for (const auto& line : response->legal_message_lines) {
+    api::autofill_private::LegalMessageLine idl_line;
+    idl_line.text = base::UTF16ToUTF8(line.text());
+    for (const auto& link : line.links()) {
+      if (!link.range.IsValid() || link.range.is_reversed() ||
+          link.range.is_empty() || link.range.end() > line.text().length() ||
+          !link.url.is_valid() || !link.url.SchemeIsHTTPOrHTTPS()) {
+        continue;
+      }
+      api::autofill_private::LegalMessageLink idl_link;
+      idl_link.start = static_cast<int>(link.range.start());
+      idl_link.end = static_cast<int>(link.range.end());
+      idl_link.url = link.url.spec();
+      idl_line.links.push_back(std::move(idl_link));
+    }
+    details.legal_message_lines.push_back(std::move(idl_line));
+  }
+  Respond(ArgumentList(
+      api::autofill_private::GetDetailsForUpsertPass::Results::Create(
+          details)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

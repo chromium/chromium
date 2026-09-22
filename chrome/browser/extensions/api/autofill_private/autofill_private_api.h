@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
@@ -527,6 +528,30 @@ class AutofillPrivateGetEntityInstanceByGuidFunction
                          bool auth_succeeded);
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+};
+
+class AutofillPrivateGetDetailsForUpsertPassFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateGetDetailsForUpsertPassFunction() = default;
+  AutofillPrivateGetDetailsForUpsertPassFunction(
+      const AutofillPrivateGetDetailsForUpsertPassFunction&) = delete;
+  AutofillPrivateGetDetailsForUpsertPassFunction& operator=(
+      const AutofillPrivateGetDetailsForUpsertPassFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getDetailsForUpsertPass",
+                             AUTOFILLPRIVATE_GETDETAILSFORUPSERTPASS)
+
+ protected:
+  ~AutofillPrivateGetDetailsForUpsertPassFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnGetDetailsForUpsertPassResponse(
+      base::expected<
+          autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse,
+          wallet::WalletHttpClient::WalletRequestError> response);
 };
 
 class AutofillPrivateGetWritableEntityTypesFunction

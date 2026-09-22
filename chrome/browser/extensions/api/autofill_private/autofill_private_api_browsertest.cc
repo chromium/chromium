@@ -14,6 +14,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
@@ -36,6 +38,7 @@
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
@@ -53,6 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
@@ -63,12 +67,17 @@
 namespace {
 
 using autofill::EntityInstance;
+using ::base::test::DictionaryHasValue;
 using ::base::test::RunOnceCallback;
+using ::testing::AllOf;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::DoAll;
+using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Optional;
 using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::TestParamInfo;
@@ -839,6 +848,165 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
 
   // The API should have saved the entity locally.
   EXPECT_EQ(saved_entity->record_type(), EntityInstance::RecordType::kLocal);
+}
+
+class AutofillPrivateApiPublicPassTest : public AutofillPrivateApiBrowserTest {
+ public:
+  AutofillPrivateApiPublicPassTest() {
+    feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+         autofill::features::kAutofillAiWalletVehicleRegistration},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    AutofillPrivateApiBrowserTest::SetUpOnMainThread();
+
+    autofill::EntityDataManager* edm =
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+    edm->SetReauthAvailability(true);
+    autofill_client()->set_entity_data_manager(edm);
+    autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+    autofill_client()->SetVariationConfigCountryCode(
+        autofill::GeoIpCountryCode("US"));
+
+    autofill_client()->set_wallet_pass_access_manager(
+        std::make_unique<
+            testing::NiceMock<autofill::MockWalletPassAccessManager>>());
+    address_data_manager().SetSyncServiceForTest(&mock_sync_service_);
+    autofill_client()->set_sync_service(&mock_sync_service_);
+    autofill_client()->GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
+    ON_CALL(mock_sync_service_, GetActiveDataTypes())
+        .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
+  }
+
+  autofill::MockWalletPassAccessManager& wallet_manager() {
+    return static_cast<autofill::MockWalletPassAccessManager&>(
+        *autofill_client()->GetWalletPassAccessManager());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  testing::NiceMock<MockSyncService> mock_sync_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
+                       GetDetailsForUpsertPass_ReturnsDetailsWhenEnabled) {
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.context_token = "test_token_123";
+  autofill::LegalMessageLine::Links links;
+  links.emplace_back(0, 10, "https://example.com/tos");
+  response.legal_message_lines.push_back(
+      autofill::TestLegalMessageLine("Terms link text", links));
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
+                  testing::_))
+      .WillOnce(RunOnceCallback<1>(std::move(response)));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", profile());
+  EXPECT_THAT(
+      result,
+      Optional(AllOf(
+          DictionaryHasValue("contextToken", base::Value("test_token_123")),
+          DictionaryHasValue("legalMessageLines", base::test::ParseJson(R"([
+            {
+              "links": [
+                {
+                  "end": 10,
+                  "start": 0,
+                  "url": "https://example.com/tos"
+                }
+              ],
+              "text": "Terms link text"
+            }
+          ])")))));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
+                       GetDetailsForUpsertPass_ReturnsNoArgumentsOnFailure) {
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
+                  testing::_))
+      .WillOnce(RunOnceCallback<1>(base::unexpected(
+          wallet::WalletHttpClient::WalletRequestError::kGenericError)));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(
+      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+  ASSERT_TRUE(function->GetResultListForTest());
+  EXPECT_TRUE(function->GetResultListForTest()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiPublicPassTest,
+    GetDetailsForUpsertPass_ReturnsNoArgumentsWhenContextTokenEmpty) {
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.context_token = "";
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
+                  testing::_))
+      .WillOnce(RunOnceCallback<1>(std::move(response)));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(
+      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+  ASSERT_TRUE(function->GetResultListForTest());
+  EXPECT_TRUE(function->GetResultListForTest()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
+                       AddVehicle_SavesToWallet_WhenContextTokenPresent) {
+  EntityInstance entity_instance = autofill::test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.guid = "";
+  api_entity.stored_in_wallet = true;
+  api_entity.context_token = "valid_context_token";
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
+                                                      profile()));
+
+  auto* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
+
+  EXPECT_THAT(
+      entity_data_manager->GetEntityInstances(),
+      ElementsAre(AllOf(
+          Property(&EntityInstance::type,
+                   autofill::EntityType(autofill::EntityTypeName::kVehicle)),
+          Property(&EntityInstance::record_type,
+                   EntityInstance::RecordType::kServerWallet))));
 }
 
 class AutofillPrivateApiAutofillAiMetricsTest
