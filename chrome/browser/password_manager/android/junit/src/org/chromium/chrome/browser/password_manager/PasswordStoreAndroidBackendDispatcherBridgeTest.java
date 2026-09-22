@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -24,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -67,8 +67,6 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
     @Mock private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridgeMock;
     @Mock private PasswordStoreAndroidBackend mBackendMock;
-    @Mock private PendingIntent mPendingIntent;
-    @Captor private ArgumentCaptor<Runnable> mSuccessCallback;
 
     private PasswordStoreAndroidBackendDispatcherBridgeImpl mBackendDispatcherBridge;
 
@@ -193,11 +191,12 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
+        PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception kExpectedException =
                 new ResolvableApiException(
-                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", mPendingIntent));
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mPendingIntent, never()).send();
+        verify(pendingIntentMock, never()).send();
         verify(mBackendReceiverBridgeMock)
                 .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
@@ -321,11 +320,12 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
         mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, "");
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .addLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
-        assertNotNull(mSuccessCallback.getValue());
+                .addLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
 
-        mSuccessCallback.getValue().run();
+        successCallback.getValue().run();
         verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
@@ -353,11 +353,12 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
         mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, "");
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .updateLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
-        assertNotNull(mSuccessCallback.getValue());
+                .updateLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
 
-        mSuccessCallback.getValue().run();
+        successCallback.getValue().run();
         verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
@@ -385,11 +386,12 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid success callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
         mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, "");
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .removeLogin(any(), eq(Optional.empty()), mSuccessCallback.capture(), any());
-        assertNotNull(mSuccessCallback.getValue());
+                .removeLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
 
-        mSuccessCallback.getValue().run();
+        successCallback.getValue().run();
         verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
