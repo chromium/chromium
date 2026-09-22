@@ -253,6 +253,61 @@ TEST_F(WebGpuSharedImageCacheTest, ReuseBeforeCleanUp) {
   EXPECT_EQ(0u, size);
 }
 
+TEST_F(WebGpuSharedImageCacheTest,
+       LeaseReturnsNullWhenContextLostWithCachedResource) {
+  auto size = gfx::Size(10, 10);
+
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  ASSERT_NE(nullptr, lease_0);
+
+  // Release the lease so the resource sits in the cache.
+  lease_0.reset();
+
+  // Lose the GPU context without recovery.
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
+
+  // Leasing with the same configuration should fail even though a matching
+  // resource is in the cache.
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  EXPECT_EQ(nullptr, lease_1);
+}
+
+TEST_F(WebGpuSharedImageCacheTest,
+       EvictsCachedResourcesAfterContextLossAndRecovery) {
+  auto size = gfx::Size(10, 10);
+
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  ASSERT_NE(nullptr, lease_0);
+  scoped_refptr<gpu::ClientSharedImage> old_shared_image =
+      lease_0->GetSharedImage();
+  ASSERT_NE(nullptr, old_shared_image);
+
+  // Release the lease so the resource sits in the cache.
+  lease_0.reset();
+
+  // Simulate GPU context loss followed by SharedGpuContext recovery onto a new
+  // WebGraphicsContext3DProviderWrapper.
+  SharedGpuContext::Reset();
+  InitializeSharedGpuContext(test_context_provider_.get(), &image_decode_cache_,
+                             SetIsContextLost::kSetToFalse);
+
+  // Leasing with the same configuration should evict the stale cached resource
+  // from the old context and allocate a valid SharedImage on the recovered
+  // context.
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  ASSERT_NE(nullptr, lease_1);
+  ASSERT_NE(nullptr, lease_1->GetSharedImage());
+  EXPECT_NE(old_shared_image, lease_1->GetSharedImage());
+  EXPECT_NE(old_shared_image->mailbox(), lease_1->GetSharedImage()->mailbox());
+}
 
 TEST_F(WebGpuSharedImageCacheTest,
        DoesNotCacheReturnedResourceWhenContextLost) {
