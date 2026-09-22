@@ -250,10 +250,7 @@ suite('Searchbox', () => {
     };
 
     // Simulate the searchbox being focused.
-    lensOverlayElement.$.searchbox.dispatchEvent(new CustomEvent('focusin', {
-      bubbles: true,
-      composed: true,
-    }));
+    lensOverlayElement.$.searchbox.fire('focusin');
     await waitAfterNextRender(lensOverlayElement);
 
     // Simulate the backend handshake completing.
@@ -581,10 +578,7 @@ suite('SearchboxMotionTweaks', () => {
 
   test('GhostLoaderHiddenWhenDropdownVisible', async () => {
     // Simulate focus to show ghost loader
-    lensOverlayElement.$.searchbox.dispatchEvent(new CustomEvent('focusin', {
-      bubbles: true,
-      composed: true,
-    }));
+    lensOverlayElement.$.searchbox.fire('focusin');
     await waitAfterNextRender(lensOverlayElement);
 
     // Assert ghost loader is visible

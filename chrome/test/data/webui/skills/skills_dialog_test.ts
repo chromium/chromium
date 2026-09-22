@@ -401,11 +401,7 @@ suite('SkillsDialogAppPage', function() {
     assertTrue(!!picker);
 
     const testEmoji = '😊';
-    picker.dispatchEvent(new CustomEvent('emoji-selected', {
-      detail: {emoji: testEmoji},
-      bubbles: true,
-      composed: true,
-    }));
+    picker.fire('emoji-selected', {emoji: testEmoji});
 
     await microtasksFinished();
     assertEquals(testEmoji, emojiTrigger.value);

@@ -675,11 +675,7 @@ suite('ContextualTasksComposeboxTest', () => {
     const dropdown = contextualComposebox.$.contextualTasksSuggestionsContainer;
 
     // Simulate focus moving to the first match (index 0) via Tab key.
-    dropdown.dispatchEvent(new CustomEvent('match-focusin', {
-      detail: {index: 0},
-      bubbles: true,
-      composed: true,
-    }));
+    dropdown.fire('match-focusin', {index: 0});
 
     await microtasksFinished();
 
@@ -707,11 +703,7 @@ suite('ContextualTasksComposeboxTest', () => {
     innerComposebox.suggestInventory = SuggestInventory.kTravel;
 
     // Simulate Tab focus (match-focusin).
-    dropdown.dispatchEvent(new CustomEvent('match-focusin', {
-      detail: {index: 0},
-      bubbles: true,
-      composed: true,
-    }));
+    dropdown.fire('match-focusin', {index: 0});
 
     await innerComposebox.updateComplete;
     // Focusing on a suggestion should not clear suggestInventory.
@@ -2188,12 +2180,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
 
     mockSearchboxPageHandler.reset();
 
-    entrypointAndMenu.dispatchEvent(
-        new CustomEvent('smart-tab-sharing-active-changed', {
-          detail: {active: true},
-          bubbles: true,
-          composed: true,
-        }));
+    entrypointAndMenu.fire('smart-tab-sharing-active-changed', {active: true});
 
     const activeArg =
         await mockSearchboxPageHandler.whenCalled('setSmartTabSharingActive');
@@ -2209,10 +2196,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
 
     mockComposeboxPageHandler.reset();
 
-    entrypointAndMenu.dispatchEvent(new CustomEvent('context-menu-opened', {
-      bubbles: true,
-      composed: true,
-    }));
+    entrypointAndMenu.fire('context-menu-opened');
 
     await mockComposeboxPageHandler.whenCalled('onContextMenuOpened');
     assertEquals(
@@ -2226,29 +2210,20 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
     const {innerComposebox} = parts;
     const entrypointAndMenu = getEntrypointAndMenu();
 
-    entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
-      detail: {
-        id: 1,
-        title: 'Shared tab',
-        // WebUI maps Mojo URL to a string, which is passed to
-        // `new URL()`.
-        url: 'https://example.com/',
-        delayUpload: false,
-        origin: TabUploadOrigin.CURRENT_TAB_CHIP,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    entrypointAndMenu.fire('add-tab-context', {
+      id: 1,
+      title: 'Shared tab',
+      // WebUI maps Mojo URL to a string, which is passed to
+      // `new URL()`.
+      url: 'https://example.com/',
+      delayUpload: false,
+      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+    });
     await mockSearchboxPageHandler.whenCalled('addTabContext');
     await microtasksFinished();
     assertEquals(1, innerComposebox.attachedContext.size);
 
-    entrypointAndMenu.dispatchEvent(
-        new CustomEvent('smart-tab-sharing-active-changed', {
-          detail: {active: true},
-          bubbles: true,
-          composed: true,
-        }));
+    entrypointAndMenu.fire('smart-tab-sharing-active-changed', {active: true});
     const activeArg =
         await mockSearchboxPageHandler.whenCalled('setSmartTabSharingActive');
     assertEquals(true, activeArg);

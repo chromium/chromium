@@ -97,9 +97,7 @@ suite('<bookmarks-list>', function() {
   });
 
   test('selects all valid IDs on highlight-items', function() {
-    list.dispatchEvent(new CustomEvent(
-        'highlight-items',
-        {bubbles: true, composed: true, detail: ['10', '1', '3', '9']}));
+    list.fire('highlight-items', ['10', '1', '3', '9']);
     const lastAction = store.lastAction as SelectItemsAction;
     assertEquals('select-items', lastAction.name);
     assertEquals('1', lastAction.anchor);
@@ -294,9 +292,7 @@ suite('<bookmarks-list> command manager integration test', function() {
     const commandManager =
         app.shadowRoot.querySelector('bookmarks-command-manager')!;
     const list = app.shadowRoot.querySelector('bookmarks-list')!;
-    list.dispatchEvent(new CustomEvent(
-        'contextmenu',
-        {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
+    list.fire('contextmenu', {clientX: 0, clientY: 0});
 
     await microtasksFinished();
     assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());

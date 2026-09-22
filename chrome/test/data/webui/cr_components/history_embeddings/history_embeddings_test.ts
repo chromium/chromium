@@ -469,12 +469,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           'defaults to unspecified');
 
       function dispatchFeedbackOptionChange(option: CrFeedbackOption) {
-        feedbackButtonsEl!.dispatchEvent(
-            new CustomEvent('selected-option-changed', {
-              bubbles: true,
-              composed: true,
-              detail: {value: option},
-            }));
+        feedbackButtonsEl!.fire('selected-option-changed', {value: option});
       }
 
       dispatchFeedbackOptionChange(CrFeedbackOption.THUMBS_DOWN);

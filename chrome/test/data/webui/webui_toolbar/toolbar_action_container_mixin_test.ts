@@ -433,11 +433,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     await microtasksFinished();
 
     // Start drag.
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'a'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-start', {itemId: 'a'});
     await microtasksFinished();
 
     // Dispatch dragenter to simulate entering the host from outside.
@@ -532,11 +528,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     await microtasksFinished();
 
     // Start drag on 'a'.
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'a'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-start', {itemId: 'a'});
     await microtasksFinished();
 
     // Verify 'a' has placeholder.
@@ -600,11 +592,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertEquals('Item A Updated', childElA_afterUpdate.textContent.trim());
 
     // Start drag on 'a'.
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'a'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-start', {itemId: 'a'});
     await microtasksFinished();
 
     // Verify drag is NOT aborted (placeholder flag should be set).
@@ -619,11 +607,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     await microtasksFinished();
 
     // Start drag.
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'a'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-start', {itemId: 'a'});
     await microtasksFinished();
 
     // Verify element 'a' has dragPlaceholder.
@@ -647,11 +631,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertEquals('b', element.keyedStates[1]!.key);
 
     // End drag (aborted)
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
-      detail: {itemId: 'a', dropEffect: 'none'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-end', {itemId: 'a', dropEffect: 'none'});
     await microtasksFinished();
 
     // Verify drag is ended and layout updated to Mojo order (b then a).
@@ -669,11 +649,7 @@ suite('ToolbarActionContainerMixinTest', function() {
     await microtasksFinished();
 
     // Start drag.
-    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'a'},
-      bubbles: true,
-      composed: true,
-    }));
+    element.fire('toolbar-action-drag-start', {itemId: 'a'});
     await microtasksFinished();
 
     assertTrue(element.keyedStates[0]!.dragPlaceholder === true);

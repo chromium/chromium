@@ -315,14 +315,10 @@ suite('SearchEnginePageTests', function() {
 
   test('EditSearchEngineDialog', async function() {
     const engine = searchEnginesInfo.others[0]!;
-    page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        engine,
-        anchorElement: page.shadowRoot.querySelector('#addSearchEngine')!,
-      },
-    }));
+    page.fire('view-or-edit-search-engine', {
+      engine,
+      anchorElement: page.shadowRoot.querySelector('#addSearchEngine')!,
+    });
     await microtasksFinished();
     const id = await browserProxy.whenCalled('searchEngineEditStarted');
     assertEquals(engine.id, id);

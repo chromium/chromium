@@ -231,11 +231,7 @@ suite('Extensions', function() {
     };
 
     // Trigger dragstart on first action
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'action-1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: 'action-1'});
 
     assertEquals('drag-start', receivedMessage?.type);
     assertEquals('action-1', receivedMessage?.itemId);
@@ -248,11 +244,7 @@ suite('Extensions', function() {
     const firstAction = actionElements[0]!;
 
     // Start drag first
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'action-1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: 'action-1'});
 
     let receivedMessage: any = null;
     const listenerChannel = new BroadcastChannel('extension-action-drag');
@@ -261,11 +253,8 @@ suite('Extensions', function() {
     };
 
     // Trigger dragend
-    container.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
-      detail: {itemId: 'action-1', dropEffect: 'move'},
-      bubbles: true,
-      composed: true,
-    }));
+    container.fire(
+        'toolbar-action-drag-end', {itemId: 'action-1', dropEffect: 'move'});
 
     assertEquals('drag-end', receivedMessage?.type);
   });
@@ -357,11 +346,7 @@ suite('Extensions', function() {
     const firstAction = actionElements[0]!;
 
     // 1. Start a local drag
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: 'action-1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: 'action-1'});
 
     // Verify it is marked as dragging/placeholder locally
     let keyedStates = container.keyedStates;
@@ -396,11 +381,7 @@ suite('Extensions', function() {
         const firstAction = actionElements[0]!;
 
         // 1. Start a local drag
-        firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-          detail: {itemId: 'action-1'},
-          bubbles: true,
-          composed: true,
-        }));
+        firstAction.fire('toolbar-action-drag-start', {itemId: 'action-1'});
 
         // Verify it is marked as dragging/placeholder locally
         let keyedStates = container.keyedStates;

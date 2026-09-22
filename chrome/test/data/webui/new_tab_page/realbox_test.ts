@@ -230,11 +230,7 @@ suite('NewTabPageRealboxNextTest', () => {
     // Act & Assert.
     const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
         'open-composebox', realbox);
-    contextElement.dispatchEvent(new CustomEvent('add-tab-context', {
-      detail: {id: 1, title: 'title'},
-      bubbles: true,
-      composed: true,
-    }));
+    contextElement.fire('add-tab-context', {id: 1, title: 'title'});
     const event = await whenOpenComposeBox;
     assertEquals(event.detail.files.length, 1);
     const tabUpload = event.detail.files[0] as TabUpload;
@@ -267,10 +263,7 @@ suite('NewTabPageRealboxNextTest', () => {
     // Act & Assert.
     const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
         'open-composebox', realbox);
-    contextElement.dispatchEvent(new CustomEvent('open-drive-upload', {
-      bubbles: true,
-      composed: true,
-    }));
+    contextElement.fire('open-drive-upload');
     const event = await whenOpenComposeBox;
     assertEquals(event.detail.files.length, 1);
     const driveUpload = event.detail.files[0] as DriveUpload;
@@ -299,10 +292,7 @@ suite('NewTabPageRealboxNextTest', () => {
     // Act & Assert.
     const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
         'open-composebox', realbox);
-    contextElement.dispatchEvent(new CustomEvent('open-drive-upload', {
-      bubbles: true,
-      composed: true,
-    }));
+    contextElement.fire('open-drive-upload');
     const event = await whenOpenComposeBox;
     assertEquals(event.detail.files.length, 0);
     assertEquals(1, event.detail.error);
@@ -801,10 +791,7 @@ suite('NewTabPageRealboxNextTest', () => {
       status: DriveDisclaimerStatus.kAccepted,
     }));
 
-    entrypointAndMenu.dispatchEvent(new CustomEvent('open-drive-upload', {
-      bubbles: true,
-      composed: true,
-    }));
+    entrypointAndMenu.fire('open-drive-upload');
     await testProxy.handler.whenCalled('onDriveUploadClicked');
     await microtasksFinished();
     assertEquals(1, metrics.count(metricName, ContextType.DRIVE));

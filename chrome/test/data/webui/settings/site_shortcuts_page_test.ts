@@ -191,11 +191,10 @@ suite('SiteShortcutsPageTest', function() {
 
   test('EditSearchEngineEventOpensEditDialog', async function() {
     const testEngine = createSampleSearchEngine({id: 10, name: 'Edit Me'});
-    page.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
-      bubbles: true,
-      composed: true,
-      detail: {engine: testEngine, anchorElement: page.$.activeShortcutsRow},
-    }));
+    page.fire('view-or-edit-search-engine', {
+      engine: testEngine,
+      anchorElement: page.$.activeShortcutsRow,
+    });
     await microtasksFinished();
 
     assertTrue(
@@ -204,11 +203,10 @@ suite('SiteShortcutsPageTest', function() {
 
   test('DeleteSearchEngineEventOpensConfirmationDialog', async function() {
     const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
-    page.dispatchEvent(new CustomEvent('delete-search-engine', {
-      bubbles: true,
-      composed: true,
-      detail: {engine: testEngine, anchorElement: page.$.activeShortcutsRow},
-    }));
+    page.fire('delete-search-engine', {
+      engine: testEngine,
+      anchorElement: page.$.activeShortcutsRow,
+    });
     await microtasksFinished();
 
     assertTrue(
@@ -217,11 +215,10 @@ suite('SiteShortcutsPageTest', function() {
 
   test('ConfirmDeleteCallsBrowserProxy', async function() {
     const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
-    page.dispatchEvent(new CustomEvent('delete-search-engine', {
-      bubbles: true,
-      composed: true,
-      detail: {engine: testEngine, anchorElement: page},
-    }));
+    page.fire('delete-search-engine', {
+      engine: testEngine,
+      anchorElement: page,
+    });
     await microtasksFinished();
 
     // Accept the dialog.
@@ -237,11 +234,10 @@ suite('SiteShortcutsPageTest', function() {
 
   test('CancelDeleteDoesNotCallBrowserProxy', async function() {
     const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
-    page.dispatchEvent(new CustomEvent('delete-search-engine', {
-      bubbles: true,
-      composed: true,
-      detail: {engine: testEngine, anchorElement: page},
-    }));
+    page.fire('delete-search-engine', {
+      engine: testEngine,
+      anchorElement: page,
+    });
     await microtasksFinished();
 
     // Cancel the dialog.

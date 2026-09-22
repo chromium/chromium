@@ -133,14 +133,9 @@ suite('CrComposeboxAutocompleteContextTest', () => {
 
         // Delete the uploaded file.
         const deletedId = testProxy.element.$.carousel.files[1]!.uuid;
-        testProxy.element.$.carousel.dispatchEvent(
-            new CustomEvent('delete-file', {
-              detail: {
-                uuid: deletedId,
-              },
-              bubbles: true,
-              composed: true,
-            }));
+        testProxy.element.$.carousel.fire('delete-file', {
+          uuid: deletedId,
+        });
 
         await microtasksFinished();
 

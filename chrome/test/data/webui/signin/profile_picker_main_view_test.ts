@@ -230,8 +230,7 @@ suite('ProfilePickerMainViewTest', function() {
 
     // Set to valid profile name.
     localProfileName.value = 'Alice';
-    localProfileName.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    localProfileName.fire('change');
     const args = await browserProxy.whenCalled('setProfileName');
     assertEquals(args[0], profiles[0]!.profilePath);
     assertEquals(args[1], 'Alice');

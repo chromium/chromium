@@ -655,8 +655,7 @@ suite('OmniboxComposeboxTest', () => {
     assertTrue(composebox!.hasAttribute('inert'));
 
     // Dismiss error scrim.
-    scrim.dispatchEvent(new CustomEvent(
-        'dismiss-error-scrim', {bubbles: true, composed: true}));
+    scrim.fire('dismiss-error-scrim');
     await microtasksFinished();
 
     // Error cleared.
@@ -751,11 +750,7 @@ suite('OmniboxComposeboxTest', () => {
       return null;
     };
 
-    carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {uuid: mockToken, fromUserAction: true},
-      bubbles: true,
-      composed: true,
-    }));
+    carousel.fire('delete-file', {uuid: mockToken, fromUserAction: true});
 
     assertTrue(deleteFileCalled);
     omniboxComposebox.deleteFile = originalDeleteFile;

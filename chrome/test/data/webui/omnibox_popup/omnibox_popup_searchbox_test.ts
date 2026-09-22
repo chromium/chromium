@@ -123,12 +123,9 @@ suite('OmniboxPopupSearchboxTest', function() {
     handler.reset();
 
     // Simulate typing in Tab 1 to create undo history.
-    searchbox.$.input.dispatchEvent(
-        new CustomEvent('searchbox-input-text-updated', {
-          bubbles: true,
-          composed: true,
-          detail: {value: 'tab 1 draft edited', isComposing: false},
-        }));
+    searchbox.$.input.fire(
+        'searchbox-input-text-updated',
+        {value: 'tab 1 draft edited', isComposing: false});
     await microtasksFinished();
 
     // Verify edit history has undoable edits on Tab 1.
@@ -1095,12 +1092,9 @@ suite('OmniboxPopupSearchboxTest', function() {
     // Baseline text: "hello world" with caret at index 11.
     inputEl.value = 'hello world';
     inputEl.setSelectionRange(11, 11);
-    searchbox.$.input.dispatchEvent(
-        new CustomEvent('searchbox-input-text-updated', {
-          detail: {value: 'hello world', isComposing: false},
-          bubbles: true,
-          composed: true,
-        }));
+    searchbox.$.input.fire(
+        'searchbox-input-text-updated',
+        {value: 'hello world', isComposing: false});
     await microtasksFinished();
 
     // User performs word deletion (Alt/Ctrl + Backspace): text becomes "hello
@@ -1108,12 +1102,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     inputEl.value = 'hello ';
     inputEl.selectionStart = 6;
     inputEl.selectionEnd = 6;
-    searchbox.$.input.dispatchEvent(
-        new CustomEvent('searchbox-input-text-updated', {
-          detail: {value: 'hello ', isComposing: false},
-          bubbles: true,
-          composed: true,
-        }));
+    searchbox.$.input.fire(
+        'searchbox-input-text-updated', {value: 'hello ', isComposing: false});
     await microtasksFinished();
     assertEquals('hello ', inputEl.value);
 
@@ -2113,12 +2103,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    // Type a single character '!' (length 1 -> mergeable).
    inputEl.value = 'hello!';
    inputEl.setSelectionRange(6, 6);
-   searchbox.$.input.dispatchEvent(
-       new CustomEvent('searchbox-input-text-updated', {
-         detail: {value: 'hello!', isComposing: false},
-         bubbles: true,
-         composed: true,
-       }));
+   searchbox.$.input.fire(
+       'searchbox-input-text-updated', {value: 'hello!', isComposing: false});
    await microtasksFinished();
    assertEquals('hello!', inputEl.value);
 
@@ -2151,12 +2137,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    // Step 1: User types 'world'.
    inputEl.value = 'world';
    inputEl.setSelectionRange(5, 5);
-   searchbox.$.input.dispatchEvent(
-       new CustomEvent('searchbox-input-text-updated', {
-         detail: {value: 'world', isComposing: false},
-         bubbles: true,
-         composed: true,
-       }));
+   searchbox.$.input.fire(
+       'searchbox-input-text-updated', {value: 'world', isComposing: false});
    await microtasksFinished();
 
    // Step 2: User selects all text 'world' (0..5).
@@ -2167,12 +2149,8 @@ suite('OmniboxPopupSearchboxTest', function() {
    // Step 3: User replaces selected 'world' with 'universe'.
    inputEl.value = 'universe';
    inputEl.setSelectionRange(8, 8);
-   searchbox.$.input.dispatchEvent(
-       new CustomEvent('searchbox-input-text-updated', {
-         detail: {value: 'universe', isComposing: false},
-         bubbles: true,
-         composed: true,
-       }));
+   searchbox.$.input.fire(
+       'searchbox-input-text-updated', {value: 'universe', isComposing: false});
    await microtasksFinished();
    assertEquals('universe', inputEl.value);
 

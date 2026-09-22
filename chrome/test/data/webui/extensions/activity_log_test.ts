@@ -61,8 +61,7 @@ suite('ExtensionsActivityLogTest', function() {
     proxyDelegate.testActivities = testActivities;
     document.body.appendChild(activityLog);
 
-    activityLog.dispatchEvent(
-        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
+    activityLog.fire('view-enter-start');
 
     // Wait until we have finished making the call to fetch the activity log.
     return proxyDelegate.whenCalled('getExtensionActivityLog');

@@ -74,8 +74,7 @@ suite('SearchEngineEditDialog', function() {
     // created by policy (crbug.com/348165485).
     if (expectedReadonly) {
       browserProxy.resetResolver('validateSearchEngineInput');
-      dialog.$.keyword.dispatchEvent(
-          new CustomEvent('input', {bubbles: true, composed: true}));
+      dialog.$.keyword.fire('input');
       assertEquals(0, browserProxy.getCallCount('validateSearchEngineInput'));
     }
   }
@@ -103,8 +102,7 @@ suite('SearchEngineEditDialog', function() {
       const inputElement =
           dialog.shadowRoot.querySelector<CrInputElement>(`#${inputId}`)!;
       browserProxy.resetResolver('validateSearchEngineInput');
-      inputElement.dispatchEvent(
-          new CustomEvent('input', {bubbles: true, composed: true}));
+      inputElement.fire('input');
       return inputElement.value !== '' ?
           // Expecting validation only on non-empty values.
           browserProxy.whenCalled('validateSearchEngineInput') :

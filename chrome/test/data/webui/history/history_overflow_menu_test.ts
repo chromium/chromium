@@ -39,8 +39,7 @@ suite('#overflow-menu', function() {
       item: createHistoryEntry(0, 'https://www.chromium.org'),
       target: target1,
     };
-    listContainer.dispatchEvent(new CustomEvent(
-        'open-menu', {bubbles: true, composed: true, detail: detail1}));
+    listContainer.fire('open-menu', detail1);
     await microtasksFinished();
     assertTrue(sharedMenu.open);
 
@@ -63,8 +62,7 @@ suite('#overflow-menu', function() {
       item: createHistoryEntry(0, 'https://www.wikipedia.org'),
       target: target2,
     };
-    listContainer.dispatchEvent(new CustomEvent(
-        'open-menu', {bubbles: true, composed: true, detail: detail2}));
+    listContainer.fire('open-menu', detail2);
     await microtasksFinished();
     assertTrue(sharedMenu.open);
 

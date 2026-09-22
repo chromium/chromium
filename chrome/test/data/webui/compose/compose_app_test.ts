@@ -526,8 +526,7 @@ suite('ComposeApp', () => {
   });
 
   test('AllowsEditingPrompt', async () => {
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await microtasksFinished();
     assertTrue(isVisible(app.$.editTextarea));
 
@@ -538,8 +537,7 @@ suite('ComposeApp', () => {
     testProxy.resetResolver('compose');
 
     // Mock clicking edit in the textarea and verify new textarea shows.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await testProxy.whenCalled('logEditInput');
     assertTrue(isVisible(app.$.editTextarea));
 
@@ -553,8 +551,7 @@ suite('ComposeApp', () => {
     assertEquals('Initial input.', app.$.textarea.value);
 
     // Mock updating input and submitting.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await microtasksFinished();
     app.$.editTextarea.value = 'Here is an even better input.';
     await microtasksFinished();
@@ -674,11 +671,8 @@ suite('ComposeApp', () => {
   test('Feedback', async () => {
     const feedbackButtons =
         app.shadowRoot.querySelector('cr-feedback-buttons')!;
-    feedbackButtons.dispatchEvent(new CustomEvent('selected-option-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {value: CrFeedbackOption.THUMBS_DOWN},
-    }));
+    feedbackButtons.fire(
+        'selected-option-changed', {value: CrFeedbackOption.THUMBS_DOWN});
     const args = await testProxy.whenCalled('setUserFeedback');
     assertEquals(args.reason, args.UserFeedback);
   });
@@ -838,8 +832,7 @@ suite('ComposeAppLegacyUi', () => {
         {input: 'Here is my input', inputMode: InputMode.kUnset});
 
     // Hitting edit button saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await assertSavedState({
       editedInput: 'Here is my input',
       input: 'Here is my input',
@@ -863,8 +856,7 @@ suite('ComposeAppLegacyUi', () => {
         {input: 'Here is my input', inputMode: InputMode.kUnset});
 
     // Submitting edited textarea saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await microtasksFinished();
     app.$.editTextarea.value = 'Here is my new input!!!!';
     await microtasksFinished();
@@ -944,8 +936,7 @@ suite('ComposeAppLegacyInputModesUi', () => {
         {input: 'Here is my input', inputMode: InputMode.kPolish});
 
     // Hitting edit button saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await assertSavedState({
       editedInput: 'Here is my input',
       input: 'Here is my input',
@@ -969,8 +960,7 @@ suite('ComposeAppLegacyInputModesUi', () => {
         {input: 'Here is my input', inputMode: InputMode.kPolish});
 
     // Submitting edited textarea saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.textarea.fire('edit-click');
     await microtasksFinished();
     app.$.editTextarea.value = 'Here is my new input!!!!';
     await microtasksFinished();

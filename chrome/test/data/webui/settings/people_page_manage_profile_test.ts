@@ -167,8 +167,7 @@ suite('ManageProfileTests', function() {
     assertEquals(policyIndicator, null);
 
     nameInput.value = 'New Name';
-    nameInput.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    nameInput.fire('change');
 
     const args = await browserProxy.whenCalled('setProfileName');
     assertEquals('New Name', args[0]);

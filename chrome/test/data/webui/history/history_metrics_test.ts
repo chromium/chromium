@@ -135,9 +135,7 @@ suite('Metrics', function() {
       },
     }));
 
-    app.dispatchEvent(new CustomEvent(
-        'change-query',
-        {bubbles: true, composed: true, detail: {search: 'goog'}}));
+    app.fire('change-query', {search: 'goog'});
     assertEquals(1, actionMap['Search']);
     const queryManager = app.shadowRoot.querySelector('history-query-manager');
     assertTrue(!!queryManager);
@@ -295,8 +293,7 @@ suite('Metrics', function() {
         ],
       },
     }));
-    app.dispatchEvent(new CustomEvent(
-        'query-history', {detail: true, bubbles: true, composed: true}));
+    app.fire('query-history', true);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
 
     const recordedHistogram2 =

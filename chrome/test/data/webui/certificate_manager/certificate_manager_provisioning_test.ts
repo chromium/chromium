@@ -129,15 +129,10 @@ suite('CertificateManagerProvisioningTests', function() {
     assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
     const whenDialogOpen =
         eventToPromise('cr-dialog-open', certProvisioningList);
-    certProvisioningList.dispatchEvent(
-        new CustomEvent(CertificateProvisioningViewDetailsActionEvent, {
-          bubbles: true,
-          composed: true,
-          detail: {
-            model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest,
-          },
-        }));
+    certProvisioningList.fire(CertificateProvisioningViewDetailsActionEvent, {
+      model: createSampleCertificateProvisioningProcess(false),
+      anchor: anchorForTest,
+    });
 
     await whenDialogOpen;
     const dialog = certProvisioningList.shadowRoot.querySelector(dialogId);
@@ -155,15 +150,10 @@ suite('CertificateManagerProvisioningTests', function() {
     const anchorForTest = document.createElement('a');
     document.body.appendChild(anchorForTest);
     assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
-    certProvisioningList.dispatchEvent(
-        new CustomEvent(CertificateProvisioningViewDetailsActionEvent, {
-          bubbles: true,
-          composed: true,
-          detail: {
-            model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest,
-          },
-        }));
+    certProvisioningList.fire(CertificateProvisioningViewDetailsActionEvent, {
+      model: createSampleCertificateProvisioningProcess(false),
+      anchor: anchorForTest,
+    });
     await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
   });
 });
@@ -191,15 +181,10 @@ suite('DetailsDialogTests', function() {
     assertFalse(!!certProvisioningList.shadowRoot.querySelector(dialogId));
     const whenDialogOpen =
         eventToPromise('cr-dialog-open', certProvisioningList);
-    certProvisioningList.dispatchEvent(
-        new CustomEvent(CertificateProvisioningViewDetailsActionEvent, {
-          bubbles: true,
-          composed: true,
-          detail: {
-            model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest,
-          },
-        }));
+    certProvisioningList.fire(CertificateProvisioningViewDetailsActionEvent, {
+      model: createSampleCertificateProvisioningProcess(false),
+      anchor: anchorForTest,
+    });
     await whenDialogOpen;
     dialog = certProvisioningList.shadowRoot.querySelector(dialogId)!;
     // Check if the dialog is initialized and opened.

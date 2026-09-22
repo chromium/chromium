@@ -269,8 +269,7 @@ suite('RuntimeHostPermissions', function() {
     const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = 'https://example.com';
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await input.updateComplete;
 
     // Closing the dialog (as opposed to canceling) should keep the

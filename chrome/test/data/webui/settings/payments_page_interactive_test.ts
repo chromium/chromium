@@ -26,8 +26,7 @@ async function typeInNickname(
     nicknameInput: CrInputElement, nickname: string): Promise<void> {
   nicknameInput.value = nickname;
   await nicknameInput.updateComplete;
-  nicknameInput.dispatchEvent(
-      new CustomEvent('input', {bubbles: true, composed: true}));
+  nicknameInput.fire('input');
 }
 
 /**

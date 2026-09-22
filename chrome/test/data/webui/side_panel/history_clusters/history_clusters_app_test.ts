@@ -228,12 +228,8 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
 
     function dispatchNativeInput(
         inputEvent: Partial<InputEvent>, inputValue: string) {
-      app.$.searchbox.dispatchEvent(
-          new CustomEvent('search-term-native-input', {
-            detail: {e: inputEvent, inputValue},
-            composed: true,
-            bubbles: true,
-          }));
+      app.$.searchbox.fire(
+          'search-term-native-input', {e: inputEvent, inputValue});
     }
 
     dispatchNativeInput({data: 'a'}, 'a');

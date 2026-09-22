@@ -1855,11 +1855,7 @@ suite('SearchboxMixinTest', () => {
     await microtasksFinished();
 
     const dropdown = element.getDropdownElement();
-    dropdown.dispatchEvent(new CustomEvent('keyword-click', {
-      bubbles: true,
-      composed: true,
-      detail: {match, matchIndex: 0},
-    }));
+    dropdown.fire('keyword-click', {match, matchIndex: 0});
     await microtasksFinished();
 
     assertEquals(0, element.selection.line);

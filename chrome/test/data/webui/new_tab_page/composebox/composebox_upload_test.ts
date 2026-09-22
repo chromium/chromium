@@ -52,13 +52,9 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
 
     // Delete the uploaded file.
     const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
-    testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: deletedId,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    testProxy.element.$.carousel.fire('delete-file', {
+      uuid: deletedId,
+    });
 
     await microtasksFinished();
 
@@ -423,14 +419,10 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
 
     // Act.
     const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
-    testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: deletedId,
-        fromUserAction: true,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    testProxy.element.$.carousel.fire('delete-file', {
+      uuid: deletedId,
+      fromUserAction: true,
+    });
 
     await microtasksFinished();
 
@@ -455,14 +447,10 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
     const uuid = await testSupport.addTab(testProxy);
 
     // Act.
-    testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: uuid,
-        fromUserAction: true,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    testProxy.element.$.carousel.fire('delete-file', {
+      uuid: uuid,
+      fromUserAction: true,
+    });
 
     await microtasksFinished();
 
@@ -599,9 +587,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
 
         // Delete the file. `uploadButtonDisabled` should be false.
         const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
-        testProxy.element.$.carousel.dispatchEvent(new CustomEvent(
-            'delete-file',
-            {detail: {uuid: deletedId}, bubbles: true, composed: true}));
+        testProxy.element.$.carousel.fire('delete-file', {uuid: deletedId});
         await microtasksFinished();
         assertFalse(testProxy.element['uploadButtonDisabled']);
         testProxy.searchboxHandler.resetResolver(

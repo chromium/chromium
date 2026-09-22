@@ -95,11 +95,7 @@ suite('<bookmarks-edit-dialog>', function() {
 
   function setUrlValue(value: string) {
     dialog.$.url.value = value;
-    dialog.$.url.dispatchEvent(new CustomEvent('value-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {value: value},
-    }));
+    dialog.$.url.fire('value-changed', {value: value});
   }
 
   test('validates urls correctly', async () => {
@@ -177,19 +173,11 @@ suite('<bookmarks-edit-dialog>', function() {
 
     const longTitle = 'a'.repeat(MAX_BOOKMARK_INPUT_LENGTH + 100);
     dialog.$.name.value = longTitle;
-    dialog.$.name.dispatchEvent(new CustomEvent('value-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {value: longTitle},
-    }));
+    dialog.$.name.fire('value-changed', {value: longTitle});
     await microtasksFinished();
 
     dialog.$.url.value = 'http://example.com';
-    dialog.$.url.dispatchEvent(new CustomEvent('value-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {value: 'http://example.com'},
-    }));
+    dialog.$.url.fire('value-changed', {value: 'http://example.com'});
     await microtasksFinished();
 
     setDebouncerForTesting();

@@ -83,22 +83,19 @@ suite('cr-tooltip', function() {
     assertTrue(tooltip.$.tooltip.hidden);
 
     // Tooltip shows when pointer enters the target.
-    parent.dispatchEvent(
-        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    parent.fire('pointerenter');
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertFalse(tooltip.$.tooltip.hidden);
 
     // Tooltip hides when pointer leaves the target.
-    parent.dispatchEvent(
-        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    parent.fire('pointerleave');
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertTrue(tooltip.$.tooltip.hidden);
 
     // If manual mode is enabled, does not respond to pointer events.
     tooltip.manualMode = true;
     await microtasksFinished();
-    parent.dispatchEvent(
-        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    parent.fire('pointerenter');
     await new Promise(resolve => setTimeout(resolve, 1));
     assertTrue(tooltip.$.tooltip.hidden);
   });
@@ -115,20 +112,17 @@ suite('cr-tooltip', function() {
     // tooltip.
     const hideDelayMs = 100;
     tooltip.hideDelay = hideDelayMs;
-    parent.dispatchEvent(
-        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    parent.fire('pointerleave');
     await new Promise(resolve => setTimeout(resolve, hideDelayMs / 2));
     assertFalse(tooltip.$.tooltip.hidden);
 
     // Pointer enters the tooltip, which cancels the hide.
-    tooltip.dispatchEvent(
-        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    tooltip.fire('pointerenter');
     await new Promise(resolve => setTimeout(resolve, hideDelayMs));
     assertFalse(tooltip.$.tooltip.hidden);
 
     // Pointer leaves tooltip, which should eventually hide the tooltip.
-    tooltip.dispatchEvent(
-        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
+    tooltip.fire('pointerleave');
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertTrue(tooltip.$.tooltip.hidden);
   });

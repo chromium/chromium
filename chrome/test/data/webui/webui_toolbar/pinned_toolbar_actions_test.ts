@@ -297,11 +297,7 @@ suite('PinnedToolbarActions', function() {
     };
 
     // Trigger dragstart on first action
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: '1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: '1'});
 
     assertEquals('drag-start', receivedMessage?.type);
     assertEquals('1', receivedMessage?.itemId);
@@ -314,11 +310,7 @@ suite('PinnedToolbarActions', function() {
     const firstAction = actionElements[0]!;
 
     // Start drag first
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: '1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: '1'});
 
     let receivedMessage: any = null;
     const listenerChannel = new BroadcastChannel('pinned-action-drag');
@@ -327,10 +319,7 @@ suite('PinnedToolbarActions', function() {
     };
 
     // Trigger dragend
-    container.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
-      bubbles: true,
-      composed: true,
-    }));
+    container.fire('toolbar-action-drag-end');
 
     assertEquals('drag-end', receivedMessage?.type);
   });
@@ -420,11 +409,7 @@ suite('PinnedToolbarActions', function() {
     const firstAction = actionElements[0]!;
 
     // 1. Start a local drag
-    firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-      detail: {itemId: '1'},
-      bubbles: true,
-      composed: true,
-    }));
+    firstAction.fire('toolbar-action-drag-start', {itemId: '1'});
 
     // Verify it is marked as dragging/placeholder locally
     let keyedStates = container.keyedStates;
@@ -459,11 +444,7 @@ suite('PinnedToolbarActions', function() {
         const firstAction = actionElements[0]!;
 
         // 1. Start a local drag
-        firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
-          detail: {itemId: '1'},
-          bubbles: true,
-          composed: true,
-        }));
+        firstAction.fire('toolbar-action-drag-start', {itemId: '1'});
 
         // Verify it is marked as dragging/placeholder locally
         let keyedStates = container.keyedStates;
@@ -727,11 +708,9 @@ suite('PinnedToolbarActions', function() {
 
         // 4. Simulate dragend (browser will report aborted since we didn't call
         // preventDefault)
-        firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
-          detail: {itemId: '1', dropEffect: 'none'},  // none = aborted
-          bubbles: true,
-          composed: true,
-        }));
+        firstAction.fire(
+            'toolbar-action-drag-end',
+            {itemId: '1', dropEffect: 'none'});  // none = aborted
 
         // Verify layout was reverted to original
         keyedStates = container.keyedStates;
@@ -798,11 +777,8 @@ suite('PinnedToolbarActions', function() {
         assertEquals(1, receivedMessages.length);
 
         // 3. Simulate dragend (aborted)
-        firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
-          detail: {itemId: '1', dropEffect: 'none'},
-          bubbles: true,
-          composed: true,
-        }));
+        firstAction.fire(
+            'toolbar-action-drag-end', {itemId: '1', dropEffect: 'none'});
         await microtasksFinished();
 
         // Verify layout is updated after drag ends

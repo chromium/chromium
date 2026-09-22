@@ -75,8 +75,7 @@ suite('DuplexSettingsTest', function() {
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
     checkbox.checked = true;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     await microtasksFinished();
     assertTrue(collapse.opened);
     assertTrue(duplexSection.getSettingValue('duplex'));

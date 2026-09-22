@@ -170,9 +170,7 @@ import {navigateTo} from './test_util.js';
     test('route updates from search', async function() {
       const searchTerm = 'McCree';
       assertEquals('history', app.$.content.selected);
-      app.dispatchEvent(new CustomEvent(
-          'change-query',
-          {bubbles: true, composed: true, detail: {search: searchTerm}}));
+      app.fire('change-query', {search: searchTerm});
       await microtasksFinished();
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
     });
@@ -359,15 +357,11 @@ suite('routing-test-with-history-embeddings-enabled', () => {
     assertTrue(!!filterChips);
 
     // Changing the "By group" chip to should change the URL.
-    filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
-      detail: {
-        value: {
-          timeRangeStart: new Date('2011-01-01T00:00:00'),
-        },
+    filterChips.fire('selected-suggestion-changed', {
+      value: {
+        timeRangeStart: new Date('2011-01-01T00:00:00'),
       },
-      composed: true,
-      bubbles: true,
-    }));
+    });
     await microtasksFinished();
 
     assertEquals(

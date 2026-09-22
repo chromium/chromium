@@ -233,11 +233,7 @@ suite('manager tests', function() {
         await microtasksFinished();
         const item = manager.shadowRoot.querySelector('downloads-item');
         assertTrue(!!item);
-        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
-          bubbles: true,
-          composed: true,
-          detail: {id: item.data?.id || ''},
-        }));
+        item.fire('save-dangerous-click', {id: item.data?.id || ''});
         await callbackRouterRemote.$.flushForTesting();
         const recordOpenId =
             await handler.whenCalled('recordOpenBypassWarningDialog');
@@ -270,11 +266,7 @@ suite('manager tests', function() {
     await microtasksFinished();
     const item = manager.shadowRoot.querySelector('downloads-item');
     assertTrue(!!item);
-    item.dispatchEvent(new CustomEvent('save-dangerous-click', {
-      bubbles: true,
-      composed: true,
-      detail: {id: item.data?.id || ''},
-    }));
+    item.fire('save-dangerous-click', {id: item.data?.id || ''});
     await callbackRouterRemote.$.flushForTesting();
     const recordOpenId =
         await handler.whenCalled('recordOpenBypassWarningDialog');
@@ -308,11 +300,7 @@ suite('manager tests', function() {
         await microtasksFinished();
         const item = manager.shadowRoot.querySelector('downloads-item');
         assertTrue(!!item);
-        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
-          bubbles: true,
-          composed: true,
-          detail: {id: item.data?.id || ''},
-        }));
+        item.fire('save-dangerous-click', {id: item.data?.id || ''});
         await microtasksFinished();
 
         const dialog = manager.shadowRoot.querySelector(

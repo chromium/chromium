@@ -412,17 +412,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertFalse(modulesElement.$.undoToast.open);
 
               let restoreCalled = false;
-              moduleWrappers[0]!.dispatchEvent(
-                  new CustomEvent('dismiss-module-instance', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                      message: 'Foo',
-                      restoreCallback: () => {
-                        restoreCalled = true;
-                      },
-                    },
-                  }));
+              moduleWrappers[0]!.fire('dismiss-module-instance', {
+                message: 'Foo',
+                restoreCallback: () => {
+                  restoreCalled = true;
+                },
+              });
               await microtasksFinished();
 
               assertEquals(
@@ -675,17 +670,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
           assertContainerLayout(moduleWrappers, layoutChangeScenario.before);
 
           let restoreCalled = false;
-          moduleWrappers[0]!.dispatchEvent(
-              new CustomEvent('dismiss-module-instance', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                  message: 'Foo',
-                  restoreCallback: () => {
-                    restoreCalled = true;
-                  },
-                },
-              }));
+          moduleWrappers[0]!.fire('dismiss-module-instance', {
+            message: 'Foo',
+            restoreCallback: () => {
+              restoreCalled = true;
+            },
+          });
           assertFalse(restoreCalled);
           await microtasksFinished();
 

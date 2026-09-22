@@ -53,8 +53,7 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
 
@@ -79,8 +78,7 @@ suite('RuntimeHostsDialog', function() {
     const invalidSite = 'foobar';
     input.value = invalidSite;
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
@@ -88,8 +86,7 @@ suite('RuntimeHostsDialog', function() {
     // Entering valid text should clear the error and enable the submit button.
     input.value = 'http://www.example.com';
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
@@ -102,8 +99,7 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://....a';
     input.value = site;
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
 
@@ -124,8 +120,7 @@ suite('RuntimeHostsDialog', function() {
     const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newPattern;
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     const submit = dialog.$.submit;
 
@@ -171,8 +166,7 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
 
@@ -244,16 +238,14 @@ suite('RuntimeHostsDialog', function() {
     const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = 'http://www.nomatch.com';
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
     assertFalse(isVisible(
         dialog.shadowRoot.querySelector('.matching-restricted-sites-warning')));
 
     input.value = 'http://*.restricted.com';
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
     assertTrue(isVisible(

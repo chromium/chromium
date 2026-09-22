@@ -121,8 +121,7 @@ suite('AdvancedDialogTest', function() {
 
     // Simulate typing a value and then pressing enter.
     typedItemInput.value = 'Hello World';
-    typedItemInput.dispatchEvent(
-        new CustomEvent('input', {composed: true, bubbles: true}));
+    typedItemInput.fire('input');
 
     const whenDialogClose = eventToPromise('close', dialog);
     keyEventOn(typedItemInput, 'keydown', 13, [], 'Enter');

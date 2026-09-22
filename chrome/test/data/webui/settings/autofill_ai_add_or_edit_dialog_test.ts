@@ -317,11 +317,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     const simulateInput = async (inputIndex: number, value: string) => {
       const input = inputs[inputIndex]!;
       input.value = value;
-      input.dispatchEvent(new CustomEvent('value-changed', {
-        bubbles: true,
-        composed: true,
-        detail: {value: value},
-      }));
+      input.fire('value-changed', {value: value});
       input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
       await flushTasks();
     };

@@ -120,8 +120,7 @@ suite('SettingsSubpage', function() {
     const search = subpage.shadowRoot.querySelector('cr-search-field');
     assertTrue(!!search);
     search.setValue('Hello');
-    subpage.dispatchEvent(new CustomEvent(
-        'clear-subpage-search', {bubbles: true, composed: true}));
+    subpage.fire('clear-subpage-search');
     await microtasksFinished();
     assertEquals('', search.getValue());
   });

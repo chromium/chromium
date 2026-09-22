@@ -51,8 +51,7 @@ suite('history-toolbar', function() {
     testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
       results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
     }));
-    app.$.history.dispatchEvent(new CustomEvent(
-        'query-history', {bubbles: true, composed: true, detail: true}));
+    app.$.history.fire('query-history', true);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     await microtasksFinished();
     const item = app.$.history.shadowRoot.querySelector('history-item')!;
@@ -82,8 +81,7 @@ suite('history-toolbar', function() {
     testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS},
     }));
-    toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
-        'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
+    toolbar.$.mainToolbar.fire('search-changed', 'Test');
     const queryArgs = await testProxy.handler.whenCalled('queryHistory');
     assertEquals('Test', queryArgs[0]);
   });
@@ -96,8 +94,7 @@ suite('history-toolbar', function() {
     testProxy.handler.setResultFor('queryHistory', delayedQuery.promise);
 
     const toolbar = app.$.toolbar;
-    toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
-        'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
+    toolbar.$.mainToolbar.fire('search-changed', 'Test2');
     await testProxy.handler.whenCalled('queryHistory');
     await microtasksFinished();
 

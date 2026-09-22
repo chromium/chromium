@@ -151,12 +151,7 @@ suite('SimplifiedSelection', function() {
       rotation: 0,
       coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
     };
-    textLayerElement.dispatchEvent(
-        new CustomEvent<CenterRotatedBox>('detect-text-in-region', {
-          bubbles: true,
-          composed: true,
-          detail: centerRotatedBox,
-        }));
+    textLayerElement.fire('detect-text-in-region', centerRotatedBox);
     await flushTasks();
   }
 

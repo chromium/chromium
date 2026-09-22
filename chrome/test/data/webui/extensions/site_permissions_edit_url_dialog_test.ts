@@ -32,8 +32,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     const site = 'http://www.example.com';
     input.value = site;
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
 
@@ -59,8 +58,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     const invalidSite = 'foobar';
     input.value = invalidSite;
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
@@ -68,8 +66,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     // Entering valid text should clear the error and enable the submit button.
     input.value = 'http://www.example.com';
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
@@ -77,8 +74,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     // Wildcard scheme is considered invalid input.
     input.value = '*://www.example.com';
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
@@ -93,8 +89,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertTrue(!!input);
     input.value = newSite;
     await microtasksFinished();
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     await microtasksFinished();
     assertFalse(input.invalid);
 

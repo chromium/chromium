@@ -63,8 +63,7 @@ suite('cr-chip', function() {
 
   test('Ripple', function() {
     assertFalse(!!crChip.shadowRoot.querySelector('#ink'));
-    crChip.dispatchEvent(
-        new CustomEvent('pointerdown', {bubbles: true, composed: true}));
+    crChip.fire('pointerdown');
     assertTrue(!!crChip.shadowRoot.querySelector('#ink'));
   });
 });

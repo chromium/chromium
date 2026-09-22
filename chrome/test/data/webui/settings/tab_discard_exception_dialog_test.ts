@@ -84,8 +84,7 @@ suite('TabDiscardExceptionsDialog', function() {
     const trimmedRule = rule.trim();
     dialog.$.input.$.input.value = rule;
     await dialog.$.input.$.input.updateComplete;
-    dialog.$.input.$.input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    dialog.$.input.$.input.fire('input');
     if (trimmedRule &&
         trimmedRule.length <= MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH) {
       const validatedRule = await performanceBrowserProxy.whenCalled(

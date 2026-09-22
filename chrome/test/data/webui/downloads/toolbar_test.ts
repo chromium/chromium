@@ -29,15 +29,13 @@ suite('toolbar tests', function() {
   });
 
   test('search starts spinner', function() {
-    toolbar.$.toolbar.dispatchEvent(new CustomEvent(
-        'search-changed', {composed: true, bubbles: true, detail: 'a'}));
+    toolbar.$.toolbar.fire('search-changed', 'a');
     assertTrue(toolbar.spinnerActive);
 
     // Pretend the manager got results and set this to false.
     toolbar.spinnerActive = false;
 
-    toolbar.$.toolbar.dispatchEvent(new CustomEvent(
-        'search-changed', {composed: true, bubbles: true, detail: 'a '}));
+    toolbar.$.toolbar.fire('search-changed', 'a ');
     assertFalse(toolbar.spinnerActive);
   });
 

@@ -506,8 +506,7 @@ suite('ContextualTasksAppTest', function() {
     // Simulate a new thread click from the toolbar.
     const toolbar = appElement.shadowRoot.querySelector('top-toolbar');
     assertTrue(!!toolbar, 'Toolbar should be visible');
-    toolbar.dispatchEvent(
-        new CustomEvent('new-thread-click', {bubbles: true, composed: true}));
+    toolbar.fire('new-thread-click');
     await microtasksFinished();
 
     const finalUrl = new URL(appElement.getThreadUrlForTesting());

@@ -1207,12 +1207,10 @@ suite('ComposeboxVoiceSearch', () => {
 
     searchboxHandler.resetResolver('submitQuery');
     const mainSubmitButton = composeboxElement.$.submit;
-    mainSubmitButton.dispatchEvent(
-        new CustomEvent('submit-focusin', {bubbles: true, composed: true}));
+    mainSubmitButton.fire('submit-focusin');
     await microtasksFinished();
 
-    mainSubmitButton.dispatchEvent(
-        new CustomEvent('submit-click', {bubbles: true, composed: true}));
+    mainSubmitButton.fire('submit-click');
     await microtasksFinished();
 
     assertEquals(1, searchboxHandler.getCallCount('submitQuery'));

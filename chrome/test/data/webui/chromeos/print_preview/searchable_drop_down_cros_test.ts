@@ -37,16 +37,14 @@ suite('cr-searchable-drop-down', function() {
         dropDown.shadowRoot!.querySelector('cr-input')!);
     input.value = searchTerm;
     await input.updateComplete;
-    input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
+    input.fire('input');
     flush();
   }
 
   async function blur(): Promise<void> {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot!.querySelector('cr-input')!);
-    input.dispatchEvent(
-        new CustomEvent('blur', {bubbles: true, composed: true}));
+    input.fire('blur');
     await input.updateComplete;
     flush();
   }

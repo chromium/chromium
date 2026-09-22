@@ -285,9 +285,7 @@ suite('DestinationSettingsTest', function() {
     const whenDestinationSelect = eventToPromise(
         DestinationStoreEventType.DESTINATION_SELECT,
         destinationSettings.getDestinationStoreForTest());
-    dropdown.dispatchEvent(new CustomEvent(
-        'selected-option-change',
-        {bubbles: true, composed: true, detail: 'Save as PDF/local/'}));
+    dropdown.fire('selected-option-change', 'Save as PDF/local/');
 
     // Ensure this fires the destination select event.
     await whenDestinationSelect;
@@ -323,11 +321,7 @@ suite('DestinationSettingsTest', function() {
     const whenDestinationSelect = eventToPromise(
         DestinationStoreEventType.DESTINATION_SELECT,
         destinationSettings.getDestinationStoreForTest());
-    dropdown.dispatchEvent(new CustomEvent('selected-option-change', {
-      bubbles: true,
-      composed: true,
-      detail: makeLocalDestinationKey('ID2'),
-    }));
+    dropdown.fire('selected-option-change', makeLocalDestinationKey('ID2'));
     await whenDestinationSelect;
     assertTrue(!!destinationSettings.destination);
     assertEquals('ID2', destinationSettings.destination.id);
@@ -413,12 +407,8 @@ suite('DestinationSettingsTest', function() {
     // Reselect a recent destination. Still 2 destinations, but in a
     // different order.
     nativeLayer.resetResolver('getPrinterCapabilities');
-    destinationSettings.$.destinationSelect.dispatchEvent(
-        new CustomEvent('selected-option-change', {
-          bubbles: true,
-          composed: true,
-          detail: 'Save as PDF/local/',
-        }));
+    destinationSettings.$.destinationSelect.fire(
+        'selected-option-change', 'Save as PDF/local/');
     await microtasksFinished();
     assertRecentDestinations(['Save as PDF', 'ID1']);
     // No additional capabilities call, since the destination was

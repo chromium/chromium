@@ -1596,9 +1596,7 @@ suite('ComposeboxAutocomplete', () => {
           const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
               element, 'cr-composebox-voice-search');
           assertTrue(!!voiceSearchElement);
-          voiceSearchElement.dispatchEvent(new CustomEvent(
-              'voice-search-final-result',
-              {detail: voiceQuery, bubbles: true, composed: true}));
+          voiceSearchElement.fire('voice-search-final-result', voiceQuery);
 
           const voiceSearchActionEvent = await voiceSearchActionPromise;
           assertEquals(

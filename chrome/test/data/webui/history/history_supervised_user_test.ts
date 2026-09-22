@@ -52,12 +52,8 @@ suite('history-list supervised-user', function() {
     const whenChecked = eventToPromise('history-checkbox-select', historyList);
     // Manually dispatch the event since the checkboxes are disabled due
     // to the test configuration.
-    historyList.shadowRoot.querySelector('history-item')!.dispatchEvent(
-        new CustomEvent('history-checkbox-select', {
-          bubbles: true,
-          composed: true,
-          detail: {index: 0, shiftKey: false},
-        }));
+    historyList.shadowRoot.querySelector('history-item')!.fire(
+        'history-checkbox-select', {index: 0, shiftKey: false});
     await whenChecked;
     toolbar.deleteSelectedItems();
     // Make sure that removeVisits is not being called.

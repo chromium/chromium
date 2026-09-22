@@ -27,8 +27,7 @@ async function updateIbanTextboxValue(
   valueInput.focus();
   valueInput.value = value;
   await valueInput.updateComplete;
-  valueInput.dispatchEvent(
-      new CustomEvent('input', {bubbles: true, composed: true}));
+  valueInput.fire('input');
 }
 
 /**

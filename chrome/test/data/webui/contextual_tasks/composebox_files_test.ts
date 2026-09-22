@@ -598,12 +598,9 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
         disabledInputTypes: [InputType.kLensImage],
       };
 
-      parts.innerComposebox.dispatchEvent(
-          new CustomEvent('input-state-changed', {
-            detail: {inputState: disabledState},
-            bubbles: true,
-            composed: true,
-          }));
+      parts.innerComposebox.fire('input-state-changed', {
+        inputState: disabledState,
+      });
 
       await microtasksFinished();
 
@@ -915,17 +912,13 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
   async function addManualTab(
       token: string, tabId: number, title: string, url: string) {
     await expectAddTabContext(token, () => {
-      getEntrypointAndMenu().dispatchEvent(new CustomEvent('add-tab-context', {
-        detail: {
-          id: tabId,
-          title,
-          url,
-          delayUpload: false,
-          origin: TabUploadOrigin.CURRENT_TAB_CHIP,
-        },
-        bubbles: true,
-        composed: true,
-      }));
+      getEntrypointAndMenu().fire('add-tab-context', {
+        id: tabId,
+        title,
+        url,
+        delayUpload: false,
+        origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+      });
     });
     await settle();
   }

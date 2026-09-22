@@ -73,12 +73,8 @@ suite('WallpaperSearchTest', () => {
 
   function updateCrFeedbackButtons(option: CrFeedbackOption) {
     wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
-    wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
-        new CustomEvent('selected-option-changed', {
-          bubbles: true,
-          composed: true,
-          detail: {value: option},
-        }));
+    wallpaperSearchElement.$.feedbackButtons.fire(
+        'selected-option-changed', {value: option});
   }
 
   setup(() => {

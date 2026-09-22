@@ -60,8 +60,7 @@ suite('PinSettingsTest', function() {
     assertEquals('', pinSection.getSettingValue('pinValue'));
 
     checkbox.checked = true;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     assertTrue(collapse.opened);
     assertTrue(pinSection.getSettingValue('pin'));
     assertTrue(pinSection.getSetting('pin').setFromUi);
@@ -85,8 +84,7 @@ suite('PinSettingsTest', function() {
   test('enter non-digit pin value', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that entering the non-digit pin value in the input updates the
@@ -108,8 +106,7 @@ suite('PinSettingsTest', function() {
   test('enter too short pin value', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that entering too short pin value in the input updates the
@@ -130,8 +127,7 @@ suite('PinSettingsTest', function() {
   test('enter empty pin value', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that initial pin value is empty and the setting is invalid.
@@ -159,8 +155,7 @@ suite('PinSettingsTest', function() {
 
     // Check that after unchecking the checkbox the pin value is valid again.
     checkbox.checked = false;
-    checkbox.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    checkbox.fire('change');
     assertTrue(pinSection.isPinValid);
   });
 

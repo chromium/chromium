@@ -96,8 +96,7 @@ suite('HistoryListTest', function() {
     testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
       results: {info: createHistoryInfo(), value: ADDITIONAL_RESULTS},
     }));
-    element.dispatchEvent(new CustomEvent(
-        'query-history', {detail: true, bubbles: true, composed: true}));
+    element.fire('query-history', true);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     await microtasksFinished();
 
@@ -246,8 +245,7 @@ suite('HistoryListTest', function() {
     testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
       results: {info: createHistoryInfo(), value: ADDITIONAL_RESULTS},
     }));
-    element.dispatchEvent(new CustomEvent(
-        'query-history', {detail: true, bubbles: true, composed: true}));
+    element.fire('query-history', true);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     return microtasksFinished();
   }
@@ -315,8 +313,7 @@ suite('HistoryListTest', function() {
     testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
     }));
-    element.dispatchEvent(new CustomEvent(
-        'query-history', {bubbles: true, composed: true, detail: false}));
+    element.fire('query-history', false);
     await testProxy.handler.whenCalled('queryHistory');
     await microtasksFinished();
     assertTrue(element.$.noResults.hidden);
@@ -377,8 +374,7 @@ suite('HistoryListTest', function() {
         value: [createHistoryEntry('2016-06-9', 'https://www.example.com')],
       },
     }));
-    element.dispatchEvent(new CustomEvent(
-        'query-history', {bubbles: true, composed: true, detail: false}));
+    element.fire('query-history', false);
     await testProxy.handler.whenCalled('queryHistory');
     assertEquals(0, toolbar.count);
   });
@@ -840,11 +836,7 @@ suite('HistoryListTest', function() {
 
     // Navigate from chrome://history/ to
     // chrome://history/?q=something else.
-    app.dispatchEvent(new CustomEvent('change-query', {
-      bubbles: true,
-      composed: true,
-      detail: {search: 'something else'},
-    }));
+    app.fire('change-query', {search: 'something else'});
     await testProxy.handler.whenCalled('queryHistory');
     testProxy.handler.resetResolver('queryHistory');
     testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
@@ -853,8 +845,7 @@ suite('HistoryListTest', function() {
         value: ADDITIONAL_RESULTS,
       },
     }));
-    element.dispatchEvent(new CustomEvent(
-        'query-history', {bubbles: true, composed: true, detail: true}));
+    element.fire('query-history', true);
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     await eventToPromise('items-rendered', element.$.infiniteList);
     const items = element.shadowRoot.querySelectorAll('history-item');
@@ -1081,7 +1072,6 @@ suite('HistoryListTest', function() {
   });
 
   teardown(function() {
-    app.dispatchEvent(new CustomEvent(
-        'change-query', {bubbles: true, composed: true, detail: {search: ''}}));
+    app.fire('change-query', {search: ''});
   });
 });

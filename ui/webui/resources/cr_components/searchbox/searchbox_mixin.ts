@@ -312,11 +312,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           cursorPosition, SuggestInventory.kDefault, isOnFocus, keyword,
           InputMethod.kKeyboard);
 
-      this.dispatchEvent(new CustomEvent('query-autocomplete', {
-        bubbles: true,
-        composed: true,
-        detail: {inputValue: input},
-      }));
+      this.fire('query-autocomplete', {inputValue: input});
     }
 
     shouldAppendDotComOnCtrlEnter(): boolean {
@@ -636,16 +632,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         const button =
             this.shadowRoot.querySelector('cr-searchbox-compose-button');
         if (button) {
-          button.dispatchEvent(new CustomEvent('compose-click', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              button: 0,
-              ctrlKey: e.ctrlKey,
-              metaKey: e.metaKey,
-              shiftKey: e.shiftKey,
-            },
-          }));
+          button.fire('compose-click', {
+            button: 0,
+            ctrlKey: e.ctrlKey,
+            metaKey: e.metaKey,
+            shiftKey: e.shiftKey,
+          });
         }
         return true;
       }
@@ -801,14 +793,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       if (e.key === 'Escape') {
-        this.dispatchEvent(new CustomEvent('escape-searchbox', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            event: e,
-            emptyInput: !this.getInputElement().inputElement.value,
-          },
-        }));
+        this.fire('escape-searchbox', {
+          event: e,
+          emptyInput: !this.getInputElement().inputElement.value,
+        });
       }
 
       // Do not handle the following keys if inside an IME composition session.

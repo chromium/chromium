@@ -595,8 +595,7 @@ suite('CustomMarginsTest', function() {
     // Workaround for mac so that this does not need to be an
     // interactive test: manually fire the focus event from the
     // control.
-    bottomControl.dispatchEvent(
-        new CustomEvent('text-focus', {bubbles: true, composed: true}));
+    bottomControl.fire('text-focus');
     const args = await whenEventFired;
 
     // Shifts left by padding of 50px to ensure that the full textbox

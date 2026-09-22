@@ -90,8 +90,7 @@ suite('cr-radio-button', function() {
     }
 
     assertFalse(!!getRipple());
-    radioButton.dispatchEvent(
-        new CustomEvent('up', {bubbles: true, composed: true}));
+    radioButton.fire('up');
     const ripple = getRipple();
     assertTrue(!!ripple);
     assertFalse(ripple.holdDown);

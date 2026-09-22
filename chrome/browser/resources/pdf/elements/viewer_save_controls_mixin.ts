@@ -145,8 +145,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
         anchorAlignmentX: AnchorAlignment.CENTER,
       });
       // For tests
-      this.dispatchEvent(new CustomEvent(
-          'save-menu-shown-for-testing', {bubbles: true, composed: true}));
+      this.fire('save-menu-shown-for-testing');
     }
 
     /**

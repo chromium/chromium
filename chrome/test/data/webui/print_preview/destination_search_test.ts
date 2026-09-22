@@ -53,9 +53,7 @@ suite('DestinationSearchTest', function() {
     const list =
         dialog.shadowRoot.querySelector('print-preview-destination-list');
     assertTrue(!!list);
-    list.dispatchEvent(new CustomEvent(
-        'destination-selected',
-        {bubbles: true, composed: true, detail: destination}));
+    list.fire('destination-selected', destination);
   }
 
   // Tests that a destination is selected if the user clicks on it and

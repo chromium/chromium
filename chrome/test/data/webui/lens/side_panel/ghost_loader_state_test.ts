@@ -103,12 +103,8 @@ suite('GhostLoaderState', () => {
     await waitAfterNextRender(lensSidePanelElement);
     assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
     // Click into the searchbox.
-    lensSidePanelElement.$.searchbox.dispatchEvent(
-        new CustomEvent('query-autocomplete', {
-          bubbles: true,
-          composed: true,
-          detail: {inputValue: ''},
-        }));
+    lensSidePanelElement.$.searchbox.fire(
+        'query-autocomplete', {inputValue: ''});
 
     await waitAfterNextRender(lensSidePanelElement);
     // State should be switched back to loading state clicking into searchbox.
