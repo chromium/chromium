@@ -47,6 +47,10 @@ const char* DeviceTrustErrorToJsErrorCode(
       return "ATTESTATION_TIMEOUT";
     case enterprise_connectors::DeviceTrustError::kUrlNotAllowed:
       return "URL_NOT_ALLOWED";
+    case enterprise_connectors::DeviceTrustError::kServiceUnavailable:
+      return "SERVICE_UNAVAILABLE";
+    case enterprise_connectors::DeviceTrustError::kInvalidOrigin:
+      return "INVALID_ORIGIN";
     case enterprise_connectors::DeviceTrustError::kUnknown:
     case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
       return "INTERNAL_ERROR";
@@ -65,6 +69,9 @@ const char* DeviceTrustErrorToJsErrorMessage(
       return "Timed out waiting for attestation response.";
     case enterprise_connectors::DeviceTrustError::kUrlNotAllowed:
       return "The requesting URL is not allowed for device attestation.";
+    case enterprise_connectors::DeviceTrustError::kInvalidOrigin:
+      return "The requesting origin is invalid.";
+    case enterprise_connectors::DeviceTrustError::kServiceUnavailable:
     case enterprise_connectors::DeviceTrustError::kUnknown:
     case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
       return "Device attestation is not available.";

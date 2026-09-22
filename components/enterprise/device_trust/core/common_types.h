@@ -48,6 +48,8 @@ enum class DeviceTrustError {
   kFailedToCreateResponse,
   kTooManyRequests,
   kUrlNotAllowed,
+  kServiceUnavailable,
+  kInvalidOrigin,
 };
 
 // Used to convert an attestation `error` to a string. This function will return
