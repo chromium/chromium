@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
 namespace extensions {
@@ -93,6 +94,13 @@ WmDesksPrivateLaunchDeskFunction::WmDesksPrivateLaunchDeskFunction() = default;
 WmDesksPrivateLaunchDeskFunction::~WmDesksPrivateLaunchDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Ensure the calling profile is the active user's profile to prevent
+  // cross-profile desk manipulation.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return RespondNow(
+        Error("The Desk API is only available to the active user profile."));
+  }
   std::optional<api::wm_desks_private::LaunchDesk::Params> params =
       api::wm_desks_private::LaunchDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -119,6 +127,13 @@ WmDesksPrivateRemoveDeskFunction::WmDesksPrivateRemoveDeskFunction() = default;
 WmDesksPrivateRemoveDeskFunction::~WmDesksPrivateRemoveDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Ensure the calling profile is the active user's profile to prevent
+  // cross-profile desk manipulation.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return RespondNow(
+        Error("The Desk API is only available to the active user profile."));
+  }
   std::optional<api::wm_desks_private::RemoveDesk::Params> params =
       api::wm_desks_private::RemoveDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -286,6 +301,13 @@ WmDesksPrivateGetActiveDeskFunction::~WmDesksPrivateGetActiveDeskFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetActiveDeskFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Ensure the calling profile is the active user's profile to prevent
+  // cross-profile desk manipulation.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return RespondNow(
+        Error("The Desk API is only available to the active user profile."));
+  }
   WMDesksPrivateFeatureAsh().GetActiveDesk(base::BindOnce(
       &WmDesksPrivateGetActiveDeskFunction::OnGetActiveDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -307,6 +329,13 @@ WmDesksPrivateSwitchDeskFunction::WmDesksPrivateSwitchDeskFunction() = default;
 WmDesksPrivateSwitchDeskFunction::~WmDesksPrivateSwitchDeskFunction() = default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Ensure the calling profile is the active user's profile to prevent
+  // cross-profile desk manipulation.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return RespondNow(
+        Error("The Desk API is only available to the active user profile."));
+  }
   std::optional<api::wm_desks_private::SwitchDesk::Params> params =
       api::wm_desks_private::SwitchDesk::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -334,6 +363,13 @@ WmDesksPrivateGetDeskByIDFunction::~WmDesksPrivateGetDeskByIDFunction() =
     default;
 
 ExtensionFunction::ResponseAction WmDesksPrivateGetDeskByIDFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  // Ensure the calling profile is the active user's profile to prevent
+  // cross-profile desk manipulation.
+  if (profile != ProfileManager::GetActiveUserProfile()) {
+    return RespondNow(
+        Error("The Desk API is only available to the active user profile."));
+  }
   auto params = api::wm_desks_private::GetDeskByID::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_uuid);

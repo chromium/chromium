@@ -22,3 +22,8 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+specific_include_rules = {
+  "wm_desks_private_api\\.cc": [
+    "+chrome/browser/profiles/profile_manager.h",
+  ],
+}

@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 
@@ -558,6 +559,36 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, GetDeskByNonExistIDTest) {
       get_desk_by_id_function.get(), R"([")" + desk_id + R"("])",
       browser()->GetProfile());
   EXPECT_EQ(error, "ResourceNotFoundError");
+}
+
+// Tests that desk API functions reject calls from an inactive user profile.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, RejectsInactiveProfileCalls) {
+  TestingProfile inactive_profile;
+  ASSERT_NE(&inactive_profile, browser()->GetProfile());
+
+  constexpr char kExpectedError[] =
+      "The Desk API is only available to the active user profile.";
+
+  auto expect_inactive_profile_error =
+      [&](scoped_refptr<ExtensionFunction> function, const std::string& args) {
+        EXPECT_EQ(kExpectedError, api_test_utils::RunFunctionAndReturnError(
+                                      function.get(), args, &inactive_profile));
+      };
+
+  expect_inactive_profile_error(
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>(),
+      R"([{"deskName": "test"}])");
+  expect_inactive_profile_error(
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>(),
+      R"(["00000000-0000-0000-0000-000000000001", {"combineDesks": false}])");
+  expect_inactive_profile_error(
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>(), "[]");
+  expect_inactive_profile_error(
+      base::MakeRefCounted<WmDesksPrivateSwitchDeskFunction>(),
+      R"(["00000000-0000-0000-0000-000000000001"])");
+  expect_inactive_profile_error(
+      base::MakeRefCounted<WmDesksPrivateGetDeskByIDFunction>(),
+      R"(["00000000-0000-0000-0000-000000000001"])");
 }
 
 }  // namespace extensions
