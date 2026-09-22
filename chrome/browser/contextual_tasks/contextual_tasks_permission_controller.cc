@@ -62,7 +62,10 @@ ContextualTasksPermissionController::GetState() const {
     return location_bar_->permission_dashboard()->GetState();
   }
 #endif
-  return toolbar_ui_api::mojom::PermissionDashboardState::New();
+  auto state = toolbar_ui_api::mojom::PermissionDashboardState::New();
+  state->indicator_chip = toolbar_ui_api::mojom::PermissionChipState::New();
+  state->request_chip = toolbar_ui_api::mojom::PermissionChipState::New();
+  return state;
 }
 
 void ContextualTasksPermissionController::PushStateToWebUI() {}
