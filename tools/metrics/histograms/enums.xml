@@ -15708,6 +15708,7 @@ from previous Chrome versions.
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>
   <int value="267706621" label="WallpaperPerDesk:disabled"/>
+  <int value="267752898" label="PingSso:disabled"/>
   <int value="268383828" label="WebAssemblyStringref:enabled"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
@@ -17469,6 +17470,7 @@ from previous Chrome versions.
   <int value="795030823" label="WebUIOmniboxPopupSelectionControl:enabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
+  <int value="798067365" label="PingSso:enabled"/>
   <int value="798093827"
       label="EnableEscapeHandlingForSecondaryActivities:enabled"/>
   <int value="798254284" label="CastMirroringNativeNV12:enabled"/>

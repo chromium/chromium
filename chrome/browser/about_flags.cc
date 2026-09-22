@@ -12690,6 +12690,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_auth::kOktaSSO)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"mac-enable-ping-sso", flag_descriptions::kEnablePingSSOName,
+     flag_descriptions::kEnablePingSSODescription, kOsMac,
+     FEATURE_VALUE_TYPE(enterprise_auth::kPingSso)},
+#endif
+
     {"autofill-enable-wallet-branding",
      flag_descriptions::kAutofillEnableWalletBrandingName,
      flag_descriptions::kAutofillEnableWalletBrandingDescription, kOsAll,

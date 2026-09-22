@@ -6870,6 +6870,13 @@
     "expiry_milestone": 155
   },
   {
+    "name": "mac-enable-ping-sso",
+    "owners": [
+      "ssolarewicz@google.com", "cec-growth-eng@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "magichrome-passkey-signin",
     "owners": [ "msalama@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160

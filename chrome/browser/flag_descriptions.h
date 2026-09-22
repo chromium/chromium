@@ -8826,6 +8826,11 @@ inline constexpr char kEnableOktaSSOName[] =
 inline constexpr char kEnableOktaSSODescription[] =
     "Enables native support for Okta SSO on managed MacOS devices.";
 
+inline constexpr char kEnablePingSSOName[] =
+    "Enable Ping SSO for enterprise browsers.";
+inline constexpr char kEnablePingSSODescription[] =
+    "Enables native support for Ping Identity SSO on managed MacOS devices.";
+
 inline constexpr char kShowFrozenUpdateNotificationName[] =
     "Show Frozen Update Notifications.";
 inline constexpr char kShowFrozenUpdateNotificationDescription[] =
