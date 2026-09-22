@@ -210,6 +210,11 @@ AutocompleteResult::~AutocompleteResult() {
 #endif
 }
 
+AutocompleteResult::AutocompleteResult(AutocompleteResult&&) noexcept = default;
+
+AutocompleteResult& AutocompleteResult::operator=(
+    AutocompleteResult&& other) noexcept = default;
+
 void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
                                             AutocompleteResult* old_matches) {
   // Skip any matches that would have already been added to the new matches if
@@ -1371,6 +1376,15 @@ void AutocompleteResult::CopyMatchesFrom(const AutocompleteResult& other) {
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif
+}
+
+AutocompleteResult AutocompleteResult::CopyForSnapshot() const {
+  AutocompleteResult snapshot;
+  snapshot.CopyMatchesFrom(*this);
+  snapshot.max_url_matches_ = max_url_matches_;
+  snapshot.session_ = session_;
+  snapshot.sequence_id_ = sequence_id_;
+  return snapshot;
 }
 
 #if DCHECK_IS_ON()

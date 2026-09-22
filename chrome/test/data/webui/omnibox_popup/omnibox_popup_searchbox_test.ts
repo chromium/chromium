@@ -168,6 +168,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       await microtasksFinished();
 
       const [
+        resultSequenceId,
         line,
         url,
         areMatchesShowing,
@@ -175,6 +176,7 @@ suite('OmniboxPopupSearchboxTest', function() {
         modifiers,
         viaKeyboard,
       ] = await testProxy.handler.whenCalled('openAutocompleteMatch');
+      assertEquals(0, resultSequenceId);
       assertEquals(-1, line);
       assertEquals('', url);
       assertFalse(areMatchesShowing);

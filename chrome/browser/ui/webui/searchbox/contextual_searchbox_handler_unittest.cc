@@ -2459,10 +2459,11 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
             &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
 
     auto modifiers = searchbox::mojom::ActionModifiers::New();
-    handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
-                                    /*are_matches_showing=*/true,
-                                    /*mouse_button=*/0, std::move(modifiers),
-                                    /*via_keyboard=*/false);
+    handler().OpenAutocompleteMatch(
+        handler().autocomplete_controller()->result().sequence_id(), 0,
+        GURL("https://www.google.com"), /*are_matches_showing=*/true,
+        /*mouse_button=*/0, std::move(modifiers),
+        /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", false,
@@ -2495,10 +2496,11 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
             &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
 
     auto modifiers = searchbox::mojom::ActionModifiers::New();
-    handler().OpenAutocompleteMatch(0, GURL("https://www.contextual.com"),
-                                    /*are_matches_showing=*/true,
-                                    /*mouse_button=*/0, std::move(modifiers),
-                                    /*via_keyboard=*/false);
+    handler().OpenAutocompleteMatch(
+        handler().autocomplete_controller()->result().sequence_id(), 0,
+        GURL("https://www.contextual.com"), /*are_matches_showing=*/true,
+        /*mouse_button=*/0, std::move(modifiers),
+        /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", true, 1);
@@ -2544,10 +2546,11 @@ TEST_F(ContextualSearchboxHandlerTest,
                                       RecordTypedSuggestNavigationBase));
 
     auto modifiers = searchbox::mojom::ActionModifiers::New();
-    handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
-                                    /*are_matches_showing=*/true,
-                                    /*mouse_button=*/0, std::move(modifiers),
-                                    /*via_keyboard=*/false);
+    handler().OpenAutocompleteMatch(
+        handler().autocomplete_controller()->result().sequence_id(), 0,
+        GURL("https://www.google.com"), /*are_matches_showing=*/true,
+        /*mouse_button=*/0, std::move(modifiers),
+        /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
         "ContextualSearch.TypedSuggestNavigation.IsVerbatim.NewTabPage", true,
@@ -2585,7 +2588,8 @@ TEST_F(ContextualSearchboxHandlerTest,
 
     auto modifiers = searchbox::mojom::ActionModifiers::New();
     handler().OpenAutocompleteMatch(
-        1, GURL("https://www.google.com/search?q=suggestion"),
+        handler().autocomplete_controller()->result().sequence_id(), 1,
+        GURL("https://www.google.com/search?q=suggestion"),
         /*are_matches_showing=*/true, /*mouse_button=*/0, std::move(modifiers),
         /*via_keyboard=*/false);
 

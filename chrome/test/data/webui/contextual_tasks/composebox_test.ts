@@ -725,8 +725,9 @@ suite('ContextualTasksComposeboxTest', () => {
       composed: true,
     }));
 
-    const [index, url] =
+    const [resultSequenceId, index, url] =
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, resultSequenceId);
     assertEquals(0, index);
     assertEquals('https://test.com', url);
 

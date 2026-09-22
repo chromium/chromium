@@ -477,6 +477,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ToolMode,//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:ToolMode) -->
 
+<!-- LINT.IfChange(OmniboxWebUIMatchActivationStatus) -->
+
+<enum name="OmniboxWebUIMatchActivationStatus">
+  <summary>
+    Status of an autocomplete match activation attempt from WebUI searchbox.
+  </summary>
+  <int value="0" label="Live result match"/>
+  <int value="1" label="Snapshot match"/>
+  <int value="2" label="Snapshot not found or evicted"/>
+  <int value="3" label="URL mismatch"/>
+  <int value="4" label="Index out of bounds"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h:OmniboxWebUIMatchActivationStatus) -->
+
 <enum name="OmniboxWebUIRendererProcessGoneStatus">
   <int value="0" label="Normal termination"/>
   <int value="1" label="Abnormal termination"/>

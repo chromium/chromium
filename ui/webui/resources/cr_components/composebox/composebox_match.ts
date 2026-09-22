@@ -57,6 +57,8 @@ export class ComposeboxMatchElement extends CrLitElement {
        */
       matchIndex: {type: Number},
 
+      resultSequenceId: {type: Number},
+
       toolMode: {
         type: Number,
         reflect: true,
@@ -76,6 +78,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   accessor overrideClampLineNum: number = -1;
 
   accessor matchIndex: number = -1;
+  accessor resultSequenceId: number = 0;
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
   accessor richImageSuggestionsEnabled: boolean = false;
   accessor suggestStyle: string = 'default';
@@ -100,7 +103,9 @@ export class ComposeboxMatchElement extends CrLitElement {
 
     // Prevent default mousedown behavior (e.g., focus) to avoid layout shifts
     // that could interfere with click events, especially for ZPS suggestions.
-    this.addEventListener('mousedown', (event) => event.preventDefault());
+    this.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+    });
 
     this.style.setProperty(
         '--clamp-line-num',
@@ -178,7 +183,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     }
 
     this.searchboxHandler_.openAutocompleteMatch(
-        this.matchIndex, this.match.destinationUrl,
+        this.resultSequenceId, this.matchIndex, this.match.destinationUrl,
         /*areMatchesShowing=*/ true,
         /*mouseButton=*/ e.button || 0, {
           altKey: e.altKey,

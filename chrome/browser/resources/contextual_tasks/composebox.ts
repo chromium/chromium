@@ -502,6 +502,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
     if (match) {
       this.searchboxHandler_.openAutocompleteMatch(
+          /*resultSequenceId=*/ this.zeroStateSuggestions_.sequenceId,
           /*line=*/ index,
           /*url=*/ match.destinationUrl,
           /*areMatchesShowing=*/ true,

@@ -127,6 +127,9 @@ extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // BrowserView.
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView;
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline;
+// The maximum number of autocomplete result snapshots cached for stale match
+// activation.
+extern const base::FeatureParam<int> kWebUIOmniboxFullPopupSnapshotCacheSize;
 // Whether to enable dynamic animation for the WebUI Omnibox.
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation;
 // Whether to enable dynamic color scheme for the WebUI Omnibox.

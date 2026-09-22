@@ -1390,6 +1390,7 @@ export class OmniboxPopupSearchboxElement extends
       // verbatim input text (or reload the permanent URL).
       e.preventDefault();
       this.pageHandler().openAutocompleteMatch(
+          /*resultSequenceId=*/ this.result?.sequenceId ?? 0,
           /*line=*/ -1,
           /*url=*/ '',
           /*areMatchesShowing=*/ this.dropdownIsVisible,

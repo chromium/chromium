@@ -529,8 +529,9 @@ suite('Composebox', () => {
       bubbles: true,
       composed: true,
     }));
-    const [matchIndex, url] =
+    const [resultSequenceId, matchIndex, url] =
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(resultSequenceId, 0);
     assertEquals(matchIndex, 0);
     assertEquals(
         url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);

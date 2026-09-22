@@ -125,9 +125,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 
   openAutocompleteMatch(
-      line: number, url: Url, areMatchesShowing: boolean, mouseButton: number,
+      resultSequenceId: number, line: number, url: Url,
+      areMatchesShowing: boolean, mouseButton: number,
       modifiers: ActionModifiers, viaKeyboard: boolean) {
     this.methodCalled('openAutocompleteMatch', {
+      resultSequenceId,
       line,
       url,
       areMatchesShowing,

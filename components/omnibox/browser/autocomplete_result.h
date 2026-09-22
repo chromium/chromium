@@ -65,6 +65,12 @@ class AutocompleteResult {
   ~AutocompleteResult();
   AutocompleteResult(const AutocompleteResult&) = delete;
   AutocompleteResult& operator=(const AutocompleteResult&) = delete;
+  AutocompleteResult(AutocompleteResult&&) noexcept;
+  AutocompleteResult& operator=(AutocompleteResult&&) noexcept;
+
+  // Returns a copy of this result with its matches and associated metadata for
+  // snapshot retention.
+  AutocompleteResult CopyForSnapshot() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a corresponding Java object, creating it if necessary.
@@ -463,6 +469,8 @@ class AutocompleteResult {
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, SwapMatches);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTimeTest,
                            ResultReadyTimeSwapAndCopy);
+  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
+                           OpenAutocompleteMatch_HistoricalSnapshot);
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 
