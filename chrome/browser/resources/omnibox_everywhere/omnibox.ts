@@ -122,7 +122,11 @@ export class OmniboxEverywhereOmniboxElement extends
       composeButtonEnabled: {type: Boolean, reflect: true},
       profileAvatarUrl_: {type: String},
       isFuseboxEnabled: {type: Boolean, reflect: true},
-      hasUserInput_: {type: Boolean},
+      hasUserInput_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'has-user-input',
+      },
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       inputState_: {type: Object},
       searchboxLayoutMode: {type: String},

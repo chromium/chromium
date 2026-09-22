@@ -244,6 +244,9 @@ cr-most-visited:not([hide-title]) {
 }
 
 #content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) #mostVisitedContainer,
+#content:has([has-user-input]) #mostVisitedContainer,
+#content:has([is-context-menu-open]) #mostVisitedContainer,
+#content:has([is-screenshot-menu-open]) #mostVisitedContainer,
 #content:has(#composebox) #mostVisitedContainer,
 #mostVisitedContainer[hidden],
 #mostVisitedContainer:has(cr-most-visited:not([visible_])),

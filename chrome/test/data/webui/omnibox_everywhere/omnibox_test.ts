@@ -1841,6 +1841,86 @@ suite('OmniboxEverywhereAppTest', () => {
       });
   // </if>
 
+  test(
+      'MVT container hides when context menu, screenshot menu, or user input is present',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          initialFreStage: 0,
+        });
+        const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+        const {instance: mvInstance, remote: mvRemote} =
+            browserProxyFactory.createForTest(mvHandler);
+        browserProxyFactory.setInstance(mvInstance);
+        mvHandler.setResultFor(
+            'getMostVisitedExpandedState',
+            Promise.resolve({isExpanded: false}));
+
+        const appWithMv = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithMv);
+        await microtasksFinished();
+
+        const testTiles = [{
+          title: 'Google',
+          titleDirection: TextDirection.LEFT_TO_RIGHT,
+          url: 'https://www.google.com/',
+          source: 0,
+          titleSource: 0,
+          isQueryTile: false,
+          allowUserEdit: false,
+          allowUserDelete: false,
+        }];
+        mvRemote.setMostVisitedInfo({
+          customLinksEnabled: false,
+          enterpriseShortcutsEnabled: false,
+          tiles: testTiles,
+          visible: true,
+        });
+        await mvRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        const searchbox =
+            appWithMv.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+            '#mostVisitedContainer');
+        assertTrue(!!searchbox);
+        assertTrue(!!mvContainer);
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+
+        // Opening context (plus) menu hides MVT container.
+        searchbox.isContextMenuOpen = true;
+        await microtasksFinished();
+        assertEquals('none', window.getComputedStyle(mvContainer).display);
+
+        // Closing context menu restores MVT container.
+        searchbox.isContextMenuOpen = false;
+        await microtasksFinished();
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+
+        // Opening screenshot (lens) menu hides MVT container.
+        searchbox.isScreenshotMenuOpen = true;
+        await microtasksFinished();
+        assertEquals('none', window.getComputedStyle(mvContainer).display);
+
+        // Closing screenshot menu restores MVT container.
+        searchbox.isScreenshotMenuOpen = false;
+        await microtasksFinished();
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+
+        // Having user input hides MVT container even if dropdown is not
+        // visible.
+        searchbox.setInputText('query');
+        await microtasksFinished();
+        assertFalse(searchbox.dropdownIsVisible);
+        assertEquals('none', window.getComputedStyle(mvContainer).display);
+
+        // Clearing input text restores MVT container.
+        searchbox.setInputText('');
+        await microtasksFinished();
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+      });
+
   test('dynamic MVT visibility updates container visibility', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
