@@ -12,9 +12,11 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -56,6 +58,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -255,11 +258,14 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
     /** Provides the RemoteViews, one per bookmark, to be shown in the widget. */
     @VisibleForTesting
     static class BookmarkAdapter implements RemoteViewsFactory, SystemNightModeMonitor.Observer {
+        private static final int HEADER_HEIGHT_DP = 48;
+        private static final int EMPTY_MESSAGE_TEXT_HEIGHT_DP = 24;
+        private static final int EMPTY_MESSAGE_HORIZONTAL_PADDING_DP = 16;
+
         // Can be accessed on any thread
         private final Context mContext;
         private final int mWidgetId;
         private final SharedPreferences mPreferences;
-        private final RemoteViews mBookmarkWidgetRemoteView;
         private int mIconColor;
 
         // Accessed only on the UI thread
@@ -278,11 +284,6 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
-            mBookmarkWidgetRemoteView =
-                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
-            mBookmarkWidgetRemoteView.setOnClickPendingIntent(
-                    R.id.empty_message,
-                    BookmarkWidgetProxy.createBookmarkProxyLaunchIntent(context));
             mEntries = new ArrayList<>();
             mFavicons = new HashMap<>();
         }
@@ -367,34 +368,11 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             // Blocks until bookmarks are loaded from the UI thread.
             loadBookmarks(folderId);
 
-            // Update empty message visibility right after mCurrentFolder is updated.
-            updateFolderEmptyMessageVisibility();
-
             if (mCurrentFolder != null) {
                 mPreferences
                         .edit()
                         .putString(PREF_CURRENT_FOLDER, mCurrentFolder.getId().toString())
                         .apply();
-            }
-        }
-
-        @BinderThread
-        private void updateFolderEmptyMessageVisibility() {
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
-            if (!BookmarkWidgetProvider.shouldShowIconsOnly(appWidgetManager, mWidgetId)) {
-                boolean folderIsEmpty = mEntries != null && mEntries.isEmpty();
-                mBookmarkWidgetRemoteView.setViewVisibility(
-                        R.id.empty_message, folderIsEmpty ? View.VISIBLE : View.GONE);
-
-                // Directly update the widget on the UI thread.
-                PostTask.runOrPostTask(
-                        TaskTraits.UI_DEFAULT,
-                        () ->
-                                // Use AppWidgetManager#partiallyUpdateAppWidget to update only the
-                                // empty_message visibility, avoiding full widget redraws and
-                                // redundant intent setup from BookmarkWidgetProvider#performUpdate.
-                                appWidgetManager.partiallyUpdateAppWidget(
-                                        mWidgetId, mBookmarkWidgetRemoteView));
             }
         }
 
@@ -441,7 +419,7 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
         @BinderThread
         @Override
         public int getViewTypeCount() {
-            return 2;
+            return 3;
         }
 
         @BinderThread
@@ -464,7 +442,14 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             if (mCurrentFolder == null) {
                 return 0;
             }
-            return mEntries.size() + (mParentFolder != null ? 1 : 0);
+            int count = mEntries.size() + (mParentFolder != null ? 1 : 0);
+            if (mEntries.isEmpty()) {
+                // When empty, include an empty message row inside the collection so that the empty
+                // state and the folder items are delivered atomically in the same dataset payload,
+                // eliminating any desync.
+                count++;
+            }
+            return count;
         }
 
         @BinderThread
@@ -507,6 +492,10 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                     return createUpView();
                 }
                 position--;
+            }
+
+            if (mEntries.isEmpty() && position == 0) {
+                return createEmptyItemView();
             }
 
             BookmarkListEntry entry = getBookmarkAtPosition(position);
@@ -597,6 +586,80 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
             setWidgetItemBackButtonVisible(false, views);
             views.setOnClickFillInIntent(R.id.list_item, fillIn);
             return views;
+        }
+
+        private RemoteViews createEmptyItemView() {
+            RemoteViews views =
+                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget_empty_item);
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+            if (appWidgetManager != null) {
+                int heightDp = getCurrentWidgetHeightDp(appWidgetManager);
+                if (heightDp > 0) {
+                    int topPaddingDp = calculateEmptyItemTopPaddingDp(heightDp);
+                    // RemoteViews#setViewPadding accepts padding values in physical pixels (px).
+                    int topPaddingPx = ViewUtils.dpToPx(mContext, topPaddingDp);
+                    int horizontalPaddingPx =
+                            ViewUtils.dpToPx(mContext, EMPTY_MESSAGE_HORIZONTAL_PADDING_DP);
+                    views.setViewPadding(
+                            R.id.empty_item_container,
+                            horizontalPaddingPx,
+                            topPaddingPx,
+                            horizontalPaddingPx,
+                            0);
+                }
+            }
+            return views;
+        }
+
+        /**
+         * Returns the height of the widget in portrait orientation, in dp.
+         *
+         * <p>The options bundle reports both orientations at once so that rotating the screen needs
+         * no re-render or round trip to this provider: the taller portrait height is stored in
+         * OPTION_APPWIDGET_MAX_HEIGHT and the shorter landscape one in OPTION_APPWIDGET_MIN_HEIGHT.
+         */
+        private static int getPortraitWidgetHeightDp(Bundle options) {
+            return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0);
+        }
+
+        /**
+         * Returns the height of the widget in landscape orientation, in dp. See {@link
+         * #getPortraitWidgetHeightDp}.
+         */
+        private static int getLandscapeWidgetHeightDp(Bundle options) {
+            return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0);
+        }
+
+        /**
+         * Returns the height of the widget in the current orientation, in dp, or 0 if the host
+         * reported none. OPTION_APPWIDGET_SIZES would list the sizes directly, but it requires API
+         * 31, above the minimum supported API level.
+         */
+        private int getCurrentWidgetHeightDp(AppWidgetManager appWidgetManager) {
+            Bundle options = appWidgetManager.getAppWidgetOptions(mWidgetId);
+            boolean isPortrait =
+                    mContext.getResources().getConfiguration().orientation
+                            == Configuration.ORIENTATION_PORTRAIT;
+            return isPortrait
+                    ? getPortraitWidgetHeightDp(options)
+                    : getLandscapeWidgetHeightDp(options);
+        }
+
+        private int calculateEmptyItemTopPaddingDp(int heightDp) {
+            int headerOffsetDp = (mParentFolder != null) ? HEADER_HEIGHT_DP : 0;
+
+            /*
+             * Sizing cases:
+             * 1. Tall (>= 120dp): Center across the entire widget card.
+             * 2. Constrained (72dp - 120dp): Center in remaining space below the header.
+             * 3. Minimum (< 72dp): Clamp padding to 0dp to prevent overflow and scrollbars.
+             */
+            int wholeWidgetPadding = (heightDp - EMPTY_MESSAGE_TEXT_HEIGHT_DP) / 2 - headerOffsetDp;
+            if (wholeWidgetPadding >= 0) {
+                return wholeWidgetPadding;
+            }
+            return Math.max(0, (heightDp - headerOffsetDp - EMPTY_MESSAGE_TEXT_HEIGHT_DP) / 2);
         }
 
         private void setWidgetItemBackButtonVisible(boolean visible, RemoteViews views) {

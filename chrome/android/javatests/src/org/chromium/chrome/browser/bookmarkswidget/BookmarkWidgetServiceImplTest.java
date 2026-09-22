@@ -163,9 +163,10 @@ public class BookmarkWidgetServiceImplTest {
 
         mFactory.onDataSetChanged();
 
+        // Subfolder with no bookmarks has 2 items: 1 up-navigation header + 1 empty message item.
         assertEquals(
-                "Factory should have one parent folder navigation item in the empty folder.",
-                1,
+                "Factory should have a parent folder navigation item plus the empty message item.",
+                2,
                 mFactory.getCount());
 
         RemoteViews views = mFactory.getViewAt(0);
@@ -189,6 +190,40 @@ public class BookmarkWidgetServiceImplTest {
                 titleView.getText().toString());
         assertEquals("Favicon should be hidden.", View.GONE, favicon.getVisibility());
         assertEquals("Back button should be visible.", View.VISIBLE, backButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptyFolder() {
+        BookmarkId subfolderId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BookmarkId mobileFolderId = mBookmarkModel.getMobileFolderId();
+                            return mBookmarkModel.addFolder(mobileFolderId, 0, FOLDER_TITLE);
+                        });
+
+        SharedPreferences prefs = BookmarkWidgetServiceImpl.getWidgetState(WIDGET_ID);
+        prefs.edit().putString("bookmarkswidget.current_folder", subfolderId.toString()).apply();
+
+        mFactory.onDataSetChanged();
+
+        // The empty message is delivered atomically inside the collection (position 1) to eliminate
+        // any out-of-band IPC desync.
+        assertEquals(
+                "Empty subfolder should report 2 items (up-navigation header + empty message)",
+                2,
+                mFactory.getCount());
+
+        RemoteViews emptyViews = mFactory.getViewAt(1);
+        assertNotNull(emptyViews);
+        assertEquals(R.layout.bookmark_widget_empty_item, emptyViews.getLayoutId());
+
+        View emptyItemView = emptyViews.apply(mContext, new FrameLayout(mContext));
+        TextView emptyMessage = emptyItemView.findViewById(R.id.empty_message);
+        assertNotNull(emptyMessage);
+        assertEquals(
+                mContext.getString(R.string.bookmark_widget_empty_msg),
+                emptyMessage.getText().toString());
     }
 
     @Test
