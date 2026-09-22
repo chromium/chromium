@@ -468,17 +468,7 @@ export class OmniboxPopupSearchboxElement extends
         if (entrypoint) {
           entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
         }
-      }
-    } else {
-      if (changedProperties.has('selectedMatchIndex')) {
-        // Guard against transient out-of-bounds indices when autocomplete
-        // results are being cleared or updated asynchronously. The backend will
-        // be synced once the new valid results are rendered.
-        if (this.selectedMatchIndex !== -1 &&
-            (!this.result || !this.result.matches ||
-             this.selectedMatchIndex >= this.result.matches.length)) {
-          return;
-        }
+      } else {
         // Synchronize selection changes driven by WebUI back to C++. This
         // ensures the backend edit model is aware of the active selection and
         // can preserve it across tab switches.
