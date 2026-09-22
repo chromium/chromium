@@ -246,6 +246,20 @@ Button* GetFirstHotTrackedView(View* view) {
   return nullptr;
 }
 
+// Returns the enclosing MenuItemView that contains `item`'s anchor view, if
+// any.
+MenuItemView* GetAnchorViewContainerMenuItem(MenuItemView* item) {
+  if (!item || !item->GetAnchorView()) {
+    return nullptr;
+  }
+  for (View* v = item->GetAnchorView()->parent(); v; v = v->parent()) {
+    if (auto* container_item = AsViewClass<MenuItemView>(v)) {
+      return container_item;
+    }
+  }
+  return nullptr;
+}
+
 MenuPartType GetScrollButtonAt(SubmenuView* source,
                                const gfx::Point& location) {
   MenuScrollViewContainer* scroll_view = source->GetScrollViewContainer();
@@ -1867,7 +1881,10 @@ void MenuController::SetSelection(MenuItemView* menu_item,
 
   // Notify the new path it is selected.
   for (size_t i = paths_differ_at; i < new_size; ++i) {
-    new_path[i]->ScrollRectToVisible(new_path[i]->GetLocalBounds());
+    View* scroll_target = new_path[i]->GetAnchorView()
+                              ? static_cast<View*>(new_path[i]->GetAnchorView())
+                              : static_cast<View*>(new_path[i]);
+    scroll_target->ScrollRectToVisible(scroll_target->GetLocalBounds());
     new_path[i]->SetSelected(true);
     if (new_path[i]->GetType() == MenuItemView::Type::kActionableSubMenu) {
       new_path[i]->SetSelectionOfActionableSubmenu(
@@ -1912,7 +1929,11 @@ void MenuController::SetSelection(MenuItemView* menu_item,
         menu_item->GetParentMenuItem()->GetSubmenu()) {
       SubmenuView* submenu = menu_item->GetParentMenuItem()->GetSubmenu();
       if (!hot_button_) {
-        submenu->GetViewAccessibility().SetActiveDescendant(*menu_item);
+        View* active_descendant =
+            menu_item->GetAnchorView()
+                ? static_cast<View*>(menu_item->GetAnchorView())
+                : static_cast<View*>(menu_item);
+        submenu->GetViewAccessibility().SetActiveDescendant(*active_descendant);
       }
     }
   }
@@ -2301,6 +2322,11 @@ bool MenuController::SendAcceleratorToHotTrackedView(int event_flags) {
     return false;
   }
 
+  if (hot_view->GetProperty(kSubmenuItemKey)) {
+    OpenSubmenuChangeSelectionIfCan();
+    return true;
+  }
+
   ui::Accelerator accelerator(ui::VKEY_RETURN, event_flags);
   hot_view->AcceleratorPressed(accelerator);
   // An accelerator may have canceled the menu after activation.
@@ -2555,6 +2581,18 @@ bool MenuController::GetMenuPartByScreenCoordinateImpl(
   menu_loc = View::ConvertPointFromScreen(menu, screen_loc);
   if (menu->GetVisibleBounds().Contains(menu_loc)) {
     part->menu = GetMenuItemAt(menu, menu_loc);
+    if (part->menu && !part->menu->children().empty()) {
+      for (View* v = menu->GetEventHandlerForPoint(menu_loc);
+           v && v != part->menu; v = v->parent()) {
+        if (Button* button = Button::AsButton(v)) {
+          if (MenuItemView* button_submenu =
+                  button->GetProperty(kSubmenuItemKey)) {
+            part->menu = button_submenu;
+          }
+          break;
+        }
+      }
+    }
     part->type = MenuPartType::kMenuItem;
     part->submenu = menu;
     part->should_submenu_show =
@@ -2897,7 +2935,10 @@ gfx::Rect MenuController::CalculateMenuBounds(
   // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
   const bool is_child_menu = !!item->GetParentMenuItem();
   gfx::Rect anchor_bounds =
-      is_child_menu ? item->GetBoundsInScreen() : state_.initial_bounds;
+      is_child_menu
+          ? (item->GetAnchorView() ? item->GetAnchorView()->GetBoundsInScreen()
+                                   : item->GetBoundsInScreen())
+          : state_.initial_bounds;
   if (is_child_menu) {
     anchor_bounds.set_height(1);
   }
@@ -3079,7 +3120,10 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
   const bool is_child_menu = !!item->GetParentMenuItem();
   gfx::Rect anchor_bounds =
-      is_child_menu ? item->GetBoundsInScreen() : state_.initial_bounds;
+      is_child_menu
+          ? (item->GetAnchorView() ? item->GetAnchorView()->GetBoundsInScreen()
+                                   : item->GetBoundsInScreen())
+          : state_.initial_bounds;
   if (is_child_menu) {
     anchor_bounds.set_height(1);
   }
@@ -3361,6 +3405,12 @@ void MenuController::IncrementSelection(
     }
   }
 
+  if (!item->SubmenuIsShowing()) {
+    if (MenuItemView* container_item = GetAnchorViewContainerMenuItem(item)) {
+      item = container_item;
+    }
+  }
+
   if (!item->children().empty()) {
     Button* button = GetFirstHotTrackedView(item);
     if (button) {
@@ -3474,6 +3524,11 @@ MenuItemView* MenuController::FindInitialSelectableMenuItem(
 void MenuController::OpenSubmenuChangeSelectionIfCan() {
   ScopedDeletionGuard guard(AsWeakPtr());
   MenuItemView* item = pending_state_.item;
+  if (Button* hot_view = GetFirstHotTrackedView(item)) {
+    if (MenuItemView* button_submenu = hot_view->GetProperty(kSubmenuItemKey)) {
+      item = button_submenu;
+    }
+  }
   if (!item->HasSubmenu() || !item->GetEnabled()) {
     return;
   }
@@ -3507,11 +3562,25 @@ void MenuController::CloseSubmenu() {
   if (!item->GetParentMenuItem()) {
     return;
   }
+  MenuItemView* item_to_select = nullptr;
   if (item->SubmenuIsShowing()) {
-    SetSelection(item, SELECTION_UPDATE_IMMEDIATELY);
+    item_to_select = item;
   } else if (item->GetParentMenuItem()->GetParentMenuItem()) {
-    SetSelection(item->GetParentMenuItem(), SELECTION_UPDATE_IMMEDIATELY);
+    item_to_select = item->GetParentMenuItem();
   }
+  if (!item_to_select) {
+    return;
+  }
+  if (MenuItemView* container_item =
+          GetAnchorViewContainerMenuItem(item_to_select)) {
+    Button* anchor_button = Button::AsButton(item_to_select->GetAnchorView());
+    SetSelection(container_item, SELECTION_UPDATE_IMMEDIATELY);
+    if (!destroy_pending_ && anchor_button) {
+      SetHotTrackedButton(anchor_button);
+    }
+    return;
+  }
+  SetSelection(item_to_select, SELECTION_UPDATE_IMMEDIATELY);
 }
 
 MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(

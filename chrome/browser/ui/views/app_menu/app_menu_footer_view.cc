@@ -20,18 +20,23 @@
 #include "ui/color/color_id.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view_class_properties.h"
 
 AppMenuFooterView::AppMenuFooterView(
+    views::MenuItemView* parent_menu_item,
     actions::ActionItem* footer_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
-    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback) {
+    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback,
+    PopulateSubmenuCallback populate_submenu_callback) {
+  CHECK(parent_menu_item);
   CHECK(footer_action_item);
   CHECK(action_view_controller);
   CHECK(command_to_action_map);
   CHECK(execute_command_callback);
+  CHECK(populate_submenu_callback);
 
   const auto* provider = ChromeLayoutProvider::Get();
 
@@ -84,15 +89,28 @@ AppMenuFooterView::AppMenuFooterView(
         footer_child_ptr->GetActionId();
     CHECK(action_id.has_value());
 
-    auto button = std::make_unique<AppMenuFooterButton>();
+    // If this item has children, create the hidden submenu item
+    // directly on parent_menu_item and populate it.
+    views::MenuItemView* submenu_item = nullptr;
+    const bool has_submenu = !footer_child->GetChildren().children().empty();
+    if (has_submenu) {
+      submenu_item =
+          parent_menu_item->AppendSubMenu(action_id.value(), std::u16string());
+      submenu_item->SetVisible(false);
+      populate_submenu_callback.Run(submenu_item, footer_child.get());
+    }
+
+    auto button = std::make_unique<AppMenuFooterButton>(submenu_item);
 
     action_view_controller->CreateActionViewRelationship(
         button.get(), footer_child_ptr->GetAsWeakPtr());
 
     (*command_to_action_map)[action_id.value()] = footer_child.get();
 
-    button->SetCallback(
-        base::BindRepeating(execute_command_callback, action_id.value()));
+    if (!has_submenu) {
+      button->SetCallback(
+          base::BindRepeating(execute_command_callback, action_id.value()));
+    }
 
     if (std::u16string* text_override =
             footer_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {

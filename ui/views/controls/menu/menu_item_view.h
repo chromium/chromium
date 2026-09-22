@@ -298,6 +298,14 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   MenuItemView* GetParentMenuItem() { return parent_menu_item_; }
   const MenuItemView* GetParentMenuItem() const { return parent_menu_item_; }
 
+  // Associates this MenuItemView with a child View inside a container
+  // MenuItemView (e.g., a footer button) so MenuController can anchor this
+  // item's submenu to `anchor_view` and route keyboard/mouse submenu
+  // interactions through it.
+  void SetAnchorView(View* anchor_view);
+  View* GetAnchorView() { return anchor_view_; }
+  const View* GetAnchorView() const { return anchor_view_; }
+
   // Sets/Gets the title.
   void SetTitle(const std::u16string& title);
   const std::u16string& title() const { return title_; }
@@ -807,7 +815,16 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   base::CallbackListSubscription visible_changed_callback_;
   base::CallbackListSubscription enabled_changed_callback_;
+
+  // Optional child view in a container MenuItemView that anchors this item's
+  // submenu.
+  raw_ptr<View> anchor_view_ = nullptr;
 };
+
+// Property set on a child views::Button inside a container MenuItemView to
+// reference the MenuItemView that owns its submenu.
+VIEWS_EXPORT extern const ui::ClassProperty<MenuItemView*>* const
+    kSubmenuItemKey;
 
 class VIEWS_EXPORT MenuItemActionViewInterface
     : public BaseActionViewInterface {
@@ -834,5 +851,7 @@ class VIEWS_EXPORT EmptyMenuMenuItem : public MenuItemView {
 };
 
 }  // namespace views
+
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::MenuItemView*)
 
 #endif  // UI_VIEWS_CONTROLS_MENU_MENU_ITEM_VIEW_H_

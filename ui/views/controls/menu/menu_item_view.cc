@@ -131,6 +131,7 @@ MenuItemView::MenuItemView(MenuDelegate* delegate)
                    delegate) {}
 
 MenuItemView::~MenuItemView() {
+  SetAnchorView(nullptr);
   if (controller_) {
     NotifyControllerOfDestructionRecursively(this, controller_.get());
   }
@@ -141,6 +142,22 @@ MenuItemView::~MenuItemView() {
   }
   for (views::View* item : removed_items_) {
     delete item;
+  }
+}
+
+void MenuItemView::SetAnchorView(View* anchor_view) {
+  if (anchor_view_ == anchor_view) {
+    return;
+  }
+  if (anchor_view_) {
+    anchor_view_->ClearProperty(kSubmenuItemKey);
+  }
+  anchor_view_ = anchor_view;
+  if (anchor_view_) {
+    anchor_view_->SetProperty(kSubmenuItemKey, this);
+    anchor_view_->GetViewAccessibility().SetHasPopup(
+        ax::mojom::HasPopup::kMenu);
+    anchor_view_->GetViewAccessibility().SetIsCollapsed();
   }
 }
 
@@ -617,6 +634,16 @@ void MenuItemView::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  if (anchor_view_) {
+    if (Button* anchor_button = Button::AsButton(anchor_view_)) {
+      anchor_button->SetHotTracked(selected);
+    }
+    if (selected) {
+      anchor_view_->GetViewAccessibility().SetIsExpanded();
+    } else {
+      anchor_view_->GetViewAccessibility().SetIsCollapsed();
+    }
+  }
   UpdateAccessibleSelection();
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
   OnPropertyChanged(&selected_, PropertyEffects::kPaint);
@@ -2048,4 +2075,8 @@ EmptyMenuMenuItem::EmptyMenuMenuItem(MenuItemView* parent)
 BEGIN_METADATA(EmptyMenuMenuItem)
 END_METADATA
 
+DEFINE_UI_CLASS_PROPERTY_KEY(MenuItemView*, kSubmenuItemKey, nullptr)
+
 }  // namespace views
+
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::MenuItemView*)

@@ -487,15 +487,19 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
 
 void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
                                    actions::ActionItem* footer_action_item) {
+  auto footer_view = std::make_unique<AppMenuFooterView>(
+      view_parent, footer_action_item, &action_view_controller_,
+      &command_to_action_map_,
+      base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
+                          base::Unretained(this)),
+      base::BindRepeating(&ActionAppMenu::PopulateMenu,
+                          base::Unretained(this)));
+
   auto* footer_item = view_parent->AppendMenuItem(0);
   footer_item->SetTriggerActionWithNonIconChildViews(false);
   footer_item->set_children_use_full_width(true);
   footer_item->set_vertical_margin(0);
-
-  footer_item->AddChildView(std::make_unique<AppMenuFooterView>(
-      footer_action_item, &action_view_controller_, &command_to_action_map_,
-      base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
-                          base::Unretained(this))));
+  footer_item->AddChildView(std::move(footer_view));
 }
 
 void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
