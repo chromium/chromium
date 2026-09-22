@@ -491,6 +491,9 @@ public class LocationBarTabletUnitTest {
                         .getResources()
                         .getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
         assertEquals(radius, glifStrokeDrawable.getCornerRadiusForTesting(), MathUtils.EPSILON);
+        assertFalse(glifStrokeDrawable.isRunning());
+
+        mLocationBarTablet.layout(0, 0, 500, 100);
         assertTrue(glifStrokeDrawable.isRunning());
 
         LinearLayout.LayoutParams layoutParams =
@@ -520,6 +523,9 @@ public class LocationBarTabletUnitTest {
         mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
         GlifStrokeDrawable glif = (GlifStrokeDrawable) mLocationBarTablet.getForeground();
         assertNotNull(glif);
+        assertFalse(glif.isRunning());
+
+        mLocationBarTablet.layout(0, 0, 500, 100);
         assertTrue(glif.isRunning());
 
         mLocationBarTablet.onSpecializedFuseboxModeActivated(false);
@@ -540,6 +546,9 @@ public class LocationBarTabletUnitTest {
         GlifStrokeDrawable glif =
                 (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
         assertNotNull(glif);
+        assertFalse(glif.isRunning());
+
+        mLocationBarTablet.layout(0, 0, 500, 100);
         assertTrue(glif.isRunning());
 
         // Suggestions update triggers updateLayoutAndBackground(), but animation continues
@@ -567,6 +576,9 @@ public class LocationBarTabletUnitTest {
         GlifStrokeDrawable glif =
                 (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
         assertNotNull(glif);
+        assertFalse(glif.isRunning());
+
+        mLocationBarTablet.layout(0, 0, 500, 100);
         assertTrue(glif.isRunning());
 
         // Losing URL bar focus stops GLIF in popover mode.

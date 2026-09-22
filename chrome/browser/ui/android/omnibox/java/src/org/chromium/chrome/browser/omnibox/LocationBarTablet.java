@@ -114,6 +114,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private boolean mShowFocusRing;
     private boolean mIsHovered;
     private boolean mIsGlifActive;
+    private boolean mStartGlifOnNextLayout;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -287,6 +288,17 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             // layout pass to finish.
             mScreenWidthDp = screenWidthDp;
             mHandler.post(() -> onFuseboxStateChanged(mFuseboxState));
+        }
+
+        if (mStartGlifOnNextLayout) {
+            mStartGlifOnNextLayout = false;
+            if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                    && (mUrlCoordinator == null || !mUrlCoordinator.hasFocus())) {
+                mIsGlifActive = false;
+            }
+            if (mIsGlifActive) {
+                mGlifBorderDrawable.start();
+            }
         }
     }
 
@@ -657,7 +669,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             }
 
             if (!mGlifBorderDrawable.isRunning()) {
-                mGlifBorderDrawable.start();
+                mStartGlifOnNextLayout = true;
             }
         } else {
             if (mGlifBorderDrawable.isRunning()) {
