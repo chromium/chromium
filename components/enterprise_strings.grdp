@@ -130,4 +130,12 @@
   <message name="IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_PRIMARY_PARAGRAPH" desc="Description in the enterprise proxy error page when a site is blocked by authorization policy.">
     You were blocked from visiting <ph name="URL">$1<ex>https://example.com</ex></ph> because of your organization's policies. If that's unexpected, contact your administrator.
   </message>
+
+  <message name="IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING" desc="Heading in the enterprise proxy error page when sign-in is required by organization policy.">
+    Your organization requires you to sign in to Chrome
+  </message>
+
+  <message name="IDS_ENTERPRISE_PROXY_AUTHN_ERROR_PRIMARY_PARAGRAPH" desc="Description in the enterprise proxy error page when sign-in is required by organization policy.">
+    To visit the site ahead, your organization requires you to sign in with your managed Google account.
+  </message>
 </grit-part>

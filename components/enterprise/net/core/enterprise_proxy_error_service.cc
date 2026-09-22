@@ -89,6 +89,16 @@ base::DictValue EnterpriseProxyErrorService::GetErrorPageParams(
              l10n_util::GetStringUTF16(IDS_ENTERPRISE_BLOCK_GO_BACK));
 
   switch (error_data.error_category()) {
+    case EnterpriseProxyErrorData::ErrorCategory::kAuthentication:
+      params.Set("title", l10n_util::GetStringUTF16(
+                              IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING));
+      params.Set("heading", l10n_util::GetStringUTF16(
+                                IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING));
+      params.Set("primary_paragraph",
+                 l10n_util::GetStringUTF16(
+                     IDS_ENTERPRISE_PROXY_AUTHN_ERROR_PRIMARY_PARAGRAPH));
+      params.Set("button_text", l10n_util::GetStringUTF16(IDS_CONTINUE));
+      break;
     case EnterpriseProxyErrorData::ErrorCategory::kAuthorization:
       params.Set("title", l10n_util::GetStringUTF16(
                               IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING));

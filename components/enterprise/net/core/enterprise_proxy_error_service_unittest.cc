@@ -387,7 +387,20 @@ TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
               *params.FindString("error_category"));
 
     if (test_case.category ==
-        EnterpriseProxyErrorData::ErrorCategory::kAuthorization) {
+        EnterpriseProxyErrorData::ErrorCategory::kAuthentication) {
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING),
+          *params.FindString("title"));
+      EXPECT_EQ(
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING),
+          *params.FindString("heading"));
+      EXPECT_EQ(l10n_util::GetStringUTF8(
+                    IDS_ENTERPRISE_PROXY_AUTHN_ERROR_PRIMARY_PARAGRAPH),
+                *params.FindString("primary_paragraph"));
+      EXPECT_EQ(l10n_util::GetStringUTF8(IDS_CONTINUE),
+                *params.FindString("button_text"));
+    } else if (test_case.category ==
+               EnterpriseProxyErrorData::ErrorCategory::kAuthorization) {
       EXPECT_EQ(
           l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING),
           *params.FindString("title"));
@@ -398,6 +411,8 @@ TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
                     IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_PRIMARY_PARAGRAPH,
                     u"https://target.example.com/page"),
                 *params.FindString("primary_paragraph"));
+      EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
+                *params.FindString("button_text"));
     } else {
       EXPECT_EQ(
           l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING),
@@ -408,9 +423,9 @@ TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
       EXPECT_EQ(l10n_util::GetStringUTF8(
                     IDS_ENTERPRISE_PROXY_OTHER_ERROR_PRIMARY_PARAGRAPH),
                 *params.FindString("primary_paragraph"));
+      EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
+                *params.FindString("button_text"));
     }
-    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
-              *params.FindString("button_text"));
 
     histogram_tester.ExpectUniqueSample(
         "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", test_case.error_code,

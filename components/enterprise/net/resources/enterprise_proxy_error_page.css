@@ -27,3 +27,15 @@ button {
       url(images/1x/warning.png) 1x,
       url(images/2x/warning.png) 2x);
 }
+
+.category-authentication .icon {
+  background-image: image-set(
+      url(images/1x/domain.png) 1x,
+      url(images/2x/domain.png) 2x);
+}
+
+@media (prefers-color-scheme: dark) {
+  .category-authentication .icon {
+    filter: invert(1) grayscale(1);
+  }
+}
