@@ -1699,20 +1699,21 @@ bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
-void SkiaOutputSurfaceImpl::DetileOverlay(gpu::Mailbox input,
-                                          const gfx::Size& input_visible_size,
-                                          gpu::SyncToken input_sync_token,
-                                          gpu::Mailbox output,
-                                          const gfx::RectF& display_rect,
-                                          const gfx::RectF& crop_rect,
-                                          gfx::OverlayTransform transform,
-                                          bool is_10bit) {
+void SkiaOutputSurfaceImpl::DetileOverlay(
+    gpu::Mailbox input,
+    const gfx::Size& input_visible_size,
+    std::vector<gpu::SyncToken> input_sync_tokens,
+    gpu::Mailbox output,
+    const gfx::RectF& display_rect,
+    const gfx::RectF& crop_rect,
+    gfx::OverlayTransform transform,
+    bool is_10bit) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DetileOverlay,
                              base::Unretained(impl_on_gpu_.get()), input,
                              input_visible_size, output, display_rect,
                              crop_rect, transform, is_10bit);
-  EnqueueGpuTask(std::move(task), {input_sync_token}, /*make_current=*/false,
-                 /*need_framebuffer=*/false);
+  EnqueueGpuTask(std::move(task), std::move(input_sync_tokens),
+                 /*make_current=*/false, /*need_framebuffer=*/false);
 }
 
 void SkiaOutputSurfaceImpl::CleanupImageProcessor() {

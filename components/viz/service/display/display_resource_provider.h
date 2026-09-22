@@ -140,9 +140,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
       DCHECK(resource_);
       return resource_->transferable.mailbox();
     }
-    const gpu::SyncToken& sync_token() const {
+    std::vector<gpu::SyncToken> GetSyncTokens() const {
       DCHECK(resource_);
-      return resource_->sync_token();
+      return resource_->transferable.shared_image()
+          ->GetSyncTokensForDisplayCompositor(resource_->sync_token());
     }
 
     // Sets the given |release_fence| onto this resource.

@@ -2980,9 +2980,10 @@ void SkiaRenderer::ScheduleOverlays() {
       bool is_10bit = overlay.format == MultiPlaneFormat::kP010;
       gpu::Mailbox detiled_image = GetProtectedSharedImage(is_10bit);
       skia_output_surface_->DetileOverlay(
-          overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
-          detiled_image, overlay.display_rect, overlay.uv_rect,
-          std::get<gfx::OverlayTransform>(overlay.transform), is_10bit);
+          overlay.mailbox, overlay.resource_size_in_pixels,
+          lock.GetSyncTokens(), detiled_image, overlay.display_rect,
+          overlay.uv_rect, std::get<gfx::OverlayTransform>(overlay.transform),
+          is_10bit);
       overlay.uv_rect = gfx::RectF(
           static_cast<float>(overlay.display_rect.width()) /
               static_cast<float>(kMaxProtectedContentWidth),
@@ -3063,8 +3064,9 @@ void SkiaRenderer::ScheduleOverlays() {
 
     // Sync tokens ensure the texture to be overlaid is available before
     // scheduling it for display.
-    if (lock.sync_token().HasData())
-      sync_tokens.push_back(lock.sync_token());
+    auto tokens_from_lock = lock.GetSyncTokens();
+    sync_tokens.insert(sync_tokens.end(), tokens_from_lock.begin(),
+                       tokens_from_lock.end());
 
     overlay.mailbox = lock.mailbox();
     DCHECK(!overlay.mailbox.IsZero());

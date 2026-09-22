@@ -124,9 +124,7 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
       resource->sync_token = sync_token;
     }
     for (auto& client_shared_image : client_shared_images_to_return) {
-      if (client_shared_image) {
-        client_shared_image->EndDisplayCompositorAccess(sync_token);
-      }
+      client_shared_image->EndDisplayCompositorAccess(sync_token);
     }
   }
 
@@ -211,6 +209,8 @@ void DisplayResourceProviderSkia::LockSetForExternalUse::UnlockResources(
     // which owns it with the |sync_token|. The child is responsible for issuing
     // a WaitSyncToken GL command with the |sync_token| before reusing it.
     resource->UpdateSyncToken(sync_token);
+    resource->transferable.shared_image()->EndDisplayCompositorAccess(
+        sync_token);
     resource->locked_for_external_use = false;
 
     resource_provider_->TryReleaseResource(id, resource);
@@ -238,6 +238,8 @@ DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage::
         resource_provider->external_use_client_->ReleaseImageContexts(
             std::move(image_contexts));
     resource.UpdateSyncToken(sync_token);
+    resource.transferable.shared_image()->EndDisplayCompositorAccess(
+        sync_token);
   }
 }
 DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage::

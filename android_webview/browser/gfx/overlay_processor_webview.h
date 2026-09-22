@@ -89,7 +89,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   };
 
   struct LockResult {
-    gpu::SyncToken sync_token;
+    std::vector<gpu::SyncToken> sync_tokens;
     base::ScopedClosureRunner unlock_cb;
     gpu::Mailbox mailbox;
   };

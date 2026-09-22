@@ -650,7 +650,11 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
           features::kUseAutomaticSyncTokenManagement)) {
     return CollectSyncTokens();
   } else {
-    return {sync_token};
+    if (sync_token.HasData()) {
+      return {sync_token};
+    } else {
+      return {};
+    }
   }
 }
 

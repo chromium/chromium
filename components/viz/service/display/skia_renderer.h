@@ -480,9 +480,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       return resource_lock->mailbox();
     }
 
-    const gpu::SyncToken& sync_token() const {
+    std::vector<gpu::SyncToken> GetSyncTokens() const {
       DCHECK(resource_lock.has_value());
-      return resource_lock->sync_token();
+      return resource_lock->GetSyncTokens();
     }
 
     void MaybeCopyReleaseFence(const gfx::GpuFenceHandle& release_fence) {

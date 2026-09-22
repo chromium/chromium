@@ -203,7 +203,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     BUILDFLAG(USE_V4L2_CODEC)
   void DetileOverlay(gpu::Mailbox input,
                      const gfx::Size& input_visible_size,
-                     gpu::SyncToken input_sync_token,
+                     std::vector<gpu::SyncToken> input_sync_tokens,
                      gpu::Mailbox output,
                      const gfx::RectF& display_rect,
                      const gfx::RectF& crop_rect,

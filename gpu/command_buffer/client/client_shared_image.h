@@ -315,7 +315,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   bool IsSyncTokenSignaled(ContextSupport* context_support,
                            const SyncToken& resource_sync_token);
 
-  // Returns all tracked SyncTokens for this SharedImage.
+  // When the UseAutomaticSyncTokenManagement feature is enabled, this function
+  // returns all tracked SyncTokens for this SharedImage. When the feature is
+  // disabled, this function returns a 1-element vector containing the input
+  // SyncToken (if the input SyncToken is valid), or an empty vector (if the
+  // input SyncToken is empty). Note that all SyncTokens in the returned vector
+  // are non-empty, regardless of whether UseAutomaticSyncTokenManagement is
+  // enabled.
   std::vector<SyncToken> GetSyncTokensForDisplayCompositor(
       const SyncToken& sync_token);
 

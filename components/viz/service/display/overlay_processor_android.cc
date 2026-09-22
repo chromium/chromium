@@ -120,7 +120,9 @@ void OverlayProcessorAndroid::ScheduleOverlays(
   std::vector<gpu::SyncToken> locks_sync_tokens;
   for (auto& candidate : overlay_candidates_) {
     locks.emplace_back(resource_provider, candidate.resource_id);
-    locks_sync_tokens.push_back(locks.back().sync_token());
+    auto tokens_from_lock = locks.back().GetSyncTokens();
+    locks_sync_tokens.insert(locks_sync_tokens.end(), tokens_from_lock.begin(),
+                             tokens_from_lock.end());
   }
 
   auto task = base::BindOnce(&OverlayProcessorOnGpu::ScheduleOverlays,
@@ -265,8 +267,11 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
   }
 
   std::vector<gpu::SyncToken> locks_sync_tokens;
-  for (auto& read_lock : locks)
-    locks_sync_tokens.push_back(read_lock->sync_token());
+  for (auto& read_lock : locks) {
+    auto tokens_from_lock = read_lock->GetSyncTokens();
+    locks_sync_tokens.insert(locks_sync_tokens.end(), tokens_from_lock.begin(),
+                             tokens_from_lock.end());
+  }
 
   if (gpu_task_scheduler_) {
     auto task = base::BindOnce(&OverlayProcessorOnGpu::NotifyOverlayPromotions,
