@@ -68,6 +68,14 @@ enum ReadAnythingDistillationState {
                                 // content in the page.
 };
 
+// Represents the outcome of a RequestReadabilityDistillation() call.
+enum ReadabilityDistillationResult {
+  kSuccess = 0,  // Distillation produced content.
+  kEmpty = 1,  // Distillation ran and produced no usable content.
+  kIneligible = 2,  // Not attempted: flag off, non-HTTP, Docs, PDF, automation.
+  kCancelled = 3,  // Superseded by a newer request, or cancelled on navigation.
+};
+
 union VoicePackInstallationState {
   InstallationState installation_state;
   ErrorCode error_code;
@@ -363,10 +371,12 @@ interface UntrustedPageHandler {
   OnSpeechEngineStalled();
 
   // Requests a fresh Readability distillation for the current page, returning
-  // the distilled title and HTML content. Returns empty strings on failure,
-  // cancellation, or if the page is ineligible for distillation.
-  RequestReadabilityDistillation()
-      => (string title, mojo_base.mojom.BigString content);
+  // the distillation result along with the distilled title and HTML content.
+  // Returns empty strings on failure, cancellation, or if the page is
+  // ineligible for distillation.
+  RequestReadabilityDistillation() => (ReadabilityDistillationResult result,
+                                       string title,
+                                       mojo_base.mojom.BigString content);
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

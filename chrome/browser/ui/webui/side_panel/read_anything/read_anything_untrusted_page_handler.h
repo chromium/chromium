@@ -421,9 +421,9 @@ class ReadAnythingUntrustedPageHandler :
   bool RequestDomDistillerDistillation(content::WebContents* contents);
 
   // Resets the state of the current readability distillation: resolves an
-  // outstanding RequestReadabilityDistillation callback with empty strings,
-  // cancels the in-flight DomDistiller distillation, if any, and clears the
-  // cached article and its timing state.
+  // outstanding RequestReadabilityDistillation callback with kCancelled and
+  // empty strings, cancels the in-flight DomDistiller distillation, if any, and
+  // clears the cached article and its timing state.
   void ResetReadabilityState();
 
   // Called if IsReadAnythingWithReadabilityEnabled is enabled. Records

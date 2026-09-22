@@ -1228,10 +1228,12 @@ void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
 
 void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
     RequestReadabilityDistillationCallback callback) {
-  // Use a local wrapper so any early return runs the callback with ("", "") on
-  // destruction, containing fallback handling to this function scope.
-  auto wrapped_callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), "", "");
+  // Use a local wrapper so any early return or teardown runs the callback with
+  // (kIneligible, "", "") on destruction, containing fallback handling to this
+  // function scope.
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback),
+      read_anything::mojom::ReadabilityDistillationResult::kIneligible, "", "");
   if (!features::IsReadAnythingWithReadabilityEnabled()) {
     return;
   }
@@ -1241,7 +1243,8 @@ void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
   ResetReadabilityState();
 
   // Registered before starting so a result can never arrive before the
-  // callback. Resetting replies ("", "") if distillation never started.
+  // callback. Resetting replies (kIneligible, "", "") if distillation never
+  // started.
   readability_callback_ = std::move(wrapped_callback);
   if (!RequestDomDistillerDistillation(tab_->GetContents())) {
     readability_callback_.Reset();
@@ -1249,7 +1252,11 @@ void ReadAnythingUntrustedPageHandler::RequestReadabilityDistillation(
 }
 
 void ReadAnythingUntrustedPageHandler::ResetReadabilityState() {
-  // readability_callback_ is always wrapped, so resetting it replies ("", "").
+  if (readability_callback_) {
+    std::move(readability_callback_)
+        .Run(read_anything::mojom::ReadabilityDistillationResult::kCancelled,
+             "", "");
+  }
   readability_callback_.Reset();
   if (distiller_delegate_) {
     distiller_delegate_->CancelDistillation();
@@ -1782,9 +1789,13 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
               kDistillationWithContent);
       // `readability_callback_` Set only for renderer-requested distillations.
       if (readability_callback_) {
+        const std::string& content = dom_distiller_content().value();
         std::move(readability_callback_)
-            .Run(dom_distiller_title().value_or(""),
-                 dom_distiller_content().value());
+            .Run(content.empty() ? read_anything::mojom::
+                                       ReadabilityDistillationResult::kEmpty
+                                 : read_anything::mojom::
+                                       ReadabilityDistillationResult::kSuccess,
+                 dom_distiller_title().value_or(""), content);
       }
       if (!features::IsReadAnythingDistillerRefactorEnabled()) {
         page_->UpdateContent(dom_distiller_title().value_or(""),
@@ -1806,7 +1817,9 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
         read_anything::mojom::ReadAnythingDistillationState::
             kDistillationEmpty);
     if (readability_callback_) {
-      std::move(readability_callback_).Run(/*title=*/"", /*content=*/"");
+      std::move(readability_callback_)
+          .Run(read_anything::mojom::ReadabilityDistillationResult::kEmpty,
+               /*title=*/"", /*content=*/"");
     }
     if (!features::IsReadAnythingDistillerRefactorEnabled()) {
       page_->UpdateContent(/*title=*/"", /*content=*/"");

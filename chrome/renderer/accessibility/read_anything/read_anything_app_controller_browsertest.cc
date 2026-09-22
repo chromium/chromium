@@ -64,7 +64,9 @@ class MockReadAnythingUntrustedPageHandler
   MockReadAnythingUntrustedPageHandler() {
     ON_CALL(*this, RequestReadabilityDistillation(testing::_))
         .WillByDefault([](RequestReadabilityDistillationCallback callback) {
-          std::move(callback).Run("", "");
+          std::move(callback).Run(
+              read_anything::mojom::ReadabilityDistillationResult::kEmpty, "",
+              "");
         });
   }
 
