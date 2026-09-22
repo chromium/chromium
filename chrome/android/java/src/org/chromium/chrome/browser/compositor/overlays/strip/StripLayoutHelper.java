@@ -2935,16 +2935,28 @@ public class StripLayoutHelper
 
     private void startReorderMode(
             float x, float y, StripLayoutView interactingView, @ReorderType int reorderType) {
-        // Allow the user to drag the selected tab out of the tab strip.
+        // Ensure valid tab state.
+        if (mModel == null || !mTabStateInitialized) return;
+        // Preserve the existing reorder, if any.
         if (mReorderDelegate.getInReorderMode()) return;
-        // Attempt to start reordering. If the interacting view is a StripLayoutTab,
-        // only continue if it is valid (non-null, non-dying, non-placeholder) and
-        // the tab state is initialized.
-        if (interactingView instanceof StripLayoutTab interactingTab
-                && (interactingTab.isDying()
-                        || interactingTab.getTabId() == Tab.INVALID_TAB_ID
-                        || !mTabStateInitialized)) {
-            return;
+
+        if (interactingView instanceof StripLayoutTab stripTab) {
+            // Only continue if the StripLayoutTab is valid (non-dying & non-placeholder).
+            if (stripTab.isDying() || stripTab.getTabId() == Tab.INVALID_TAB_ID) return;
+
+            // If the tab is the last in a tab group, treat as a tab group reorder instead.
+            Tab tab = assumeNonNull(getTabById(stripTab.getTabId()));
+            Token groupId = tab.getTabGroupId();
+
+            // Ignore multi-selected tabs for now.
+            // TODO(crbug.com/552582355): Prevent multi-select from clobbering groups.
+            boolean isMultiSelected =
+                    mModel.isTabMultiSelected(tab.getId())
+                            && mModel.getMultiSelectedTabsCount() > 1;
+
+            if (groupId != null && mModel.getTabCountForGroup(groupId) == 1 && !isMultiSelected) {
+                interactingView = assertNonNull(findGroupTitle(groupId));
+            }
         }
 
         finishAnimations();

@@ -230,6 +230,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean shouldShowUserPrompt(StripLayoutTab draggedTab) {
+        // TODO(crbug.com/552582355): Cleanup as this is no longer needed.
         if (mModel.isIncognitoBranded()) {
             return false;
         }
@@ -242,6 +243,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean isTabInCollaboration(int tabId) {
+        // TODO(crbug.com/552582355): Cleanup as this is no longer needed.
         var profile = assumeNonNull(mModel.getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(profile);
