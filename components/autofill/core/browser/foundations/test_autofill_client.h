@@ -929,7 +929,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
-  std::unique_ptr<AtMemoryManager> at_memory_manager_;
   personal_context::PersonalContextEligibilityState
       personal_context_eligibility_state_ =
           personal_context::PersonalContextEligibilityState::kEligible;
@@ -978,6 +977,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<WalletPassAccessManager> wallet_pass_access_manager_;
+  // Must be destroyed before `prefs_` because `AtMemoryPersistedStateManager`
+  // observes and references `prefs_`.
+  std::unique_ptr<AtMemoryManager> at_memory_manager_;
   std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_;
 
   GeoIpCountryCode variation_config_country_code_;

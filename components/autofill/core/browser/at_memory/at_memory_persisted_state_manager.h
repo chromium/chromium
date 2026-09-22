@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,7 +20,11 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "url/origin.h"
+
+class PrefService;
 
 namespace history {
 class HistoryService;
@@ -42,7 +47,9 @@ namespace autofill {
 // active field (e.g. before any filter has been entered, or after clearing the
 // filter). `search_state_` is only instantiated once the user enters or submits
 // a query.
-class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
+class AtMemoryPersistedStateManager
+    : public history::HistoryServiceObserver,
+      public personal_context::PersonalContextEligibilityService::Observer {
  public:
   struct ExpiringSuggestion {
     Suggestion suggestion;
@@ -53,8 +60,11 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   static constexpr base::TimeDelta kDefaultTimeToLive = base::Minutes(30);
   static constexpr base::TimeDelta kSpiiTimeToLive = base::Minutes(1);
 
-  explicit AtMemoryPersistedStateManager(
-      history::HistoryService* history_service);
+  AtMemoryPersistedStateManager(
+      history::HistoryService* history_service,
+      PrefService* pref_service,
+      personal_context::PersonalContextEligibilityService* eligibility_service,
+      base::RepeatingClosure on_reset_callback);
   ~AtMemoryPersistedStateManager() override;
 
   AtMemoryPersistedStateManager(const AtMemoryPersistedStateManager&) = delete;
@@ -89,7 +99,13 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
+  // personal_context::PersonalContextEligibilityService::Observer:
+  void OnEligibilityStateChanged(
+      personal_context::PersonalContextEligibilityState new_state) override;
+
  private:
+  // Resets the persisted state, clears `previously_filled_suggestions_`, and
+  // executes `on_reset_callback_`.
   void Reset();
   void ResetSearchState();
   void RestartSearchStateTimer();
@@ -97,6 +113,8 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
 
   // Removes previously filled suggestions that have exceeded their TTL.
   void RemoveExpiredPreviouslyFilledSuggestions();
+
+  void OnPrefChanged();
 
   // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
@@ -111,9 +129,24 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   std::vector<ExpiringSuggestion> previously_filled_suggestions_;
   base::OneShotTimer previously_filled_suggestions_timer_;
 
+  PrefChangeRegistrar pref_registrar_;
+
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+  base::ScopedObservation<
+      personal_context::PersonalContextEligibilityService,
+      personal_context::PersonalContextEligibilityService::Observer>
+      eligibility_service_observation_{this};
+  // Callback invoked whenever persisted state is reset (e.g. due to TTL expiry,
+  // history deletion, settings toggle being turned off, or eligibility loss).
+  // Used by `AtMemoryManager` to cancel in-flight queries and dismiss any
+  // active suggestion popup.
+  // TODO(crbug.com/535486238): Consider extracting history/pref/eligibility
+  // observations into a dedicated helper class (e.g.
+  // `AtMemoryStateChangeObserver`) to avoid a cyclic call graph; see
+  // https://crrev.com/c/8320987/comment/f3210d7d_373869e6/.
+  base::RepeatingClosure on_reset_callback_;
 };
 
 }  // namespace autofill

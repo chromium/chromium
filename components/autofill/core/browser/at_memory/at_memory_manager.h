@@ -172,6 +172,10 @@ class AtMemoryManager {
   // Cancels any pending search queries and resets searching states.
   void CancelPendingQueries();
 
+  // Invoked when `state_manager_` resets its state. Cancels pending search
+  // queries and hides the suggestion popup if showing.
+  void OnStateReset();
+
   // Sends the given suggestions to the UI.
   void SendSuggestions(std::vector<Suggestion> suggestions);
 

@@ -2690,6 +2690,109 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_HistoryDeletionResetsState) {
       manager().GetStateForField(field_id, form_origin()).filter.empty());
 }
 
+// Tests that when search statefulness is enabled and an in-flight query is
+// ongoing with an active popup, resetting state (e.g. via settings toggle)
+// cancels the ongoing query, hides the suggestion popup, and drops the query
+// response.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_OngoingQueryCancelledAndPopupHiddenOnStateReset) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().GetStateForField(field_id, form_origin());
+
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  manager().OnFilterChanged(u"john");
+
+  // Keep the query in flight by capturing the callback without invoking it.
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"john"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+
+  manager().OnSearchSubmitted(u"john");
+  EXPECT_TRUE(manager().IsSearching());
+  ASSERT_TRUE(saved_query_callback);
+
+  // Expect that hiding suggestions is requested when the settings toggle is
+  // turned off.
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kStaleData,
+                              std::optional(FillingProduct::kAtMemory)));
+
+  autofill_client().GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  EXPECT_FALSE(manager().IsSearching());
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+
+  // If the asynchronous response arrives after cancellation, it should be
+  // ignored and not update the suggestions.
+  EXPECT_CALL(update_callback_, Run).Times(0);
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  saved_query_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess, {entry}));
+}
+
+// Tests that when search statefulness is enabled and an in-flight query is
+// running in the background without an active popup, resetting state cancels
+// the query without attempting to hide an already-closed popup.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_BackgroundQueryCancelledOnStateResetWithoutPopup) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().GetStateForField(field_id, form_origin());
+
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  manager().OnFilterChanged(u"john");
+
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"john"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+
+  manager().OnSearchSubmitted(u"john");
+  EXPECT_TRUE(manager().IsSearching());
+  ASSERT_TRUE(saved_query_callback);
+
+  // Close the popup while search continues in the background.
+  manager().OnPopupHidden();
+  EXPECT_TRUE(manager().IsSearching());
+
+  // Since popup is already closed, HideSuggestions should NOT be called.
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+
+  autofill_client().GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  EXPECT_FALSE(manager().IsSearching());
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
 
 // Tests that empty query displays previously filled suggestions below the

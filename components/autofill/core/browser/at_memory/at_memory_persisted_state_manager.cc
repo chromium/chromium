@@ -11,10 +11,13 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace autofill {
 
@@ -86,9 +89,24 @@ bool IsSpiiSuggestion(const Suggestion& suggestion) {
 }  // namespace
 
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
-    history::HistoryService* history_service) {
+    history::HistoryService* history_service,
+    PrefService* pref_service,
+    personal_context::PersonalContextEligibilityService* eligibility_service,
+    base::RepeatingClosure on_reset_callback)
+    : on_reset_callback_(std::move(on_reset_callback)) {
   if (history_service) {
     history_service_observation_.Observe(history_service);
+  }
+  if (pref_service) {
+    pref_registrar_.Init(pref_service);
+    pref_registrar_.Add(
+        personal_context::prefs::
+            kPersonalContextInAutofillSettingsToggleStatus,
+        base::BindRepeating(&AtMemoryPersistedStateManager::OnPrefChanged,
+                            base::Unretained(this)));
+  }
+  if (eligibility_service) {
+    eligibility_service_observation_.Observe(eligibility_service);
   }
 }
 
@@ -205,10 +223,28 @@ void AtMemoryPersistedStateManager::HistoryServiceBeingDeleted(
   history_service_observation_.Reset();
 }
 
+void AtMemoryPersistedStateManager::OnEligibilityStateChanged(
+    personal_context::PersonalContextEligibilityState new_state) {
+  switch (new_state) {
+    case personal_context::PersonalContextEligibilityState::kEligible:
+      break;
+    case personal_context::PersonalContextEligibilityState::
+        kDisabledNotEligible:
+      Reset();
+      break;
+  }
+}
+
 void AtMemoryPersistedStateManager::Reset() {
   ResetSearchState();
   previously_filled_suggestions_.clear();
   previously_filled_suggestions_timer_.Stop();
+  // TODO(crbug.com/535486238): Consider cancelling ongoing queries directly in
+  // `PersonalContextService` / `AtMemoryQueryService` when enablement state
+  // changes. This would require adding cancellation functions to said services.
+  if (on_reset_callback_) {
+    on_reset_callback_.Run();
+  }
 }
 
 void AtMemoryPersistedStateManager::ResetSearchState() {
@@ -245,6 +281,14 @@ void AtMemoryPersistedStateManager::RemoveExpiredPreviouslyFilledSuggestions() {
                   return entry.expiration_time <= now;
                 });
   RestartPreviouslyFilledSuggestionsTimer();
+}
+
+void AtMemoryPersistedStateManager::OnPrefChanged() {
+  if (!pref_registrar_.prefs()->GetBoolean(
+          personal_context::prefs::
+              kPersonalContextInAutofillSettingsToggleStatus)) {
+    Reset();
+  }
 }
 
 }  // namespace autofill

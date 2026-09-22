@@ -385,7 +385,16 @@ Suggestion AtMemoryManager::CreateSourceAttributionSuggestion() {
 
 AtMemoryManager::AtMemoryManager(AutofillClient* client,
                                  history::HistoryService* history_service)
-    : client_(CHECK_DEREF(client)), state_manager_(history_service) {}
+    : client_(CHECK_DEREF(client)),
+      state_manager_(
+          history_service,
+          client->GetPrefs(),
+          client->GetPersonalContextEligibilityService(),
+          // `base::Unretained(this)` is safe because `state_manager_` is a
+          // direct member of `this` and does not invoke the callback during
+          // destruction.
+          base::BindRepeating(&AtMemoryManager::OnStateReset,
+                              base::Unretained(this))) {}
 
 AtMemoryManager::~AtMemoryManager() = default;
 
@@ -862,6 +871,14 @@ void AtMemoryManager::CancelPendingQueries() {
     state_manager_.StopSearching();
   } else if (popup_state_) {
     popup_state_->is_searching = false;
+  }
+}
+
+void AtMemoryManager::OnStateReset() {
+  CancelPendingQueries();
+  if (popup_state_) {
+    client_->HideSuggestions(SuggestionHidingReason::kStaleData,
+                             FillingProduct::kAtMemory);
   }
 }
 

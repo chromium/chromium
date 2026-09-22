@@ -4,11 +4,15 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -17,6 +21,11 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/personal_context/core/personal_context_types.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,18 +41,69 @@ url::Origin OtherFieldOrigin() {
   return url::Origin::Create(GURL("https://other.com"));
 }
 
+class FakePersonalContextEligibilityService
+    : public personal_context::PersonalContextEligibilityService {
+ public:
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  personal_context::PersonalContextEligibilityState GetEligibilityState()
+      override {
+    return state_;
+  }
+
+  std::optional<personal_context::PersonalContextNonEligibilityReason>
+  GetNonEligibilityReason() const override {
+    return std::nullopt;
+  }
+
+  void SetEligibilityState(
+      personal_context::PersonalContextEligibilityState state) {
+    state_ = state;
+    for (Observer& observer : observers_) {
+      observer.OnEligibilityStateChanged(state);
+    }
+  }
+
+ private:
+  personal_context::PersonalContextEligibilityState state_ =
+      personal_context::PersonalContextEligibilityState::kEligible;
+  base::ObserverList<Observer> observers_;
+};
+
 class AtMemoryPersistedStateManagerTest : public testing::Test {
  public:
-  AtMemoryPersistedStateManager& state_manager() { return state_manager_; }
+  AtMemoryPersistedStateManagerTest() {
+    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
+    pref_service_.SetBoolean(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+        true);
+    state_manager_ = std::make_unique<AtMemoryPersistedStateManager>(
+        /*history_service=*/nullptr, &pref_service_, &eligibility_service_,
+        /*on_reset_callback=*/base::DoNothing());
+  }
+
+  AtMemoryPersistedStateManager& state_manager() { return *state_manager_; }
   const FieldGlobalId& field_id() const { return field_id_; }
   const FieldGlobalId& other_field_id() const { return other_field_id_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+  TestingPrefServiceSimple& pref_service() { return pref_service_; }
+  FakePersonalContextEligibilityService& eligibility_service() {
+    return eligibility_service_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  AtMemoryPersistedStateManager state_manager_{/*history_service=*/nullptr};
+  TestingPrefServiceSimple pref_service_;
+  FakePersonalContextEligibilityService eligibility_service_;
+  std::unique_ptr<AtMemoryPersistedStateManager> state_manager_;
   FieldGlobalId field_id_{test::MakeFieldGlobalId()};
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
 };
@@ -666,6 +726,87 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
   task_environment().FastForwardBy(base::Minutes(10));
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);
+}
+
+// Tests that disabling the Personal Context settings toggle clears both the
+// active search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest, SettingsToggleDisabledClearsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  ASSERT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  pref_service().SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that when `PersonalContextEligibilityService` reports that the user is
+// no longer eligible, active search state and previously filled suggestions are
+// cleared.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       EligibilityStateChangedToDisabledClearsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+  ASSERT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  ASSERT_FALSE(state_manager().previously_filled_suggestions().empty());
+
+  eligibility_service().SetEligibilityState(
+      personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
+
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that enabling settings or receiving an eligible state does not clear
+// the active search state or previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       EnablingPrefOrRemainingEligiblePreservesState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  pref_service().SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  eligibility_service().SetEligibilityState(
+      personal_context::PersonalContextEligibilityState::kEligible);
+
+  EXPECT_TRUE(
+      state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
+  EXPECT_FALSE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that the `on_reset_callback` passed to the constructor is called when
+// the state is reset (e.g. by history deletion or settings change).
+TEST_F(AtMemoryPersistedStateManagerTest, OnResetCallbackInvokedOnReset) {
+  base::MockRepeatingClosure reset_callback;
+  AtMemoryPersistedStateManager custom_state_manager(
+      /*history_service=*/nullptr, &pref_service(), &eligibility_service(),
+      reset_callback.Get());
+
+  EXPECT_CALL(reset_callback, Run);
+  pref_service().SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
 }
 
 }  // namespace
