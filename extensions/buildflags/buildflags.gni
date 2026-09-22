@@ -5,28 +5,50 @@
 import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 
+# This file contains a collection of buildflags related both to the extensions
+# system and to other overlapping technologies.
+#
+# Why so "enable extensions" flags?
+#
+# Historically, enable_extensions was used to guard code that was
+# extension-specific. However, extensions didn't used to run on android. When
+# bringing extension support to desktop android, we needed a way to bring the
+# code over piecemeal (we couldn't just "turn on" enable_extensions, which
+# would have necessitated hundreds of thousands of lines of code to change in a
+# single CL). For this, we introduced enable_extensions_core. This new flag is
+# what controls the majority of the extensions code now, since most has been
+# ported to android. Sites that still use enable_extensions are those that have
+# not yet been ported (or explicitly excluded) from desktop android.
+#
+# Existing sites with gating on enable_extensions should be updated as follows:
+# Should it be ported to desktop android?
+#   Yes
+#       -> update it to enable_extensions_core and port it accordingly.
+#   No / not right now
+#       -> find a more appropriate build flag.
+#          * It should never run on Android because of Android-specific reasons
+#              -> `enable_extensions_core && !is_android`
+#          * It might run on Android at some point, but depends on another
+#            system
+#              -> `enable_extensions_core && <other system>`
+#                 Likely candidates include "enable_platform_apps",
+#                 "enable_guest_view", "full_safe_browsing", etc.
+#
+# **New code should not use enable_extensions.**
+# Instead, use a more suitable set of flags, as described above.
+#
+# https://crbug.com/546631276 tracks the consolidation of these flags.
+
 declare_args() {
   # `enable_extensions` controls whether the full and stable extensions platform
-  # is compiled.
+  # is compiled, as shipped on windows, mac, linux, and chromeos.
+  # This should not be used in new code. See note above for details.
+  # TODO(https://crbug.com/546631276): Collapse this and enable_extensions_core
+  # into one.
   enable_extensions = !is_android && !is_ios && !is_castos && !is_fuchsia
 
-  # `enable_desktop_android_extensions` is an experimental flag used in
-  # prototypes of desktop-focused android-powered builds. This is very much
-  # in-development, non-stable, and likely to crash at any given moment.
-  #
-  # Introducing a separate flag like this has the unfortunate effect of leading
-  # to a lot of `if BUILDFLAG(ENABLE_EXTENSIONS)` checks in extensions code
-  # itself, since those checks are instead the equivalent of
-  # `if BUILDFLAG(ENABLE_FULL_EXTENSIONS_SYSTEM)`. However, we don't want to
-  # change the stable, production-utilized `enable_extensions` flag for this
-  # experimental build.
-  #
-  # As the experimental build progresses, there should be fewer of those
-  # checks littered around the extensions codebase, since more and more of
-  # the extensions code will be included in the desktop android variant.
-  #
-  # TODO(https://crbug.com/356905053): Continue expanding the scope of
-  # enable_desktop_android_extensions.
+  # An implementation-detail flag to control extensions on desktop android.
+  # Don't use this directly. See note above.
   enable_desktop_android_extensions = is_desktop_android
 }
 
@@ -45,10 +67,8 @@ declare_args() {
   # to delete the hosted apps code when deprecation is complete.
   enable_hosted_apps = enable_extensions
 
-  # Whether the core extensions system is enabled. This prevents many callsites
-  # from needing blocks for
-  # `if (enable_extensions || enable_desktop_android_extensions)`, since the
-  # core handling in each of these implementations is similar.
+  # Whether the core extensions system is enabled, used across all systems that
+  # support extensions. See note at the top of this file for details.
   enable_extensions_core =
       enable_extensions || enable_desktop_android_extensions
 }
