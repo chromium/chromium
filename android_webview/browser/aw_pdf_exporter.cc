@@ -69,17 +69,22 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
                                 const JavaRef<jobject>& cancel_signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Wrap the file descriptor in a ScopedFD to take ownership, since we are
-  // responsible for closing it when we are done (after Java detached it).
+  // Wrap the file descriptor in a ScopedFD to take ownership, since
+  // AwPdfExporter and AwPrintManager are responsible for closing it when done
+  // (after Java detached it).
   base::ScopedFD scoped_fd(fd);
+  // Also verify Java sent over a valid file descriptor, since the rest of the
+  // code assumes it did.
+  CHECK(scoped_fd.is_valid());
 
   printing::PageRanges page_ranges;
   JNI_AwPdfExporter_GetPageRanges(env, pages, &page_ranges);
 
   // Create an AwPrintManager for the provided WebContents if the
   // AwPrintManager doesn't exist.
-  if (!AwPrintManager::FromWebContents(web_contents_))
+  if (!AwPrintManager::FromWebContents(web_contents_)) {
     AwPrintManager::CreateForWebContents(web_contents_);
+  }
 
   // Update the parameters of the current print manager.
   AwPrintManager* print_manager =
@@ -89,8 +94,9 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
                              base::BindRepeating(&AwPdfExporter::DidExportPdf,
                                                  base::Unretained(this)));
 
-  if (!print_manager->PrintNow())
+  if (!print_manager->PrintNow()) {
     DidExportPdf(0);
+  }
 }
 
 namespace {

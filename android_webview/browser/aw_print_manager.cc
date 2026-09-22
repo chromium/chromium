@@ -32,10 +32,8 @@ namespace {
 uint32_t SaveDataToFd(base::ScopedFD fd,
                       uint32_t page_count,
                       scoped_refptr<base::RefCountedSharedMemoryMapping> data) {
-  bool did_write_successfully = fd.is_valid();
-  if (did_write_successfully) {
-    did_write_successfully = base::WriteFileDescriptor(fd.get(), *data);
-  }
+  CHECK(fd.is_valid());
+  bool did_write_successfully = base::WriteFileDescriptor(fd.get(), *data);
   return did_write_successfully ? page_count : 0;
 }
 
@@ -69,7 +67,7 @@ void AwPrintManager::SetupScriptedPrintAndroid(
 }
 
 void AwPrintManager::PdfWritingDone(int page_count) {
-  // The fd_ should have been reset when printing started.
+  // `fd_` should have been reset when printing started.
   CHECK(!fd_.is_valid());
   // Trigger the callback to notify the embedding application that printing is
   // done. A non-positive `page_count` value (<=0) will be presented as an error
@@ -109,6 +107,7 @@ void AwPrintManager::UpdateParam(
     PrintManager::PdfWritingDoneCallback callback) {
   DCHECK(settings);
   DCHECK(callback);
+  CHECK(file_descriptor.is_valid());
   settings_ = std::move(settings);
   fd_ = std::move(file_descriptor);
   set_pdf_writing_done_callback(std::move(callback));
@@ -152,10 +151,11 @@ void AwPrintManager::ScriptedPrint(
 void AwPrintManager::DidPrintDocument(
     printing::mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {
-  // Extract the fd_ here to prevent it from being used more than once.
+  // Extract `fd_` here to prevent it from being used more than once.
   base::ScopedFD print_fd = std::move(fd_);
 
   if (!print_fd.is_valid()) {
+    // Can potentially happen if DidPrintDocument() gets called twice.
     PdfWritingDone(0);
     std::move(callback).Run(false);
     return;
