@@ -136,6 +136,28 @@ def RaiseCommandException(args, returncode, output, error):
     raise Exception(message)
 
 
+def _SubprocessEnv():
+    """Returns the environment to use for subprocesses (gradle, gn, ...)."""
+    env = os.environ.copy()
+    # Explicitly set JAVA_HOME since some bots do not have this already set.
+    env['JAVA_HOME'] = _JAVA_HOME
+    # The JVM tries IPv4 addresses first by default and never falls back to
+    # IPv6, so on IPv6-only bots (e.g. android-androidx-packager) the gradle
+    # wrapper and dependency downloads hang until they time out. "system" makes
+    # the JVM use the address order returned by the OS resolver instead, which
+    # already accounts for which of IPv4 / IPv6 is actually routable (unlike
+    # "true", which hangs the same way on IPv4-only dev machines). All maven
+    # repositories we use have AAAA records. JAVA_TOOL_OPTIONS is picked up by
+    # every JVM that gradle launches (wrapper, client and daemon), unlike
+    # GRADLE_OPTS.
+    java_tool_options = env.get('JAVA_TOOL_OPTIONS', '')
+    if 'java.net.preferIPv6Addresses' not in java_tool_options:
+        env['JAVA_TOOL_OPTIONS'] = (
+            java_tool_options +
+            ' -Djava.net.preferIPv6Addresses=system').strip()
+    return env
+
+
 def RunCommand(args, print_stdout=False, cwd=None):
     """Run a new shell command.
 
@@ -149,10 +171,7 @@ def RunCommand(args, print_stdout=False, cwd=None):
   """
     logging.debug('Run %s', args)
     stdout = None if print_stdout else subprocess.PIPE
-    # Explicitly set JAVA_HOME since some bots do not have this already set.
-    env = os.environ.copy()
-    env['JAVA_HOME'] = _JAVA_HOME
-    p = subprocess.Popen(args, stdout=stdout, cwd=cwd, env=env)
+    p = subprocess.Popen(args, stdout=stdout, cwd=cwd, env=_SubprocessEnv())
     pout, _ = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, None, pout)
@@ -173,13 +192,10 @@ def RunCommandAndGetOutput(args):
     messages.
   """
     logging.debug('Run %s', args)
-    # Explicitly set JAVA_HOME since some bots do not have this already set.
-    env = os.environ.copy()
-    env['JAVA_HOME'] = _JAVA_HOME
     p = subprocess.Popen(args,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
-                         env=env)
+                         env=_SubprocessEnv())
     pout, perr = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, pout, perr)
