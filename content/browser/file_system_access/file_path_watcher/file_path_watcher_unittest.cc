@@ -341,8 +341,7 @@ inline constexpr auto IsDirectory = []() {
 inline constexpr auto IsDeletedFile = IsFile;
 inline constexpr auto IsDeletedDirectory = IsDirectory;
 
-// TODO(crbug.com/341372596): A file move is reported as a directory on linux.
-inline constexpr auto IsMovedFile = IsDirectory;
+inline constexpr auto IsMovedFile = IsFile;
 inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
                                            base::FilePath modified_path) {
   return testing::ElementsAre(
@@ -3201,6 +3200,58 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+TEST_P(FilePathWatcherWithChangeInfoTest, MoveParentWithTargetTypeChanged) {
+  base::FilePath parent_dir(temp_dir_.GetPath().AppendASCII("parent"));
+  base::FilePath moved_parent_dir(
+      temp_dir_.GetPath().AppendASCII("moved_parent"));
+  base::FilePath replacement_parent_dir(
+      temp_dir_.GetPath().AppendASCII("replacement_parent"));
+  base::FilePath moved_replacement_parent_dir(
+      temp_dir_.GetPath().AppendASCII("moved_replacement_parent"));
+  base::FilePath target(parent_dir.AppendASCII("subdir").AppendASCII("target"));
+  base::FilePath replacement_target(
+      replacement_parent_dir.AppendASCII("subdir").AppendASCII("target"));
+
+  EventExpecterWithChangeInfo deleted_file_event_expecter;
+  deleted_file_event_expecter.SetEventSequenceMatcher(
+      testing::AllOf(HasPath(target), testing::Not(HasErrored()), IsFile(),
+                     IsType(FilePathWatcher::ChangeType::kDeleted),
+                     HasModifiedPath(target), HasNoMovedFromPath()));
+  EventExpecterWithChangeInfo created_directory_event_expecter;
+  created_directory_event_expecter.SetEventSequenceMatcher(
+      testing::AllOf(HasPath(target), testing::Not(HasErrored()), IsDirectory(),
+                     IsType(FilePathWatcher::ChangeType::kCreated),
+                     HasModifiedPath(target), HasNoMovedFromPath()));
+  EventExpecterWithChangeInfo deleted_directory_event_expecter;
+  deleted_directory_event_expecter.SetEventSequenceMatcher(
+      testing::AllOf(HasPath(target), testing::Not(HasErrored()), IsDirectory(),
+                     IsType(FilePathWatcher::ChangeType::kDeleted),
+                     HasModifiedPath(target), HasNoMovedFromPath()));
+
+  ASSERT_TRUE(CreateDirectory(target.DirName()));
+  ASSERT_TRUE(WriteFile(target, "content"));
+  ASSERT_TRUE(CreateDirectory(replacement_target));
+
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(
+      SetupWatchWithChangeInfo(target, &watcher, &delegate, GetWatchOptions()));
+
+  ASSERT_TRUE(Move(parent_dir, moved_parent_dir));
+  delegate.RunUntilEventsMatch(deleted_file_event_expecter);
+  delegate.SpinAndDiscardAllReceivedEvents();
+
+  ASSERT_TRUE(Move(replacement_parent_dir, parent_dir));
+  delegate.RunUntilEventsMatch(created_directory_event_expecter);
+  delegate.SpinAndDiscardAllReceivedEvents();
+
+  ASSERT_TRUE(Move(parent_dir, moved_replacement_parent_dir));
+  delegate.RunUntilEventsMatch(deleted_directory_event_expecter);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath src_file(dir.AppendASCII("src_file"));
@@ -3438,6 +3489,44 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteTargetLinkedFile) {
   // Now make sure we get notified if the target file is deleted.
   ASSERT_TRUE(DeleteFile(test_file()));
   delegate.RunUntilEventsMatch(event_expecter);
+}
+
+TEST_P(FilePathWatcherWithChangeInfoTest,
+       CreateTargetLinkedDirectoryAndMoveParent) {
+  base::FilePath parent_dir(temp_dir_.GetPath().AppendASCII("parent"));
+  base::FilePath moved_parent_dir(
+      temp_dir_.GetPath().AppendASCII("moved_parent"));
+  base::FilePath link(parent_dir.AppendASCII("link"));
+  base::ScopedTempDir link_target_temp_dir;
+  ASSERT_TRUE(link_target_temp_dir.CreateUniqueTempDir());
+  base::FilePath link_target(
+      link_target_temp_dir.GetPath().AppendASCII("link_target"));
+
+  EventExpecterWithChangeInfo created_event_expecter;
+  created_event_expecter.SetEventSequenceMatcher(
+      testing::AllOf(HasPath(link), testing::Not(HasErrored()), IsFile(),
+                     IsType(FilePathWatcher::ChangeType::kCreated),
+                     HasModifiedPath(link), HasNoMovedFromPath()));
+  EventExpecterWithChangeInfo deleted_event_expecter;
+  deleted_event_expecter.SetEventSequenceMatcher(
+      testing::AllOf(HasPath(link), testing::Not(HasErrored()), IsFile(),
+                     IsType(FilePathWatcher::ChangeType::kDeleted),
+                     HasModifiedPath(link), HasNoMovedFromPath()));
+
+  ASSERT_TRUE(CreateDirectory(parent_dir));
+  ASSERT_TRUE(CreateSymbolicLink(link_target, link));
+
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(
+      SetupWatchWithChangeInfo(link, &watcher, &delegate, GetWatchOptions()));
+
+  ASSERT_TRUE(CreateDirectory(link_target));
+  delegate.RunUntilEventsMatch(created_event_expecter);
+  delegate.SpinAndDiscardAllReceivedEvents();
+
+  ASSERT_TRUE(Move(parent_dir, moved_parent_dir));
+  delegate.RunUntilEventsMatch(deleted_event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, LinkedDirectoryPart1) {

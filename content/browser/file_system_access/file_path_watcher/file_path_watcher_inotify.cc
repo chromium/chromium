@@ -11,6 +11,7 @@
 #include <sys/inotify.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -24,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -82,6 +84,17 @@ size_t GetQuotaLimitFromSystemLimit(size_t system_limit) {
 
   return features::kFileSystemObserverQuotaLimitLinuxPercent.Get() *
          effective_system_limit;
+}
+
+FilePathWatcher::FilePathType GetFilePathType(const base::FilePath& path) {
+  // Use lstat() so symlinks are classified as files, matching inotify's lack
+  // of IN_ISDIR for symlink events.
+  base::stat_wrapper_t file_info;
+  if (base::File::Lstat(path, &file_info) != 0) {
+    return FilePathWatcher::FilePathType::kUnknown;
+  }
+  return S_ISDIR(file_info.st_mode) ? FilePathWatcher::FilePathType::kDirectory
+                                    : FilePathWatcher::FilePathType::kFile;
 }
 
 class InotifyReaderThreadDelegate final
@@ -299,7 +312,11 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
     kNotFound,       // `child_name` is not found to be within the watch scope.
     kLimitExceeded,  // Error occurred while updating inotify watches.
   };
-  base::expected<base::FilePath, ChangeProcessError>
+  struct ChangeProcessResult {
+    base::FilePath changed_path;
+    FilePathWatcher::FilePathType file_path_type;
+  };
+  base::expected<ChangeProcessResult, ChangeProcessError>
   FindChangedPathAndUpdateWatches(InotifyReader::Watch fired_watch,
                                   const base::FilePath::StringType& child_name,
                                   FilePathWatcher::FilePathType file_path_type,
@@ -370,6 +387,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   // The file or directory we're supposed to watch.
   base::FilePath target_;
+
+  // The tracked type of `target_`, reset to kUnknown when it is deleted.
+  // Snapshot this before updating watches to report the type when an ancestor
+  // moves or is deleted and `target_` no longer exists when handling the event.
+  FilePathWatcher::FilePathType target_path_type_ =
+      FilePathWatcher::FilePathType::kUnknown;
 
   Type type_ = Type::kNonRecursive;
   bool report_modified_path_ = false;
@@ -753,10 +776,10 @@ void FilePathWatcherImpl::OnFilePathChanged(
   // may delete `this`.
   usage_monitor.Stop();
 
-  FilePathWatcher::ChangeInfo change_info(file_path_type, change_type,
-                                          result.value());
+  FilePathWatcher::ChangeInfo change_info(result->file_path_type, change_type,
+                                          result->changed_path);
   callback_.Run(std::move(change_info),
-                report_modified_path_ ? result.value() : target_,
+                report_modified_path_ ? result->changed_path : target_,
                 /*error=*/false);  // `this` may be deleted.
 }
 
@@ -796,34 +819,38 @@ void FilePathWatcherImpl::OnFilePathChangedForMoveEvents(
 
   if (moved_from_result.has_value() && moved_to_result.has_value()) {
     FilePathWatcher::ChangeInfo change_info(
-        file_path_type, FilePathWatcher::ChangeType::kMoved,
-        moved_to_result.value(), moved_from_result.value());
-    callback_.Run(std::move(change_info),
-                  report_modified_path_ ? moved_to_result.value() : target_,
-                  /*error=*/false);  // `this` may be deleted.
+        moved_to_result->file_path_type, FilePathWatcher::ChangeType::kMoved,
+        moved_to_result->changed_path, moved_from_result->changed_path);
+    callback_.Run(
+        std::move(change_info),
+        report_modified_path_ ? moved_to_result->changed_path : target_,
+        /*error=*/false);  // `this` may be deleted.
   } else if (moved_from_result.has_value()) {
     // Report file/dir moved out of the watch scope as `ChangeType::kDeleted`.
     FilePathWatcher::ChangeInfo change_info(
-        file_path_type, FilePathWatcher::ChangeType::kDeleted,
-        moved_from_result.value());
-    callback_.Run(std::move(change_info),
-                  report_modified_path_ ? moved_from_result.value() : target_,
-                  /*error=*/false);  // `this` may be deleted.
+        moved_from_result->file_path_type,
+        FilePathWatcher::ChangeType::kDeleted, moved_from_result->changed_path);
+    callback_.Run(
+        std::move(change_info),
+        report_modified_path_ ? moved_from_result->changed_path : target_,
+        /*error=*/false);  // `this` may be deleted.
   } else if (moved_to_result.has_value()) {
     // Report file/dir moved into the watch scope as `ChangeType::kCreated`.
     FilePathWatcher::ChangeInfo change_info(
-        file_path_type, FilePathWatcher::ChangeType::kCreated,
-        moved_to_result.value());
-    callback_.Run(std::move(change_info),
-                  report_modified_path_ ? moved_to_result.value() : target_,
-                  /*error=*/false);  // `this` may be deleted.
+        moved_to_result->file_path_type, FilePathWatcher::ChangeType::kCreated,
+        moved_to_result->changed_path);
+    callback_.Run(
+        std::move(change_info),
+        report_modified_path_ ? moved_to_result->changed_path : target_,
+        /*error=*/false);  // `this` may be deleted.
   }
 
   // No need to invoke the callback when neither of the modified path is found
   // within the watched scope (= ChangeProcessError::kNotFound)
 }
 
-base::expected<base::FilePath, FilePathWatcherImpl::ChangeProcessError>
+base::expected<FilePathWatcherImpl::ChangeProcessResult,
+               FilePathWatcherImpl::ChangeProcessError>
 FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
     InotifyReader::Watch fired_watch,
     const base::FilePath::StringType& child,
@@ -846,6 +873,12 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
     bool change_on_target_path = child.empty() ||
                                  (child == watch_entry.linkname) ||
                                  (child == watch_entry.subdir);
+
+    // A watch for a broken symlink observes the symlink target's parent. An
+    // event for `linkname` therefore describes the symlink target, rather than
+    // the path represented by this WatchEntry.
+    bool link_target_changed =
+        !watch_entry.linkname.empty() && child == watch_entry.linkname;
 
     // Check if the change references |target_| or a direct child of |target_|.
     bool target_changed;
@@ -874,6 +907,8 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
       }
     }
 
+    const auto target_path_type_before_change = target_path_type_;
+
     // Update watches if a directory component of the |target_| path
     // (dis)appears. Note that we don't add the additional restriction of
     // checking the event mask to see if it is for a directory here as changes
@@ -884,6 +919,13 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
         return base::unexpected(ChangeProcessError::kLimitExceeded);
       }
       did_update = true;
+
+      if (target_changed && !link_target_changed) {
+        target_path_type_ =
+            deleted ? FilePathWatcher::FilePathType::kUnknown : file_path_type;
+      } else {
+        target_path_type_ = GetFilePathType(target_);
+      }
     }
 
     // Report the following events:
@@ -903,7 +945,14 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
         }
         did_update = true;
       }
-      return base::ok(change_on_target_path ? target_ : target_.Append(child));
+      FilePathWatcher::FilePathType changed_path_type = file_path_type;
+      if (change_on_target_path && (!target_changed || link_target_changed)) {
+        changed_path_type =
+            created ? target_path_type_ : target_path_type_before_change;
+      }
+      return base::ok(ChangeProcessResult{
+          change_on_target_path ? target_ : target_.Append(child),
+          changed_path_type});
     }
   }
 
@@ -917,7 +966,7 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
         return base::unexpected(ChangeProcessError::kLimitExceeded);
       }
     }
-    return base::ok(child_path);
+    return base::ok(ChangeProcessResult{child_path, file_path_type});
   }
 
   return base::unexpected(ChangeProcessError::kNotFound);
@@ -1024,6 +1073,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     return false;
   }
 
+  target_path_type_ = GetFilePathType(target_);
   RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult::kSuccess);
 
   return true;
