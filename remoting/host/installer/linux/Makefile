@@ -161,7 +161,7 @@ endif
 	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
 
-	for locale in $$(ls $(BUILD_DIR)/remoting_locales); do \
+	for locale in $$(ls "$(BUILD_DIR)/remoting_locales"); do \
 	  install "$(BUILD_DIR)/remoting_locales/$$locale" \
 	    "$(INSTALL_DIR)/remoting_locales/$$locale"; \
 	done
@@ -170,7 +170,7 @@ endif
 	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
 	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
 
-	install $(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop \
+	install "$(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop" \
 	  "$(CRON_DIR)/chrome-remote-desktop"
 
 	install -m 0644 \
