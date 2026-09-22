@@ -4,13 +4,22 @@
 
 #include "chrome/services/sharing/nearby/platform/scheduled_executor.h"
 
+#include <atomic>
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/test/test_waitable_event.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,24 +47,12 @@ class ScheduledExecutorTest : public testing::Test {
     std::shared_ptr<api::Cancelable> cancelable = scheduled_executor_->Schedule(
         std::move(runnable), absl::Microseconds(delay.InMicroseconds()));
 
-    // In order to make thread-safe calls to the API of base::OneShotTimer,
-    // schedule() will post a task to an internal base::SequencedTaskRunner that
-    // calls Start() on a base::OneShotTimer. Executing RunUntilIdle() simply
-    // ensures that the base::OneShotTimer associated with the Runnable has been
-    // Start()ed, but offers no guarantee on whether the Runnable has been run()
-    // or not.
-    task_environment_.RunUntilIdle();
-
     return cancelable;
   }
 
   void CancelTaskAndVerifyState(std::shared_ptr<api::Cancelable> cancelable,
                                 bool should_expect_success) {
     EXPECT_EQ(should_expect_success, cancelable->Cancel());
-
-    // Ensures that the base::OneShotTimer associated with the given Cancelable
-    // has been Stop()ped before this method returns.
-    task_environment_.RunUntilIdle();
   }
 
   void VerifySetContainsId(const base::UnguessableToken& id) {
@@ -165,8 +162,7 @@ TEST_F(ScheduledExecutorTest, FailToCancelAfterCancel) {
       PostRunnableWithIdAndDelay(run_loop, id, kDefaultDelayTimeDelta);
 
   // The first call should successfully cancel the task. Subsequent invocations
-  // will return false by default, as CancelableTask uses a base::OnceClosure
-  // that will be consumed after the first call to cancel().
+  // will return false because the runnable has been removed.
   CancelTaskAndVerifyState(cancelable, true /* should_expect_success */);
   CancelTaskAndVerifyState(cancelable, false /* should_expect_success */);
   CancelTaskAndVerifyState(cancelable, false /* should_expect_success */);
@@ -227,6 +223,178 @@ TEST_F(ScheduledExecutorTest, DestroyAllowExistingTaskToCompleteImmediately) {
   run_loop.Run();
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id);
+}
+
+TEST_F(ScheduledExecutorTest, CancelFromDifferentSequence) {
+  base::RunLoop run_loop;
+  base::UnguessableToken id = base::UnguessableToken::Create();
+  auto cancelable =
+      PostRunnableWithIdAndDelay(run_loop, id, kDefaultDelayTimeDelta);
+
+  scoped_refptr<base::SequencedTaskRunner> other_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+
+  base::RunLoop cancel_run_loop;
+  other_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                EXPECT_TRUE(cancelable->Cancel());
+                                cancel_run_loop.Quit();
+                              }));
+  cancel_run_loop.Run();
+
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  EXPECT_EQ(0u, GetSetSize());
+}
+
+TEST_F(ScheduledExecutorTest, ConcurrentCancelFromMultipleThreads) {
+  base::RunLoop run_loop;
+  base::UnguessableToken id = base::UnguessableToken::Create();
+  auto cancelable =
+      PostRunnableWithIdAndDelay(run_loop, id, kDefaultDelayTimeDelta);
+
+  constexpr size_t kNumTasks = 4;
+  std::atomic<int> success_count{0};
+  base::RunLoop cancel_run_loop;
+  auto barrier = base::BarrierClosure(kNumTasks, cancel_run_loop.QuitClosure());
+
+  for (size_t i = 0; i < kNumTasks; ++i) {
+    base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                 if (cancelable->Cancel()) {
+                                   ++success_count;
+                                 }
+                                 barrier.Run();
+                               }));
+  }
+
+  cancel_run_loop.Run();
+
+  EXPECT_EQ(1, success_count.load());
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  EXPECT_EQ(0u, GetSetSize());
+}
+
+TEST_F(ScheduledExecutorTest, ConcurrentCancelDuringDestruction) {
+  for (int iter = 0; iter < 50; ++iter) {
+    auto executor = std::make_unique<ScheduledExecutor>(
+        task_environment_.GetMainThreadTaskRunner());
+    base::TestWaitableEvent go;
+    std::shared_ptr<api::Cancelable> cancelable =
+        executor->Schedule([&go]() { go.Signal(); }, absl::Hours(1));
+
+    base::TestWaitableEvent cancel_done;
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::WithBaseSyncPrimitives()},
+        base::BindLambdaForTesting([&go, &cancel_done, cancelable]() {
+          go.Wait();
+          cancelable->Cancel();
+          cancel_done.Signal();
+        }));
+
+    executor.reset();
+    cancel_done.Wait();
+  }
+}
+
+TEST_F(ScheduledExecutorTest, CancelWhileTaskIsRunningReturnsFalse) {
+  base::TestWaitableEvent task_started;
+  base::TestWaitableEvent allow_task_finish;
+  std::atomic<bool> cancel_result{true};
+  base::RunLoop task_run_loop;
+
+  std::shared_ptr<api::Cancelable> cancelable = scheduled_executor_->Schedule(
+      [&]() {
+        task_started.Signal();
+        allow_task_finish.Wait();
+        task_run_loop.Quit();
+      },
+      absl::ZeroDuration());
+
+  base::ThreadPool::PostTask(FROM_HERE, {base::WithBaseSyncPrimitives()},
+                             base::BindLambdaForTesting([&]() {
+                               task_started.Wait();
+                               cancel_result.store(cancelable->Cancel(),
+                                                   std::memory_order_release);
+                               allow_task_finish.Signal();
+                             }));
+
+  task_run_loop.Run();
+
+  EXPECT_FALSE(cancel_result.load());
+}
+
+TEST_F(ScheduledExecutorTest, MultiplePendingTasksWithMixedCancellation) {
+  constexpr int kNumTasks = 20;
+  std::vector<std::shared_ptr<api::Cancelable>> cancelables;
+  std::atomic<int> run_count{0};
+
+  for (int i = 0; i < kNumTasks; ++i) {
+    cancelables.push_back(scheduled_executor_->Schedule(
+        [&run_count]() { run_count.fetch_add(1, std::memory_order_relaxed); },
+        absl::Milliseconds(100 * (i + 1))));
+  }
+
+  // Cancel even-indexed tasks.
+  for (int i = 0; i < kNumTasks; i += 2) {
+    EXPECT_TRUE(cancelables[i]->Cancel());
+  }
+
+  task_environment_.FastForwardBy(base::Milliseconds(100 * (kNumTasks + 1)));
+
+  // Exactly half of the tasks (the odd-indexed ones) should have executed.
+  EXPECT_EQ(kNumTasks / 2, run_count.load());
+
+  // Attempting to cancel already-executed tasks should return false.
+  for (int i = 1; i < kNumTasks; i += 2) {
+    EXPECT_FALSE(cancelables[i]->Cancel());
+  }
+}
+
+TEST_F(ScheduledExecutorTest, ConcurrentCancelOfMultipleTasks) {
+  constexpr size_t kNumTasks = 100;
+  std::vector<std::shared_ptr<api::Cancelable>> cancelables;
+  cancelables.reserve(kNumTasks);
+
+  for (size_t i = 0; i < kNumTasks; ++i) {
+    cancelables.push_back(
+        scheduled_executor_->Schedule([]() {}, absl::Minutes(10)));
+  }
+
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(kNumTasks, run_loop.QuitClosure());
+
+  for (size_t i = 0; i < kNumTasks; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindLambdaForTesting([cancelable = cancelables[i], barrier]() {
+          cancelable->Cancel();
+          barrier.Run();
+        }));
+  }
+
+  run_loop.Run();
+}
+
+TEST_F(ScheduledExecutorTest, ExecuteRunsImmediately) {
+  base::RunLoop run_loop;
+  bool executed = false;
+  scheduled_executor_->Execute([&]() {
+    executed = true;
+    run_loop.Quit();
+  });
+  run_loop.Run();
+  EXPECT_TRUE(executed);
+}
+
+TEST_F(ScheduledExecutorTest, NegativeDurationRunsImmediately) {
+  base::RunLoop run_loop;
+  bool executed = false;
+  scheduled_executor_->Schedule(
+      [&]() {
+        executed = true;
+        run_loop.Quit();
+      },
+      absl::Seconds(-5));
+  run_loop.Run();
+  EXPECT_TRUE(executed);
 }
 
 }  // namespace nearby::chrome
