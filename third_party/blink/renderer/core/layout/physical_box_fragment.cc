@@ -117,7 +117,7 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 }
 
 int MaxGapDecorationsWidth(const GapDataList<int>& width_value) {
-  const auto widths = width_value.GetGapDataList();
+  const auto& widths = width_value.GetGapDataList();
   CHECK(!widths.empty());
 
   const auto& first_width = widths[0];

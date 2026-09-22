@@ -284,11 +284,11 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   const ComputedStyle& style = box_fragment_.Style();
   const bool is_column_gap = (track_direction == kForColumns);
 
-  GapDataList<StyleColor> rule_colors =
+  const GapDataList<StyleColor>& rule_colors =
       is_column_gap ? style.ColumnRuleColor() : style.RowRuleColor();
-  GapDataList<EBorderStyle> rule_styles =
+  const GapDataList<EBorderStyle>& rule_styles =
       is_column_gap ? style.ColumnRuleStyle() : style.RowRuleStyle();
-  GapDataList<int> rule_widths =
+  const GapDataList<int>& rule_widths =
       is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
   RuleBreak rule_break = CSSGapDecorationUtils::ResolveRuleBreakValue(
       style, track_direction, gap_geometry.GetContainerType());
