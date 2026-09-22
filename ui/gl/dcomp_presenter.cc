@@ -82,8 +82,6 @@ constexpr std::string_view CommitErrorReasonToString(
     case CommitError::Reason::
         kPresentToSwapChainSdrRevertCreateVideoProcessorOutputView:
       return "PresentToSwapChainSdrRevertCreateVideoProcessorOutputView";
-    case CommitError::Reason::kPresentToSwapChainSdrRevertSetColorSpace:
-      return "PresentToSwapChainSdrRevertSetColorSpace";
     case CommitError::Reason::kUploadVideoImageInvalidPixmapData:
       return "UploadVideoImageInvalidPixmapData";
     case CommitError::Reason::kUploadVideoImageInvalidPixmapSize:

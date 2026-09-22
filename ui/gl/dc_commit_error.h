@@ -39,7 +39,6 @@ struct CommitError {
     kPresentToSwapChainPresent,
     kPresentToSwapChainSdrRevertMissingVideoProcessor,
     kPresentToSwapChainSdrRevertCreateVideoProcessorOutputView,
-    kPresentToSwapChainSdrRevertSetColorSpace,
     kUploadVideoImageInvalidPixmapData,
     kUploadVideoImageInvalidPixmapSize,
     kUploadVideoImageInvalidPixmapStride,

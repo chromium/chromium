@@ -351,18 +351,15 @@ bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
                             const gfx::Rect& target_rect) {
   // Get the original dest size in case of restoring.
   uint32_t original_dest_width, original_dest_height;
-  HRESULT hr = decode_swap_chain->GetDestSize(&original_dest_width,
-                                              &original_dest_height);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "GetDestSize failed: "
-                << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
+  CHECK_EQ(decode_swap_chain->GetDestSize(&original_dest_width,
+                                          &original_dest_height),
+           S_OK);
 
   // Set the destination surface size if necessary.
   if (dest_size.width() != static_cast<int>(original_dest_width) ||
       dest_size.height() != static_cast<int>(original_dest_height)) {
-    hr = decode_swap_chain->SetDestSize(dest_size.width(), dest_size.height());
+    HRESULT hr =
+        decode_swap_chain->SetDestSize(dest_size.width(), dest_size.height());
     if (FAILED(hr)) {
       DLOG(ERROR) << "SetDestSize failed: "
                   << logging::SystemErrorCodeToString(hr);
@@ -372,18 +369,12 @@ bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
 
   // Get the original target rect in case of restoring.
   RECT original_target_rect;
-  hr = decode_swap_chain->GetTargetRect(&original_target_rect);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "GetTargetRect failed: "
-                << logging::SystemErrorCodeToString(hr);
-    decode_swap_chain->SetDestSize(original_dest_width, original_dest_height);
-    return false;
-  }
+  CHECK_EQ(decode_swap_chain->GetTargetRect(&original_target_rect), S_OK);
 
   // Set the target region to the specified rectangle if necessary.
   RECT target_region = target_rect.ToRECT();
   if (target_region != original_target_rect) {
-    hr = decode_swap_chain->SetTargetRect(&target_region);
+    HRESULT hr = decode_swap_chain->SetTargetRect(&target_region);
     if (FAILED(hr)) {
       DLOG(ERROR) << "SetTargetRect failed: "
                   << logging::SystemErrorCodeToString(hr);
@@ -915,17 +906,11 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
     SetSwapChainPresentDuration();
 
-    Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-    CHECK_EQ(dcomp_device_.As(&desktop_device), S_OK);
-
-    hr = desktop_device->CreateSurfaceFromHandle(swap_chain_handle.Get(),
-                                                 &decode_surface_);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "CreateSurfaceFromHandle failed: "
-                  << logging::SystemErrorCodeToString(hr);
-      return false;
-    }
-    DCHECK(decode_surface_);
+    // We own `swap_chain_handle` and created it with all access rights, so it
+    // is always usable as a surface.
+    CHECK_EQ(dcomp_device_->CreateSurfaceFromHandle(swap_chain_handle.Get(),
+                                                    &decode_surface_),
+             S_OK);
 
     content_ = decode_surface_.Get();
   }
@@ -1880,13 +1865,8 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
   SetSwapChainPresentDuration();
 
   DXGI_ADAPTER_DESC adapter_desc;
-  hr = dxgi_adapter->GetDesc(&adapter_desc);
-  if (SUCCEEDED(hr)) {
-    gpu_vendor_id_ = adapter_desc.VendorId;
-  } else {
-    DLOG(ERROR) << "Failed to get adapter desc: "
-                << logging::SystemErrorCodeToString(hr);
-  }
+  CHECK_EQ(dxgi_adapter->GetDesc(&adapter_desc), S_OK);
+  gpu_vendor_id_ = adapter_desc.VendorId;
 
   enable_vp_auto_hdr_ =
       !layer_tree_->disable_vp_auto_hdr() && IsVpAutoHDREnabled(gpu_vendor_id_);
@@ -1986,11 +1966,9 @@ base::expected<void, CommitError> SwapChainPresenter::RevertSwapChainToSDR(
                                             is_yuv_swapchain);
   context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
                                                output_dxgi_color_space);
-  hr = swap_chain_->SetColorSpace1(output_dxgi_color_space);
-  if (FAILED(hr)) {
-    return base::unexpected(CommitError{
-        CommitError::Reason::kPresentToSwapChainSdrRevertSetColorSpace, hr});
-  }
+  // The color space matches the format of the swap chain that was just
+  // reallocated, so it is always supported.
+  CHECK_EQ(swap_chain_->SetColorSpace1(output_dxgi_color_space), S_OK);
 
   return base::ok();
 }
