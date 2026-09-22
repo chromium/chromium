@@ -9,9 +9,13 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/page_transition_types.h"
 
 namespace glic {
 
@@ -62,7 +66,13 @@ IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
 
   GURL untrusted_guest_url = embedded_test_server()->GetURL(
       "b.com", "/glic/browser_tests/minimal_client.html");
-  ASSERT_TRUE(content::NavigateToURL(guest_contents, untrusted_guest_url));
+  // Start the navigation without waiting for it to finish. Committing a page
+  // without API access sends the host page to the error panel, which destroys
+  // the <webview> and with it `guest_contents`, so anything that inspects the
+  // guest after the commit would be reading freed memory.
+  guest_contents->GetController().LoadURL(
+      untrusted_guest_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+      std::string());
 
   // 3. Verify Glic API/Mojo connection is immediately revoked
   EXPECT_TRUE(

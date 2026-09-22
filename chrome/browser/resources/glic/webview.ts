@@ -104,7 +104,6 @@ export class WebviewPersistentState {
 // Creates and manages the <webview> element.
 export class WebviewController {
   webview: WebViewType;
-  private dormant = false;
 
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
@@ -228,17 +227,6 @@ export class WebviewController {
     this.webview.remove();
   }
 
-  // Destroys the host and prevents the host from being recreated. This results
-  // in a webview which effectively cannot communicate with Chrome. Useful for
-  // debugging.
-  setDormant(): void {
-    if (this.dormant) {
-      return;
-    }
-    this.dormant = true;
-    this.destroyHost();
-  }
-
   private destroyHost(webClientState?: WebClientState) {
     this.stopBootstrapPing();
     if (webClientState !== undefined) {
@@ -317,8 +305,7 @@ export class WebviewController {
   onGuestNavigated(
       url: string, isApiAllowed: boolean, pageType: GuestPageType,
       _isInitialCommit: boolean): void {
-    if (this.dormant ||
-        this.getWebClientState().getCurrentValue() === WebClientState.kError) {
+    if (this.getWebClientState().getCurrentValue() === WebClientState.kError) {
       return;
     }
 

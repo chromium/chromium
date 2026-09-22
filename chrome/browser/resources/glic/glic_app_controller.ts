@@ -29,10 +29,6 @@ const kMinHoldLoadingTimeMs = loadTimeData.getInteger('minLoadingTimeMs');
 // Maximum time to wait for load before showing error panel.
 const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 
-// Whether to enable the debug button on the error panel. Can be enabled with
-// the --enable-features=GlicDebugWebview command-line flag.
-const kEnableDebug = loadTimeData.getBoolean('enableDebug');
-
 const kShowErrorAllowed = loadTimeData.getBoolean('showErrorAllowed');
 
 interface PageElementTypes {
@@ -110,8 +106,8 @@ export enum WebUiErrorReason {
   TIMEOUT_LOADING_CLIENT = 4,
   TIMEOUT_WARMED = 5,
   CLIENT_ERROR = 6,
-  CLOSE_DEBUG_VIEW = 7,
-  MAX_VALUE = CLOSE_DEBUG_VIEW,
+  DEPRECATED_CLOSE_DEBUG_VIEW = 7,
+  MAX_VALUE = DEPRECATED_CLOSE_DEBUG_VIEW,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PanelWebUiStateErrorReason)
 
@@ -241,11 +237,6 @@ export class GlicAppController implements WebviewDelegate {
       }
     });
 
-    if (kEnableDebug) {
-      window.addEventListener('load', () => {
-        this.installDebugButton();
-      });
-    }
     this.initializeIcons_();
   }
 
@@ -405,8 +396,7 @@ export class GlicAppController implements WebviewDelegate {
         reloadOnOpen: true,
         onEnter:
             () => {
-              // Keep the webview alive for debugging purposes.
-              this.setWebviewDormant();
+              this.destroyWebview();
               this.showPanel('errorPanel');
             },
       },
@@ -741,15 +731,6 @@ export class GlicAppController implements WebviewDelegate {
     this.webview = undefined;
   }
 
-  private setWebviewDormant(): void {
-    // Never allow dormant state when the panel is hidden.
-    if (this.panelStateKind === PanelStateKind.kHidden) {
-      this.destroyWebview();
-      return;
-    }
-    this.webview?.setDormant();
-  }
-
   private online(): void {
     if (this.simulateNoConnection) {
       return;
@@ -769,17 +750,6 @@ export class GlicAppController implements WebviewDelegate {
     if (allowedStates.includes(this.state!)) {
       this.setState(WebUiState.kOffline);
     }
-  }
-
-  private installDebugButton(): void {
-    const button = document.createElement('cr-icon-button');
-    button.id = 'debug';
-    button.classList.add('tonal-button');
-    button.setAttribute('iron-icon', 'cr:search');
-    document.querySelector('#errorPanel .notice')!.appendChild(button);
-    button.addEventListener('click', () => {
-      this.showDebug();
-    });
   }
 
   private startWarmedTimeout(): void {
@@ -829,23 +799,8 @@ export class GlicAppController implements WebviewDelegate {
 
   // External entry points.
 
-  showDebug(): void {
-    this.setState(WebUiState.kReady);
-    $.guestPanel.classList.toggle('show-header', true);
-    $.guestPanel.classList.toggle('debug', true);
-  }
-
   close(): void {
-    // If we're in the debug view, switch back to error. Otherwise close the
-    // window.
-    if (this.state === WebUiState.kReady &&
-        $.guestPanel.classList.contains('debug')) {
-      $.guestPanel.classList.toggle('debug', false);
-      // Not a client load failure: the debug view was open because the client
-      // had already failed, and closing it just restores the error panel.
-      this.setErrorState(WebUiErrorReason.CLOSE_DEBUG_VIEW, null);
-
-    } else if (this.state === WebUiState.kReady) {
+    if (this.state === WebUiState.kReady) {
       this.browserProxy.pageHandler.closePanel();
     } else {
       // Reload in the background if user closes window while web client is not

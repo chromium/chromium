@@ -1413,7 +1413,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Timeout Loading Client"/>
   <int value="5" label="Timeout Warmed"/>
   <int value="6" label="Client Error"/>
-  <int value="7" label="Close Debug View"/>
+  <int value="7" label="(Obsolete) Close Debug View">
+    (Obsolete) Recorded when the error panel's debug view was closed. The debug
+    view was removed in 09/2026.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:PanelWebUiStateErrorReason) -->

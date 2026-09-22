@@ -129,8 +129,4 @@ export class AppRouter {
   reload(): void {
     this.glicController?.reload();
   }
-
-  showDebug(): void {
-    this.glicController?.showDebug();
-  }
 }

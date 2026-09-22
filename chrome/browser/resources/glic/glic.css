@@ -301,11 +301,6 @@ webview {
   color: var(--cr-fallback-color-on-secondary-container);
 }
 
-#debug {
-  position: absolute;
-  right: 30px;
-}
-
 cr-progress {
   width: 80%;
   margin: 20px 10% 0;

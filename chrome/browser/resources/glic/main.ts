@@ -52,15 +52,6 @@ function setupListeners(controller: AppRouter) {
       }
     });
   }
-
-  const debugButton = document.getElementById('debug');
-  if (debugButton) {
-    debugButton.addEventListener('click', () => {
-      if ('showDebug' in controller) {
-        controller.showDebug();
-      }
-    });
-  }
 }
 
 
