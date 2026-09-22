@@ -1,0 +1,47 @@
+This is a wdspec test.
+[FAIL] test_features_values[any-hover=none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "any-hover")
+[FAIL] test_features_values[any-pointer=coarse]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "any-pointer")
+[FAIL] test_features_values[color=0]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "color")
+[FAIL] test_features_values[color-index=256]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "color-index")
+[FAIL] test_features_values[display-mode=standalone]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "display-mode")
+[FAIL] test_features_values[dynamic-range=high]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "dynamic-range")
+[FAIL] test_features_values[environment-blending=additive]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "environment-blending")
+[FAIL] test_features_values[grid=1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "grid")
+[FAIL] test_features_values[horizontal-viewport-segments=2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "horizontal-viewport-segments")
+[FAIL] test_features_values[hover=none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "hover")
+[FAIL] test_features_values[inverted-colors=inverted]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "inverted-colors")
+[FAIL] test_features_values[monochrome=8]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "monochrome")
+[FAIL] test_features_values[nav-controls=none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "nav-controls")
+[FAIL] test_features_values[overflow-block=paged]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "overflow-block")
+[FAIL] test_features_values[overflow-inline=none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "overflow-inline")
+[FAIL] test_features_values[pointer=coarse]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "pointer")
+[FAIL] test_features_values[scan=interlace]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "scan")
+[FAIL] test_features_values[scripting=none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "scripting")
+[FAIL] test_features_values[update=slow]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "update")
+[FAIL] test_features_values[vertical-viewport-segments=2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "vertical-viewport-segments")
+[FAIL] test_features_values[video-color-gamut=rec2020]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "video-color-gamut")
+[FAIL] test_features_values[video-dynamic-range=high]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Media feature(s) not supported: "video-dynamic-range")
+Harness: the test ran to completion.
+
