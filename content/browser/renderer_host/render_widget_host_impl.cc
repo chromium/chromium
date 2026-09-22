@@ -298,6 +298,9 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   }
 
   for (const auto& custom_data_item : drop_data.custom_data) {
+    if (custom_data_item.first == kDragIdCustomDataKey) {
+      continue;
+    }
     metadata.push_back(DropData::Metadata::CreateForMimeType(
         DropData::Kind::STRING, custom_data_item.first));
   }

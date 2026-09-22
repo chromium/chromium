@@ -4383,7 +4383,7 @@ TEST_F(WebContentsImplTest, DragProvenanceLifecycle) {
 
   contents()->OnStartDragging(&drop_data, source_rfh_token);
 
-  auto it = drop_data.custom_data.find(u"chromium/x-drag-id");
+  auto it = drop_data.custom_data.find(kDragIdCustomDataKey);
   ASSERT_NE(it, drop_data.custom_data.end())
       << "drag_id should be added to custom_data when file_contents is "
          "present.";
@@ -4412,7 +4412,7 @@ TEST_F(WebContentsImplTest, NoStashIfNoFileContents) {
 
   contents()->OnStartDragging(&drop_data, GlobalRenderFrameHostToken());
 
-  EXPECT_EQ(drop_data.custom_data.find(u"chromium/x-drag-id"),
+  EXPECT_EQ(drop_data.custom_data.find(kDragIdCustomDataKey),
             drop_data.custom_data.end())
       << "No drag_id should be created if file_contents is empty.";
 }
@@ -4427,14 +4427,14 @@ TEST_F(WebContentsImplTest, MultipleDragProvenancesAreIsolated) {
       base::ToVector(base::byte_span_from_cstring("content 1"));
   contents()->OnStartDragging(&data1, source_rfh_token);
   base::UnguessableToken id1 = *base::UnguessableToken::DeserializeFromString(
-      base::UTF16ToASCII(data1.custom_data[u"chromium/x-drag-id"]));
+      base::UTF16ToASCII(data1.custom_data[kDragIdCustomDataKey]));
 
   DropData data2;
   data2.file_contents =
       base::ToVector(base::byte_span_from_cstring("content 2"));
   contents()->OnStartDragging(&data2, source_rfh_token);
   base::UnguessableToken id2 = *base::UnguessableToken::DeserializeFromString(
-      base::UTF16ToASCII(data2.custom_data[u"chromium/x-drag-id"]));
+      base::UTF16ToASCII(data2.custom_data[kDragIdCustomDataKey]));
 
   EXPECT_NE(id1, id2);
   EXPECT_EQ(WebContents::FromDragId(contents()->GetBrowserContext(),

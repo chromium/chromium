@@ -34,8 +34,6 @@ namespace glic {
 
 namespace {
 
-const char16_t kGlicDragIdKey[] = u"chromium/x-drag-id";
-
 // Constructs the `glic::mojom::AdditionalContext` containing the dropped data
 // and the retrieved page context of the originating source tab.
 // Needed to bundle all relevant multimodal web content (raw file bytes,
@@ -242,7 +240,7 @@ GlicDragAndDropContentType GetDragAndDropContentType(
 }  // namespace
 
 bool IsGlicWebDrag(const content::DropData& drop_data) {
-  return drop_data.custom_data.contains(kGlicDragIdKey);
+  return drop_data.custom_data.contains(content::kDragIdCustomDataKey);
 }
 
 // Initiates the Glic drag-and-drop invocation workflow when a web drag is
@@ -282,8 +280,8 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   }
 
   std::optional<base::UnguessableToken> raw_drag_id =
-      base::UnguessableToken::DeserializeFromString(
-          base::UTF16ToUTF8(drop_data.custom_data.at(kGlicDragIdKey)));
+      base::UnguessableToken::DeserializeFromString(base::UTF16ToUTF8(
+          drop_data.custom_data.at(content::kDragIdCustomDataKey)));
   if (!raw_drag_id) {
     base::UmaHistogramEnumeration(
         "Glic.DragAndDrop.ValidationResult",

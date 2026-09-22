@@ -8132,7 +8132,7 @@ void WebContentsImpl::OnStartDragging(
 
   active_drag_id_ = drag_id;
   SetDragSource(drag_id, source_rfh_token);
-  drop_data->custom_data[u"chromium/x-drag-id"] =
+  drop_data->custom_data[kDragIdCustomDataKey] =
       base::ASCIIToUTF16(drag_id.value().ToString());
 }
 

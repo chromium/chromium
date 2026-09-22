@@ -27,6 +27,13 @@
 
 namespace content {
 
+// Key of the DropData::custom_data entry holding the id that links an
+// in-progress drag back to the WebContents it started from. This entry is
+// assigned by the browser when a drag starts (see
+// `WebContentsImpl::OnStartDragging()`); values supplied by the drag source
+// are discarded (see `DragDataToDropData()`).
+inline constexpr char16_t kDragIdCustomDataKey[] = u"chromium/x-drag-id";
+
 struct CONTENT_EXPORT DownloadUrlMetadata {
   DownloadUrlMetadata();
   ~DownloadUrlMetadata();
@@ -67,7 +74,7 @@ struct CONTENT_EXPORT DropData {
     LAST = BINARY
   };
 
-  struct Metadata {
+  struct CONTENT_EXPORT Metadata {
     static Metadata CreateForMimeType(Kind kind,
                                       const std::u16string& mime_type);
     static Metadata CreateForFilePath(
