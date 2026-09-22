@@ -315,6 +315,7 @@ void XboxDataFetcher::AddController(XboxControllerMac* controller) {
   }
   PadState* state = GetPadState(controller->location_id());
   if (!state) {
+    controller->Shutdown();
     delete controller;
     RecordXboxMacOutcome(XboxMacOutcome::kNoSlotAvailable);
     return;  // No available slot for this device
