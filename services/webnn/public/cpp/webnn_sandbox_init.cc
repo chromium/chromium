@@ -48,7 +48,7 @@ void PreSandboxWebNNInitialization(bool is_gpu_process) {
         base::FilePath(FILE_PATH_LITERAL("libLiteRtWebGpuAccelerator.so"));
   }
 
-  dlopen(library_path.value().c_str(), RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
+  dlopen(library_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_NODELETE);
 #endif
 #endif  // BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
 }
