@@ -154,3 +154,8 @@ crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaD
 
 # Gardening suppression 2026-09-21
 crbug.com/564394196 GeminiContainerTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
+
+# Gardening suppression 2026-09-22
+crbug.com/564394196 GeminiCopresenceTestCase/testOpenSettingsFromToolbar [ Pass Failure ]
+crbug.com/564394196 GeminiDynamicSettingsTestCase/testLoadDynamicSettings [ Pass Failure ]
+
