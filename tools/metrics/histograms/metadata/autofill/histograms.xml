@@ -6340,6 +6340,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="EntitySaveUpdateFlow"
         summary="Autofill Android Message shown to prompt a user to save an
                  entity to Chrome (like password, driver's license, etc.)"/>
+    <variant name="ResurrectChurnedUsers"
+        summary="Autofill Android Message shown to prompt a churned user to
+                 re-enable payment autofill"/>
   </token>
   <token key="Event">
     <variant name="ActionClicked"

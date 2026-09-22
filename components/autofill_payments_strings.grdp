@@ -1479,6 +1479,12 @@
   <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_DESCRIPTION" desc="Convenience description for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
     Fill card details automatically when you check out online. Cards are saved in Google Wallet securely.
   </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_MESSAGE_TITLE" desc="Title for the payments churned users Android message banner. Prompts the user to turn on payment autofill.">
+    Securely check out with autofill
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_MESSAGE_DESCRIPTION" desc="Description for the payments churned users Android message banner. Prompts the user to turn on payment autofill.">
+    Turn on autofill to make shopping easier
+  </message>
   <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_TITLE" desc="Title for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
     Autofill turned on
   </message>

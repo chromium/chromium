@@ -1622,6 +1622,7 @@ chromium-metrics-reviews@google.com.
   <int value="78" label="IntranetRedirect"/>
   <int value="79" label="PasswordSavedConfirmation"/>
   <int value="80" label="EmailVerified"/>
+  <int value="81" label="ResurrectChurnedUsers"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

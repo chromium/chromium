@@ -164,6 +164,7 @@ enum class MessageIdentifier {
   INTRANET_REDIRECT = 78,
   PASSWORD_SAVED_CONFIRMATION = 79,
   EMAIL_VERIFIED = 80,
+  RESURRECT_CHURNED_USERS = 81,
   // Insert new values before this line.
   COUNT
 };

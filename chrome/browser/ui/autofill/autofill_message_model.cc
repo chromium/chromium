@@ -150,6 +150,27 @@ AutofillMessageModel::CreateForEmailVerified(
                                std::move(action_callback), base::DoNothing()));
 }
 
+std::unique_ptr<AutofillMessageModel>
+AutofillMessageModel::CreateForResurrectChurnedUsers(
+    base::OnceClosure action_callback,
+    messages::MessageWrapper::DismissCallback dismiss_callback) {
+  std::unique_ptr<messages::MessageWrapper> message =
+      std::make_unique<messages::MessageWrapper>(
+          messages::MessageIdentifier::RESURRECT_CHURNED_USERS);
+  message->SetTitle(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CHURNED_USERS_MESSAGE_TITLE));
+  message->SetDescription(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CHURNED_USERS_MESSAGE_DESCRIPTION));
+  message->SetPrimaryButtonText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CHURNED_USERS_BUBBLE_ACCEPT_BUTTON_LABEL));
+  message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+      IDR_ANDROID_AUTOFILL_ID_CHROME_PRODUCT));
+
+  return base::WrapUnique(new AutofillMessageModel(
+      std::move(message), Type::kResurrectChurnedUsers,
+      std::move(action_callback), std::move(dismiss_callback)));
+}
+
 std::string_view AutofillMessageModel::TypeToString(Type message_type) {
   switch (message_type) {
     case Type::kUnspecified:
@@ -168,6 +189,8 @@ std::string_view AutofillMessageModel::TypeToString(Type message_type) {
       return "PrivateInferenceNotice";
     case Type::kEmailVerified:
       return "EmailVerified";
+    case Type::kResurrectChurnedUsers:
+      return "ResurrectChurnedUsers";
   }
 }
 

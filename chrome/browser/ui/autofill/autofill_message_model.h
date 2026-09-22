@@ -43,6 +43,11 @@ class AutofillMessageModel {
     kPrivateInferenceNotice = 6,
     // Used when an email has been automatically confirmed on supported sites.
     kEmailVerified = 7,
+    // Used when a user who previously disabled payment autofill
+    // (`prefs::kAutofillCreditCardEnabled` == false, i.e. a "churned" user)
+    // interacts with a credit card form. Prompts them to re-enable payment
+    // autofill ("resurrecting" them) when they accept the message.
+    kResurrectChurnedUsers = 8,
   };
 
   AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,
@@ -72,6 +77,9 @@ class AutofillMessageModel {
   static std::unique_ptr<AutofillMessageModel> CreateForEmailVerified(
       const GURL& issuer,
       base::OnceClosure action_callback);
+  static std::unique_ptr<AutofillMessageModel> CreateForResurrectChurnedUsers(
+      base::OnceClosure action_callback,
+      messages::MessageWrapper::DismissCallback dismiss_callback);
 
   // Converts a message model type to a string for debugging and metrics.
   static std::string_view TypeToString(Type message_type);

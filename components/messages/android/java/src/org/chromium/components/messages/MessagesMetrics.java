@@ -238,6 +238,8 @@ public class MessagesMetrics {
                 return "PasswordSavedConfirmation";
             case MessageIdentifier.EMAIL_VERIFIED:
                 return "EmailVerified";
+            case MessageIdentifier.RESURRECT_CHURNED_USERS:
+                return "ResurrectChurnedUsers";
             default:
                 return "Unknown";
         }
