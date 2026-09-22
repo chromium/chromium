@@ -203,11 +203,9 @@ public class FlatLayoutDelegateUnitTest {
     public void testOnUrlUpdated() {
         addTabsToModelList(TAB1_ID);
         PropertyModel model = mModelList.get(0).model;
-        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
 
         mDelegate.onUrlUpdated(mTab1);
 
-        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
     }
@@ -216,7 +214,6 @@ public class FlatLayoutDelegateUnitTest {
     public void testOnUrlUpdated_NotFound() {
         mDelegate.onUrlUpdated(mTab1);
 
-        verify(mMediator, never()).getDomainForTab(any(), any());
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
@@ -399,9 +396,7 @@ public class FlatLayoutDelegateUnitTest {
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
 
         mDelegate.onUrlUpdated(mTab1);
-        verify(mMediator, never()).getDomainForTab(any(), any());
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
-        assertNull(model.get(TabProperties.URL_DOMAIN));
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
         assertEquals(TabAlert.NONE, model.get(TabProperties.ALERT_STATE));

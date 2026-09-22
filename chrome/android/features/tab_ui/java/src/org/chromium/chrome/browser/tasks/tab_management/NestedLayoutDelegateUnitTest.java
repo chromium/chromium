@@ -295,11 +295,9 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testOnUrlUpdated() {
         PropertyModel model = addTabToModelList(TAB1_ID, null);
-        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
 
         mDelegate.onUrlUpdated(mTab1);
 
-        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
     }
@@ -308,7 +306,6 @@ public class NestedLayoutDelegateUnitTest {
     public void testOnUrlUpdated_NotFound() {
         mDelegate.onUrlUpdated(mTab1);
 
-        verify(mMediator, never()).getDomainForTab(any(), any());
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }

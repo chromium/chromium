@@ -314,8 +314,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             Tab representativeTab = indexAndTab.second;
             if (!TabUtils.isValid(representativeTab) || model == null) return;
 
-            model.set(
-                    TabProperties.URL_DOMAIN, mMediator.getDomainForTab(representativeTab, model));
             mMediator.updateThumbnailFetcher(model, representativeTab.getId());
             mMediator.updateFaviconForTab(model, representativeTab, null, null);
         } else {

@@ -465,11 +465,9 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
         setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
-        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
 
         mDelegate.onUrlUpdated(mTab1);
 
-        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
     }
@@ -482,7 +480,6 @@ public class GroupedLayoutDelegateUnitTest {
 
         mDelegate.onUrlUpdated(mTab1);
 
-        verify(mMediator, never()).getDomainForTab(any(), any());
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
@@ -491,11 +488,9 @@ public class GroupedLayoutDelegateUnitTest {
     public void testOnUrlUpdated_NotInTabGroup() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
 
         mDelegate.onUrlUpdated(mTab1);
 
-        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
     }
@@ -506,7 +501,6 @@ public class GroupedLayoutDelegateUnitTest {
 
         mDelegate.onUrlUpdated(mTab1);
 
-        verify(mMediator, never()).getDomainForTab(any(), any());
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
@@ -577,7 +571,7 @@ public class GroupedLayoutDelegateUnitTest {
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
 
         mDelegate.onUrlUpdated(mTab1);
-        verify(mMediator, never()).getDomainForTab(any(), any());
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
         verify(mMediator, never()).updateDescriptionString(any());

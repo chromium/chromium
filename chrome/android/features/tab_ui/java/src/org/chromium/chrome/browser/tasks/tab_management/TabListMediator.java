@@ -122,7 +122,6 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -1296,8 +1295,6 @@ public class TabListMediator implements TabListNotificationHandler {
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
-        model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, model));
-
         setupPersistedTabDataFetcherForTab(tab, model);
 
         updateFaviconForTab(model, tab, null, null);
@@ -1859,7 +1856,6 @@ public class TabListMediator implements TabListNotificationHandler {
         tabInfo.set(
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, tabInfo, /* useDefault= */ false));
-        tabInfo.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, tabInfo));
         @TabAlert int alertState = getTabGridAlertState(tab, tabInfo);
         tabInfo.set(TabProperties.ALERT_STATE, alertState);
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
@@ -1986,20 +1982,6 @@ public class TabListMediator implements TabListNotificationHandler {
             addTabInfoToModelForTab(childTab, childIndex);
         }
         return children.size();
-    }
-
-    String getDomainForTab(Tab tab, PropertyModel model) {
-        if (!TabProperties.isTabGroupHeader(model)) return getDomain(tab);
-        List<Tab> relatedTabs = getRelatedTabsForId(tab.getId());
-
-        List<String> domainNames = new ArrayList<>();
-
-        for (int i = 0; i < relatedTabs.size(); i++) {
-            String domain = getDomain(relatedTabs.get(i));
-            domainNames.add(domain);
-        }
-        // TODO(crbug.com/40107640): Address i18n issue for the list delimiter.
-        return TextUtils.join(", ", domainNames);
     }
 
     /**
@@ -2200,25 +2182,6 @@ public class TabListMediator implements TabListNotificationHandler {
                                     colorDesc);
                 };
         model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER, descriptionTextResolver);
-    }
-
-    @VisibleForTesting
-    protected static String getDomain(Tab tab) {
-        // TODO(crbug.com/40144810) Investigate how uninitialized Tabs are appearing
-        // here.
-        assert tab.isInitialized();
-        if (!tab.isInitialized()) {
-            return "";
-        }
-
-        String spec = tab.getUrl().getSpec();
-        if (spec == null) return "";
-
-        // TODO(crbug.com/40549331): convert UrlUtilities to GURL
-        String domain = UrlUtilities.getDomainAndRegistry(spec, false);
-
-        if (domain == null || domain.isEmpty()) return spec;
-        return domain;
     }
 
     @Nullable

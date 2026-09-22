@@ -140,7 +140,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -436,9 +435,6 @@ public class TabListMediatorUnitTest {
     private RecyclerView.ViewHolder mFakeViewHolder1;
     private RecyclerView.ViewHolder mFakeViewHolder2;
     private PriceTabData mPriceTabData;
-    private String mTab1Domain;
-    private String mTab2Domain;
-    private String mNewDomain;
     private GURL mFaviconUrl;
     private Resources mResources;
     private Context mContext;
@@ -558,10 +554,6 @@ public class TabListMediatorUnitTest {
         when(mActivity.getTheme()).thenReturn(mContext.getTheme());
         when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
 
-        mTab1Domain = TAB1_URL.getHost().replace("www.", "");
-        mTab2Domain = TAB2_URL.getHost().replace("www.", "");
-        //        mTab3Domain = TAB3_URL.getHost().replace("www.", "");
-        mNewDomain = new GURL(NEW_URL).getHost().replace("www.", "");
         mFaviconUrl = JUnitTestGURLs.RED_1;
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
@@ -3292,8 +3284,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void urlUpdated_forSingleTab_GroupedLayout() {
-        assertNotEquals(mNewDomain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-
         when(mTab1.getUrl()).thenReturn(new GURL(NEW_URL));
 
         PropertyModel model1 = mModelList.get(POSITION1).model;
@@ -3302,8 +3292,6 @@ public class TabListMediatorUnitTest {
         model1.set(TabProperties.FAVICON_FETCHER, null);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
-        assertEquals(mNewDomain, model1.get(TabProperties.URL_DOMAIN));
-        assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
         assertNotEquals(oldThumbnailFetcher, model1.get(TabProperties.THUMBNAIL_FETCHER));
         assertNotNull(model1.get(TabProperties.FAVICON_FETCHER));
     }
@@ -3316,28 +3304,17 @@ public class TabListMediatorUnitTest {
         when(mTabModel.representativeIndexOf(mTab2)).thenReturn(POSITION1);
 
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
-        assertEquals(
-                mTab1Domain + ", " + mTab2Domain,
-                mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
 
-        // Update URL_DOMAIN for mTab1.
         when(mTab1.getUrl()).thenReturn(new GURL(NEW_URL));
         var oldFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
-        assertEquals(
-                mNewDomain + ", " + mTab2Domain,
-                mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         var newFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertNotEquals(oldFetcher, newFetcher);
 
-        // Update URL_DOMAIN for mTab2.
         when(mTab2.getUrl()).thenReturn(new GURL(NEW_URL));
         mTabObserverCaptor.getValue().onUrlUpdated(mTab2);
 
-        assertEquals(
-                mNewDomain + ", " + mNewDomain,
-                mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         var newestFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertNotEquals(newFetcher, newestFetcher);
     }
@@ -3353,56 +3330,23 @@ public class TabListMediatorUnitTest {
         verify(mTab2, times(1)).addObserver(mTabObserverCaptor.getValue());
 
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
-        assertEquals(mTab1Domain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-        assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
         verify(mTab2, times(2)).addObserver(mTabObserverCaptor.getValue());
 
         var oldFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
 
-        // Update URL_DOMAIN for mTab1.
         when(mTab1.getUrl()).thenReturn(new GURL(NEW_URL));
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
-        assertEquals(mNewDomain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-        assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
         var newFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertNotEquals(oldFetcher, newFetcher);
 
         oldFetcher = mModelList.get(POSITION2).model.get(TabProperties.THUMBNAIL_FETCHER);
 
-        // Update URL_DOMAIN for mTab2.
         when(mTab2.getUrl()).thenReturn(new GURL(NEW_URL));
         mTabObserverCaptor.getValue().onUrlUpdated(mTab2);
 
-        assertEquals(mNewDomain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-        assertEquals(mNewDomain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
-
         newFetcher = mModelList.get(POSITION2).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertNotEquals(oldFetcher, newFetcher);
-    }
-
-    @Test
-    public void urlUpdated_forUngroup() {
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
-        assertEquals(
-                mTab1Domain + ", " + mTab2Domain,
-                mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-
-        // Assume that TabModel is already updated.
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
-        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(false);
-        mockRepresentativeTabs(mTab1, mTab2);
-        when(mTab2.getTabGroupId()).thenReturn(null);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
-
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
-        assertEquals(mTab1Domain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
-        assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
     }
 
     @Test
@@ -3996,13 +3940,6 @@ public class TabListMediatorUnitTest {
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
         assertNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testGetDomainOnDestroyedTab() {
-        Tab tab = new MockTab(TAB1_ID, mProfile);
-        tab.destroy();
-        TabListMediator.getDomain(tab);
     }
 
     @Test

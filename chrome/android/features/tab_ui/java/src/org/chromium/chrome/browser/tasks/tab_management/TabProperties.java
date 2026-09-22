@@ -187,9 +187,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<SelectionDelegate<TabListEditorItemSelectionId>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> URL_DOMAIN =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -277,7 +274,6 @@ public class TabProperties {
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
                 TAB_SELECTION_DELEGATE,
-                URL_DOMAIN,
                 ACCESSIBILITY_DELEGATE,
                 CARD_TYPE,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,

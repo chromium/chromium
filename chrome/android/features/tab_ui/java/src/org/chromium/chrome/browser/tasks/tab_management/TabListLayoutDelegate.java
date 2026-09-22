@@ -334,8 +334,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     /**
-     * Updates the URL domain, thumbnail, and favicon for a tab or its representing card when its
-     * URL changes.
+     * Updates the thumbnail and favicon for a tab or its representing card when its URL changes.
      *
      * @param updatedTab The {@link Tab} whose URL changed.
      */
@@ -346,7 +345,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (!TabUtils.isValid(updatedTab) || model == null) return;
 
-        model.set(TabProperties.URL_DOMAIN, mMediator.getDomainForTab(updatedTab, model));
         mMediator.updateThumbnailFetcher(model, updatedTab.getId());
         mMediator.updateFaviconForTab(model, updatedTab, null, null);
     }
