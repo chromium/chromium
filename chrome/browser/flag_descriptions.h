@@ -1740,6 +1740,11 @@ inline constexpr char kGlicExperimentalTriggeringScreenshotName[] =
 inline constexpr char kGlicExperimentalTriggeringScreenshotDescription[] =
     "Enables secure client-side screenshot capture and encryption on yield "
     "for Glic experimental triggering tasks.";
+inline constexpr char kGlicExperimentalTriggeringScriptToolsName[] =
+    "Glic experimental triggering script tool execution";
+inline constexpr char kGlicExperimentalTriggeringScriptToolsDescription[] =
+    "Enables direct ScriptTool action execution for Glic experimental "
+    "triggering tasks.";
 inline constexpr char kGlicBackgroundActuationName[] =
     "Glic background actuation";
 inline constexpr char kGlicBackgroundActuationDescription[] =

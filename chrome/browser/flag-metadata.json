@@ -5812,6 +5812,14 @@
     "expiry_milestone": 156
   },
   {
+    "name": "glic-experimental-triggering-script-tools",
+    "owners": [
+      "mek@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "glic-gemini-enterprise-consent-enabled",
     "owners": [
       "esalma@google.com",
