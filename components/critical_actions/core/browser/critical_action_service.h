@@ -25,6 +25,27 @@
 
 namespace critical_actions {
 
+// Outcome of resolving a conversation ID for critical action entries.
+// LINT.IfChange(ConversationIdResolutionOutcome)
+enum class ConversationIdResolutionOutcome {
+  kAlreadyPresent = 0,
+  kResolvedFromCache = 1,
+  kMissingTaskId = 2,
+  kDeferredCacheMiss = 3,
+  kMaxValue = kDeferredCacheMiss,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionConversationIdResolutionOutcome)
+
+// Outcome of deferred conversation ID resolution for critical action entries.
+// LINT.IfChange(ConversationIdDeferredResolutionOutcome)
+enum class ConversationIdDeferredResolutionOutcome {
+  kBackfilled = 0,
+  kEvictedServiceShutdown = 1,
+  kEvictedCapacityExceeded = 2,
+  kMaxValue = kEvictedCapacityExceeded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionConversationIdDeferredResolutionOutcome)
+
 // Outcome of resolving a navigation ID to a History Visit ID for critical
 // action entries.
 // LINT.IfChange(VisitIdResolutionOutcome)
@@ -117,7 +138,8 @@ class CriticalActionService : public KeyedService,
 
   // TODO(b/561944228): Temporary solution while b/494212836 is in place; remove
   // once fixed. CriticalActionService needs conversation_id.
-  void MaybeSetConversationId(CriticalActionEntry& entry);
+  ConversationIdResolutionOutcome MaybeSetConversationId(
+      CriticalActionEntry& entry);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<CriticalActionBackend> backend_
@@ -131,15 +153,24 @@ class CriticalActionService : public KeyedService,
   // resolutions.
   base::LRUCache<int64_t, NavigationState> navigation_cache_;
 
-  // Capacity-limited LRU cache mapping actor_task_id to conversation_id.
+  // Capacity-limited LRU cache mapping actor_task_id to conversation_id. Unlike
+  // `task_to_critical_action_ids_cache_`, this cache does not hold pending
+  // action records, evicting entries here causes no data loss, so eviction
+  // metrics are not tracked.
   // TODO(b/561944228): Remove when b/494212836 is fixed and conversation_id is
   // available when logging critical actions.
   base::LRUCache<std::string, std::string> task_to_conversation_cache_;
 
-  // Capacity-limited LRU cache mapping actor_task_id to critical_action_ids.
+  struct PendingCriticalAction {
+    std::string critical_action_id;
+    ActionSource action_source;
+  };
+
+  // Capacity-limited LRU cache mapping actor_task_id to pending critical
+  // actions.
   // TODO(b/561944228): Remove when b/494212836 is fixed and conversation_id is
   // available when logging critical actions.
-  base::LRUCache<std::string, std::vector<std::string>>
+  base::LRUCache<std::string, std::vector<PendingCriticalAction>>
       task_to_critical_action_ids_cache_;
 };
 

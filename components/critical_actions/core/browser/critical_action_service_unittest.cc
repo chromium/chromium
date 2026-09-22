@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -613,5 +615,132 @@ INSTANTIATE_TEST_SUITE_P(
         SetCriticalActionsConversationIdServiceTestCase>& info) {
       return info.param.test_name;
     });
+
+struct ConversationIdResolutionOutcomeTestCase {
+  std::string test_name;
+  std::string entry_conversation_id;
+  std::string entry_actor_task_id;
+  bool populate_cache = false;
+  ConversationIdResolutionOutcome expected_outcome;
+};
+
+class ConversationIdResolutionOutcomeTest
+    : public CriticalActionServiceTest,
+      public testing::WithParamInterface<
+          ConversationIdResolutionOutcomeTestCase> {};
+
+TEST_P(ConversationIdResolutionOutcomeTest, EmitsExpectedHistogram) {
+  const ConversationIdResolutionOutcomeTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
+
+  if (test_case.populate_cache) {
+    service_->SetCriticalActionsConversationId({test_case.entry_actor_task_id},
+                                               "cached_conv_id");
+  }
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.conversation_id = test_case.entry_conversation_id;
+  entry.actor_task_id = test_case.entry_actor_task_id;
+
+  service_->AddCriticalAction(entry);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationIdResolutionOutcome.Actor",
+      test_case.expected_outcome, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConversationIdResolutionOutcomeTest,
+    testing::Values(
+        ConversationIdResolutionOutcomeTestCase{
+            .test_name = "AlreadyPresent",
+            .entry_conversation_id = "existing_conv_id",
+            .entry_actor_task_id = "task_1",
+            .populate_cache = false,
+            .expected_outcome =
+                ConversationIdResolutionOutcome::kAlreadyPresent,
+        },
+        ConversationIdResolutionOutcomeTestCase{
+            .test_name = "ResolvedFromCache",
+            .entry_conversation_id = "",
+            .entry_actor_task_id = "task_2",
+            .populate_cache = true,
+            .expected_outcome =
+                ConversationIdResolutionOutcome::kResolvedFromCache,
+        },
+        ConversationIdResolutionOutcomeTestCase{
+            .test_name = "DeferredCacheMiss",
+            .entry_conversation_id = "",
+            .entry_actor_task_id = "task_3",
+            .populate_cache = false,
+            .expected_outcome =
+                ConversationIdResolutionOutcome::kDeferredCacheMiss,
+        },
+        ConversationIdResolutionOutcomeTestCase{
+            .test_name = "MissingTaskId",
+            .entry_conversation_id = "",
+            .entry_actor_task_id = "",
+            .populate_cache = false,
+            .expected_outcome = ConversationIdResolutionOutcome::kMissingTaskId,
+        }),
+    [](const testing::TestParamInfo<ConversationIdResolutionOutcomeTestCase>&
+           info) { return info.param.test_name; });
+
+TEST_F(CriticalActionServiceTest, ConversationIdResolutionOutcomeBackfilled) {
+  base::HistogramTester histogram_tester;
+  const std::string task_id = "test_task";
+
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = task_id;
+  service_->AddCriticalAction(entry1);
+
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = task_id;
+  service_->AddCriticalAction(entry2);
+
+  service_->SetCriticalActionsConversationId({task_id}, "resolved_conv_id");
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationIdResolutionOutcome.Actor",
+      ConversationIdResolutionOutcome::kDeferredCacheMiss, 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationIdDeferredResolutionOutcome.Actor",
+      ConversationIdDeferredResolutionOutcome::kBackfilled, 2);
+}
+
+TEST_F(CriticalActionServiceTest,
+       ConversationIdResolutionOutcomeEvictedServiceShutdown) {
+  base::HistogramTester histogram_tester;
+  const std::string task_id = "test_task";
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.actor_task_id = task_id;
+  service_->AddCriticalAction(entry);
+
+  service_->Shutdown();
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationIdResolutionOutcome.Actor",
+      ConversationIdResolutionOutcome::kDeferredCacheMiss, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationIdDeferredResolutionOutcome.Actor",
+      ConversationIdDeferredResolutionOutcome::kEvictedServiceShutdown, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       ConversationIdResolutionOutcomeEvictedCapacityExceeded) {
+  base::HistogramTester histogram_tester;
+
+  for (int i = 0; i <= 200; ++i) {
+    CriticalActionEntry entry = CreateDefaultEntry();
+    entry.actor_task_id = base::StrCat({"task_", base::NumberToString(i)});
+    service_->AddCriticalAction(entry);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationIdDeferredResolutionOutcome.Actor",
+      ConversationIdDeferredResolutionOutcome::kEvictedCapacityExceeded, 1);
+}
 
 }  // namespace critical_actions

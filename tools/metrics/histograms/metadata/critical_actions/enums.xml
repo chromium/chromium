@@ -22,6 +22,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CriticalActionConversationIdDeferredResolutionOutcome) -->
+
+<enum name="CriticalActionConversationIdDeferredResolutionOutcome">
+  <int value="0" label="Success: Backfilled from in-memory cache"/>
+  <int value="1" label="Evicted: Service shutting down"/>
+  <int value="2" label="Evicted: Task cache capacity exceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:ConversationIdDeferredResolutionOutcome) -->
+
+<!-- LINT.IfChange(CriticalActionConversationIdResolutionOutcome) -->
+
+<enum name="CriticalActionConversationIdResolutionOutcome">
+  <int value="0" label="Success: Already present on entry"/>
+  <int value="1" label="Success: Resolved from in-memory cache"/>
+  <int value="2" label="Failed: Expected conversation but missing task ID"/>
+  <int value="3" label="Deferred: Cache miss, deferred for later resolution"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:ConversationIdResolutionOutcome) -->
+
 <!-- LINT.IfChange(CriticalActionType) -->
 
 <enum name="CriticalActionType">

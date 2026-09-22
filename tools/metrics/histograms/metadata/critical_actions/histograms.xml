@@ -32,6 +32,32 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:ActionSource) -->
 
+<histogram
+    name="CriticalActions.ConversationIdDeferredResolutionOutcome.{ActionSource}"
+    enum="CriticalActionConversationIdDeferredResolutionOutcome"
+    expires_after="2027-01-01">
+  <owner>kutylbeky@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the final resolution outcome of a deferred conversation ID
+    resolution for a critical action triggered by {ActionSource}.
+  </summary>
+  <token key="ActionSource" variants="ActionSource"/>
+</histogram>
+
+<histogram
+    name="CriticalActions.ConversationIdResolutionOutcome.{ActionSource}"
+    enum="CriticalActionConversationIdResolutionOutcome"
+    expires_after="2027-01-01">
+  <owner>kutylbeky@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the resolution outcome of resolving a conversation ID for a critical
+    action triggered by {ActionSource} at the time the action is logged.
+  </summary>
+  <token key="ActionSource" variants="ActionSource"/>
+</histogram>
+
 <histogram name="CriticalActions.Database.SqliteError"
     enum="SqliteLoggedResultCode" expires_after="2026-11-01">
   <owner>kalinino@google.com</owner>
