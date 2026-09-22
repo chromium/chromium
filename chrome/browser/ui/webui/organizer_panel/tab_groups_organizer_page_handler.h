@@ -5,25 +5,31 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_TAB_GROUPS_ORGANIZER_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_TAB_GROUPS_ORGANIZER_PAGE_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-namespace tab_groups {
-class TabGroupSyncService;
-}
-
 class TabGroupsOrganizerPageHandler
-    : public organizer_panel::mojom::TabGroupsOrganizerPageHandler {
+    : public organizer_panel::mojom::TabGroupsOrganizerPageHandler,
+      public tab_groups::TabGroupSyncService::Observer {
  public:
   TabGroupsOrganizerPageHandler(
       mojo::PendingReceiver<
           organizer_panel::mojom::TabGroupsOrganizerPageHandler> receiver,
+      mojo::PendingRemote<organizer_panel::mojom::TabGroupsOrganizerPage> page,
       content::WebContents* web_contents);
   TabGroupsOrganizerPageHandler(const TabGroupsOrganizerPageHandler&) = delete;
   TabGroupsOrganizerPageHandler& operator=(
@@ -34,11 +40,27 @@ class TabGroupsOrganizerPageHandler
   void GetTabGroups(GetTabGroupsCallback callback) override;
   void OpenTabGroup(const base::Uuid& id) override;
 
+  // tab_groups::TabGroupSyncService::Observer:
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                       tab_groups::TriggerSource source) override;
+  void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
+                         tab_groups::TriggerSource source) override;
+  void OnTabGroupRemoved(const base::Uuid& sync_id,
+                         tab_groups::TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
+  void OnWillBeDestroyed() override;
+
  private:
   mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       receiver_;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPage> page_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  base::ScopedObservation<tab_groups::TabGroupSyncService,
+                          tab_groups::TabGroupSyncService::Observer>
+      tab_group_sync_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_TAB_GROUPS_ORGANIZER_PAGE_HANDLER_H_

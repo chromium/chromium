@@ -35,17 +35,33 @@ base::Time GetLastUsedTime(const tab_groups::SavedTabGroup& group) {
   return group.creation_time();
 }
 
+organizer_panel::mojom::TabGroupPtr CreateMojoTabGroup(
+    const tab_groups::SavedTabGroup& group) {
+  auto tab_group = organizer_panel::mojom::TabGroup::New();
+  tab_group->id = group.saved_guid();
+  tab_group->title = base::UTF16ToUTF8(
+      tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group));
+  tab_group->color = group.color();
+  tab_group->is_open = group.local_group_id().has_value();
+  return tab_group;
+}
+
 }  // namespace
 
 TabGroupsOrganizerPageHandler::TabGroupsOrganizerPageHandler(
     mojo::PendingReceiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
         receiver,
+    mojo::PendingRemote<organizer_panel::mojom::TabGroupsOrganizerPage> page,
     content::WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
       web_contents_(web_contents),
       tab_group_sync_service_(
           tab_groups::TabGroupSyncServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+  if (tab_group_sync_service_) {
+    tab_group_sync_service_observation_.Observe(tab_group_sync_service_);
+  }
 }
 
 TabGroupsOrganizerPageHandler::~TabGroupsOrganizerPageHandler() = default;
@@ -70,13 +86,7 @@ void TabGroupsOrganizerPageHandler::GetTabGroups(
   });
 
   for (const tab_groups::SavedTabGroup& group : groups) {
-    auto tab_group = organizer_panel::mojom::TabGroup::New();
-    tab_group->id = group.saved_guid();
-    tab_group->title = base::UTF16ToUTF8(
-        tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group));
-    tab_group->color = group.color();
-    tab_group->is_open = group.local_group_id().has_value();
-    tab_groups.push_back(std::move(tab_group));
+    tab_groups.push_back(CreateMojoTabGroup(group));
   }
 
   std::move(callback).Run(std::move(tab_groups));
@@ -100,4 +110,44 @@ void TabGroupsOrganizerPageHandler::OpenTabGroup(const base::Uuid& id) {
   tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
       browser, group->saved_guid(),
       tab_groups::OpeningSource::kOpenedFromRevisitUi, tab_group_sync_service_);
+}
+
+void TabGroupsOrganizerPageHandler::OnTabGroupAdded(
+    const tab_groups::SavedTabGroup& group,
+    tab_groups::TriggerSource source) {
+  if (group.saved_tabs().empty()) {
+    return;
+  }
+  page_->TabGroupAdded(CreateMojoTabGroup(group));
+}
+
+void TabGroupsOrganizerPageHandler::OnTabGroupUpdated(
+    const tab_groups::SavedTabGroup& group,
+    tab_groups::TriggerSource source) {
+  page_->TabGroupUpdated(CreateMojoTabGroup(group));
+}
+
+void TabGroupsOrganizerPageHandler::OnTabGroupRemoved(
+    const base::Uuid& sync_id,
+    tab_groups::TriggerSource source) {
+  page_->TabGroupRemoved(sync_id);
+}
+
+void TabGroupsOrganizerPageHandler::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<tab_groups::LocalTabGroupID>& local_id) {
+  if (!tab_group_sync_service_) {
+    return;
+  }
+  std::optional<tab_groups::SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(sync_id);
+  if (!group) {
+    return;
+  }
+  page_->TabGroupUpdated(CreateMojoTabGroup(*group));
+}
+
+void TabGroupsOrganizerPageHandler::OnWillBeDestroyed() {
+  tab_group_sync_service_observation_.Reset();
+  tab_group_sync_service_ = nullptr;
 }

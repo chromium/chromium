@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -22,12 +23,83 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
+
+class FakeTabGroupsOrganizerPage
+    : public organizer_panel::mojom::TabGroupsOrganizerPage {
+ public:
+  mojo::PendingRemote<organizer_panel::mojom::TabGroupsOrganizerPage>
+  BindAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void TabGroupAdded(organizer_panel::mojom::TabGroupPtr tab_group) override {
+    added_groups_.push_back(std::move(tab_group));
+    if (added_quit_closure_) {
+      std::move(added_quit_closure_).Run();
+    }
+  }
+
+  void TabGroupRemoved(const base::Uuid& id) override {
+    removed_group_ids_.push_back(id);
+    if (removed_quit_closure_) {
+      std::move(removed_quit_closure_).Run();
+    }
+  }
+
+  void TabGroupUpdated(organizer_panel::mojom::TabGroupPtr tab_group) override {
+    updated_groups_.push_back(std::move(tab_group));
+    if (updated_quit_closure_) {
+      std::move(updated_quit_closure_).Run();
+    }
+  }
+
+  void WaitForTabGroupAdded() {
+    base::RunLoop run_loop;
+    added_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void WaitForTabGroupRemoved() {
+    base::RunLoop run_loop;
+    removed_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void WaitForTabGroupUpdated() {
+    base::RunLoop run_loop;
+    updated_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  const std::vector<organizer_panel::mojom::TabGroupPtr>& added_groups() const {
+    return added_groups_;
+  }
+  const std::vector<base::Uuid>& removed_group_ids() const {
+    return removed_group_ids_;
+  }
+  const std::vector<organizer_panel::mojom::TabGroupPtr>& updated_groups()
+      const {
+    return updated_groups_;
+  }
+
+ private:
+  mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPage> receiver_{
+      this};
+  std::vector<organizer_panel::mojom::TabGroupPtr> added_groups_;
+  std::vector<base::Uuid> removed_group_ids_;
+  std::vector<organizer_panel::mojom::TabGroupPtr> updated_groups_;
+  base::OnceClosure added_quit_closure_;
+  base::OnceClosure removed_quit_closure_;
+  base::OnceClosure updated_quit_closure_;
+};
 
 class TabGroupsOrganizerPageHandlerBrowserTest : public InProcessBrowserTest {
  public:
@@ -93,10 +165,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   service->AddGroup(group2);
   service->AddGroup(group3);
 
+  FakeTabGroupsOrganizerPage page;
   mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       handler_remote;
   TabGroupsOrganizerPageHandler handler(
-      handler_remote.BindNewPipeAndPassReceiver(),
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::test::TestFuture<std::vector<organizer_panel::mojom::TabGroupPtr>>
@@ -140,10 +213,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   ASSERT_FALSE(service->GetGroup(id)->local_group_id().has_value());
 
+  FakeTabGroupsOrganizerPage page;
   mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       handler_remote;
   TabGroupsOrganizerPageHandler handler(
-      handler_remote.BindNewPipeAndPassReceiver(),
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
   handler_remote->OpenTabGroup(id);
@@ -179,10 +253,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       service->GetGroup(local_group_id);
   ASSERT_TRUE(saved_group.has_value());
 
+  FakeTabGroupsOrganizerPage page;
   mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       handler_remote;
   TabGroupsOrganizerPageHandler handler(
-      handler_remote.BindNewPipeAndPassReceiver(),
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
   handler_remote->OpenTabGroup(saved_group->saved_guid());
@@ -190,6 +265,93 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
 
   // Clicking an open group should activate the first tab in that group (tab 0).
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       NotifiesPageOnTabGroupAdded) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
+                                   id, /*position=*/0);
+  tab_groups::SavedTabGroup group(u"New Group",
+                                  tab_groups::TabGroupColorId::kYellow, {tab},
+                                  /*position=*/std::nullopt, id);
+
+  service->AddGroup(group);
+  page.WaitForTabGroupAdded();
+
+  ASSERT_EQ(1u, page.added_groups().size());
+  EXPECT_EQ(page.added_groups()[0]->id, id);
+  EXPECT_EQ(page.added_groups()[0]->title, "New Group");
+  EXPECT_EQ(page.added_groups()[0]->color,
+            tab_groups::TabGroupColorId::kYellow);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       NotifiesPageOnTabGroupRemoved) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
+                                   id, /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Group", tab_groups::TabGroupColorId::kBlue,
+                                  {tab}, /*position=*/std::nullopt, id);
+  service->AddGroup(group);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  service->RemoveGroup(id);
+  page.WaitForTabGroupRemoved();
+
+  ASSERT_EQ(1u, page.removed_group_ids().size());
+  EXPECT_EQ(page.removed_group_ids()[0], id);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       NotifiesPageOnTabGroupUpdated) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
+                                   id, /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Original Title",
+                                  tab_groups::TabGroupColorId::kBlue, {tab},
+                                  /*position=*/std::nullopt, id, local_id);
+  service->AddGroup(group);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  tab_groups::TabGroupVisualData visual_data(u"Updated Title",
+                                             tab_groups::TabGroupColorId::kRed);
+  service->UpdateVisualData(local_id, &visual_data);
+  page.WaitForTabGroupUpdated();
+
+  ASSERT_EQ(1u, page.updated_groups().size());
+  EXPECT_EQ(page.updated_groups()[0]->id, id);
+  EXPECT_EQ(page.updated_groups()[0]->title, "Updated Title");
+  EXPECT_EQ(page.updated_groups()[0]->color, tab_groups::TabGroupColorId::kRed);
 }
 
 }  // namespace

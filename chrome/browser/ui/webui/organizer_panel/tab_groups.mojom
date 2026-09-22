@@ -15,6 +15,18 @@ struct TabGroup {
   bool is_open;
 };
 
+// WebUI-side handler for requests from the browser.
+interface TabGroupsOrganizerPage {
+  // Called when a tab group is added.
+  TabGroupAdded(TabGroup tab_group);
+
+  // Called when a tab group is removed.
+  TabGroupRemoved(mojo_base.mojom.Uuid id);
+
+  // Called when a tab group is updated.
+  TabGroupUpdated(TabGroup tab_group);
+};
+
 // Browser-side handler for requests from WebUI page.
 interface TabGroupsOrganizerPageHandler {
   // Get the list of tab groups that should be displayed in the organizer panel.
@@ -29,5 +41,6 @@ interface TabGroupsOrganizerPageHandler {
 interface TabGroupsOrganizerPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreatePageHandler(
+      pending_remote<TabGroupsOrganizerPage> page,
       pending_receiver<TabGroupsOrganizerPageHandler> handler);
 };

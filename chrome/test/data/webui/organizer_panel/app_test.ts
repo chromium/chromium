@@ -48,7 +48,9 @@ suite('OrganizerPanelAppTest', () => {
         TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
     mockTabGroupsHandler.setResultFor(
         'getTabGroups', Promise.resolve({tabGroups: []}));
-    tabGroupsBrowserProxyFactory.setInstance({handler: mockTabGroupsHandler});
+    const {instance: tabGroupsInstance} =
+        tabGroupsBrowserProxyFactory.createForTest(mockTabGroupsHandler);
+    tabGroupsBrowserProxyFactory.setInstance(tabGroupsInstance);
 
     app = document.createElement('organizer-panel-app');
     document.body.appendChild(app);

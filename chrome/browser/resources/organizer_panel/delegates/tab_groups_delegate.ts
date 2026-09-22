@@ -8,6 +8,7 @@ import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
@@ -18,8 +19,24 @@ import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 export class TabGroupsDelegate implements
     OrganizerListSectionDelegate<TabGroup> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private client_?: OrganizerListSectionClient;
+  private listenerIds_: number[] = [];
+  private tabGroups_: TabGroup[] = [];
 
-  init(_sectionClient: OrganizerListSectionClient) {}
+  init(sectionClient: OrganizerListSectionClient) {
+    this.client_ = sectionClient;
+    const callbackRouter = this.browserProxy_.callbackRouter;
+    this.listenerIds_.push(
+        callbackRouter.tabGroupAdded.addListener((tabGroup: TabGroup) => {
+          this.onTabGroupAdded_(tabGroup);
+        }),
+        callbackRouter.tabGroupRemoved.addListener((id: Uuid) => {
+          this.onTabGroupRemoved_(id);
+        }),
+        callbackRouter.tabGroupUpdated.addListener((tabGroup: TabGroup) => {
+          this.onTabGroupUpdated_(tabGroup);
+        }));
+  }
 
   getHeader(): string {
     return loadTimeData.getString('tabGroups');
@@ -27,13 +44,41 @@ export class TabGroupsDelegate implements
 
   async getItems(): Promise<Array<OrganizerListSectionItem<TabGroup>>> {
     const {tabGroups} = await this.browserProxy_.handler.getTabGroups();
-    return tabGroups.map(group => this.tabGroupToSectionItem_(group));
+    this.tabGroups_ = tabGroups;
+    return this.tabGroups_.map(group => this.tabGroupToSectionItem_(group));
   }
 
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTabGroup(data.id);
+  }
+
+  private notifyClient_() {
+    this.client_?.onItemsChanged(
+        this.tabGroups_.map(group => this.tabGroupToSectionItem_(group)));
+  }
+
+  private onTabGroupAdded_(tabGroup: TabGroup) {
+    this.tabGroups_ = [
+      tabGroup,
+      ...this.tabGroups_.filter(g => g.id.value !== tabGroup.id.value),
+    ];
+    this.notifyClient_();
+  }
+
+  private onTabGroupRemoved_(id: Uuid) {
+    this.tabGroups_ = this.tabGroups_.filter(g => g.id.value !== id.value);
+    this.notifyClient_();
+  }
+
+  private onTabGroupUpdated_(tabGroup: TabGroup) {
+    const index =
+        this.tabGroups_.findIndex(g => g.id.value === tabGroup.id.value);
+    if (index !== -1) {
+      this.tabGroups_[index] = tabGroup;
+      this.notifyClient_();
+    }
   }
 
   private tabGroupToSectionItem_(group: TabGroup):

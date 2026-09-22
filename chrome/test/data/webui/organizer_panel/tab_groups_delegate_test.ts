@@ -3,32 +3,42 @@
 // found in the LICENSE file.
 
 import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {TabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerListSectionClient, OrganizerListSectionItem, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+class TestClient implements OrganizerListSectionClient {
+  items: Array<OrganizerListSectionItem<unknown>> = [];
+
+  onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
+    this.items = items;
+  }
+}
 
 suite('TabGroupsDelegateTest', () => {
   let delegate: TabGroupsDelegate;
   let mockHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
       TabGroupsOrganizerPageHandlerRemote;
+  let remotePage: TabGroupsOrganizerPageRemote;
 
   const sampleGroups: TabGroup[] = [
     {
-      id: {value: '00000000-0000-0000-0000-000000000001'},
+      id: {value: '1'},
       color: Color.kBlue,
       title: 'Sample Group 1',
       isOpen: true,
     },
     {
-      id: {value: '00000000-0000-0000-0000-000000000002'},
+      id: {value: '2'},
       color: Color.kRed,
       title: 'Sample Group 2',
       isOpen: false,
     },
     {
-      id: {value: '00000000-0000-0000-0000-000000000003'},
+      id: {value: '3'},
       color: Color.kGreen,
       title: 'Sample Group 3',
       isOpen: true,
@@ -42,8 +52,11 @@ suite('TabGroupsDelegateTest', () => {
     });
     mockHandler = TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
     mockHandler.setResultFor(
-        'getTabGroups', Promise.resolve({tabGroups: sampleGroups}));
-    tabGroupsBrowserProxyFactory.setInstance({handler: mockHandler});
+        'getTabGroups', Promise.resolve({tabGroups: [...sampleGroups]}));
+    const {instance, remote} =
+        tabGroupsBrowserProxyFactory.createForTest(mockHandler);
+    tabGroupsBrowserProxyFactory.setInstance(instance);
+    remotePage = remote;
     delegate = new TabGroupsDelegate();
   });
 
@@ -84,5 +97,72 @@ suite('TabGroupsDelegateTest', () => {
 
     assertEquals(1, mockHandler.getCallCount('openTabGroup'));
     assertEquals(sampleGroups[1]!.id, mockHandler.getArgs('openTabGroup')[0]);
+  });
+
+  test('adds tab group to the top of the list', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    await delegate.getItems();
+
+    const newGroup: TabGroup = {
+      id: {value: '4'},
+      color: Color.kYellow,
+      title: 'Sample Group 4',
+      isOpen: true,
+    };
+
+    remotePage.tabGroupAdded(newGroup);
+    await microtasksFinished();
+
+    assertEquals(4, client.items.length);
+    assertEquals('Sample Group 4', client.items[0]!.title[0]);
+    assertEquals('Sample Group 1', client.items[1]!.title[0]);
+    assertEquals('Sample Group 2', client.items[2]!.title[0]);
+    assertEquals('Sample Group 3', client.items[3]!.title[0]);
+  });
+
+  test('removes tab group from list', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    await delegate.getItems();
+
+    remotePage.tabGroupRemoved({value: '2'});
+    await microtasksFinished();
+
+    assertEquals(2, client.items.length);
+    assertEquals('Sample Group 1', client.items[0]!.title[0]);
+    assertEquals('Sample Group 3', client.items[1]!.title[0]);
+  });
+
+  test('updates tab group without changing order', async () => {
+    const client = new TestClient();
+    delegate.init(client);
+
+    await delegate.getItems();
+
+    const updatedGroup: TabGroup = {
+      id: {value: '2'},
+      color: Color.kCyan,
+      title: 'Updated Group 2',
+      isOpen: true,
+    };
+
+    remotePage.tabGroupUpdated(updatedGroup);
+    await microtasksFinished();
+
+    assertEquals(3, client.items.length);
+    assertEquals('Sample Group 1', client.items[0]!.title[0]);
+    assertEquals('Updated Group 2', client.items[1]!.title[0]);
+    assertEquals('Sample Group 3', client.items[2]!.title[0]);
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    render(client.items[1]!.prefixIcon!.element!, container);
+    const dot = container.querySelector('tab-group-dot');
+    assertTrue(!!dot);
+    assertEquals(Color.kCyan, dot.color);
+    assertTrue(dot.filled);
   });
 });

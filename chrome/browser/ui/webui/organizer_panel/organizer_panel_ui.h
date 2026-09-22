@@ -56,9 +56,11 @@ class OrganizerPanelUI
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
 
   // organizer_panel::mojom::TabGroupsOrganizerPageHandlerFactory:
-  void CreatePageHandler(mojo::PendingReceiver<
-                         organizer_panel::mojom::TabGroupsOrganizerPageHandler>
-                             receiver) override;
+  void CreatePageHandler(
+      mojo::PendingRemote<organizer_panel::mojom::TabGroupsOrganizerPage> page,
+      mojo::PendingReceiver<
+          organizer_panel::mojom::TabGroupsOrganizerPageHandler> receiver)
+      override;
 
   std::unique_ptr<TabSearchPageHandler> page_handler_;
   std::unique_ptr<SearchHandler> search_handler_;

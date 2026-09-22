@@ -105,11 +105,17 @@ void OrganizerPanelUI::BindInterface(
 }
 
 void OrganizerPanelUI::CreatePageHandler(
+    mojo::PendingRemote<organizer_panel::mojom::TabGroupsOrganizerPage> page,
     mojo::PendingReceiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
         receiver) {
+  if (!page.is_valid() || !receiver.is_valid()) {
+    tab_groups_page_factory_receiver_.ReportBadMessage(
+        "Invalid page pending remote or receiver in CreatePageHandler");
+    return;
+  }
   tab_groups_organizer_page_handler_ =
       std::make_unique<TabGroupsOrganizerPageHandler>(
-          std::move(receiver), web_ui()->GetWebContents());
+          std::move(receiver), std::move(page), web_ui()->GetWebContents());
 }
 
 void OrganizerPanelUI::CreatePageHandler(
