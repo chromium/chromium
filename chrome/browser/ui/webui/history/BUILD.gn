@@ -21,6 +21,7 @@ source_set("history") {
       "history_identity_state_watcher.cc",
       "history_login_handler.cc",
       "history_ui.cc",
+      "history_ui_platform_handlers_desktop.cc",
       "navigation_handler.cc",
     ]
     if (enable_dice_support) {
@@ -32,6 +33,7 @@ source_set("history") {
       "history_identity_state_watcher.h",
       "history_login_handler.h",
       "history_ui.h",
+      "history_ui_platform_handlers.h",
       "navigation_handler.h",
     ]
     if (enable_dice_support) {
@@ -98,6 +100,7 @@ source_set("history") {
       "//components/sync/service",
       "//components/sync_device_info",
       "//components/sync_sessions",
+      "//components/tabs:public",
       "//components/user_education/webui",
       "//components/user_education/webui:mojo_bindings",
       "//content/public/browser",
