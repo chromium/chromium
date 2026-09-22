@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
@@ -27,6 +28,13 @@ namespace gpu {
 namespace webgpu {
 
 #if BUILDFLAG(USE_DAWN)
+
+// Enables the use of dedicated shared memory transfer buffers for mapped WebGPU
+// buffers. Only takes effect when explicitly enabled (e.g. via
+// --enable-features=WebGPUUseDedicatedTransferBuffer).
+BASE_FEATURE(kWebGPUUseDedicatedTransferBuffer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 DawnWireServices::~DawnWireServices() {
   wgpuDawnWireClientInstanceRelease(wgpu_instance_);
 }
@@ -38,7 +46,9 @@ DawnWireServices::DawnWireServices(
     std::unique_ptr<TransferBuffer> transfer_buffer,
     bool support_locking)
     : lock_(support_locking ? std::make_optional<base::Lock>() : std::nullopt),
-      memory_transfer_service_(mapped_memory),
+      memory_transfer_service_(
+          mapped_memory,
+          base::FeatureList::IsEnabled(kWebGPUUseDedicatedTransferBuffer)),
       serializer_(webgpu_implementation,
                   helper,
                   &memory_transfer_service_,
@@ -163,6 +173,7 @@ WebGPUImplementation::~WebGPUImplementation() {
 #if BUILDFLAG(USE_DAWN)
   if (dawn_wire_) {
     dawn_wire_->FreeMappedResources(helper_);
+    dawn_wire_.reset();
   }
 #endif
 

@@ -1510,7 +1510,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
       // Require platform-specific SharedBufferMemory feature to support
       // importing transfer buffer into Dawn as shared buffer memory in dawn
       // wire.
-      wgpu::FeatureName::SharedBufferMemoryFromWindowsHandle,
+      wgpu::FeatureName::SharedBufferMemoryHostPointer,
   };
   for (const wgpu::FeatureName& feature : kOptionalFeatures) {
     if (adapter_obj.HasFeature(feature)) {
