@@ -11008,7 +11008,9 @@ const CSSValue* ViewTimelineInset::CSSValueFromComputedStyleInternal(
 
 const CSSValue* ViewTimelineInset::InitialValue() const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  const auto* auto_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  list->Append(*MakeGarbageCollected<CSSValuePair>(
+      auto_value, auto_value, CSSValuePair::kDropIdenticalValues));
   return list;
 }
 
