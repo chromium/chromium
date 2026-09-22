@@ -29,6 +29,11 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
@@ -2042,5 +2047,103 @@ TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
+
+TEST_F(ActionAppMenuTest,
+       SafetyHubPrioritizedOverGlobalErrorAndDefaultBrowser) {
+  SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        Profile* profile = Profile::FromBrowserContext(context);
+        auto service = std::make_unique<SafetyHubMenuNotificationService>(
+            profile->GetPrefs(), nullptr, nullptr,
+#if !BUILDFLAG(IS_ANDROID)
+            nullptr,
+#endif
+            profile);
+        auto getter = base::BindRepeating(
+            []() -> std::optional<std::unique_ptr<SafetyHubResult>> {
+              return std::make_unique<SafetyHubSafeBrowsingResult>(
+                  SafeBrowsingState::kDisabledByUser);
+            });
+        service->UpdateResultGetterForTesting(
+            safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS, getter);
+        return service;
+      }));
+
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(
+          kActionGlobalError, browser_actions_->root_action_item());
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  actions::ActionItem* default_browser_action =
+      actions::ActionManager::Get().FindAction(
+          kActionSetBrowserAsDefault, browser_actions_->root_action_item());
+  ASSERT_NE(default_browser_action, nullptr);
+  default_browser_action->SetVisible(true);
+#endif
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Only the Safety Hub notification should be populated in the menu, and it
+  // should still round its bottom corners.
+  views::MenuItemView* safety_hub_item =
+      root->GetMenuItemByID(kActionOpenSafetyHub);
+  ASSERT_TRUE(safety_hub_item);
+  ASSERT_TRUE(safety_hub_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  EXPECT_FALSE(root->GetMenuItemByID(kActionGlobalError));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(root->GetMenuItemByID(kActionSetBrowserAsDefault));
+#endif
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, GlobalErrorPrioritizedOverDefaultBrowser) {
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(
+          kActionGlobalError, browser_actions_->root_action_item());
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
+  actions::ActionItem* default_browser_action =
+      actions::ActionManager::Get().FindAction(
+          kActionSetBrowserAsDefault, browser_actions_->root_action_item());
+  ASSERT_NE(default_browser_action, nullptr);
+  default_browser_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Only the Global Error notification should be populated in the menu, and it
+  // should still round its bottom corners.
+  views::MenuItemView* global_error_item =
+      root->GetMenuItemByID(kActionGlobalError);
+  ASSERT_TRUE(global_error_item);
+  ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  EXPECT_FALSE(root->GetMenuItemByID(kActionSetBrowserAsDefault));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif
 
 }  // namespace
