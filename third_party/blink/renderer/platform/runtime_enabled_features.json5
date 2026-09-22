@@ -7456,6 +7456,15 @@
       status: "test",
     },
     {
+      // If enabled, "attributionsrc" in window.open() features will not
+      // disable UI features (avoiding opening as a popup instead of a new tab)
+      // when Attribution Reporting is disabled/removed. Can be removed once
+      // kAttributionReportingWindowOpen usage is sufficiently low.
+      // https://crbug.com/553155942
+      name: "WindowOpenAttributionSrc",
+      status: "stable",
+    },
+    {
       // Fixes an issue where Ctrl+Right Arrow skips punctuation before a newline.
       name: "WordSkipSpacesPunctuationFix",
       status: "stable",
