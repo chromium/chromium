@@ -23,6 +23,8 @@ void SetIsolatedWorldInfo(int32_t world_id, const WebIsolatedWorldInfo& info) {
   DOMWrapperWorld::SetNonMainWorldStableId(world_id, info.stable_id);
   DOMWrapperWorld::SetNonMainWorldHumanReadableName(world_id,
                                                     info.human_readable_name);
+  DOMWrapperWorld::SetNonMainWorldEmbedderWorldId(world_id,
+                                                  info.embedder_world_id);
   IsolatedWorldCSP::Get().SetContentSecurityPolicy(
       world_id, info.content_security_policy, security_origin);
 }

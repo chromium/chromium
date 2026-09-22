@@ -44,6 +44,13 @@ struct WebIsolatedWorldInfo {
   // Some types of isolated world will not have a suitable tag so will leave
   // this empty.
   WebString stable_id;
+
+  // Distinguishes isolated worlds that share a `stable_id`. As with
+  // `stable_id`, the exact meaning depends on the embedder and the type of
+  // isolated world. Chrome extensions use the `worldId` the extension chose
+  // for a chrome.userScripts world, which is unset for the default user
+  // script world.
+  WebString embedder_world_id;
 };
 
 // The ID of the "main" execution world for a document.

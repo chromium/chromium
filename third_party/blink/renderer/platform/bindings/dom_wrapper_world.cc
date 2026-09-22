@@ -270,6 +270,27 @@ void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
   IsolatedWorldHumanReadableNames().Set(world_id, human_readable_name);
 }
 
+typedef HashMap<int, String> IsolatedWorldEmbedderWorldIdMap;
+static IsolatedWorldEmbedderWorldIdMap& IsolatedWorldEmbedderWorldIds() {
+  DCHECK(IsMainThread());
+  DEFINE_STATIC_LOCAL(IsolatedWorldEmbedderWorldIdMap, map, ());
+  return map;
+}
+
+String DOMWrapperWorld::NonMainWorldEmbedderWorldId() const {
+  DCHECK(!IsMainWorld());
+  const auto& map = IsolatedWorldEmbedderWorldIds();
+  const auto it = map.find(GetWorldId());
+  return it != map.end() ? it->value : String();
+}
+
+void DOMWrapperWorld::SetNonMainWorldEmbedderWorldId(
+    int32_t world_id,
+    const String& embedder_world_id) {
+  DCHECK(!IsMainWorldId(world_id));
+  IsolatedWorldEmbedderWorldIds().Set(world_id, embedder_world_id);
+}
+
 constinit thread_local int next_world_id =
     DOMWrapperWorld::kUnspecifiedWorldIdStart;
 

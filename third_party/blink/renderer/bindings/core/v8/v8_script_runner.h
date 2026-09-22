@@ -159,10 +159,9 @@ class CORE_EXPORT V8ScriptRunner final {
 
  private:
   static v8::MaybeLocal<v8::Value> RunCompiledScript(
-      v8::Isolate*,
+      ScriptState*,
       v8::Local<v8::Script>,
-      v8::Local<v8::Data> host_defined_options,
-      ExecutionContext*);
+      v8::Local<v8::Data> host_defined_options);
 };
 
 }  // namespace blink

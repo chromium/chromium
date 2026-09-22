@@ -167,6 +167,9 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   static void SetNonMainWorldHumanReadableName(int32_t world_id, const String&);
   String NonMainWorldHumanReadableName() const;
 
+  static void SetNonMainWorldEmbedderWorldId(int32_t world_id, const String&);
+  String NonMainWorldEmbedderWorldId() const;
+
   // Associates an isolated world (see above for description) with a security
   // origin. XMLHttpRequest instances used in that world will be considered
   // to come from that origin, not the frame's.

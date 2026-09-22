@@ -60,7 +60,9 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -301,6 +303,34 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   }
 }
 
+void AddWorldAnnotations(perfetto::EventContext& ctx,
+                         const DOMWrapperWorld& world) {
+  ctx.AddDebugAnnotation("worldId", world.GetWorldId());
+  if (!world.IsIsolatedWorld()) {
+    return;
+  }
+  ctx.AddDebugAnnotation("worldName",
+                         world.NonMainWorldHumanReadableName().Utf8());
+  const String embedder_world_id = world.NonMainWorldEmbedderWorldId();
+  if (!embedder_world_id.empty()) {
+    ctx.AddDebugAnnotation("embedderWorldId", embedder_world_id.Utf8());
+  }
+}
+
+void AddFunctionWorldAnnotations(perfetto::EventContext& ctx,
+                                 v8::Isolate* isolate,
+                                 v8::Local<v8::Object> function) {
+  v8::Local<v8::Context> creation_context;
+  if (!function->GetCreationContext(isolate).ToLocal(&creation_context)) {
+    return;
+  }
+  ScriptState* script_state = ScriptState::MaybeFrom(isolate, creation_context);
+  if (!script_state || !script_state->World().IsIsolatedWorld()) {
+    return;
+  }
+  AddWorldAnnotations(ctx, script_state->World());
+}
+
 int GetMicrotasksScopeDepth(v8::Isolate* isolate,
                             v8::MicrotaskQueue* microtask_queue) {
   if (microtask_queue)
@@ -328,7 +358,9 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
 
   constexpr const char* kTraceEventCategoryGroup = "v8,devtools.timeline";
   TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compile", "fileName",
-                    file_name.Utf8());
+                    file_name.Utf8(), [&](perfetto::EventContext ctx) {
+                      AddWorldAnnotations(ctx, script_state->World());
+                    });
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   probe::V8Compile probe(execution_context, file_name,
                          script_start_position.line_.ZeroBasedInt(),
@@ -467,16 +499,21 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
 }
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
-    v8::Isolate* isolate,
+    ScriptState* script_state,
     v8::Local<v8::Script> script,
-    v8::Local<v8::Data> host_defined_options,
-    ExecutionContext* context) {
+    v8::Local<v8::Data> host_defined_options) {
   DCHECK(!script.IsEmpty());
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExecutionContext* context = ExecutionContext::From(script_state);
 
   v8::Local<v8::Value> script_name =
       script->GetUnboundScript()->GetScriptName();
-  TRACE_EVENT1("v8", "v8.run", "fileName",
-               TRACE_STR_COPY(*v8::String::Utf8Value(isolate, script_name)));
+  TRACE_EVENT("v8", "v8.run", "fileName",
+              TRACE_STR_COPY(*v8::String::Utf8Value(isolate, script_name)),
+              [&](perfetto::EventContext ctx) {
+                AddWorldAnnotations(ctx, script_state->World());
+              });
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
@@ -628,7 +665,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
           "ScriptCompiled", inspector_target_rundown_event::Data,
           execution_context, isolate, script_state, script->ScriptId());
       maybe_result = V8ScriptRunner::RunCompiledScript(
-          isolate, script, origin.GetHostDefinedOptions(), execution_context);
+          script_state, script, origin.GetHostDefinedOptions());
       probe::DidProduceCompilationCache(
           probe::ToCoreProbeSink(execution_context), *classic_script, script);
 
@@ -763,7 +800,9 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
     ExecutionContext* context,
     int argc,
     v8::Local<v8::Value> argv[]) {
-  TRACE_EVENT0("v8", "v8.callAsConstructor");
+  TRACE_EVENT("v8", "v8.callAsConstructor", [&](perfetto::EventContext ctx) {
+    AddFunctionWorldAnnotations(ctx, isolate, constructor);
+  });
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
   v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(context);
@@ -815,7 +854,9 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     v8::Local<v8::Value> argv[],
     v8::Isolate* isolate) {
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
-  TRACE_EVENT0("v8", "v8.callFunction");
+  TRACE_EVENT("v8", "v8.callFunction", [&](perfetto::EventContext ctx) {
+    AddFunctionWorldAnnotations(ctx, isolate, function);
+  });
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
@@ -931,7 +972,10 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
                                    ? record->ScriptId()
                                    : v8::UnboundScript::kNoScriptId);
 
-    TRACE_EVENT0("v8,devtools.timeline", "v8.evaluateModule");
+    TRACE_EVENT("v8,devtools.timeline", "v8.evaluateModule",
+                [&](perfetto::EventContext ctx) {
+                  AddWorldAnnotations(ctx, script_state->World());
+                });
     RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
     // Do not perform a microtask checkpoint here. A checkpoint is performed
