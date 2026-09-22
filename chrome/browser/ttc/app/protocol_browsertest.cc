@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
@@ -203,6 +204,37 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   EXPECT_TRUE(ttc_service().is_session_active());
   ASSERT_TRUE(WaitForServiceState(ServiceState::kSessionInactive));
   EXPECT_EQ(session_controller(), nullptr);
+}
+
+// The transport reports a kConnecting state before it becomes connected. This
+// must not be mistaken for a disconnection, which would end the session.
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
+                       ConnectingTransportDoesNotEndSession) {
+  ttc_service().StartSession();
+  ASSERT_EQ(session_controller()->GetSessionLifecycle(),
+            SessionLifecycle::kInitializing);
+
+  BeginBackendConnection();
+
+  EXPECT_FALSE(backend()->is_transport_connected());
+  EXPECT_EQ(session_controller()->GetSessionLifecycle(),
+            SessionLifecycle::kInitializing);
+
+  // Sessions are torn down asynchronously so drain the task queue to ensure
+  // the session survived the connecting notification.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ttc_service().is_session_active());
+  ASSERT_NE(session_controller(), nullptr);
+
+  // The session becomes live once the transport connects and the server
+  // responds to the setup request.
+  OpenBackendConnection();
+  RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
+                       "session_1");
+
+  EXPECT_TRUE(backend()->is_transport_connected());
+  EXPECT_EQ(session_controller()->GetSessionLifecycle(),
+            SessionLifecycle::kLive);
 }
 
 }  // namespace ttc

@@ -127,6 +127,13 @@ void TtcMesClient::Connect(Observer* observer) {
 
 void TtcMesClient::OnConnectionStateChanged(
     optimization_guide::RemoteModelExecutionSession::ConnectionState state) {
+  // kConnecting is sent before being connected. That's not a disconnection (or
+  // a connection) so avoid reporting it.
+  if (state == optimization_guide::RemoteModelExecutionSession::
+                   ConnectionState::kConnecting) {
+    return;
+  }
+
   is_transport_connected_ =
       (state == optimization_guide::RemoteModelExecutionSession::
                     ConnectionState::kConnected);

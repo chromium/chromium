@@ -203,8 +203,16 @@ void AppBrowserTestBase::ResetModelExecutionSession() {
 void AppBrowserTestBase::StartSessionAndConnectBackend() {
   ttc_service().StartSession();
 
-  // The connection is established once the client has sent its setup frame.
+  // Sending the setup frame starts the connection, which passes through the
+  // connecting state before it's established.
+  BeginBackendConnection();
   OpenBackendConnection();
+}
+
+void AppBrowserTestBase::BeginBackendConnection() {
+  CHECK_DEREF(model_execution_session())
+      .SetConnectionState(optimization_guide::RemoteModelExecutionSession::
+                              ConnectionState::kConnecting);
 }
 
 void AppBrowserTestBase::OpenBackendConnection() {

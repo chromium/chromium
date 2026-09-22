@@ -89,12 +89,15 @@ class AppBrowserTestBase : public PlatformBrowserTest {
   void ResetModelExecutionSession();
 
   // Starts a session, ensuring the client sends its setup frame and that the
-  // backend connection is opened.
+  // backend connection is opened, following the same connection state sequence
+  // the real session reports.
   void StartSessionAndConnectBackend();
 
   // Simulates the backend connection opening or closing. These require a
   // session: the client only starts watching the streaming session once it has
-  // one.
+  // one. BeginBackendConnection() simulates the intermediate state the real
+  // session reports while its WebSocket handshake is in progress.
+  void BeginBackendConnection();
   void OpenBackendConnection();
   void CloseBackendConnection();
 
