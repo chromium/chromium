@@ -302,6 +302,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     return;
   context_lost_mode_ = lost_mode;
   ResetInternal();
+  ResetRecorder();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
     ResetResourceProvider();
@@ -1117,6 +1118,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 
 void CanvasRenderingContext2D::SizeChanged() {
   ResetResourceProvider();
+  ResetRecorder();
   did_fail_to_create_resource_provider_ = false;
 }
 
@@ -1129,6 +1131,7 @@ void CanvasRenderingContext2D::Dispose() {
   FlushForImageListener::Get()->RemoveObserver(this);
   hibernation_handler_ = nullptr;
   ResetResourceProvider();
+  ResetRecorder();
   CanvasRenderingContext::Dispose();
 }
 
@@ -1304,7 +1307,6 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 void CanvasRenderingContext2D::ResetResourceProvider() {
   auto old_shared = std::move(shared_image_provider_);
   auto old_bitmap = std::move(bitmap_provider_);
-  ResetRecorder();
   last_recording_ = std::nullopt;
   if (canvas()) {
     canvas()->UpdateMemoryUsage();
@@ -1332,6 +1334,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   std::unique_ptr<MemoryManagedPaintRecorder> recorder = ReleaseRecorder();
   canvas()->ResetLayer();
   ResetResourceProvider();
+  ResetRecorder();
 
   // Bail out if the context is lost.
   if (isContextLost() && !IsContextBeingRestored()) {
@@ -1439,6 +1442,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ResetResourceProvider();
+  ResetRecorder();
   shared_image_provider_ = std::move(provider);
   if (shared_image_provider_) {
     ConfigureRecorder(size, shared_image_provider_->IsGraphite());
@@ -1452,6 +1456,7 @@ void CanvasRenderingContext2D::SetBitmapProviderForTesting(
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ResetResourceProvider();
+  ResetRecorder();
   bitmap_provider_ = std::move(provider);
   if (bitmap_provider_) {
     ConfigureRecorder(size, /*is_graphite=*/false);
@@ -1465,6 +1470,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ResetResourceProvider();
+  ResetRecorder();
 }
 
 }  // namespace blink
