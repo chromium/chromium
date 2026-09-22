@@ -22,6 +22,8 @@ struct COMPONENT_EXPORT(VARIATIONS) SeedResponse {
   std::string signature;
   std::string country;
   std::string geo_level1;
+  // The variations-server-provided timestamp of when the response was sent.
+  // From the HTTP "Date" header.
   base::Time date;
   bool is_gzip_compressed = false;
 };

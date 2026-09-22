@@ -324,7 +324,7 @@ void VariationsSeedStore::StoreSeedData(
     std::string base64_seed_signature,
     std::string country_code,
     std::string geo_level1,
-    base::Time date_fetched,
+    base::Time seed_date,
     bool is_delta_compressed,
     bool is_gzip_compressed,
     bool require_synchronous) {
@@ -345,7 +345,7 @@ void VariationsSeedStore::StoreSeedData(
   seed_data.base64_seed_signature = std::move(base64_seed_signature);
   seed_data.country_code = std::move(country_code);
   seed_data.geo_level1 = std::move(geo_level1);
-  seed_data.date_fetched = date_fetched;
+  seed_data.seed_date = seed_date;
   seed_data.is_gzip_compressed = is_gzip_compressed;
   seed_data.is_delta_compressed = is_delta_compressed;
 
@@ -518,18 +518,16 @@ void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {
   }
 }
 
-void VariationsSeedStore::UpdateSeedDateAndLogDayChange(
-    base::Time server_date_fetched) {
-  LogSeedDayChange(server_date_fetched);
-  seed_reader_writer_->SetSeedDate(server_date_fetched);
+void VariationsSeedStore::UpdateSeedDateAndLogDayChange(base::Time seed_date) {
+  LogSeedDayChange(seed_date);
+  seed_reader_writer_->SetSeedDate(seed_date);
 }
 
-void VariationsSeedStore::LogSeedDayChange(
-    base::Time server_date_fetched) {
+void VariationsSeedStore::LogSeedDayChange(base::Time seed_date) {
   UpdateSeedDateResult result = UpdateSeedDateResult::kNoOldDate;
   const base::Time stored_date = seed_reader_writer_->GetSeedInfo().seed_date;
   if (!stored_date.is_null()) {
-    result = GetSeedDateChangeState(server_date_fetched, stored_date);
+    result = GetSeedDateChangeState(seed_date, stored_date);
   }
 
   base::UmaHistogramEnumeration("Variations.SeedDateChange", result);
@@ -860,7 +858,7 @@ void VariationsSeedStore::OnSeedDataProcessed(
       base::BindOnce(&VariationsSeedStore::StoreValidatedSeed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
                      std::move(result.validated), result.seed_data.country_code,
-                     result.seed_data.geo_level1, result.seed_data.date_fetched,
+                     result.seed_data.geo_level1, result.seed_data.seed_date,
                      require_synchronous);
   ReadSeedData(/*done_callback=*/std::move(store_validated_seed_cb),
                SeedType::SAFE, require_synchronous);
@@ -899,7 +897,7 @@ void VariationsSeedStore::StoreValidatedSeed(
     ValidatedSeed seed,
     std::string country_code,
     std::string geo_level1,
-    base::Time date_fetched,
+    base::Time seed_date,
     bool require_synchronous,
     SeedReaderWriter::ReadSeedDataResult safe_seed_read_result) {
 #if BUILDFLAG(IS_ANDROID)
@@ -914,7 +912,7 @@ void VariationsSeedStore::StoreValidatedSeed(
 
   int milestone = version_info::GetMajorVersionNumberAsInt();
 
-  LogSeedDayChange(date_fetched);
+  LogSeedDayChange(seed_date);
 
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
@@ -930,7 +928,7 @@ void VariationsSeedStore::StoreValidatedSeed(
           .seed_data = seed_data,
           .signature = seed.base64_seed_signature,
           .milestone = milestone,
-          .seed_date = date_fetched,
+          .seed_date = seed_date,
           .client_fetch_time = base::Time::Now(),
           .session_country_code = country_code,
           .session_geo_level1 = geo_level1,

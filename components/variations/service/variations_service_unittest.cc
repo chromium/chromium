@@ -266,14 +266,14 @@ class TestVariationsService : public VariationsService {
                  std::string seed_signature,
                  std::string country_code,
                  std::string geo_level1,
-                 base::Time date_fetched,
+                 base::Time seed_date,
                  bool is_delta_compressed,
                  bool is_gzip_compressed) override {
     seed_stored_ = true;
     stored_seed_data_ = seed_data;
     stored_country_ = country_code;
     stored_geo_level_ = geo_level1;
-    stored_date_ = date_fetched;
+    stored_date_ = seed_date;
     delta_compressed_seed_ = is_delta_compressed;
     gzip_compressed_seed_ = is_gzip_compressed;
     OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,

@@ -833,7 +833,7 @@ void VariationsService::StoreSeed(std::string seed_data,
                                   std::string seed_signature,
                                   std::string country_code,
                                   std::string geo_level1,
-                                  base::Time date_fetched,
+                                  base::Time seed_date,
                                   bool is_delta_compressed,
                                   bool is_gzip_compressed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -843,7 +843,7 @@ void VariationsService::StoreSeed(std::string seed_data,
                      weak_ptr_factory_.GetWeakPtr(), is_delta_compressed);
   field_trial_creator_.seed_store()->StoreSeedData(
       std::move(done_callback), std::move(seed_data), std::move(seed_signature),
-      std::move(country_code), std::move(geo_level1), date_fetched,
+      std::move(country_code), std::move(geo_level1), seed_date,
       is_delta_compressed, is_gzip_compressed,
       /*require_synchronous=*/false);
 }

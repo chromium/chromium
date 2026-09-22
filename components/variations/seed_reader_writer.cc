@@ -530,12 +530,12 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
   }
 }
 
-void SeedReaderWriter::SetSeedDate(base::Time server_date_fetched) {
+void SeedReaderWriter::SetSeedDate(base::Time seed_date) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Both groups store the seed date in local state. It is updated after every
   // successful seed fetch, including "HTTP 304 Not Modified" responses, so
   // avoid rewriting the whole seed file just to refresh a timestamp.
-  local_state_->SetTime(fields_prefs_->seed_date, server_date_fetched);
+  local_state_->SetTime(fields_prefs_->seed_date, seed_date);
 }
 
 void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {

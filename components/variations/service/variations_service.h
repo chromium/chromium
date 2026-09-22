@@ -337,7 +337,7 @@ class VariationsService
                          std::string seed_signature,
                          std::string country_code,
                          std::string geo_level1,
-                         base::Time date_fetched,
+                         base::Time seed_date,
                          bool is_delta_compressed,
                          bool is_gzip_compressed);
 
