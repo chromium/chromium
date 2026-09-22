@@ -3351,9 +3351,6 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_SUBLABEL" desc="Sublabel describing the selection shortcut triggering in Gemini.">
         To select part of the screen in Gemini in Chrome, use keyboard shortcut.
       </message>
-      <message name="IDS_SETTINGS_GLIC_HOTKEY_SCOPE_CHROME" desc="Label for the 'In Chrome' option in the shortcut invocation scope dropdown.">
-        In Chrome
-      </message>
 
       <!-- Profile Picker Glic version-->
       <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling.">

@@ -61,13 +61,6 @@ export function getHtml(this: SettingsGlicSubpageElement) {
               </a>
             </div>
           </div>
-          <select id="scopeSelector" class="md-select"
-              .value="${this.selectedScope_}"
-              @change="${this.onScopeChange_}"
-              ?hidden="${!this.glicHotkeyLocalScopeEnabled_}">
-            <option value="CHROME">$i18n{glicHotkeyScopeChrome}</option>
-            <option value="GLOBAL">$i18n{glicHotkeyScopeGlobal}</option>
-          </select>
           <cr-shortcut-input class="cr-padded-text shortcut-input"
               input-aria-label="$i18n{glicKeyboardShortcut}"
               edit-button-aria-label="$i18n{glicKeyboardShortcutEditLabel}"
@@ -78,6 +71,14 @@ export function getHtml(this: SettingsGlicSubpageElement) {
               @shortcut-updated="${this.onShortcutUpdated_}">
           </cr-shortcut-input>
         </div>
+        <settings-toggle-button
+            ?hidden="${!this.glicHotkeyLocalScopeEnabled_}"
+            id="scopeToggle"
+            pref-key="glic.hotkey_global_scope_enabled"
+            label="$i18n{glicHotkeyGlobalScopeDescription}"
+            @settings-boolean-control-change="${
+                this.onScopeToggleSettingsBooleanControlChange_}">
+        </settings-toggle-button>
         <div class="hr cr-row keyboard-shortcut-setting"
             ?hidden="${!this.glicSelectionFeatureEnabled_}"
             id="selectionShortcutSetting">

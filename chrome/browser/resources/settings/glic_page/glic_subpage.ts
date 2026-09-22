@@ -93,8 +93,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       disallowedByAdmin_: {type: Boolean},
       userStatusPref_: {type: Object},
       launcherEnabledPref_: {type: Object},
-      hotkeyGlobalScopeEnabledPref_: {type: Object},
-      selectedScope_: {type: String},
       registeredShortcut_: {type: String},
       registeredFocusToggleShortcut_: {type: String},
       registeredSelectionShortcut_: {type: String},
@@ -131,9 +129,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       undefined = undefined;
   protected accessor launcherEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined = undefined;
-  protected accessor hotkeyGlobalScopeEnabledPref_:
-      chrome.settingsPrivate.PrefObject<boolean>|undefined = undefined;
-  protected accessor selectedScope_: 'GLOBAL'|'CHROME' = 'CHROME';
   protected accessor registeredShortcut_: string = '';
   protected accessor registeredFocusToggleShortcut_: string = '';
   protected accessor registeredSelectionShortcut_: string = '';
@@ -212,8 +207,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       [SettingsGlicPageFeaturePrefName.USER_STATUS]: 'userStatusPref_',
       [SettingsGlicPageFeaturePrefName.LAUNCHER_ENABLED]:
           'launcherEnabledPref_',
-      [SettingsGlicPageFeaturePrefName.HOTKEY_GLOBAL_SCOPE_ENABLED]:
-          'hotkeyGlobalScopeEnabledPref_',
     });
     this.addPrefObserver(
         SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED,
@@ -291,11 +284,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedPrivateProperties.has('hotkeyGlobalScopeEnabledPref_')) {
-      this.selectedScope_ = this.computeSelectedScope_(
-          !!this.hotkeyGlobalScopeEnabledPref_?.value);
-    }
-
     if (changedPrivateProperties.has('webActuationEnabledPref_')) {
       this.onWebActuationEnabledChanged_(this.webActuationEnabledPref_.value);
     }
@@ -346,20 +334,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
 
-  private computeSelectedScope_(globalEnabled: boolean): 'GLOBAL'|'CHROME' {
-    return globalEnabled ? 'GLOBAL' : 'CHROME';
-  }
-
   protected getMainShortcutOpened_(): boolean {
     return this.launcherEnabledPref_?.value ||
         this.glicHotkeyLocalScopeEnabled_;
   }
 
-  protected onScopeChange_(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const isGlobal = select.value === 'GLOBAL';
-    PrefService.getInstance().setPrefValue(
-        SettingsGlicPageFeaturePrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, isGlobal);
+  protected onScopeToggleSettingsBooleanControlChange_(event: Event) {
+    const isGlobal = (event.target as SettingsToggleButtonElement).checked;
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.HotkeyScope.' + (isGlobal ? 'Global' : 'Chrome'));
   }

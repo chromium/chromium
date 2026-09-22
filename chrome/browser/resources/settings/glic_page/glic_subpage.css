@@ -6,22 +6,13 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
- * #import=chrome://resources/cr_elements/md_select_lit.css.js
  * #import=../settings_columned_section_lit.css.js
  * #import=../settings_shared_lit.css.js
- * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit md-select-lit
+ * #include=cr-icons-lit cr-shared-style-lit settings-columned-section-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
 .keyboard-shortcut-setting {
   align-items: center;
-}
-
-.keyboard-shortcut-setting .md-select {
-  --md-select-width: fit-content;
-  line-height: 22px;
-  margin-inline-end: var(--cr-section-padding);
-  margin-inline-start: var(--cr-section-padding);
-  min-width: 120px;
 }
 
 #mainShortcutSetting {

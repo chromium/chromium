@@ -1012,8 +1012,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"glicMediaUnderstandingToggle", IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING},
       {"glicMediaUnderstandingToggleSublabel",
        IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING_SUBLABEL},
-      {"glicHotkeyScopeChrome", IDS_SETTINGS_GLIC_HOTKEY_SCOPE_CHROME},
-      {"glicHotkeyScopeGlobal", IDS_SETTINGS_GLIC_HOTKEY_SCOPE_GLOBAL},
       {"siteSettingsInlineCueMenu", IDS_SETTINGS_GLIC_INLINE_CUE_MENU},
       {"siteSettingsInlineCueMenuDescription",
        IDS_SETTINGS_GLIC_INLINE_CUE_MENU_DESCRIPTION},
@@ -1031,6 +1029,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_INLINE_CUE_MENU},
       {"siteSettingsInlineCueMenuToggleSublabel",
        IDS_SETTINGS_GLIC_INLINE_CUE_MENU_TOGGLE_SUBLABEL},
+      {"glicHotkeyGlobalScopeDescription",
+       IDS_SETTINGS_GLIC_HOTKEY_GLOBAL_SCOPE_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

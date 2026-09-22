@@ -1331,36 +1331,36 @@ suite('GlicSubpage', function() {
       return createGlicPage(/*initialShortcut=*/ '⌃A');
     });
 
-    test('DropdownVisible', () => {
-      const scopeSelector = $<HTMLSelectElement>('scopeSelector');
-      assertTrue(!!scopeSelector);
-      assertTrue(isVisible(scopeSelector));
+    test('ToggleVisible', () => {
+      const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle');
+      assertTrue(!!scopeToggle);
+      assertTrue(isVisible(scopeToggle));
     });
 
-    test('DropdownSelectionReflectsPref', async () => {
-      const scopeSelector = $<HTMLSelectElement>('scopeSelector')!;
+    test('ToggleReflectsPref', async () => {
+      const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle')!;
 
       prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, true);
       await microtasksFinished();
-      assertEquals('GLOBAL', scopeSelector.value);
+      assertTrue(scopeToggle.checked);
 
       prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, false);
       await microtasksFinished();
-      assertEquals('CHROME', scopeSelector.value);
+      assertFalse(scopeToggle.checked);
     });
 
-    test('ChangingDropdownUpdatesPrefAndMetrics', async () => {
-      const scopeSelector = $<HTMLSelectElement>('scopeSelector')!;
+    test('TogglingUpdatesPrefAndMetrics', async () => {
+      const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle')!;
 
-      scopeSelector.value = 'GLOBAL';
-      scopeSelector.dispatchEvent(new Event('change'));
+      // Default is false, click should make it true.
+      scopeToggle.click();
       assertTrue(
           prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
               .value);
       await verifyUserAction('Glic.Settings.HotkeyScope.Global');
 
-      scopeSelector.value = 'CHROME';
-      scopeSelector.dispatchEvent(new Event('change'));
+      // Click again should make it false.
+      scopeToggle.click();
       assertFalse(
           prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
               .value);
@@ -1391,9 +1391,9 @@ suite('GlicSubpage', function() {
       return createGlicPage(/*initialShortcut=*/ '⌃A');
     });
 
-    test('DropdownHidden', () => {
-      const scopeSelector = $<HTMLSelectElement>('scopeSelector');
-      assertFalse(isVisible(scopeSelector));
+    test('ToggleHidden', () => {
+      const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle');
+      assertFalse(isVisible(scopeToggle));
     });
   });
 });

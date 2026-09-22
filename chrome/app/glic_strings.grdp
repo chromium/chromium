@@ -180,6 +180,9 @@
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting." formatter_data="android_java">
     Keyboard shortcut
   </message>
+  <message name="IDS_SETTINGS_GLIC_HOTKEY_GLOBAL_SCOPE_DESCRIPTION" desc="Description for the hotkey scope setting to allow it to work globally.">
+    Use shortcut across OS apps
+  </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_EDIT_LABEL" desc="Label of the edit keyboard shortcut setting button.">
     Edit keyboard shortcut
   </message>
@@ -435,9 +438,6 @@
   </message>
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_REMOVE_ERROR" desc="Toast message to show when a login permission was unable to be removed.">
     Couldn't remove permission. Try again later.
-  </message>
-  <message name="IDS_SETTINGS_GLIC_HOTKEY_SCOPE_GLOBAL" desc="Label for the 'Global' option in the shortcut invocation scope dropdown.">
-    Global
   </message>
 
   <!-- Glic button and tab strip context menu -->
