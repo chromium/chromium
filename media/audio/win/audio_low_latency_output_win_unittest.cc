@@ -610,13 +610,13 @@ class GlitchDetectorTest : public ::testing::Test {
   // reports 384,000 Hz (where position advances by 3,840 units every 10 ms).
   // AudioTimestampHelper::FramesToTime(delta_pos, kDeviceFrequency) accurately
   // resolves this to milliseconds.
-  static constexpr UINT64 kDeviceFrequency = 384000;
-  static constexpr UINT64 kInitialPosition = 384000;
-  static constexpr UINT64 kInitialQpc = 117445800000;
+  static constexpr uint64_t kDeviceFrequency = 384000;
+  static constexpr uint64_t kInitialPosition = 384000;
+  static constexpr uint64_t kInitialQpc = 117445800000;
 
   WASAPIAudioOutputStream::GlitchDetector detector_{kBufferDuration};
-  UINT64 pos_ = kInitialPosition;
-  UINT64 qpc_ = kInitialQpc;
+  uint64_t pos_ = kInitialPosition;
+  uint64_t qpc_ = kInitialQpc;
 
   void SetUp() override { ResetPositions(); }
 
@@ -633,15 +633,16 @@ class GlitchDetectorTest : public ::testing::Test {
   // - `padding_frames` is the queued buffer frames reported by WASAPI.
   void StepCallback(base::TimeDelta pos_duration,
                     base::TimeDelta qpc_duration,
-                    UINT32 padding_frames) {
+                    uint32_t padding_frames,
+                    bool is_shared_mode = true) {
     pos_ += (pos_duration.InMicroseconds() * kDeviceFrequency) /
             base::Time::kMicrosecondsPerSecond;
     // QPC ticks are in 100ns units (10,000 ticks per millisecond).
-    qpc_ += static_cast<UINT64>(qpc_duration.InMicroseconds() * 10);
+    qpc_ += static_cast<uint64_t>(qpc_duration.InMicroseconds() * 10);
 
     detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency,
                                     padding_frames, kPacketFrames,
-                                    /*is_shared_mode=*/true);
+                                    is_shared_mode);
   }
 };
 
@@ -653,7 +654,7 @@ TEST_F(GlitchDetectorTest, HealthyPlayoutNoGlitches) {
 
   // In real-world Windows 48 kHz traces (with a 1056-frame endpoint buffer
   // and 480-frame packet size), WASAPI maintains ~560 frames of padding.
-  static constexpr UINT32 kHealthyPaddingFrames = 560;
+  static constexpr uint32_t kHealthyPaddingFrames = 560;
 
   // First callback seeds baseline positions:
   detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency,
@@ -1150,6 +1151,241 @@ TEST_F(GlitchDetectorTest, DriverClockBackwardJumpDoesNotUnderflow) {
   SystemGlitchReporter::Stats stats = detector_.GetLongTermStatsAndReset();
   EXPECT_EQ(stats.glitches_detected, 1);
   EXPECT_EQ(stats.total_glitch_duration, base::Milliseconds(10));
+}
+
+// Exclusive Mode Detection:
+// Verify that when `is_shared_mode = false`, a timing gap (`gap_duration >
+// glitch_threshold_`) immediately registers a glitch regardless of padding.
+TEST_F(GlitchDetectorTest, ExclusiveModeDetectsGlitchRegardlessOfPadding) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  ResetPositions();
+
+  // Seed baseline in exclusive mode (`is_shared_mode = false`):
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 560,
+                                  kPacketFrames, /*is_shared_mode=*/false);
+
+  // Callback 1: Delayed by 16ms (gap = 6ms > 5ms threshold). Even if padding
+  // parameter is 560, exclusive mode treats buffer as empty (`!is_shared_mode`)
+  // and opens a recovery window.
+  StepCallback(base::Milliseconds(10), base::Milliseconds(16), 560,
+               /*is_shared_mode=*/false);
+
+  // Callback 2: Playout catches up (gap = 0ms), committing the 6ms glitch.
+  StepCallback(base::Milliseconds(10), base::Milliseconds(10), 560,
+               /*is_shared_mode=*/false);
+
+  AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(info.count, 1u);
+  EXPECT_EQ(info.duration, base::Milliseconds(6));
+
+  SystemGlitchReporter::Stats stats = detector_.GetLongTermStatsAndReset();
+  EXPECT_EQ(stats.glitches_detected, 1);
+  EXPECT_EQ(stats.total_glitch_duration, base::Milliseconds(6));
+}
+
+// Post-Recovery Scheduler Jitter (State Machine Leak Regression Test):
+// Verify that an empty buffer encountered during an active recovery window
+// does not leak `recent_empty_buffer_countdown_` into post-recovery playout
+// and trigger false-positive glitches on subsequent Bluetooth scheduler jitter.
+TEST_F(GlitchDetectorTest,
+       PostRecoverySchedulerJitterDoesNotTriggerFalsePositive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  ResetPositions();
+
+  // Seed baseline:
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 480,
+                                  kPacketFrames, true);
+
+  // Callback 1: Real underrun (gap = 20ms, padding = 0). Opens recovery window.
+  StepCallback(base::Milliseconds(0), base::Milliseconds(20), 0);
+
+  // Callback 2: Still in recovery (gap = 5ms > 0) and buffer is still empty
+  // (padding = 0).
+  StepCallback(base::Milliseconds(5), base::Milliseconds(10), 0);
+
+  // Callback 3: Recovery completes (gap = 0ms) while padding was still 0 on
+  // entry. Commits the 25ms glitch and must clear
+  // `recent_empty_buffer_countdown_`.
+  StepCallback(base::Milliseconds(10), base::Milliseconds(10), 0);
+
+  AudioGlitchInfo recovery_glitch = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(recovery_glitch.count, 1u);
+  EXPECT_EQ(recovery_glitch.duration, base::Milliseconds(25));
+
+  // Callback 4: Immediately after recovery closes, Bluetooth scheduler jitter
+  // delays the callback (gap = 16ms - 10ms = 6ms > 5ms), but the buffer now
+  // has healthy padding (560 >= 480). Assert that 0 glitches are reported.
+  StepCallback(base::Milliseconds(10), base::Milliseconds(16), 560);
+  StepCallback(base::Milliseconds(10), base::Milliseconds(10), 560);
+
+  AudioGlitchInfo post_recovery_info = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(post_recovery_info.count, 0u);
+  EXPECT_EQ(post_recovery_info.duration, base::TimeDelta());
+
+  SystemGlitchReporter::Stats stats = detector_.GetLongTermStatsAndReset();
+  EXPECT_EQ(stats.glitches_detected, 1);
+  EXPECT_EQ(stats.total_glitch_duration, base::Milliseconds(25));
+}
+
+// Zero Initial Position Seeding (`initialized_` flag):
+// Verify that if `device_position` legitimately starts at 0 on the first
+// callback and remains 0 on the second callback due to an immediate stall,
+// the second callback is evaluated as a glitch rather than re-seeding.
+TEST_F(GlitchDetectorTest,
+       ZeroInitialPositionSeedsOnceAndDetectsImmediateStall) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  pos_ = 0;
+  qpc_ = kInitialQpc;
+
+  // Callback 0: Seed at device_position = 0.
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 480,
+                                  kPacketFrames, true);
+
+  // Callback 1: Hardware playout stalls at device_position = 0 while QPC
+  // advances by 20ms and padding drops to 0. Because `initialized_` is true,
+  // this must open the recovery window rather than re-seeding.
+  StepCallback(base::Milliseconds(0), base::Milliseconds(20), 0);
+
+  // Callback 2: Playout recovers (gap = 0ms, padding = 480).
+  StepCallback(base::Milliseconds(10), base::Milliseconds(10), 480);
+
+  AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(info.count, 1u);
+  EXPECT_EQ(info.duration, base::Milliseconds(20));
+}
+
+// Teardown Flush:
+// Verify that calling `GetLongTermStatsAndReset()` while
+// `recovery_window_countdown_ > 0` flushes accumulated glitch duration to
+// `SystemGlitchReporter::Stats`.
+TEST_F(GlitchDetectorTest, TeardownFlushesActiveRecoveryWindowToLongTermStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  ResetPositions();
+
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 480,
+                                  kPacketFrames, true);
+
+  // Open recovery window (20ms gap) and accumulate 5ms more on next callback,
+  // then immediately tear down stream before recovery window closes:
+  StepCallback(base::Milliseconds(0), base::Milliseconds(20), 0);
+  StepCallback(base::Milliseconds(5), base::Milliseconds(10), 480);
+
+  SystemGlitchReporter::Stats stats = detector_.GetLongTermStatsAndReset();
+  EXPECT_EQ(stats.glitches_detected, 1);
+  EXPECT_EQ(stats.total_glitch_duration, base::Milliseconds(25));
+}
+
+// Clock Jumps Backward (QPC):
+// Verify that `qpc_position < last_qpc_position_` is safely clamped to zero
+// elapsed QPC time without underflowing unsigned subtraction.
+TEST_F(GlitchDetectorTest, QpcClockBackwardJumpDoesNotUnderflow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  ResetPositions();
+
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 480,
+                                  kPacketFrames, true);
+
+  // Simulate QPC jumping backward by 5ms (-50,000 ticks) while device position
+  // advances normally by 10ms and padding is 0. Clamping QPC increase to 0
+  // yields gap_duration = 0ms - 10ms = -10ms <= 5ms threshold -> 0 glitches.
+  pos_ += 3840;
+  qpc_ -= 50000;
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency,
+                                  /*current_padding_frames=*/0, kPacketFrames,
+                                  /*is_shared_mode=*/true);
+
+  AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(info.count, 0u);
+  EXPECT_EQ(info.duration, base::TimeDelta());
+
+  SystemGlitchReporter::Stats stats = detector_.GetLongTermStatsAndReset();
+  EXPECT_EQ(stats.glitches_detected, 0);
+}
+
+// Padding Boundary Values (`packet_size_frames - 1` vs `packet_size_frames`):
+// Verify exact boundary behavior at `current_padding_frames <
+// packet_size_frames`.
+TEST_F(GlitchDetectorTest, PaddingBoundaryValuesAtPacketSizeThreshold) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  // Case A: `padding == kPacketFrames` (480) does NOT trigger empty buffer.
+  {
+    detector_.Reset();
+    ResetPositions();
+
+    detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, kPacketFrames,
+                                    kPacketFrames, true);
+    StepCallback(base::Milliseconds(10), base::Milliseconds(16), kPacketFrames);
+    StepCallback(base::Milliseconds(10), base::Milliseconds(10), kPacketFrames);
+
+    AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+    EXPECT_EQ(info.count, 0u);
+    EXPECT_EQ(detector_.GetLongTermStatsAndReset().glitches_detected, 0);
+  }
+
+  // Case B: `padding == kPacketFrames - 1` (479) DOES trigger empty buffer.
+  {
+    detector_.Reset();
+    ResetPositions();
+
+    detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, kPacketFrames,
+                                    kPacketFrames, true);
+    StepCallback(base::Milliseconds(10), base::Milliseconds(16),
+                 kPacketFrames - 1);
+    StepCallback(base::Milliseconds(10), base::Milliseconds(10), kPacketFrames);
+
+    AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+    EXPECT_EQ(info.count, 1u);
+    EXPECT_EQ(info.duration, base::Milliseconds(6));
+    EXPECT_EQ(detector_.GetLongTermStatsAndReset().glitches_detected, 1);
+  }
+}
+
+// Zero Device Frequency Guard:
+// Verify that passing `device_frequency == 0` is safely ignored without
+// dividing by zero or corrupting internal state.
+TEST_F(GlitchDetectorTest, ZeroDeviceFrequencyIsIgnoredSafely) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWasapiImproveGlitchDetection);
+
+  detector_.Reset();
+  ResetPositions();
+
+  // Calling with `device_frequency == 0` before initialization should be a
+  // no-op and leave `initialized_` false:
+  detector_.ProcessRenderCallback(pos_, qpc_, /*device_frequency=*/0, 0,
+                                  kPacketFrames, true);
+
+  // Subsequent valid callback seeds the baseline normally:
+  detector_.ProcessRenderCallback(pos_, qpc_, kDeviceFrequency, 480,
+                                  kPacketFrames, true);
+
+  // Calling with `device_frequency == 0` after initialization should also be a
+  // no-op without advancing baseline positions or reporting glitches:
+  detector_.ProcessRenderCallback(pos_ + 3840, qpc_ + 200000,
+                                  /*device_frequency=*/0, 0, kPacketFrames,
+                                  true);
+
+  AudioGlitchInfo info = detector_.GetGlitchInfoAndReset();
+  EXPECT_EQ(info.count, 0u);
+  EXPECT_EQ(info.duration, base::TimeDelta());
+  EXPECT_EQ(detector_.GetLongTermStatsAndReset().glitches_detected, 0);
 }
 
 }  // namespace media

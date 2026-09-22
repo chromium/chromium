@@ -178,18 +178,18 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
     // buffer recovery windows.
     // Note: `device_position` has undefined units and is meaningful only in
     // relation to `device_frequency` from IAudioClock::GetFrequency().
-    void ProcessRenderCallback(UINT64 device_position,
-                               UINT64 qpc_position,
-                               UINT64 device_frequency,
-                               UINT32 current_padding_frames,
+    void ProcessRenderCallback(uint64_t device_position,
+                               uint64_t qpc_position,
+                               uint64_t device_frequency,
+                               uint32_t current_padding_frames,
                                size_t packet_size_frames,
                                bool is_shared_mode);
 
     // Extracts accumulated glitch info to hand to OnMoreData().
-    AudioGlitchInfo GetGlitchInfoAndReset();
+    [[nodiscard]] AudioGlitchInfo GetGlitchInfoAndReset();
 
     // Returns long-term glitch stats for stream end logging and UMA reporting.
-    SystemGlitchReporter::Stats GetLongTermStatsAndReset();
+    [[nodiscard]] SystemGlitchReporter::Stats GetLongTermStatsAndReset();
 
    private:
     // Maximum number of consecutive callbacks (~100ms for 10ms packets) to
@@ -208,8 +208,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
 
     const base::TimeDelta glitch_threshold_;
 
-    UINT64 last_device_position_ = 0;
-    UINT64 last_qpc_position_ = 0;
+    bool initialized_ = false;
+    uint64_t last_device_position_ = 0;
+    uint64_t last_qpc_position_ = 0;
 
     int recovery_window_countdown_ = 0;
     int recent_empty_buffer_countdown_ = 0;
