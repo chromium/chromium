@@ -18,6 +18,7 @@ import org.chromium.chrome.ui.messages.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * A snackbar shows a message at the bottom of the screen and optionally contains an action button.
@@ -156,7 +157,7 @@ public class Snackbar {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;
-    private final @Nullable CharSequence mText;
+    private @Nullable CharSequence mText;
     private @Nullable String mTemplateText;
     private @Nullable String mActionText;
     private @Nullable Object mActionData;
@@ -220,6 +221,12 @@ public class Snackbar {
      */
     public Snackbar setHighPriority(boolean highPriority) {
         mIsHighPriority = highPriority;
+        return this;
+    }
+
+    /** Sets the text to show on the snackbar. */
+    public Snackbar setText(@Nullable CharSequence text) {
+        mText = text;
         return this;
     }
 
@@ -389,5 +396,44 @@ public class Snackbar {
 
     public @Nullable CharSequence getTextForTesting() {
         return mText;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Snackbar other)) return false;
+        return mController == other.mController
+                && Objects.equals(mText, other.mText)
+                && Objects.equals(mTemplateText, other.mTemplateText)
+                && Objects.equals(mActionText, other.mActionText)
+                && Objects.equals(mActionData, other.mActionData)
+                && mBackgroundColor == other.mBackgroundColor
+                && mTextAppearanceResId == other.mTextAppearanceResId
+                && mDefaultLines == other.mDefaultLines
+                && mIsHighPriority == other.mIsHighPriority
+                && mDurationMs == other.mDurationMs
+                && Objects.equals(mProfileImage, other.mProfileImage)
+                && mType == other.mType
+                && mIdentifier == other.mIdentifier
+                && mTheme == other.mTheme;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                mController,
+                mText,
+                mTemplateText,
+                mActionText,
+                mActionData,
+                mBackgroundColor,
+                mTextAppearanceResId,
+                mDefaultLines,
+                mIsHighPriority,
+                mDurationMs,
+                mProfileImage,
+                mType,
+                mIdentifier,
+                mTheme);
     }
 }

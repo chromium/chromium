@@ -9,12 +9,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Tests for {@link ExclusiveAccessBubble}. */
@@ -67,5 +69,24 @@ public class ExclusiveAccessBubbleTest {
         // its fullscreen state and fire another Update() from C++.
         bubble.update("Test text");
         Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(Mockito.any());
+    }
+
+    @Test
+    public void testUpdateWithNewTextReusesSnackbarInstance() {
+        ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
+
+        bubble.update("Press Esc");
+        ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
+        Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(captor.capture());
+        Snackbar firstSnackbar = captor.getValue();
+        Assert.assertEquals("Press Esc", firstSnackbar.getTextForTesting());
+
+        bubble.update("Press and hold Esc");
+        Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(captor.capture());
+        Snackbar secondSnackbar = captor.getValue();
+
+        Assert.assertSame(firstSnackbar, secondSnackbar);
+        Assert.assertEquals("Press and hold Esc", secondSnackbar.getTextForTesting());
+        Mockito.verify(mSnackbarManager, Mockito.never()).dismissSnackbars(Mockito.any());
     }
 }

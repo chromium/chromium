@@ -63,8 +63,11 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:supplier_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

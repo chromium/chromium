@@ -6,27 +6,38 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.widget.FrameLayout;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.DismissalReason;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
+import java.util.concurrent.TimeUnit;
+
 /** Tests for {@link SnackbarCollection}. */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class SnackbarCollectionUnitTest {
     private static final String ACTION_TITLE = "stack";
     private static final String NOTIFICATION_TITLE = "queue";
@@ -400,6 +411,122 @@ public class SnackbarCollectionUnitTest {
         org.junit.Assert.assertNotNull(current);
         collection.removeMatchingSnackbars(current.getController(), current.getActionData());
         assertTrue(collection.isEmpty());
+    }
+
+    @Test
+    @Feature({"Browser", "Snackbar", "Security"})
+    public void testHighPriorityUpdateWithUpdatedText() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout parent = new FrameLayout(activity);
+        activity.setContentView(parent);
+        SnackbarManager manager = new SnackbarManager(activity, parent, null, null, null);
+
+        Snackbar hp1 =
+                Snackbar.make(
+                                "Press Esc",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setBackgroundColor(Color.BLACK)
+                        .setHighPriority(true);
+        manager.showSnackbar(hp1);
+        assertEquals(hp1, manager.getCurrentSnackbarForTesting());
+        assertEquals("Press Esc", manager.getCurrentSnackbarForTesting().getText());
+
+        // Advance 7000ms into the 10000ms TYPE_ACTION timeout (3000ms remaining).
+        ShadowLooper.idleMainLooper(7000, TimeUnit.MILLISECONDS);
+        assertTrue(manager.isShowing());
+
+        Snackbar hp2 =
+                Snackbar.make(
+                                "Press and hold Esc",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setBackgroundColor(Color.BLACK)
+                        .setHighPriority(true);
+        manager.showSnackbar(hp2);
+
+        // Verify hp1 was updated to hp2 without dismissing the controller.
+        verify(mMockController, never()).onDismissNoAction(any());
+        assertEquals(hp2, manager.getCurrentSnackbarForTesting());
+        assertEquals("Press and hold Esc", manager.getCurrentSnackbarForTesting().getText());
+
+        // Advance another 7000ms (14000ms total elapsed > initial 10000ms duration).
+        // Because the duration timeout was reset on update, the snackbar must still be showing.
+        ShadowLooper.idleMainLooper(7000, TimeUnit.MILLISECONDS);
+        verify(mMockController, never()).onDismissNoAction(any());
+        assertTrue(manager.isShowing());
+        assertEquals(hp2, manager.getCurrentSnackbarForTesting());
+
+        // Advance past the remaining 3000ms of the reset 10000ms duration; now it should time out.
+        ShadowLooper.idleMainLooper(3500, TimeUnit.MILLISECONDS);
+        verify(mMockController, times(1)).onDismissNoAction(null);
+        assertFalse(manager.isShowing());
+        manager.destroy();
+        ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    @Feature({"Browser", "Snackbar", "Security"})
+    public void testHighPriorityUpdateWithUpdatedTemplateText() {
+        SnackbarCollection collection = new SnackbarCollection();
+
+        Snackbar hp1 =
+                Snackbar.make(
+                                "Title",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setTemplateText("Template %s")
+                        .setHighPriority(true)
+                        .setDuration(3800);
+        collection.add(hp1);
+        assertEquals(hp1, collection.getCurrent());
+
+        Snackbar hp2 =
+                Snackbar.make(
+                                "Title",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setTemplateText("Updated Template %s")
+                        .setHighPriority(true)
+                        .setDuration(5000);
+        collection.add(hp2);
+
+        verify(mMockController, never()).onDismissNoAction(any());
+        assertEquals(hp2, collection.getCurrent());
+        assertEquals(5000, collection.getCurrent().getDuration());
+    }
+
+    @Test
+    @Feature({"Browser", "Snackbar", "Security"})
+    public void testHighPriorityDeduplicationWithIdenticalText() {
+        SnackbarCollection collection = new SnackbarCollection();
+
+        Snackbar hp1 =
+                Snackbar.make(
+                                "Press Esc",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setHighPriority(true);
+        collection.add(hp1);
+        assertEquals(hp1, collection.getCurrent());
+
+        Snackbar hp2 =
+                Snackbar.make(
+                                "Press Esc",
+                                mMockController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        .setHighPriority(true);
+        collection.add(hp2);
+
+        // Deduplicated without dismissal: the existing instance hp1 should be retained.
+        verify(mMockController, never()).onDismissNoAction(any());
+        assertSame(hp1, collection.getCurrent());
     }
 
     private Snackbar makeActionSnackbar(SnackbarController controller) {

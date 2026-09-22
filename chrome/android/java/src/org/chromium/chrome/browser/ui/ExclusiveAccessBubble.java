@@ -69,14 +69,7 @@ public class ExclusiveAccessBubble {
 
         SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
         if (snackbarManager != null && mSnackbar != null) {
-            mSnackbar =
-                    Snackbar.make(
-                                    text,
-                                    mSnackbarController,
-                                    Snackbar.TYPE_ACTION,
-                                    Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
-                            .setHighPriority(true)
-                            .setDuration(EXCLUSIVE_ACCESS_SNACKBAR_DURATION_MS);
+            mSnackbar.setText(text);
             // This will trigger SnackbarManager.updateView() and update the existing view.
             snackbarManager.showSnackbar(mSnackbar);
             return;

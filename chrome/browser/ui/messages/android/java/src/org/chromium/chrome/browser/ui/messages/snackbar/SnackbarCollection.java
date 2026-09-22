@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /** A data structure that holds all the {@link Snackbar}s managed by {@link SnackbarManager}. */
 @NullMarked
@@ -47,8 +48,14 @@ class SnackbarCollection {
                 // State Deduplication: Rapid oscillation attacks (e.g., spamming requestFullscreen)
                 // are collapsed here. If it's the exact same warning, we ignore the duplicate.
                 if (mActiveHighPriority.getController() == snackbar.getController()
-                        && objectsAreEqual(
+                        && Objects.equals(
                                 mActiveHighPriority.getActionData(), snackbar.getActionData())) {
+                    // Defensive update: If a controller submits a new Snackbar instance with
+                    // modified content (e.g., updated text) instead of mutating in place,
+                    // update the active instance rather than dropping the update as a duplicate.
+                    if (!mActiveHighPriority.equals(snackbar)) {
+                        mActiveHighPriority = snackbar;
+                    }
                     return; // Deduplication: already have this HP snackbar.
                 }
                 // LIFO Immediate Interruption: The new HP warning instantly overwrites the old one.
@@ -217,7 +224,7 @@ class SnackbarCollection {
         boolean removed = false;
         if (mActiveHighPriority != null
                 && mActiveHighPriority.getController() == controller
-                && objectsAreEqual(mActiveHighPriority.getActionData(), data)) {
+                && Objects.equals(mActiveHighPriority.getActionData(), data)) {
             Snackbar removedHp = mActiveHighPriority;
             mActiveHighPriority = null;
             RecordHistogram.recordEnumeratedHistogram(
@@ -250,7 +257,7 @@ class SnackbarCollection {
         while (iter.hasNext()) {
             Snackbar snackbar = iter.next();
             if (snackbar.getController() == controller
-                    && objectsAreEqual(snackbar.getActionData(), data)) {
+                    && Objects.equals(snackbar.getActionData(), data)) {
                 iter.remove();
                 removedSnackbars.add(snackbar);
             }
@@ -261,11 +268,5 @@ class SnackbarCollection {
             controller.onDismissNoAction(assumeNonNull(snackbar.getActionData()));
         }
         return !removedSnackbars.isEmpty();
-    }
-
-    private static boolean objectsAreEqual(@Nullable Object a, @Nullable Object b) {
-        if (a == null && b == null) return true;
-        if (a == null || b == null) return false;
-        return a.equals(b);
     }
 }
