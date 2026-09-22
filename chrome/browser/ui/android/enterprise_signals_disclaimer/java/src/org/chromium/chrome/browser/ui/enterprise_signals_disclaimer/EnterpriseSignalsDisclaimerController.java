@@ -167,7 +167,6 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
             return false;
         }
 
-        // TODO(b/512836948): Expand this check to include all forms of management.
         if (!ManagedBrowserUtils.isProfileManaged(mProfile)) {
             return false;
         }
