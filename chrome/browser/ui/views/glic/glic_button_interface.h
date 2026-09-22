@@ -5,28 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BUTTON_INTERFACE_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BUTTON_INTERFACE_H_
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "ui/base/class_property.h"
-#include "ui/views/view.h"
-
 class BrowserWindowInterface;
+
+namespace ui {
+class PropertyHandler;
+}  // namespace ui
 
 namespace views {
 class LabelButton;
-}
+}  // namespace views
 
 namespace glic {
 class GlicButtonInterface {
  public:
-  static views::LabelButton* FromBrowser(BrowserWindowInterface* browser) {
-    if (!browser) {
-      return nullptr;
-    }
-
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    CHECK(browser_view);
-    return browser_view->GetGlicButton();
-  }
+  static views::LabelButton* FromBrowser(BrowserWindowInterface* browser);
 
   // Width factor of button, used in animations.
   virtual float GetWidthFactor() const = 0;

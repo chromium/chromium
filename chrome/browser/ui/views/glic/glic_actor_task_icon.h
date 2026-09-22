@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
@@ -23,8 +24,6 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-
-class BrowserWindowInterface;
 
 namespace glic {
 
