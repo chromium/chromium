@@ -164,7 +164,7 @@ p {
 }
 
 /* For RTL languages, flip the direction */
-:host-context([dir=rtl]) #left-animation {
+:host-context([dir=rtl]) #leftAnimation {
   left: auto;
   right: 0;
   transform: scaleX(-1) translate(
@@ -172,7 +172,7 @@ p {
     -50%);
 }
 
-:host-context([dir=rtl]) #right-animation {
+:host-context([dir=rtl]) #rightAnimation {
   left: 0;
   right: auto;
   transform: scaleX(-1) translate(
@@ -180,13 +180,13 @@ p {
     -50%);
 }
 
-:host-context([dir=rtl]) #bottom-animation {
+:host-context([dir=rtl]) #bottomAnimation {
   left: auto;
   right: 20%;
   transform: scaleX(-1) translate(-50%, max(0px, calc(50% - (50vh - 300px) / 2)));
 }
 
-:host-context([dir=rtl]):host([is-pre-first-run-desktop-refresh-enabled_]) #bottom-animation {
+:host-context([dir=rtl]):host([is-pre-first-run-desktop-refresh-enabled_]) #bottomAnimation {
   transform: scaleX(-1) translate(-50%, max(0px, calc(35% - (50vh - 300px) / 2)));
 }
 
