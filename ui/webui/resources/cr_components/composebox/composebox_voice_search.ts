@@ -364,7 +364,7 @@ export class ComposeboxVoiceSearchElement extends
     }
   }
 
-  protected shouldShowErrorScrim_(): boolean {
+  protected isInError_(): boolean {
     return !!this.errorMessage_;
   }
 
@@ -434,9 +434,7 @@ export class ComposeboxVoiceSearchElement extends
       }
       e.preventDefault();
       e.stopPropagation();
-      // TODO(crbug.com/564678643): Rename shouldShowErrorScrim_() to
-      // isInError_().
-      if (this.shouldShowErrorScrim_()) {
+      if (this.isInError_()) {
         this.onCloseClick_();
       } else {
         this.onStopClick_();
@@ -883,7 +881,7 @@ export class ComposeboxVoiceSearchElement extends
   protected onCloseClick_() {
     // If closing while an error is showing, the close action is to dismiss
     // the error state, so it should not log as a user-canceled voice session.
-    if (this.shouldShowErrorScrim_()) {
+    if (this.isInError_()) {
       this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
       this.voiceModeEndCleanup_();
       return;
