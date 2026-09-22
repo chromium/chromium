@@ -529,9 +529,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set(
       "realboxVirtualFocusNavigation",
       base::FeatureList::IsEnabled(features::kRealboxVirtualFocusNavigation));
-  dict.Set("omniboxPopupVirtualFocusNavigation",
-           base::FeatureList::IsEnabled(
-               features::kOmniboxPopupVirtualFocusNavigation));
   dict.Set("lensOverlayVirtualFocusNavigation",
            base::FeatureList::IsEnabled(
                features::kLensOverlayVirtualFocusNavigation));

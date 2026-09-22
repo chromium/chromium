@@ -2593,6 +2593,7 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('TabKeyAcceptsInlineAutocomplete', async () => {
+   searchbox.virtualFocusEnabled = false;
    searchbox.focusInput();
    searchbox.getInputElement().setInput({
      text: 'you',
@@ -2629,6 +2630,7 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('ShiftTabClearsInlineAutocompleteWithoutPreventDefault', async () => {
+   searchbox.virtualFocusEnabled = false;
    searchbox.focusInput();
    searchbox.getInputElement().setInput({
      text: 'you',
@@ -2653,6 +2655,7 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('TabKeyPrioritizesKeywordEntryOverInlineAutocomplete', async () => {
+   searchbox.virtualFocusEnabled = false;
    const keyword = 'youtube.com';
    const match = createSearchMatchForTesting({
      allowedToBeDefaultMatch: true,
@@ -2694,6 +2697,7 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('TabKeyFallsBackToInlineAutocompleteWhenNoKeywordChip', async () => {
+   searchbox.virtualFocusEnabled = false;
    const match = createSearchMatchForTesting({
      allowedToBeDefaultMatch: true,
      contents: 'youtube.com',

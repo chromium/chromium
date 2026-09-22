@@ -6944,11 +6944,6 @@ inline constexpr char kRealboxVirtualFocusNavigationDescription[] =
     "from the searchbox, unifying behavior with the Omnibox and improving "
     "accessibility.";
 
-inline constexpr char kOmniboxPopupVirtualFocusNavigationName[] =
-    "Enable WebUI Omnibox Popup Virtual Focus Navigation";
-inline constexpr char kOmniboxPopupVirtualFocusNavigationDescription[] =
-    "Enables virtual focus keyboard navigation within the WebUI Omnibox Popup.";
-
 inline constexpr char kLensOverlayVirtualFocusNavigationName[] =
     "Enable Lens Overlay Virtual Focus Navigation";
 inline constexpr char kLensOverlayVirtualFocusNavigationDescription[] =
