@@ -102,6 +102,8 @@ class InstallerDownloaderController final
   void SetShouldShowInfobarForProfileCallbackForTesting(
       ShouldShowInfobarForProfileCallback callback);
 
+  void ResetSessionStateForTesting();
+
  private:
   using BrowserAndActiveTabTrackerMap = std::map<
       BrowserWindowInterface*,

@@ -504,6 +504,12 @@ void InstallerDownloaderController::
   should_show_infobar_for_profile_callback_ = std::move(callback);
 }
 
+void InstallerDownloaderController::ResetSessionStateForTesting() {
+  infobar_closed_ = false;
+  infobar_shown_ = false;
+  user_initiated_info_bar_close_pending_ = false;
+}
+
 void InstallerDownloaderController::OnInfoBarDismissed() {
   base::UmaHistogramBoolean("Windows.InstallerDownloader.RequestAccepted",
                             false);
