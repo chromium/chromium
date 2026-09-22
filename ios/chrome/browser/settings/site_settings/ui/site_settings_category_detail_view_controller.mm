@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -251,7 +253,8 @@ enum ItemType {
   __weak __typeof(self) weakSelf = self;
   UIContextualAction* deleteAction = [UIContextualAction
       contextualActionWithStyle:UIContextualActionStyleDestructive
-                          title:@"Delete"
+                          title:l10n_util::GetNSString(
+                                    IDS_IOS_DELETE_ACTION_TITLE)
                         handler:^(UIContextualAction* action,
                                   UIView* sourceView,
                                   void (^completionHandler)(BOOL)) {
@@ -337,7 +340,9 @@ enum ItemType {
 
   for (SiteSettingsSiteException* siteException in sites) {
     TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:itemType];
-    item.title = siteException.formattedTitle;
+    if (!siteException.URL) {
+      item.title = siteException.formattedTitle;
+    }
     item.URL = siteException.URL;
     item.selectionStyle = UITableViewCellSelectionStyleNone;
     [model addItem:item toSectionWithIdentifier:sectionIdentifier];

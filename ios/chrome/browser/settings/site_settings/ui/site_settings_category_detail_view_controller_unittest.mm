@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
@@ -16,6 +17,7 @@
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -25,7 +27,10 @@ SiteSettingsSiteException* CreateSiteException(NSString* origin,
       [[SiteSettingsSiteException alloc] init];
   exception.origin = origin;
   exception.formattedTitle = title;
-  exception.URL = [[CrURL alloc] initWithGURL:GURL("https://example.com")];
+  GURL url(base::SysNSStringToUTF8(origin));
+  if (url.is_valid()) {
+    exception.URL = [[CrURL alloc] initWithGURL:url];
+  }
   return exception;
 }
 
@@ -125,11 +130,13 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
 
   TableViewURLItem* notAllowedItem =
       static_cast<TableViewURLItem*>(GetTableViewItem(1, 0));
-  EXPECT_NSEQ(@"blocked.com", notAllowedItem.title);
+  EXPECT_EQ(GURL("https://blocked.com"), notAllowedItem.URL.gurl);
+  EXPECT_EQ(nil, notAllowedItem.title);
 
   TableViewURLItem* allowedItem =
       static_cast<TableViewURLItem*>(GetTableViewItem(2, 0));
-  EXPECT_NSEQ(@"allowed.com", allowedItem.title);
+  EXPECT_EQ(GURL("https://allowed.com"), allowedItem.URL.gurl);
+  EXPECT_EQ(nil, allowedItem.title);
 
   // Clearing lists should remove the sections again.
   [vc setAllowedSites:@[] notAllowedSites:@[]];
