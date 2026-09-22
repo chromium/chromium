@@ -1292,25 +1292,75 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
                 std::make_unique<RemoveTabDelegate>(this, tab));
 }
 
+std::optional<tab_groups::TabGroupId>
+TabContainerImpl::GetGroupHeaderPrecedingClosingTab(
+    Tab* tab,
+    int former_model_index) const {
+  // tab->group() has already been cleared when the tab is closing.
+  // We can determine if `tab` was the leading tab in a group by checking the
+  // tab now at `former_model_index`.
+
+  if (former_model_index >= GetTabCount()) {
+    return std::nullopt;
+  }
+
+  std::optional<tab_groups::TabGroupId> next_tab_group =
+      GetTabAtModelIndex(former_model_index)->group();
+  if (!next_tab_group.has_value()) {
+    return std::nullopt;
+  }
+
+  const auto group_views_it = group_views_.find(next_tab_group.value());
+  if (group_views_it == group_views_.end()) {
+    return std::nullopt;
+  }
+
+  // Ensure the closing tab was physically to the right of the header.
+  const bool was_in_next_group =
+      group_views_it->second->header()->bounds().x() <= tab->bounds().x();
+  if (!was_in_next_group) {
+    return std::nullopt;
+  }
+
+  // If at index 0 or the previous tab belonged to a different group, this tab
+  // was the first tab in the group and was preceded by the group header.
+  if (former_model_index == 0 ||
+      GetTabAtModelIndex(former_model_index - 1)->group() != next_tab_group) {
+    return next_tab_group;
+  }
+
+  return std::nullopt;
+}
+
 gfx::Rect TabContainerImpl::GetTargetBoundsForClosingTab(
     Tab* tab,
     int former_model_index) const {
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
-  // Compute the target bounds for animating this tab closed.  The tab's left
-  // edge should stay joined to the right edge of the previous tab, if any.
+  // Compute the target bounds for animating this tab closed.
   gfx::Rect target_bounds = tab->bounds();
-  target_bounds.set_x(
-      (former_model_index > 0)
-          ? (tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
-             tab_overlap)
-          : 0);
+  int target_x = 0;
 
-  // The tab should animate to the width of the overlap in order to close at the
-  // same speed the surrounding tabs are moving, since at this width the
-  // subsequent tab is naturally positioned at the same X coordinate.
+  std::optional<tab_groups::TabGroupId> preceding_group =
+      GetGroupHeaderPrecedingClosingTab(tab, former_model_index);
+  if (preceding_group.has_value()) {
+    // If the tab was preceded by a group header, the left edge should be joined
+    // to the right of the header.
+    const auto header_bounds_it =
+        layout_helper_->group_header_ideal_bounds().find(
+            preceding_group.value());
+    if (header_bounds_it != layout_helper_->group_header_ideal_bounds().end()) {
+      target_x = header_bounds_it->second.right() - tab_overlap;
+    }
+  } else if (former_model_index > 0) {
+    // Otherwise, the tab's left edge should stay joined to the right edge of
+    // the previous tab.
+    target_x = tabs_view_model_.ideal_bounds(former_model_index - 1).right() -
+               tab_overlap;
+  }
+
+  target_bounds.set_x(target_x);
   target_bounds.set_width(tab_overlap);
-
   return target_bounds;
 }
 

@@ -721,6 +721,98 @@ TEST_F(TabContainerTest, ClosingTrailingmostVisibleTabInFocusedGroup) {
   EXPECT_LT(tab_container_->GetTabAtModelIndex(2)->width(), standard_width);
 }
 
+// Verifies target bounds during removal animation for an ungrouped tab preceded
+// by another tab.
+TEST_F(TabContainerTest, UngroupedTabClosingTargetBounds) {
+  AddTab(0);
+  AddTab(1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  Tab* closing_tab = tab_container_->GetTabAtModelIndex(1);
+  gfx::Rect prev_tab_bounds = tab_container_->GetIdealBounds(0);
+
+  RemoveTab(1);
+  auto* tab_container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  gfx::Rect target_bounds =
+      tab_container_impl->GetBoundsAnimatorForTesting().GetTargetBounds(
+          closing_tab);
+  EXPECT_EQ(target_bounds.x(), prev_tab_bounds.right() - tab_overlap);
+  EXPECT_EQ(target_bounds.width(), tab_overlap);
+}
+
+// Verifies target bounds during removal animation for the first tab in a group
+// at model index > 0.
+TEST_F(TabContainerTest, FirstTabInGroupClosingTargetBounds) {
+  AddTab(0);
+  AddTab(1);
+  AddTab(2);
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group1);
+  AddTabToGroup(2, group1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  Tab* closing_tab = tab_container_->GetTabAtModelIndex(1);
+  gfx::Rect header_bounds = tab_container_->GetIdealBounds(group1);
+
+  RemoveTab(1);
+  auto* tab_container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  gfx::Rect target_bounds =
+      tab_container_impl->GetBoundsAnimatorForTesting().GetTargetBounds(
+          closing_tab);
+  EXPECT_EQ(target_bounds.x(), header_bounds.right() - tab_overlap);
+  EXPECT_EQ(target_bounds.width(), tab_overlap);
+}
+
+// Verifies target bounds during removal animation for the first tab in a group
+// at the start of the tabstrip (model index 0).
+TEST_F(TabContainerTest, FirstTabInGroupAtStartClosingTargetBounds) {
+  AddTab(0);
+  AddTab(1);
+  tab_groups::TabGroupId group0 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group0);
+  AddTabToGroup(1, group0);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  Tab* closing_tab = tab_container_->GetTabAtModelIndex(0);
+  gfx::Rect header_bounds = tab_container_->GetIdealBounds(group0);
+
+  RemoveTab(0);
+  auto* tab_container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  gfx::Rect target_bounds =
+      tab_container_impl->GetBoundsAnimatorForTesting().GetTargetBounds(
+          closing_tab);
+  EXPECT_EQ(target_bounds.x(), header_bounds.right() - tab_overlap);
+  EXPECT_EQ(target_bounds.width(), tab_overlap);
+
+  tab_container_->CompleteAnimationAndLayout();
+}
+
+// Verifies target bounds during removal animation for an ungrouped tab at index
+// 0 followed by a tab group at index 1.
+TEST_F(TabContainerTest, UngroupedTabBeforeGroupClosingTargetBounds) {
+  AddTab(0);
+  AddTab(1);
+  AddTab(2);
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group1);
+  AddTabToGroup(2, group1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  Tab* closing_tab = tab_container_->GetTabAtModelIndex(0);
+
+  RemoveTab(0);
+  auto* tab_container_impl = static_cast<TabContainerImpl*>(tab_container_);
+  gfx::Rect target_bounds =
+      tab_container_impl->GetBoundsAnimatorForTesting().GetTargetBounds(
+          closing_tab);
+  EXPECT_EQ(target_bounds.x(), 0);
+  EXPECT_EQ(target_bounds.width(), tab_overlap);
+}
+
 // Verifies child view order matches model order.
 TEST_F(TabContainerTest, TabViewOrder) {
   AddTab(0);

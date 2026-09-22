@@ -168,6 +168,10 @@ class TabContainerImpl : public TabContainer,
     return z_ordered_children_cache_;
   }
 
+  const views::BoundsAnimator& GetBoundsAnimatorForTesting() const {
+    return bounds_animator_;
+  }
+
   // Used to simulate PaintChildren in unittests which is the only time in which
   // the production containers should check/update the zorder.
   void UpdateZOrderCacheForTesting();
@@ -211,6 +215,13 @@ class TabContainerImpl : public TabContainer,
   void StartInsertTabAnimation(int model_index);
 
   void StartRemoveTabAnimation(Tab* tab, int former_model_index);
+
+  // Returns the group ID if the closing tab was preceded by a TabGroupHeader,
+  // or std::nullopt if it was preceded by another tab or is at the start of
+  // the strip without a group.
+  std::optional<tab_groups::TabGroupId> GetGroupHeaderPrecedingClosingTab(
+      Tab* tab,
+      int former_model_index) const;
 
   // Computes the bounds that `tab` should animate towards as it closes.
   gfx::Rect GetTargetBoundsForClosingTab(Tab* tab,
