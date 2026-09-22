@@ -117,6 +117,7 @@ export class AudioMenuElement extends AudioMenuElementBase implements
               data: 'open-voice-selection-dialog',
               itemType: SettingsItemType.ACTION,
               eventName: 'open-voice-selection-dialog',
+              opensDialog: true,
             },
             {
               title: loadTimeData.getString('accentMenuLabel'),
@@ -124,6 +125,7 @@ export class AudioMenuElement extends AudioMenuElementBase implements
               itemType: SettingsItemType.ACTION,
               data: 'open-accent-menu',
               eventName: 'open-accent-menu',
+              opensDialog: true,
             },
           ],
     },

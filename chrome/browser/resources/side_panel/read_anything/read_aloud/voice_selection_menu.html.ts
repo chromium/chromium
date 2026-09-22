@@ -76,6 +76,7 @@ export function getHtml(this: VoiceSelectionMenuElement) {
       <button
           class="dropdown-item dropdown-voice-selection-button language-menu-button"
           tabindex="0"
+          aria-haspopup="dialog"
           @click="${this.onLanguageMenuClick_}">
         $i18n{readingModeLanguageMenu}
       </button>

@@ -60,6 +60,10 @@ export interface MenuStateItem<T> {
   itemType?: SettingsItemType;
   // Optional event name override. If omitted, falls back to group.eventName.
   eventName?: string;
+  // Set when activating this item opens a dialog instead of taking immediate
+  // action. This is surfaced as aria-haspopup="dialog" so assistive technology
+  // announces that the item opens another surface.
+  opensDialog?: boolean;
 }
 
 export interface MenuHeader {

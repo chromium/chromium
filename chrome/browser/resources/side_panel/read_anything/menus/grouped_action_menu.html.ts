@@ -39,6 +39,7 @@ export function getHtml(this: GroupedActionMenuElement) {
             title="${item.ariaLabel || item.title}"
             aria-label="${item.ariaLabel || item.title}"
             aria-checked="${this.getItemAriaChecked_(item)}"
+            aria-haspopup="${this.getItemAriaHasPopup_(item)}"
             @click="${this.onClick_}"
             data-group-index="${groupIndex}"
             data-item-index="${itemIndex}">

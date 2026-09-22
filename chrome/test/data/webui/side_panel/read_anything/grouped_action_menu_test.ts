@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {GroupedActionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertTestSettingsAreNotDefaultSettings, getItemsInMenu, setupTestEnvironment} from './common.js';
@@ -167,5 +167,26 @@ suite('GroupedActionMenuElement', () => {
     // Explicit ariaLabel.
     assertEquals('Custom Label', buttons[1]!.getAttribute('aria-label'));
     assertEquals('Custom Label', buttons[1]!.getAttribute('title'));
+  });
+
+  test('items that open a dialog expose aria-haspopup', async () => {
+    menu.menuGroups = [
+      {
+        header: {title: 'Header 1', separator: false},
+        items: [
+          {title: 'Opens Dialog', data: 1, opensDialog: true},
+          {title: 'Immediate Action', data: 2},
+        ],
+        eventName: ToolbarEvent.THEME,
+      },
+    ];
+    await microtasksFinished();
+
+    const buttons = getItemsInMenu(menu.$.lazyMenu);
+
+    assertEquals(2, buttons.length);
+    assertEquals('dialog', buttons[0]!.getAttribute('aria-haspopup'));
+    // Items that act immediately shouldn't claim to open anything.
+    assertFalse(buttons[1]!.hasAttribute('aria-haspopup'));
   });
 });

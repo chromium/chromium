@@ -10,7 +10,7 @@ import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-un
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, createSpeechSynthesisVoice, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
+import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, createSpeechSynthesisVoice, getItemsInMenu, setupTestEnvironment, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -269,4 +269,18 @@ suite('AudioMenuElement', () => {
         assertEquals(
             loadTimeData.getString('accentMenuLabel'), accentItem.title);
       });
+
+  test('voice and accent items are announced as opening a dialog', async () => {
+    createAudioMenu();
+    await microtasksFinished();
+
+    const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+    // The voice and accent items are the first two items in the menu.
+    assertTrue(buttons.length >= 2);
+    assertEquals('dialog', buttons[0]!.getAttribute('aria-haspopup'));
+    assertEquals('dialog', buttons[1]!.getAttribute('aria-haspopup'));
+
+    // Highlight options act immediately, so they have no popup.
+    assertFalse(buttons[2]!.hasAttribute('aria-haspopup'));
+  });
 });

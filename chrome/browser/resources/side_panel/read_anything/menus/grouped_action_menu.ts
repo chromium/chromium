@@ -115,6 +115,15 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
     return item.selected ?? false;
   }
 
+  // Returns the aria-haspopup attribute for items that open a dialog, so
+  // screen readers announce that this item opens another surface rather than
+  // acting immediately. Returns nothing for items without a dialog so the
+  // attribute isn't rendered at all.
+  protected getItemAriaHasPopup_(item: MenuStateItem<unknown>): string|
+      typeof nothing {
+    return item.opensDialog ? 'dialog' : nothing;
+  }
+
   protected getItemIcon_(item: MenuStateItem<unknown>): string|null {
     if (item.itemType === SettingsItemType.ACTION) {
       return null;
