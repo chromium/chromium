@@ -87,6 +87,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
+#include "base/android/device_info.h"
+#include "base/system/sys_info.h"
 #endif
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -435,6 +437,16 @@ class HDRProxy {
 
 GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
     : owner_(owner),
+#if BUILDFLAG(IS_MAC)
+      supports_gpu_mode_hardware_gl_(false),
+#elif BUILDFLAG(IS_ANDROID)
+      supports_gpu_mode_hardware_gl_(
+          !base::android::device_info::is_desktop() ||
+          base::SysInfo::GetAndroidHardwareEGL() == "swiftshader" ||
+          base::SysInfo::GetAndroidHardwareEGL() == "emulation"),
+#else
+      supports_gpu_mode_hardware_gl_(true),
+#endif
       observer_list_(base::MakeRefCounted<GpuDataManagerObserverList>()) {
   CHECK(owner_, base::NotFatalUntil::M159);
   InitializeGpuModes();
@@ -500,7 +512,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
       // support software compositing or sometimes fail dawn initialization.
       // TODO(b/323953910): Eliminate this fallback on each platform once
       // Graphite stability is sufficient on that platform.
-      if constexpr (kSupportsGpuModeHardwareGL) {
+      if (supports_gpu_mode_hardware_gl_) {
         fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
       }
       // When kLateGraphiteFeatureCheck is enabled, the browser gates hardware
