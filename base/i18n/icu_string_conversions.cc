@@ -10,12 +10,12 @@
 #include <memory>
 #include <string_view>
 
-#include "base/check.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/fixed_array.h"
-#include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/ucnv_err.h"
@@ -204,25 +204,10 @@ bool ConvertToUtf8AndNormalize(std::string_view text,
     return false;
   }
 
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* normalizer = icu::Normalizer2::getNFCInstance(status);
-  DCHECK(U_SUCCESS(status));
-  if (U_FAILURE(status)) {
-    return false;
-  }
-  int32_t utf16_length = static_cast<int32_t>(utf16.length());
-  icu::UnicodeString normalized(utf16.data(), utf16_length);
-  int32_t normalized_prefix_length =
-      normalizer->spanQuickCheckYes(normalized, status);
-  if (normalized_prefix_length < utf16_length) {
-    icu::UnicodeString un_normalized(normalized, normalized_prefix_length);
-    normalized.truncate(normalized_prefix_length);
-    normalizer->normalizeSecondAndAppend(normalized, un_normalized, status);
-  }
-  if (U_FAILURE(status)) {
-    return false;
-  }
-  normalized.toUTF8String(*result);
+  // Note: the bridge normalizer has no failure channel; if the underlying
+  // backend fails it returns the input unchanged.
+  *result = UTF16ToUTF8(i18n::IcuBridge::GetInstance().normalizer().Normalize(
+      i18n::IcuBridge::Normalizer::NormalizationForm::NFC, utf16));
   return true;
 }
 
