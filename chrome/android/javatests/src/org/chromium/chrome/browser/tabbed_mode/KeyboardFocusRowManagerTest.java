@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -228,9 +227,12 @@ public class KeyboardFocusRowManagerTest {
                 () -> mTabbedRootUiCoordinator.getSidePanelDevFeatureForTesting().toggle());
     }
 
+    // TODO(crbug.com/543500090): Fix and re-enable on android-14-tablet-landscape-arm64-rel
+    // (currently excluded in its test filter file).
+    // If this test flakes on another bot, please check the test history and disable it only for
+    // the specific problematic bot(s) rather than disabling the test across all bots.
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/543500090")
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     @EnableFeatures({

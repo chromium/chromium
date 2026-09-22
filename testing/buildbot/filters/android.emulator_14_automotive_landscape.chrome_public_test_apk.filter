@@ -48,3 +48,6 @@
 # crbug.com/555361598
 -org.chromium.chrome.browser.settings.SettingsPageSigninTest.testSignOutInSingleColumnThenTransitionToMultiColumn
 -org.chromium.chrome.browser.settings.SettingsPageTest.testSearchInSingleColumnThenRotateToLandscapeAndExitSearch
+
+# crbug.com/543500090
+-org.chromium.chrome.browser.tabbed_mode.KeyboardFocusRowManagerTest.testSwitchKeyboardFocusRow_withBookmarksBarAndSidePanel
