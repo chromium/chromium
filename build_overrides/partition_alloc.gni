@@ -27,7 +27,6 @@
 # variable embedders can provide to partition_alloc. For the least common,
 # consider wrapping them into some partition_alloc specific names.
 
-import("//build/config/android/config.gni")
 import("//build/config/cast.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")

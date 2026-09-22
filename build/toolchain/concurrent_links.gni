@@ -7,7 +7,6 @@
 # in the context of the default_toolchain, so we can at least check for that.
 assert(current_toolchain == default_toolchain)
 
-import("//build/config/android/config.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
