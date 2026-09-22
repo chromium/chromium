@@ -350,10 +350,11 @@ public class SettingsFragmentRegistry {
                 .requireArgs(SingleWebsiteSettings.EXTRA_SITE_ADDRESS)
                 .fallback("/allSites");
         registerMapping("/storageAccess", StorageAccessSubpageSettings.class)
-                // TODO(crbug.com/555347875): The page currently only accepts a serialized Website,
-                // which a URL cannot carry, so every URL to it redirects. Give it the string keyed
-                // form that the other site settings pages use.
-                .requireArgs(StorageAccessSubpageSettings.EXTRA_STORAGE_ACCESS_STATE)
+                // The page shows one origin's storage access permissions, either the allowed or
+                // the blocked ones, so it needs both to know what to show.
+                .requireArgs(
+                        SingleWebsiteSettings.EXTRA_SITE_ADDRESS,
+                        StorageAccessSubpageSettings.EXTRA_ALLOWED)
                 .fallback("/allSites");
         registerMapping("/locationPermission", LocationPermissionSubpageSettings.class)
                 .requireArgs(SingleWebsiteSettings.EXTRA_SITE_ADDRESS)
@@ -400,6 +401,7 @@ public class SettingsFragmentRegistry {
         // argument extra keys with appropriate type deserialization.
         registerWebsiteAddressParameterMapping("site", SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
         registerBooleanParameterMapping("fromGrouped", SingleWebsiteSettings.EXTRA_FROM_GROUPED);
+        registerBooleanParameterMapping("allowed", StorageAccessSubpageSettings.EXTRA_ALLOWED);
         registerParameterMapping("category", SingleCategorySettings.EXTRA_CATEGORY);
         registerParameterMapping("title", SingleCategorySettings.EXTRA_TITLE);
         registerParameterMapping("group", GroupedWebsitesSettings.EXTRA_GROUP);

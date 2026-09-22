@@ -669,6 +669,34 @@ public class SettingsFragmentRegistryTest {
                 resolution.args.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
     }
 
+    @Test
+    public void testStorageAccessUrlRoundTrip() {
+        // The arguments the site settings pages open this page with, which under Url navigation
+        // are turned into a Url and parsed back out again.
+        Bundle args = new Bundle();
+        args.putSerializable(
+                StorageAccessSubpageSettings.EXTRA_STORAGE_ACCESS_STATE,
+                new Website(WebsiteAddress.create("https://example.com"), null));
+        args.putBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED, true);
+
+        String url =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        StorageAccessSubpageSettings.class, args);
+        assertEquals(
+                "chrome://settings/storageAccess?allowed=true&site=https%3A%2F%2Fexample.com", url);
+
+        SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
+        assertNull(resolution.redirectUrl);
+        assertEquals(StorageAccessSubpageSettings.class, resolution.fragmentClass);
+        assertTrue(resolution.args.getBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED));
+        assertNotNull(resolution.args.get(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+
+        // The permission state is half of what the page shows, so a Url without it has no page.
+        assertRedirects(
+                "chrome://settings/storageAccess?site=https://example.com",
+                "chrome://settings/allSites");
+    }
+
     private static void assertRedirects(String url, String expectedRedirectUrl) {
         SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
         assertEquals(url, expectedRedirectUrl, resolution.redirectUrl);

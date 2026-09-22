@@ -522,14 +522,17 @@ public class WebsitePreferenceBridge {
             // StorageAccess exceptions should always specify a primary pattern. The secondary
             // pattern might or not be empty depending if the exception is normal or embargoed.
             assert !primaryPattern.isEmpty() && !primaryPattern.equals(SITE_WILDCARD);
-        } else if (contentSettingType == ContentSettingsType.COOKIES
-                && !secondaryPattern.equals(SITE_WILDCARD)) {
-            // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
-            // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
-            // the wildcard.
-            assert primaryPattern.equals(SITE_WILDCARD);
+        } else if (secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty()) {
+            // The common case: the setting applies to the site wherever it appears.
         } else {
-            assert secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty();
+            // The exception is scoped to an embedder. Cookies are not the only setting that can
+            // be, and a cookie exception scoped this way does not have to leave its primary
+            // pattern as the wildcard: WebsitePermissionsFetcher builds a Website for the
+            // (origin, embedder) pair precisely because native returns exceptions with both
+            // patterns set. Such an exception has to be writable back with the pair it was read
+            // with, since that is how resetting it removes the rule, so the only thing left to
+            // require is that the pair names an origin at all.
+            assert !primaryPattern.isEmpty();
         }
 
         WebsitePreferenceBridgeJni.get()

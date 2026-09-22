@@ -105,7 +105,19 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             SiteSettingsCategory.Type.ALL_SITES),
                     sites -> {
                         if (getActivity() == null) return;
-                        mSiteGroup = WebsiteGroup.createForDomain(domainAndRegistry, sites);
+                        WebsiteGroup group = WebsiteGroup.createForDomain(domainAndRegistry, sites);
+
+                        // The Url named a group that no longer has any sites, e.g. because its
+                        // data was deleted after the entry was created. There is nothing to show,
+                        // so leave for the page that lists all groups.
+                        if (group.getWebsites().isEmpty()) {
+                            assumeNonNull(getSettingsNavigation())
+                                    .finishCurrentSettings(
+                                            this, AllSiteSettings.class, /* parentArgs= */ null);
+                            return;
+                        }
+
+                        mSiteGroup = group;
                         displayGroupPreferences(mSiteGroup);
                     });
         }
@@ -247,7 +259,12 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 // place for a slightly smoother user experience. However, due to the complexity
                 // involved in refreshing the already fetched data and a very marginal benefit, it
                 // may not be worth it.
-                assumeNonNull(getSettingsNavigation()).finishCurrentSettings(this);
+                //
+                // "All sites" is named explicitly because under Url navigation there is no
+                // fragment back stack to pop: this page occupies a navigation entry, and the
+                // entry it occupies is no longer worth returning to now the group is gone.
+                assumeNonNull(getSettingsNavigation())
+                        .finishCurrentSettings(this, AllSiteSettings.class, /* parentArgs= */ null);
             };
 
     @VisibleForTesting

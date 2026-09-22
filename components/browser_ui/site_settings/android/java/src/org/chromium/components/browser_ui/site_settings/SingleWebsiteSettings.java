@@ -1713,7 +1713,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         Activity activity = getActivity();
         if (activity != null) {
             var settingsNavigation = assumeNonNull(getSettingsNavigation());
-            settingsNavigation.finishCurrentSettings(this);
+
+            // Clearing a site's data can leave the group it belonged to with nothing to show, so
+            // a page reached from a group returns past the group to "All sites". With fragments
+            // that means finishing both pages; under Url navigation there is no fragment to pop
+            // and the destination has to be named instead.
+            settingsNavigation.finishCurrentSettings(
+                    this, mFromGrouped ? AllSiteSettings.class : null, /* parentArgs= */ null);
             if (mFromGrouped && groupFragment != null) {
                 settingsNavigation.executePendingNavigations(activity);
                 settingsNavigation.finishCurrentSettings(groupFragment);
