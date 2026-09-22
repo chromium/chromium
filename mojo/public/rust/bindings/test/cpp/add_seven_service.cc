@@ -43,4 +43,8 @@ void PlusSevenMathService::AddTwoInts(TwoIntsPtr ns,
 
 void PlusSevenMathService::DoNothing() {}
 
+void PlusSevenMathService::DoNothingWithAck(DoNothingWithAckCallback callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace bindings_unittests::mojom

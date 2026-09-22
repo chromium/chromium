@@ -36,7 +36,7 @@ impl {{args_struct(method)}} {
   {
     let (payload, handles, interface_ids_offset) =
        mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} }, registrar);
-    {%- if method.response_parameters %}
+    {%- if method.response_parameters is not none %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
     {%- else %}
     let flags = bindings::message_header::MessageHeaderFlags::empty();
@@ -51,7 +51,7 @@ impl {{args_struct(method)}} {
   }
 }
 
-{%- if method.response_parameters %}
+{%- if method.response_parameters is not none %}
 {{declare_struct(response_struct(method), method.response_param_struct, true)}}
 
 impl {{response_struct(method)}} {
@@ -79,7 +79,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
 {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
   {{- typed_fields(method.param_struct.fields)}}
-  {%- if method.response_parameters -%}
+  {%- if method.response_parameters is not none -%}
     ,
     {#- Align the response callback with the first argument for readability #}
     {{" " * (method.name|length + 1)}} response_callback: impl Send + 'static + FnOnce(
@@ -105,7 +105,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         // Check that this does/doesn't have the request flags set like the mojom file says it should.
-        if !message.header.flags.is_valid_request({{ "true" if method.response_parameters else "false" }}) {
+        if !message.header.flags.is_valid_request({{ "true" if method.response_parameters is not none else "false" }}) {
           let _ = message.report_bad_message("Message flags do not match the method signature");
           return;
         }
@@ -118,7 +118,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
             return;
           }
         };
-        {%- if method.response_parameters %}
+        {%- if method.response_parameters is not none %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
           let mut msg = {{response_struct(method)}}::serialize_from_parts(&sender, {{field_names(method.response_param_struct.fields)}});
           msg.header.request_id = request_id;
@@ -129,7 +129,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
           {%- for field in method.param_struct.fields -%}
             {#- #}parsed.{{field.name}},
           {% endfor -%}
-          {%- if method.response_parameters -%} callback {%- endif -%}
+          {%- if method.response_parameters is not none -%} callback {%- endif -%}
         );
       }
       {%- endfor %}
@@ -143,7 +143,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
 {%- set callback_ty_name = "%sResponseCallback"|format(interface.name) %}
 
 pub enum {{callback_ty_name}} {
-{%- for method in interface.methods if method.response_parameters %}
+{%- for method in interface.methods if method.response_parameters is not none %}
   {{method.name}}(Box<dyn Send + 'static + FnOnce({{field_types(method.response_param_struct.fields)}})>),
 {%- endfor %}
 }
@@ -169,7 +169,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
     // but that's unsafe, and the compiler can figure it out anway.
     let mut handles = std::mem::take(&mut message.handles).into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match (message.header.name, send_response) {
-      {%- for method in interface.methods if method.response_parameters %}
+      {%- for method in interface.methods if method.response_parameters is not none %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} = match
           mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
@@ -207,7 +207,7 @@ impl<Marker> {{interface.name}} for bindings::remote::GenericRemote<dyn {{interf
   {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
   {{- typed_fields(method.param_struct.fields)}}
-  {%- if method.response_parameters -%}
+  {%- if method.response_parameters is not none -%}
     ,
     {#- Align the response callback with the first argument for readability #}
     {{" " * (method.name|length + 1)}} response_callback: impl Send + 'static + FnOnce(
@@ -217,7 +217,7 @@ impl<Marker> {{interface.name}} for bindings::remote::GenericRemote<dyn {{interf
   ) {
     {#- Function body begins here #}
     let message = {{args_struct(method)}}::serialize_from_parts(self.as_registrar(), {{field_names(method.param_struct.fields)}});
-    {%- if method.response_parameters %}
+    {%- if method.response_parameters is not none %}
     let callback = Some({{callback_ty_name}}::{{method.name}}(Box::new(response_callback)));
     {%- else %}
     let callback = None;

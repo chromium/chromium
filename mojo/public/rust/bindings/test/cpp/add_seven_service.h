@@ -30,6 +30,7 @@ class PlusSevenMathService : public MathService {
   void Add(uint32_t a, uint32_t b, AddCallback callback) override;
   void AddTwoInts(TwoIntsPtr ns, AddTwoIntsCallback callback) override;
   void DoNothing() override;
+  void DoNothingWithAck(DoNothingWithAckCallback callback) override;
 
  private:
   // This class follows the standard C++ practice of holding its own receiver.

@@ -244,6 +244,71 @@ fn test_remote_receiver_notifying() {
     // 1 + 2 + 3 + 4 + 7 + 12 = 31
     expect_eq!(Arc::into_inner(sum).unwrap().into_inner().unwrap(), 31);
 }
+#[gtest(RustBindingsAPI, EmptyResponseTest)]
+fn test_empty_response() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    let mut remote = pending_remote.bind();
+    let _receiver = pending_receiver.bind(SaturatingMathService {});
+
+    // Gets no response at all
+    remote.DoNothing();
+
+    let acked = Arc::new(Mutex::new(false));
+    let acked_clone = acked.clone();
+
+    // Gets an empty response, which should trigger the response callback.
+    remote.DoNothingWithAck(move || {
+        *acked_clone.lock().unwrap() = true;
+        quit();
+    });
+
+    run_loop.run();
+
+    expect_true!(*acked.lock().unwrap());
+}
+
+/// The same method, but acknowledged by a C++ receiver.
+///
+/// This is the cross-language half of the contract: the Rust remote has to
+/// mark the outgoing request as expecting a response, or the C++ receiver's
+/// validator rejects it as a bad message.
+#[gtest(RustBindingsAPI, EmptyResponseCppReceiverTest)]
+fn test_empty_response_cpp_receiver() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    // Pass the receiver handle to C++ and bind it there
+    let receiver_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_receiver.into_endpoint(),
+        );
+    let _cpp_receiver = crate::cxx::ffi::CreatePlusSevenMathService(receiver_wrapper);
+
+    let mut remote = pending_remote.bind();
+
+    let acked = Arc::new(Mutex::new(false));
+    let acked_clone = acked.clone();
+    remote.DoNothingWithAck(move || {
+        *acked_clone.lock().unwrap() = true;
+        quit();
+    });
+
+    run_loop.run();
+
+    expect_true!(*acked.lock().unwrap());
+}
 
 #[gtest(RustBindingsAPI, CppReceiverTest)]
 fn test_cpp_receiver() {
