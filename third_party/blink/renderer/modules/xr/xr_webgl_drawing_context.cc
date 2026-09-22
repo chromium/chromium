@@ -75,10 +75,22 @@ XRWebGLDrawingContext::TransferToSharedImageHolder() {
 
 std::unique_ptr<SharedImageHolder>
 XRWebGLDrawingContext::DoneWithSharedBuffer() {
-  if (!color_swap_chain_) {
+  // Get the shared image from the color swap chain.
+  if (!color_swap_chain_ || !color_swap_chain_->layer()) {
     return nullptr;
   }
-  return color_swap_chain_->DoneWithSharedBuffer();
+
+  const XRSharedImageData& shared_image_data =
+      color_swap_chain_->layer()->SharedImage();
+
+  if (!shared_image_data.shared_image) {
+    return nullptr;
+  }
+
+  gpu::SyncToken sync_token = color_swap_chain_->GetSyncToken();
+
+  return std::make_unique<SharedImageHolder>(shared_image_data.shared_image,
+                                             sync_token, base::DoNothing());
 }
 
 XRFrameTransportDelegate* XRWebGLDrawingContext::GetTransportDelegate() {

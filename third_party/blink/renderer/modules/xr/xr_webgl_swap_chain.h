@@ -78,9 +78,6 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
   virtual std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() {
     return nullptr;
   }
-  virtual std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() {
-    return nullptr;
-  }
   virtual bool IsCube() const { return false; }
   virtual gpu::SyncToken GetSyncToken() const { return gpu::SyncToken(); }
 
@@ -128,9 +125,6 @@ class XRWebGLSharedImageSwapChain final : public XRWebGLSwapChain {
   WebGLUnownedTexture* ProduceTexture() override;
 
   void OnFrameEnd() override;
-
-  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
-  std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() override;
 
   gpu::SyncToken GetSyncToken() const override { return sync_token_; }
 

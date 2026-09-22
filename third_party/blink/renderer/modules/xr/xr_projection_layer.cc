@@ -15,9 +15,8 @@ namespace blink {
 XRProjectionLayer::XRProjectionLayer(XRSession* session,
                                      XRGraphicsBinding* binding,
                                      XRLayerDrawingContext* drawing_context,
-                                     V8XRLayerLayout::Enum final_layout,
-                                     V8XRTextureType::Enum texture_type)
-    : XRCompositionLayer(session, binding, drawing_context, texture_type) {
+                                     V8XRLayerLayout::Enum final_layout)
+    : XRCompositionLayer(session, binding, drawing_context) {
   // Let SetLayout() decide which layout to use.
   SetLayout(final_layout);
 
