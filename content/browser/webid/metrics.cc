@@ -279,7 +279,7 @@ void Metrics::RecordContinueOnResponseAndTurnaroundTime(
                                 turnaround_time);
 }
 
-void Metrics::RecordHasNonce(const std::set<GURL>& idps_with_nonce) {
+void Metrics::RecordHasNonce(const base::flat_set<GURL>& idps_with_nonce) {
   if (!idps_with_nonce.empty()) {
     base::UmaHistogramBoolean("Blink.FedCm.HasNonce", true);
     GetOrCreateFedCmBuilder()->SetHasNonce(true);
@@ -290,7 +290,7 @@ void Metrics::RecordHasNonce(const std::set<GURL>& idps_with_nonce) {
 }
 
 void Metrics::RecordHasNonceOutsideParamsOnly(
-    const std::set<GURL>& idps_with_nonce_outside_params_only) {
+    const base::flat_set<GURL>& idps_with_nonce_outside_params_only) {
   if (idps_with_nonce_outside_params_only.empty()) {
     return;
   }

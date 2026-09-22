@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/webid/accounts_fetcher.h"
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
+#include "content/browser/webid/fedcm_request_spec.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
@@ -46,7 +47,6 @@ namespace content {
 
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
-class NavigationHandle;
 class RenderFrameHost;
 
 namespace webid {
@@ -94,13 +94,8 @@ class CONTENT_EXPORT Request
   // interception, so that we can use this handle for user activation checking
   // and setting up parameters for a later redirect. This is virtual so that it
   // can be mocked.
-  virtual bool RequestToken(
-      std::vector<blink::mojom::IdentityProviderGetParametersPtr>
-          idp_get_params_ptrs,
-      ::password_manager::CredentialMediationRequirement requirement,
-      NavigationHandle* navigation_handle,
-      const GURL& intercepted_url,
-      RequestTokenCallback callback);
+  virtual bool RequestToken(scoped_refptr<FedCmRequestSpec> spec,
+                            RequestTokenCallback callback);
 
   // blink::mojom::FederatedRequest:
   void Abort() override;
@@ -150,7 +145,7 @@ class CONTENT_EXPORT Request
 
   ::password_manager::CredentialMediationRequirement GetMediationRequirement()
       const {
-    return mediation_requirement_;
+    return spec_->mediation_requirement();
   }
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -255,7 +250,7 @@ class CONTENT_EXPORT Request
   url::Origin GetEmbeddingOrigin() const;
 
   GURL login_url() { return login_url_; }
-  const std::vector<GURL>& idp_order() const { return idp_order_; }
+  const std::vector<GURL>& idp_order() const { return spec_->idp_order(); }
   bool HadAccountIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
   }
@@ -315,10 +310,6 @@ class CONTENT_EXPORT Request
   // already cached in `idp_infos_`, bypasses ConfigFetcher and directly
   // fetches the accounts endpoint.
   void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
-
-  std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>
-  MaybeAddRegisteredProviders(
-      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers);
 
   void MaybeShowAccountsDialog();
   void OnGetPassiveDialogVolume(
@@ -450,7 +441,7 @@ class CONTENT_EXPORT Request
   // Returns whether we'll be using an ambient UI for a passive call.
   bool IsUsingAmbient() const;
 
-  blink::mojom::RpMode GetRpMode() const { return rp_mode_; }
+  blink::mojom::RpMode GetRpMode() const { return spec_->rp_mode(); }
 
   // Shows a FedCM UI and returns true if it succeeded and the Request was not
   // destroyed. Showing a FedCM UI may cause the tab to drop fullscreen or lose
@@ -552,10 +543,6 @@ class CONTENT_EXPORT Request
   // the current request.
   base::flat_set<GURL> idps_user_tried_to_signin_to_;
 
-  // List of config URLs of IDPs in the same order as the providers specified in
-  // the navigator.credentials.get call.
-  std::vector<GURL> idp_order_;
-
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP. If
   // LoginToIdp() is called, this is the login URL for the IDP. Does not include
   // the filters as query parameters, if any.
@@ -572,9 +559,7 @@ class CONTENT_EXPORT Request
   std::optional<IdentityCredentialTokenError> token_error_;
 
   DialogType dialog_type_ = DialogType::kNone;
-  ::password_manager::CredentialMediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
-  blink::mojom::RpMode rp_mode_{blink::mojom::RpMode::kPassive};
   IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_ =
       IdentityRequestDialogController::PassiveDialogVolume::kDefault;
 
@@ -589,14 +574,6 @@ class CONTENT_EXPORT Request
   // Type of error URL for metrics and devtools issue purposes.
   std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;
 
-  // The active flow requires user activation to be kicked off. We'd also need
-  // this information along the way. e.g. showing pop-up window when accounts
-  // fetch is failed. However, the function `HasTransientUserActivation` may
-  // return false at that time because the network requests may be very slow
-  // such that the previous user gesture is expired. Therefore we store the
-  // information to use it during the entire the active flow.
-  bool had_transient_user_activation_{false};
-
   // Keeps track of the state of the use other account flow. Is std::nullopt
   // when the flow is not active.
   std::optional<UseOtherAccountResult> use_other_account_account_result_;
@@ -610,14 +587,7 @@ class CONTENT_EXPORT Request
 
   perfetto::NamedTrack perfetto_track_;
 
-  // Whether this Request can make top level redirections, available
-  // currently only for interception-initiated requests.
-  bool can_accept_redirect_to_{false};
-
-  // Stores the URL that we intercepted. This will be used as the referrer when
-  // loading the redirect target so that to the RP this looks like the load was
-  // initiated by the IDP.
-  GURL intercepted_url_;
+  scoped_refptr<FedCmRequestSpec> spec_;
 
   // Whether the callback for the current request has been delayed.
   bool complete_request_delayed_{false};

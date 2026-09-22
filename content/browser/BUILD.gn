@@ -2264,6 +2264,8 @@ source_set("browser") {
     "webid/document_metadata.h",
     "webid/fake_identity_request_dialog_controller.cc",
     "webid/fake_identity_request_dialog_controller.h",
+    "webid/fedcm_request_spec.cc",
+    "webid/fedcm_request_spec.h",
     "webid/federated_embedder_login_request.cc",
     "webid/flags.cc",
     "webid/flags.h",

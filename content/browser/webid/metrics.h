@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_METRICS_H_
 #define CONTENT_BROWSER_WEBID_METRICS_H_
 
+#include "base/containers/flat_set.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -458,9 +459,9 @@ class CONTENT_EXPORT Metrics {
       bool did_show_ui);
 
   // Records whether a nonce was included in the FedCM call.
-  void RecordHasNonce(const std::set<GURL>& idps_with_nonce);
+  void RecordHasNonce(const base::flat_set<GURL>& idps_with_nonce);
   void RecordHasNonceOutsideParamsOnly(
-      const std::set<GURL>& idps_with_nonce_outside_params_only);
+      const base::flat_set<GURL>& idps_with_nonce_outside_params_only);
 
   // Records when the well-known file does not have the required endpoints due
   // to client_metadata being used.

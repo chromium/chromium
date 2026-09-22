@@ -34,6 +34,7 @@ class IdentityRequestDialogController;
 
 namespace webid {
 
+class FedCmRequestSpec;
 class Request;
 class IdentityRegistry;
 class IdpRegistrationHandler;
@@ -194,12 +195,8 @@ class CONTENT_EXPORT RequestService
   void CleanUpCompletedRequest(Request* request);
   void CleanUpActiveRequest(Request* request);
   void SetActiveRequestAndResetController(std::unique_ptr<Request> request);
-  bool ShouldCancelNewRequest(
-      Request* new_request,
-      const std::vector<blink::mojom::IdentityProviderGetParametersPtr>&
-          idp_get_params,
-      ::password_manager::CredentialMediationRequirement requirement,
-      NavigationHandle* navigation_handle);
+  bool ShouldCancelNewRequest(Request* new_request,
+                              const FedCmRequestSpec& spec);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 
