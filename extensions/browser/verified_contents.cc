@@ -19,8 +19,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/extension.h"
 
@@ -318,23 +318,23 @@ bool VerifiedContents::GetPayload(std::string_view contents,
 bool VerifiedContents::VerifySignature(const std::string& protected_value,
                                        const std::string& payload,
                                        const std::string& signature_bytes) {
-  crypto::SignatureVerifier signature_verifier;
-  if (!signature_verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA256,
-                                     base::as_byte_span(signature_bytes),
-                                     public_key_)) {
-    VLOG(1) << "Could not verify signature - VerifyInit failure";
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key_);
+  if (!public_key || !public_key->IsRsa()) {
+    VLOG(1) << "Could not verify signature - invalid public key";
     return false;
   }
 
-  signature_verifier.VerifyUpdate(base::as_byte_span(protected_value));
+  crypto::sign::Verifier signature_verifier(
+      crypto::sign::RSA_PKCS1_SHA256, *public_key,
+      base::as_byte_span(signature_bytes));
 
-  std::string dot(".");
-  signature_verifier.VerifyUpdate(base::as_byte_span(dot));
+  signature_verifier.Update(base::as_byte_span(protected_value));
+  signature_verifier.Update(base::as_byte_span(std::string_view(".")));
+  signature_verifier.Update(base::as_byte_span(payload));
 
-  signature_verifier.VerifyUpdate(base::as_byte_span(payload));
-
-  if (!signature_verifier.VerifyFinal()) {
-    VLOG(1) << "Could not verify signature - VerifyFinal failure";
+  if (!signature_verifier.Finish()) {
+    VLOG(1) << "Could not verify signature - Finish failure";
     return false;
   }
   return true;

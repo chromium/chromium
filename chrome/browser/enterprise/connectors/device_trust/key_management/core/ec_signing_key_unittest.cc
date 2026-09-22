@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -26,10 +26,13 @@ class ECSigningKeyTest : public testing::Test {
               base::span<const uint8_t> pubkey,
               base::span<const uint8_t> signature,
               const std::string& data) {
-    crypto::SignatureVerifier verifier;
-    verifier.VerifyInit(algo, signature, pubkey);
-    verifier.VerifyUpdate(base::as_byte_span(data));
-    return verifier.VerifyFinal();
+    std::optional<crypto::keypair::PublicKey> public_key =
+        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pubkey);
+    if (!public_key || !public_key->IsEc()) {
+      return false;
+    }
+    return crypto::sign::Verify(algo, *public_key, base::as_byte_span(data),
+                                signature);
   }
 
   ECSigningKeyProvider* provider() { return &provider_; }

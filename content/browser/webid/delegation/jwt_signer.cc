@@ -21,7 +21,6 @@
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"

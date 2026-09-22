@@ -14,8 +14,8 @@
 #include "crypto/aead.h"
 #include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 
 namespace {
 
@@ -205,17 +205,16 @@ NearbyShareDecryptedPublicCertificate::
 bool NearbyShareDecryptedPublicCertificate::VerifySignature(
     base::span<const uint8_t> payload,
     base::span<const uint8_t> signature) const {
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::sign::ECDSA_SHA256, signature,
-                           public_key_)) {
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key_);
+  if (!public_key || !public_key->IsEc()) {
     CD_LOG(ERROR, Feature::NS)
         << "Verification failed: Initialization unsuccessful.";
     return false;
   }
 
-  verifier.VerifyUpdate(payload);
-
-  return verifier.VerifyFinal();
+  return crypto::sign::Verify(crypto::sign::ECDSA_SHA256, *public_key, payload,
+                              signature);
 }
 
 std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>

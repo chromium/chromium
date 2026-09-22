@@ -29,9 +29,9 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/owner_settings_service.h"
+#include "crypto/keypair.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -410,14 +410,13 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
       signed_policy = result_waiter.Get<1>();
   EXPECT_TRUE(signed_policy);
 
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::sign::RSA_PKCS1_SHA1,
-      base::as_byte_span(signed_policy->policy_data_signature()),
-      pub_key->data()));
-  signature_verifier.VerifyUpdate(
-      base::as_byte_span(signed_policy->policy_data()));
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> parsed_pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pub_key->data());
+  ASSERT_TRUE(parsed_pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(
+      crypto::sign::RSA_PKCS1_SHA1, *parsed_pub_key,
+      base::as_byte_span(signed_policy->policy_data()),
+      base::as_byte_span(signed_policy->policy_data_signature())));
 }
 
 // Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA256
@@ -443,14 +442,13 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
           .Get<std::unique_ptr<enterprise_management::PolicyFetchResponse>>();
   ASSERT_TRUE(signed_policy);
 
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::sign::RSA_PKCS1_SHA256,
-      base::as_byte_span(signed_policy->policy_data_signature()),
-      pub_key->data()));
-  signature_verifier.VerifyUpdate(
-      base::as_byte_span(signed_policy->policy_data()));
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> parsed_pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pub_key->data());
+  ASSERT_TRUE(parsed_pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(
+      crypto::sign::RSA_PKCS1_SHA256, *parsed_pub_key,
+      base::as_byte_span(signed_policy->policy_data()),
+      base::as_byte_span(signed_policy->policy_data_signature())));
 }
 
 // Test that OwnerSettingsServiceAsh correctly fails when it cannot sign

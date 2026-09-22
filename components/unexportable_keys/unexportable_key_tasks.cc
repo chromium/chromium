@@ -17,13 +17,41 @@
 #include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
 
 namespace {
+
+bool IsKeyCompatibleWithAlgorithm(const crypto::keypair::PublicKey& key,
+                                  crypto::sign::SignatureKind algorithm) {
+  using enum crypto::sign::SignatureKind;
+  switch (algorithm) {
+    case RSA_PKCS1_SHA1:
+    case RSA_PKCS1_SHA256:
+    case RSA_PKCS1_SHA384:
+    case RSA_PKCS1_SHA512:
+    case RSA_PSS_SHA256:
+    case RSA_PSS_SHA384:
+    case RSA_PSS_SHA512:
+      return key.IsRsa();
+    case ECDSA_SHA1:
+    case ECDSA_SHA256:
+    case ECDSA_SHA384:
+    case ECDSA_SHA512:
+      return key.IsEc();
+    case ED25519:
+      return key.IsEd25519();
+    case MLDSA_44:
+      return key.IsMldsa44();
+    case MLDSA_65:
+      return key.IsMldsa65();
+    case MLDSA_87:
+      return key.IsMldsa87();
+  }
+}
 
 ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
 GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
@@ -91,13 +119,18 @@ ServiceErrorOr<std::vector<uint8_t>> SignSlowlyWithRefCountedKey(
   // correctly. This is a very rare occurrence. Return an error if it does
   // happen to force the retry mechanism to kick in as it is very likely to
   // succeed on the next attempt.
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(signing_key->key().Algorithm(), *signature,
-                           signing_key->key().GetSubjectPublicKeyInfo())) {
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          signing_key->key().GetSubjectPublicKeyInfo());
+  if (!public_key) {
     return base::unexpected(ServiceError::kVerifySignatureFailed);
   }
-  verifier.VerifyUpdate(data);
-  if (!verifier.VerifyFinal()) {
+  if (!IsKeyCompatibleWithAlgorithm(*public_key,
+                                    signing_key->key().Algorithm())) {
+    return base::unexpected(ServiceError::kVerifySignatureFailed);
+  }
+  if (!crypto::sign::Verify(signing_key->key().Algorithm(), *public_key, data,
+                            *signature)) {
     return base::unexpected(ServiceError::kVerifySignatureFailed);
   }
   return *std::move(signature);

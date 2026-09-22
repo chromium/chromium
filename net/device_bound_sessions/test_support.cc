@@ -20,8 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "crypto/evp.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/base/features.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -374,9 +374,9 @@ bool VerifyEs256Jwt(std::string_view jwt) {
     return false;
   }
 
-  // `crypto::SignatureVerifier` expects the public key in the
-  // SubjectPublicKeyInfo format and the signature in the DER format, so convert
-  // accordingly.
+  // `crypto::keypair::PublicKey::FromSubjectPublicKeyInfo` expects the public
+  // key in SubjectPublicKeyInfo format and `crypto::sign::Verify` expects the
+  // ECDSA signature in DER format, so convert accordingly.
   std::optional<std::vector<uint8_t>> spki = Es256JwkToSpki(*jwk);
   if (!spki) {
     return false;
@@ -388,12 +388,15 @@ bool VerifyEs256Jwt(std::string_view jwt) {
     return false;
   }
 
-  crypto::SignatureVerifier verifier;
-  verifier.VerifyInit(crypto::sign::ECDSA_SHA256, der_sig.value(),
-                      spki.value());
-  verifier.VerifyUpdate(
-      base::as_byte_span(base::StrCat({header64, ".", payload64})));
-  return verifier.VerifyFinal();
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(*spki);
+  if (!public_key || !public_key->IsEc()) {
+    return false;
+  }
+
+  return crypto::sign::Verify(
+      crypto::sign::ECDSA_SHA256, *public_key,
+      base::as_byte_span(base::StrCat({header64, ".", payload64})), *der_sig);
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

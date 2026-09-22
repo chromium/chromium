@@ -47,11 +47,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/keypair.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
@@ -469,13 +469,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
 
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      kSignatureAlgorithm,
-      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
-      base::as_byte_span(public_key_spki_der)));
-  signature_verifier.VerifyUpdate(base::as_byte_span(kDataToSign));
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key_spki_der);
+  ASSERT_TRUE(public_key);
+  EXPECT_TRUE(crypto::sign::Verify(kSignatureAlgorithm, *public_key,
+                                   kDataToSign,
+                                   sign_waiter.Get<std::vector<uint8_t>>()));
 }
 
 class RunLoopQuiter {
@@ -549,13 +548,12 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
 
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      kSignatureAlgorithm,
-      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
-      base::as_byte_span(public_key_spki_der)));
-  signature_verifier.VerifyUpdate(kDataToSign);
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key_spki_der);
+  ASSERT_TRUE(public_key);
+  EXPECT_TRUE(crypto::sign::Verify(kSignatureAlgorithm, *public_key,
+                                   kDataToSign,
+                                   sign_waiter.Get<std::vector<uint8_t>>()));
 }
 
 // Generates a software-backed RSA key pair.

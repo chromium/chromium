@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -47,12 +47,13 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha256Rsa) {
   EXPECT_TRUE(signing_key->Sign(some_string, em::PolicyFetchRequest::SHA256_RSA,
                                 &signature));
   EXPECT_FALSE(signature.empty());
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::sign::RSA_PKCS1_SHA256, base::as_byte_span(signature),
-      base::as_byte_span(signing_key->public_key())));
-  signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          base::as_byte_span(signing_key->public_key()));
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::RSA_PKCS1_SHA256, *pub_key,
+                                   base::as_byte_span(some_string),
+                                   base::as_byte_span(signature)));
 }
 
 TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha1Rsa) {
@@ -75,12 +76,13 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha1Rsa) {
   EXPECT_TRUE(signing_key->Sign(some_string, em::PolicyFetchRequest::SHA1_RSA,
                                 &signature));
   EXPECT_FALSE(signature.empty());
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::sign::RSA_PKCS1_SHA1, base::as_byte_span(signature),
-      base::as_byte_span(signing_key->public_key())));
-  signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          base::as_byte_span(signing_key->public_key()));
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::RSA_PKCS1_SHA1, *pub_key,
+                                   base::as_byte_span(some_string),
+                                   base::as_byte_span(signature)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

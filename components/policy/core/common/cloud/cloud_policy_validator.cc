@@ -26,8 +26,8 @@
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -265,7 +265,6 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
                                                const std::string& key,
                                                const std::string& signature,
                                                SignatureType signature_type) {
-  crypto::SignatureVerifier verifier;
   crypto::sign::SignatureKind algorithm;
   switch (signature_type) {
     case em::PolicyFetchRequest::SHA1_RSA:
@@ -282,14 +281,16 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
       return false;
   }
 
-  if (!verifier.VerifyInit(algorithm, base::as_byte_span(signature),
-                           base::as_byte_span(key))) {
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          base::as_byte_span(key));
+  if (!public_key || !public_key->IsRsa()) {
     DLOG_POLICY(ERROR, CBCM_ENROLLMENT)
         << "Invalid verification signature/key format";
     return false;
   }
-  verifier.VerifyUpdate(base::as_byte_span(data));
-  return verifier.VerifyFinal();
+  return crypto::sign::Verify(algorithm, *public_key, base::as_byte_span(data),
+                              base::as_byte_span(signature));
 }
 
 CloudPolicyValidatorBase::CloudPolicyValidatorBase(

@@ -6,26 +6,20 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "crypto/ecdsa_utils.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
-#include "third_party/boringssl/src/include/openssl/mem.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,45 +48,25 @@ class JwtSignerTest : public testing::Test {
 void VerifyEs256(const std::vector<uint8_t>& public_key,
                  const base::span<const uint8_t>& signature,
                  const std::string& message) {
-  const size_t kMaxBytesPerBN = 32;
-  EXPECT_EQ(signature.size(), 2 * kMaxBytesPerBN);
-  base::span<const uint8_t> r_bytes = signature.first(kMaxBytesPerBN);
-  base::span<const uint8_t> s_bytes = signature.subspan(kMaxBytesPerBN);
-
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
-  EXPECT_TRUE(ecdsa_sig);
-
-  EXPECT_TRUE(BN_bin2bn(r_bytes.data(), r_bytes.size(), ecdsa_sig->r));
-  EXPECT_TRUE(BN_bin2bn(s_bytes.data(), s_bytes.size(), ecdsa_sig->s));
-
-  uint8_t* der;
-  size_t der_len;
-  EXPECT_TRUE(ECDSA_SIG_to_bytes(&der, &der_len, ecdsa_sig.get()));
-
-  // Frees memory allocated by `ECDSA_SIG_to_bytes()`.
-  bssl::UniquePtr<uint8_t> delete_signature(der);
-
-  // SAFETY: `ECDSA_SIG_to_bytes()` uses a C-style API to allocate a new buffer.
-  auto signature_span = UNSAFE_BUFFERS(base::span<uint8_t>(der, der_len));
-  auto der_signature = base::ToVector(signature_span);
-
-  crypto::SignatureVerifier verifier;
-  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::ECDSA_SHA256, der_signature,
-                                  public_key));
-
-  verifier.VerifyUpdate(base::as_byte_span(message));
-  EXPECT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key);
+  ASSERT_TRUE(pub_key);
+  std::optional<std::vector<uint8_t>> der_signature =
+      crypto::ConvertEcdsaRawSignatureToDer(*pub_key, signature);
+  ASSERT_TRUE(der_signature);
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::ECDSA_SHA256, *pub_key,
+                                   base::as_byte_span(message),
+                                   *der_signature));
 }
 
 void VerifyRs256(const std::vector<uint8_t>& public_key,
                  base::span<const uint8_t> signature,
                  const std::string& message) {
-  crypto::SignatureVerifier verifier;
-  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA256, signature,
-                                  public_key));
-
-  verifier.VerifyUpdate(base::as_byte_span(message));
-  EXPECT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key);
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::RSA_PKCS1_SHA256, *pub_key,
+                                   base::as_byte_span(message), signature));
 }
 
 void VerifyEdDsa(const crypto::keypair::PublicKey& public_key,

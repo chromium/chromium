@@ -15,8 +15,8 @@
 #include "chromeos/ash/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "crypto/hmac.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -117,12 +117,13 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   //
   // Note: The signature is random, i.e., we have no way of setting "k" from RFC
   // 6979 A.2.5. So, we can only verify the signature using the public key.
-  crypto::SignatureVerifier verifier;
-  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::ECDSA_SHA256,
-                                  StringToByteVector(*key_proof),
-                                  kTestPublicKeyBytes));
-  verifier.VerifyUpdate(StringToByteVector(kAsymmetricTestSalt + kTestPayload));
-  EXPECT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kTestPublicKeyBytes);
+  ASSERT_TRUE(public_key);
+  EXPECT_TRUE(crypto::sign::Verify(
+      crypto::sign::ECDSA_SHA256, *public_key,
+      StringToByteVector(kAsymmetricTestSalt + kTestPayload),
+      StringToByteVector(*key_proof)));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,

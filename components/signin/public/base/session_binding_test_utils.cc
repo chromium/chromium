@@ -9,58 +9,24 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
-#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace signin {
 
 namespace {
 
 constexpr size_t kJwtPartsCount = 3U;
-constexpr uint8_t kJwtSeparatorArray[] = {'.'};
 
 // JWT parts listed in the order they appear in JWT.
 enum class JwtPart : size_t { kHeader = 0, kPayload = 1, kSignature = 2 };
-
-std::optional<std::vector<uint8_t>> ConvertRawSignatureToDER(
-    base::span<const uint8_t> raw_signature) {
-  const size_t kMaxBytesPerBN = 32;
-  if (raw_signature.size() != 2 * kMaxBytesPerBN) {
-    return std::nullopt;
-  }
-  base::span<const uint8_t> r_bytes = raw_signature.first(kMaxBytesPerBN);
-  base::span<const uint8_t> s_bytes = raw_signature.subspan(kMaxBytesPerBN);
-
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
-  if (!ecdsa_sig || !BN_bin2bn(r_bytes.data(), r_bytes.size(), ecdsa_sig->r) ||
-      !BN_bin2bn(s_bytes.data(), s_bytes.size(), ecdsa_sig->s)) {
-    return std::nullopt;
-  }
-
-  uint8_t* signature_bytes;
-  size_t signature_len;
-  if (!ECDSA_SIG_to_bytes(&signature_bytes, &signature_len, ecdsa_sig.get())) {
-    return std::nullopt;
-  }
-  // Frees memory allocated by `ECDSA_SIG_to_bytes()`.
-  bssl::UniquePtr<uint8_t> delete_signature(signature_bytes);
-  // SAFETY: `ECDSA_SIG_to_bytes()` uses a C-style API to allocate a new buffer.
-  auto signature_span =
-      UNSAFE_BUFFERS(base::span<uint8_t>(signature_bytes, signature_len));
-  return base::ToVector(signature_span);
-}
 
 std::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
   std::vector<std::string_view> encoded_parts = base::SplitStringPiece(
@@ -102,29 +68,77 @@ testing::AssertionResult VerifyJwtSignature(
            << "Failed to decode signature: " << signature_str;
   }
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
-  if (algorithm == crypto::sign::ECDSA_SHA256) {
-    std::optional<std::vector<uint8_t>> der_signature =
-        ConvertRawSignatureToDER(base::as_byte_span(signature));
-    if (!der_signature) {
-      return testing::AssertionFailure()
-             << "Failed to convert raw signature to DER: " << signature_str;
-    }
-    signature = std::move(der_signature).value();
+
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key);
+  if (!key) {
+    return testing::AssertionFailure() << "Failed to parse public key SPKI";
   }
 
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(algorithm, signature, public_key)) {
-    return testing::AssertionFailure()
-           << "Failed to initialize the signature verifier";
+  using enum crypto::sign::SignatureKind;
+  switch (algorithm) {
+    case RSA_PKCS1_SHA1:
+    case RSA_PKCS1_SHA256:
+    case RSA_PKCS1_SHA384:
+    case RSA_PKCS1_SHA512:
+    case RSA_PSS_SHA256:
+    case RSA_PSS_SHA384:
+    case RSA_PSS_SHA512:
+      if (!key->IsRsa()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: RSA key expected";
+      }
+      break;
+    case ECDSA_SHA1:
+    case ECDSA_SHA256:
+    case ECDSA_SHA384:
+    case ECDSA_SHA512: {
+      if (!key->IsEc()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: EC key expected";
+      }
+      std::optional<std::vector<uint8_t>> der_signature =
+          crypto::ConvertEcdsaRawSignatureToDer(*key, signature);
+      if (!der_signature) {
+        return testing::AssertionFailure()
+               << "Failed to convert raw signature to DER: " << signature_str;
+      }
+      signature = *std::move(der_signature);
+      break;
+    }
+    case ED25519:
+      if (!key->IsEd25519()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: Ed25519 key expected";
+      }
+      break;
+    case MLDSA_44:
+      if (!key->IsMldsa44()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: ML-DSA-44 key expected";
+      }
+      break;
+    case MLDSA_65:
+      if (!key->IsMldsa65()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: ML-DSA-65 key expected";
+      }
+      break;
+    case MLDSA_87:
+      if (!key->IsMldsa87()) {
+        return testing::AssertionFailure()
+               << "Failed to verify signature: ML-DSA-87 key expected";
+      }
+      break;
   }
-  verifier.VerifyUpdate(
-      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kHeader)]));
-  verifier.VerifyUpdate(kJwtSeparatorArray);
-  verifier.VerifyUpdate(
-      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kPayload)]));
-  return verifier.VerifyFinal()
+
+  std::string header_and_payload =
+      base::StrCat({parts[static_cast<size_t>(JwtPart::kHeader)], ".",
+                    parts[static_cast<size_t>(JwtPart::kPayload)]});
+  return crypto::sign::Verify(algorithm, *key,
+                              base::as_byte_span(header_and_payload), signature)
              ? testing::AssertionSuccess()
-             : (testing::AssertionFailure() << "Invalid signature");
+             : testing::AssertionFailure() << "Failed to verify signature";
 }
 
 std::optional<base::DictValue> ExtractHeaderFromJwt(std::string_view jwt) {

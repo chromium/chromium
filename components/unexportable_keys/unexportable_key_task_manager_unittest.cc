@@ -21,12 +21,12 @@
 #include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "crypto/keypair.h"
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/mock_unexportable_key_provider.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -348,11 +348,12 @@ TEST_P(UnexportableKeyTaskManagerTest, SignAsync) {
               ElementsAre(base::Bucket(0, 1)));
 
   // Also verify that the signature was generated correctly.
-  crypto::SignatureVerifier verifier;
-  ASSERT_TRUE(verifier.VerifyInit(key->key().Algorithm(), signed_data,
-                                  key->key().GetSubjectPublicKeyInfo()));
-  verifier.VerifyUpdate(data);
-  EXPECT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          key->key().GetSubjectPublicKeyInfo());
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(key->key().Algorithm(), *pub_key, data,
+                                   signed_data));
 }
 
 TEST_P(UnexportableKeyTaskManagerTest, SignAsyncNullKey) {
@@ -409,11 +410,12 @@ TEST_P(UnexportableKeyTaskManagerTest, SignWithAttestationKeyAsync) {
       IsEmpty());
 
   // Also verify that the signature was generated correctly.
-  crypto::SignatureVerifier verifier;
-  ASSERT_TRUE(verifier.VerifyInit(key->key().Algorithm(), signed_data,
-                                  key->key().GetSubjectPublicKeyInfo()));
-  verifier.VerifyUpdate(data);
-  EXPECT_TRUE(verifier.VerifyFinal());
+  std::optional<crypto::keypair::PublicKey> pub_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+          key->key().GetSubjectPublicKeyInfo());
+  ASSERT_TRUE(pub_key);
+  EXPECT_TRUE(crypto::sign::Verify(key->key().Algorithm(), *pub_key, data,
+                                   signed_data));
 }
 
 TEST_P(UnexportableKeyTaskManagerTest, SignWithAttestationKeyAsyncNullKey) {
