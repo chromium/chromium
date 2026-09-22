@@ -574,8 +574,11 @@ PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(
 
 void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
-      optimization_guide::DefaultAIPageContentOptions(
-          /*on_critical_path =*/false);
+      base::FeatureList::IsEnabled(features::kAutofillActionableAIPageContent)
+          ? optimization_guide::ActionableAIPageContentOptions(
+                /*on_critical_path =*/false)
+          : optimization_guide::DefaultAIPageContentOptions(
+                /*on_critical_path =*/false);
   optimization_guide::GetAIPageContent(
       web_contents(), std::move(extraction_options),
       base::BindOnce([](optimization_guide::AIPageContentResultOrError result)

@@ -60,6 +60,10 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the extracted APC proto includes node geometry.
+BASE_FEATURE(kAutofillActionableAIPageContent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, ActorFormFillingServiceImpl will attempt to split requests for a
 // form section fill (when relevant) into two sub-fills - one for a "contact
 // info" sub-section and one for an "address" sub-section.
