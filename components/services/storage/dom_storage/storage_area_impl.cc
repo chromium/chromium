@@ -724,6 +724,10 @@ void StorageAreaImpl::CommitChanges() {
   database_->InitiateCommit();
 }
 
+bool StorageAreaImpl::HasPendingCommit() const {
+  return commit_batch_ != nullptr;
+}
+
 std::optional<DomStorageDatabase::MapBatchUpdate>
 StorageAreaImpl::CollectCommit() {
   if (!commit_batch_) {

@@ -4,6 +4,10 @@
 
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+
 #include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -23,6 +27,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/features.h"
@@ -117,6 +122,29 @@ void RecordOpenDatabaseHistograms(StorageType storage_type,
         base::BindOnce(&RecordDatabaseOnDiskSizeKB, storage_type, database_path,
                        is_sqlite, metrics_type));
   }
+}
+
+// After LevelDB to SQLite migration, a map locator's storage keys and session
+// IDs must match. For session storage, a map locator's map IDs must match. For
+// local storage, LevelDB source map locators do not have a map ID. However,
+// SQLite candidate map locators include a map ID.
+bool IsMigratedMapMatch(
+    const DomStorageDatabase::MapLocator& source_locator,
+    const DomStorageDatabase::MapLocator& candidate_locator) {
+  // Compare storage keys.
+  if (source_locator.storage_key() != candidate_locator.storage_key()) {
+    return false;
+  }
+
+  // Compare map IDs for session storage.
+  if (source_locator.map_id().has_value() &&
+      source_locator.map_id() != candidate_locator.map_id()) {
+    return false;
+  }
+
+  // Compare session IDs.
+  return std::ranges::is_permutation(source_locator.session_ids(),
+                                     candidate_locator.session_ids());
 }
 
 }  // namespace
@@ -244,6 +272,15 @@ DomStorageDatabaseFactory::OpenResult::OpenResult(OpenResult&&) = default;
 DomStorageDatabaseFactory::OpenResult&
 DomStorageDatabaseFactory::OpenResult::operator=(OpenResult&&) = default;
 
+// static
+DomStorageDatabaseFactory::OpenResult
+DomStorageDatabaseFactory::OpenResult::FromError(DbStatus status) {
+  CHECK(!status.ok());
+  OpenResult result;
+  result.open_status = std::move(status);
+  return result;
+}
+
 void DomStorageDatabaseFactory::OpenResult::SetDatabase(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<DomStorageDatabase> database) {
@@ -333,34 +370,21 @@ void DomStorageDatabaseFactory::InitializeDatabase(
     }
   }
 
-  std::unique_ptr<DomStorageDatabase> db;
-  switch (storage_type) {
-    case StorageType::kLocalStorage:
-      if (is_sqlite) {
-        db = std::make_unique<LocalStorageSqlite>(PassKey());
-      } else {
-        db = std::make_unique<LocalStorageLevelDB>(PassKey(), write_exp_tag);
-      }
-      break;
-    case StorageType::kSessionStorage:
-      if (is_sqlite) {
-        db = std::make_unique<SessionStorageSqlite>(PassKey());
-      } else {
-        db = std::make_unique<SessionStorageLevelDB>(PassKey(), write_exp_tag);
-      }
-      break;
-  }
-  CHECK(db);
-
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  DbStatus open_status = db->Open(database_path, memory_dump_id);
+  StatusOr<std::unique_ptr<DomStorageDatabase>> database =
+      ConstructAndOpenDatabase(storage_type, is_sqlite, write_exp_tag,
+                               database_path, memory_dump_id);
+  DbStatus open_status =
+      database.has_value() ? DbStatus::OK() : std::move(database.error());
   RecordOpenDatabaseHistograms(storage_type, metrics_type, database_path,
                                is_sqlite, start_time, open_status);
 
   // We are now on the backend's blocking sequence, so bind the database to it.
   OpenResult result;
-  result.SetDatabase(base::SequencedTaskRunner::GetCurrentDefault(),
-                     std::move(db));
+  if (database.has_value()) {
+    result.SetDatabase(base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(*database));
+  }
   result.metrics_type = metrics_type;
   result.is_sqlite = is_sqlite;
   result.open_status = std::move(open_status);
@@ -369,10 +393,60 @@ void DomStorageDatabaseFactory::InitializeDatabase(
 }
 
 // static
+StatusOr<std::unique_ptr<DomStorageDatabase>>
+DomStorageDatabaseFactory::ConstructAndOpenDatabase(
+    StorageType storage_type,
+    bool is_sqlite,
+    bool write_exp_tag,
+    const base::FilePath& database_path,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id) {
+  std::unique_ptr<DomStorageDatabase> database;
+
+  switch (storage_type) {
+    case StorageType::kLocalStorage: {
+      if (is_sqlite) {
+        database = std::make_unique<LocalStorageSqlite>(PassKey());
+      } else {
+        database =
+            std::make_unique<LocalStorageLevelDB>(PassKey(), write_exp_tag);
+      }
+    } break;
+
+    case StorageType::kSessionStorage: {
+      if (is_sqlite) {
+        database = std::make_unique<SessionStorageSqlite>(PassKey());
+      } else {
+        database =
+            std::make_unique<SessionStorageLevelDB>(PassKey(), write_exp_tag);
+      }
+    } break;
+
+    default: {
+      NOTREACHED();
+    }
+  }
+
+  DbStatus open_status = database->Open(database_path, memory_dump_id);
+  if (!open_status.ok()) {
+    return base::unexpected(std::move(open_status));
+  }
+  return database;
+}
+
+// static
 DomStorageDatabaseFactory::OpenCallback&
 DomStorageDatabaseFactory::GetOpenCallback() {
   static base::NoDestructor<OpenCallback> callback(
       base::BindRepeating(&DomStorageDatabaseFactory::OpenImpl));
+  return *callback;
+}
+
+// static
+DomStorageDatabaseFactory::MigrationCallback&
+DomStorageDatabaseFactory::GetMigrationCallback() {
+  static base::NoDestructor<MigrationCallback> callback(
+      base::BindRepeating(&DomStorageDatabaseFactory::MigrateLevelDbToSqlite));
   return *callback;
 }
 
@@ -389,6 +463,18 @@ void DomStorageDatabaseFactory::Open(
   GetOpenCallback().Run(
       storage_type, dir_to_open, memory_dump_id, dir_to_destroy,
       base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
+
+// static
+void DomStorageDatabaseFactory::Migrate(
+    StorageType storage_type,
+    const base::FilePath& dir_to_open,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id,
+    OpenResultCallback callback,
+    DomStorageDatabase* source_database) {
+  GetMigrationCallback().Run(storage_type, dir_to_open, memory_dump_id,
+                             std::move(callback), source_database);
 }
 
 // static
@@ -423,6 +509,107 @@ void DomStorageDatabaseFactory::OpenImpl(
                      dir_to_destroy, std::move(on_destroyed_cb));
   CheckOnDiskLevelDbState(storage_type, dir_to_destroy,
                           std::move(on_checked_cb));
+}
+
+// static
+void DomStorageDatabaseFactory::MigrateLevelDbToSqlite(
+    StorageType storage_type,
+    const base::FilePath& dir_to_open,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id,
+    OpenResultCallback callback,
+    DomStorageDatabase* source_database) {
+  const base::FilePath sqlite_path =
+      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open);
+
+  // Populate a new SQLite database at the staging path with all records
+  // copied from the `source_database` LevelDB. Any failure below returns an
+  // `OpenResult::FromError()` without modifying `source_database`, so the
+  // caller can continue using it.
+  const base::FilePath sqlite_staging_path =
+      sqlite_path.AddExtensionASCII(kSqliteMigrationStagingExtension);
+
+  StatusOr<std::unique_ptr<DomStorageDatabase>> migration_result =
+      CreateAndPopulateSqliteDatabaseForMigration(
+          storage_type, *source_database, sqlite_staging_path);
+  if (!migration_result.has_value()) {
+    std::move(callback).Run(
+        OpenResult::FromError(std::move(migration_result.error())));
+    return;
+  }
+
+  std::unique_ptr<DomStorageDatabase> sqlite_destination =
+      std::move(*migration_result);
+
+  // `CleanUpStaleData()` checkpoints the SQLite database, which moves all data
+  // from the WAL file to the main database file. That way, migration only has
+  // one file to move from staging to production.
+  DbStatus cleanup_status = sqlite_destination->CleanUpStaleData();
+  if (!cleanup_status.ok()) {
+    std::move(callback).Run(OpenResult::FromError(std::move(cleanup_status)));
+    return;
+  }
+
+  // Verify the migrated data against the source.
+  DbStatus verify_status =
+      VerifyMigration(*source_database, *sqlite_destination);
+  if (!verify_status.ok()) {
+    std::move(callback).Run(OpenResult::FromError(std::move(verify_status)));
+    return;
+  }
+
+  // Move the staged SQLite database file from the staging path to the
+  // production path. Close the SQLite database to allow migration to move the
+  // file.
+  sqlite_destination.reset();
+
+  DbStatus promote_status =
+      MoveTempSqliteToFinalLocation(sqlite_staging_path, sqlite_path);
+  if (!promote_status.ok()) {
+    std::move(callback).Run(OpenResult::FromError(std::move(promote_status)));
+    return;
+  }
+
+  // Re-open the moved SQLite database before destroying `source_database`. If
+  // opening fails, fall back to the `source_database`.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  StatusOr<std::unique_ptr<DomStorageDatabase>> open_result =
+      ConstructAndOpenDatabase(storage_type, /*is_sqlite=*/true,
+                               /*write_exp_tag=*/false, sqlite_path,
+                               memory_dump_id);
+  DbStatus open_status =
+      open_result.has_value() ? DbStatus::OK() : std::move(open_result.error());
+  // TODO(crbug.com/377242771): add a different histogram for the open after
+  // migration.
+  RecordOpenDatabaseHistograms(storage_type, DatabaseMetricsType::kOnDisk,
+                               sqlite_path, /*is_sqlite=*/true, start_time,
+                               open_status);
+  if (!open_status.ok()) {
+    // Delete the migrated SQLite database that failed to open.
+    // TODO(crbug.com/377242771): record the delete result.
+    std::ignore = sqlite::DestroyDatabase(sqlite_path);
+    std::move(callback).Run(OpenResult::FromError(std::move(open_status)));
+    return;
+  }
+  std::unique_ptr<DomStorageDatabase> sqlite_database = *std::move(open_result);
+
+  // The migration succeeded. Close and delete the source LevelDB.
+  const base::FilePath leveldb_path =
+      DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
+  source_database->Close();
+  // TODO(crbug.com/377242771): record the delete result.
+  std::ignore = DomStorageDatabaseLevelDB::Destroy(leveldb_path);
+
+  // Attach `sqlite_database` to the SQLite sequence. Return the newly
+  // migrated database.
+  sqlite_database->DetachFromSequence();
+
+  OpenResult result;
+  result.is_sqlite = true;
+  result.open_status = DbStatus::OK();
+  result.SetDatabase(GetTaskRunnerForDb(sqlite_path),
+                     std::move(sqlite_database));
+  std::move(callback).Run(std::move(result));
 }
 
 // static
@@ -518,33 +705,78 @@ void DomStorageDatabaseFactory::ResolveDatabaseBackend(
                                              std::move(destroy_outcome)));
     return;
   }
+  if (base::FeatureList::IsEnabled(kDomStorageSqliteMigration)) {
+    ResolveOnDiskMigrationDatabaseBackend(storage_type, std::move(dir_to_open),
+                                          std::move(callback),
+                                          std::move(destroy_outcome));
+    return;
+  }
 
   const DomStorageSqliteRolloutStage stage =
       GetSqliteRolloutStage(/*in_memory=*/false);
 
-  // A non-experimental rollout stage has a fixed backend, so no disk state
-  // check is needed.
-  if (!IsExperimentalRolloutStage(stage)) {
-    const bool is_sqlite =
-        stage == DomStorageSqliteRolloutStage::kUseSqliteOnly;
-    base::FilePath path =
-        is_sqlite
-            ? DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open)
-            : DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
-    std::move(callback).Run(is_sqlite, /*write_exp_tag=*/false,
-                            DatabaseMetricsType::kOnDisk, std::move(path),
-                            std::move(destroy_outcome));
+  // An experimental rollout stage picks the backend from the on-disk LevelDB
+  // state.
+  if (IsExperimentalRolloutStage(stage)) {
+    OnDiskStateCheckedCallback on_checked_cb = base::BindOnce(
+        &DomStorageDatabaseFactory::ResolveOnDiskExperimentalDatabaseBackend,
+        storage_type, dir_to_open, stage, std::move(callback),
+        std::move(destroy_outcome));
+    CheckOnDiskLevelDbState(storage_type, std::move(dir_to_open),
+                            std::move(on_checked_cb));
     return;
   }
 
-  // An experimental rollout stage picks the backend from the on-disk LevelDB
-  // state.
-  OnDiskStateCheckedCallback on_checked_cb = base::BindOnce(
-      &DomStorageDatabaseFactory::ResolveOnDiskExperimentalDatabaseBackend,
-      storage_type, dir_to_open, stage, std::move(callback),
-      std::move(destroy_outcome));
-  CheckOnDiskLevelDbState(storage_type, std::move(dir_to_open),
-                          std::move(on_checked_cb));
+  // A non-experimental rollout stage has a fixed backend, so no disk state
+  // check is needed.
+  const bool is_sqlite = stage == DomStorageSqliteRolloutStage::kUseSqliteOnly;
+  base::FilePath path =
+      is_sqlite ? DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open)
+                : DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
+  std::move(callback).Run(is_sqlite, /*write_exp_tag=*/false,
+                          DatabaseMetricsType::kOnDisk, std::move(path),
+                          std::move(destroy_outcome));
+}
+
+// static
+void DomStorageDatabaseFactory::ResolveOnDiskMigrationDatabaseBackend(
+    StorageType storage_type,
+    base::FilePath dir_to_open,
+    OnBackendResolvedCallback callback,
+    std::optional<DestroyOutcome> destroy_outcome) {
+  const base::FilePath sqlite_path =
+      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open);
+  scoped_refptr<base::SequencedTaskRunner> runner =
+      GetTaskRunnerForDb(sqlite_path);
+  if (!runner->RunsTasksInCurrentSequence()) {
+    runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &DomStorageDatabaseFactory::ResolveOnDiskMigrationDatabaseBackend,
+            storage_type, std::move(dir_to_open), std::move(callback),
+            std::move(destroy_outcome)));
+    return;
+  }
+
+  // Open LevelDB only when it exists and has not yet been migrated (no SQLite
+  // present). Fresh partitions and already-migrated ones open SQLite directly;
+  // an existing LevelDB stays on LevelDB until it is migrated.
+  std::unique_ptr<FilesystemProxy> filesystem = CreateFilesystemProxy();
+  const bool is_sqlite =
+      filesystem->PathExists(sqlite_path) ||
+      storage::CheckOnDiskLevelDbState(storage_type, dir_to_open) ==
+          LevelDbOnDiskState::kNone;
+
+  const base::FilePath leveldb_path =
+      DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
+  base::FilePath path = is_sqlite ? sqlite_path : leveldb_path;
+
+  // This path only selects LevelDB when one already exists, so there is no new
+  // LevelDB to tag. Since migration is not part of a rollout experiment
+  // yet, the metrics type is fixed.
+  std::move(callback).Run(is_sqlite, /*write_exp_tag=*/false,
+                          DatabaseMetricsType::kOnDisk, std::move(path),
+                          std::move(destroy_outcome));
 }
 
 // static
@@ -582,7 +814,7 @@ scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   }
 
-  //  This will always return the same task runner for a given `database_path`.
+  // This will always return the same task runner for a given `database_path`.
   return base::ThreadPool::CreateSequencedTaskRunnerForResource(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
@@ -655,8 +887,10 @@ DbStatus PurgeOrigins(DomStorageDatabase& database,
                                                std::move(maps_to_delete));
 }
 
-DbStatus MigrateDatabase(DomStorageDatabase& source,
-                         DomStorageDatabase& destination) {
+// static
+DbStatus DomStorageDatabaseFactory::MigrateDatabase(
+    DomStorageDatabase& source,
+    DomStorageDatabase& destination) {
   ASSIGN_OR_RETURN(DomStorageDatabase::Metadata source_metadata,
                    source.ReadAllMetadata());
 
@@ -675,7 +909,7 @@ DbStatus MigrateDatabase(DomStorageDatabase& source,
       update.entries_to_add.emplace_back(std::move(key), std::move(value));
     }
 
-    // Migrate the map's usage metadata as  part of the batch update.
+    // Migrate the map's usage metadata as part of the batch update.
     bool has_access_metadata = source_map.last_accessed.has_value();
     bool has_write_metadata = source_map.last_modified && source_map.total_size;
     if (has_access_metadata || has_write_metadata) {
@@ -701,6 +935,109 @@ DbStatus MigrateDatabase(DomStorageDatabase& source,
     std::vector<DomStorageDatabase::MapBatchUpdate> updates;
     updates.push_back(std::move(update));
     DB_RETURN_IF_ERROR(destination.UpdateMaps(std::move(updates)));
+  }
+  return DbStatus::OK();
+}
+
+// static
+StatusOr<std::unique_ptr<DomStorageDatabase>>
+DomStorageDatabaseFactory::CreateAndPopulateSqliteDatabaseForMigration(
+    StorageType storage_type,
+    DomStorageDatabase& source_database,
+    const base::FilePath& destination_path) {
+  // Discard any leftover staging database from a previously-aborted migration
+  // so the destination starts empty.
+  if (!sql::Database::Delete(destination_path)) {
+    return base::unexpected(DbStatus::IOError("delete failed"));
+  }
+
+  // The staging database is temporary, so it's not exposed for memory tracing.
+  // The promoted database is reopened with the source database's memory dump
+  // ID.
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<DomStorageDatabase> destination,
+      ConstructAndOpenDatabase(storage_type, /*is_sqlite=*/true,
+                               /*write_exp_tag=*/false, destination_path,
+                               /*memory_dump_id=*/std::nullopt));
+
+  DbStatus migration_status = MigrateDatabase(source_database, *destination);
+  if (!migration_status.ok()) {
+    return base::unexpected(std::move(migration_status));
+  }
+  return destination;
+}
+
+// static
+DbStatus DomStorageDatabaseFactory::MoveTempSqliteToFinalLocation(
+    const base::FilePath& sqlite_staging_path,
+    const base::FilePath& sqlite_path) {
+  std::unique_ptr<FilesystemProxy> filesystem = CreateFilesystemProxy();
+
+  CHECK(
+      !filesystem->PathExists(sql::Database::JournalPath(sqlite_staging_path)));
+
+  CHECK(!filesystem->PathExists(
+      sql::Database::WriteAheadLogPath(sqlite_staging_path)));
+
+  if (filesystem->RenameFile(sqlite_staging_path, sqlite_path) !=
+      base::File::FILE_OK) {
+    return DbStatus::IOError("Rename failed");
+  }
+  return DbStatus::OK();
+}
+
+// TODO(crbug.com/377242771): Reduce the time complexity of migration
+// verification.
+//
+// static
+DbStatus DomStorageDatabaseFactory::VerifyMigration(
+    DomStorageDatabase& source,
+    DomStorageDatabase& destination) {
+  ASSIGN_OR_RETURN(DomStorageDatabase::Metadata source_metadata,
+                   source.ReadAllMetadata());
+
+  ASSIGN_OR_RETURN(DomStorageDatabase::Metadata destination_metadata,
+                   destination.ReadAllMetadata());
+
+  if (source_metadata.map_metadata.size() !=
+      destination_metadata.map_metadata.size()) {
+    return DbStatus::Corruption("invalid map count");
+  }
+
+  for (const DomStorageDatabase::MapMetadata& source_map :
+       source_metadata.map_metadata) {
+    const DomStorageDatabase::MapMetadata* destination_map = nullptr;
+
+    for (const DomStorageDatabase::MapMetadata& candidate :
+         destination_metadata.map_metadata) {
+      if (IsMigratedMapMatch(source_map.map_locator, candidate.map_locator)) {
+        destination_map = &candidate;
+        break;
+      }
+    }
+
+    if (!destination_map) {
+      return DbStatus::Corruption("missing map");
+    }
+
+    if (source_map.last_accessed != destination_map->last_accessed ||
+        source_map.last_modified != destination_map->last_modified ||
+        source_map.total_size != destination_map->total_size) {
+      return DbStatus::Corruption("invalid metadata");
+    }
+
+    ASSIGN_OR_RETURN((std::map<DomStorageDatabase::Key,
+                               DomStorageDatabase::Value> source_entries),
+                     source.ReadMapKeyValues(source_map.map_locator.Clone()));
+
+    ASSIGN_OR_RETURN(
+        (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+             destination_entries),
+        destination.ReadMapKeyValues(destination_map->map_locator.Clone()));
+
+    if (source_entries != destination_entries) {
+      return DbStatus::Corruption("invalid entries");
+    }
   }
   return DbStatus::OK();
 }

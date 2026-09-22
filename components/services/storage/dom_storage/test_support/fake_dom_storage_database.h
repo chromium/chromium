@@ -50,6 +50,8 @@ class FakeDomStorageDatabase : public DomStorageDatabase {
                           std::vector<MapLocator> maps_to_delete) override;
   DbStatus PurgeOrigins(std::set<url::Origin> origins) override;
   DbStatus CleanUpStaleData() override;
+  void Close() override;
+  void DetachFromSequence() override;
 
   // Test-only DomStorageDatabase methods. Stubbed for now.
   // TODO(crbug.com/377242771): Update tests using these to rely on this fake

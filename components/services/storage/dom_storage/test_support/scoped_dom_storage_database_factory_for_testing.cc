@@ -16,9 +16,25 @@ ScopedDomStorageDatabaseFactoryForTesting::
 }
 
 ScopedDomStorageDatabaseFactoryForTesting::
+    ScopedDomStorageDatabaseFactoryForTesting(
+        MigrationCallback migration_callback)
+    : default_migration_callback_(
+          std::move(DomStorageDatabaseFactory::GetMigrationCallback())) {
+  DomStorageDatabaseFactory::GetMigrationCallback() =
+      std::move(migration_callback);
+}
+
+ScopedDomStorageDatabaseFactoryForTesting::
     ~ScopedDomStorageDatabaseFactoryForTesting() {
-  DomStorageDatabaseFactory::GetOpenCallback() =
-      std::move(default_open_callback_);
+  if (default_open_callback_) {
+    DomStorageDatabaseFactory::GetOpenCallback() =
+        std::move(default_open_callback_);
+  }
+
+  if (default_migration_callback_) {
+    DomStorageDatabaseFactory::GetMigrationCallback() =
+        std::move(default_migration_callback_);
+  }
 }
 
 }  // namespace storage

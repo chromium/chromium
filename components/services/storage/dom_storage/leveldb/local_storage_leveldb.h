@@ -122,6 +122,8 @@ class LocalStorageLevelDB : public DomStorageDatabase {
                           std::vector<MapLocator> maps_to_delete) override;
   DbStatus PurgeOrigins(std::set<url::Origin> origins) override;
   DbStatus CleanUpStaleData() override;
+  void Close() override;
+  void DetachFromSequence() override;
 
   // Test-only functions.
   DbStatus PutVersionForTesting(int64_t version) override;

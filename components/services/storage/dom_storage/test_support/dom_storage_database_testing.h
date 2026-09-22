@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
@@ -17,7 +18,6 @@
 
 namespace base {
 class FilePath;
-class RunLoop;
 }  // namespace base
 
 namespace storage {
@@ -101,7 +101,7 @@ void DeleteSessionsSync(
     std::vector<std::string> session_ids,
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
 
-// Synchronously write key/value pairs to a map in the database.
+// Writes key/value pairs to a map in the database.
 class FakeCommitter : public AsyncDomStorageDatabase::Committer {
  public:
   FakeCommitter(AsyncDomStorageDatabase* database,
@@ -111,27 +111,42 @@ class FakeCommitter : public AsyncDomStorageDatabase::Committer {
   void PutMapKeyValueSync(DomStorageDatabase::Key key,
                           DomStorageDatabase::Value value);
 
+  void QueuePutMapKeyValue(DomStorageDatabase::Key key,
+                           DomStorageDatabase::Value value,
+                           base::OnceCallback<void(DbStatus)> callback);
+
   // Deletes all of the map's key/value pairs.
   void ClearMapSync();
 
   // `AsyncDomStorageDatabase::Committer`:
+  bool HasPendingCommit() const override;
   std::optional<DomStorageDatabase::MapBatchUpdate> CollectCommit() override;
   base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 
  private:
   void CommitSync(DomStorageDatabase::MapBatchUpdate map_update);
 
-  // Records `commit_complete_result_` then quits `commit_complete_run_loop_`.
+  // Clears `commit_in_progress_` after running its `callback`.
   void OnCommitCompleted(DbStatus status);
 
   raw_ptr<AsyncDomStorageDatabase> database_;
-  DomStorageDatabase::MapLocator map_locator_;
+  const DomStorageDatabase::MapLocator map_locator_;
 
-  // `PutMapKeyValueSync()` sets these members to start the commit.
-  // `PutMapKeyValueSync()` also resets these members after the commit finishes.
-  std::optional<DomStorageDatabase::MapBatchUpdate> pending_commit_;
-  std::unique_ptr<base::RunLoop> commit_complete_run_loop_;
-  std::optional<DbStatus> commit_complete_result_;
+  struct Commit {
+    Commit(DomStorageDatabase::MapBatchUpdate batch_update,
+           base::OnceCallback<void(DbStatus)> callback);
+    Commit(Commit&& source);
+    Commit& operator=(Commit&& source);
+    ~Commit();
+
+    Commit(Commit& source) = delete;
+    Commit& operator=(Commit& source) = delete;
+
+    DomStorageDatabase::MapBatchUpdate batch_update;
+    base::OnceCallback<void(DbStatus)> callback;
+  };
+
+  base::queue<Commit> commit_queue_;
 };
 
 // Overwrites the database's version to simulate a corrupt, invalid version.

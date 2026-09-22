@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
@@ -341,6 +342,14 @@ DbStatus LocalStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
 
 DbStatus LocalStorageLevelDB::CleanUpStaleData() {
   return leveldb_->RewriteDB();
+}
+
+void LocalStorageLevelDB::Close() {
+  leveldb_.reset();
+}
+
+void LocalStorageLevelDB::DetachFromSequence() {
+  NOTREACHED();
 }
 
 DbStatus LocalStorageLevelDB::PutVersionForTesting(int64_t version) {

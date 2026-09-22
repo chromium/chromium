@@ -339,6 +339,14 @@ class DomStorageDatabase {
   // new copy of the database that replaces the old copy.
   virtual DbStatus CleanUpStaleData() = 0;
 
+  // For LevelDB to SQLite migration. Used after migration completes to close
+  // and delete the LevelDB.
+  virtual void Close() = 0;
+
+  // For LevelDB to SQLite migration. Detaches SQLite database from the LevelDB
+  // sequence so it can be bound to the SQLite sequence.
+  virtual void DetachFromSequence() = 0;
+
   // Test-only functions.
   virtual DbStatus PutVersionForTesting(int64_t version) = 0;
   virtual void MakeAllCommitsFailForTesting() = 0;
@@ -371,6 +379,10 @@ class DomStorageDatabaseFactory {
     ~OpenResult();
     OpenResult(OpenResult&&);
     OpenResult& operator=(OpenResult&&);
+
+    // Builds a failure result with no database, including failures before a
+    // database is opened.
+    static OpenResult FromError(DbStatus status);
 
     // Stores `database` for transport to the caller's sequence, with a deleter
     // that destroys it on `task_runner` (its backend sequence) if the result is
@@ -431,7 +443,32 @@ class DomStorageDatabaseFactory {
       const base::FilePath& dir_to_destroy,
       OpenResultCallback callback);
 
+  // Define a migration callback that tests can override to simulate failures.
+  using MigrationCallback = base::RepeatingCallback<void(
+      StorageType storage_type,
+      const base::FilePath& dir_to_open,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id,
+      OpenResultCallback callback,
+      DomStorageDatabase* source_database)>;
+
+  // Migrates the on-disk LevelDB `source_database` under `dir_to_open` to
+  // SQLite. Must be called on the `source_database` LevelDB sequence.
+  //
+  // On success, `callback` runs with the migrated SQLite result, which
+  // is already opened and bound to the SQLite sequence. `source_database`
+  // database has been emptied and its files deleted. On failure
+  // `source_database` is left untouched and still usable.
+  static void Migrate(
+      StorageType storage_type,
+      const base::FilePath& dir_to_open,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id,
+      OpenResultCallback callback,
+      DomStorageDatabase* source_database);
+
  private:
+  friend class AsyncDomStorageDatabaseMigrationTest;
   friend class LocalStorageLevelDBTest;
   friend class LocalStorageSqliteTest;
   friend class LocalStorageImplOnDiskSQLiteRolloutTestBase;
@@ -441,6 +478,15 @@ class DomStorageDatabaseFactory {
   friend class SessionStorageImplOnDiskSQLiteRolloutTestBase;
   friend class ScopedDomStorageDatabaseFactoryForTesting;
 
+  // Creates a new SQLite database at `destination_path` and copies all records
+  // from `source_database` into it, returning the opened SQLite database on
+  // success.
+  static StatusOr<std::unique_ptr<DomStorageDatabase>>
+  CreateAndPopulateSqliteDatabaseForMigration(
+      StorageType storage_type,
+      DomStorageDatabase& source_database,
+      const base::FilePath& destination_path);
+
   static void OpenImpl(
       StorageType storage_type,
       const base::FilePath& dir_to_open,
@@ -449,9 +495,17 @@ class DomStorageDatabaseFactory {
       const base::FilePath& dir_to_destroy,
       OpenResultCallback callback);
 
+  static void MigrateLevelDbToSqlite(
+      StorageType storage_type,
+      const base::FilePath& dir_to_open,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id,
+      OpenResultCallback callback,
+      DomStorageDatabase* source_database);
+
   // The following Open helpers are private static members so that
-  // `InitializeDatabase` can create a `PassKey` when constructing backend
-  // subclasses.
+  // `ConstructAndOpenDatabase()` can create a `PassKey` when constructing
+  // backend subclasses.
 
   using OnDiskStateCheckedCallback =
       base::OnceCallback<void(LevelDbOnDiskState)>;
@@ -491,6 +545,14 @@ class DomStorageDatabaseFactory {
       OnBackendResolvedCallback callback,
       std::optional<DestroyOutcome> destroy_outcome);
 
+  // Resolves the migration backend by checking whether a SQLite database
+  // already exists on disk: if so it is opened, otherwise LevelDB is opened.
+  static void ResolveOnDiskMigrationDatabaseBackend(
+      StorageType storage_type,
+      base::FilePath dir_to_open,
+      OnBackendResolvedCallback callback,
+      std::optional<DestroyOutcome> destroy_outcome);
+
   // Resolves the experimental backend from the on-disk LevelDB state, then runs
   // `callback`. Bound as the `CheckOnDiskLevelDbState()` continuation for
   // the open flow, so `leveldb_state` (the produced on-disk state) trails.
@@ -522,10 +584,36 @@ class DomStorageDatabaseFactory {
       base::FilePath database_path,
       std::optional<DestroyOutcome> destroy_outcome);
 
+  // Constructs and opens the requested backend.
+  static StatusOr<std::unique_ptr<DomStorageDatabase>> ConstructAndOpenDatabase(
+      StorageType storage_type,
+      bool is_sqlite,
+      bool write_exp_tag,
+      const base::FilePath& database_path,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id);
+
+  // Migrates all metadata and map entries from `source` to `destination`.
+  // `destination` must be empty.
+  static DbStatus MigrateDatabase(DomStorageDatabase& source,
+                                  DomStorageDatabase& destination);
+
+  // Moves the SQLite database file from `sqlite_staging_path` to `sqlite_path`.
+  static DbStatus MoveTempSqliteToFinalLocation(
+      const base::FilePath& sqlite_staging_path,
+      const base::FilePath& sqlite_path);
+
+  // Verifies that `destination` contains the same maps, metadata and entries
+  // as `source`.
+  static DbStatus VerifyMigration(DomStorageDatabase& source,
+                                  DomStorageDatabase& destination);
+
   // Returns the open callback, lazily initialized on first call. Defaults to
   // `OpenImpl`. Tests can swap in a custom implementation via
   // `ScopedDomStorageDatabaseFactoryForTesting`.
   static OpenCallback& GetOpenCallback();
+
+  static DomStorageDatabaseFactory::MigrationCallback& GetMigrationCallback();
 
   // Allow unit tests to create a database instance without `SequenceBound`.
   static PassKey CreatePassKeyForTesting();
@@ -550,12 +638,6 @@ void ReportDatabaseMemoryUsage(
 // Both LevelDB and SQLite implementations use this helper function.
 DbStatus PurgeOrigins(DomStorageDatabase& database,
                       std::set<url::Origin> origins);
-
-// Migrates all metadata and map entries from `source` to `destination`.
-// Intended for migrating from LevelDB to SQLite. The `destination` must be
-// empty.
-DbStatus MigrateDatabase(DomStorageDatabase& source,
-                         DomStorageDatabase& destination);
 
 }  // namespace storage
 

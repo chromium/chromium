@@ -107,6 +107,8 @@ class SessionStorageLevelDB : public DomStorageDatabase {
 
   DbStatus PurgeOrigins(std::set<url::Origin> origins) override;
   DbStatus CleanUpStaleData() override;
+  void Close() override;
+  void DetachFromSequence() override;
 
   // Test-only functions.
   DbStatus PutVersionForTesting(int64_t version) override;

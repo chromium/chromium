@@ -208,6 +208,7 @@ source_set("tests") {
   ]
 
   deps = [
+    ":filesystem_proxy_factory",
     ":storage",
     ":test_support",
     "//base",

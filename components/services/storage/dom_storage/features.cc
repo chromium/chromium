@@ -13,6 +13,13 @@ BASE_FEATURE(kDomStorageSqlite, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDomStorageSqliteInMemory, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDomStorageSqliteMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDomStorageSqliteMigrationInactivityTimeoutParam,
+                   &kDomStorageSqliteMigration,
+                   kDomStorageSqliteMigrationInactivityTimeout);
+
 BASE_FEATURE(kDomStorageSqliteNewDatabases, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<DomStorageSqliteRolloutStage>::Option

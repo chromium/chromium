@@ -26,6 +26,10 @@ inline constexpr int kLocalStorageStaleBucketCutoffInDays = 400;
 // database.
 inline constexpr int kCommitErrorThreshold = 8;
 
+// Extension for the temporary SQLite database built during migration. It is
+// moved to the final path only after migration succeeds.
+inline constexpr char kSqliteMigrationStagingExtension[] = "Migrating";
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DOM_STORAGE_CONSTANTS_H_

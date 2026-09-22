@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -302,6 +303,14 @@ DbStatus SessionStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
 
 DbStatus SessionStorageLevelDB::CleanUpStaleData() {
   return leveldb_->RewriteDB();
+}
+
+void SessionStorageLevelDB::Close() {
+  leveldb_.reset();
+}
+
+void SessionStorageLevelDB::DetachFromSequence() {
+  NOTREACHED();
 }
 
 DbStatus SessionStorageLevelDB::PutVersionForTesting(int64_t version) {

@@ -24,6 +24,21 @@ COMPONENT_EXPORT(STORAGE_FEATURES) BASE_DECLARE_FEATURE(kDomStorageSqlite);
 COMPONENT_EXPORT(STORAGE_FEATURES)
 BASE_DECLARE_FEATURE(kDomStorageSqliteInMemory);
 
+// Enable to migrate on-disk LevelDB databases to SQLite after they become idle.
+// Also, uses SQLite for new databases.
+COMPONENT_EXPORT(STORAGE_FEATURES)
+BASE_DECLARE_FEATURE(kDomStorageSqliteMigration);
+
+// How long an on-disk LevelDB must stay idle before it is migrated to SQLite.
+// Exposed as a feature param so field trials can tune it and tests can
+// shorten it.
+COMPONENT_EXPORT(STORAGE_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kDomStorageSqliteMigrationInactivityTimeoutParam);
+
+inline constexpr base::TimeDelta kDomStorageSqliteMigrationInactivityTimeout =
+    base::Seconds(45);
+
 // Used as a feature param by `kDomStorageSqliteNewDatabases`. Adding, removing
 // and reordering values is fine; just make sure to update
 // `kDomStorageSqliteNewDatabasesStages` when adding new values.

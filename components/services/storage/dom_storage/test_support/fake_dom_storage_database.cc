@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 
 namespace storage {
@@ -83,6 +84,14 @@ DbStatus FakeDomStorageDatabase::PurgeOrigins(std::set<url::Origin> origins) {
 
 DbStatus FakeDomStorageDatabase::CleanUpStaleData() {
   return DbStatus::OK();
+}
+
+void FakeDomStorageDatabase::Close() {
+  NOTREACHED();
+}
+
+void FakeDomStorageDatabase::DetachFromSequence() {
+  NOTREACHED();
 }
 
 DbStatus FakeDomStorageDatabase::PutVersionForTesting(int64_t version) {

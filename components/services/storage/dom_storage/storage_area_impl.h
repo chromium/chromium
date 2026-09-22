@@ -193,6 +193,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
       GetAllCallback callback) override;
 
   // Committer:
+  bool HasPendingCommit() const override;
   std::optional<DomStorageDatabase::MapBatchUpdate> CollectCommit() override;
   base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 

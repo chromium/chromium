@@ -6,6 +6,7 @@
 
 #include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -334,6 +335,21 @@ DbStatus LocalStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
 DbStatus LocalStorageSqlite::CleanUpStaleData() {
   RETURN_STATUS_ON_ERROR(database_->CheckpointDatabase(/*truncate=*/true));
   return DbStatus::OK();
+}
+
+void LocalStorageSqlite::Close() {
+  NOTREACHED();
+}
+
+void LocalStorageSqlite::DetachFromSequence() {
+  // The dump provider was registered on the sequence this database was opened
+  // on, which is not the one that will use it. Unregister rather than leave it
+  // bound to the wrong sequence.
+  // TODO(crbug.com/377242771): Re-register the dump provider on the adopting
+  // sequence so memory usage reporting resumes.
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+  database_->DetachFromSequence();
 }
 
 void LocalStorageSqlite::MakeAllCommitsFailForTesting() {

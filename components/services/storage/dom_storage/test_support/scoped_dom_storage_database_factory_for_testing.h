@@ -9,16 +9,22 @@
 
 namespace storage {
 
-// Overrides DomStorageDatabaseFactory::Open() for the duration of this object's
-// lifetime. Tests provide a callback that defines the behavior of Open(),
-// including destroying a pre-existing database when `dir_to_destroy` is
-// non-empty.
+// Overrides DomStorageDatabaseFactory::Open() or
+// DomStorageDatabaseFactory::Migrate() for the duration of this object's
+// lifetime. Tests provide a callback that defines the behavior of Open() or
+// Migrate(), including destroying a pre-existing database when `dir_to_destroy`
+// is non-empty.
 class ScopedDomStorageDatabaseFactoryForTesting {
  public:
   using OpenCallback = DomStorageDatabaseFactory::OpenCallback;
+  using MigrationCallback = DomStorageDatabaseFactory::MigrationCallback;
 
   explicit ScopedDomStorageDatabaseFactoryForTesting(
       OpenCallback open_callback);
+
+  explicit ScopedDomStorageDatabaseFactoryForTesting(
+      MigrationCallback migration_callback_);
+
   ~ScopedDomStorageDatabaseFactoryForTesting();
 
   ScopedDomStorageDatabaseFactoryForTesting(
@@ -28,6 +34,7 @@ class ScopedDomStorageDatabaseFactoryForTesting {
 
  private:
   OpenCallback default_open_callback_;
+  MigrationCallback default_migration_callback_;
 };
 
 }  // namespace storage

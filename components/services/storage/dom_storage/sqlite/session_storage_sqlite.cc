@@ -5,6 +5,7 @@
 #include "components/services/storage/dom_storage/sqlite/session_storage_sqlite.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -271,6 +272,19 @@ DbStatus SessionStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
 DbStatus SessionStorageSqlite::CleanUpStaleData() {
   RETURN_STATUS_ON_ERROR(database_->CheckpointDatabase(/*truncate=*/true));
   return DbStatus::OK();
+}
+
+void SessionStorageSqlite::Close() {
+  NOTREACHED();
+}
+
+void SessionStorageSqlite::DetachFromSequence() {
+  // The dump provider was registered on the sequence this database was opened
+  // on, which is not the one that will use it. Unregister rather than leave it
+  // bound to the wrong sequence.
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+  database_->DetachFromSequence();
 }
 
 void SessionStorageSqlite::MakeAllCommitsFailForTesting() {

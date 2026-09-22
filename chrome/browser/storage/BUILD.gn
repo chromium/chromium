@@ -70,7 +70,10 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
 
-    sources = [ "persistent_storage_browsertest.cc" ]
+    sources = [
+      "dom_storage_migration_browsertest.cc",
+      "persistent_storage_browsertest.cc",
+    ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -82,6 +85,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/bookmarks",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/prefs:util",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -94,6 +98,7 @@ if (!is_android) {
       "//components/content_settings/core/browser:cookie_settings",
       "//content/public/browser",
       "//content/public/common",
+      "//content/test:browsertest_support",
       "//content/test:test_support",
       "//net",
       "//net:test_support",

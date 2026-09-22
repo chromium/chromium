@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
+#include "components/services/storage/dom_storage/features.h"
 
 namespace storage {
 
@@ -62,7 +63,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
     const base::FilePath& dir_to_destroy,
     OpenCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> instance(
-      new AsyncDomStorageDatabase(storage_type));
+      new AsyncDomStorageDatabase(storage_type, dir_to_open, memory_dump_id));
 
   DomStorageDatabaseFactory::Open(
       storage_type, dir_to_open, memory_dump_id, dir_to_destroy,
@@ -73,8 +74,14 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
   return instance;
 }
 
-AsyncDomStorageDatabase::AsyncDomStorageDatabase(StorageType storage_type)
-    : storage_type_(storage_type) {}
+AsyncDomStorageDatabase::AsyncDomStorageDatabase(
+    StorageType storage_type,
+    const base::FilePath& dir_to_open,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id)
+    : storage_type_(storage_type),
+      dir_to_open_(dir_to_open),
+      memory_dump_id_(memory_dump_id) {}
 
 AsyncDomStorageDatabase::~AsyncDomStorageDatabase() {
   DCHECK(committers_.empty());
@@ -84,6 +91,14 @@ void AsyncDomStorageDatabase::ReadMapKeyValues(
     DomStorageDatabase::MapLocator map_locator,
     ReadMapKeyValuesCallback callback) {
   CHECK(is_database_opened_);
+
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::ReadMapKeyValues,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(map_locator),
+                       std::move(callback)));
+    return;
+  }
 
   RunTaskOnDbSequenceAndRecordHistograms<
       std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>(
@@ -103,6 +118,13 @@ void AsyncDomStorageDatabase::CloneMap(
     StatusCallback callback) {
   CHECK(is_database_opened_);
 
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(base::BindOnce(
+        &AsyncDomStorageDatabase::CloneMap, weak_ptr_factory_.GetWeakPtr(),
+        std::move(source_map), std::move(target_map), std::move(callback)));
+    return;
+  }
+
   RunTaskOnDbSequenceAndRecordHistograms(
       "CloneMap",
       base::BindOnce(
@@ -120,6 +142,13 @@ void AsyncDomStorageDatabase::ReadAllMetadata(
     ReadAllMetadataCallback callback) {
   CHECK(is_database_opened_);
 
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::ReadAllMetadata,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   RunTaskOnDbSequenceAndRecordHistograms<DomStorageDatabase::Metadata>(
       "ReadAllMetadata", base::BindOnce([](DomStorageDatabase* database) {
         return database->ReadAllMetadata();
@@ -130,6 +159,13 @@ void AsyncDomStorageDatabase::ReadAllMetadata(
 void AsyncDomStorageDatabase::PutMetadata(DomStorageDatabase::Metadata metadata,
                                           StatusCallback callback) {
   CHECK(is_database_opened_);
+
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(base::BindOnce(
+        &AsyncDomStorageDatabase::PutMetadata, weak_ptr_factory_.GetWeakPtr(),
+        std::move(metadata), std::move(callback)));
+    return;
+  }
 
   RunTaskOnDbSequenceAndRecordHistograms(
       "PutMetadata",
@@ -148,6 +184,15 @@ void AsyncDomStorageDatabase::DeleteStorageKeysFromSession(
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
     StatusCallback callback) {
   CHECK(is_database_opened_);
+
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::DeleteStorageKeysFromSession,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(session_id),
+                       std::move(metadata_to_delete), std::move(maps_to_delete),
+                       std::move(callback)));
+    return;
+  }
 
   RunTaskOnDbSequenceAndRecordHistograms(
       "DeleteStorageKeysFromSession",
@@ -171,6 +216,14 @@ void AsyncDomStorageDatabase::DeleteSessions(
     StatusCallback callback) {
   CHECK(is_database_opened_);
 
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::DeleteSessions,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(session_ids),
+                       std::move(maps_to_delete), std::move(callback)));
+    return;
+  }
+
   RunTaskOnDbSequenceAndRecordHistograms(
       "DeleteSessions",
       base::BindOnce(
@@ -188,6 +241,13 @@ void AsyncDomStorageDatabase::PurgeOriginsForShutdown(
     std::set<url::Origin> origins) {
   CHECK(is_database_opened_);
 
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::PurgeOriginsForShutdown,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(origins)));
+    return;
+  }
+
   RunTaskOnDbSequenceAndRecordHistograms(
       "PurgeOrigins",
       base::BindOnce(
@@ -200,6 +260,13 @@ void AsyncDomStorageDatabase::PurgeOriginsForShutdown(
 
 void AsyncDomStorageDatabase::CleanUpStaleData(StatusCallback callback) {
   CHECK(is_database_opened_);
+
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::CleanUpStaleData,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
 
   RunTaskOnDbSequenceAndRecordHistograms(
       "CleanUpStaleData", base::BindOnce([](DomStorageDatabase* database) {
@@ -220,6 +287,13 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
 
 void AsyncDomStorageDatabase::InitiateCommit() {
   CHECK(is_database_opened_);
+
+  if (migration_state_ == MigrationState::kMigrating) {
+    tasks_blocked_on_migration_.push_back(
+        base::BindOnce(&AsyncDomStorageDatabase::InitiateCommit,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   std::vector<DomStorageDatabase::MapBatchUpdate> commits;
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
@@ -256,17 +330,83 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 void AsyncDomStorageDatabase::OnDatabaseOpened(
     OpenCallback callback,
     DomStorageDatabaseFactory::OpenResult result) {
+  CHECK_EQ(migration_state_, MigrationState::kInactive);
   CHECK(!is_database_opened_);
+
   metrics_type_ = result.metrics_type;
   is_sqlite_ = result.is_sqlite;
-  database_ = result.TakeDatabase();
+
   is_database_opened_ = result.open_status.ok();
   if (is_database_opened_) {
+    database_ = result.TakeDatabase();
     CHECK(database_);
+    if (!dir_to_open_.empty() && !is_sqlite_ &&
+        base::FeatureList::IsEnabled(kDomStorageSqliteMigration)) {
+      migration_state_ = MigrationState::kAwaitingIdle;
+      migration_timer_.Start(
+          FROM_HERE, kDomStorageSqliteMigrationInactivityTimeoutParam.Get(),
+          base::BindRepeating(&AsyncDomStorageDatabase::StartMigration,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   std::move(callback).Run(OpenOutcome{std::move(result.open_status),
                                       std::move(result.destroy_outcome)});
+}
+
+void AsyncDomStorageDatabase::ResetMigrationTimer() {
+  if (migration_state_ != MigrationState::kAwaitingIdle) {
+    return;
+  }
+  migration_timer_.Reset();
+}
+
+void AsyncDomStorageDatabase::StartMigration() {
+  CHECK(is_database_opened_);
+  CHECK_EQ(migration_state_, MigrationState::kAwaitingIdle);
+
+  for (Committer* committer : committers_) {
+    if (committer->HasPendingCommit()) {
+      InitiateCommit();
+      return;
+    }
+  }
+
+  migration_state_ = MigrationState::kMigrating;
+
+  database_.PostTaskWithThisObject(
+      base::BindOnce(&DomStorageDatabaseFactory::Migrate, storage_type_,
+                     dir_to_open_, memory_dump_id_,
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &AsyncDomStorageDatabase::OnMigrationFinished,
+                         weak_ptr_factory_.GetWeakPtr()))));
+}
+
+void AsyncDomStorageDatabase::OnMigrationFinished(
+    DomStorageDatabaseFactory::OpenResult result) {
+  CHECK_EQ(migration_state_, MigrationState::kMigrating);
+  CHECK(is_database_opened_);
+
+  if (result.open_status.ok()) {
+    CHECK(result.is_sqlite);
+
+    metrics_type_ = result.metrics_type;
+    is_sqlite_ = true;
+
+    // Replaces LevelDB, which the migration deleted.
+    database_ = result.TakeDatabase();
+    migration_state_ = MigrationState::kCompleted;
+  } else {
+    // The migration failed, leaving the LevelDB intact, so keep using it.
+    migration_state_ = MigrationState::kAborted;
+  }
+
+  // Run any operations that were blocked while migrating.
+  std::vector<base::OnceClosure> tasks_to_run =
+      std::move(tasks_blocked_on_migration_);
+  for (auto& task : tasks_to_run) {
+    std::move(task).Run();
+  }
 }
 
 std::string_view AsyncDomStorageDatabase::StorageTypeForHistograms() const {
@@ -292,6 +432,8 @@ void AsyncDomStorageDatabase::RunTaskOnDbSequenceAndRecordHistograms(
     std::string_view operation,
     base::OnceCallback<DbStatus(DomStorageDatabase*)> db_task,
     StatusCallback callback) {
+  ResetMigrationTimer();
+
   database_.PostTaskWithThisObject(base::BindOnce(
       [](base::OnceCallback<DbStatus(DomStorageDatabase*)> db_task,
          std::string status_histogram_name, std::string duration_histogram_name,
@@ -313,6 +455,8 @@ void AsyncDomStorageDatabase::RunTaskOnDbSequenceAndRecordHistograms(
     std::string_view operation,
     base::OnceCallback<StatusOr<T>(DomStorageDatabase*)> db_task,
     base::OnceCallback<void(StatusOr<T>)> callback) {
+  ResetMigrationTimer();
+
   database_.PostTaskWithThisObject(base::BindOnce(
       [](base::OnceCallback<StatusOr<T>(DomStorageDatabase*)> db_task,
          std::string status_histogram_name, std::string duration_histogram_name,
