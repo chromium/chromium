@@ -161,6 +161,7 @@
   overflow-y: auto;
   padding-bottom: 0;
   padding-inline-end: 20px;
+  padding-inline-start: 20px;
   word-break: break-word;
 }
 
