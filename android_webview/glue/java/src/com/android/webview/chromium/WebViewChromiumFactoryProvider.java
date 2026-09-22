@@ -449,8 +449,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // Since N, getSharedPreferences creates the preference dir if it doesn't exist,
                 // causing a disk write.
                 mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
-                if (controller.isActionEnabled(SafeModeActionIds.DELETE_VARIATIONS_SEED)) {
-                    WebViewCachedFlags.initForSafeMode(mWebViewPrefs);
+                if (isBranchDowngrade(
+                                packageInfo.versionCode, mWebViewPrefs.getInt(VERSION_CODE_PREF, 0))
+                        || controller.isActionEnabled(SafeModeActionIds.DELETE_VARIATIONS_SEED)) {
+                    WebViewCachedFlags.initWithDefaults(mWebViewPrefs);
                 } else {
                     WebViewCachedFlags.init(mWebViewPrefs);
                 }

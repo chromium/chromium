@@ -177,7 +177,7 @@ public class WebViewCachedFlags {
      *
      * @param prefs the SharedPreferences which will be cleared during initialization.
      */
-    public static void initForSafeMode(SharedPreferences prefs) {
+    public static void initWithDefaults(SharedPreferences prefs) {
         synchronized (sLock) {
             assert sInstance == null : "Cannot call WebViewCachedFlags.init more than once.";
             initInternal(prefs, true);
