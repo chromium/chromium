@@ -441,6 +441,16 @@ V5UpdateProtocolManager::ParsedResponse::ParsedResponse(ParsedResponse&&) =
 V5UpdateProtocolManager::ParsedResponse&
 V5UpdateProtocolManager::ParsedResponse::operator=(ParsedResponse&&) = default;
 
+void V5UpdateProtocolManager::ResetUpdateErrors() {
+  update_error_count_ = 0;
+  update_back_off_mult_ = 1;
+}
+
+base::TimeDelta V5UpdateProtocolManager::GetNextBackOffInterval() {
+  return SBProtocolManagerUtil::GetNextBackOffInterval(&update_error_count_,
+                                                       &update_back_off_mult_);
+}
+
 void V5UpdateProtocolManager::RecordProtocolSpecificNextUpdateInterval(
     base::TimeDelta interval) {
   base::UmaHistogramCustomTimes("SafeBrowsing.V5Update.NextUpdateInterval",

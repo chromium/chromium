@@ -95,7 +95,9 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
   void ScheduleNextUpdateAfterInterval(base::TimeDelta interval);
 
  private:
-  // SBUpdateProtocolManager override:
+  // SBUpdateProtocolManager overrides:
+  void ResetUpdateErrors() override;
+  base::TimeDelta GetNextBackOffInterval() override;
   void RecordProtocolSpecificNextUpdateInterval(
       base::TimeDelta interval) override;
 
@@ -111,6 +113,13 @@ class V4UpdateProtocolManager : public SBUpdateProtocolManager {
   base::OneShotTimer timeout_timer_;
 
   ExtendedReportingLevelCallback extended_reporting_level_callback_;
+
+  // The number of HTTP response errors since the last successful HTTP
+  // response, used for request backoff timing.
+  size_t update_error_count_ = 0;
+
+  // Multiplier for the backoff error after the second.
+  size_t update_back_off_mult_ = 1;
 };
 
 }  // namespace safe_browsing

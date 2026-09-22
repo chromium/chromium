@@ -357,6 +357,16 @@ void V4UpdateProtocolManager::GetUpdateUrlAndHeaders(
       req_base64, "threatListUpdates:fetch", config_, gurl, headers);
 }
 
+void V4UpdateProtocolManager::ResetUpdateErrors() {
+  update_error_count_ = 0;
+  update_back_off_mult_ = 1;
+}
+
+base::TimeDelta V4UpdateProtocolManager::GetNextBackOffInterval() {
+  return SBProtocolManagerUtil::GetNextBackOffInterval(&update_error_count_,
+                                                       &update_back_off_mult_);
+}
+
 void V4UpdateProtocolManager::RecordProtocolSpecificNextUpdateInterval(
     base::TimeDelta interval) {
   base::UmaHistogramCustomTimes("SafeBrowsing.V4Update.NextUpdateInterval",

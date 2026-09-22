@@ -63,11 +63,6 @@ SBUpdateProtocolManager::~SBUpdateProtocolManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void SBUpdateProtocolManager::ResetUpdateErrors() {
-  update_error_count_ = 0;
-  update_back_off_mult_ = 1;
-}
-
 bool SBUpdateProtocolManager::IsUpdateScheduled() const {
   return update_timer_.IsRunning();
 }
@@ -80,8 +75,7 @@ base::TimeDelta SBUpdateProtocolManager::GetNextUpdateInterval(bool back_off) {
 
   base::TimeDelta next = next_update_interval_;
   if (back_off) {
-    next = SBProtocolManagerUtil::GetNextBackOffInterval(
-        &update_error_count_, &update_back_off_mult_);
+    next = GetNextBackOffInterval();
   }
 
   base::UmaHistogramCustomTimes("SafeBrowsing.SBUpdate.NextUpdateInterval",

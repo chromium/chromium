@@ -97,8 +97,12 @@ class SBUpdateProtocolManager {
   // Records the network response code of the last update
   int last_response_code_ = 0;
 
-  // Resets the update error counter and multiplier.
-  void ResetUpdateErrors();
+  // Resets the update error state for backoff timing.
+  virtual void ResetUpdateErrors() = 0;
+
+  // Updates internal backoff state for an error and returns the next backoff
+  // interval.
+  virtual base::TimeDelta GetNextBackOffInterval() = 0;
 
   // Returns whether another update is currently scheduled.
   bool IsUpdateScheduled() const;
@@ -139,14 +143,6 @@ class SBUpdateProtocolManager {
   base::Time last_response_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  // The number of HTTP response errors since the the last successful HTTP
-  // response, used for request backoff timing.
-  size_t update_error_count_ = 0;
-
-  // Multiplier for the backoff error after the second.
-  size_t update_back_off_mult_ = 1;
 };
 
 }  // namespace safe_browsing

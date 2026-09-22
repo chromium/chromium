@@ -190,12 +190,21 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
       base::TimeDelta interval,
       std::vector<ListIdentifierAndVersion> list_identifier_to_version_mapping);
 
-  // SBUpdateProtocolManager override:
+  // SBUpdateProtocolManager overrides:
+  void ResetUpdateErrors() override;
+  base::TimeDelta GetNextBackOffInterval() override;
   void RecordProtocolSpecificNextUpdateInterval(
       base::TimeDelta interval) override;
 
   // The callback that's called when fetching lists completes.
   V5UpdateCallback update_callback_;
+
+  // The number of HTTP response errors since the last successful HTTP
+  // response, used for request backoff timing.
+  size_t update_error_count_ = 0;
+
+  // Multiplier for the backoff error after the second.
+  size_t update_back_off_mult_ = 1;
 
   base::WeakPtrFactory<V5UpdateProtocolManager> weak_factory_{this};
 };
