@@ -85,6 +85,7 @@ import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.Selection;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
@@ -98,7 +99,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -1758,11 +1758,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
             return false;
         } else if (action == ACTION_SET_EXTENDED_SELECTION.getId()) {
-            if (!ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
                 return false;
             }
-            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate == null || !delegate.isActionSetExtendedSelectionSupported()) {
+            if (!ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
                 return false;
             }
             if (arguments == null) {
@@ -1774,16 +1773,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // Since `delegate.isActionSetExtendedSelectionSupported()` is true, extended
             // selection should be readable and hence a null value for start node means
             // that `node.getSelection()` has returned null.
-            var selectionStart = delegate.getActionSetExtendedSelectionStartArgument(arguments);
-            if (selectionStart == null) {
-                return WebContentsAccessibilityImplJni.get()
-                        .clearExtendedSelection(mNativeObj, virtualViewId);
-            }
-
-            var selectionEnd = delegate.getActionSetExtendedSelectionEndArgument(arguments);
-            // This is not expected since start node is not null, but since the error is
-            // from the platform, assume selection is cleared.
-            if (selectionEnd == null) {
+            Selection selection =
+                    arguments.getParcelable(
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_PARCELABLE,
+                            Selection.class);
+            if (selection == null) {
                 return WebContentsAccessibilityImplJni.get()
                         .clearExtendedSelection(mNativeObj, virtualViewId);
             }
@@ -1794,15 +1788,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             int endOffsetType =
                     arguments.getInt(EXTRA_SELECTION_END_OFFSET_TYPE, OFFSET_TYPE_TEXT);
 
+            var selectionStart = selection.getStart();
+            var selectionEnd = selection.getEnd();
             return WebContentsAccessibilityImplJni.get()
                     .setExtendedSelection(
                             mNativeObj,
                             virtualViewId,
-                            /* startNodeId= */ selectionStart.first,
-                            /* startNodeOffset= */ selectionStart.second,
+                            /* startNodeId= */ selectionStart.getVirtualDescendantId(),
+                            /* startNodeOffset= */ selectionStart.getOffset(),
                             /* startOffsetType= */ startOffsetType,
-                            /* endNodeId= */ selectionEnd.first,
-                            /* endNodeOffset= */ selectionEnd.second,
+                            /* endNodeId= */ selectionEnd.getVirtualDescendantId(),
+                            /* endNodeOffset= */ selectionEnd.getOffset(),
                             /* endOffsetType= */ endOffsetType);
         } else if (action == ACTION_SHOW_TOOLTIP.getId()) {
             return WebContentsAccessibilityImplJni.get().showTooltip(mNativeObj, virtualViewId);

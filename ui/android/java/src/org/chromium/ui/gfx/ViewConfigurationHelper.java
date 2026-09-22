@@ -14,11 +14,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
  * This class facilitates access to ViewConfiguration-related properties, also providing native-code
@@ -127,12 +127,7 @@ public class ViewConfigurationHelper {
 
     @CalledByNative
     private int getTextCursorBlinkInterval() {
-        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
-                AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            return AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-        }
-        return aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
+        return AccessibilityState.getTextCursorBlinkInterval();
     }
 
     private int getScaledMinScalingSpan() {

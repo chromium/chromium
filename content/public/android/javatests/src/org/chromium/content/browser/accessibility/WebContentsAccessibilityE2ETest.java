@@ -921,13 +921,9 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION})
     public void testExtendedSelection() throws Throwable {
-        Assume.assumeTrue(
-                "Requires Android 16 QPR2 (36.1) or higher",
-                Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1);
-
         String html =
                 """
                 <p id="p1">Paragraph1</p>

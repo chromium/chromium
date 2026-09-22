@@ -26,6 +26,12 @@ import java.util.WeakHashMap;
 @JNINamespace("ui")
 @NullMarked
 public class AccessibilityState {
+    /**
+     * The default text cursor blink interval in milliseconds. This value is used as a fallback on
+     * versions of Android where the setting is not user-configurable.
+     */
+    public static final int DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS = 500;
+
     public static final int EVENT_TYPE_MASK_ALL = ~0;
     public static final int EVENT_TYPE_MASK_NONE = 0;
 

@@ -34,7 +34,6 @@ import android.view.autofill.AutofillManager;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -142,8 +141,7 @@ class AccessibilityStateDelegateImpl
     private boolean mDisplayInversionEnabled;
     private boolean mHighContrastEnabled;
     private int mFontWeightAdjustment;
-    private int mTextCursorBlinkInterval =
-            AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+    private int mTextCursorBlinkInterval = AccessibilityState.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     private float mAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
@@ -367,13 +365,16 @@ class AccessibilityStateDelegateImpl
                         Settings.Global.ANIMATOR_DURATION_SCALE,
                         1f);
 
-        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
-                AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate != null) {
-            mTextCursorBlinkInterval = aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
-        } else {
+        // This settings check only works reliably without security violations on CINNAMON_BUN+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
             mTextCursorBlinkInterval =
-                    AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+                    Settings.Secure.getInt(
+                            context.getContentResolver(),
+                            /* Settings.Secure.ACCESSIBILITY_TEXT_CURSOR_BLINK_INTERVAL_MS */
+                            "accessibility_text_cursor_blink_interval_ms",
+                            AccessibilityState.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS);
+        } else {
+            mTextCursorBlinkInterval = AccessibilityState.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
         }
 
         int highTextContrastEnabled =
@@ -940,7 +941,7 @@ class AccessibilityStateDelegateImpl
         mHighContrastEnabled = false;
         mAnimatorDurationScale = 1f;
         mAccessibilityManager = null;
-        mTextCursorBlinkInterval = AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        mTextCursorBlinkInterval = AccessibilityState.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     }
 
     private void processServicesChange() {
