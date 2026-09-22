@@ -93,6 +93,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   void MarkAsFromPrivileged();
   bool IsFromPrivileged() const;
 
+  // Attaches and retrieves an opaque identifier for a drag initiated by Chrome.
+  void SetChromeDragId(const base::UnguessableToken& drag_id);
+  std::optional<base::UnguessableToken> GetChromeDragId() const;
+
   // These functions add data to the OSExchangeData object of various Chrome
   // types. The OSExchangeData object takes care of translating the data into
   // a format suitable for exchange with the OS.

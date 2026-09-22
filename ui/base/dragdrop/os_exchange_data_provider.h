@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_url_info.h"
@@ -69,6 +70,9 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
   virtual void MarkAsFromPrivileged() = 0;
   virtual bool IsFromPrivileged() const = 0;
+
+  virtual void SetChromeDragId(const base::UnguessableToken& drag_id) = 0;
+  virtual std::optional<base::UnguessableToken> GetChromeDragId() const = 0;
 
   virtual void SetString(std::u16string_view data) = 0;
   virtual void SetURLs(base::span<const ClipboardUrlInfo> url_infos) = 0;

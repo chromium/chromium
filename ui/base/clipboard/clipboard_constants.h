@@ -121,6 +121,11 @@ extern NSString* const kUTTypeChromiumPrivilegedInitiatedDrag;
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumRendererInitiatedDrag;
 
+// Data type placed on dragging pasteboards to track the originating Chrome
+// drag identifier without exposing custom DataTransfer types to web renderers.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern NSString* const kUTTypeChromiumDragId;
+
 // A type specifying DataTransfer custom data. The data is pickled.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumDataTransferCustomData;

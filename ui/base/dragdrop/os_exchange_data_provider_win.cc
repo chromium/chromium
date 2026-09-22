@@ -81,6 +81,7 @@ void PopulateFileDescriptorName(FILEDESCRIPTORW& dsc,
 
 const ClipboardFormatType& GetRendererTaintFormatType();
 const ClipboardFormatType& GetFromPrivilegedFormatType();
+const ClipboardFormatType& GetChromeDragIdFormatType();
 const ClipboardFormatType& GetIgnoreFileContentsFormatType();
 // Creates the contents of an Internet Shortcut file for the given URL.
 std::vector<uint8_t> GetInternetShortcutFileContents(const GURL& url);
@@ -403,6 +404,28 @@ void OSExchangeDataProviderWin::MarkAsFromPrivileged() {
 
 bool OSExchangeDataProviderWin::IsFromPrivileged() const {
   return HasCustomFormat(GetFromPrivilegedFormatType());
+}
+
+void OSExchangeDataProviderWin::SetChromeDragId(
+    const base::UnguessableToken& drag_id) {
+  base::Pickle pickle;
+  pickle.WriteString(drag_id.ToString());
+  SetPickledData(GetChromeDragIdFormatType(), pickle);
+}
+
+std::optional<base::UnguessableToken>
+OSExchangeDataProviderWin::GetChromeDragId() const {
+  std::optional<base::Pickle> pickle =
+      GetPickledData(GetChromeDragIdFormatType());
+  if (!pickle.has_value()) {
+    return std::nullopt;
+  }
+  base::PickleIterator iter(*pickle);
+  std::string_view drag_id_str;
+  if (!iter.ReadStringPiece(&drag_id_str)) {
+    return std::nullopt;
+  }
+  return base::UnguessableToken::DeserializeFromString(drag_id_str);
 }
 
 void OSExchangeDataProviderWin::SetString(std::u16string_view data) {
@@ -1534,6 +1557,12 @@ const ClipboardFormatType& GetRendererTaintFormatType() {
 const ClipboardFormatType& GetFromPrivilegedFormatType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ClipboardFormatType::CustomPlatformType("chromium/from-privileged"));
+  return *format;
+}
+
+const ClipboardFormatType& GetChromeDragIdFormatType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ClipboardFormatType::CustomPlatformType("chromium/x-drag-id"));
   return *format;
 }
 

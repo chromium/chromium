@@ -364,4 +364,19 @@ TEST_F(OSExchangeDataTest, RendererTaintedTupleOrigin) {
   EXPECT_EQ(tuple_origin, origin);
 }
 
+TEST_F(OSExchangeDataTest, ChromeDragId) {
+  const base::UnguessableToken drag_id = base::UnguessableToken::Create();
+
+  OSExchangeData empty_data;
+  EXPECT_FALSE(empty_data.GetChromeDragId().has_value());
+
+  const OSExchangeData copy([&] {
+    OSExchangeData data;
+    data.SetChromeDragId(drag_id);
+    return data.provider().Clone();
+  }());
+
+  EXPECT_EQ(drag_id, copy.GetChromeDragId());
+}
+
 }  // namespace ui

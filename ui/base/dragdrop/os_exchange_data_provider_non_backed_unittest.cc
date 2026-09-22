@@ -50,6 +50,8 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
                            kFileContents);
   original.SetHtml(kHtml, GURL(kBaseUrl));
   original.MarkRendererTaintedFromOrigin(url::Origin());
+  const base::UnguessableToken drag_id = base::UnguessableToken::Create();
+  original.SetChromeDragId(drag_id);
   GURL url("https://www.example.com");
   original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
@@ -84,6 +86,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(GURL(kBaseUrl), html_content->base_url);
 
   EXPECT_TRUE(copy->IsRendererTainted());
+  EXPECT_EQ(drag_id, copy->GetChromeDragId());
 
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);

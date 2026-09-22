@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
+  void SetChromeDragId(const base::UnguessableToken& drag_id) override;
+  std::optional<base::UnguessableToken> GetChromeDragId() const override;
   void SetString(std::u16string_view data) override;
   void SetURLs(base::span<const ClipboardUrlInfo> url_infos) override;
   void SetFilename(const base::FilePath& path) override;
@@ -90,6 +92,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   // Drag image and offset data.
   gfx::ImageSkia drag_image_;
   gfx::Vector2d cursor_offset_;
+  std::optional<base::UnguessableToken> chrome_drag_id_;
 };
 
 }  // namespace ui

@@ -19,6 +19,8 @@ NSString* const kUTTypeChromiumPrivilegedInitiatedDrag =
 NSString* const kUTTypeChromiumRendererInitiatedDrag =
     @"org.chromium.chromium-renderer-initiated-drag";
 
+NSString* const kUTTypeChromiumDragId = @"org.chromium.drag-id";
+
 NSString* const kUTTypeChromiumDataTransferCustomData =
     @"org.chromium.web-custom-data";
 

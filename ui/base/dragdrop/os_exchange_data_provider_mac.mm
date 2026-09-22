@@ -179,6 +179,26 @@ bool OSExchangeDataProviderMac::IsFromPrivileged() const {
       containsObject:kUTTypeChromiumPrivilegedInitiatedDrag];
 }
 
+void OSExchangeDataProviderMac::SetChromeDragId(
+    const base::UnguessableToken& drag_id) {
+  chrome_drag_id_ = drag_id;
+  [GetPasteboard() setString:base::SysUTF8ToNSString(drag_id.ToString())
+                     forType:kUTTypeChromiumDragId];
+}
+
+std::optional<base::UnguessableToken>
+OSExchangeDataProviderMac::GetChromeDragId() const {
+  if (chrome_drag_id_.has_value()) {
+    return chrome_drag_id_;
+  }
+  NSString* item = [GetPasteboard() stringForType:kUTTypeChromiumDragId];
+  if (!item) {
+    return std::nullopt;
+  }
+  return base::UnguessableToken::DeserializeFromString(
+      base::SysNSStringToUTF8(item));
+}
+
 void OSExchangeDataProviderMac::SetString(std::u16string_view string) {
   [GetPasteboard() setString:base::SysUTF16ToNSString(string)
                      forType:NSPasteboardTypeString];
@@ -383,9 +403,9 @@ NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
     kUTTypeChromiumInitiatedDrag, kUTTypeChromiumPrivilegedInitiatedDrag,
     kUTTypeChromiumRendererInitiatedDrag, kUTTypeChromiumDataTransferCustomData,
-    kUTTypeWebKitWebUrlsWithTitles, kUTTypeChromiumSourceUrl,
-    NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
-    NSPasteboardTypeString, NSPasteboardTypeURL
+    kUTTypeChromiumDragId, kUTTypeWebKitWebUrlsWithTitles,
+    kUTTypeChromiumSourceUrl, NSPasteboardTypeFileURL, NSPasteboardTypeHTML,
+    NSPasteboardTypeRTF, NSPasteboardTypeString, NSPasteboardTypeURL
   ];
 }
 

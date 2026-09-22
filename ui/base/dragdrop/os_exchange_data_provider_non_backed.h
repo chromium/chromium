@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
+  void SetChromeDragId(const base::UnguessableToken& drag_id) override;
+  std::optional<base::UnguessableToken> GetChromeDragId() const override;
   void SetString(std::u16string_view data) override;
   void SetURLs(base::span<const ClipboardUrlInfo> url_infos) override;
   void SetFilename(const base::FilePath& path) override;
@@ -135,6 +137,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
 
   // For marking data originating by privileged WebContents.
   bool is_from_privileged_ = false;
+
+  // Opaque Chrome drag identifier.
+  std::optional<base::UnguessableToken> chrome_drag_id_;
 
   // Data source.
   std::unique_ptr<DataTransferEndpoint> source_;

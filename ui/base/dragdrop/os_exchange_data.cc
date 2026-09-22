@@ -48,6 +48,14 @@ bool OSExchangeData::IsFromPrivileged() const {
   return provider_->IsFromPrivileged();
 }
 
+void OSExchangeData::SetChromeDragId(const base::UnguessableToken& drag_id) {
+  provider_->SetChromeDragId(drag_id);
+}
+
+std::optional<base::UnguessableToken> OSExchangeData::GetChromeDragId() const {
+  return provider_->GetChromeDragId();
+}
+
 void OSExchangeData::SetString(std::u16string_view data) {
   provider_->SetString(data);
 }

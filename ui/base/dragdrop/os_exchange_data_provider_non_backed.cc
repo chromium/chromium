@@ -63,6 +63,16 @@ bool OSExchangeDataProviderNonBacked::IsFromPrivileged() const {
   return is_from_privileged_;
 }
 
+void OSExchangeDataProviderNonBacked::SetChromeDragId(
+    const base::UnguessableToken& drag_id) {
+  chrome_drag_id_ = drag_id;
+}
+
+std::optional<base::UnguessableToken>
+OSExchangeDataProviderNonBacked::GetChromeDragId() const {
+  return chrome_drag_id_;
+}
+
 void OSExchangeDataProviderNonBacked::SetString(std::u16string_view data) {
   if (HasString())
     return;
@@ -308,6 +318,7 @@ void OSExchangeDataProviderNonBacked::CopyData(
               : nullptr;
   provider->tainted_by_renderer_origin_ = tainted_by_renderer_origin_;
   provider->is_from_privileged_ = is_from_privileged_;
+  provider->chrome_drag_id_ = chrome_drag_id_;
   provider->drag_image_ = drag_image_;
   provider->drag_image_offset_ = drag_image_offset_;
 }

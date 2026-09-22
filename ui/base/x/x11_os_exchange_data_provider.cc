@@ -43,6 +43,7 @@ namespace {
 const char kDndSelection[] = "XdndSelection";
 const char kRendererTaint[] = "chromium/x-renderer-taint";
 const char kFromPrivileged[] = "chromium/from-privileged";
+const char kChromeDragId[] = "chromium/x-drag-id";
 
 const char kNetscapeURL[] = "_NETSCAPE_URL";
 
@@ -140,6 +141,25 @@ void XOSExchangeDataProvider::MarkAsFromPrivileged() {
 
 bool XOSExchangeDataProvider::IsFromPrivileged() const {
   return format_map_.find(x11::GetAtom(kFromPrivileged)) != format_map_.end();
+}
+
+void XOSExchangeDataProvider::SetChromeDragId(
+    const base::UnguessableToken& drag_id) {
+  format_map_.Insert(
+      x11::GetAtom(kChromeDragId),
+      base::MakeRefCounted<base::RefCountedString>(drag_id.ToString()));
+}
+
+std::optional<base::UnguessableToken> XOSExchangeDataProvider::GetChromeDragId()
+    const {
+  ui::SelectionData data = format_map_.Get(x11::GetAtom(kChromeDragId));
+  if (!data.IsValid()) {
+    return std::nullopt;
+  }
+
+  std::string data_as_string;
+  data.AssignTo(&data_as_string);
+  return base::UnguessableToken::DeserializeFromString(data_as_string);
 }
 
 void XOSExchangeDataProvider::SetString(std::u16string_view text_data) {
