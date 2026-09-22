@@ -99,8 +99,10 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/font_family_cache.h"
+#include "chrome/browser/glic/host/glic_url_loader_throttle.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_cors_exempt_headers.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -6170,6 +6172,11 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     result.push_back(std::move(contextual_tasks_throttle));
   }
 
+  if (auto glic_throttle = glic::GlicURLLoaderThrottle::MaybeCreate(
+          browser_context, wc_getter, frame_tree_node_id, request)) {
+    result.push_back(std::move(glic_throttle));
+  }
+
   return result;
 }
 
@@ -6806,6 +6813,11 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
       frame, factory_builder, header_client);
 #endif  // BUILDFLAG (ENABLE_EXTENSIONS_CORE)
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+  if (type == URLLoaderFactoryType::kDocumentSubResource) {
+    glic::GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
+        frame, factory_builder);
+  }
 
   MaybeSetTargetNetwork(GetBoundNetworkFromRenderFrameHost(frame),
                         factory_builder, is_for_network_service);
@@ -9748,6 +9760,7 @@ void ChromeContentBrowserClient::UpdateCorsExemptHeaderForPrefetch(
         UpdateCorsExemptHeaders(params);
   }
 #endif
+  glic::UpdateCorsExemptHeaders(params);
 }
 
 bool ChromeContentBrowserClient::IsFullscreenAllowedForUnfocusedWebContents(

@@ -31,6 +31,7 @@
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
+#include "chrome/browser/glic/public/glic_cors_exempt_headers.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
 #include "chrome/browser/net/default_dns_over_https_config_source.h"
@@ -979,6 +980,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #endif  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
   network_context_params->cors_exempt_header_list.push_back(
       contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName);
+  glic::UpdateCorsExemptHeaders(network_context_params);
 
   network_context_params->enable_zstd = true;
 

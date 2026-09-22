@@ -3652,9 +3652,6 @@ class GlicApiTestWithRequestMonitor : public GlicApiTest {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
-  if (GetParam().no_webview) {
-    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
-  }
   ASSERT_OK(OpenGlicForActiveTab());
   const GURL cross_origin_rpc_url =
       embedded_https_test_server().GetURL("b.com", "/fake-rpc/cors");

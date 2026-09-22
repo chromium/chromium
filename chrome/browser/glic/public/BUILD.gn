@@ -12,3 +12,11 @@ source_set("features") {
     "//build:android_buildflags",
   ]
 }
+
+source_set("cors_exempt_headers") {
+  sources = [
+    "glic_cors_exempt_headers.cc",
+    "glic_cors_exempt_headers.h",
+  ]
+  deps = [ "//services/network/public/mojom" ]
+}
