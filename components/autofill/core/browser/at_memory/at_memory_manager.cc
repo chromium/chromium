@@ -386,15 +386,15 @@ Suggestion AtMemoryManager::CreateSourceAttributionSuggestion() {
 AtMemoryManager::AtMemoryManager(AutofillClient* client,
                                  history::HistoryService* history_service)
     : client_(CHECK_DEREF(client)),
-      state_manager_(
-          history_service,
-          client->GetPrefs(),
-          client->GetPersonalContextEligibilityService(),
-          // `base::Unretained(this)` is safe because `state_manager_` is a
-          // direct member of `this` and does not invoke the callback during
-          // destruction.
-          base::BindRepeating(&AtMemoryManager::OnStateReset,
-                              base::Unretained(this))) {}
+      state_manager_(history_service,
+                     client->GetPrefs(),
+                     client_->GetIdentityManager(),
+                     client->GetPersonalContextEligibilityService(),
+                     // `base::Unretained(this)` is safe because
+                     // `state_manager_` is a direct member of `this` and does
+                     // not invoke the callback during destruction.
+                     base::BindRepeating(&AtMemoryManager::OnStateReset,
+                                         base::Unretained(this))) {}
 
 AtMemoryManager::~AtMemoryManager() = default;
 

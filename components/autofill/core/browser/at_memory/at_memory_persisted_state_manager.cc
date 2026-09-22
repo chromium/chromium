@@ -91,6 +91,7 @@ bool IsSpiiSuggestion(const Suggestion& suggestion) {
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
     history::HistoryService* history_service,
     PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
     personal_context::PersonalContextEligibilityService* eligibility_service,
     base::RepeatingClosure on_reset_callback)
     : on_reset_callback_(std::move(on_reset_callback)) {
@@ -104,6 +105,9 @@ AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
             kPersonalContextInAutofillSettingsToggleStatus,
         base::BindRepeating(&AtMemoryPersistedStateManager::OnPrefChanged,
                             base::Unretained(this)));
+  }
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
   }
   if (eligibility_service) {
     eligibility_service_observation_.Observe(eligibility_service);
@@ -233,6 +237,19 @@ void AtMemoryPersistedStateManager::OnEligibilityStateChanged(
       Reset();
       break;
   }
+}
+
+void AtMemoryPersistedStateManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    Reset();
+  }
+}
+
+void AtMemoryPersistedStateManager::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
 }
 
 void AtMemoryPersistedStateManager::Reset() {

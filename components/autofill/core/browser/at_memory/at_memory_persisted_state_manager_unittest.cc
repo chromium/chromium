@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -26,6 +27,7 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -84,7 +86,8 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
     state_manager_ = std::make_unique<AtMemoryPersistedStateManager>(
-        /*history_service=*/nullptr, &pref_service_, &eligibility_service_,
+        /*history_service=*/nullptr, &pref_service_,
+        identity_test_env_.identity_manager(), &eligibility_service_,
         /*on_reset_callback=*/base::DoNothing());
   }
 
@@ -96,6 +99,9 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
   FakePersonalContextEligibilityService& eligibility_service() {
     return eligibility_service_;
   }
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -103,6 +109,7 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestingPrefServiceSimple pref_service_;
   FakePersonalContextEligibilityService eligibility_service_;
+  signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<AtMemoryPersistedStateManager> state_manager_;
   FieldGlobalId field_id_{test::MakeFieldGlobalId()};
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
@@ -655,6 +662,49 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests that signing out clears persisted search state and previously filled
+// suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       SignOutClearsPersistedStateAndPreviouslyFilledSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  identity_test_env().MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"Suggestion 1", SuggestionType::kAtMemorySearchResult));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  identity_test_env().ClearPrimaryAccount();
+
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Tests that switching from one primary account to another clears persisted
+// search state and previously filled suggestions.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       PrimaryAccountSwitchClearsPersistedStateAndPreviouslyFilledSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+  identity_test_env().MakePrimaryAccountAvailable(
+      "user1@example.com", signin::ConsentLevel::kSignin);
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"Suggestion 1", SuggestionType::kAtMemorySearchResult));
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"address");
+
+  identity_test_env().MakePrimaryAccountAvailable(
+      "user2@example.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
 // Tests that persisted search state expires and is reset after the inactivity
 // TTL (30 minutes).
 TEST_F(AtMemoryPersistedStateManagerTest, StateExpiresAfterTtl) {
@@ -796,17 +846,21 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 }
 
 // Tests that the `on_reset_callback` passed to the constructor is called when
-// the state is reset (e.g. by history deletion or settings change).
+// the state is reset (e.g. by history deletion, settings change, or account
+// change).
 TEST_F(AtMemoryPersistedStateManagerTest, OnResetCallbackInvokedOnReset) {
   base::MockRepeatingClosure reset_callback;
   AtMemoryPersistedStateManager custom_state_manager(
-      /*history_service=*/nullptr, &pref_service(), &eligibility_service(),
+      /*history_service=*/nullptr, &pref_service(),
+      identity_test_env().identity_manager(), &eligibility_service(),
       reset_callback.Get());
 
-  EXPECT_CALL(reset_callback, Run);
+  EXPECT_CALL(reset_callback, Run).Times(2);
   pref_service().SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
+  identity_test_env().MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
 }
 
 }  // namespace

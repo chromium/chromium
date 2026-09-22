@@ -22,6 +22,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/origin.h"
 
 class PrefService;
@@ -49,7 +50,8 @@ namespace autofill {
 // a query.
 class AtMemoryPersistedStateManager
     : public history::HistoryServiceObserver,
-      public personal_context::PersonalContextEligibilityService::Observer {
+      public personal_context::PersonalContextEligibilityService::Observer,
+      public signin::IdentityManager::Observer {
  public:
   struct ExpiringSuggestion {
     Suggestion suggestion;
@@ -63,6 +65,7 @@ class AtMemoryPersistedStateManager
   AtMemoryPersistedStateManager(
       history::HistoryService* history_service,
       PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
       personal_context::PersonalContextEligibilityService* eligibility_service,
       base::RepeatingClosure on_reset_callback);
   ~AtMemoryPersistedStateManager() override;
@@ -103,6 +106,12 @@ class AtMemoryPersistedStateManager
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  private:
   // Resets the persisted state, clears `previously_filled_suggestions_`, and
   // executes `on_reset_callback_`.
@@ -134,6 +143,9 @@ class AtMemoryPersistedStateManager
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   base::ScopedObservation<
       personal_context::PersonalContextEligibilityService,
       personal_context::PersonalContextEligibilityService::Observer>
