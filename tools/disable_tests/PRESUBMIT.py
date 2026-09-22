@@ -9,6 +9,11 @@ for more details on the presubmit API built into depot_tools.
 
 
 def _CommonChecks(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='tests')
+  ):
+    return []
   results = []
   disabled_warnings = [
     'anomalous-backslash-in-string',

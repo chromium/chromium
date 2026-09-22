@@ -12,6 +12,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPyLint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   output = []
   # These tools don't run on Windows so these tests don't work and give many
   # verbose and cryptic failure messages.

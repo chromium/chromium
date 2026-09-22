@@ -58,6 +58,8 @@ PYLINT_FILES_TO_SKIP = [
 
 def CheckExterns(input_api, output_api):
   """Make sure tool changes update the generated externs."""
+  if not input_api.HasAffectedFiles(extensions=('.py', '.json', '.idl')):
+    return []
   original_sys_path = sys.path
   try:
     sys.path.insert(0, input_api.PresubmitLocalPath())
@@ -71,6 +73,8 @@ def CheckExterns(input_api, output_api):
 
 
 def CheckPylint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   disabled_warnings = [
     'bad-indentation',
     'consider-using-dict-items',
@@ -92,6 +96,11 @@ def CheckPylint(input_api, output_api):
 
 
 def CheckTests(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='test')
+  ):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api, output_api, '.', files_to_check=TEST_FILE_PATTERN
   )

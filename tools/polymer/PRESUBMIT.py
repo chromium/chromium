@@ -20,23 +20,21 @@ def RunPolymerTests(input_api, output_api):
   return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
+_SOURCES = [
+  'html_to_js.py',
+  'html_to_wrapper.py',
+  'css_minifier.js',
+  'css_to_wrapper.py',
+  'html_to_js_test.py',
+  'html_to_wrapper_test.py',
+  'css_to_wrapper_test.py',
+]
+
+
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
-  results = []
-  affected = input_api.AffectedFiles()
-
-  webui_sources = set(
-    [
-      'html_to_js.py',
-      'html_to_wrapper.py',
-      'css_minifier.js',
-      'css_to_wrapper.py',
-    ]
-  )
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-  if webui_sources.intersection(set(affected_files)):
-    results += RunPolymerTests(input_api, output_api)
-
-  return results
+  if not input_api.HasAffectedFiles(path=_SOURCES):
+    return []
+  return RunPolymerTests(input_api, output_api)
 
 
 def CheckChangeOnUpload(input_api, output_api):

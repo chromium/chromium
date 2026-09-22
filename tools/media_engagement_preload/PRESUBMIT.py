@@ -8,11 +8,9 @@
 
 def _RunMakeDafsaTests(input_api, output_api):
   """Runs unittest for make_dafsa if any related file has been modified."""
-  files = (
-    'tools/media_engagement_preload/make_dafsa.py',
-    'tools/media_engagement_preload/make_dafsa_unittest.py',
-  )
-  if not any(f in input_api.LocalPaths() for f in files):
+  if not input_api.HasAffectedFiles(
+    path=['make_dafsa.py', 'make_dafsa_unittest.py']
+  ):
     return []
 
   return input_api.RunTests(

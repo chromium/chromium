@@ -12,6 +12,8 @@ def CheckChangeOnCommit(*args):
 
 
 def _CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   cwd = input_api.PresubmitLocalPath()
   path = input_api.os_path
   files = [path.basename(f.LocalPath()) for f in input_api.AffectedFiles()]

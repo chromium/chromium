@@ -10,6 +10,8 @@ for more details on the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   output = []
   disabled_warnings = [
     'bad-indentation',

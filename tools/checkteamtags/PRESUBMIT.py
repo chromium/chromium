@@ -19,6 +19,8 @@ def CheckChangeOnCommit(input_api, output_api):
 
 def _CommonChecks(input_api, output_api):
   """Does all presubmit checks for chekteamtags."""
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   results = []
   results.extend(_RunUnitTests(input_api, output_api))
   results.extend(_RunPyLint(input_api, output_api))

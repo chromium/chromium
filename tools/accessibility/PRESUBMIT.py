@@ -7,6 +7,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPythonUnittestsPass(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   results = []
   this_dir = input_api.PresubmitLocalPath()
 

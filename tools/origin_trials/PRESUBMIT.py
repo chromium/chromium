@@ -4,6 +4,8 @@
 
 
 def _CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   results = []
 
   # Run Pylint over the files in the directory.

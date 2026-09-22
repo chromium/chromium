@@ -12,6 +12,9 @@ import sys
 
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
+
   def join(*args):
     return input_api.os_path.join(input_api.PresubmitLocalPath(), *args)
 

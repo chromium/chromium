@@ -9,6 +9,11 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPythonTests(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='tests')
+  ):
+    return []
   local_path = input_api.PresubmitLocalPath()
   path = lambda *p: input_api.os_path.join(local_path, *p)
   unit_tests = [

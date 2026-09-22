@@ -8,6 +8,11 @@ Runs Python unit tests in /tools/vim/tests on upload.
 
 
 def CheckChangeOnUpload(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='tests')
+  ):
+    return []
   results = []
 
   # affected_files is list of files affected by this change. The paths are

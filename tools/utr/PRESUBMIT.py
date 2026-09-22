@@ -6,6 +6,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckTests(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   return input_api.RunTests(
     input_api.canned_checks.GetUnitTestsInDirectory(
       input_api, output_api, '.', [r'.+_test\.py$']
@@ -14,6 +16,8 @@ def CheckTests(input_api, output_api):
 
 
 def CheckPylint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   disabled_warnings = [
     'bad-indentation',
     'consider-using-dict-items',

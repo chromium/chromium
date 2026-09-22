@@ -6,6 +6,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPylint(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     disabled_warnings = [
         'consider-using-with',
         'missing-module-docstring',

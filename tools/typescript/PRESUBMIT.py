@@ -10,29 +10,31 @@ for more details about the presubmit API built into depot_tools.
 PRESUBMIT_VERSION = '2.0.0'
 
 
+_TYPESCRIPT_SOURCES = [
+  'path_mappings.py',
+  'path_utils.py',
+  'tsconfig_base.json',
+  'ts_library.py',
+  'validate_tsconfig.py',
+  'ts_library_test.py',
+  'path_mappings_test.py',
+]
+
+
 def CheckRunTypescriptTests(input_api, output_api):
-  affected = input_api.AffectedFiles()
-
-  sources = set(
-    [
-      'path_mappings.py',
-      'path_utils.py',
-      'tsconfig_base.json',
-      'ts_library.py',
-      'validate_tsconfig.py',
-    ]
-  )
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-  if not sources.intersection(set(affected_files)):
+  if not input_api.HasAffectedFiles(path=_TYPESCRIPT_SOURCES):
     return []
-
   presubmit_path = input_api.PresubmitLocalPath()
-  sources = ['ts_library_test.py', 'path_mappings_test.py']
-  tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
+  tests = [
+    input_api.os_path.join(presubmit_path, s)
+    for s in ['ts_library_test.py', 'path_mappings_test.py']
+  ]
   return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
 def CheckStyleESLint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions=('.js', '.ts')):
+    return []
   results = []
 
   try:
