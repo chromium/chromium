@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
@@ -38,13 +39,13 @@ constexpr char kTestWebBundleId[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kTestUpdateUrl[] = "https://example.com/update.json";
 
-AccountId CreateAccountIdFromPolicy(const std::string& account_id) {
-  return AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-      account_id, policy::DeviceLocalAccountType::kKioskIsolatedWebApp));
-}
-
-const AccountId kExpectedIwaKioskAccountId =
-    CreateAccountIdFromPolicy(kTestIwaKioskAccountIdSetting);
+// The account id `KioskIwaManager` derives from the policy setting above.
+// `policy::GenerateDeviceLocalAccountUserId()` hex encodes the setting name
+// and appends the domain for `DeviceLocalAccountType::kKioskIsolatedWebApp`.
+constexpr AccountId::Literal kExpectedIwaKioskAccountId =
+    AccountId::Literal::FromUserEmail(
+        "6977615f6b696f736b5f6163636f756e74@"
+        "isolated-kiosk-apps.device-local.localhost");
 
 // Creates an IWA device local account.
 // Create a valid account with default params.

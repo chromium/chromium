@@ -76,14 +76,12 @@ constexpr char kNoDeviceAttributesPermissionExpectedError[] =
     "web API because it was not granted the 'device-attributes' "
     "permission.\"\n";
 
-const web_package::SignedWebBundleId kTestWebBundleId =
-    web_app::test::GetDefaultEd25519WebBundleId();
 
 KioskMixin::Config GetKioskIwaManualLaunchConfig(
     const GURL& update_manifest_url) {
   KioskMixin::IsolatedWebAppOption iwa_option(
       /*account_id=*/"simple-iwa@localhost",
-      /*web_bundle_id=*/kTestWebBundleId,
+      /*web_bundle_id=*/web_app::test::GetDefaultEd25519WebBundleId(),
       /*update_manifest_url=*/update_manifest_url);
 
   KioskMixin::Config kiosk_iwa_config = {/*name=*/"IsolatedWebApp",
@@ -170,7 +168,7 @@ class KioskIwaDeviceAttributesApiTest
           policy::key::kDeviceAttributesBlockedForOrigins,
           policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
           policy::POLICY_SOURCE_CLOUD,
-          base::Value(base::ListValue().Append(kAppOrigin.Serialize())),
+          base::Value(base::ListValue().Append(app_origin_.Serialize())),
           nullptr);
     }
     if (IsAllowPolicySet()) {
@@ -178,7 +176,7 @@ class KioskIwaDeviceAttributesApiTest
           policy::key::kDeviceAttributesAllowedForOrigins,
           policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
           policy::POLICY_SOURCE_CLOUD,
-          base::Value(base::ListValue().Append(kAppOrigin.Serialize())),
+          base::Value(base::ListValue().Append(app_origin_.Serialize())),
           nullptr);
     }
     policy_provider_.UpdateChromePolicy(policies);
@@ -201,10 +199,10 @@ class KioskIwaDeviceAttributesApiTest
           policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
               {ash::kAccountsPrefDeviceLocalAccounts});
         }));
-    kiosk_.Configure(
-        scoped_update,
-        GetKioskIwaManualLaunchConfig(
-            iwa_test_update_server_.GetUpdateManifestUrl(kTestWebBundleId)));
+    kiosk_.Configure(scoped_update,
+                     GetKioskIwaManualLaunchConfig(
+                         iwa_test_update_server_.GetUpdateManifestUrl(
+                             web_app::test::GetDefaultEd25519WebBundleId())));
 
     scoped_update.policy_data()->set_annotated_asset_id(
         kDeviceAnnotatedAssetId);
@@ -226,14 +224,14 @@ class KioskIwaDeviceAttributesApiTest
     SetBrowser(browser_created_observer.Wait());
 
     ASSERT_NE(web_contents(), nullptr);
-    ASSERT_EQ(web_contents()->GetVisibleURL(), kAppOrigin.GetURL());
+    ASSERT_EQ(web_contents()->GetVisibleURL(), app_origin_.GetURL());
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
 
-  const url::Origin kAppOrigin =
-      url::Origin::CreateFromNormalizedTuple(webapps::kIsolatedAppScheme,
-                                             kTestWebBundleId.id(),
-                                             /*port=*/0);
+  const url::Origin app_origin_ = url::Origin::CreateFromNormalizedTuple(
+      webapps::kIsolatedAppScheme,
+      web_app::test::GetDefaultEd25519WebBundleId().id(),
+      /*port=*/0);
 
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};

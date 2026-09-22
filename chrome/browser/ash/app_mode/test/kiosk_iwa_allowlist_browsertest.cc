@@ -33,20 +33,19 @@ namespace ash::kiosk::test {
 
 namespace {
 
-const web_package::SignedWebBundleId kTestWebBundleId1 =
-    web_app::test::GetDefaultEd25519WebBundleId();
-const web_package::SignedWebBundleId kTestWebBundleId2 =
-    web_app::test::GetDefaultEcdsaP256WebBundleId();
-const auto kTestKeyPair1 = web_app::test::GetDefaultEd25519KeyPair();
-const auto kTestKeyPair2 = web_app::test::GetDefaultEcdsaP256KeyPair();
-constexpr std::string_view account_id1 = "first-iwa@localhost";
-constexpr std::string_view account_id2 = "second-iwa@localhost";
+using web_app::test::GetDefaultEcdsaP256KeyPair;
+using web_app::test::GetDefaultEcdsaP256WebBundleId;
+using web_app::test::GetDefaultEd25519KeyPair;
+using web_app::test::GetDefaultEd25519WebBundleId;
+
+constexpr std::string_view kAccountId1 = "first-iwa@localhost";
+constexpr std::string_view kAccountId2 = "second-iwa@localhost";
 
 KioskMixin::Config GetKioskIwaConfig(const GURL& update_manifest_url,
                                      bool auto_launch = true) {
   KioskMixin::IsolatedWebAppOption iwa_option(
-      account_id1,
-      /*web_bundle_id=*/kTestWebBundleId1,
+      /*account_id=*/kAccountId1,
+      /*web_bundle_id=*/GetDefaultEd25519WebBundleId(),
       /*update_manifest_url=*/update_manifest_url);
 
   KioskMixin::Config kiosk_iwa_config = {
@@ -73,13 +72,13 @@ KioskMixin::Config GetKioskIwaTwoAppsManualLaunchConfig(
     const GURL& update_manifest_url1,
     const GURL& update_manifest_url2) {
   KioskMixin::IsolatedWebAppOption iwa_option1(
-      account_id1,
-      /*web_bundle_id=*/kTestWebBundleId1,
+      /*account_id=*/kAccountId1,
+      /*web_bundle_id=*/GetDefaultEd25519WebBundleId(),
       /*update_manifest_url=*/update_manifest_url1);
 
   KioskMixin::IsolatedWebAppOption iwa_option2(
-      account_id2,
-      /*web_bundle_id=*/kTestWebBundleId2,
+      /*account_id=*/kAccountId2,
+      /*web_bundle_id=*/GetDefaultEcdsaP256WebBundleId(),
       /*update_manifest_url=*/update_manifest_url2);
 
   KioskMixin::Config kiosk_iwa_config = {
@@ -126,7 +125,7 @@ class KioskIwaAllowlistBrowserTest : public MixinBasedInProcessBrowserTest {
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle(kTestKeyPair1));
+            .BuildBundle(GetDefaultEd25519KeyPair()));
   }
   ~KioskIwaAllowlistBrowserTest() override = default;
   KioskIwaAllowlistBrowserTest(const KioskIwaAllowlistBrowserTest&) = delete;
@@ -144,15 +143,14 @@ class KioskIwaAllowlistBrowserTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
-  KioskMixin kiosk_{
-      &mixin_host_,
-      GetKioskIwaManualLaunchConfig(
-          iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId1))};
+  KioskMixin kiosk_{&mixin_host_, GetKioskIwaManualLaunchConfig(
+                                      iwa_test_server_.GetUpdateManifestUrl(
+                                          GetDefaultEd25519WebBundleId()))};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaAllowlistBrowserTest,
                        AllowlistedAppInstalledAndLaunched) {
-  SetIwaAllowlist({kTestWebBundleId1});
+  SetIwaAllowlist({GetDefaultEd25519WebBundleId()});
 
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
   ASSERT_TRUE(WaitKioskLaunched());
@@ -187,11 +185,11 @@ class KioskIwaBlocklistBrowserTest : public MixinBasedInProcessBrowserTest {
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle(kTestKeyPair1));
+            .BuildBundle(GetDefaultEd25519KeyPair()));
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("10.0.0"))
-            .BuildBundle(kTestKeyPair2));
+            .BuildBundle(GetDefaultEcdsaP256KeyPair()));
   }
   ~KioskIwaBlocklistBrowserTest() override = default;
   KioskIwaBlocklistBrowserTest(const KioskIwaBlocklistBrowserTest&) = delete;
@@ -203,21 +201,23 @@ class KioskIwaBlocklistBrowserTest : public MixinBasedInProcessBrowserTest {
   KioskMixin kiosk_{
       &mixin_host_,
       GetKioskIwaTwoAppsManualLaunchConfig(
-          iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId1),
-          iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId2))};
+          iwa_test_server_.GetUpdateManifestUrl(GetDefaultEd25519WebBundleId()),
+          iwa_test_server_.GetUpdateManifestUrl(
+              GetDefaultEcdsaP256WebBundleId()))};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistBrowserTest,
                        AppShutdownOnBlocklisting) {
   EXPECT_OK(web_app::test::KeyDistributionComponentBuilder(base::Version("1.0"))
-                .WithManagedAllowlist({kTestWebBundleId1})
+                .WithManagedAllowlist({GetDefaultEd25519WebBundleId()})
                 .Build()
                 .UploadFromComponentFolder());
-  ASSERT_TRUE(LaunchAppManually(GetKioskAppByBundleId(kTestWebBundleId1)));
+  ASSERT_TRUE(
+      LaunchAppManually(GetKioskAppByBundleId(GetDefaultEd25519WebBundleId())));
   ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_OK(web_app::test::KeyDistributionComponentBuilder(base::Version("1.1"))
-                .WithBlocklist({kTestWebBundleId1})
+                .WithBlocklist({GetDefaultEd25519WebBundleId()})
                 .Build()
                 .UploadFromComponentFolder());
 
@@ -229,10 +229,12 @@ IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistBrowserTest,
 IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistBrowserTest,
                        SecondAppNotAffectedByBlocklisting) {
   EXPECT_OK(web_app::test::KeyDistributionComponentBuilder(base::Version("1.0"))
-                .WithManagedAllowlist({kTestWebBundleId1, kTestWebBundleId2})
+                .WithManagedAllowlist({GetDefaultEd25519WebBundleId(),
+                                       GetDefaultEcdsaP256WebBundleId()})
                 .Build()
                 .UploadFromComponentFolder());
-  ASSERT_TRUE(LaunchAppManually(GetKioskAppByBundleId(kTestWebBundleId1)));
+  ASSERT_TRUE(
+      LaunchAppManually(GetKioskAppByBundleId(GetDefaultEd25519WebBundleId())));
   ASSERT_TRUE(WaitKioskLaunched());
 
   KioskAppManagerBase::AppList apps_before =
@@ -240,13 +242,13 @@ IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistBrowserTest,
   EXPECT_THAT(apps_before, testing::SizeIs(Eq(2)));
 
   EXPECT_OK(web_app::test::KeyDistributionComponentBuilder(base::Version("1.1"))
-                .WithManagedAllowlist({kTestWebBundleId1})
-                .WithBlocklist({kTestWebBundleId2})
+                .WithManagedAllowlist({GetDefaultEd25519WebBundleId()})
+                .WithBlocklist({GetDefaultEcdsaP256WebBundleId()})
                 .Build()
                 .UploadFromComponentFolder());
 
   auto app_id_1 = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                      kTestWebBundleId1)
+                      GetDefaultEd25519WebBundleId())
                       .app_id();
 
   // Only one app should be removed
@@ -264,9 +266,10 @@ class KioskIwaBlocklistAutoLaunchInitiallyAllowedBrowserTest
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle(kTestKeyPair1));
-    data_provider_->Update(
-        [&](auto& update) { update.AddToManagedAllowlist(kTestWebBundleId1); });
+            .BuildBundle(GetDefaultEd25519KeyPair()));
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(GetDefaultEd25519WebBundleId());
+    });
   }
   ~KioskIwaBlocklistAutoLaunchInitiallyAllowedBrowserTest() override = default;
   KioskIwaBlocklistAutoLaunchInitiallyAllowedBrowserTest(
@@ -277,18 +280,18 @@ class KioskIwaBlocklistAutoLaunchInitiallyAllowedBrowserTest
  protected:
   web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
-  KioskMixin kiosk_{
-      &mixin_host_,
-      GetKioskIwaAutoLaunchConfig(
-          iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId1))};
+  KioskMixin kiosk_{&mixin_host_, GetKioskIwaAutoLaunchConfig(
+                                      iwa_test_server_.GetUpdateManifestUrl(
+                                          GetDefaultEd25519WebBundleId()))};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistAutoLaunchInitiallyAllowedBrowserTest,
                        AppShutdownOnBlocklisting) {
   ASSERT_TRUE(WaitKioskLaunched());
 
-  data_provider_->Update(
-      [&](auto& update) { update.AddToBlocklist(kTestWebBundleId1); });
+  data_provider_->Update([&](auto& update) {
+    update.AddToBlocklist(GetDefaultEd25519WebBundleId());
+  });
 
   auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   EXPECT_TRUE(
@@ -302,9 +305,10 @@ class KioskIwaBlocklistAutoLaunchInitiallyBlockedBrowserTest
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle(kTestKeyPair1));
-    data_provider_->Update(
-        [&](auto& update) { update.AddToBlocklist(kTestWebBundleId1); });
+            .BuildBundle(GetDefaultEd25519KeyPair()));
+    data_provider_->Update([&](auto& update) {
+      update.AddToBlocklist(GetDefaultEd25519WebBundleId());
+    });
   }
   ~KioskIwaBlocklistAutoLaunchInitiallyBlockedBrowserTest() override = default;
   KioskIwaBlocklistAutoLaunchInitiallyBlockedBrowserTest(
@@ -315,10 +319,9 @@ class KioskIwaBlocklistAutoLaunchInitiallyBlockedBrowserTest
  protected:
   web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
-  KioskMixin kiosk_{
-      &mixin_host_,
-      GetKioskIwaAutoLaunchConfig(
-          iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId1))};
+  KioskMixin kiosk_{&mixin_host_, GetKioskIwaAutoLaunchConfig(
+                                      iwa_test_server_.GetUpdateManifestUrl(
+                                          GetDefaultEd25519WebBundleId()))};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaBlocklistAutoLaunchInitiallyBlockedBrowserTest,

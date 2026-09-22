@@ -43,10 +43,6 @@ namespace {
 constexpr char kLaunchKioskOfflineTag[] =
     "screenplay-35e430a3-04b3-46a7-aa0a-207a368b8cba";
 
-const web_package::SignedWebBundleId kTestWebBundleId =
-    web_app::test::GetDefaultEd25519WebBundleId();
-const web_package::test::KeyPair kTestKeyPair =
-    web_app::test::GetDefaultEd25519KeyPair();
 
 // Possible values for `KioskWebAppOfflineEnabledTest`.
 enum class TestAppType { kKioskWeb, kKioskIwa };
@@ -80,9 +76,11 @@ class KioskWebAppOfflineEnabledTest
   KioskWebAppOfflineEnabledTest() {
     iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
-            .BuildBundle(kTestKeyPair));
-    data_provider_->Update(
-        [&](auto& update) { update.AddToManagedAllowlist(kTestWebBundleId); });
+            .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(
+          web_app::test::GetDefaultEd25519WebBundleId());
+    });
   }
 
   KioskWebAppOfflineEnabledTest(const KioskWebAppOfflineEnabledTest&) = delete;
@@ -115,13 +113,15 @@ class KioskWebAppOfflineEnabledTest
                 {KioskMixin::SimpleWebAppOption()}};
 
       case TestAppType::kKioskIwa:
-        return {/*name=*/"IsolatedWebApp",
-                /*auto_launch_account_id=*/{},
-                {KioskMixin::IsolatedWebAppOption(
-                    /*account_id=*/"simple-iwa@localhost",
-                    /*web_bundle_id=*/kTestWebBundleId,
-                    /*update_manifest_url=*/
-                    iwa_test_server_.GetUpdateManifestUrl(kTestWebBundleId))}};
+        return {
+            /*name=*/"IsolatedWebApp",
+            /*auto_launch_account_id=*/{},
+            {KioskMixin::IsolatedWebAppOption(
+                /*account_id=*/"simple-iwa@localhost",
+                /*web_bundle_id=*/web_app::test::GetDefaultEd25519WebBundleId(),
+                /*update_manifest_url=*/
+                iwa_test_server_.GetUpdateManifestUrl(
+                    web_app::test::GetDefaultEd25519WebBundleId()))}};
     }
   }
 

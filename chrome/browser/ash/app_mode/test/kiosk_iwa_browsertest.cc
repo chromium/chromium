@@ -27,13 +27,11 @@ using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
-const web_package::SignedWebBundleId kTestWebBundleId =
-    web_app::test::GetDefaultEd25519WebBundleId();
 
 KioskMixin::Config GetKioskIwaConfig(const GURL& update_manifest_url) {
   KioskMixin::IsolatedWebAppOption iwa_option(
       /*account_id=*/"simple-iwa@localhost",
-      /*web_bundle_id=*/kTestWebBundleId,
+      /*web_bundle_id=*/web_app::test::GetDefaultEd25519WebBundleId(),
       /*update_manifest_url=*/update_manifest_url);
 
   KioskMixin::Config kiosk_iwa_config = {
@@ -67,7 +65,7 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_,
                     GetKioskIwaConfig(iwa_test_server_.GetUpdateManifestUrl(
-                        kTestWebBundleId))};
+                        web_app::test::GetDefaultEd25519WebBundleId()))};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaTest, InstallsAndLaunchesApp) {
@@ -82,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(KioskIwaTest, OriginHasUnlimitedStorage) {
   ASSERT_NE(storage_policy, nullptr);
 
   const url::Origin kExpectedOrigin = url::Origin::CreateFromNormalizedTuple(
-      webapps::kIsolatedAppScheme, kTestWebBundleId.id(), /*port=*/0);
+      webapps::kIsolatedAppScheme,
+      web_app::test::GetDefaultEd25519WebBundleId().id(), /*port=*/0);
   EXPECT_TRUE(storage_policy->IsStorageUnlimited(kExpectedOrigin.GetURL()));
 }
 

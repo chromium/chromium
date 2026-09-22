@@ -83,18 +83,16 @@ constexpr char kChannelNameUnknown[] = "unknown";
 
 constexpr char kUnsetPolicyValue[] = "";
 
-const web_app::UpdateChannel kChannelBeta =
-    web_app::UpdateChannel::Create(kChannelNameBeta).value();
-const web_app::UpdateChannel kChannelAlpha =
-    web_app::UpdateChannel::Create(kChannelNameAlpha).value();
-
-constexpr std::string_view GetTestAccountId() {
-  return kTestAccountId;
+web_app::UpdateChannel GetChannelBeta() {
+  return web_app::UpdateChannel::Create(kChannelNameBeta).value();
+}
+web_app::UpdateChannel GetChannelAlpha() {
+  return web_app::UpdateChannel::Create(kChannelNameAlpha).value();
 }
 
 AccountId GetTestDeviceLocalAccountId() {
   return CreateDeviceLocalAccountId(
-      GetTestAccountId(), policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
+      kTestAccountId, policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
 }
 
 const KioskIwaData* GetCurrentKioskIwaData() {
@@ -214,7 +212,7 @@ KioskMixin::Config CreateManualLaunchConfigWithChannel(
     const std::string& update_channel,
     const GURL& update_manifest_url) {
   KioskMixin::IsolatedWebAppOption iwa_option(
-      /*account_id=*/GetTestAccountId(),
+      /*account_id=*/kTestAccountId,
       /*web_bundle_id=*/GetTestWebBundleId(), update_manifest_url,
       update_channel);
 
@@ -228,7 +226,7 @@ KioskMixin::Config CreateManualLaunchConfigWithVersionPinning(
     bool allow_downgrades,
     const GURL& update_manifest_url) {
   KioskMixin::IsolatedWebAppOption iwa_option(
-      /*account_id=*/GetTestAccountId(),
+      /*account_id=*/kTestAccountId,
       /*web_bundle_id=*/GetTestWebBundleId(), update_manifest_url,
       /*update_channel=*/kUnsetPolicyValue, pinned_version, allow_downgrades);
 
@@ -368,8 +366,8 @@ class KioskIwaUpdateChannelTest
       : KioskIwaVersionManagementBaseTest(
             KioskIwaWithCustomChannel(GetChannelName())) {
     AddTestBundle(kVersionString1);
-    AddTestBundle(kVersionString2, {{kChannelBeta, kChannelAlpha}});
-    AddTestBundle(kVersionString3, {{kChannelAlpha}});
+    AddTestBundle(kVersionString2, {{GetChannelBeta(), GetChannelAlpha()}});
+    AddTestBundle(kVersionString3, {{GetChannelAlpha()}});
   }
 
  protected:
@@ -641,8 +639,8 @@ class KioskIwaUpdateChannelChangeTest
   KioskIwaUpdateChannelChangeTest()
       : KioskIwaVersionManagementBaseTest(KioskIwaWithChannelSwitch()) {
     AddTestBundle(kVersionString1);
-    AddTestBundle(kVersionString2, {{kChannelBeta}});
-    AddTestBundle(kVersionString3, {{kChannelAlpha}});
+    AddTestBundle(kVersionString2, {{GetChannelBeta()}});
+    AddTestBundle(kVersionString3, {{GetChannelAlpha()}});
   }
 
  protected:
