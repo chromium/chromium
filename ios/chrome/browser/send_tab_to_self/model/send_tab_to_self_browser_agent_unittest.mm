@@ -83,7 +83,16 @@ SendTabToSelfTextFragment CreateTextFragment(
   return fragment;
 }
 
-}  // namespace
+FakeSendTabToSelfModel::RemoteEntryParams CreateRemoteEntryParams(
+    const GURL& url,
+    base::Time shared_time,
+    const std::string& target_device_cache_guid = kDeviceID) {
+  FakeSendTabToSelfModel::RemoteEntryParams params;
+  params.url = url;
+  params.shared_time = shared_time;
+  params.target_device_cache_guid = target_device_cache_guid;
+  return params;
+}
 
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
@@ -102,8 +111,10 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
 
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    mock_scene_commands_ =
-        [OCMockObject mockForProtocol:@protocol(SceneCommands)];
+    // Use a nice mock so tests triggering auto-open do not fail on unhandled
+    // `openURLInNewTab:` calls. With `kSendTabToSelfSupportAutoOpenInTabGrid`
+    // enabled, this mock will not be used anymore anyway.
+    mock_scene_commands_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_scene_commands_
                      forProtocol:@protocol(SceneCommands)];
@@ -116,6 +127,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     model_ = static_cast<FakeSendTabToSelfModel*>(
         SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
             ->GetSendTabToSelfModel());
+    model_->SetLocalCacheGuid(kDeviceID);
   }
   ~SendTabToSelfBrowserAgentTest() override = default;
 
@@ -224,13 +236,13 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddMultiplePicksMostRecent) {
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   const base::Time now = base::Time::Now();
-  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params(3);
-  entry_params[0].url = GURL("http://www.test.com/older");
-  entry_params[0].shared_time = now - base::Seconds(10);
-  entry_params[1].url = GURL("http://www.test.com/newest");
-  entry_params[1].shared_time = now;
-  entry_params[2].url = GURL("http://www.test.com/older-still");
-  entry_params[2].shared_time = now - base::Seconds(5);
+  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params = {
+      CreateRemoteEntryParams(GURL("http://www.test.com/older"),
+                              now - base::Seconds(10)),
+      CreateRemoteEntryParams(GURL("http://www.test.com/newest"), now),
+      CreateRemoteEntryParams(GURL("http://www.test.com/older-still"),
+                              now - base::Seconds(5)),
+  };
 
   std::vector<const SendTabToSelfEntry*> entries =
       model_->AddEntriesRemotely(std::move(entry_params));
@@ -299,13 +311,13 @@ TEST_F(SendTabToSelfBrowserAgentTest,
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   const base::Time now = base::Time::Now();
-  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params(3);
-  entry_params[0].url = GURL("http://www.test.com/older");
-  entry_params[0].shared_time = now - base::Seconds(10);
-  entry_params[1].url = GURL("http://www.test.com/newest");
-  entry_params[1].shared_time = now;
-  entry_params[2].url = GURL("http://www.test.com/older-still");
-  entry_params[2].shared_time = now - base::Seconds(5);
+  std::vector<FakeSendTabToSelfModel::RemoteEntryParams> entry_params = {
+      CreateRemoteEntryParams(GURL("http://www.test.com/older"),
+                              now - base::Seconds(10)),
+      CreateRemoteEntryParams(GURL("http://www.test.com/newest"), now),
+      CreateRemoteEntryParams(GURL("http://www.test.com/older-still"),
+                              now - base::Seconds(5)),
+  };
 
   std::vector<const SendTabToSelfEntry*> entries =
       model_->AddEntriesRemotely(std::move(entry_params));
@@ -384,26 +396,6 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
   EXPECT_EQ(1UL, second_infobar_manager->infobars().size());
 }
 
-TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemoveSimple) {
-  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
-  InfoBarManagerImpl* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state);
-  EXPECT_EQ(0UL, infobar_manager->infobars().size());
-
-  const SendTabToSelfEntry* entry = model_->AddEntryRemotely(
-      GURL("http://www.test.com/test-1"), "title", kDeviceID,
-      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
-
-  // An infobar for the entry should have been added.
-  EXPECT_EQ(1UL, infobar_manager->infobars().size());
-
-  // Remove the entry remotely.
-  model_->RemoveEntryRemotely(entry->GetGUID());
-
-  // The infobar should have been removed.
-  EXPECT_EQ(0UL, infobar_manager->infobars().size());
-}
-
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemovePending) {
   // Remote entry added when there are no web states (so it's pending).
   const SendTabToSelfEntry* entry = model_->AddEntryRemotely(
@@ -454,57 +446,6 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemovePendingNotVisibleTab) {
 
   // No infobar should be added since the pending entry was removed.
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
-}
-
-// Tests that removing an unrelated entry remotely removes its InfoBar but
-// preserves the pending entry for a not-yet-visible WebState.
-TEST_F(SendTabToSelfBrowserAgentTest,
-       TestRemoteRemoveUnrelatedEntryPreservesPending) {
-  // Add first web state, active and visible.
-  web::WebState* web_state1 = AppendNewWebState(GURL("http://www.blank.com"));
-  InfoBarManagerImpl* infobar_manager1 =
-      InfoBarManagerImpl::FromWebState(web_state1);
-  EXPECT_EQ(0UL, infobar_manager1->infobars().size());
-
-  // Add an entry for the visible web state.
-  const SendTabToSelfEntry* entry1 = model_->AddEntryRemotely(
-      GURL("http://www.test.com/first"), "title1", kDeviceID,
-      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
-  ASSERT_TRUE(entry1);
-  std::string guid1 = entry1->GetGUID();
-  EXPECT_EQ(1UL, infobar_manager1->infobars().size());
-
-  // Add second web state, active but not visible.
-  web::WebState* web_state2 =
-      AppendNewWebState(GURL("http://www.blank.com"),
-                        /*activate=*/true, /*is_visible=*/false);
-  InfoBarManagerImpl* infobar_manager2 =
-      InfoBarManagerImpl::FromWebState(web_state2);
-  EXPECT_EQ(0UL, infobar_manager2->infobars().size());
-
-  // Add the pending entry for the non-visible web state.
-  const SendTabToSelfEntry* pending_entry = model_->AddEntryRemotely(
-      GURL("http://www.test.com/pending"), "title2", kDeviceID,
-      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
-  ASSERT_TRUE(pending_entry);
-  std::string pending_guid = pending_entry->GetGUID();
-  EXPECT_EQ(0UL, infobar_manager2->infobars().size());
-
-  // Remove the first entry remotely.
-  model_->RemoveEntryRemotely(guid1);
-  EXPECT_EQ(0UL, infobar_manager1->infobars().size());
-
-  // Show the second web state.
-  web_state2->WasShown();
-
-  // An infobar for the pending entry should now be added to the second web
-  // state.
-  ASSERT_EQ(1UL, infobar_manager2->infobars().size());
-  infobars::InfoBar* infobar = infobar_manager2->infobars()[0];
-  auto* delegate =
-      static_cast<send_tab_to_self::IOSSendTabToSelfInfoBarDelegate*>(
-          infobar->delegate());
-  EXPECT_EQ(pending_guid, delegate->GetGUID());
 }
 
 // Tests that when an entry is added while the active WebState is not visible,
@@ -972,6 +913,86 @@ TEST_F(SendTabToSelfBrowserAgentToastDisabledTest,
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands);
 }
 
+class SendTabToSelfBrowserAgentWithoutAutoOpenTest
+    : public SendTabToSelfBrowserAgentTest {
+ public:
+  SendTabToSelfBrowserAgentWithoutAutoOpenTest()
+      : SendTabToSelfBrowserAgentTest(
+            {},
+            {send_tab_to_self::kSendTabToSelfAutoOpen}) {}
+};
+
+TEST_F(SendTabToSelfBrowserAgentWithoutAutoOpenTest, TestRemoteRemoveSimple) {
+  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  const SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com/test-1"), "title", kDeviceID,
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+
+  // An infobar for the entry should have been added.
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
+
+  // Remove the entry remotely.
+  model_->RemoveEntryRemotely(entry->GetGUID());
+
+  // The infobar should have been removed.
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+}
+
+// Tests that removing an unrelated entry remotely removes its InfoBar but
+// preserves the pending entry for a not-yet-visible WebState.
+TEST_F(SendTabToSelfBrowserAgentWithoutAutoOpenTest,
+       TestRemoteRemoveUnrelatedEntryPreservesPending) {
+  // Add first web state, active and visible.
+  web::WebState* web_state1 = AppendNewWebState(GURL("http://www.blank.com"));
+  InfoBarManagerImpl* infobar_manager1 =
+      InfoBarManagerImpl::FromWebState(web_state1);
+  EXPECT_EQ(0UL, infobar_manager1->infobars().size());
+
+  // Add an entry for the visible web state.
+  const SendTabToSelfEntry* entry1 = model_->AddEntryRemotely(
+      GURL("http://www.test.com/first"), "title1", kDeviceID,
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+  ASSERT_TRUE(entry1);
+  std::string guid1 = entry1->GetGUID();
+  EXPECT_EQ(1UL, infobar_manager1->infobars().size());
+
+  // Add second web state, active but not visible.
+  web::WebState* web_state2 =
+      AppendNewWebState(GURL("http://www.blank.com"),
+                        /*activate=*/true, /*is_visible=*/false);
+  InfoBarManagerImpl* infobar_manager2 =
+      InfoBarManagerImpl::FromWebState(web_state2);
+  EXPECT_EQ(0UL, infobar_manager2->infobars().size());
+
+  // Add the pending entry for the non-visible web state.
+  const SendTabToSelfEntry* pending_entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com/pending"), "title2", kDeviceID,
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+  ASSERT_TRUE(pending_entry);
+  std::string pending_guid = pending_entry->GetGUID();
+  EXPECT_EQ(0UL, infobar_manager2->infobars().size());
+
+  // Remove the first entry remotely.
+  model_->RemoveEntryRemotely(guid1);
+  EXPECT_EQ(0UL, infobar_manager1->infobars().size());
+
+  // Show the second web state.
+  web_state2->WasShown();
+
+  // An infobar for the pending entry should now be added to the second web
+  // state.
+  ASSERT_EQ(1UL, infobar_manager2->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager2->infobars()[0];
+  auto* delegate =
+      static_cast<send_tab_to_self::IOSSendTabToSelfInfoBarDelegate*>(
+          infobar->delegate());
+  EXPECT_EQ(pending_guid, delegate->GetGUID());
+}
+
 class SendTabToSelfBrowserAgentScrollPositionTestBase
     : public SendTabToSelfBrowserAgentTest {
  public:
@@ -1223,4 +1244,5 @@ TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
   histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
 }
 
+}  // namespace
 }  // namespace send_tab_to_self

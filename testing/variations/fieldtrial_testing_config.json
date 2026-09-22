@@ -11299,7 +11299,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SendTabToSelfAutoOpen",
                         "SendTabToSelfEnhancedBottomsheet",
                         "SendTabToSelfExtraEntryPoints",
                         "SendTabToSelfImprovedLastActiveLabels",
