@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -216,6 +217,8 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
   builder.SetAutofillWebDataService(content::GetUIThreadTaskRunner({}),
                                     profile_web_data_service,
                                     account_web_data_service);
+  builder.SetEntitySuppressionManager(
+      autofill::EntitySuppressionManagerFactory::GetForProfile(profile));
   builder.SetBookmarkModel(BookmarkModelFactory::GetForBrowserContext(profile));
   builder.SetBookmarkSyncService(
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
@@ -542,6 +545,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(AimEligibilityServiceFactory::GetInstance());
+  DependsOn(autofill::EntitySuppressionManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());

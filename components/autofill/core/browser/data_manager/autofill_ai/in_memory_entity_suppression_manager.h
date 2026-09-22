@@ -31,6 +31,9 @@ class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
   bool UnsuppressEntity(const EntityInstance& entity) override;
   bool IsSuppressed(const EntityInstance& entity) const override;
 
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
+      override;
+
  private:
   base::ObserverList<Observer> observers_;
 

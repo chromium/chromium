@@ -19,6 +19,8 @@ namespace autofill {
 
 class EntitySuppressionManager;
 
+// TODO(crbug.com/501036619): Remove EntitySuppressionManagerFactory from the
+// autofill namespace.
 class EntitySuppressionManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static EntitySuppressionManager* GetForProfile(Profile* profile);

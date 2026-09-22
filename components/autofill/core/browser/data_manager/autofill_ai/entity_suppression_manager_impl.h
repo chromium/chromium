@@ -40,6 +40,9 @@ class EntitySuppressionManagerImpl
   // EntitySuppressionSyncBridge::Observer:
   void OnSuppressionsChanged() override;
 
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
+      override;
+
  private:
   base::ObserverList<EntitySuppressionManager::Observer> observers_;
 

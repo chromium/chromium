@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/account_settings/account_setting_service.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_data_type_controller.h"
@@ -227,6 +228,11 @@ void CommonControllerBuilder::SetAutofillWebDataService(
   autofill_web_data_ui_thread_.Set(ui_thread);
   profile_autofill_web_data_service_.Set(web_data_service_on_disk);
   account_autofill_web_data_service_.Set(web_data_service_in_memory);
+}
+
+void CommonControllerBuilder::SetEntitySuppressionManager(
+    autofill::EntitySuppressionManager* entity_suppression_manager) {
+  entity_suppression_manager_.Set(entity_suppression_manager);
 }
 
 void CommonControllerBuilder::SetAimEligibilityService(
@@ -1217,13 +1223,22 @@ CommonControllerBuilder::CreateJourneyDataTypeController(
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateAutofillEntitySuppressionDataTypeController() {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression) ||
+      !entity_suppression_manager_.value()) {
     return nullptr;
   }
 
-  // TODO(crbug.com/501036619): Instantiate the DataTypeController once the
-  // keyed service and sync bridge are wired up.
-  return nullptr;
+  syncer::DataTypeControllerDelegate* delegate =
+      entity_suppression_manager_.value()->GetSyncControllerDelegate().get();
+  if (!delegate) {
+    return nullptr;
+  }
+  return std::make_unique<syncer::DataTypeController>(
+      syncer::AUTOFILL_ENTITY_SUPPRESSION,
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

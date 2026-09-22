@@ -50,6 +50,9 @@ class EntitySuppressionManagerImplTest : public testing::Test {
 
  protected:
   EntitySuppressionManagerImpl& manager() { return *manager_; }
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
+    return mock_processor_;
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -248,6 +251,12 @@ TEST_F(EntitySuppressionManagerImplTest,
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
   manager().OnSuppressionsChanged();
+}
+
+// Tests that GetSyncControllerDelegate forwards to the sync bridge.
+TEST_F(EntitySuppressionManagerImplTest, GetSyncControllerDelegate) {
+  EXPECT_CALL(mock_processor(), GetControllerDelegate());
+  manager().GetSyncControllerDelegate();
 }
 
 }  // namespace

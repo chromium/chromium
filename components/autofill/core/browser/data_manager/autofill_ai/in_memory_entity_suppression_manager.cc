@@ -63,4 +63,9 @@ bool InMemoryEntitySuppressionManager::IsSuppressed(
                              });
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+InMemoryEntitySuppressionManager::GetSyncControllerDelegate() {
+  return nullptr;
+}
+
 }  // namespace autofill

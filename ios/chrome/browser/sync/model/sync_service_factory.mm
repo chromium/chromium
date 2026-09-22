@@ -155,6 +155,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForProfile(profile));
   builder.SetNotebooksService(nullptr);
+  // TODO(crbug.com/501036619): Wire up EntitySuppressionManager on iOS.
+  builder.SetEntitySuppressionManager(nullptr);
 
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());

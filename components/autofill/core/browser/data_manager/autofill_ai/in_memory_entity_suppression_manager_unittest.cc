@@ -209,5 +209,11 @@ TEST_F(InMemoryEntitySuppressionManagerTest,
   EXPECT_FALSE(suppression_manager_.UnsuppressEntity(passport));
 }
 
+// Tests that GetSyncControllerDelegate returns nullptr.
+TEST_F(InMemoryEntitySuppressionManagerTest,
+       GetSyncControllerDelegateReturnsNullptr) {
+  EXPECT_EQ(nullptr, suppression_manager_.GetSyncControllerDelegate());
+}
+
 }  // namespace
 }  // namespace autofill

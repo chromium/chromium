@@ -69,4 +69,9 @@ void EntitySuppressionManagerImpl::OnSuppressionsChanged() {
       &EntitySuppressionManager::Observer::OnEntitySuppressionsChanged);
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+EntitySuppressionManagerImpl::GetSyncControllerDelegate() {
+  return sync_bridge_->GetControllerDelegate();
+}
+
 }  // namespace autofill
