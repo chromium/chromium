@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
@@ -175,9 +174,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
         if (newIndex == TabList.INVALID_TAB_INDEX) return newIndex;
 
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        mMediator.addTabInfoToModelForTab(
-                tab, newIndex, TabModelUtils.getCurrentTabId(tabModel) == tab.getId());
+        mMediator.addTabInfoToModelForTab(tab, newIndex);
         return newIndex;
     }
 
@@ -375,9 +372,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
         if (srcIndex == TabModel.INVALID_TAB_INDEX && desIndex != TabModel.INVALID_TAB_INDEX) {
             // Tab is moving out of a collapsed group.
-            TabModel tabModel = mMediator.getCurrentTabModelChecked();
-            int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
-            mMediator.addTabInfoToModelForTab(tab, desIndex, currentTabId == tab.getId());
+            mMediator.addTabInfoToModelForTab(tab, desIndex);
         } else if (srcIndex != TabModel.INVALID_TAB_INDEX
                 && desIndex == TabModel.INVALID_TAB_INDEX) {
             // Tab is moving into a collapsed group.

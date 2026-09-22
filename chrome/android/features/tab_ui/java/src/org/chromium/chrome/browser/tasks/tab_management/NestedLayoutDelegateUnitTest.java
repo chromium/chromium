@@ -156,7 +156,7 @@ public class NestedLayoutDelegateUnitTest {
         int index = mDelegate.onTabAdded(mTab1);
 
         assertEquals(0, index);
-        verify(mMediator).addTabInfoToModelForTab(mTab1, 0, /* isSelected= */ true);
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 0);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(1, index);
         verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
-        verify(mMediator).addTabInfoToModelForTab(mTab1, 1, /* isSelected= */ true);
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 1);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(1, index);
         verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
-        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(TabModel.INVALID_TAB_INDEX, index);
         verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
-        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt());
     }
 
     @Test
@@ -212,7 +212,7 @@ public class NestedLayoutDelegateUnitTest {
         int index = mDelegate.onTabAdded(mTab1);
 
         assertEquals(0, index);
-        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+        verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class NestedLayoutDelegateUnitTest {
 
         mDelegate.didAddTab(mTab1, TabLaunchType.FROM_CHROME_UI);
 
-        verify(mMediator).addTabInfoToModelForTab(eq(mTab1), eq(0), anyBoolean());
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 0);
         verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
     }
 
@@ -244,7 +244,7 @@ public class NestedLayoutDelegateUnitTest {
 
         mDelegate.tabClosureUndone(mTab1);
 
-        verify(mMediator).addTabInfoToModelForTab(eq(mTab1), eq(0), anyBoolean());
+        verify(mMediator).addTabInfoToModelForTab(mTab1, 0);
     }
 
     @Test
@@ -595,7 +595,7 @@ public class NestedLayoutDelegateUnitTest {
 
         mDelegate.didMoveTabOutOfGroup(mTab3, 1);
 
-        verify(mMediator).addTabInfoToModelForTab(mTab3, 1, false);
+        verify(mMediator).addTabInfoToModelForTab(mTab3, 1);
     }
 
     @Test

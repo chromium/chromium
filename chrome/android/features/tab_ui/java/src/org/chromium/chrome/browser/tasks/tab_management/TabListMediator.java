@@ -1243,17 +1243,6 @@ public class TabListMediator implements TabListNotificationHandler {
         mTabGridItemTouchHelperCallback.clearCardState();
     }
 
-    private boolean isSelectedTab(Tab tab, int tabModelSelectedTabId) {
-        SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate =
-                getTabSelectionDelegate();
-        if (selectionDelegate == null) {
-            return tab.getId() == tabModelSelectedTabId;
-        } else {
-            return selectionDelegate.isItemSelected(
-                    TabListEditorItemSelectionId.createTabId(tab.getId()));
-        }
-    }
-
     /**
      * @see TabSwitcherMediator.ResetHandler#softCleanup
      */
@@ -1284,7 +1273,6 @@ public class TabListMediator implements TabListNotificationHandler {
                     || TabProperties.getTabId(model) == tab.getId();
         }
 
-        boolean isTabSelected = isTabSelected(tab, model, mTabActionState);
         boolean isInTabGroup = isTabInTabGroup(tab);
         @TabGroupColorId int tabGroupColorId = TabGroupColorId.GREY;
         // Only update the color if the tab is a representation of a tab group, otherwise
@@ -1298,7 +1286,6 @@ public class TabListMediator implements TabListNotificationHandler {
 
         updateTabGroupProperties(tab, model, tabGroupColorId);
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
-        model.set(TabProperties.IS_SELECTED, isTabSelected);
         model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         model.set(
                 TabProperties.TITLE,
@@ -1318,7 +1305,7 @@ public class TabListMediator implements TabListNotificationHandler {
         ActorUiTabController controller = ActorUiTabController.from(tab);
         updateActorUiState(model, controller == null ? null : controller.getUiTabState());
 
-        boolean forceUpdate = isTabSelected && !quickMode;
+        boolean forceUpdate = model.get(TabProperties.IS_SELECTED) && !quickMode;
         boolean forceUpdateLastSelected =
                 mTabListLayoutDelegate.requiresThumbnailUpdateOnDeselect()
                         && index == mLastSelectedTabListModelIndex
@@ -1802,14 +1789,12 @@ public class TabListMediator implements TabListNotificationHandler {
             assumeNonNull(tabGroupId);
             addTabInfoToModelForGroup(tab, tabGroupId, index);
         } else {
-            TabModel tabModel = getCurrentTabModelChecked();
-            int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
-            addTabInfoToModelForTab(tab, index, currentTabId == tab.getId());
+            addTabInfoToModelForTab(tab, index);
         }
     }
 
     private PropertyModel addTabInfoToModel(
-            Tab tab, int index, boolean isSelected, @CardProperties.ModelType int cardType) {
+            Tab tab, int index, @CardProperties.ModelType int cardType) {
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
@@ -1817,7 +1802,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.IS_INCOGNITO, tab.isIncognito())
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.FAVICON_FETCHED, false)
-                        .with(TabProperties.IS_SELECTED, isSelected)
+                        .with(TabProperties.IS_SELECTED, false)
                         .with(CARD_ALPHA, 1f)
                         .with(CardProperties.CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE)
                         .with(TabProperties.TAB_SELECTION_DELEGATE, getTabSelectionDelegate())
@@ -1864,12 +1849,11 @@ public class TabListMediator implements TabListNotificationHandler {
      *
      * @param tab The {@link Tab} to represent in the model list.
      * @param index The target UI index where the tab card model will be inserted.
-     * @param isSelected Whether the tab card should visually indicate that it is currently active.
      */
-    void addTabInfoToModelForTab(Tab tab, int index, boolean isSelected) {
+    void addTabInfoToModelForTab(Tab tab, int index) {
         assert index != TabModel.INVALID_TAB_INDEX;
 
-        PropertyModel tabInfo = addTabInfoToModel(tab, index, isSelected, ModelType.TAB);
+        PropertyModel tabInfo = addTabInfoToModel(tab, index, ModelType.TAB);
 
         mTabListLayoutDelegate.setupGroupPropertiesForChildTab(tab, tabInfo);
         tabInfo.set(
@@ -1901,8 +1885,8 @@ public class TabListMediator implements TabListNotificationHandler {
 
     /**
      * Builds and inserts a {@link PropertyModel} for a tab group card or header at the given UI
-     * index. Configures group properties including color, title fallback, collapsed state, and sets
-     * selection if the group is collapsed and contains the active tab.
+     * index. Configures group properties including color, title fallback, collapsed state, and
+     * delegates selection state to {@link #bindTabActionStateProperties}.
      *
      * @param tab A representative {@link Tab} for the group.
      * @param tabGroupId The {@link Token} identifying the tab group.
@@ -1913,16 +1897,11 @@ public class TabListMediator implements TabListNotificationHandler {
         assumeNonNull(tabGroupId);
         TabModel tabModel = getCurrentTabModelChecked();
         @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
-        int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
 
         boolean isCollapsed = mTabListLayoutDelegate.isGroupCollapsed(tabGroupId);
-        // If the group is collapsed, the group representation card displays the selection.
-        // If expanded, the group card is a header and should remain unhighlighted (child rows show
-        // selection).
-        boolean isSelected = isCollapsed && isSelectedTab(tab, currentTabId);
 
         int cardType = mTabListLayoutDelegate.getGroupCardType();
-        PropertyModel groupInfo = addTabInfoToModel(tab, index, isSelected, cardType);
+        PropertyModel groupInfo = addTabInfoToModel(tab, index, cardType);
 
         // Group Header Specific properties
         groupInfo.set(TabProperties.TAB_GROUP_ID, null);
@@ -2001,11 +1980,10 @@ public class TabListMediator implements TabListNotificationHandler {
     int insertChildTabs(Token tabGroupId, int headerIndex) {
         TabModel tabModel = getCurrentTabModelChecked();
         List<Tab> children = tabModel.getTabsInGroup(tabGroupId);
-        int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
         for (int i = 0; i < children.size(); i++) {
             Tab childTab = children.get(i);
             int childIndex = headerIndex + 1 + i;
-            addTabInfoToModelForTab(childTab, childIndex, isSelectedTab(childTab, currentTabId));
+            addTabInfoToModelForTab(childTab, childIndex);
         }
         return children.size();
     }
