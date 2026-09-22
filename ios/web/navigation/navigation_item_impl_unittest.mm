@@ -19,6 +19,7 @@ namespace web {
 namespace {
 
 const char kItemURLString[] = "http://init.test";
+constexpr std::string_view kReferrerURLString = "http://referrer.url";
 static NSString* const kHTTPHeaderKey1 = @"key1";
 static NSString* const kHTTPHeaderKey2 = @"key2";
 static NSString* const kHTTPHeaderValue1 = @"value1";
@@ -213,6 +214,8 @@ TEST_F(NavigationItemTest, RestoreState) {
   other_item.SetVirtualURL(GURL("www.virtual.com"));
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
   other_item.SetSecurityScopedFileResource(data);
+  other_item.SetReferrer(
+      Referrer(GURL(kReferrerURLString), ReferrerPolicyDefault));
 
   ASSERT_NE(other_item.GetURL(), item_->GetURL());
 
@@ -222,12 +225,15 @@ TEST_F(NavigationItemTest, RestoreState) {
   EXPECT_NE(other_item.GetVirtualURL(), item_->GetVirtualURL());
   EXPECT_NE(other_item.GetSecurityScopedFileResource(),
             item_->GetSecurityScopedFileResource());
+  EXPECT_NE(other_item.GetReferrer(), item_->GetReferrer());
 
   NavigationItemImpl other_item2;
   other_item2.SetUserAgentType(UserAgentType::DESKTOP);
   other_item2.SetURL(item_->GetURL());
   other_item2.SetVirtualURL(GURL("www.virtual.com"));
   other_item2.SetSecurityScopedFileResource(data);
+  other_item2.SetReferrer(
+      Referrer(GURL(kReferrerURLString), ReferrerPolicyDefault));
 
   // Same URL, everything is restored.
   item_->RestoreStateFromItem(&other_item2);
@@ -235,6 +241,15 @@ TEST_F(NavigationItemTest, RestoreState) {
   EXPECT_EQ(other_item2.GetVirtualURL(), item_->GetVirtualURL());
   EXPECT_EQ(other_item2.GetSecurityScopedFileResource(),
             item_->GetSecurityScopedFileResource());
+  EXPECT_EQ(other_item2.GetReferrer(), item_->GetReferrer());
+
+  // Restoring an item with an empty referrer correctly updates the referrer.
+  NavigationItemImpl other_item3;
+  other_item3.SetURL(item_->GetURL());
+  ASSERT_TRUE(other_item3.GetReferrer().url.is_empty());
+  item_->RestoreStateFromItem(&other_item3);
+  EXPECT_EQ(other_item3.GetReferrer(), item_->GetReferrer());
+  EXPECT_TRUE(item_->GetReferrer().url.is_empty());
 }
 
 // Tests that NavigationItemImpl round trip correctly when serialized to proto.

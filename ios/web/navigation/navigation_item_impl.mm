@@ -382,15 +382,17 @@ void NavigationItemImpl::ResetForCommit() {
 
 void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
   // Restore the UserAgent type in any case, as if the URLs are different it
-  // might mean that `this` is a next navigation. The page display state and the
-  // virtual URL only make sense if it is the same item. The other headers might
-  // not make sense after creating a new navigation to the page.
+  // might mean that `this` is a next navigation. The page display state, the
+  // virtual URL, the security scoped file resource, and the referrer only make
+  // sense if it is the same item. Other headers might not make sense after
+  // creating a new navigation to the page.
   if (other->GetUserAgentType() != UserAgentType::NONE) {
     SetUserAgentType(other->GetUserAgentType());
   }
   if (url_ == other->GetURL()) {
     SetVirtualURL(other->GetVirtualURL());
     SetSecurityScopedFileResource(other->GetSecurityScopedFileResource());
+    SetReferrer(other->GetReferrer());
   }
 }
 

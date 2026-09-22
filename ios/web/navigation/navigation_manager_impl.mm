@@ -1579,9 +1579,10 @@ NavigationManagerImpl::WKWebViewCache::GetNavigationItemImplAtIndex(
   std::unique_ptr<web::NavigationItemImpl> new_item =
       navigation_manager_->CreateNavigationItemWithRewriters(
           net::GURLWithNSURL(wk_item.URL),
-          (prev_wk_item ? web::Referrer(net::GURLWithNSURL(prev_wk_item.URL),
-                                        web::ReferrerPolicyAlways)
-                        : web::Referrer()),
+          (prev_wk_item
+               ? web::Referrer(net::GURLWithNSURL(prev_wk_item.URL),
+                               web::ReferrerPolicyStrictOriginWhenCrossOrigin)
+               : web::Referrer()),
           ui::PageTransition::PAGE_TRANSITION_LINK,
           NavigationInitiationType::RENDERER_INITIATED, HttpsUpgradeType::kNone,
           // Not using GetLastCommittedItem()->GetURL() in case the last

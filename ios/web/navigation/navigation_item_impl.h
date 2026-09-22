@@ -133,7 +133,9 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetUntrusted();
   bool IsUntrusted();
 
-  // Restores the state of the `other` navigation item in this item.
+  // Restores the state (virtual URL, security scoped file resource, and
+  // referrer) of the `other` navigation item in this item if their URLs match.
+  // Also restores the user agent type regardless of URL match.
   void RestoreStateFromItem(NavigationItem* other);
 
 #ifndef NDEBUG

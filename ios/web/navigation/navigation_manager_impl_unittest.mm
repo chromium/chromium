@@ -2136,6 +2136,22 @@ TEST_P(
   EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
 }
 
+// Tests that a lazily created NavigationItemImpl uses
+// ReferrerPolicyStrictOriginWhenCrossOrigin with the previous entry's URL.
+TEST_P(NavigationManagerTest,
+       GetNavigationItemImplAtIndex_SynthesizedReferrerPolicy) {
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/1"
+                  backListURLs:@[ @"http://www.url.com/0" ]
+               forwardListURLs:nil];
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(1);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/1"), item->GetURL());
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetReferrer().url);
+  EXPECT_EQ(web::ReferrerPolicyStrictOriginWhenCrossOrigin,
+            item->GetReferrer().policy);
+}
+
 TEST_P(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"),
