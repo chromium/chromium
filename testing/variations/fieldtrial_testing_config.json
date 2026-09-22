@@ -11301,7 +11301,6 @@
                     "enable_features": [
                         "SendTabToSelfAutoOpen",
                         "SendTabToSelfEnhancedBottomsheet",
-                        "SendTabToSelfEnhancedDesktopUI",
                         "SendTabToSelfExtraEntryPoints",
                         "SendTabToSelfImprovedLastActiveLabels",
                         "SendTabToSelfPostSendToast",

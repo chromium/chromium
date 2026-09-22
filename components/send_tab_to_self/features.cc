@@ -43,8 +43,7 @@ BASE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kSendTabToSelfEnhancedDesktopUI,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSendTabToSelfEnhancedDesktopUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfPostSendToast, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -39,6 +39,9 @@ namespace {
 using FormFactor = syncer::DeviceInfo::FormFactor;
 using OsType = syncer::DeviceInfo::OsType;
 
+constexpr char kDeviceGuid3[] = "device_guid_3";
+constexpr char kDeviceName3[] = "Device_3";
+
 class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
  public:
   explicit SendTabToSelfBubbleControllerMock(content::WebContents* web_contents)
@@ -52,7 +55,7 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
              clock.Now() - base::Days(0)},
             {"Device_2", "device_guid_2", FormFactor::kDesktop, OsType::kLinux,
              clock.Now() - base::Days(1)},
-            {"Device_3", "device_guid_3", FormFactor::kPhone, OsType::kAndroid,
+            {kDeviceName3, kDeviceGuid3, FormFactor::kPhone, OsType::kAndroid,
              clock.Now() - base::Days(5)}};
   }
 
@@ -123,49 +126,10 @@ class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
   raw_ptr<SendTabToSelfBubbleControllerMock> controller_;
 };
 
+// Verifies that the first target device button in the list of options receives
+// initial keyboard focus when the dialog opens.
 TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
-       KeyboardAccessibilityConfigured) {
-  auto* container = bubble_->GetButtonContainerForTesting();
-
-  ASSERT_EQ(3U, container->children().size());
-
-  // All three device entries should be grouped together, and the first one
-  // should receive initial keyboard focus.
-  EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
-  EXPECT_NE(-1, container->children()[0]->GetGroup());
-  EXPECT_EQ(container->children()[0]->GetGroup(),
-            container->children()[1]->GetGroup());
-  EXPECT_EQ(container->children()[0]->GetGroup(),
-            container->children()[2]->GetGroup());
-}
-
-TEST_F(SendTabToSelfDevicePickerBubbleViewTest, ButtonPressed) {
-  EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3", "Device_3"));
-  const views::View* button_container = bubble_->GetButtonContainerForTesting();
-  ASSERT_EQ(3U, button_container->children().size());
-
-  // Simulate a click on the third device button.
-  views::test::ButtonTestApi(
-      static_cast<views::Button*>(button_container->children()[2]))
-      .NotifyDefaultMouseClick();
-}
-
-// Test fixture for SendTabToSelfDevicePickerBubbleView with the enhanced
-// desktop UI feature enabled.
-class SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest
-    : public SendTabToSelfDevicePickerBubbleViewTest {
- public:
-  SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest() = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{kSendTabToSelfEnhancedDesktopUI};
-};
-
-// Verifies that when enhanced desktop UI is enabled, the first target device
-// button in the list of options receives initial keyboard focus when the dialog
-// opens.
-TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
-       InitiallyFocusedViewIsFirstDeviceWhenEnhancedUiEnabled) {
+       InitiallyFocusedViewIsFirstDevice) {
   const views::View* container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, container->children().size());
 
@@ -174,10 +138,27 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
   EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
 }
 
+// Verifies that clicking a target device button selects it and accepting the
+// dialog notifies the controller with the selected device.
+TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
+       SelectDeviceAndAcceptNotifiesController) {
+  EXPECT_CALL(*controller_, OnDeviceSelected).Times(0);
+  const views::View* button_container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, button_container->children().size());
+
+  auto* third_button = views::AsViewClass<SendTabToSelfBubbleDeviceButton>(
+      button_container->children()[2]);
+  views::test::ButtonTestApi(third_button).NotifyDefaultMouseClick();
+  EXPECT_TRUE(third_button->IsSelected());
+
+  EXPECT_CALL(*controller_, OnDeviceSelected(kDeviceGuid3, kDeviceName3));
+  bubble_->AcceptDialog();
+}
+
 // Verifies that the first target device button is automatically selected on
 // open and its accessibility node data indicates that it is selected and has
 // listbox option roles for Windows AT compatibility.
-TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
+TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
        FirstDeviceIsSelectedAndAccessibleOnOpen) {
   const views::View* container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, container->children().size());
@@ -204,7 +185,7 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
 // Verifies that selecting a different target device updates the selected state
 // and accessibility node data for both the newly selected and previously
 // selected target device buttons.
-TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
+TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
        SelectTargetDeviceUpdatesAccessibilitySelection) {
   const views::View* container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, container->children().size());
@@ -237,6 +218,46 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
             GetAccessibleNodeRole(second_button));
   EXPECT_FALSE(IsAccessibleNodeSelected(first_button));
   EXPECT_TRUE(IsAccessibleNodeSelected(second_button));
+}
+
+// Test fixture for SendTabToSelfDevicePickerBubbleView with the enhanced
+// desktop UI feature disabled (legacy instant-send bubble).
+class SendTabToSelfDevicePickerBubbleViewLegacyTest
+    : public SendTabToSelfDevicePickerBubbleViewTest {
+ public:
+  SendTabToSelfDevicePickerBubbleViewLegacyTest() {
+    feature_list_.InitAndDisableFeature(kSendTabToSelfEnhancedDesktopUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SendTabToSelfDevicePickerBubbleViewLegacyTest,
+       KeyboardAccessibilityConfigured) {
+  auto* container = bubble_->GetButtonContainerForTesting();
+
+  ASSERT_EQ(3U, container->children().size());
+
+  // All three device entries should be grouped together, and the first one
+  // should receive initial keyboard focus.
+  EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
+  EXPECT_NE(-1, container->children()[0]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[1]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[2]->GetGroup());
+}
+
+TEST_F(SendTabToSelfDevicePickerBubbleViewLegacyTest, ButtonPressed) {
+  EXPECT_CALL(*controller_, OnDeviceSelected(kDeviceGuid3, kDeviceName3));
+  const views::View* button_container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, button_container->children().size());
+
+  // Simulate a click on the third device button.
+  views::test::ButtonTestApi(
+      static_cast<views::Button*>(button_container->children()[2]))
+      .NotifyDefaultMouseClick();
 }
 
 }  // namespace send_tab_to_self
