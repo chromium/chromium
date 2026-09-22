@@ -11,6 +11,7 @@ import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js'
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import {PDF_DESTINATION_KEY} from '../data/destination.js';
@@ -63,6 +64,17 @@ export class PrintPreviewDestinationSelectElement extends
   accessor pdfPrinterDisabled: boolean = false;
   accessor recentDestinationList: Destination[] = [];
   protected accessor pdfDestinationKey_: string = PDF_DESTINATION_KEY;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('noDestinations') ||
+        changedProperties.has('recentDestinationList') ||
+        changedProperties.has('selectedValue')) {
+      this.$.select.value =
+          this.noDestinations ? 'noDestinations' : this.selectedValue;
+    }
+  }
 
   override focus() {
     this.$.select.focus();
