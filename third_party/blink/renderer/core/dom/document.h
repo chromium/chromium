@@ -1179,6 +1179,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void FlushAutofocusCandidates();
   void FinalizeAutofocus();
   Element* GetAutofocusDelegate() const;
+  bool HasSequentialFocusNavigationStartingPoint() const;
   void SetSequentialFocusNavigationStartingPoint(Node*);
   Element* SequentialFocusNavigationStartingPoint(
       mojom::blink::FocusType) const;

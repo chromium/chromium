@@ -2406,7 +2406,17 @@ void Element::ScrollIntoViewNoVisualUpdate(
       container ? container->GetLayoutObject() : nullptr,
       /*from_remote_frame=*/false, include_self, resolver);
 
-  GetDocument().SetSequentialFocusNavigationStartingPoint(originating_element);
+  // Avoid creating a starting point before the first sequential focus
+  // navigation. Disabling the feature restores the legacy behavior.
+  const bool has_sequential_focus_navigation_starting_point =
+      GetDocument().FocusedElement() ||
+      GetDocument().HasSequentialFocusNavigationStartingPoint();
+  if (!RuntimeEnabledFeatures::
+          ScrollIntoViewNoInitialFocusNavigationStartingPointEnabled() ||
+      has_sequential_focus_navigation_starting_point) {
+    GetDocument().SetSequentialFocusNavigationStartingPoint(
+        originating_element);
+  }
 }
 
 void Element::scrollIntoViewIfNeeded(bool center_if_needed) {

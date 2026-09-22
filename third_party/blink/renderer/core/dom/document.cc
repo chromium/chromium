@@ -6200,6 +6200,10 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
                                                  new_focused_element);
 }
 
+bool Document::HasSequentialFocusNavigationStartingPoint() const {
+  return sequential_focus_navigation_starting_point_;
+}
+
 void Document::SetSequentialFocusNavigationStartingPoint(Node* node) {
   if (!dom_window_)
     return;

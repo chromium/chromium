@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel="help"
+      href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation">
+<link rel="help"
+      href="https://drafts.csswg.org/cssom-view-1/#dom-element-scrollintoview">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<button id="before"></button>
+<button id="scrolled"></button>
+<button id="after"></button>
+
+<script>
+test(() => {
+  const before = document.querySelector('#before');
+  const scrolled = document.querySelector('#scrolled');
+  scrolled.scrollIntoView();
+  eventSender.keyDown('\t');
+  assert_equals(document.activeElement, before);
+}, 'Element.scrollIntoView() should not set the initial sequential focus ' +
+   'navigation starting point.');
+</script>
