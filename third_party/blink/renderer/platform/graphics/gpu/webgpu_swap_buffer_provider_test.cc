@@ -396,7 +396,9 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // destruction
   gpu::SyncToken release_token;
   webgpu_->GenSyncTokenCHROMIUM(release_token.GetData());
-  std::move(release_callback).Run(release_token, false /* lostResource */);
+  gpu::SyncToken returned_token = resource.shared_image()->EndExport(
+      gpu::SharedImageExportResult::CreateForTesting(release_token));
+  std::move(release_callback).Run(returned_token, false /* lostResource */);
   resource = viz::TransferableResource();
 
   // Release the unused swap buffers held by the provider.
