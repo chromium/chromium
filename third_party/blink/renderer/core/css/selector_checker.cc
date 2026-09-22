@@ -805,7 +805,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
-    case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
     case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoOpen:
@@ -3013,14 +3012,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return input->IsPickerVisible();
       } else if (auto* menuitem = DynamicTo<HTMLMenuItemElement>(element)) {
         return menuitem->IsSubmenuOpen();
-      }
-      return false;
-    case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
-      if (auto* menulist = DynamicTo<HTMLMenuListElement>(element)) {
-        if (auto* menuitem_anchor = DynamicTo<HTMLMenuItemElement>(
-                menulist->GetPopoverData()->invoker())) {
-          return IsA<HTMLMenuBarElement>(menuitem_anchor->OwningMenuElement());
-        }
       }
       return false;
     case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:

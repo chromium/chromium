@@ -380,7 +380,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoHostHasNonAutoAppearance,
     kPseudoIsHtml,
     kPseudoListBox,
-    kPseudoMenulistPopoverWithMenubarAnchor,
     kPseudoMenulistPopoverWithMenulistAnchor,
     kPseudoMultiSelectFocus,
     kPseudoOpen,

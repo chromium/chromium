@@ -2434,9 +2434,7 @@ select optgroup optgroup {
     background-color: Canvas;
     border: 1px solid currentColor;
     padding: 0.25em;
-  }
 
-  menulist:-internal-menulist-popover-with-menubar-anchor {
     /* Below and span-right, by default. */
     position-area: block-end span-inline-end;
   }

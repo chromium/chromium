@@ -530,7 +530,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoLink:
     case kPseudoLinkTo:
     case kPseudoListBox:
-    case kPseudoMenulistPopoverWithMenubarAnchor:
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMultiSelectFocus:
@@ -656,8 +655,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-list-box", CSSSelector::kPseudoListBox},
     {"-internal-media-controls-overlay-cast-button",
      CSSSelector::kPseudoWebKitCustomElement},
-    {"-internal-menulist-popover-with-menubar-anchor",
-     CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor},
     {"-internal-menulist-popover-with-menulist-anchor",
      CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
@@ -1187,7 +1184,6 @@ void CSSSelector::UpdatePseudoType(AtomicString value,
     case kPseudoLastOfType:
     case kPseudoLink:
     case kPseudoLinkTo:
-    case kPseudoMenulistPopoverWithMenubarAnchor:
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMuted:
@@ -1992,7 +1988,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoLang:
     case kPseudoLink:
     case kPseudoLinkTo:
-    case kPseudoMenulistPopoverWithMenubarAnchor:
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMuted:
