@@ -1114,4 +1114,54 @@ TEST_F(MediaStreamVideoSourceTest, GetNextCaptureVersionDefaultImplementation) {
   EXPECT_EQ(source()->GetNextCaptureVersion(), std::nullopt);
 }
 
+// Pausing a source must push a black frame all the way through to the sink, so
+// that a consumer is not left displaying the last real frame of whatever the
+// source was showing. Regression test: the black frame used to be built with a
+// default-constructed capture version, which the track discarded as
+// kOldCaptureVersion once the source's version had moved on.
+TEST_F(MediaStreamVideoSourceTest, StopForRestartDeliversBlackFrameToSink) {
+  WebMediaStreamTrack track = CreateTrackAndStartSource(100, 100, 30.0);
+  MockMediaStreamVideoSink sink;
+  sink.ConnectToTrack(track);
+
+  // Move the capture version on, as a source change does in production. From
+  // here the track discards any frame stamped with an older version.
+  const media::CaptureVersion kCaptureVersion(1, 0);
+  EXPECT_CALL(*mock_source(), GetCaptureVersion())
+      .WillRepeatedly(Return(kCaptureVersion));
+  mock_source()->DeliverNewCaptureVersion(kCaptureVersion);
+
+  // A real frame at the current version: this is the frame the sink would be
+  // stuck on if the black frame never arrived.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(sink, OnVideoFrame).WillOnce([&](base::TimeTicks) {
+      run_loop.Quit();
+    });
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateBlackFrame(gfx::Size(200, 200));
+    frame->set_timestamp(base::Seconds(1));
+    frame->metadata().capture_version = kCaptureVersion;
+    mock_source()->DeliverVideoFrame(std::move(frame));
+    run_loop.Run();
+  }
+  EXPECT_EQ(sink.number_of_frames(), 1);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame).WillOnce([&](base::TimeTicks) {
+    run_loop.Quit();
+  });
+  mock_source()->EnableStopForRestart();
+  source()->StopForRestart(
+      BindOnce([](MediaStreamVideoSource::RestartResult result) {}),
+      /*send_black_frame=*/true);
+
+  run_loop.Run();
+
+  EXPECT_EQ(sink.number_of_frames(), 2);
+  ASSERT_TRUE(sink.last_frame());
+  EXPECT_FALSE(sink.last_frame()->visible_rect().IsEmpty());
+  sink.DisconnectFromTrack();
+}
+
 }  // namespace blink

@@ -246,15 +246,20 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
   if (send_black_frame) {
     const std::optional<gfx::Size> source_size =
         GetTrackAdapter()->source_frame_size();
-    scoped_refptr<media::VideoFrame> black_frame =
-        media::VideoFrame::CreateBlackFrame(
-            source_size.has_value() ? *source_size
-                                    : gfx::Size(kDefaultWidth, kDefaultHeight));
+    const gfx::Size black_frame_size =
+        source_size.has_value() ? *source_size
+                                : gfx::Size(kDefaultWidth, kDefaultHeight);
+    // Note: the frame is constructed on the video task runner rather than here,
+    // so that it can be stamped with a timestamp that continues the source's
+    // timeline. A frame starting over at zero, with a default capture version,
+    // is discarded downstream and the consumer keeps displaying the last real
+    // frame.
     PostCrossThreadTask(
         *video_task_runner(), FROM_HERE,
-        CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
-                            GetTrackAdapter(), black_frame,
-                            base::TimeTicks::Now()));
+        CrossThreadBindOnce(
+            &VideoTrackAdapter::DeliverBlackFrameOnVideoTaskRunner,
+            GetTrackAdapter(), black_frame_size, GetCaptureVersion(),
+            base::TimeTicks::Now()));
   }
 
   StopSourceForRestartImpl();

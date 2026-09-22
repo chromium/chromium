@@ -932,6 +932,9 @@ void VideoTrackAdapter::DeliverFrameOnVideoTaskRunner(
   TRACE_EVENT0("media", "VideoTrackAdapter::DeliverFrameOnVideoTaskRunner");
   ++frame_counter_;
 
+  last_frame_timestamp_ = video_frame->timestamp();
+  last_frame_arrival_time_ = base::TimeTicks::Now();
+
   bool is_device_rotated = false;
   // TODO(guidou): Use actual device information instead of this heuristic to
   // detect frames from rotated devices. https://crbug.com/722748
@@ -944,6 +947,46 @@ void VideoTrackAdapter::DeliverFrameOnVideoTaskRunner(
     adapter->DeliverFrame(video_frame, estimated_capture_time,
                           is_device_rotated);
   }
+}
+
+void VideoTrackAdapter::DeliverBlackFrameOnVideoTaskRunner(
+    const gfx::Size& size,
+    media::CaptureVersion capture_version,
+    base::TimeTicks estimated_capture_time) {
+  DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
+
+  scoped_refptr<media::VideoFrame> black_frame =
+      media::VideoFrame::CreateBlackFrame(size);
+  if (!black_frame) {
+    return;
+  }
+
+  // CreateBlackFrame() produces a frame with a zero timestamp and default
+  // metadata. Advance it along the existing timeline instead, so that it does
+  // not appear to travel backwards relative to everything delivered so far.
+  //
+  // The delta is deliberately forced past kMaxTimeBetweenFrames, which is the
+  // unconditional "keep" branch of
+  // VideoFrameResolutionAdapter::MaybeDropFrame(). A merely monotonic delta is
+  // not enough: when the source has a max frame rate (the common case for
+  // screen share) a small delta is discarded as
+  // kResolutionAdapterFrameRateIsHigherThanRequested. This frame is a security
+  // control, so it must not be rate limited. The forward jump is harmless --
+  // the capture is about to be suspended anyway, and when real frames resume
+  // their apparently-backwards timestamp hits the is_negative() keep branch.
+  const base::TimeDelta elapsed =
+      last_frame_arrival_time_.is_null()
+          ? base::TimeDelta()
+          : base::TimeTicks::Now() - last_frame_arrival_time_;
+  const base::TimeDelta advance =
+      std::max(elapsed, kMaxTimeBetweenFrames + base::Milliseconds(1));
+  black_frame->set_timestamp(last_frame_timestamp_ + advance);
+  // MediaStreamVideoTrack::FrameDeliverer discards frames whose capture version
+  // is older than the latest one it has seen, which a default-constructed one
+  // generally is.
+  black_frame->metadata().capture_version = capture_version;
+
+  DeliverFrameOnVideoTaskRunner(std::move(black_frame), estimated_capture_time);
 }
 
 void VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner(

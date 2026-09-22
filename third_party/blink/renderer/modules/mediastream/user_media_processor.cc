@@ -1654,11 +1654,23 @@ void UserMediaProcessor::OnDeviceRequestStateChange(
   WebPlatformMediaStreamSource* const source_impl = source->GetPlatformSource();
   source_impl->SetSourceMuted(new_state ==
                               mojom::blink::MediaStreamStateChange::PAUSE);
-  MediaStreamVideoSource* video_source =
-      static_cast<blink::MediaStreamVideoSource*>(source_impl);
-  if (!video_source) {
+
+  // The browser process dispatches this notification for *every* device in the
+  // request whose id matches the DesktopMediaID that changed state. For tab
+  // capture with tab audio, the audio and video devices share a single
+  // DesktopMediaID, so this is reached once for the audio source and once for
+  // the video source. Only a video source can be stopped and restarted.
+  //
+  // This type check is what makes the downcast below safe -- it must not be
+  // removed. A null check on the cast result cannot substitute for it: a
+  // static_cast of a non-null pointer is never null, so the audio source would
+  // be silently reinterpreted as a video source.
+  if (source->GetType() != MediaStreamSource::kTypeVideo) {
     return;
   }
+  auto* const video_source = static_cast<MediaStreamVideoSource*>(source_impl);
+  CHECK(video_source);
+
   if (new_state == mojom::blink::MediaStreamStateChange::PAUSE) {
     if (video_source->IsRunning()) {
       video_source->StopForRestart(base::DoNothing(),
@@ -1666,8 +1678,13 @@ void UserMediaProcessor::OnDeviceRequestStateChange(
     }
   } else if (new_state == mojom::blink::MediaStreamStateChange::PLAY) {
     if (video_source->IsStoppedForRestart()) {
-      video_source->Restart(*video_source->GetCurrentFormat(),
-                            base::DoNothing());
+      // A source that is stopped for restart may not have a current format, in
+      // which case there is nothing to restart it with.
+      const std::optional<media::VideoCaptureFormat> current_format =
+          video_source->GetCurrentFormat();
+      if (current_format) {
+        video_source->Restart(*current_format, base::DoNothing());
+      }
     }
   } else {
     NOTREACHED();

@@ -336,6 +336,31 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     frame_processed_.Wait();
   }
 
+  // Ask |adapter_| to synthesize and deliver a black frame, and wait until
+  // either OnFrameDelivered or OnFrameDropped has observed the outcome.
+  void DeliverBlackFrameAndValidate(const gfx::Size& size,
+                                    media::CaptureVersion capture_version,
+                                    base::TimeTicks estimated_capture_time) {
+    // |adapter_| is constructed with the IO task runner as its video task
+    // runner (see CreateAdapter), mirroring production, so the delivery is
+    // posted there.
+    auto deliver_frame = [&]() {
+      PostCrossThreadTask(
+          *platform_support_->GetIOTaskRunner(), FROM_HERE,
+          CrossThreadBindOnce(
+              &VideoTrackAdapter::DeliverBlackFrameOnVideoTaskRunner, adapter_,
+              size, capture_version, estimated_capture_time));
+    };
+
+    frame_processed_.Reset();
+    // Bounce off |testing_render_thread_| to synchronize with the
+    // AddTrackOnVideoTaskRunner / ReconfigureTrackOnVideoTaskRunner that would
+    // be invoked through ConfigureTrack, as DeliverAndValidateFrame does.
+    testing_render_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting(deliver_frame));
+    frame_processed_.Wait();
+  }
+
   void OnFrameDelivered(
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks estimated_capture_time) {
@@ -926,6 +951,57 @@ TEST_F(VideoTrackAdapterFixtureTest, DropFramesIfTimeBetweenFramesIsZero) {
       /*actual_input_frame_rate=*/std::numeric_limits<double>::infinity());
   EXPECT_EQ(num_delivered, 1);
   EXPECT_EQ(num_dropped, kNumFrames - 1);
+}
+
+// A black frame synthesized when capture is paused must reach the track even
+// though a real frame was just delivered and the source has a max frame rate.
+// It is a security control rather than a content update, so it must not be
+// rate limited, and it must not appear to travel backwards in time.
+TEST_F(VideoTrackAdapterFixtureTest, BlackFrameIsDeliveredAndStamped) {
+  const gfx::Size kSize(640, 480);
+  const double kFrameRate = 30.0;
+  CreateAdapter(
+      media::VideoCaptureFormat(kSize, kFrameRate, media::PIXEL_FORMAT_I420));
+  ConfigureTrack(VideoTrackAdapterSettings(/*target_size=*/std::nullopt,
+                                           /*min_aspect_ratio=*/0.0,
+                                           /*max_aspect_ratio=*/640.0,
+                                           kFrameRate));
+
+  // Deliver a real frame first. This arms the frame rate limiter and
+  // establishes the timeline that the black frame has to continue.
+  const base::TimeDelta kRealFrameTimestamp = base::Seconds(1);
+  auto real_frame =
+      CreateTestFrame(kSize, gfx::Rect(kSize), kSize,
+                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
+                      test_sii_.get());
+  real_frame->set_timestamp(kRealFrameTimestamp);
+  SetFrameValidationCallback(base::BindLambdaForTesting(
+      [](scoped_refptr<media::VideoFrame> frame, base::TimeTicks) {}));
+  DeliverAndValidateFrame(real_frame, base::TimeTicks());
+
+  // The black frame follows immediately afterwards. A real frame arriving this
+  // soon would be discarded as
+  // kResolutionAdapterFrameRateIsHigherThanRequested.
+  const media::CaptureVersion kCaptureVersion(1, 0);
+  scoped_refptr<media::VideoFrame> delivered_frame;
+  SetFrameValidationCallback(base::BindLambdaForTesting(
+      [&](scoped_refptr<media::VideoFrame> frame, base::TimeTicks) {
+        delivered_frame = std::move(frame);
+      }));
+  SetFrameDroppedCallback(
+      base::BindLambdaForTesting([](media::VideoCaptureFrameDropReason reason) {
+        ADD_FAILURE() << "Black frame was dropped, reason "
+                      << static_cast<int>(reason);
+      }));
+  DeliverBlackFrameAndValidate(kSize, kCaptureVersion, base::TimeTicks::Now());
+
+  ASSERT_TRUE(delivered_frame);
+  EXPECT_EQ(delivered_frame->natural_size(), kSize);
+  // Carries the source's capture version, so MediaStreamVideoTrack does not
+  // discard it as kOldCaptureVersion.
+  EXPECT_EQ(delivered_frame->metadata().capture_version, kCaptureVersion);
+  // Continues the timeline rather than restarting at zero.
+  EXPECT_GT(delivered_frame->timestamp(), kRealFrameTimestamp);
 }
 
 class VideoTrackAdapterEncodedTest : public ::testing::Test {
