@@ -8812,6 +8812,24 @@
             ]
         }
     ],
+    "GlicEmbeddedPdfBytesExtraction": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicEmbeddedPdfBytesExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicExperimentalTriggering": [
         {
             "platforms": [
