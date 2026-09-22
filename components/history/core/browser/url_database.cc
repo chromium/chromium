@@ -348,6 +348,18 @@ bool URLDatabase::InitURLEnumeratorForEverything(URLEnumerator* enumerator) {
   return enumerator->statement_.is_valid();
 }
 
+bool URLDatabase::InitURLEnumeratorForTypedOrSearched(
+    URLEnumerator* enumerator) {
+  DCHECK(!enumerator->initialized_);
+  DCHECK(has_keyword_search_terms_);
+  enumerator->statement_.Assign(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_URL_ROW_FIELDS
+                     "FROM urls WHERE typed_count > 0 OR "
+                     "id IN (SELECT url_id FROM keyword_search_terms)"));
+  enumerator->initialized_ = enumerator->statement_.is_valid();
+  return enumerator->statement_.is_valid();
+}
+
 bool URLDatabase::InitURLEnumeratorForSignificant(URLEnumerator* enumerator) {
   DCHECK(!enumerator->initialized_);
   static constexpr char kSql[] =
@@ -609,6 +621,19 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   return statement.Run();
 }
 
+bool URLDatabase::InsertKeywordSearchTermRow(const KeywordSearchTermRow& row) {
+  DCHECK(has_keyword_search_terms_);
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO keyword_search_terms (keyword_id, url_id, term, "
+      "normalized_term) VALUES (?,?,?,?)"));
+  statement.BindInt64(0, row.keyword_id);
+  statement.BindInt64(1, row.url_id);
+  statement.BindString16(2, row.term);
+  statement.BindString16(3, row.normalized_term);
+  return statement.Run();
+}
+
 bool URLDatabase::GetAggregateURLDataForKeywordSearchTerm(
     const std::u16string& term,
     URLRow* url_info) {
@@ -754,6 +779,20 @@ URLDatabase::CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id) {
   return enumerator;
 }
 
+std::unique_ptr<KeywordSearchTermRowEnumerator>
+URLDatabase::CreateKeywordSearchTermRowEnumerator() {
+  DCHECK(has_keyword_search_terms_);
+  auto enumerator = base::WrapUnique(new KeywordSearchTermRowEnumerator());
+  enumerator->statement_.Assign(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT keyword_id, url_id, term, normalized_term "
+      "FROM keyword_search_terms"));
+  if (!enumerator->statement_.is_valid()) {
+    return nullptr;
+  }
+  return enumerator;
+}
+
 bool URLDatabase::DeleteKeywordSearchTerm(const std::u16string& term) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM keyword_search_terms WHERE term=?"));
@@ -817,8 +856,8 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
        "typed_count INTEGER DEFAULT 0 NOT NULL,"
        "last_visit_time INTEGER NOT NULL,"
        "hidden INTEGER DEFAULT 0 NOT NULL)"});
-  // IMPORTANT: If you change the columns, also update in_memory_database.cc
-  // where the values are copied (InitFromDisk).
+  // IMPORTANT: If you change the columns, also update FillURLRow() and
+  // InsertOrUpdateURLRowByID(), which InMemoryDatabase uses to copy rows.
 
   return GetDB().Execute(sql);
 }

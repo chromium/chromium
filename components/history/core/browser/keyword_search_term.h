@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -67,6 +68,28 @@ class KeywordSearchTermVisitEnumerator {
 
   sql::Statement statement_;  // The statement to create KeywordSearchTermVisit.
   bool initialized_{false};   // Whether |statement_| can be executed.
+};
+
+// KeywordSearchTermRowEnumerator ----------------------------------------------
+
+// A basic enumerator to enumerate the rows of the keyword search terms table.
+// May be created and initialized by URLDatabase only.
+class KeywordSearchTermRowEnumerator {
+ public:
+  KeywordSearchTermRowEnumerator(const KeywordSearchTermRowEnumerator&) =
+      delete;
+  KeywordSearchTermRowEnumerator& operator=(
+      const KeywordSearchTermRowEnumerator&) = delete;
+  ~KeywordSearchTermRowEnumerator() = default;
+
+  // Returns the next row, or nullptr if no rows are left.
+  std::unique_ptr<KeywordSearchTermRow> GetNextRow();
+
+ private:
+  friend class URLDatabase;
+  KeywordSearchTermRowEnumerator() = default;
+
+  sql::Statement statement_;
 };
 
 }  // namespace history

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,7 @@ class Database;
 
 namespace history {
 
+class KeywordSearchTermRowEnumerator;
 class KeywordSearchTermVisitEnumerator;
 struct KeywordSearchTermRow;
 
@@ -173,6 +175,11 @@ class URLDatabase {
   // times in the order of the most significant ones first.
   bool InitURLEnumeratorForSignificant(URLEnumerator* enumerator);
 
+  // Initializes the given enumerator to enumerate all URLs in the database that
+  // were typed at least once or that have a keyword search term, i.e. the
+  // subset cached by InMemoryDatabase. Requires the keyword search terms table.
+  bool InitURLEnumeratorForTypedOrSearched(URLEnumerator* enumerator);
+
   // Autocomplete --------------------------------------------------------------
 
   // Fills the given array with URLs matching the given prefix.  They will be
@@ -263,6 +270,16 @@ class URLDatabase {
   // newest.
   std::unique_ptr<KeywordSearchTermVisitEnumerator>
   CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id);
+
+  // Returns an enumerator over every row of the keyword search terms table, or
+  // nullptr if the table cannot be read.
+  std::unique_ptr<KeywordSearchTermRowEnumerator>
+  CreateKeywordSearchTermRowEnumerator();
+
+  // Inserts `row` verbatim into the keyword search terms table, without
+  // normalizing the term or checking for an existing row. Used to copy rows
+  // between databases; see SetKeywordSearchTermsForURL() for regular updates.
+  bool InsertKeywordSearchTermRow(const KeywordSearchTermRow& row);
 
   // Deletes all searches matching `term`.
   bool DeleteKeywordSearchTerm(const std::u16string& term);

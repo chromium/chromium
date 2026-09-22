@@ -89,8 +89,7 @@ class HistoryDatabase : public DownloadDatabase,
   void reset_error_callback() { db_.reset_error_callback(); }
 
   // Must call this function to complete initialization. Will return
-  // sql::INIT_OK on success. Otherwise, no other function should be called. You
-  // may want to call BeginExclusiveMode after this when you are ready.
+  // sql::INIT_OK on success. Otherwise, no other function should be called.
   sql::InitStatus Init(const base::FilePath& history_name);
 
   // Computes and records various metrics for the database. Should only be
@@ -113,13 +112,6 @@ class HistoryDatabase : public DownloadDatabase,
   int CountUniqueDomainsVisited(base::Time begin_time,
                                 base::Time end_time,
                                 VisitQuery404sPolicy policy_for_404_visits);
-
-  // Call to set the mode on the database to exclusive. The default locking mode
-  // is "normal" but we want to run in exclusive mode for slightly better
-  // performance since we know nobody else is using the database. This is
-  // separate from Init() since the in-memory database attaches to slurp the
-  // data out, and this can't happen in exclusive mode.
-  void BeginExclusiveMode();
 
   // Returns the current version that we will generate history databases with.
   static int GetCurrentVersion();

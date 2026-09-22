@@ -3861,6 +3861,51 @@ TEST_F(HistoryBackendTest, ClientRedirectScoring) {
   EXPECT_EQ(0, url_row.typed_count());
 }
 
+// The in-memory backend of a freshly initialized HistoryBackend must contain
+// what earlier sessions wrote to disk: the URLs that were typed or searched
+// for, with their keyword search terms, but not URLs that were only followed.
+TEST_P(InMemoryHistoryBackendTest, PopulatedFromDiskOnInit) {
+  const GURL typed_url("http://typed.com/");
+  const GURL link_url("http://link.com/");
+  const GURL search_url("http://search.com/?q=term");
+  const base::Time visit_time = base::Time::Now();
+  backend_->AddPage(HistoryAddPageArgs(
+      typed_url, visit_time, 0, 0, std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false, true));
+  backend_->AddPage(HistoryAddPageArgs(
+      link_url, visit_time, 0, 0, std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false, true));
+  backend_->AddPage(HistoryAddPageArgs(
+      search_url, visit_time, 0, 0, std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false, true));
+  backend_->SetKeywordSearchTermsForURL(search_url, kTestKeywordId, u"term");
+
+  // Simulate a restart: shut the backend down and initialize a new one on the
+  // same directory.
+  backend_->Closing();
+  backend_ = nullptr;
+  mem_backend_.reset();
+  backend_ = base::MakeRefCounted<TestHistoryBackend>(
+      std::make_unique<HistoryBackendTestDelegate>(this),
+      history_client_.CreateBackendClient(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  backend_->Init(false, TestHistoryDatabaseParamsForPath(test_dir()));
+  ASSERT_TRUE(mem_backend_);
+
+  URLRow row;
+  ASSERT_NE(0, mem_backend_->db()->GetRowForURL(typed_url, &row));
+  EXPECT_EQ(1, row.typed_count());
+  EXPECT_EQ(0, mem_backend_->db()->GetRowForURL(link_url, nullptr));
+  ASSERT_NE(0, mem_backend_->db()->GetRowForURL(search_url, &row));
+  KeywordSearchTermRow term;
+  ASSERT_TRUE(mem_backend_->db()->GetKeywordSearchTermRow(row.id(), &term));
+  EXPECT_EQ(kTestKeywordId, term.keyword_id);
+  EXPECT_EQ(u"term", term.term);
+}
+
 // Common implementation for the two tests below, given that the only difference
 // between them is the type of the notification sent out.
 void InMemoryHistoryBackendTest::TestAddingAndChangingURLRows(

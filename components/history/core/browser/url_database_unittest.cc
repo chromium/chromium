@@ -5,6 +5,7 @@
 #include "components/history/core/browser/url_database.h"
 
 #include <limits>
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,6 +19,7 @@
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "sql/database.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -35,6 +37,21 @@ bool IsURLRowEqual(const URLRow& a,
          a.typed_count() == b.typed_count() &&
          a.last_visit() - b.last_visit() <= base::Seconds(1) &&
          a.hidden() == b.hidden();
+}
+
+// Matches a KeywordSearchTermRow with the given field values.
+testing::Matcher<const KeywordSearchTermRow&> MatchesSearchTerm(
+    KeywordID keyword_id,
+    URLID url_id,
+    const std::u16string& term,
+    const std::u16string& normalized_term) {
+  return testing::AllOf(
+      testing::Field("keyword_id", &KeywordSearchTermRow::keyword_id,
+                     keyword_id),
+      testing::Field("url_id", &KeywordSearchTermRow::url_id, url_id),
+      testing::Field("term", &KeywordSearchTermRow::term, term),
+      testing::Field("normalized_term", &KeywordSearchTermRow::normalized_term,
+                     normalized_term));
 }
 
 }  // namespace
@@ -588,6 +605,80 @@ TEST_F(URLDatabaseTest, EnumeratorForSignificant) {
   for (; history_enum.GetNextURL(&row); ++row_count)
     EXPECT_EQ(good_urls[row_count], row.url().spec());
   EXPECT_EQ(6, row_count);
+}
+
+TEST_F(URLDatabaseTest, EnumeratorForTypedOrSearched) {
+  URLRow typed(GURL("http://www.typed.com/"));
+  typed.set_typed_count(1);
+  const URLID typed_id = AddURL(typed);
+  ASSERT_NE(0, typed_id);
+
+  URLRow hidden_typed(GURL("http://www.hidden-typed.com/"));
+  hidden_typed.set_typed_count(1);
+  hidden_typed.set_hidden(true);
+  const URLID hidden_typed_id = AddURL(hidden_typed);
+  ASSERT_NE(0, hidden_typed_id);
+
+  const URLID searched_id =
+      AddURL(URLRow(GURL("https://www.google.com/search?q=foo")));
+  ASSERT_NE(0, searched_id);
+  ASSERT_TRUE(
+      SetKeywordSearchTermsForURL(searched_id, /*keyword_id=*/1, u"foo"));
+
+  URLRow visited(GURL("http://www.visited.com/"));
+  visited.set_visit_count(10);
+  ASSERT_NE(0, AddURL(visited));
+
+  URLDatabase::URLEnumerator enumerator;
+  ASSERT_TRUE(InitURLEnumeratorForTypedOrSearched(&enumerator));
+  std::vector<URLID> ids;
+  for (URLRow row; enumerator.GetNextURL(&row);) {
+    ids.push_back(row.id());
+  }
+  EXPECT_THAT(ids, testing::UnorderedElementsAre(typed_id, hidden_typed_id,
+                                                 searched_id));
+}
+
+TEST_F(URLDatabaseTest, KeywordSearchTermRowEnumerator) {
+  const URLID foo_id =
+      AddURL(URLRow(GURL("https://www.google.com/search?q=Foo")));
+  ASSERT_NE(0, foo_id);
+  ASSERT_TRUE(SetKeywordSearchTermsForURL(foo_id, /*keyword_id=*/1, u"Foo"));
+  const URLID bar_id =
+      AddURL(URLRow(GURL("https://www.bing.com/search?q=Bar+Baz")));
+  ASSERT_NE(0, bar_id);
+  ASSERT_TRUE(
+      SetKeywordSearchTermsForURL(bar_id, /*keyword_id=*/2, u"Bar  Baz"));
+
+  std::unique_ptr<KeywordSearchTermRowEnumerator> enumerator =
+      CreateKeywordSearchTermRowEnumerator();
+  ASSERT_TRUE(enumerator);
+  std::vector<KeywordSearchTermRow> rows;
+  while (std::unique_ptr<KeywordSearchTermRow> row = enumerator->GetNextRow()) {
+    rows.push_back(std::move(*row));
+  }
+  EXPECT_THAT(rows, testing::UnorderedElementsAre(
+                        MatchesSearchTerm(1, foo_id, u"Foo", u"foo"),
+                        MatchesSearchTerm(2, bar_id, u"Bar  Baz", u"bar baz")));
+}
+
+TEST_F(URLDatabaseTest, InsertKeywordSearchTermRow) {
+  const URLID url_id =
+      AddURL(URLRow(GURL("https://www.google.com/search?q=Foo")));
+  ASSERT_NE(0, url_id);
+
+  // The row is stored as given, without normalizing the term.
+  KeywordSearchTermRow row;
+  row.keyword_id = 1;
+  row.url_id = url_id;
+  row.term = u"Foo  Bar";
+  row.normalized_term = u"not normalized";
+  ASSERT_TRUE(InsertKeywordSearchTermRow(row));
+
+  KeywordSearchTermRow stored;
+  ASSERT_TRUE(GetKeywordSearchTermRow(url_id, &stored));
+  EXPECT_THAT(stored,
+              MatchesSearchTerm(1, url_id, u"Foo  Bar", u"not normalized"));
 }
 
 // Test GetKeywordSearchTermRows and DeleteSearchTerm

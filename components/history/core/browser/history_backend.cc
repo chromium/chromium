@@ -1356,11 +1356,10 @@ void HistoryBackend::InitImpl(
   {
     std::unique_ptr<InMemoryHistoryBackend> mem_backend(
         new InMemoryHistoryBackend);
-    if (mem_backend->Init(history_name)) {
+    if (mem_backend->Init(*db_)) {
       delegate_->SetInMemoryBackend(std::move(mem_backend));
     }
   }
-  db_->BeginExclusiveMode();  // Must be after the mem backend read the data.
   if (!local_device_originator_cache_guid_.empty()) {
     db_->SetLocalDeviceOriginatorCacheGuid(local_device_originator_cache_guid_);
   }

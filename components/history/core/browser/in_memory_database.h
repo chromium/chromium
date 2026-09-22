@@ -8,10 +8,6 @@
 #include "components/history/core/browser/url_database.h"
 #include "sql/database.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace history {
 
 // Class used for a fast in-memory cache of typed URLs. Used for inline
@@ -29,11 +25,12 @@ class InMemoryDatabase : public URLDatabase {
   // Creates an empty in-memory database.
   bool InitFromScratch();
 
-  // Initializes the database by directly slurping the data from the given
-  // file. Conceptually, the InMemoryHistoryBackend should do the populating
-  // after this object does some common initialization, but that would be
-  // much slower.
-  bool InitFromDisk(const base::FilePath& history_name);
+  // Initializes the database with the subset of `history_db` (the main,
+  // already initialized history database) that this cache holds: the URLs that
+  // were typed at least once or that have a keyword search term, and all
+  // keyword search terms. Returns false only if the database could not be
+  // created; a failure to copy rows leaves the cache empty or incomplete.
+  bool InitFromUrlDatabase(URLDatabase& history_db);
 
  protected:
   // Implemented for URLDatabase.
@@ -41,8 +38,13 @@ class InMemoryDatabase : public URLDatabase {
 
  private:
   // Initializes the database connection, this is the shared code between
-  // InitFromScratch() and InitFromDisk() above. Returns true on success.
+  // `InitFromScratch()` and `InitFromUrlDatabase()` above. Returns true on
+  // success.
   bool InitDB();
+
+  // Copies the cached subset of `history_db` into this database, inside a
+  // transaction that is rolled back if any insert fails.
+  void PopulateFrom(URLDatabase& history_db);
 
   sql::Database db_;
 };

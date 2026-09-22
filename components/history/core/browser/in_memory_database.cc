@@ -4,33 +4,17 @@
 
 #include "components/history/core/browser/in_memory_database.h"
 
+#include <memory>
 #include <tuple>
 
-#include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "components/history/core/browser/features.h"
+#include "components/history/core/browser/keyword_search_term.h"
 #include "sql/database.h"
+#include "sql/transaction.h"
 
 namespace history {
 
-InMemoryDatabase::InMemoryDatabase()
-    // When the main history database uses WAL mode, exclusive locking must be
-    // disabled on this in-memory connection. InitFromDisk() uses ATTACH to open
-    // the on-disk history file within this connection, and the locking mode of
-    // this connection governs how locks are acquired on the attached file. With
-    // exclusive locking, the ATTACH would try to exclusively lock the WAL
-    // shared-memory file (-shm), which conflicts with the main database's
-    // existing WAL connection to the same file.
-    //
-    // Without WAL mode, exclusive locking is fine: SQLite's exclusive lock is
-    // only acquired on the next lock transition (e.g. when a write occurs),
-    // and this connection only reads via ATTACH before detaching, so it never
-    // actually contends with the main database's connection.
-    : db_(sql::DatabaseOptions().set_exclusive_locking(
-              !base::FeatureList::IsEnabled(kHistoryDatabaseWriteAheadLogging)),
-          /*tag=*/"HistoryInMemoryDB") {}
+InMemoryDatabase::InMemoryDatabase() : db_(/*tag=*/"HistoryInMemoryDB") {}
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 
@@ -67,60 +51,15 @@ bool InMemoryDatabase::InitFromScratch() {
   return true;
 }
 
-bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
-  if (!InitDB())
-    return false;
-
-  // Attach to the history database on disk.
-  if (!db_.AttachDatabase(history_name, "history")) {
+bool InMemoryDatabase::InitFromUrlDatabase(URLDatabase& history_db) {
+  if (!InitDB()) {
     return false;
   }
 
-  // Copy URL data to memory.
-
-  // Need to explicitly specify the column names here since databases on disk
-  // may or may not have a favicon_id column, but the in-memory one will never
-  // have it. Therefore, the columns aren't guaranteed to match.
-  //
-  // TODO(crbug.com/40527222) Once we can guarantee that the favicon_id
-  // column doesn't exist with migration code, this can be replaced with the
-  // simpler:
-  //   "INSERT INTO urls SELECT * FROM history.urls WHERE typed_count > 0"
-  // which does not require us to keep the list of columns in sync. However,
-  // we may still want to keep the explicit columns as a safety measure.
-  if (!db_.Execute(
-      "INSERT INTO urls "
-      "(id, url, title, visit_count, typed_count, last_visit_time, hidden) "
-      "SELECT "
-      "id, url, title, visit_count, typed_count, last_visit_time, hidden "
-      "FROM history.urls WHERE typed_count > 0")) {
-    // Unable to get data from the history database. This is OK, the file may
-    // just not exist yet.
-  }
-  UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBItemCount",
-                          db_.GetLastChangeCount());
-
-  // Insert keyword search related URLs.
-  if (!db_.Execute("INSERT OR IGNORE INTO urls SELECT u.id, u.url, u.title, "
-                   "u.visit_count, u.typed_count, u.last_visit_time, u.hidden "
-                   "FROM history.urls u JOIN history.keyword_search_terms kst "
-                   "WHERE u.typed_count = 0 AND u.id = kst.url_id")) {
-    // Unable to get data from the history database. This is OK, the file may
-    // just not exist yet.
-  }
-
-  // Copy search terms to memory.
-  if (!db_.Execute(
-      "INSERT INTO keyword_search_terms SELECT * FROM "
-      "history.keyword_search_terms")) {
-    // Unable to get data from the history database. This is OK, the file may
-    // just not exist yet.
-  }
-
-  // Detach from the history database on disk.
-  if (!db_.DetachDatabase("history")) {
-    NOTREACHED() << "Unable to detach from history database.";
-  }
+  // Populating is best effort. An empty or incomplete cache is still useful
+  // because `InMemoryHistoryBackend` keeps it up to date from here on, and read
+  // errors on `history_db` are reported through its own error callback.
+  PopulateFrom(history_db);
 
   // Index the table, this is faster than creating the index first and then
   // inserting into it.
@@ -130,6 +69,39 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   db_.DetachFromSequence();
 
   return true;
+}
+
+void InMemoryDatabase::PopulateFrom(URLDatabase& history_db) {
+  // The transaction holds a reference to `db_` and must be gone before
+  // `InitFromUrlDatabase()` detaches the database from this sequence.
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return;
+  }
+
+  URLEnumerator url_enumerator;
+  if (!history_db.InitURLEnumeratorForTypedOrSearched(&url_enumerator)) {
+    return;
+  }
+  for (URLRow row; url_enumerator.GetNextURL(&row);) {
+    if (!InsertOrUpdateURLRowByID(row)) {
+      return;
+    }
+  }
+
+  std::unique_ptr<KeywordSearchTermRowEnumerator> term_enumerator =
+      history_db.CreateKeywordSearchTermRowEnumerator();
+  if (!term_enumerator) {
+    return;
+  }
+  while (std::unique_ptr<KeywordSearchTermRow> row =
+             term_enumerator->GetNextRow()) {
+    if (!InsertKeywordSearchTermRow(*row)) {
+      return;
+    }
+  }
+
+  std::ignore = transaction.Commit();
 }
 
 sql::Database& InMemoryDatabase::GetDB() {

@@ -30,15 +30,12 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace history {
 
 class HistoryBackendTestBase;
 class InMemoryDatabase;
 class InMemoryHistoryBackendTest;
+class URLDatabase;
 class URLRow;
 
 class InMemoryHistoryBackend : public HistoryServiceObserver {
@@ -50,9 +47,11 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
 
   ~InMemoryHistoryBackend() override;
 
-  // Initializes the backend from the history database pointed to by the
-  // full path in `history_filename`.
-  bool Init(const base::FilePath& history_filename);
+  // Populates the backend from `history_db`, the main history database, which
+  // must have been successfully initialized. Must be called on the history
+  // backend's sequence, before this object is handed to the main thread.
+  // Returns false if the in-memory database could not be created.
+  bool Init(URLDatabase& history_db);
 
   // Does initialization work when this object is attached to the history
   // system on the main thread. The argument is the profile with which the

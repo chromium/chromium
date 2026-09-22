@@ -19,9 +19,9 @@ namespace history {
 InMemoryHistoryBackend::InMemoryHistoryBackend() = default;
 InMemoryHistoryBackend::~InMemoryHistoryBackend() = default;
 
-bool InMemoryHistoryBackend::Init(const base::FilePath& history_filename) {
+bool InMemoryHistoryBackend::Init(URLDatabase& history_db) {
   db_ = std::make_unique<InMemoryDatabase>();
-  return db_->InitFromDisk(history_filename);
+  return db_->InitFromUrlDatabase(history_db);
 }
 
 void InMemoryHistoryBackend::AttachToHistoryService(

@@ -72,13 +72,6 @@ HistoryDatabase::HistoryDatabase(
     : DownloadDatabase(download_interrupt_reason_none,
                        download_interrupt_reason_crash),
       db_(sql::DatabaseOptions()
-              // Note that we don't set exclusive locking here. That's done by
-              // BeginExclusiveMode below which is called later (we have to be
-              // in shared mode to start out for the in-memory backend to read
-              // the data).
-              // TODO(crbug.com/40159106) Remove this dependency on normal
-              // locking mode.
-              .set_exclusive_locking(false)
               // Set the cache size. The page size, plus a little extra, times
               // this value, tells us how much memory the cache will use
               // maximum. 1000 * 4kB = 4MB
@@ -400,11 +393,6 @@ int HistoryDatabase::CountUniqueDomainsVisited(
   DomainsVisitedResult result =
       GetUniqueDomainsVisited(begin_time, end_time, policy_for_404_visits);
   return result.locally_visited_domains.size();
-}
-
-void HistoryDatabase::BeginExclusiveMode() {
-  // We need to use a PRAGMA statement here as the DB has already been created.
-  std::ignore = db_.Execute("PRAGMA locking_mode=EXCLUSIVE");
 }
 
 // static

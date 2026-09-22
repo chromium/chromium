@@ -2398,20 +2398,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2026-02-22">
-  <owner>sky@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    The number of typed URLs in the history database that are read into the
-    &quot;in memory&quot; history database. This in memory copy of the typed
-    URLs is used for synchronous inline autocomplete on the UI thread, while the
-    larger slower service is run off of disk on a background thread. Recorded on
-    profile open.
-  </summary>
-</histogram>
-
 <histogram name="History.InMemoryURLHistoryItems" units="items"
     expires_after="2027-02-07">
   <owner>mpearson@chromium.org</owner>
