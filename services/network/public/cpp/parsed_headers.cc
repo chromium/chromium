@@ -96,8 +96,7 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
       clear_site_data_set.contains(net::kDatatypeWildcard)) {
     parsed_headers->client_hints_ignored_due_to_clear_site_data_header = true;
   }
-  if (!features::ShouldBlockAcceptClientHintsFor(url::Origin::Create(url)) &&
-      !parsed_headers->client_hints_ignored_due_to_clear_site_data_header) {
+  if (!parsed_headers->client_hints_ignored_due_to_clear_site_data_header) {
     if (std::optional<std::string> accept_ch =
             headers->GetNormalizedHeader("Accept-CH")) {
       parsed_headers->accept_ch = ParseClientHintsHeader(*accept_ch);

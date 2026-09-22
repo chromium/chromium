@@ -12,20 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace network::features {
-
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kBlockAcceptClientHints);
-// Note: Do not use BASE_DECLARE_FEATURE_PARAM macro as this is called only once
-// per process to construct a static local instance.
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-extern const base::FeatureParam<std::string> kBlockAcceptClientHintsBlockedSite;
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-bool ShouldBlockAcceptClientHintsFor(const url::Origin& origin);
 
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kNetworkErrorLogging);
