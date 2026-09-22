@@ -1433,7 +1433,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <!-- TODO(crbug.com/491115361): Remove note after YourSavedInfo rename -->
 
 <histogram name="Autofill.AddressesSettingsPage.VisitReferrer"
-    enum="AutofillSettingsReferrer" expires_after="2027-01-17">
+    enum="AutofillSettingsReferrer" expires_after="2027-03-21">
   <owner>ireneuszszulc@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -6427,7 +6427,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.NumberOfNamesMigratedToAlternativeNamesDuringCleanUp"
-    units="count" expires_after="2027-01-17">
+    units="count" expires_after="2027-03-21">
   <owner>sygiet@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -10904,7 +10904,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.WebView.AutofillSession" enum="AutofillSessionStates"
-    expires_after="2026-12-12">
+    expires_after="2027-03-21">
   <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the state of an autofill session.</summary>

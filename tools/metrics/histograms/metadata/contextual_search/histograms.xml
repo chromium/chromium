@@ -655,7 +655,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadAttemptCount.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-20">
+    units="count" expires_after="2027-03-21">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -719,7 +719,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.{ContextualSearchSource}"
-    units="count" expires_after="2027-01-19">
+    units="count" expires_after="2027-03-21">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
