@@ -32,6 +32,16 @@ interface RealtimeReportingResult {
   device: boolean;
   success: boolean;
 }
+interface KeyValuePair {
+  key: string;
+  value: string;
+}
+interface V5GetHashLookupResult {
+  requestKeyValues: KeyValuePair[];
+  requestSearchHashesJson: string;
+  responseKeyValues: KeyValuePair[];
+  responseSearchHashesJson?: string;
+}
 interface DeepScanResult {
   request: string;
   request_time: string;
@@ -76,6 +86,14 @@ function initialize() {
         }
         addDatabaseManagerInfo(databaseState);
       });
+
+  if (loadTimeData.getBoolean('isV5Enabled')) {
+    sendWithPromise<V5GetHashLookupResult[]>('getV5GetHashLookups', [])
+        .then((lookups: V5GetHashLookupResult[]) => {
+          lookups.forEach(addV5GetHashLookup);
+        });
+    addWebUiListener('v5-get-hash-lookup-update', addV5GetHashLookup);
+  }
 
   sendWithPromise<string[]>('getDownloadUrlsChecked', [])
       .then((urlsChecked: string[]) => {
@@ -309,12 +327,14 @@ function addExperiments(experiments: string[]) {
 // Shows either the Hash Cache tab (for V4) or the Database Manager
 // SearchHashes Lookups tab (for V5) depending on whether the
 // SafeBrowsingLocalListsUseSBv5 feature is enabled.
-// TODO(crbug.com/362791941): hide v5 panel when disabled
 function updateDatabaseManagerGetHashTabs() {
   const isV5Enabled = loadTimeData.getBoolean('isV5Enabled');
   if (isV5Enabled) {
     $('hash-cache')?.remove();
     $('hash-cache-panel')?.remove();
+  } else {
+    $('db-manager-search-hashes-lookups')?.remove();
+    $('db-manager-search-hashes-lookups-panel')?.remove();
   }
 }
 
@@ -452,6 +472,54 @@ function addFullHashCacheInfo(result: string[]) {
   const cacheInfo = $('full-hash-cache-info');
   assert(cacheInfo);
   cacheInfo.textContent = result.toString();
+}
+
+// Populates a table cell with key/value details and an optional formatted JSON
+// block preceded by a header.
+function populateV5GetHashLookupCell(
+    cell: HTMLTableCellElement, keyValues: KeyValuePair[], jsonHeader: string,
+    json?: string) {
+  for (const pair of keyValues) {
+    const keySpan = document.createElement('span');
+    keySpan.className = 'bold-span';
+    keySpan.textContent = `${pair.key}: `;
+    cell.appendChild(keySpan);
+    cell.appendChild(document.createTextNode(`${pair.value}\n`));
+  }
+  if (json) {
+    cell.appendChild(document.createTextNode('\n'));
+    const headerSpan = document.createElement('span');
+    headerSpan.className = 'bold-span';
+    headerSpan.textContent = `${jsonHeader}:\n`;
+    cell.appendChild(headerSpan);
+    cell.appendChild(document.createTextNode(json));
+  }
+}
+
+// Adds a V5 get-hash lookup entry to the table in the Database Manager
+// SearchHashes Lookups tab. `lookup` contains the details of the lookup event.
+function addV5GetHashLookup(lookup: V5GetHashLookupResult) {
+  const emptyText = $('db-manager-search-hashes-lookups-empty-text');
+  assert(emptyText);
+  emptyText.hidden = true;
+
+  const table = $<HTMLTableElement>('db-manager-search-hashes-lookups-table');
+  assert(table);
+  table.hidden = false;
+
+  const row = table.insertRow();
+  row.className = 'content';
+  const requestCell = row.insertCell();
+  requestCell.className = 'content';
+  populateV5GetHashLookupCell(
+      requestCell, lookup.requestKeyValues, 'SearchHashesRequest',
+      lookup.requestSearchHashesJson);
+
+  const responseCell = row.insertCell();
+  responseCell.className = 'content';
+  populateV5GetHashLookupCell(
+      responseCell, lookup.responseKeyValues, 'SearchHashesResponse',
+      lookup.responseSearchHashesJson);
 }
 
 function addDownloadUrlChecked(urlAndResult: string) {

@@ -61,6 +61,10 @@ table.expandable-events td {
   vertical-align: top;
 }
 
+table.request-response th {
+  text-align: left;
+}
+
 table.request-response td {
   vertical-align: top;
   white-space: pre-wrap;

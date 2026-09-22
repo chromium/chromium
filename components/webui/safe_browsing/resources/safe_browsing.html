@@ -23,6 +23,7 @@
       <div slot="tab" id="db-manager">Database Manager</div>
       <div slot="tab" id="hash-cache">Hash Cache</div>
 </if>
+      <div slot="tab" id="db-manager-search-hashes-lookups">Database Manager SearchHashes Lookups</div>
       <div slot="tab" id="download-protection">Download Protection</div>
       <div slot="tab" id="deep-scan">Deep Scans</div>
 <if expr="not is_android">
@@ -152,6 +153,20 @@
         </div>
       </div>
 </if>
+      <div slot="panel" id="db-manager-search-hashes-lookups-panel">
+        <h2>Database Manager SearchHashes Lookups</h2>
+        <p id="db-manager-search-hashes-lookups-empty-text">No Database Manager SearchHashes lookups logged yet.</p>
+        <table id="db-manager-search-hashes-lookups-table" class="request-response" hidden>
+          <thead>
+            <tr>
+              <th>Request Details</th>
+              <th>Response Details</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
       <div slot="panel">
         <h2>Download URLs checked</h2>
         <div class="content">
