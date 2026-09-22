@@ -93,11 +93,11 @@ class POLICY_EXPORT PolicyLogger {
         const std::string& message,
         std::string_view file,
         const int line);
-    Log(const Log&) = delete;
+    Log(const Log&);
     Log& operator=(const Log&) = delete;
-    Log(Log&&) = default;
-    Log& operator=(Log&&) = default;
-    ~Log() = default;
+    Log(Log&&);
+    Log& operator=(Log&&);
+    ~Log();
 
     Severity log_severity() const { return log_severity_; }
     Source log_source() const { return log_source_; }
@@ -191,6 +191,9 @@ class POLICY_EXPORT PolicyLogger {
  private:
   // Adds a new log to the logs_ list.
   void AddLog(Log&& new_log);
+
+  // Retrieves all logs asynchronously.
+  void GetLogs(base::OnceCallback<void(std::vector<Log>)> callback);
 
   base::Lock lock_;
 

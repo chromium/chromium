@@ -51,6 +51,10 @@ class PolicyLoggerTest : public PlatformTest {
     policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
   }
 
+  void TearDown() override {
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  }
+
   base::test::TaskEnvironment task_environment_;
 };
 

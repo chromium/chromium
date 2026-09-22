@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -166,6 +168,11 @@ PolicyLogger::Log::Log(const Severity log_severity,
       line_(line),
       timestamp_(base::Time::Now()) {}
 
+PolicyLogger::Log::Log(const Log&) = default;
+PolicyLogger::Log::Log(Log&&) = default;
+PolicyLogger::Log& PolicyLogger::Log::operator=(Log&&) = default;
+PolicyLogger::Log::~Log() = default;
+
 // static
 PolicyLogger* PolicyLogger::GetInstance() {
   static base::NoDestructor<PolicyLogger> instance;
@@ -273,22 +280,38 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   logs_.emplace_back(std::move(new_log));
 }
 
-void PolicyLogger::GetAsList(GetAsListCallback callback) {
-  base::ListValue all_logs_list;
-  base::AutoLock lock(lock_);
-  for (const Log& log : logs_) {
-    all_logs_list.Append(log.GetAsDict());
+void PolicyLogger::GetLogs(
+    base::OnceCallback<void(std::vector<Log>)> callback) {
+  std::vector<Log> in_memory_logs;
+  {
+    base::AutoLock lock(lock_);
+    in_memory_logs = std::vector<Log>(logs_.begin(), logs_.end());
   }
-  std::move(callback).Run(std::move(all_logs_list));
+  std::move(callback).Run(std::move(in_memory_logs));
+}
+
+void PolicyLogger::GetAsList(GetAsListCallback callback) {
+  GetLogs(base::BindOnce(
+      [](GetAsListCallback callback, std::vector<Log> logs) {
+        base::ListValue all_logs_list;
+        for (const Log& log : logs) {
+          all_logs_list.Append(log.GetAsDict());
+        }
+        std::move(callback).Run(std::move(all_logs_list));
+      },
+      std::move(callback)));
 }
 
 void PolicyLogger::GetAsMojoList(GetAsMojoListCallback callback) {
-  std::vector<policy::mojom::LogPtr> all_logs_list;
-  base::AutoLock lock(lock_);
-  all_logs_list.reserve(logs_.size());
-  std::ranges::transform(logs_, std::back_inserter(all_logs_list),
-                         &PolicyLogger::Log::GetAsMojoLog);
-  std::move(callback).Run(std::move(all_logs_list));
+  GetLogs(base::BindOnce(
+      [](GetAsMojoListCallback callback, std::vector<Log> logs) {
+        std::vector<policy::mojom::LogPtr> all_logs_list;
+        all_logs_list.reserve(logs.size());
+        std::ranges::transform(logs, std::back_inserter(all_logs_list),
+                               &PolicyLogger::Log::GetAsMojoLog);
+        std::move(callback).Run(std::move(all_logs_list));
+      },
+      std::move(callback)));
 }
 
 void PolicyLogger::RecordPerformanceMetrics() {
@@ -310,7 +333,7 @@ void PolicyLogger::RecordPerformanceMetrics() {
 void PolicyLogger::ResetLoggerForTesting() {
   CHECK_IS_TEST();
   base::AutoLock lock(lock_);
-  logs_.erase(logs_.begin(), logs_.end());
+  logs_.clear();
 }
 
 }  // namespace policy
