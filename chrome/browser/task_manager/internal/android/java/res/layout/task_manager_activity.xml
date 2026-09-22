@@ -42,6 +42,17 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:background="@drawable/task_card_background"
             android:clipToOutline="true" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/task_manager_empty_view_text"
+            android:visibility="gone"
+            android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
+            app:leading="@dimen/headline2_size_leading" />
     </LinearLayout>
 
     <org.chromium.ui.widget.ButtonCompat

@@ -4879,6 +4879,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_TASK_MANAGER_SEARCH_HINT" desc="The placeholder text for the Task Manager search box" formatter_data="android_java">
           Search
         </message>
+        <message name="IDS_TASK_MANAGER_EMPTY_VIEW_TEXT" desc="The text displayed when there are no tasks or no search results in the Task Manager." formatter_data="android_java">
+          No tasks
+        </message>
         <message name="IDS_TASK_MANAGER_KILL_V2" desc="The caption of the Task Manager kill button">
           End task
         </message>

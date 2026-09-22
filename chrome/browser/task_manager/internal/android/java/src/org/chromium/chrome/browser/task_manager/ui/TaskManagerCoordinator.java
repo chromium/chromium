@@ -40,6 +40,8 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuCheckItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -65,6 +67,10 @@ class TaskManagerCoordinator {
     private final TaskManagerMediator mMediator;
 
     private final LinearLayout mHeaderView;
+    private final RecyclerView mRecyclerView;
+    private final TextView mEmptyView;
+    private final ModelList mTasksModel;
+    private final ListObserver<Void> mTasksModelObserver;
     private final SimpleRecyclerViewAdapter mAdapter;
     private final List<PropertyModelChangeProcessor<PropertyModel, View, PropertyKey>>
             mModelChangeProcessors = new ArrayList<>();
@@ -100,11 +106,11 @@ class TaskManagerCoordinator {
                             bindHeader(model, view, key);
                         }));
 
-        RecyclerView recyclerView = taskManagerView.findViewById(R.id.tasks_view);
-        recyclerView.setLayoutManager(
+        mRecyclerView = taskManagerView.findViewById(R.id.tasks_view);
+        mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
-                        recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.addOnItemTouchListener(
+                        mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.addOnItemTouchListener(
                 new RecyclerView.SimpleOnItemTouchListener() {
                     @Override
                     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -124,8 +130,24 @@ class TaskManagerCoordinator {
                     }
                 });
 
+        mTasksModel = tasksModel;
         mAdapter = new SimpleRecyclerViewAdapter(tasksModel);
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
+        mEmptyView = taskManagerView.findViewById(R.id.empty_view);
+        mTasksModelObserver =
+                new ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        updateEmptyView();
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        updateEmptyView();
+                    }
+                };
+        mTasksModel.addObserver(mTasksModelObserver);
+        updateEmptyView();
 
         mAdapter.registerType(
                 TaskManagerProperties.RowType.TASK,
@@ -165,6 +187,12 @@ class TaskManagerCoordinator {
         return location;
     }
 
+    private void updateEmptyView() {
+        boolean isEmpty = mTasksModel.isEmpty();
+        mEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        mRecyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+    }
+
     /** Revert the bindings made in the constructor. */
     void destroy() {
         if (mContextMenuPopup != null) {
@@ -172,6 +200,7 @@ class TaskManagerCoordinator {
             mContextMenuPopup = null;
         }
 
+        mTasksModel.removeObserver(mTasksModelObserver);
         mMediator.stopObserving();
 
         mModelChangeProcessors.forEach(PropertyModelChangeProcessor::destroy);

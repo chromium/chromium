@@ -77,6 +77,7 @@ public class TaskManagerCoordinatorTest {
 
     LinearLayout mHeaderView;
     RecyclerView mRecyclerView;
+    TextView mEmptyView;
 
     TaskManagerCoordinator mCoordinator;
 
@@ -98,9 +99,11 @@ public class TaskManagerCoordinatorTest {
 
         mHeaderView = mActivity.findViewById(R.id.header_linear_layout);
         mRecyclerView = mActivity.findViewById(R.id.tasks_view);
+        mEmptyView = mActivity.findViewById(R.id.empty_view);
 
         assertTrue(mHeaderView.isShown());
-        assertTrue(mRecyclerView.isShown());
+        assertTrue(mEmptyView.isShown());
+        assertFalse(mRecyclerView.isShown());
 
         PropertyKey[] columnKeys =
                 new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID};
@@ -280,6 +283,13 @@ public class TaskManagerCoordinatorTest {
     public void testRightClickOnRecyclerViewShowsContextMenu() {
         assertNull(mCoordinator.getContextMenuPopupForTesting());
 
+        PropertyModel task =
+                new PropertyModel.Builder(mTaskModelKeys)
+                        .with(TASK_ID, 1)
+                        .with(TASK_NAME, "foo")
+                        .build();
+        mTasksModel.add(new ListItem(RowType.TASK, task));
+
         long now = SystemClock.uptimeMillis();
         MotionEvent rightClickDown =
                 MotionEvent.obtain(
@@ -297,5 +307,47 @@ public class TaskManagerCoordinatorTest {
         assertTrue(mCoordinator.getContextMenuPopupForTesting().isShowing());
 
         mCoordinator.getContextMenuPopupForTesting().dismiss();
+    }
+
+    @Test
+    public void testRightClickOnEmptyViewShowsNoContextMenu() {
+        assertNull(mCoordinator.getContextMenuPopupForTesting());
+
+        long now = SystemClock.uptimeMillis();
+        MotionEvent rightClickDown =
+                MotionEvent.obtain(
+                        now,
+                        now,
+                        MotionEvent.ACTION_DOWN,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        rightClickDown.setButtonState(MotionEvent.BUTTON_SECONDARY);
+
+        mEmptyView.dispatchTouchEvent(rightClickDown);
+
+        assertNull(mCoordinator.getContextMenuPopupForTesting());
+    }
+
+    @Test
+    public void testEmptyView() {
+        assertTrue(mEmptyView.isShown());
+        assertFalse(mRecyclerView.isShown());
+        assertEquals("No tasks", mEmptyView.getText().toString());
+
+        PropertyModel task =
+                new PropertyModel.Builder(mTaskModelKeys)
+                        .with(TASK_ID, 1)
+                        .with(TASK_NAME, "foo")
+                        .build();
+        mTasksModel.add(new ListItem(RowType.TASK, task));
+
+        assertFalse(mEmptyView.isShown());
+        assertTrue(mRecyclerView.isShown());
+
+        mTasksModel.removeAt(0);
+
+        assertTrue(mEmptyView.isShown());
+        assertFalse(mRecyclerView.isShown());
     }
 }
