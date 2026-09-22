@@ -510,12 +510,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         @Override
-        public void onSideUiSpecsChanged(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
+        public void onSideUiSpecsChanged(
+                SideUiCoordinator.SideUiSpecs sideUiSpecs,
+                SideUiCoordinator.UiUpdateRequest request) {
             if (mIsInHub) {
                 super.onSideUiSpecsChanged(
-                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
+                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()), request);
             } else {
-                super.onSideUiSpecsChanged(sideUiSpecs);
+                super.onSideUiSpecsChanged(sideUiSpecs, request);
             }
         }
 
@@ -524,7 +526,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (layoutType == LayoutType.HUB) {
                 mIsInHub = true;
                 super.onSideUiSpecsChanged(
-                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
+                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()),
+                        new SideUiCoordinator.UiUpdateRequest(
+                                /* sideUiId= */ null, /* suppressAnimations= */ true));
             }
         }
 
@@ -534,7 +538,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mIsInHub = false;
                 var sideUiCoordinator = mSideUiCoordinatorSupplier.get();
                 if (sideUiCoordinator != null) {
-                    super.onSideUiSpecsChanged(sideUiCoordinator.getCurrentSideUiSpecs());
+                    super.onSideUiSpecsChanged(
+                            sideUiCoordinator.getCurrentSideUiSpecs(),
+                            new SideUiCoordinator.UiUpdateRequest(
+                                    /* sideUiId= */ null, /* suppressAnimations= */ true));
                 }
             }
         }
@@ -722,8 +729,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (BottomBarConfigUtils.isBottomBarEnabled(activity)) {
             if (BottomBarConfigUtils.shouldShowOnGts()) {
                 Function<HubManager, NonNullObservableSupplier<Integer>> supplierGetter =
-                        hubManager ->
-                                assumeNonNull(hubManager.getHubBottomOverviewColorSupplier());
+                        hubManager -> assumeNonNull(hubManager.getHubBottomOverviewColorSupplier());
                 mBottomOverviewColorSupplier =
                         initHubOverviewColorSupplier(hubManagerSupplier, supplierGetter);
             }

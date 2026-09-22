@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 
 import java.util.Set;
 
@@ -190,7 +191,7 @@ import java.util.Set;
         }
 
         @Override
-        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
             // TODO(crbug.com/525353575): Determine the innermost side UI to figure out which
             //  corner to show when supporting VT and SP on the same side.
             boolean isLeftShowing = sideUiSpecs.getWidth(AnchorSide.LEFT) != 0;
@@ -220,7 +221,7 @@ import java.util.Set;
                     .getTopRightRoundedCorner()
                     .setVisibility(rightHairlineVisibility);
 
-            super.onSideUiSpecsChanged(sideUiSpecs);
+            super.onSideUiSpecsChanged(sideUiSpecs, request);
         }
     }
 

@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -1604,7 +1605,9 @@ public class CompositorViewHolderUnitTest {
                 .thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
-        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
+        mCompositorViewHolder.onSideUiSpecsChanged(
+                currentSideUiSpecs,
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
 
         // Verify layout params.
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTab.getView().getLayoutParams();

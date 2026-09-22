@@ -976,20 +976,23 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertNotNull(observer);
 
         SideUiCoordinator.SideUiSpecs specs = new SideUiCoordinator.SideUiSpecs(120, 80);
+        SideUiCoordinator.UiUpdateRequest request =
+                new SideUiCoordinator.UiUpdateRequest(
+                        /* sideUiId= */ null, /* suppressAnimations= */ true);
 
         // Test onSideUiSpecsChanged updates margins in model
-        observer.onSideUiSpecsChanged(specs);
+        observer.onSideUiSpecsChanged(specs, request);
 
         PropertyModel model = mCoordinator.getModelForTesting();
         Assert.assertEquals(120, model.get(ActorOverlayProperties.LEFT_MARGIN));
         Assert.assertEquals(80, model.get(ActorOverlayProperties.RIGHT_MARGIN));
 
         // Test onPreSideUiSpecsChange returns null when view is not visible / not inflated
-        Assert.assertNull(observer.onPreSideUiSpecsChange(specs));
+        Assert.assertNull(observer.onPreSideUiSpecsChange(specs, request));
 
         // Test onPreSideUiSpecsChange returns transition when visible
         mCoordinator.showOverlayForTesting(true);
-        Transition transition = observer.onPreSideUiSpecsChange(specs);
+        Transition transition = observer.onPreSideUiSpecsChange(specs, request);
         Assert.assertNotNull(transition);
     }
 

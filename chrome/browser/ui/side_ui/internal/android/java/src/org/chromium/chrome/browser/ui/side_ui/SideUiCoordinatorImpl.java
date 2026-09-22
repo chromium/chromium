@@ -547,7 +547,11 @@ final class SideUiCoordinatorImpl
         if (!sideUiSpecsDiff.isEmpty() || !topMarginDiff.isEmpty()) {
             var uiUpdateSpecs =
                     new SideUiUpdateSpecs(
-                            currentSideUiSpecs, newSideUiSpecs, sideUiSpecsDiff, topMarginDiff);
+                            currentSideUiSpecs,
+                            newSideUiSpecs,
+                            sideUiSpecsDiff,
+                            topMarginDiff,
+                            request);
             @Nullable TransitionSet transitionSet =
                     suppressAnimations ? null : collectTransitions(uiUpdateSpecs);
             commitNewSideUiSpecs(uiUpdateSpecs, transitionSet);
@@ -790,7 +794,8 @@ final class SideUiCoordinatorImpl
         }
 
         List<Transition> transitions =
-                mSideUiObserverNotifier.notifyPreSideUiSpecsChange(uiUpdateSpecs.mNewSpecs);
+                mSideUiObserverNotifier.notifyPreSideUiSpecsChange(
+                        uiUpdateSpecs.mNewSpecs, uiUpdateSpecs.mRequest);
         for (var transition : transitions) {
             transitionSet.addTransition(transition);
         }
@@ -910,7 +915,8 @@ final class SideUiCoordinatorImpl
 
                         notifyContainersOnUiUpdateCompleted(
                                 uiUpdateSpecs.mCurrentSpecs, uiUpdateSpecs.mNewSpecs);
-                        mSideUiObserverNotifier.notifyTransitionEnded(uiUpdateSpecs.mNewSpecs);
+                        mSideUiObserverNotifier.notifyTransitionEnded(
+                                uiUpdateSpecs.mNewSpecs, uiUpdateSpecs.mRequest);
                     }
                 });
         transitionSet.addListener(mSideUiTransitionListener);
@@ -935,7 +941,7 @@ final class SideUiCoordinatorImpl
                     anchorContainer, sideUiContainer, anchorSide, oldWidth, newWidth);
         }
 
-        mSideUiObserverNotifier.notifyTransitionBegun(newSideUiSpecs);
+        mSideUiObserverNotifier.notifyTransitionBegun(newSideUiSpecs, uiUpdateSpecs.mRequest);
     }
 
     private void commitNewSpecsForStaticResize(SideUiUpdateSpecs uiUpdateSpecs) {
@@ -991,7 +997,7 @@ final class SideUiCoordinatorImpl
         }
 
         notifyContainersOnUiUpdateCompleted(currentSideUiSpecs, newSideUiSpecs);
-        mSideUiObserverNotifier.notifySideUiSpecsChanged(newSideUiSpecs);
+        mSideUiObserverNotifier.notifySideUiSpecsChanged(newSideUiSpecs, uiUpdateSpecs.mRequest);
     }
 
     /**

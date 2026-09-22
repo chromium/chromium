@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -47,7 +48,7 @@ public class HistoryNavigationCoordinator
         implements InsetObserver.WindowInsetObserver, PauseResumeWithNativeObserver {
     private final Runnable mUpdateNavigationStateRunnable = this::onNavigationStateChanged;
     private final SideUiObserver mSideUiObserver =
-            (SideUiSpecs sideUiSpecs) ->
+            (SideUiSpecs sideUiSpecs, UiUpdateRequest request) ->
                     updateSideUiWidths(
                             sideUiSpecs.getWidth(AnchorSide.LEFT),
                             sideUiSpecs.getWidth(AnchorSide.RIGHT));
@@ -201,7 +202,9 @@ public class HistoryNavigationCoordinator
         GestureNavMetrics.logGestureType(isFeatureEnabled());
     }
 
-    /** @return {@link TouchEventObserver} for gesture navigation component. */
+    /**
+     * @return {@link TouchEventObserver} for gesture navigation component.
+     */
     public @Nullable TouchEventObserver getTouchEventObserver() {
         // Can be null if gesture navigation was not triggered at all or already destroyed.
         return mNavigationHandler;
@@ -367,7 +370,7 @@ public class HistoryNavigationCoordinator
      * Signals a pull update.
      *
      * @param xDelta The change in horizontal pull distance (positive if toward right, negative if
-     * left).
+     *     left).
      * @param yDelta The change in vertical pull distance.
      */
     public void pull(float xDelta, float yDelta) {

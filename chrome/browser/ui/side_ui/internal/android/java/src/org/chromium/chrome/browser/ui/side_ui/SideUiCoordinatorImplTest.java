@@ -264,7 +264,7 @@ public class SideUiCoordinatorImplTest {
         @Px
         int expectedLeftSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(expectedLeftSideUiWidth, 0);
-        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
+        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs), any());
 
         // Verify view attached to left container.
         assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
@@ -290,7 +290,7 @@ public class SideUiCoordinatorImplTest {
         @Px
         int expectedRightSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedRightSideUiWidth);
-        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
+        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs), any());
 
         // Verify view attached to right container.
         assertEquals(mRightAnchorContainer, mSideUiContainerView.getParent());
@@ -798,7 +798,7 @@ public class SideUiCoordinatorImplTest {
         @Px
         int expectedRightSideUiWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMinWidthDp);
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedRightSideUiWidth);
-        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
+        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs), any());
 
         // Verify the container view's width is updated.
         assertEquals(expectedRightSideUiWidth, mSideUiContainerView.getWidth());
@@ -830,7 +830,7 @@ public class SideUiCoordinatorImplTest {
         // Verify that the observer is NOT notified of the showable state or the specs since neither
         // was changed.
         verify(mSideUiObserver, never()).onShowableSideUisUpdated(any());
-        verify(mSideUiObserver, never()).onSideUiSpecsChanged(any());
+        verify(mSideUiObserver, never()).onSideUiSpecsChanged(any(), any());
 
         // Verify the container view's width is unchanged.
         assertEquals(sideUiWidth, mSideUiContainerView.getWidth());
@@ -928,8 +928,8 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: SideUiObserver received onTransitionBegun() and onTransitionEnded().
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedWidth);
-        verify(mSideUiObserver).onTransitionBegun(expectedSideUiSpecs);
-        verify(mSideUiObserver).onTransitionEnded(expectedSideUiSpecs);
+        verify(mSideUiObserver).onTransitionBegun(eq(expectedSideUiSpecs), any());
+        verify(mSideUiObserver).onTransitionEnded(eq(expectedSideUiSpecs), any());
     }
 
     @Test
@@ -1173,7 +1173,7 @@ public class SideUiCoordinatorImplTest {
                         /* suppressAnimations= */ false,
                         UpdateReason.SIDE_UI_REQUEST));
 
-        verify(mSideUiObserver).onTransitionBegun(any());
+        verify(mSideUiObserver).onTransitionBegun(any(), any());
 
         mCoordinator.endAnimations();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -1190,7 +1190,7 @@ public class SideUiCoordinatorImplTest {
                         UpdateReason.SIDE_UI_REQUEST));
 
         // Verifies changes in both width/height suppressed animation.
-        verify(mSideUiObserver, never()).onTransitionBegun(any());
+        verify(mSideUiObserver, never()).onTransitionBegun(any(), any());
     }
 
     @Test

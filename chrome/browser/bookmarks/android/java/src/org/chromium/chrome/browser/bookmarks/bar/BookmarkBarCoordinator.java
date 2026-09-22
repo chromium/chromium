@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
@@ -220,7 +221,9 @@ public class BookmarkBarCoordinator
                     // BookmarkBarCoordinator is created lazily, therefore may miss the latest
                     // SideUi changes. Update the bar UI with the current SideUiSpecs.
                     mSideUiObserver.onSideUiSpecsChanged(
-                            sideUiStateProvider.getCurrentSideUiSpecs());
+                            sideUiStateProvider.getCurrentSideUiSpecs(),
+                            new UiUpdateRequest(
+                                    /* sideUiId= */ null, /* suppressAnimations= */ true));
                 });
 
         // The content container contains the tightly-wrapper ViewResourceFrameLayout for snapshots.
@@ -852,8 +855,9 @@ public class BookmarkBarCoordinator
         }
 
         @Override
-        public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
-            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs);
+        public @Nullable Transition onPreSideUiSpecsChange(
+                SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs, request);
             super.triggerSynchronousMeasureAndLayout();
             return transition;
         }

@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 
 /** Observer for side UI changes. */
 @NullMarked
@@ -22,6 +23,7 @@ public interface SideUiObserver {
      * #onTransitionBegun and #onTransitionEnded.
      *
      * @param sideUiSpecs The new {@link SideUiSpecs}.
+     * @param request The {@link UiUpdateRequest} that triggered this update.
      * @return The {@link Transition} used to handle the animation for this observer. This
      *     Transition will be used to ensure that all animations from this side UI change happen
      *     together. An observer can return a null Transition to opt out of the animation (e.g. if
@@ -30,7 +32,8 @@ public interface SideUiObserver {
      */
     // TODO(crbug.com/505118476): Clean up all classes implementing this interface and make this
     //  return a non-nullable.
-    default @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+    default @Nullable Transition onPreSideUiSpecsChange(
+            SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         return null;
     }
 
@@ -44,14 +47,15 @@ public interface SideUiObserver {
      * <p>This will only be triggered when there is an animation.
      *
      * @param sideUiSpecs The new {@link SideUiSpecs}.
+     * @param request The {@link UiUpdateRequest} that triggered this update.
      */
-    default void onTransitionBegun(SideUiSpecs sideUiSpecs) {
+    default void onTransitionBegun(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         // For observers that just target Java Views, this should be the same as
         // #onSideUiSpecsChanged(), since the Transition framework will capture all changes made
         // after the Transition has begun and animate them. #onSideUiSpecsChanged() should not be
         // called if animating things that aren't Java Views, such as any Animators with custom
         // logic being synchronized to the Transition (e.g. to update composited views).
-        onSideUiSpecsChanged(sideUiSpecs);
+        onSideUiSpecsChanged(sideUiSpecs, request);
     }
 
     /**
@@ -60,16 +64,18 @@ public interface SideUiObserver {
      * <p>This will only be triggered when there is an animation.
      *
      * @param sideUiSpecs The new {@link SideUiSpecs}.
+     * @param request The {@link UiUpdateRequest} that triggered this update.
      */
-    default void onTransitionEnded(SideUiSpecs sideUiSpecs) {}
+    default void onTransitionEnded(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {}
 
     /**
      * Called after {@link SideUiCoordinator} has applied the given {@link SideUiSpecs} to the UI.
      * This method will only be called for static resizing, not for animated changes.
      *
      * @param sideUiSpecs The new {@link SideUiSpecs}.
+     * @param request The {@link UiUpdateRequest} that triggered this update.
      */
-    void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs);
+    void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request);
 
     /**
      * Called when {@link SideUiShowability} is updated.

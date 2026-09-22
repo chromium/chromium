@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -395,7 +396,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         mSideUiStateProvider = provider;
         if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
             mSideUiStateProvider.addObserver(observer);
-            observer.onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
+            observer.onSideUiSpecsChanged(
+                    mSideUiStateProvider.getCurrentSideUiSpecs(),
+                    new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         }
     }
 
@@ -575,15 +578,17 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     /**
      * Handles updating any visual elements of the find toolbar based on changes to the tab model.
+     *
      * @param isIncognito Whether the current tab model is incognito or not.
      */
     protected void updateVisualsForTabModel(boolean isIncognito) {}
 
     /**
-     * Sets a custom ActionMode.Callback instance to the FindQuery.  This lets us
-     * get notified when the user tries to do copy, paste, etc. on the FindQuery.
-     * @param callback The ActionMode.Callback instance to be notified when selection ActionMode
-     * is triggered.
+     * Sets a custom ActionMode.Callback instance to the FindQuery. This lets us get notified when
+     * the user tries to do copy, paste, etc. on the FindQuery.
+     *
+     * @param callback The ActionMode.Callback instance to be notified when selection ActionMode is
+     *     triggered.
      */
     public void setActionModeCallbackForTextEdit(ActionMode.Callback callback) {
         mFindQuery.setCustomSelectionActionModeCallback(callback);
@@ -603,8 +608,8 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     }
 
     /**
-     * Initializes the find toolbar. Should be called just after the find toolbar is shown.
-     * If the toolbar is already showing, this just focuses the toolbar.
+     * Initializes the find toolbar. Should be called just after the find toolbar is shown. If the
+     * toolbar is already showing, this just focuses the toolbar.
      */
     public final void activate() {
         ThreadUtils.checkUiThread();
@@ -653,6 +658,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     /**
      * Call this just before closing the find toolbar.
+     *
      * @param clearSelection Whether the selection on the page should be cleared.
      */
     public final void deactivate(boolean clearSelection) {
@@ -826,9 +832,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     }
 
     /**
-     * @param failed    Whether or not the find query had any matching results.
+     * @param failed Whether or not the find query had any matching results.
      * @param incognito Whether or not the current tab is incognito.
-     * @return          The color of the status text.
+     * @return The color of the status text.
      */
     protected int getStatusColor(boolean failed, boolean incognito) {
         return failed

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 
 import java.util.Map;
 
@@ -52,19 +53,25 @@ public class ViewMarginAdjusterForSideUiTest {
         SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // End margin
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(0, 200));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(0, 200),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(0, mLayoutParamsCaptor.getValue().getMarginStart());
         assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
 
         // Start margin
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(200, 0));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(200, 0),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView, times(2)).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(200, mLayoutParamsCaptor.getValue().getMarginStart());
         assertEquals(0, mLayoutParamsCaptor.getValue().getMarginEnd());
 
         // Both margins
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(100, 200));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(100, 200),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(100, mLayoutParamsCaptor.getValue().getMarginStart());
         assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
@@ -78,19 +85,25 @@ public class ViewMarginAdjusterForSideUiTest {
         SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // Right margin
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(0, 200));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(0, 200),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(20, mLayoutParamsCaptor.getValue().leftMargin);
         assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
 
         // Start margin
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(200, 0));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(200, 0),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView, times(2)).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(220, mLayoutParamsCaptor.getValue().leftMargin);
         assertEquals(35, mLayoutParamsCaptor.getValue().rightMargin);
 
         // Both margins
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(100, 200));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(100, 200),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(120, mLayoutParamsCaptor.getValue().leftMargin);
         assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
@@ -104,7 +117,9 @@ public class ViewMarginAdjusterForSideUiTest {
         Map<@AnchorSide Integer, SideUiSize> sideUiSpecs = new ArrayMap<>();
         sideUiSpecs.put(AnchorSide.LEFT, new SideUiSize(100, HeightType.WEB_CONTENTS));
         sideUiSpecs.put(AnchorSide.RIGHT, new SideUiSize(200, HeightType.TOOLBAR));
-        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(sideUiSpecs));
+        marginContainerObserver.onSideUiSpecsChanged(
+                new SideUiSpecs(sideUiSpecs),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
 
         // Ignores the width from WEB_CONTENTS-heighType container.

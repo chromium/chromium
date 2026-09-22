@@ -231,7 +231,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     // SideUiObserver implementation:
     @Override
-    public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+    public @Nullable Transition onPreSideUiSpecsChange(
+            SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         int side = getAnchorSide();
         int newWidth = sideUiSpecs.getWidth(side);
         int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getWidth(side);
@@ -251,12 +252,12 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     @Override
-    public void onTransitionEnded(SideUiSpecs sideUiSpecs) {
+    public void onTransitionEnded(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         mTabListCoordinator.setInTransition(false);
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         updateCollapseButtonAndRailState();
     }
 

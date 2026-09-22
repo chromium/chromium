@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -115,7 +116,10 @@ public class MiniPlayerCoordinator {
                     provider -> {
                         mMarginAdjuster = new ViewMarginAdjusterForSideUi(mLayout);
                         provider.addObserver(mMarginAdjuster);
-                        mMarginAdjuster.onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+                        mMarginAdjuster.onSideUiSpecsChanged(
+                                provider.getCurrentSideUiSpecs(),
+                                new UiUpdateRequest(
+                                        /* sideUiId= */ null, /* suppressAnimations= */ true));
                     });
         }
 
@@ -141,8 +145,9 @@ public class MiniPlayerCoordinator {
 
     /**
      * Show the mini player if it isn't already showing.
+     *
      * @param animate True if the transition should be animated. If false, the mini player will
-     *         instantly appear.
+     *     instantly appear.
      */
     public void show(boolean animate) {
         mMediator.show(animate);
@@ -156,10 +161,8 @@ public class MiniPlayerCoordinator {
     /**
      * Dismiss the mini player.
      *
-     * @param animate True if the transition should be animated. If false, the mini
-     *                player will
-     *                instantly disappear (though web contents resizing may lag
-     *                behind).
+     * @param animate True if the transition should be animated. If false, the mini player will
+     *     instantly disappear (though web contents resizing may lag behind).
      */
     public void dismiss(boolean animate) {
         mMediator.dismiss(animate);

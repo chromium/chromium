@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -272,8 +273,8 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mHasKeyboardGeometryChangeFired;
 
     /**
-     * By default, the virtual keyboard overlays content, only resizing the visual viewport.
-     * Web content can use APIs that can change this to cause the WebContents to be resized.
+     * By default, the virtual keyboard overlays content, only resizing the visual viewport. Web
+     * content can use APIs that can change this to cause the WebContents to be resized.
      */
     @VirtualKeyboardMode.EnumType
     private int mVirtualKeyboardMode = VirtualKeyboardMode.RESIZES_VISUAL;
@@ -630,8 +631,8 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * @param layoutManager The {@link LayoutManagerImpl} instance that will be driving what
-     *                      shows in this {@link CompositorViewHolder}.
+     * @param layoutManager The {@link LayoutManagerImpl} instance that will be driving what shows
+     *     in this {@link CompositorViewHolder}.
      */
     public void setLayoutManager(LayoutManagerImpl layoutManager) {
         mLayoutManager = layoutManager;
@@ -1518,7 +1519,8 @@ public class CompositorViewHolder extends FrameLayout
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+    public @Nullable Transition onPreSideUiSpecsChange(
+            SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         if (mSideUiStateProvider == null) return null;
 
         Tab currentTab = getCurrentTab();
@@ -1547,7 +1549,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void onTransitionBegun(SideUiSpecs sideUiSpecs) {
+    public void onTransitionBegun(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         // Trigger changes to Java Views, but delay any direct changes to composited views until
         // #onSideUiSpecsChanged().
         repositionTabViewForSideUi(sideUiSpecs);
@@ -1561,13 +1563,13 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void onTransitionEnded(SideUiSpecs sideUiSpecs) {
-        onSideUiSpecsChanged(sideUiSpecs);
+    public void onTransitionEnded(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        onSideUiSpecsChanged(sideUiSpecs, request);
         resetClipToPadding();
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         // Delay #updateWebContentsSize to the end of the task queue. Some side panel instances
         // rapidly close and re-open the side panel, which can cause a flicker if the web contents
         // are updated synchronously.
@@ -1893,7 +1895,10 @@ public class CompositorViewHolder extends FrameLayout
                 (sideUiStateProvider) -> {
                     mSideUiStateProvider = sideUiStateProvider;
                     mSideUiStateProvider.addObserver(this);
-                    onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
+                    onSideUiSpecsChanged(
+                            mSideUiStateProvider.getCurrentSideUiSpecs(),
+                            new UiUpdateRequest(
+                                    /* sideUiId= */ null, /* suppressAnimations= */ true));
                 });
     }
 
@@ -1915,8 +1920,8 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * Sets the URL bar. This is needed so that the ContentViewHolder can find out
-     * whether it can claim focus.
+     * Sets the URL bar. This is needed so that the ContentViewHolder can find out whether it can
+     * claim focus.
      */
     public void setUrlBar(View urlBar) {
         mUrlBar = urlBar;
@@ -2163,6 +2168,7 @@ public class CompositorViewHolder extends FrameLayout
     /**
      * Sets the correct size for {@link View} on {@code tab} and sets the correct rendering
      * parameters on {@link WebContents} on {@code tab}.
+     *
      * @param tab The {@link Tab} to initialize.
      */
     private void initializeTab(Tab tab) {
@@ -2262,7 +2268,6 @@ public class CompositorViewHolder extends FrameLayout
         } else {
             setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
         }
-
     }
 
     // TabObscuringHandler.Observer

@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
@@ -74,7 +75,8 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
     }
 
     @Override
-    public @Nullable Transition onPreSideUiSpecsChange(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
+    public @Nullable Transition onPreSideUiSpecsChange(
+            SideUiCoordinator.SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         TransitionSet transitionSet = new TransitionSet();
         Collection<View> descendants = new ArrayList<>();
         ViewUtils.getAllDescendants(mView, descendants, emptySet());
@@ -90,7 +92,8 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
     }
 
     @Override
-    public void onSideUiSpecsChanged(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
+    public void onSideUiSpecsChanged(
+            SideUiCoordinator.SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
         int leftMargin = 0;
         int rightMargin = 0;

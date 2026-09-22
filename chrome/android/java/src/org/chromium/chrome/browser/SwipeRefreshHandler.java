@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -117,7 +118,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     private final SideUiObserver mSideUiObserver =
             new SideUiObserver() {
                 @Override
-                public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+                public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
                     updateSideUiWidths(
                             sideUiSpecs.getWidth(AnchorSide.LEFT),
                             sideUiSpecs.getWidth(AnchorSide.RIGHT));
@@ -281,9 +282,8 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     }
 
     /**
-     * Notify the SwipeRefreshLayout that a refresh action has completed.
-     * Defer the notification by a reasonable minimum to ensure sufficient
-     * visiblity of the animation.
+     * Notify the SwipeRefreshLayout that a refresh action has completed. Defer the notification by
+     * a reasonable minimum to ensure sufficient visiblity of the animation.
      */
     public void didStopRefreshing() {
         if (mSwipeRefreshLayout == null || !mSwipeRefreshLayout.isRefreshing()) return;

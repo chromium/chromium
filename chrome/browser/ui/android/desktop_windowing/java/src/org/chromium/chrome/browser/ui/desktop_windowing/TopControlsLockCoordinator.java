@@ -46,7 +46,7 @@ public class TopControlsLockCoordinator {
                     updateLock();
                 }
             };
-    private final SideUiObserver mSideUiObserver = sideUiSpecs -> updateLock();
+    private final SideUiObserver mSideUiObserver = (sideUiSpecs, request) -> updateLock();
     private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /**

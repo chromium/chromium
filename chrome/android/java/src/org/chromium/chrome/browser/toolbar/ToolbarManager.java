@@ -238,6 +238,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
@@ -1946,16 +1947,18 @@ public class ToolbarManager
         // TODO(https://crbug.com/536963036): Remove the explicit calls to onSideUiSpecsChanged
         // after fixing the initialization order.
         var currentSideUiSpecs = sideUiStateProvider.getCurrentSideUiSpecs();
+        var currentRequest =
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true);
 
         mControlContainerSideUiObserver =
                 new ToolbarMarginAdjusterForSideUi(mControlContainer, mToolbar);
-        mControlContainerSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
+        mControlContainerSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs, currentRequest);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
 
         mProgressBarSideUiObserver =
                 new ViewMarginAdjusterForSideUi(
                         mProgressBarContainer, /* forToolbarElement= */ false);
-        mProgressBarSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
+        mProgressBarSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs, currentRequest);
         mSideUiStateProvider.addObserver(mProgressBarSideUiObserver);
     }
 
@@ -1977,15 +1980,16 @@ public class ToolbarManager
         }
 
         @Override
-        public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
-            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs);
+        public @Nullable Transition onPreSideUiSpecsChange(
+                SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs, request);
             super.triggerSynchronousMeasureAndLayout();
             return transition;
         }
 
         @Override
-        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-            super.onSideUiSpecsChanged(sideUiSpecs);
+        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+            super.onSideUiSpecsChanged(sideUiSpecs, request);
             int xOffset = 0;
             if (sideUiSpecs.getHeightType(AnchorSide.LEFT) == HeightType.TOOLBAR) {
                 xOffset = sideUiSpecs.getWidth(AnchorSide.LEFT);
@@ -3706,7 +3710,6 @@ public class ToolbarManager
         }
 
         checkIfNtpShowingWithNoPendingLoad();
-
     }
 
     private void setBookmarkModel(

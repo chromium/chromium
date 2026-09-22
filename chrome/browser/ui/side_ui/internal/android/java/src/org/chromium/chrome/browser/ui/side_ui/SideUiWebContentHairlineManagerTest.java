@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.Collections;
@@ -193,7 +194,9 @@ public class SideUiWebContentHairlineManagerTest {
         // 2. Show left SideUI.
         SideUiSpecs showLeftSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(showLeftSpecs);
+        observer.onSideUiSpecsChanged(
+                showLeftSpecs,
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         assertEquals(View.VISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.VISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
@@ -203,7 +206,9 @@ public class SideUiWebContentHairlineManagerTest {
         // 3. Hide left SideUI and show right SideUI.
         SideUiSpecs showRightSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.RIGHT, new SideUiSize(50, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(showRightSpecs);
+        observer.onSideUiSpecsChanged(
+                showRightSpecs,
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.VISIBLE, mRightHairline.getVisibility());
@@ -212,7 +217,9 @@ public class SideUiWebContentHairlineManagerTest {
 
         // 4. Hide right SideUI.
         SideUiSpecs hideAllSpecs = new SideUiSpecs(Collections.emptyMap());
-        observer.onSideUiSpecsChanged(hideAllSpecs);
+        observer.onSideUiSpecsChanged(
+                hideAllSpecs,
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
@@ -232,7 +239,9 @@ public class SideUiWebContentHairlineManagerTest {
 
         SideUiSpecs showLeftSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
-        observer.onSideUiSpecsChanged(showLeftSpecs);
+        observer.onSideUiSpecsChanged(
+                showLeftSpecs,
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
 
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());

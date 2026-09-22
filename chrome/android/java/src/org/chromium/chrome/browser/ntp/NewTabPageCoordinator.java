@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
@@ -336,7 +337,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // TODO(crbug.com/517393491): Refactor to a reusable component to apply to other UiConfigs.
         mSideUiObserver =
-                sideUiSpecs -> {
+                (sideUiSpecs, request) -> {
                     if (mUiConfig != null) {
                         mUiConfig.setHorizontalInset(getSideUiWidthDp(sideUiSpecs));
                     }
@@ -346,7 +347,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         provider -> {
                             mSideUiStateProvider = provider;
                             provider.addObserver(mSideUiObserver);
-                            mSideUiObserver.onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+                            mSideUiObserver.onSideUiSpecsChanged(
+                                    provider.getCurrentSideUiSpecs(),
+                                    new UiUpdateRequest(
+                                            /* sideUiId= */ null, /* suppressAnimations= */ true));
                         }));
 
         NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(

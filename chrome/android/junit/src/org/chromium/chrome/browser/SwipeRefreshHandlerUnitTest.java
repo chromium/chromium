@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -105,7 +106,11 @@ public class SwipeRefreshHandlerUnitTest {
                                 new SideUiSize(150, HeightType.WEB_CONTENTS),
                                 AnchorSide.RIGHT,
                                 new SideUiSize(250, HeightType.WEB_CONTENTS)));
-        mSideUiObserverCaptor.getValue().onSideUiSpecsChanged(newSpecs);
+        mSideUiObserverCaptor
+                .getValue()
+                .onSideUiSpecsChanged(
+                        newSpecs,
+                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
 
         verify(mSwipeRefreshLayout).setHorizontalOffsets(150, 250);
     }

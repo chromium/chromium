@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +57,12 @@ final class SideUiObserverNotifier {
      *
      * @return All {@link Transition}s returned by {@link SideUiObserver}s.
      */
-    List<Transition> notifyPreSideUiSpecsChange(SideUiSpecs newSideUiSpecs) {
+    List<Transition> notifyPreSideUiSpecsChange(
+            SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         List<Transition> transitions = new ArrayList<>();
         for (var observer : mObservers) {
-            @Nullable Transition transition = observer.onPreSideUiSpecsChange(newSideUiSpecs);
+            @Nullable Transition transition =
+                    observer.onPreSideUiSpecsChange(newSideUiSpecs, request);
             if (transition != null) {
                 transitions.add(transition);
             }
@@ -69,23 +72,23 @@ final class SideUiObserverNotifier {
     }
 
     /** Invokes {@link SideUiObserver#onTransitionBegun}. */
-    void notifyTransitionBegun(SideUiSpecs newSideUiSpecs) {
+    void notifyTransitionBegun(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         for (var observer : mObservers) {
-            observer.onTransitionBegun(newSideUiSpecs);
+            observer.onTransitionBegun(newSideUiSpecs, request);
         }
     }
 
     /** Invokes {@link SideUiObserver#onTransitionEnded}. */
-    void notifyTransitionEnded(SideUiSpecs newSideUiSpecs) {
+    void notifyTransitionEnded(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         for (var observer : mObservers) {
-            observer.onTransitionEnded(newSideUiSpecs);
+            observer.onTransitionEnded(newSideUiSpecs, request);
         }
     }
 
     /** Invokes {@link SideUiObserver#onSideUiSpecsChanged}. */
-    void notifySideUiSpecsChanged(SideUiSpecs newSideUiSpecs) {
+    void notifySideUiSpecsChanged(SideUiSpecs newSideUiSpecs, UiUpdateRequest request) {
         for (var observer : mObservers) {
-            observer.onSideUiSpecsChanged(newSideUiSpecs);
+            observer.onSideUiSpecsChanged(newSideUiSpecs, request);
         }
     }
 }
