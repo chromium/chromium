@@ -183,4 +183,13 @@ suite('ComposeboxMatch', () => {
         // Clean up.
         el.remove();
       });
+
+  test('iconContainer does not shrink with long text', async () => {
+    matchElement.match = createAutocompleteMatch({
+      contents: 'Very long text '.repeat(20),
+    });
+    await microtasksFinished();
+
+    assertStyle(matchElement.$.iconContainer, 'flex-shrink', '0');
+  });
 });

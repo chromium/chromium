@@ -18,6 +18,7 @@ import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.j
 
 export interface ComposeboxMatchElement {
   $: {
+    iconContainer: HTMLElement,
     image: HTMLElement,
     remove: HTMLElement,
     textContainer: HTMLElement,
