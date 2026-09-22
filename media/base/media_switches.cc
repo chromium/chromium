@@ -1069,11 +1069,6 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
 // Note: This is controlled on a per-board basis by ChromeOS and must be kept.
 BASE_FEATURE(kVideoDecodeBatching, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables optimizations to flush() and configure() in the WebCodecs' audio and
-// video decoder implementations. Kill-switch to be removed after M145 stable.
-BASE_FEATURE(kWebCodecsDecoderFlushOptimizations,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A video encoder is allowed to drop a frame in WebCodecs.
 BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
              base::FEATURE_DISABLED_BY_DEFAULT);

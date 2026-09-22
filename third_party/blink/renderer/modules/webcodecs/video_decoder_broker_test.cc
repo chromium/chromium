@@ -410,9 +410,7 @@ TEST_F(VideoDecoderBrokerTest, Init_DenyAcceleration) {
 
 TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures({media::kResolutionBasedDecoderPriority,
-                                    media::kWebCodecsDecoderFlushOptimizations},
-                                   {});
+  scoped_features.InitAndEnableFeature(media::kResolutionBasedDecoderPriority);
   V8TestingScope v8_scope;
   ExecutionContext* execution_context = v8_scope.GetExecutionContext();
 

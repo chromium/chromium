@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
-#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -387,9 +386,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   // some platforms, providing the next config may allow the decoder to elide
   // costly reinitialization work.
   auto eos_buffer =
-      base::FeatureList::IsEnabled(media::kWebCodecsDecoderFlushOptimizations)
-          ? media::DecoderBuffer::CreateEOSBuffer(*request->media_config)
-          : media::DecoderBuffer::CreateEOSBuffer();
+      media::DecoderBuffer::CreateEOSBuffer(*request->media_config);
 
   // Processing continues in OnFlushDone().
   decoder()->Decode(

@@ -8,14 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/decoder_status.h"
-#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/buildflags.h"
@@ -137,9 +135,7 @@ class MediaVideoTaskWrapper {
     // automatic call to Initialize() after Flush() destroys the codec;
     // invalidating any unrendered output buffers.
     // See https://crbug.com/474398415
-    if (decoder_ && !decoder_factory_needs_update_ &&
-        base::FeatureList::IsEnabled(
-            media::kWebCodecsDecoderFlushOptimizations)) {
+    if (decoder_ && !decoder_factory_needs_update_) {
       selector_->PrependDecoder(std::move(decoder_));
     }
 

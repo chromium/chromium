@@ -6,10 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
-#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -294,8 +292,6 @@ TEST_F(VideoDecoderTest, isConfigureSupportedWithInvalidHWConfig) {
 }
 
 TEST_F(VideoDecoderTest, ConfigureGeneratesConfigChangeEOS) {
-  base::test::ScopedFeatureList feature_list{
-      media::kWebCodecsDecoderFlushOptimizations};
   V8TestingScope v8_scope;
   MockFunctionScope mock_functions(v8_scope.GetScriptState());
 
