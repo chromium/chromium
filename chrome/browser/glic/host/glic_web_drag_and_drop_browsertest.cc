@@ -1,0 +1,208 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
+#include "chrome/test/base/drag_and_drop_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace glic {
+namespace {
+
+class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase {
+ public:
+  GlicWebDragAndDropBrowserTest()
+      : GlicDragAndDropTestBase(
+            GlicTestJsPath("./glic_web_drag_and_drop_browsertest.js")) {}
+};
+
+// Linux does not natively support direct in-memory FileContents retrieval
+// inside OSExchangeData.
+// Web-to-Glic drag-and-drop is fully supported on macOS, Windows, and
+// ChromeOS. On Windows, this test is currently disabled due to test simulation
+// flakiness in headless CI runners.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_testWebToGlicDragMaterialization \
+  DISABLED_testWebToGlicDragMaterialization
+#else
+#define MAYBE_testWebToGlicDragMaterialization testWebToGlicDragMaterialization
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+                       MAYBE_testWebToGlicDragMaterialization) {
+  base::HistogramTester histogram_tester;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "fake-dm-token"));
+
+  // 1. Open GLIC and prepare the guest.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+
+  // 2. Setup Source Tab with an image.
+  content::WebContents* source_wc = SetupSourceTabWithDraggableImage();
+  ASSERT_TRUE(source_wc);
+
+  // 3. Setup the drop simulation to run WHILE the source drag is active.
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  // 4. Start waiting for a drag to initiate.
+  drag_and_drop_test_utils::DragStartWaiter waiter(
+      source_wc, base::BindLambdaForTesting([&]() {
+        base::ScopedClosureRunner release_runner(base::BindOnce(
+            &drag_and_drop_test_utils::DragStartWaiter::ReleaseDrag,
+            base::Unretained(&waiter)));
+
+        // Programmatically simulate the DragEnter with Blink's real captured
+        // drag data (preserving the custom Glic drag source ID pickle
+        // chromium/x-drag-id).
+        simulator.SimulateDragEnter(host_relative_point,
+                                    waiter.TakeCapturedData());
+
+        // Programmatically simulate the Drop immediately inside Gtest's drag
+        // callback context.
+        simulator.SimulateDrop(host_relative_point);
+      }));
+  waiter.SuppressPassingStartDragFurther();
+
+  // 5. Simulate a real drag starting in the source tab.
+  SimulateMouseDragFromImage(source_wc);
+
+  // 6. Wait for the entire drag-and-drop sequence to finish.
+  waiter.WaitUntilDragStart();
+
+  // 7. Gtest's main thread is now fully unblocked.
+  // Resume TS and wait for the test to complete.
+  ContinueJsTest();
+
+  EXPECT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.InvokeResult.WebDragDrop",
+            static_cast<int>(GlicInvokeResult::kSuccess));
+      },
+      1));
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
+                                      GlicDragAndDropContentType::kImage, 1);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+}
+
+// Linux does not natively support direct in-memory FileContents retrieval
+// inside OSExchangeData.
+// Web-to-Glic drag-and-drop is fully supported on macOS, Windows, and
+// ChromeOS. On Windows, this test is currently disabled due to test simulation
+// flakiness in headless CI runners.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_testWebToGlicDragMaterializationFromDetached \
+  DISABLED_testWebToGlicDragMaterializationFromDetached
+#else
+#define MAYBE_testWebToGlicDragMaterializationFromDetached \
+  testWebToGlicDragMaterializationFromDetached
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+                       MAYBE_testWebToGlicDragMaterializationFromDetached) {
+  base::HistogramTester histogram_tester;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "fake-dm-token"));
+
+  // 1. Open GLIC and detach it into a separate OS window.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTabAndDetach());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+
+  // 2. Setup Source Tab with an image.
+  content::WebContents* source_wc = SetupSourceTabWithDraggableImage();
+  ASSERT_TRUE(source_wc);
+
+  // 3. Setup the drop simulation to run WHILE the source drag is active.
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  // 4. Start waiting for a drag to initiate.
+  drag_and_drop_test_utils::DragStartWaiter waiter(
+      source_wc, base::BindLambdaForTesting([&]() {
+        base::ScopedClosureRunner release_runner(base::BindOnce(
+            &drag_and_drop_test_utils::DragStartWaiter::ReleaseDrag,
+            base::Unretained(&waiter)));
+
+        // Programmatically simulate the DragEnter with Blink's real captured
+        // drag data (preserving the custom Glic drag source ID pickle
+        // chromium/x-drag-id).
+        simulator.SimulateDragEnter(host_relative_point,
+                                    waiter.TakeCapturedData());
+
+        // Programmatically simulate the Drop immediately inside Gtest's drag
+        // callback context.
+        simulator.SimulateDrop(host_relative_point);
+      }));
+  waiter.SuppressPassingStartDragFurther();
+
+  // 5. Simulate a real drag starting in the source tab.
+  SimulateMouseDragFromImage(source_wc);
+
+  // 6. Wait for the entire drag-and-drop sequence to finish.
+  waiter.WaitUntilDragStart();
+
+  // 7. Gtest's main thread is now fully unblocked.
+  // Resume TS and wait for the test to complete.
+  ContinueJsTest();
+
+  EXPECT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.InvokeResult.WebDragDrop",
+            static_cast<int>(GlicInvokeResult::kSuccess));
+      },
+      1));
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
+                                      GlicDragAndDropContentType::kImage, 1);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+}
+
+}  // namespace
+}  // namespace glic

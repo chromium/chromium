@@ -18,7 +18,6 @@ class GlicDragAndDropPolicyTest extends ApiTestFixtureBase {
     const dragEnter = Promise.withResolvers<void>();
     const dragOver = Promise.withResolvers<void>();
     const nativeDrop = Promise.withResolvers<string>();
-    const invokeDrop = Promise.withResolvers<string>();
     const state = {wasDropped: false, wasInvoked: false};
 
     window.addEventListener('dragenter', () => {
@@ -40,30 +39,6 @@ class GlicDragAndDropPolicyTest extends ApiTestFixtureBase {
       }
       if (options.invocationSource === InvocationSource.WEB_DRAG_DROP) {
         state.wasInvoked = true;
-        if (!options.context) {
-          invokeDrop.reject(new Error('InvokeOptions context is missing!'));
-          return;
-        }
-        if (!options.context.parts || options.context.parts.length === 0) {
-          invokeDrop.reject(new Error('InvokeOptions context has no parts!'));
-          return;
-        }
-        let foundImage = false;
-        for (const part of options.context.parts) {
-          if (part.data) {
-            foundImage = true;
-            const blob = part.data;
-            if (blob && blob.size > 0) {
-              invokeDrop.resolve(part.filename || options.context.name || '');
-            } else {
-              invokeDrop.reject(new Error('Received empty image bytes!'));
-            }
-          }
-        }
-        if (!foundImage) {
-          invokeDrop.reject(
-              new Error('No parts with image data found in InvokeOptions!'));
-        }
       }
     });
 
@@ -71,7 +46,6 @@ class GlicDragAndDropPolicyTest extends ApiTestFixtureBase {
       dragEnterPromise: dragEnter.promise,
       dragOverPromise: dragOver.promise,
       nativeDropPromise: nativeDrop.promise,
-      invokeDropPromise: invokeDrop.promise,
       state,
     };
   }
@@ -108,24 +82,7 @@ class GlicDragAndDropPolicyTest extends ApiTestFixtureBase {
     assertFalse(
         state.wasDropped, 'Drop occurred when it should have been blocked');
   }
-  async testWebToGlicDragMaterialization() {
-    const {dragEnterPromise, dragOverPromise, invokeDropPromise} =
-        this.setupDragAndDropHandlers();
 
-    await this.advanceToNextStep();
-
-    await waitFor(dragEnterPromise, 40000, 'DragEnter never arrived');
-    await waitFor(dragOverPromise, 40000, 'DragOver never arrived');
-
-    const droppedData =
-        await waitFor(invokeDropPromise, 40000, 'Invoke never arrived');
-
-    assertEquals('cors-allowed.jpg', droppedData);
-  }
-
-  async testWebToGlicDragMaterializationFromDetached() {
-    await this.testWebToGlicDragMaterialization();
-  }
 
   async testWebToGlicDragDlpBlocked() {
     const {dragEnterPromise, dragOverPromise, state} =

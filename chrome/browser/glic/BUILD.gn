@@ -1005,7 +1005,10 @@ source_set("browser_tests") {
     ]
 
     if (!is_mac && enterprise_cloud_content_analysis) {
-      sources += [ "host/glic_drag_and_drop_browsertest.cc" ]
+      sources += [
+        "host/glic_drag_and_drop_browsertest.cc",
+        "host/glic_web_drag_and_drop_browsertest.cc",
+      ]
     }
 
     deps += [
