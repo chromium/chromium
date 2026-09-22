@@ -300,7 +300,7 @@ TEST_F(V5SearchHashesUtilTest, DetermineMostSevereThreat_MultipleDetails) {
       CreateHashDetail(V5::ThreatType::TRICK_TO_BILL);  // Severity 15
   V5::FullHash::FullHashDetail detail_med = CreateHashDetail(
       V5::ThreatType::SOCIAL_ENGINEERING,
-      {V5::ThreatAttribute::CANARY});  // Severity 4 (Suspicious Site)
+      {V5::ThreatAttribute::CANARY});  // Severity 7 (Suspicious Site)
   V5::FullHash::FullHashDetail detail_high =
       CreateHashDetail(V5::ThreatType::MALWARE);  // Severity 0 (most severe)
 

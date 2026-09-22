@@ -197,8 +197,12 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AllowlistUrlSet);
 
-// Returns the corresponding ThreatSeverity to a SBThreatType
-// Keep the same as sb_local_database_manager GetThreatSeverity()
+// Returns the corresponding ThreatSeverity to a SBThreatType.
+// v4: Keep the same as sb_local_database_manager GetThreatSeverity().
+// v5: Keep the severity values in sync with GetThreatSeverity() in
+// v5_search_hashes_util.cc.
+// TODO(crbug.com/372395685): deprecate v4 part of this comment.
+// LINT.IfChange(ThreatTypeSeverity)
 ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
   using enum SBThreatType;
   switch (threat_type) {
@@ -223,7 +227,7 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
       return 3;
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
     case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
-      return 4;
+      return 7;
     case SB_THREAT_TYPE_BILLING:
       return 15;
     case SB_THREAT_TYPE_UNUSED:
@@ -240,6 +244,7 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
       NOTREACHED();
   }
 }
+// LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_search_hashes_util.cc:ThreatTypeSeverity)
 
 // Whether the warning triggered by this threat type can be bypassed.
 bool IsWarningBypassable(safe_browsing::SBThreatType threat_type) {
