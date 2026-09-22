@@ -135,6 +135,10 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
       process->GetBrowserContext(), origin, is_for_isolated_world,
       is_for_service_worker, params.get());
 
+  if (is_for_isolated_world && !params->ignore_isolated_world_origin) {
+    params->isolated_world_origin_lock = origin;
+  }
+
   params->cookie_observer = std::move(cookie_observer);
   params->trust_token_observer = std::move(trust_token_observer);
   params->shared_dictionary_observer = std::move(shared_dictionary_observer);

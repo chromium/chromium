@@ -190,6 +190,7 @@ CorsURLLoaderTestBase::ResetFactoryParams::ResetFactoryParams() {
   mojom::URLLoaderFactoryParams params;
   is_trusted = params.is_trusted;
   ignore_isolated_world_origin = params.ignore_isolated_world_origin;
+  isolated_world_origin_lock = params.isolated_world_origin_lock;
   client_security_state = std::move(params.client_security_state);
 
   mojom::URLLoaderFactoryOverride factory_override;
@@ -346,6 +347,8 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
   factory_params->is_orb_enabled = !process_id.is_browser();
   factory_params->ignore_isolated_world_origin =
       params.ignore_isolated_world_origin;
+  factory_params->isolated_world_origin_lock =
+      params.isolated_world_origin_lock;
   factory_params->factory_override = mojom::URLLoaderFactoryOverride::New();
   factory_params->factory_override->overriding_factory =
       test_url_loader_factory_receiver_->BindNewPipeAndPassRemote();

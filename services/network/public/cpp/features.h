@@ -389,6 +389,12 @@ BASE_DECLARE_FEATURE(kSafeRevalidation);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBindURLLoaderFactoryToHighPriorityTaskRunner);
 
+// When enabled, validates that ResourceRequest::isolated_world_origin matches
+// URLLoaderFactoryParams::isolated_world_origin_lock when
+// ignore_isolated_world_origin is false.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kEnforceIsolatedWorldOriginLock);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

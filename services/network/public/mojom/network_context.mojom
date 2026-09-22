@@ -856,6 +856,17 @@ struct URLLoaderFactoryParams {
   // field once Chrome Platform Apps are gone.
   bool ignore_isolated_world_origin = true;
 
+  // The origin of the isolated world that is permitted to use this factory.
+  // When `ignore_isolated_world_origin` is false, requests with an
+  // `isolated_world_origin` that does not match this lock will be rejected
+  // with a bad message report.
+  // Setting this field when `ignore_isolated_world_origin` is true is invalid
+  // and will also result in a bad message report.
+  //
+  // TODO(crbug.com/40137011): Remove `isolated_world_origin_lock` once Chrome
+  // Platform Apps are gone and `ignore_isolated_world_origin` is removed.
+  url.mojom.Origin? isolated_world_origin_lock;
+
   // Indicate whether a request is not from web page ( probably from chrome
   // extension background page ).
   bool unsafe_non_webby_initiator = false;
