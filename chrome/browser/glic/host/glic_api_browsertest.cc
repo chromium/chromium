@@ -64,7 +64,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -235,7 +234,6 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam().no_webview) {
       enabled_features.push_back(features::kGlicNoWebview);
-      enabled_features.push_back(pwc::mojom::features::kPrivilegedWebContents);
     } else {
       disabled_features.push_back(features::kGlicNoWebview);
     }

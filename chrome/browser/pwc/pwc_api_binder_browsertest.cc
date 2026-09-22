@@ -14,7 +14,6 @@
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc.mojom.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -82,11 +81,6 @@ void ExpectBindKillsRenderer(content::RenderFrameHost* frame) {
 
 class PwcApiBinderBrowserTest : public InProcessBrowserTest {
  public:
-  PwcApiBinderBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        mojom::features::kPrivilegedWebContents);
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -111,9 +105,6 @@ class PwcApiBinderBrowserTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The qualifying frame -- the primary main frame of a PrivilegedWebContents

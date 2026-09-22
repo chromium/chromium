@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -119,7 +118,6 @@ std::unique_ptr<PrivilegedWebContents> PrivilegedWebContents::Create(
     PrivilegedComponent component,
     content::BrowserContext* browser_context,
     std::unique_ptr<PwcPolicyDelegate> policy_delegate) {
-  CHECK(base::FeatureList::IsEnabled(mojom::features::kPrivilegedWebContents));
   CHECK(browser_context);
   CHECK(policy_delegate);
   // Not std::make_unique: the constructor is private.

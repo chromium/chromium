@@ -8,7 +8,6 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -28,8 +27,7 @@ class GlicPermissionEnforcementBrowserTest
                                                              fake_longitude_);
     if (IsNoWebview()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicNoWebview,
-                                pwc::mojom::features::kPrivilegedWebContents},
+          /*enabled_features=*/{features::kGlicNoWebview},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(

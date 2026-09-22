@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/pwc/pwc_permission_delegate.h"
 #include "chrome/browser/pwc/test_support/test_pwc_permission_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -55,17 +54,7 @@ std::unique_ptr<FixedPwcPolicyDelegate> MakeTestDelegate() {
           url::Origin::Create(GURL("https://pwc-test.example.com"))});
 }
 
-class PrivilegedWebContentsTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        mojom::features::kPrivilegedWebContents);
-    ChromeRenderViewHostTestHarness::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using PrivilegedWebContentsTest = ChromeRenderViewHostTestHarness;
 
 TEST_F(PrivilegedWebContentsTest, CreateOwnsAWebContents) {
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(

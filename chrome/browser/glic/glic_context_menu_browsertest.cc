@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -908,7 +907,6 @@ class GlicInternalContextMenuBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsNoWebview()) {
       enabled_features.push_back(features::kGlicNoWebview);
-      enabled_features.push_back(pwc::mojom::features::kPrivilegedWebContents);
     } else {
       disabled_features.push_back(features::kGlicNoWebview);
     }
@@ -1066,9 +1064,7 @@ class GlicNoWebviewOverlayContextMenuBrowserTest : public GlicBrowserTest {
  public:
   GlicNoWebviewOverlayContextMenuBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicNoWebview,
-         pwc::mojom::features::kPrivilegedWebContents},
-        {});
+        {features::kGlic, features::kGlicNoWebview}, {});
   }
 
  private:

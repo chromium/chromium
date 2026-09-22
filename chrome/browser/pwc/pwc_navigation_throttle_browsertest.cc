@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -37,11 +36,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 class PwcNavigationThrottleBrowserTest : public InProcessBrowserTest {
  public:
-  PwcNavigationThrottleBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        mojom::features::kPrivilegedWebContents);
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -51,9 +45,6 @@ class PwcNavigationThrottleBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The throttle cancels off-allowlist primary-main-frame navigations in a

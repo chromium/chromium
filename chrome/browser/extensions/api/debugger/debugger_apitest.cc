@@ -42,7 +42,6 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
@@ -327,16 +326,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunctionOnTarget(
   return testing::AssertionSuccess();
 }
 
-class PwcDebuggerApiTest : public DebuggerApiTest {
- public:
-  PwcDebuggerApiTest() {
-    feature_list_.InitAndEnableFeature(
-        pwc::mojom::features::kPrivilegedWebContents);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using PwcDebuggerApiTest = DebuggerApiTest;
 
 // An extension with the "debugger" permission cannot attach to, or even
 // enumerate, a privileged WebContents (see //chrome's PrivilegedWebContents):

@@ -62,9 +62,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   // Creates a PrivilegedWebContents for `component` in `browser_context`.
   // `policy_delegate` supplies the component's origin allowlists and is
   // implemented by the component owner (see PwcPolicyDelegate); it is
-  // consulted through the structural guardrails of PwcComponentPolicy. Must
-  // only be called when pwc::mojom::features::kPrivilegedWebContents is
-  // enabled.
+  // consulted through the structural guardrails of PwcComponentPolicy.
   static std::unique_ptr<PrivilegedWebContents> Create(
       PrivilegedComponent component,
       content::BrowserContext* browser_context,

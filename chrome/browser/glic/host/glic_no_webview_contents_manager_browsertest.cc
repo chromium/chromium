@@ -16,7 +16,6 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -65,8 +64,7 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
  public:
   GlicNoWebviewContentsManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicNoWebview,
-                              pwc::mojom::features::kPrivilegedWebContents},
+        /*enabled_features=*/{features::kGlicNoWebview},
         /*disabled_features=*/{});
   }
 

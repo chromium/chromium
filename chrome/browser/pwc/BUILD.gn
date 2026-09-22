@@ -4,16 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("features") {
-  sources = [ "pwc_features.mojom" ]
-}
-
 mojom("mojo_bindings") {
   sources = [ "pwc.mojom" ]
-
-  # For the [RuntimeFeature] reference to
-  # pwc.mojom.features.kPrivilegedWebContents.
-  public_deps = [ ":features" ]
 }
 
 source_set("pwc") {
@@ -44,7 +36,6 @@ source_set("pwc") {
   ]
 
   deps = [
-    ":features",
     "//chrome/browser:bad_message",
     "//components/back_forward_cache",
   ]
@@ -59,7 +50,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":features",
     ":pwc",
     "//base/test:test_support",
     "//chrome/browser/pwc/test_support",
@@ -82,7 +72,6 @@ source_set("browser_tests") {
   sources = []
 
   deps = [
-    ":features",
     ":mojo_bindings",
     ":pwc",
     "//base/test:test_support",

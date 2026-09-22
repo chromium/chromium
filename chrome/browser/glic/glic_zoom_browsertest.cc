@@ -14,7 +14,6 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
@@ -31,8 +30,7 @@ class GlicZoomBrowserTest : public GlicBrowserTest,
   GlicZoomBrowserTest() {
     if (IsNoWebview()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicNoWebview,
-                                pwc::mojom::features::kPrivilegedWebContents},
+          /*enabled_features=*/{features::kGlicNoWebview},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(

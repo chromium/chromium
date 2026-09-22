@@ -11,7 +11,6 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -172,9 +171,7 @@ class GlicViewNoWebviewTest : public ChromeViewsTestBase {
  public:
   GlicViewNoWebviewTest() {
     feature_list_.InitWithFeatures(
-        {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents,
-         features::kGlicDragAndDropFileUpload},
-        {});
+        {features::kGlicNoWebview, features::kGlicDragAndDropFileUpload}, {});
   }
   ~GlicViewNoWebviewTest() override = default;
 

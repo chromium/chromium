@@ -9,7 +9,6 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/pwc/test_support/test_pwc_permission_delegate.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/url_constants.h"
@@ -253,8 +252,6 @@ class PermissionManagerPwcTest : public ChromeRenderViewHostTestHarness {
   PermissionManagerPwcTest() : test_url_("https://pwc-test.example.com") {}
 
   void SetUp() override {
-    scoped_pwc_feature_list_.InitAndEnableFeature(
-        pwc::mojom::features::kPrivilegedWebContents);
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
     ChromeRenderViewHostTestHarness::SetUp();
@@ -300,7 +297,6 @@ class PermissionManagerPwcTest : public ChromeRenderViewHostTestHarness {
   const GURL& test_url() const { return test_url_; }
 
  private:
-  base::test::ScopedFeatureList scoped_pwc_feature_list_;
   GURL test_url_;
   std::unique_ptr<pwc::PrivilegedWebContents> pwc_;
 };

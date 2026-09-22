@@ -4,8 +4,6 @@
 
 module pwc.mojom;
 
-import "chrome/browser/pwc/pwc_features.mojom";
-
 // The elevated-capability bridge exposed only to a fully-qualified privileged
 // main frame. "Fully qualified" means the requesting frame is the primary
 // main frame of a PrivilegedWebContents, its document is committed over HTTPS
@@ -16,10 +14,7 @@ import "chrome/browser/pwc/pwc_features.mojom";
 // The interface is intentionally empty: the production capability surface is
 // a feature-team follow-on, and the security-relevant part is not any method
 // but the *gate* on who may bind the interface at all -- enforced
-// browser-side in //chrome/browser/pwc/pwc_api_binder.* and, as defense in
-// depth, guarded with [RuntimeFeature] below so the interface is not even
-// registered when PrivilegedWebContents is disabled. Tests observe a
+// browser-side in //chrome/browser/pwc/pwc_api_binder.*. Tests observe a
 // successful vs. refused bind via Remote::FlushForTesting() plus
 // connectivity, so no test-only method ships here.
-[RuntimeFeature=pwc.mojom.features.kPrivilegedWebContents]
 interface PrivilegedBridge {};

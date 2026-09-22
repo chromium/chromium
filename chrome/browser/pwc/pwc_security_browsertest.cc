@@ -47,7 +47,6 @@
 #include "chrome/browser/pwc/pwc.mojom.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -69,11 +68,6 @@ namespace {
 
 class PwcSecurityBrowserTest : public InProcessBrowserTest {
  public:
-  PwcSecurityBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        mojom::features::kPrivilegedWebContents);
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -113,9 +107,6 @@ class PwcSecurityBrowserTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The privileged main frame runs in a privileged process, and an ordinary tab
