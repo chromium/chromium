@@ -60,8 +60,6 @@ BASE_FEATURE(kMITMSoftwareInterstitial, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
-BASE_FEATURE(kSSLCommonNameMismatchHandling, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default delay in milliseconds before displaying the SSL interstitial.
 // This can be changed in tests.
 // - If there is a name mismatch and a suggested URL available result arrives
@@ -119,9 +117,7 @@ class CommonNameMismatchRedirectObserver
         blink::mojom::ConsoleMessageLevel::kInfo,
         base::StringPrintf(
             "Redirecting navigation %s -> %s because the server presented a "
-            "certificate valid for %s but not for %s. To disable such "
-            "redirects launch Chrome with the following flag: "
-            "--disable-features=SSLCommonNameMismatchHandling",
+            "certificate valid for %s but not for %s.",
             request_url_hostname_.c_str(), suggested_url_hostname_.c_str(),
             suggested_url_hostname_.c_str(), request_url_hostname_.c_str()));
     GetWebContents().RemoveUserData(UserDataKey());
@@ -146,10 +142,6 @@ void RecordUMA(SSLErrorHandler::UMAEvent event) {
 
 bool IsMITMSoftwareInterstitialEnabled() {
   return base::FeatureList::IsEnabled(kMITMSoftwareInterstitial);
-}
-
-bool IsSSLCommonNameMismatchHandlingEnabled() {
-  return base::FeatureList::IsEnabled(kSSLCommonNameMismatchHandling);
 }
 
 // Configuration for SSLErrorHandler.
@@ -771,8 +763,7 @@ void SSLErrorHandler::StartHandlingError() {
     }
   }
 
-  if (IsSSLCommonNameMismatchHandlingEnabled() &&
-      cert_error_ == net::ERR_CERT_COMMON_NAME_INVALID &&
+  if (cert_error_ == net::ERR_CERT_COMMON_NAME_INVALID &&
       delegate_->IsErrorOverridable()) {
     std::vector<std::string> dns_names;
     ssl_info_.cert->GetSubjectAltName(&dns_names, nullptr);

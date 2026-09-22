@@ -57,13 +57,12 @@ void CommonNameMismatchHandler::CheckSuggestedUrl(const GURL& url,
           description:
             "If Chromium cannot make a secure connection to a site, this can "
             "be because the site is misconfigured. The site may be serving a "
-            "security certificate intended for another site. If the SSL Common "
-            "Name Mismatch Handling feature is enabled, Chromium will try to "
-            "detect if one of the domains listed in the site's certificate is "
-            "available by issuing requests to those domains. If the response "
-            "indicates that an alternative site for which the certificate is "
-            "valid is available, Chromium will automatically redirect the user "
-            "to the alternative site."
+            "security certificate intended for another site. Chromium will "
+            "try to detect if one of the domains listed in the site's "
+            "certificate is available by issuing requests to those domains. If "
+            "the response indicates that an alternative site for which the "
+            "certificate is valid is available, Chromium will automatically "
+            "redirect the user to the alternative site."
           trigger: "Resource load."
           data: "An HTTP HEAD request to the alternative site."
           destination: WEBSITE
@@ -71,8 +70,7 @@ void CommonNameMismatchHandler::CheckSuggestedUrl(const GURL& url,
         policy {
           cookies_allowed: NO
           setting:
-            "Users can disable this feature by command line flag "
-            "'--disable-feature=SSLCommonNameMismatchHandling'."
+            "This feature cannot be disabled in settings."
           policy_exception_justification:
             "Not implemented."
         })");
