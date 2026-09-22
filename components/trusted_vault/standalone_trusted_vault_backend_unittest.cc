@@ -73,15 +73,6 @@ MATCHER_P(MatchTrustedVaultKeyAndVersions, expected, "") {
                                      result_listener);
 }
 
-MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
-  const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
-      given_state = arg;
-  return given_state.degraded_recoverability_value() ==
-             expected_state.degraded_recoverability_value() &&
-         given_state.last_refresh_time_millis_since_unix_epoch() ==
-             expected_state.last_refresh_time_millis_since_unix_epoch();
-}
-
 MATCHER_P(KeyMaterialEq, expected, "") {
   const std::string& key_material = arg.key_material();
   const std::vector<uint8_t> key_material_as_bytes =
@@ -508,25 +499,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       nullptr;
   raw_ptr<TestLocalRecoveryFactorsFactory> local_recovery_factors_factory_;
 };
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldWriteDegradedRecoverabilityState) {
-  SetPrimaryAccountWithUnknownAuthError(MakeAccountInfoWithGaiaId("user"));
-  trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState
-      degraded_recoverability_state;
-  degraded_recoverability_state.set_degraded_recoverability_value(
-      trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
-  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
-      123);
-  backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
-
-  // Read the file from disk.
-  trusted_vault_pb::LocalTrustedVault proto =
-      file_access()->GetStoredLocalTrustedVault();
-  ASSERT_THAT(proto.user_size(), Eq(1));
-  EXPECT_THAT(proto.user(0).degraded_recoverability_state(),
-              DegradedRecoverabilityStateEq(degraded_recoverability_state));
-}
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldInvokeGetIsRecoverabilityDegradedCallbackImmediately) {

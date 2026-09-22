@@ -38,7 +38,7 @@ namespace trusted_vault {
 // sequence.
 class StandaloneTrustedVaultBackend
     : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
-      public TrustedVaultDegradedRecoverabilityHandler::Delegate {
+      public TrustedVaultDegradedRecoverabilityHandler::Observer {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -99,11 +99,9 @@ class StandaloneTrustedVaultBackend
   StandaloneTrustedVaultBackend& operator=(
       const StandaloneTrustedVaultBackend& other) = delete;
 
-  // TrustedVaultDegradedRecoverabilityHandler::Delegate implementation.
-  void WriteDegradedRecoverabilityState(
-      const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
-          degraded_recoverability_state) override;
-  void OnDegradedRecoverabilityChanged() override;
+  // TrustedVaultDegradedRecoverabilityHandler::Observer implementation.
+  void OnDegradedRecoverabilityChanged(
+      SecurityDomainId security_domain) override;
 
   // Restores state saved on disk, should be called before using the object.
   void ReadDataFromDisk();

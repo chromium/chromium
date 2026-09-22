@@ -6,6 +6,7 @@
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -15,26 +16,27 @@
 #include "components/trusted_vault/trusted_vault_histograms.h"
 
 namespace trusted_vault_pb {
-class LocalTrustedVaultDegradedRecoverabilityState;
 enum DegradedRecoverabilityValue : int;
 }  // namespace trusted_vault_pb
 
 namespace trusted_vault {
+
+class DegradedRecoverabilityStorage;
+enum class SecurityDomainId;
+
 // Refreshs the degraded recoverability state by scheduling the requests based
 // on the current state, heuristics and last refresh time.
 class TrustedVaultDegradedRecoverabilityHandler {
  public:
-  class Delegate {
+  class Observer {
    public:
-    Delegate() = default;
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-    virtual ~Delegate() = default;
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    virtual ~Observer() = default;
 
-    virtual void WriteDegradedRecoverabilityState(
-        const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
-            degraded_recoverability_state) = 0;
-    virtual void OnDegradedRecoverabilityChanged() = 0;
+    virtual void OnDegradedRecoverabilityChanged(
+        SecurityDomainId security_domain) = 0;
   };
 
   // Exposed for testing.
@@ -43,13 +45,14 @@ class TrustedVaultDegradedRecoverabilityHandler {
   static constexpr base::TimeDelta kShortDegradedRecoverabilityRefreshPeriod =
       base::Hours(1);
 
-  // `connection` and `delegate` must not be null and must outlive this object.
+  // `connection`, `observer`, and `storage` must not be null and must outlive
+  // this object.
   TrustedVaultDegradedRecoverabilityHandler(
       TrustedVaultConnection* connection,
-      Delegate* delegate,
+      Observer* observer,
+      DegradedRecoverabilityStorage* storage,
       const CoreAccountInfo& account_info,
-      const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
-          degraded_recoverability_state);
+      SecurityDomainId security_domain);
   TrustedVaultDegradedRecoverabilityHandler(
       const TrustedVaultDegradedRecoverabilityHandler&) = delete;
   TrustedVaultDegradedRecoverabilityHandler& operator=(
@@ -70,8 +73,11 @@ class TrustedVaultDegradedRecoverabilityHandler {
       TrustedVaultRecoverabilityStatus status);
 
   const raw_ptr<TrustedVaultConnection> connection_;
-  const raw_ptr<Delegate> delegate_;
-  CoreAccountInfo account_info_;
+  const raw_ptr<Observer> observer_;
+  const raw_ptr<DegradedRecoverabilityStorage> storage_;
+  const CoreAccountInfo account_info_;
+  const SecurityDomainId security_domain_;
+
   // A "timer" takes care of invoking Refresh() in the future, once after a
   // `current_refresh_period_` delay has elapsed.
   base::OneShotTimer next_refresh_timer_;

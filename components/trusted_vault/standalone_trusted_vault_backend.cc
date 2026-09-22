@@ -258,16 +258,9 @@ StandaloneTrustedVaultBackend::CreateForTesting(
       std::move(connection), std::move(local_recovery_factors_factory)));
 }
 
-void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
-    const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
-        degraded_recoverability_state) {
-  DCHECK(primary_account_.has_value());
-  storage_->SetDegradedRecoverabilityState(primary_account_->gaia,
-                                           security_domain_id_,
-                                           degraded_recoverability_state);
-}
-
-void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
+void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged(
+    SecurityDomainId security_domain) {
+  CHECK_EQ(security_domain, security_domain_id_);
   delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
@@ -369,10 +362,11 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       MaybeProcessPendingTrustedRecoveryMethod();
       MaybeRegisterLocalRecoveryFactors();
 
-      CHECK(degraded_recoverability_handler_);
-      degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
-          TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
-              kPersistentAuthErrorResolved);
+      if (degraded_recoverability_handler_) {
+        degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
+            TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+                kPersistentAuthErrorResolved);
+      }
     }
 
     return;
@@ -400,13 +394,13 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
         local_recovery_factors_factory_->CreateLocalRecoveryFactors(
             security_domain_id_, storage_.get(), connection_.get(),
             *primary_account_);
+
+    degraded_recoverability_handler_ =
+        std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+            connection_.get(), /*observer=*/this, storage_.get(),
+            primary_account_.value(), security_domain_id_);
   }
 
-  degraded_recoverability_handler_ =
-      std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
-          connection_.get(), /*delegate=*/this, primary_account_.value(),
-          storage_->GetDegradedRecoverabilityState(primary_account_->gaia,
-                                                   security_domain_id_));
   // Should process `pending_get_is_recoverability_degraded_` if it belongs to
   // the current primary account.
   // TODO(crbug.com/40255601): |pending_get_is_recoverability_degraded_| should
@@ -417,8 +411,13 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   if (pending_get_is_recoverability_degraded_.has_value() &&
       pending_get_is_recoverability_degraded_->account_info ==
           primary_account_) {
-    degraded_recoverability_handler_->GetIsRecoverabilityDegraded(std::move(
-        pending_get_is_recoverability_degraded_->completion_callback));
+    if (degraded_recoverability_handler_) {
+      degraded_recoverability_handler_->GetIsRecoverabilityDegraded(std::move(
+          pending_get_is_recoverability_degraded_->completion_callback));
+    } else {
+      std::move(pending_get_is_recoverability_degraded_->completion_callback)
+          .Run(false);
+    }
   }
   pending_get_is_recoverability_degraded_.reset();
 
@@ -457,8 +456,12 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
   if (account_info == primary_account_) {
-    degraded_recoverability_handler_->GetIsRecoverabilityDegraded(
-        std::move(cb));
+    if (degraded_recoverability_handler_) {
+      degraded_recoverability_handler_->GetIsRecoverabilityDegraded(
+          std::move(cb));
+    } else {
+      std::move(cb).Run(false);
+    }
     return;
   }
   pending_get_is_recoverability_degraded_ =
@@ -747,9 +750,11 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 
   std::move(cb).Run();
 
-  degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
-      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
-          kRecoveryMethodAdded);
+  if (degraded_recoverability_handler_) {
+    degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
+        TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+            kRecoveryMethodAdded);
+  }
   NotifyIdleForTestingIfNecessary();
 }
 
