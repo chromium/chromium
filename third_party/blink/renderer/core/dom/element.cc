@@ -2132,8 +2132,15 @@ void Element::HandlePointerEventsForInterestFor(
 }
 
 void Element::HandleFocusEventsForInterestFor(FocusEvent* focus_event) {
-  if (!focus_event || !focus_event->isTrusted()) {
+  if (!focus_event) {
     return;
+  }
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (!focus_event->isTrusted()) {
+      return;
+    }
+  } else {
+    DCHECK(focus_event->isTrusted());
   }
   if (focus_event->sourceCapabilities() &&
       focus_event->sourceCapabilities()->firesTouchEvents()) {
@@ -2148,8 +2155,23 @@ void Element::HandleFocusEventsForInterestFor(FocusEvent* focus_event) {
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (event.isTrusted() && (InterestForElement() || SourceInterestInvoker() ||
-                            GetInterestState() != InterestState::kNoInterest))
+#if DCHECK_IS_ON()
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    const bool is_click =
+        event.IsMouseEvent() && event.type() == event_type_names::kClick;
+    const bool is_android_select_mousedown_quirk =
+        event.IsMouseEvent() && event.type() == event_type_names::kMousedown &&
+        IsA<HTMLSelectElement>(*this) && GetDocument().GetSettings() &&
+        GetDocument().GetSettings()->GetWideViewportQuirkEnabled();
+    DCHECK(event.isTrusted() || is_click || is_android_select_mousedown_quirk);
+  }
+#endif
+  const bool is_trusted =
+      !RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()
+          ? event.isTrusted()
+          : true;
+  if (is_trusted && (InterestForElement() || SourceInterestInvoker() ||
+                     GetInterestState() != InterestState::kNoInterest))
       [[unlikely]] {
     // Handle new `interestfor` activation via keyboard or long-press.
     HandleFocusEventsForInterestFor(DynamicTo<FocusEvent>(event));
