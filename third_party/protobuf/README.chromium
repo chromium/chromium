@@ -38,9 +38,10 @@ Steps used to create the current version (or roll a newer one):
    to also agree on `third_party/protobuf/src` so maybe this'll never happen?
    Here be dragons. Probably.
 
-   Probably worth making a local `git commit` here before applying patches (next
-   step), however, as we still apply 0053-ignore-compatibility-dir.patch you can
-   simplify your roll by `rm -r compatibility` before comitting.
+   Remove `compatibility/` (which contains large files that trip presubmit)
+   before making a local `git commit` here:
+
+   $ rm -rf compatibility
 
 3. Apply patches in patches/ (see the description below):
 
@@ -58,46 +59,36 @@ Steps used to create the current version (or roll a newer one):
 
    Probably worth committing locally here too.
 
-4. Remove generated .pb.h/.pb.cc files for Well Known Types. Due to the fact
-   that they are generated for protobuf full, and Chromium uses protobuf lite
-   too, they can cause issues during build that are not easy to spot.
-
-   $ rm src/google/protobuf/{any,api,duration,empty,field_mask,source_context,struct,timestamp,type,wrappers}.pb.{cc,h}
-
-5. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
-   the same directory as this file.
+4. Run "gen_extra_chromium_files.py" in the same directory as this file.
 
    $ ./gen_extra_chromium_files.py -C ../../out/Default
 
-   Add and commit `python/google/protobuf/descriptor_pb2.py` and
-   `python/google/protobuf/compiler/plugin_pb2.py` as well. Because *_pb2.py is
-   in the .gitignore file for this directory, you need to add the files with
-   `-f`.
+   This script builds Chromium's `protoc` and uses it to:
+   - Remove `compatibility/` and pre-generated Well-Known Type `.pb.{cc,h}`
+     files (`any`, `api`, `duration`, `empty`, `field_mask`, `source_context`,
+     `struct`, `timestamp`, `type`, `wrappers`).
+   - Regenerate bootstrapped C++ headers/sources (`descriptor.pb.{h,cc}` and
+     `compiler/plugin.pb.{h,cc}`) with Chromium's compiler patches applied.
+   - Generate `python/google/protobuf/descriptor_pb2.py` and
+     `python/google/protobuf/compiler/plugin_pb2.py`.
+   - Generate `python/google/protobuf/internal/python_edition_defaults.py`
+     directly via `protoc --edition_defaults_out` (no Bazel required).
 
+   Add and commit the generated files. Because `*_pb2.py` is in the `.gitignore`
+   file for this directory, you need to add those files with `-f`:
+
+   $ git add src/google/protobuf/descriptor.pb.{h,cc} \
+     src/google/protobuf/compiler/plugin.pb.{h,cc} \
+     python/google/protobuf/internal/python_edition_defaults.py
    $ git add -f python/google/protobuf/descriptor_pb2.py \
      python/google/protobuf/compiler/plugin_pb2.py
 
-6. This step requires `bazel`, and not the one from depot_tools, and it is not
-   part of build/install-build-deps.sh in Chromium, so you need to manually
-   install it:
-
-   $ apt install bazel
-
-   Run:
-
-   $ cd python/
-   $ /usr/bin/bazel build embedded_python_edition_defaults_generate --enable_bzlmod
-   $ cp ../bazel-bin/python/google/protobuf/internal/python_edition_defaults.py google/protobuf/internal/
-   $ git add google/protobuf/internal/python_edition_defaults.py
-
-   TODO: generalize this and add it to gen_extra_chromium_files.py
-
-7. Update Version, CPEPrefix and Revision in this file.
+5. Update Version, CPEPrefix and Revision in this file.
 
    The revision should be set to the SHA1 of the commit that the release tag
    points to at the time of the roll.
 
-8. Address breakages.
+6. Address breakages.
 
    The CQ will help you identify problems that need fixing.
 
@@ -208,20 +199,6 @@ Description of the patches:
   buggy. PlacementNew copies RepeatedFields wholesale via memcp, which triggers
   false positive out-of-bounds reads. See
   https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow
-
-- 0053-ignore-compatibility-dir.patch
-
-  Add the compatability dir to .gitignore as it's unnecessary and contains files
-  that trip CheckForTooLargeFiles presubmit.
-
-  Note that if you commit locally before applying the patches, you might need to
-  manually remove this directory again from git.
-
-- 0055-fix-deprecated-weak-accessor-in-descriptor.patch
-
-  Removes a single [[deprecated]] attribute from the FieldOptions::weak()
-  accessor in the pre-generated descriptor.pb.h file. This fixes a build
-  warning without the noise of regenerating the entire file.
 
 - 0058-fix-messagelite-clear-declaration.patch
 
