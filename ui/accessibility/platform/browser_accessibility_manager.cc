@@ -1319,7 +1319,7 @@ void BrowserAccessibilityManager::SetSelection(
   if (!delegate_ || range.IsNull())
     return;
 
-  // TODO(crbug.com/443078007): Add position types and affinity to AXActionData
+  // TODO(crbug.com/527726308): Add position types and affinity to AXActionData
   // and pass them to blink to avoid ambiguity.
   AXActionData action_data;
   action_data.anchor_node_id = range.anchor()->anchor_id();
