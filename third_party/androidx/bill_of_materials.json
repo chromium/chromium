@@ -1477,22 +1477,22 @@
     {
         "name": "okio",
         "group": "com.squareup.okio",
-        "version": "3.17.0"
+        "version": "3.18.2"
     },
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.17.0"
+        "version": "3.18.2"
     },
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "6.4.7"
+        "version": "7.0.3"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "6.4.7"
+        "version": "7.0.3"
     },
     {
         "name": "javawriter",
