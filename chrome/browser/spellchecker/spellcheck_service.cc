@@ -103,18 +103,23 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
 
 #if BUILDFLAG(IS_MAC)
   if (defer_spellcheck) {
-    // Defer Cocoa spellchecker initialization to a post-startup idle task to
-    // avoid blocking the main thread during critical startup path.
-    // This is safe because:
+    // Defer Cocoa spellchecker initialization to a post-startup idle task on
+    // the UI thread to avoid blocking the main thread during critical startup
+    // path. This is safe because:
     // 1. Spellcheck is not needed immediately on startup.
     // 2. Renderers that don't need spellcheck (like Top Chrome WebUI and NTP)
     //    are bypassed entirely in `InitForRenderer`, so they won't trigger
     //    early initialization of the service.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&spellcheck_platform::GetSpellCheckerLanguage),
-        base::BindOnce(&SpellcheckService::InitMacDeferredSpellcheck,
-                       weak_ptr_factory_.GetWeakPtr()));
+    //
+    // Note: This must run on the UI thread rather than ThreadPool because
+    // macOS NSSpellChecker must be initialized on the main thread; accessing
+    // it for the first time from a background thread synchronously dispatches
+    // to the main thread, causing deadlocks during test shutdown or when
+    // waiting on background tasks.
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&SpellcheckService::InitMacDeferredSpellcheck,
+                                  weak_ptr_factory_.GetWeakPtr()));
   } else {
     InitializePlatformLanguageMacWithLanguage(
         spellcheck_platform::GetSpellCheckerLanguage());
@@ -266,25 +271,21 @@ void SpellcheckService::InitializePlatformLanguageMacWithLanguage(
 // spellcheck when deferred initialization is enabled.
 //
 // The initialization flow works as follows:
-// 1. Get the system's preferred spellchecker language off-thread (called via
-//    ThreadPool::PostTaskAndReplyWithResult in the constructor). This is
-//    done because querying the platform language can block the main thread.
-// 2. Once the language is resolved, InitMacDeferredSpellcheck is run on the
-//    UI thread.
-// 3. Initialize Hunspell dictionaries first. This sets up the dictionary
+// 1. Initialize Hunspell dictionaries first. This sets up the dictionary
 //    infrastructure and StartRecordingMetrics() so metrics are not dropped.
-// 4. Initialize platform language. If the preference changes, the preference
-//    observer will trigger LoadDictionaries() to perform the actual load.
-// 5. Load the custom dictionary database asynchronously.
-void SpellcheckService::InitMacDeferredSpellcheck(
-    const std::string& platform_lang) {
+// 2. Query the platform language on the UI thread once idle and initialize it.
+//    If the preference changes, the preference observer will trigger
+//    LoadDictionaries() to perform the actual load.
+// 3. Load the custom dictionary database asynchronously.
+void SpellcheckService::InitMacDeferredSpellcheck() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // 1. Initialize Hunspell dictionaries first to set up metrics.
   InitializeDictionaries(base::DoNothing());
 
   // 2. Initialize platform language. If it updates the preference, the
   // observer will automatically call LoadDictionaries() again.
-  InitializePlatformLanguageMacWithLanguage(platform_lang);
+  InitializePlatformLanguageMacWithLanguage(
+      spellcheck_platform::GetSpellCheckerLanguage());
 
   // 3. Load custom dictionary database.
   custom_dictionary_->Load();
@@ -634,6 +635,11 @@ SpellcheckService::GetHunspellDictionaries() {
 bool SpellcheckService::IsSpellcheckEnabled() const {
   const PrefService* prefs = user_prefs::UserPrefs::Get(context_);
 
+#if BUILDFLAG(IS_MAC)
+  // Basic spell check on macOS is controlled by the OS and does not depend on
+  // users' dictionaries preference or loaded Hunspell dictionaries.
+  return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
+#else
   bool enable_if_uninitialized = false;
 #if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
@@ -647,6 +653,7 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
   return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
          (!hunspell_dictionaries_.empty() || enable_if_uninitialized);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void SpellcheckService::OnRenderProcessHostCreated(
