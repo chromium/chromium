@@ -402,6 +402,8 @@ class GpuIntegrationTest(
       # TODO(crbug.com/452061489): Fix tests that fail when the WebUI
       # Omnibox is enabled and then remove this.
       '--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup',
+      # TODO(crbug.com/550607402): Remove this once the investigation ends.
+      '--disable-dump-without-crashing-on-angle-portability-messages',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a

@@ -10,8 +10,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -27,12 +30,14 @@
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
+#include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -400,6 +405,28 @@ void GL_APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
   command_decoder->OnDebugMessage(source, type, id, severity, length, message);
   LogGLDebugMessage(source, type, id, severity, length, message,
                     command_decoder->GetLogger());
+
+  if (source == GL_DEBUG_SOURCE_OTHER && type == GL_DEBUG_TYPE_PORTABILITY &&
+      (id == 0xBADDEF || id == 0xBADBA5E)) {
+    // Note: log_message cannot contain any user data. The error strings
+    // generated from ANGLE are all static strings and do not contain user
+    // information such as shader source code. Be careful if updating the
+    // contents of this string.
+    std::string log_message = base::NumberToString(id);
+    if (message && length > 0) {
+      log_message += ": " + std::string(message, length);
+    }
+    LOG(ERROR) << log_message;
+    crash_keys::gpu_gl_error_message.Set(log_message);
+    // Limit to 1 report per GPU process
+    static uint32_t reports_left = 1;
+    static bool no_dump = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kDisableDumpWithoutCrashingOnAnglePortabilityMessages);
+    if (reports_left > 0 && !no_dump) {
+      base::debug::DumpWithoutCrashing();
+      --reports_left;
+    }
+  }
 }
 
 GLsizeiptr GL_APIENTRY

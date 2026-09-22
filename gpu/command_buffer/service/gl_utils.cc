@@ -455,6 +455,11 @@ void InitializeGLDebugLogging(bool log_non_errors,
     glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE,
                              GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
                              GL_FALSE);
+
+    // Enable special messages from ANGLE used to experiment with disabling
+    // obscure features of webgl.
+    glDebugMessageControlKHR(GL_DEBUG_SOURCE_OTHER, GL_DEBUG_TYPE_PORTABILITY,
+                             GL_DONT_CARE, 0, nullptr, GL_TRUE);
   }
 
   glDebugMessageCallbackKHR(callback, user_param);

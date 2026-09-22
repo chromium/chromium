@@ -69,4 +69,9 @@ const char kVulkanImplementationNameSwiftshader[] = "swiftshader";
 // used for present render result on screen.
 const char kDisableVulkanSurface[] = "disable-vulkan-surface";
 
+// Disable DumpWithoutCrashing on ANGLE portability messages.
+// This should be used by GPU integration tests to avoid failures on bots.
+const char kDisableDumpWithoutCrashingOnAnglePortabilityMessages[] =
+    "disable-dump-without-crashing-on-angle-portability-messages";
+
 }  // namespace switches

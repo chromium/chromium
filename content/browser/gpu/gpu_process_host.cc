@@ -293,6 +293,7 @@ static const char* const kSwitchNames[] = {
     switches::kDoubleBufferCompositing,
     switches::kHeadless,
     switches::kEnableLowEndDeviceMode,
+    switches::kDisableDumpWithoutCrashingOnAnglePortabilityMessages,
     switches::kDisableSkiaGraphite,
     switches::kDisableSkiaGraphitePrecompilation,
     switches::kDisableLowEndDeviceMode,
