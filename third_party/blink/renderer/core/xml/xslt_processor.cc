@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -375,6 +377,34 @@ static bool SourceHasPolyfillScript(Document& owner_document) {
   return false;
 }
 
+// Returns true if the main world global object of `context` has a
+// `createXSLTTransformModule` property. That function is installed by the XSLT
+// polyfill, so its presence means the page can keep working without native
+// XSLT, and the deprecation banner would be a false alarm.
+static bool ContextHasPolyfillGlobal(ExecutionContext* context) {
+  if (!context) {
+    return false;
+  }
+  ScriptState* script_state = ToScriptStateForMainWorld(context);
+  if (!script_state || !script_state->ContextIsValid()) {
+    return false;
+  }
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> v8_context = script_state->GetContext();
+  // The lookup runs page script if the property has a getter, so swallow any
+  // exception it throws.
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Value> value;
+  if (!v8_context->Global()
+           ->Get(v8_context,
+                 V8AtomicString(isolate, "createXSLTTransformModule"))
+           .ToLocal(&value)) {
+    return false;
+  }
+  return !value->IsUndefined() && !value->IsNull();
+}
+
 // Document::GetSettings() returns null for a frameless document, which is what
 // XSLTProcessor.transformToDocument() produces, so the caller can't use it.
 // The execution context is the window that created the document, which does
@@ -410,7 +440,7 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
       context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT)) {
     return;
   }
-  if (source_has_polyfill_script) {
+  if (source_has_polyfill_script || ContextHasPolyfillGlobal(context)) {
     return;
   }
   if (is_cap_alert_xslt) {
