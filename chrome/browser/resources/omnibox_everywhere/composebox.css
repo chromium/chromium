@@ -143,10 +143,11 @@ search-animated-glow:not([animation-state='expanding'])::part(
   z-index: 0;
 }
 
-/* Needed because composebox_submit.css sets opacity: 0.4 on #submitIcon
- * when disabled. For loomnibox, we want the submit icon to remain at
- * full opacity even when the input is empty. */
-cr-composebox-submit::part(submit-icon),
+/* Ensure the modern arrow-forward icon is used per the design spec. */
+cr-composebox-submit::part(submit-icon) {
+  --cr-icon-image: url(//resources/images/icon_arrow_forward.svg);
+}
+
 cr-composebox-input::part(cancel) {
   opacity: 1;
 }
