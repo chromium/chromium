@@ -28,6 +28,7 @@ extern const char kHatsSurveyTriggerAutofillPassword[];
 extern const char kHatsSurveyTriggerAutoPipAllowed[];
 extern const char kHatsSurveyTriggerAutoPipBlocked[];
 extern const char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[];
+extern const char kHatsSurveyTriggerContextualCueingDismissed[];
 extern const char kHatsSurveyTriggerManageYourSavedInfoPerception[];
 extern const char kHatsSurveyTriggerManagePasswordsPerception[];
 extern const char kHatsSurveyTriggerManagePaymentsPerception[];

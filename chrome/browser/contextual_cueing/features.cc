@@ -149,4 +149,7 @@ const base::FeatureParam<bool> kEnablePrivateInsightsLogging(
     "ContextualCueingV2EnablePrivateInsightsLogging",
     false);
 
+BASE_FEATURE(kHappinessTrackingSurveysForContextualCueingDismissed,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace contextual_cueing

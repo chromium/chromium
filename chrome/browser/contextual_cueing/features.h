@@ -94,6 +94,9 @@ extern const base::FeatureParam<bool> kShouldShowCueInSplitView;
 // If true, logs telemetry events to the Private Insights Service.
 extern const base::FeatureParam<bool> kEnablePrivateInsightsLogging;
 
+// Happiness Tracking Survey (HaTS) feature for contextual cueing dismissals.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForContextualCueingDismissed);
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_FEATURES_H_

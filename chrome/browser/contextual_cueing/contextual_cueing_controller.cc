@@ -79,6 +79,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals.mojom.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -1435,6 +1438,7 @@ void ContextualCueingController::OnCueInteraction(
     case ContextualCueingInteraction::kCueDismissed:
       contextual_cueing_service_->OnCueDismissed(
           cue_type, ShouldRecordUcbStats(cue_type));
+      MaybeLaunchDismissHatsSurvey(cue_type, cuj);
       break;
     case ContextualCueingInteraction::kCueEditPrompt:
       if (CueTarget* target = GetTarget(cue_type)) {
@@ -1455,6 +1459,48 @@ void ContextualCueingController::OnCueInteraction(
                                                ShouldRecordUcbStats(cue_type));
       break;
   }
+}
+
+void ContextualCueingController::MaybeLaunchDismissHatsSurvey(
+    CueTargetType cue_type,
+    const std::string& cuj) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile = tab_->GetProfile();
+  content::WebContents* web_contents = tab_->GetContents();
+  if (!profile || !web_contents) {
+    return;
+  }
+
+  ContextualCueSurveyCategory category = GetSurveyCategory(cue_type, cuj);
+  if (category == ContextualCueSurveyCategory::kUnknown) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (prefs::HasDismissSurveyBeenShown(prefs, category)) {
+    return;
+  }
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  hats_service->LaunchSurveyForWebContents(
+      kHatsSurveyTriggerContextualCueingDismissed, web_contents,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/{{"CUJ", GetSurveyCujName(cuj)}},
+      /*success_callback=*/
+      base::BindOnce(
+          [](base::WeakPtr<Profile> weak_profile,
+             ContextualCueSurveyCategory cat) {
+            if (weak_profile) {
+              prefs::SetDismissSurveyShown(weak_profile->GetPrefs(), cat);
+            }
+          },
+          profile->GetWeakPtr(), category));
+#endif
 }
 
 base::TimeDelta ContextualCueingController::ExtractCueShownDuration() {

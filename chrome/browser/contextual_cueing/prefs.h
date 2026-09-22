@@ -21,6 +21,14 @@ enum class ChromeSuggestionsSettingsValue {
   kDisabled = 1,
 };
 
+enum class ContextualCueSurveyCategory {
+  kUnknown = 0,
+  kEducation = 1,
+  kShopping = 2,
+  kIndigo = 3,
+  kMaxValue = kIndigo,
+};
+
 namespace prefs {
 
 // Per-target UCB interaction counters, persisted across restarts.
@@ -41,8 +49,16 @@ std::string GetClicksPrefName(CueTargetType type);
 // Returns the pref name for the dismissal count for |type|.
 std::string GetDismissalsPrefName(CueTargetType type);
 
-// Registers all per-target UCB stat prefs. Called by the service factory and
-// optionally by tests that need pref-backed persistence.
+// Returns whether the HaTS dismiss survey has been shown for |category|.
+bool HasDismissSurveyBeenShown(PrefService* pref_service,
+                               ContextualCueSurveyCategory category);
+
+// Marks that the HaTS dismiss survey has been shown for |category|.
+void SetDismissSurveyShown(PrefService* pref_service,
+                           ContextualCueSurveyCategory category);
+
+// Registers all per-target UCB stat prefs and HaTS shown prefs. Called by the
+// service factory and optionally by tests that need pref-backed persistence.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Retrieves per-target UCB stats from prefs.

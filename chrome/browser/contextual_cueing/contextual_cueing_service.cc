@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
@@ -20,6 +21,33 @@ const contextual_cueing::TargetStats kEmptyStats;
 }  // namespace
 
 namespace contextual_cueing {
+
+ContextualCueSurveyCategory GetSurveyCategory(CueTargetType cue_type,
+                                              const std::string& cuj) {
+  if (cue_type == CueTargetType::kIndigo) {
+    return ContextualCueSurveyCategory::kIndigo;
+  }
+
+  if (cue_type == CueTargetType::kGlic) {
+    std::string cuj_upper = base::ToUpperASCII(cuj);
+    if (cuj_upper.find("SHOP") != std::string::npos) {
+      return ContextualCueSurveyCategory::kShopping;
+    }
+    if (cuj_upper.find("LEARN") != std::string::npos ||
+        cuj_upper.find("QUIZ") != std::string::npos) {
+      return ContextualCueSurveyCategory::kEducation;
+    }
+  }
+
+  return ContextualCueSurveyCategory::kUnknown;
+}
+
+std::string GetSurveyCujName(const std::string& cuj) {
+  if (base::EqualsCaseInsensitiveASCII(cuj, "Indigo")) {
+    return "TRY_ON_YOU";
+  }
+  return cuj;
+}
 
 ContextualCueingService::ContextualCueingService(PrefService* profile_prefs)
     : recent_nudge_tracker_(kCueCapCount.Get(), kCueCapTime.Get()),

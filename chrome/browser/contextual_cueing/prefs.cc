@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/prefs.h"
 
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/contextual_cueing/ucb_scorer.h"
@@ -22,6 +23,20 @@ std::string PrefPrefix(CueTargetType type) {
       {"contextual_cueing.ucb.", base::ToLowerASCII(GetName(type)), "."});
 }
 
+std::string GetDismissSurveyShownPrefName(
+    ContextualCueSurveyCategory category) {
+  switch (category) {
+    case ContextualCueSurveyCategory::kUnknown:
+      NOTREACHED();
+    case ContextualCueSurveyCategory::kEducation:
+      return "contextual_cueing.hats.edu.dismiss_survey_shown";
+    case ContextualCueSurveyCategory::kShopping:
+      return "contextual_cueing.hats.shopping.dismiss_survey_shown";
+    case ContextualCueSurveyCategory::kIndigo:
+      return "contextual_cueing.hats.indigo.dismiss_survey_shown";
+  }
+}
+
 }  // namespace
 
 std::string GetImpressionsPrefName(CueTargetType type) {
@@ -36,6 +51,19 @@ std::string GetDismissalsPrefName(CueTargetType type) {
   return PrefPrefix(type) + "dismissals";
 }
 
+bool HasDismissSurveyBeenShown(PrefService* pref_service,
+                               ContextualCueSurveyCategory category) {
+  return pref_service &&
+         pref_service->GetBoolean(GetDismissSurveyShownPrefName(category));
+}
+
+void SetDismissSurveyShown(PrefService* pref_service,
+                           ContextualCueSurveyCategory category) {
+  if (pref_service) {
+    pref_service->SetBoolean(GetDismissSurveyShownPrefName(category), true);
+  }
+}
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Register prefs for all CueTargetTypes. kTestSource is included to prevent
   // fatal DCHECKs when tests using a real Profile trigger a test cue.
@@ -44,6 +72,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(GetImpressionsPrefName(type), 0);
     registry->RegisterIntegerPref(GetClicksPrefName(type), 0);
     registry->RegisterIntegerPref(GetDismissalsPrefName(type), 0);
+  }
+
+  for (int i = 0; i <= static_cast<int>(ContextualCueSurveyCategory::kMaxValue);
+       ++i) {
+    ContextualCueSurveyCategory category =
+        static_cast<ContextualCueSurveyCategory>(i);
+    if (category == ContextualCueSurveyCategory::kUnknown) {
+      continue;
+    }
+    registry->RegisterBooleanPref(GetDismissSurveyShownPrefName(category),
+                                  false);
   }
 }
 

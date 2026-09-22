@@ -255,6 +255,11 @@ class ContextualCueingController
   // Logs and records a contextual cueing decision for this tab to UKM.
   void RecordContextualCueingDecision(ContextualCueingDecision decision);
 
+  // Launches the HaTS dismiss survey if eligible and not previously shown for
+  // this cue's category.
+  void MaybeLaunchDismissHatsSurvey(CueTargetType cue_type,
+                                    const std::string& cuj);
+
   void OnSidePanelShown();
 
   void OnTabActivated(tabs::TabInterface* tab);

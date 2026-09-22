@@ -62,6 +62,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/metrics/critical_user_journeys",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",

@@ -30,6 +30,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_cueing/features.h"  // nogncheck
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
@@ -80,6 +81,8 @@ constexpr char kHatsSurveyTriggerAutoPipAllowed[] = "autopip-allowed";
 constexpr char kHatsSurveyTriggerAutoPipBlocked[] = "autopip-blocked";
 constexpr char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[] =
     "autopip-permission-prompt-ignored";
+constexpr char kHatsSurveyTriggerContextualCueingDismissed[] =
+    "contextual-cueing-dismissed";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
     "download-warning-bubble-bypass";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
@@ -884,6 +887,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"ID that's tied to your Google Lens session"});
+
+  // Contextual cueing surveys.
+  survey_configs.emplace_back(
+      &contextual_cueing::kHappinessTrackingSurveysForContextualCueingDismissed,
+      kHatsSurveyTriggerContextualCueingDismissed,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/std::vector<std::string>{"CUJ"});
 
 #else  // BUILDFLAG(IS_ANDROID)
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

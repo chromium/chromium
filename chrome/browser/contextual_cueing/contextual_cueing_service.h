@@ -31,6 +31,15 @@ class PrefService;
 namespace contextual_cueing {
 
 enum class ContextualCueingDecision;
+enum class ContextualCueSurveyCategory;
+
+// Determines the HaTS survey category for a given cue target type and CUJ.
+ContextualCueSurveyCategory GetSurveyCategory(CueTargetType cue_type,
+                                              const std::string& cuj);
+
+// Returns the sanitized CUJ name to log in the HaTS survey metadata, converting
+// internal code names (e.g. "Indigo") to external identifiers.
+std::string GetSurveyCujName(const std::string& cuj);
 
 class ContextualCueingService : public KeyedService {
  public:

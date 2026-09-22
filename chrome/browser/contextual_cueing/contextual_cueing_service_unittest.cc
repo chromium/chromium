@@ -328,5 +328,64 @@ TEST_F(ContextualCueingServiceDisableBackoffTest, BackoffDisabled) {
   EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
 }
 
+TEST_F(ContextualCueingServiceV2Test, HatsSurveyCategoryResolution) {
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kIndigo, "Indigo"),
+            ContextualCueSurveyCategory::kIndigo);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "SHOPPING"),
+            ContextualCueSurveyCategory::kShopping);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "MULTITAB_SHOPPING"),
+            ContextualCueSurveyCategory::kShopping);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "LEARNING"),
+            ContextualCueSurveyCategory::kEducation);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "QUIZ"),
+            ContextualCueSurveyCategory::kEducation);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "Glic"),
+            ContextualCueSurveyCategory::kUnknown);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "TRAVEL"),
+            ContextualCueSurveyCategory::kUnknown);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kTestSource, "Test"),
+            ContextualCueSurveyCategory::kUnknown);
+
+  EXPECT_EQ(GetSurveyCujName("Indigo"), "TRY_ON_YOU");
+  EXPECT_EQ(GetSurveyCujName("LEARNING"), "LEARNING");
+  EXPECT_EQ(GetSurveyCujName("SHOPPING"), "SHOPPING");
+}
+
+TEST_F(ContextualCueingServiceV2Test, HatsDismissSurveyShownPrefs) {
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kEducation));
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kShopping));
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kIndigo));
+
+  prefs::SetDismissSurveyShown(&pref_service_,
+                               ContextualCueSurveyCategory::kEducation);
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kEducation));
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kShopping));
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kIndigo));
+
+  prefs::SetDismissSurveyShown(&pref_service_,
+                               ContextualCueSurveyCategory::kShopping);
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kEducation));
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kShopping));
+  EXPECT_FALSE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kIndigo));
+
+  prefs::SetDismissSurveyShown(&pref_service_,
+                               ContextualCueSurveyCategory::kIndigo);
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kEducation));
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kShopping));
+  EXPECT_TRUE(prefs::HasDismissSurveyBeenShown(
+      &pref_service_, ContextualCueSurveyCategory::kIndigo));
+}
+
 }  // namespace
 }  // namespace contextual_cueing
