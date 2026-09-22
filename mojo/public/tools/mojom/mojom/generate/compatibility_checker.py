@@ -47,7 +47,20 @@ class BackwardCompatibilityChecker:
 
   @_CheckCompat.register(mojom.Kind)
   def _(self, new: mojom.Kind, old: mojom.Kind):
-    return new == old
+    if new == old:
+      return True
+    # Temporary exception: allow migration from an untyped handle (`handle`) to
+    # a typed handle (`handle<platform>`), as they have the same wire
+    # representation.
+    #
+    # The strict equality check above requires that both types have the same
+    # nullability, so continue enforcing that here, even though nullable and
+    # non-nullable handles are represented identically on the wire.
+    return (
+      mojom.IsGenericHandleKind(old)
+      and mojom.IsAnyHandleKind(new)
+      and new.is_nullable == old.is_nullable
+    )
 
   @_CheckCompat.register(mojom.Field)
   def _(self, new: mojom.Field, old: mojom.Field):

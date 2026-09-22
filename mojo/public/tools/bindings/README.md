@@ -256,7 +256,7 @@ struct AllTheThings {
   // nullable. Note that interfaces and interface requests (the "Foo" and
   // "Foo&" type syntax respectively) are just strongly-typed message pipe
   // handles.
-  handle generic_handle;
+  handle<platform> platform_handle;
   handle<data_pipe_consumer> reader;
   handle<data_pipe_producer>? maybe_writer;
   handle<shared_buffer> dumping_ground;

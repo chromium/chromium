@@ -653,3 +653,43 @@ class VersionCompatibilityTest(MojomParserTestCase):
       'union U { hash_map<string, int32> m; };',
       'union U { map<string, int32> m; };',
     )
+
+  def testHandleRefinementCompatibility(self):
+    """Upgrading an untyped handle to a specific handle subtype with matching
+    nullability is backward-compatible, whereas downgrading or changing between
+    distinct subtypes is not."""
+    self.assertBackwardCompatible(
+      'struct S { handle h; };',
+      'struct S { handle<platform> h; };',
+    )
+    self.assertBackwardCompatible(
+      'struct S { handle? h; };',
+      'struct S { handle<platform>? h; };',
+    )
+    self.assertBackwardCompatible(
+      'struct S { handle h; };',
+      'struct S { handle<message_pipe> h; };',
+    )
+    self.assertBackwardCompatible(
+      'interface F { Do@0(handle h) => (handle? out); };',
+      'interface F { Do@0(handle<platform> h) => (handle<platform>? out); };',
+    )
+    # Downgrading from typed handle to untyped handle is not allowed.
+    self.assertNotBackwardCompatible(
+      'struct S { handle<platform> h; };',
+      'struct S { handle h; };',
+    )
+    # Changing between distinct handle subtypes is not allowed.
+    self.assertNotBackwardCompatible(
+      'struct S { handle<platform> h; };',
+      'struct S { handle<message_pipe> h; };',
+    )
+    # Changing nullability is not allowed.
+    self.assertNotBackwardCompatible(
+      'struct S { handle h; };',
+      'struct S { handle<platform>? h; };',
+    )
+    self.assertNotBackwardCompatible(
+      'struct S { handle? h; };',
+      'struct S { handle<platform> h; };',
+    )

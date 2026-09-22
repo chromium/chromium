@@ -1,0 +1,58 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Interfaces for testing that an untyped `handle` is wire compatible with
+// `handle<T>` with a `T` (e.g. `platform`) of the corresponding type. This is
+// to ensure the safety of migrating the last few [Stable] interfaces and
+// structs that use the legacy untyped `handle` type.
+
+module mojo.test.handle_compatibility.mojom;
+
+struct UntypedHandleStruct {
+  handle h@0;
+  handle? nullable_h@1;
+  array<handle> handle_array@2;
+};
+
+struct PlatformHandleStruct {
+  handle<platform> h@0;
+  handle<platform>? nullable_h@1;
+  array<handle<platform>> handle_array@2;
+};
+
+interface UntypedHandleInterface {
+  Echo@0(handle h, handle? nullable_h, UntypedHandleStruct s)
+      => (handle h_out, handle? nullable_h_out, UntypedHandleStruct s_out);
+};
+
+interface PlatformHandleInterface {
+  Echo@0(handle<platform> h,
+         handle<platform>? nullable_h,
+         PlatformHandleStruct s) => (handle<platform> h_out,
+                                     handle<platform>? nullable_h_out,
+                                     PlatformHandleStruct s_out);
+};
+
+// The interfaces below carry a single handle parameter, and are used to spot
+// check that handle subtypes other than `handle<platform>` also remain wire
+// compatible with untyped `handle`.
+interface UntypedHandleParamInterface {
+  Echo@0(handle h) => (handle h_out);
+};
+
+interface SharedBufferHandleParamInterface {
+  Echo@0(handle<shared_buffer> h) => (handle<shared_buffer> h_out);
+};
+
+interface MessagePipeHandleParamInterface {
+  Echo@0(handle<message_pipe> h) => (handle<message_pipe> h_out);
+};
+
+interface DataPipeConsumerHandleParamInterface {
+  Echo@0(handle<data_pipe_consumer> h) => (handle<data_pipe_consumer> h_out);
+};
+
+interface DataPipeProducerHandleParamInterface {
+  Echo@0(handle<data_pipe_producer> h) => (handle<data_pipe_producer> h_out);
+};
