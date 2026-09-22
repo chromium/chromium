@@ -3324,19 +3324,16 @@ if (enable_java_templates) {
   #
   template("generate_interface_jar") {
     action_with_pydeps(target_name) {
-      _ijar_target = "//third_party/ijar:ijar($host_toolchain)"
-      _ijar_executable = get_label_info(_ijar_target, "root_out_dir") + "/ijar"
+      _ijar_executable =
+          "//third_party/android_build_tools/bazel_tools/cipd/ijar"
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
                                    "data",
                                    "data_deps",
+                                   "deps",
                                    "public_deps",
                                  ])
       script = "//build/android/gyp/ijar.py"
-      deps = [ _ijar_target ]
-      if (defined(invoker.deps)) {
-        deps += invoker.deps
-      }
       inputs = [
         invoker.input_jar,
         _ijar_executable,

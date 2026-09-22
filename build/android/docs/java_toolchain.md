@@ -37,18 +37,18 @@ What are interface jars?:
 * Dependant targets use interface `.jar` files to skip having to be rebuilt
   when only private implementation details change.
 
-For prebuilt `.jar` files: we use [//third_party/ijar] to create interface
-`.jar` files from the prebuilt ones.
+For prebuilt `.jar` files: we use [`ijar`] to create interface `.jar` files
+from the prebuilt ones.
 
-For non-prebuilt `.jar` files`: we use [//third_party/turbine] to create
+For non-prebuilt `.jar` files`: we use [`//third_party/turbine`] to create
 interface `.jar` files directly from `.java` source files. Turbine is faster
 than javac because it does not compile method bodies. Although Turbine causes
 us to compile files twice, it speeds up builds by allowing `javac` compilation
 of targets to happen concurrently with their dependencies. We also use Turbine
 to run our annotation processors.
 
-[//third_party/ijar]: /third_party/ijar/README.chromium
-[//third_party/turbine]: /third_party/turbine/README.chromium
+[`ijar`]: /third_party/android_build_tools/bazel_tools/README.chromium
+[`//third_party/turbine`]: /third_party/turbine/README.chromium
 
 ### Step 2a: Compile with javac
 
