@@ -110,6 +110,12 @@ const CGFloat kPromoMaxImpressionCount = 3;
     _FRECompletion = nil;
     completion(NO);
   }
+  _prefService = nullptr;
+  _webStateList = nullptr;
+  _geminiService = nullptr;
+  _tracker = nullptr;
+  _identityManager = nullptr;
+  _authService = nullptr;
 }
 
 - (BOOL)shouldShowPromo {

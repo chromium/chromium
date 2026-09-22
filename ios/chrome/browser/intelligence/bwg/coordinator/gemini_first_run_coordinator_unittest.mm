@@ -4,22 +4,28 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 
+#import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
 #import <memory>
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_page_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_wrapper_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_lightweight_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_visual_rich_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -33,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -48,6 +55,8 @@ namespace {
 const CGFloat kPromoMaxImpressionCount = 3;
 
 const std::string kFirstProfileName = "FirstProfile";
+
+constexpr char kGeminiLiveFREOutcomeHistogram[] = "IOS.Gemini.Live.FREOutcome";
 
 std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
   return std::make_unique<
@@ -354,6 +363,53 @@ TEST_F(GeminiFirstRunCoordinatorTest,
   [coordinator_ stop];
 }
 
+// Tests that starting the coordinator with VisualRich experiment enabled
+// creates a GeminiVisualRichViewController step.
+TEST_F(GeminiFirstRunCoordinatorTest,
+       TestVisualRichFirstRunStarts_RefactorEnabled) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{kGeminiFRERefactor, {}},
+       {kGeminiFREExperiment,
+        {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
+      {});
+
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::AIHub);
+
+  GeminiFirstRunPageViewController* pageVC =
+      base::apple::ObjCCast<GeminiFirstRunPageViewController>(
+          base_view_controller_.presentedViewController);
+  ASSERT_NE(pageVC, nil);
+  ASSERT_EQ(1u, pageVC.childViewControllers.count);
+  EXPECT_TRUE([pageVC.childViewControllers.firstObject
+      isKindOfClass:[GeminiVisualRichViewController class]]);
+
+  [coordinator_ stop];
+}
+
+// Tests that starting the coordinator with Lightweight experiment enabled
+// creates a GeminiLightweightViewController step.
+TEST_F(GeminiFirstRunCoordinatorTest,
+       TestLightweightFirstRunStarts_RefactorEnabled) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{kGeminiFRERefactor, {}},
+       {kGeminiFREExperiment,
+        {{kGeminiFREExperimentParam,
+          kGeminiFREExperimentParamLightweightConvenience}}}},
+      {});
+
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::AIHub);
+
+  GeminiFirstRunPageViewController* pageVC =
+      base::apple::ObjCCast<GeminiFirstRunPageViewController>(
+          base_view_controller_.presentedViewController);
+  ASSERT_NE(pageVC, nil);
+  ASSERT_EQ(1u, pageVC.childViewControllers.count);
+  EXPECT_TRUE([pageVC.childViewControllers.firstObject
+      isKindOfClass:[GeminiLightweightViewController class]]);
+
+  [coordinator_ stop];
+}
+
 // Tests that stopping the coordinator with a completion handler that
 // deallocates the coordinator synchronously does not crash.
 TEST_F(GeminiFirstRunCoordinatorTest, SynchronousDeallocOnStopDoesNotCrash) {
@@ -381,4 +437,87 @@ TEST_F(GeminiFirstRunCoordinatorTest, SynchronousDeallocOnStopDoesNotCrash) {
 
   [localCoordinator stopWithCompletion:nil];
   EXPECT_EQ(localCoordinator, nil);
+}
+
+// Tests that ChromeNextIa skips preparing and presenting AI Hub IPH.
+TEST_F(GeminiFirstRunCoordinatorTest, TestChromeNextIaSkipsIPH) {
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  OCMReject([mock_help_command_handler_
+      presentInProductHelpWithType:InProductHelpType::kPageActionMenu]);
+
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
+  [coordinator_ stop];
+
+  EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
+}
+
+// Tests that dismissGeminiConsentUIWithCompletion for kLive when user consented
+// and microphone permission is granted logs kSuccess.
+TEST_F(GeminiFirstRunCoordinatorTest,
+       TestDismissGeminiConsentUI_LiveConsented_MicGranted) {
+  base::HistogramTester histogram_tester;
+  ProfileIOS* profile = profile_manager_.GetProfileWithName(kFirstProfileName);
+  profile->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
+  profile->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting, true);
+
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  base_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_ = std::make_unique<ScopedKeyWindow>();
+  [scoped_window_->Get() setRootViewController:base_view_controller_];
+  [scoped_window_->Get() makeKeyAndVisible];
+
+  coordinator_ = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                  fromEntryPoint:gemini::EntryPoint::AIHub
+                    firstRunType:GeminiFirstRunType::kLive
+               completionHandler:nil];
+  coordinator_.animatedPresentation = NO;
+  [coordinator_ start];
+
+  [(id<GeminiFirstRunMediatorDelegate>)coordinator_
+      dismissGeminiConsentUIWithCompletion:^{
+      }];
+
+  histogram_tester.ExpectUniqueSample(kGeminiLiveFREOutcomeHistogram,
+                                      IOSGeminiLiveFREOutcome::kSuccess, 1);
+  [coordinator_ stop];
+  [mock_device stopMocking];
+}
+
+// Tests presentationControllerDidDismiss: for kLive flow.
+TEST_F(GeminiFirstRunCoordinatorTest, TestPresentationControllerDidDismiss) {
+  base::HistogramTester histogram_tester;
+  base_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_ = std::make_unique<ScopedKeyWindow>();
+  [scoped_window_->Get() setRootViewController:base_view_controller_];
+  [scoped_window_->Get() makeKeyAndVisible];
+
+  __block BOOL completion_called = NO;
+  __block BOOL completion_success = YES;
+  coordinator_ = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                  fromEntryPoint:gemini::EntryPoint::AIHub
+                    firstRunType:GeminiFirstRunType::kLive
+               completionHandler:^(BOOL success) {
+                 completion_called = YES;
+                 completion_success = success;
+               }];
+  coordinator_.animatedPresentation = NO;
+  [coordinator_ start];
+
+  UIPresentationController* presentationController =
+      base_view_controller_.presentedViewController.presentationController;
+  [(id<UISheetPresentationControllerDelegate>)coordinator_
+      presentationControllerDidDismiss:presentationController];
+  EXPECT_TRUE(completion_called);
+  EXPECT_FALSE(completion_success);
+  histogram_tester.ExpectUniqueSample(
+      kGeminiLiveFREOutcomeHistogram,
+      IOSGeminiLiveFREOutcome::kDismissedOnConsent, 1);
+  [coordinator_ stop];
 }

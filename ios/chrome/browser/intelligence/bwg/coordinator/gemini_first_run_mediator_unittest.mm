@@ -9,9 +9,12 @@
 #import <memory>
 
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -20,6 +23,9 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -58,15 +64,42 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        GeminiServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeGeminiService>();
+            }));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
+    mock_delegate_ = OCMProtocolMock(@protocol(GeminiFirstRunMediatorDelegate));
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+
+    mediator_ = CreateMediator(gemini::EntryPoint::Promo, ^(BOOL success) {
+      completion_called_ = YES;
+      completion_success_ = success;
+    });
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    mock_delegate_ = nil;
+    mock_scene_handler_ = nil;
+    browser_.reset();
+    profile_.reset();
+    PlatformTest::TearDown();
+  }
+
+  GeminiFirstRunMediator* CreateMediator(gemini::EntryPoint entry_point,
+                                         void (^completion)(BOOL success)) {
     PrefService* prefs = profile_->GetPrefs();
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
 
-    mediator_ = [[GeminiFirstRunMediator alloc]
+    GeminiFirstRunMediator* mediator = [[GeminiFirstRunMediator alloc]
           initWithPrefService:prefs
                  webStateList:browser_->GetWebStateList()
            baseViewController:nil
@@ -77,16 +110,11 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
               identityManager:IdentityManagerFactory::GetForProfile(
                                   profile_.get())
                       tracker:tracker
-                   entryPoint:gemini::EntryPoint::Promo
-            completionHandler:nil];
-  }
-
-  void TearDown() override {
-    [mediator_ disconnect];
-    mediator_ = nil;
-    browser_.reset();
-    profile_.reset();
-    PlatformTest::TearDown();
+                   entryPoint:entry_point
+            completionHandler:completion];
+    mediator.delegate = mock_delegate_;
+    mediator.sceneHandler = mock_scene_handler_;
+    return mediator;
   }
 
  protected:
@@ -95,14 +123,19 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   GeminiFirstRunMediator* mediator_ = nil;
+  id mock_delegate_ = nil;
+  id mock_scene_handler_ = nil;
+  BOOL completion_called_ = NO;
+  BOOL completion_success_ = NO;
 };
 
-// Tests that stepsForFirstRunType returns promo and consent steps for NewUser
-// by default.
-TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_DefaultNewUser) {
+// Tests steps and branding header for NewUser by default.
+TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_DefaultNewUser) {
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kPromo,
                                    GeminiFirstRunStepIdentifier::kConsent));
+  EXPECT_TRUE([mediator_
+      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
 }
 
 // Tests that stepsForFirstRunType returns only the consent step for NewUser
@@ -115,15 +148,16 @@ TEST_F(GeminiFirstRunMediatorTest,
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kConsent));
 }
 
-// Tests that stepsForFirstRunType returns only the consent step for Live.
-TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_Live) {
+// Tests steps and branding header for Live.
+TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_Live) {
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kLive],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kConsent));
+  EXPECT_FALSE([mediator_
+      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kLive]);
 }
 
-// Tests that stepsForFirstRunType returns only the VisualRich step when the
-// Visual Rich experiment is enabled.
-TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_VisualRich) {
+// Tests steps and branding header when Visual Rich experiment is enabled.
+TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_VisualRich) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{kGeminiFRERefactor, {}},
@@ -133,11 +167,12 @@ TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_VisualRich) {
 
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kVisualRich));
+  EXPECT_FALSE([mediator_
+      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
 }
 
-// Tests that stepsForFirstRunType returns only the Lightweight step when the
-// Lightweight experiment is enabled.
-TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_Lightweight) {
+// Tests steps and branding header when Lightweight experiment is enabled.
+TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_Lightweight) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{kGeminiFRERefactor, {}},
@@ -148,43 +183,6 @@ TEST_F(GeminiFirstRunMediatorTest, StepsForFirstRunType_Lightweight) {
 
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kLightweight));
-}
-
-// Tests that shouldShowBrandingHeader returns true for NewUser by default.
-TEST_F(GeminiFirstRunMediatorTest, ShouldShowBrandingHeader_DefaultNewUser) {
-  EXPECT_TRUE([mediator_
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
-}
-
-// Tests that shouldShowBrandingHeader returns false for Live.
-TEST_F(GeminiFirstRunMediatorTest, ShouldShowBrandingHeader_Live) {
-  EXPECT_FALSE([mediator_
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kLive]);
-}
-
-// Tests that shouldShowBrandingHeader returns false for Visual Rich.
-TEST_F(GeminiFirstRunMediatorTest, ShouldShowBrandingHeader_VisualRich) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiFRERefactor, {}},
-       {kGeminiFREExperiment,
-        {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
-      {});
-
-  EXPECT_FALSE([mediator_
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
-}
-
-// Tests that shouldShowBrandingHeader returns true for Lightweight.
-TEST_F(GeminiFirstRunMediatorTest, ShouldShowBrandingHeader_Lightweight) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiFRERefactor, {}},
-       {kGeminiFREExperiment,
-        {{kGeminiFREExperimentParam,
-          kGeminiFREExperimentParamLightweightConvenience}}}},
-      {});
-
   EXPECT_TRUE([mediator_
       shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
 }
@@ -217,20 +215,100 @@ TEST_F(GeminiFirstRunMediatorTest, LightweightPromoTitle_Variants) {
 }
 
 // Tests that consenting to Live Gemini updates both the Live consent pref and
-// the Chrome-level Live microphone setting, and notifies the delegate.
+// the Chrome-level Live microphone setting, notifies the delegate, and calls
+// the completion block with success.
 TEST_F(GeminiFirstRunMediatorTest, TestDidConsentToLiveGemini) {
-  id mock_delegate = OCMProtocolMock(@protocol(GeminiFirstRunMediatorDelegate));
-  mediator_.delegate = mock_delegate;
-
   PrefService* prefs = profile_->GetPrefs();
   EXPECT_FALSE(prefs->GetBoolean(prefs::kIOSGeminiLiveConsent));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
 
-  OCMExpect([mock_delegate dismissGeminiConsentUIWithCompletion:[OCMArg any]]);
+  OCMExpect([mock_delegate_
+      dismissGeminiConsentUIWithCompletion:[OCMArg invokeBlock]]);
 
   [mediator_ didConsentToLiveGemini];
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveConsent));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting));
-  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  EXPECT_TRUE(completion_called_);
+  EXPECT_TRUE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests that shouldShowAIHubIPH returns NO when ChromeNextIa is enabled.
+TEST_F(GeminiFirstRunMediatorTest, TestShouldShowAIHubIPH_ChromeNextIaEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kChromeNextIa);
+  EXPECT_FALSE([mediator_ shouldShowAIHubIPH]);
+}
+
+// Tests didConsentGemini sets consent pref, notifies tracker when
+// kGeminiNavigationPromo is enabled, and dismisses UI with completion(YES).
+TEST_F(GeminiFirstRunMediatorTest, TestDidConsentGemini) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {feature_engagement::kIPHiOSGeminiFullscreenPromoFeature,
+       kGeminiNavigationPromo, kPageActionMenu},
+      {});
+
+  auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+  EXPECT_CALL(*tracker,
+              NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven));
+
+  OCMExpect([mock_delegate_
+      dismissGeminiConsentUIWithCompletion:[OCMArg invokeBlock]]);
+
+  [mediator_ didConsentGemini];
+
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));
+  EXPECT_TRUE(completion_called_);
+  EXPECT_TRUE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests didRefuseGeminiConsent dismisses the flow and calls completion with NO.
+TEST_F(GeminiFirstRunMediatorTest, TestDidRefuseGeminiConsent) {
+  OCMExpect([mock_delegate_ dismissGeminiFlow]);
+  [mediator_ didRefuseGeminiConsent];
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));
+  EXPECT_TRUE(completion_called_);
+  EXPECT_FALSE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests didCloseGeminiPromo dismisses the flow and calls completion with NO.
+TEST_F(GeminiFirstRunMediatorTest, TestDidCloseGeminiPromo) {
+  OCMExpect([mock_delegate_ dismissGeminiFlow]);
+  [mediator_ didCloseGeminiPromo];
+  EXPECT_TRUE(completion_called_);
+  EXPECT_FALSE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests didRefuseLiveOnboarding dismisses consent UI and calls completion with
+// NO.
+TEST_F(GeminiFirstRunMediatorTest, TestDidRefuseLiveOnboarding) {
+  OCMExpect([mock_delegate_
+      dismissGeminiConsentUIWithCompletion:[OCMArg invokeBlock]]);
+  [mediator_ didRefuseLiveOnboarding];
+  EXPECT_TRUE(completion_called_);
+  EXPECT_FALSE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests didTapConsentLinkWithAction: dismisses the flow and opens a URL for
+// a valid action, and does nothing for an unknown action.
+TEST_F(GeminiFirstRunMediatorTest, TestDidTapConsentLinkWithAction) {
+  OCMExpect([mock_delegate_ dismissGeminiFlow]);
+  OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg isNotNil]]);
+  [mediator_ didTapConsentLinkWithAction:kGeminiFirstFootnoteLinkAction];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+
+  // Verify unknown action does not dismiss the flow or open a new tab.
+  OCMReject([mock_delegate_ dismissGeminiFlow]);
+  OCMReject([mock_scene_handler_ openURLInNewTab:[OCMArg any]]);
+  [mediator_ didTapConsentLinkWithAction:@"unknownAction"];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 }
