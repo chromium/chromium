@@ -1060,7 +1060,10 @@ try_.builder(
     properties = {
         "$build/chromium_toolchain": {
             "toolchain": "CLANG",
+            "trusted_build_instance": "lexan-release-infra-linux-prod",
+            "trusted_build_instance_env": "prod",
             "trusted_build_instance_pool": "high-cpu",
+            "trusted_build_instance_project": "lexan-release-infra-prod",
             "config_path": "build/lexan/configs/tbi/linux-patched-fix-strict-deps.textproto",
         },
     },
