@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_H_
+#ifndef CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
+#define CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
 
 #include <string>
 #include <string_view>
@@ -24,11 +24,11 @@ class Profile;
 
 namespace glic {
 
-class GlicActorTaskIconManager : public KeyedService {
+class GlicActivityManager : public KeyedService {
  public:
-  GlicActorTaskIconManager(Profile* profile,
-                           actor::ActorKeyedService* actor_service);
-  ~GlicActorTaskIconManager() override;
+  GlicActivityManager(Profile* profile,
+                      actor::ActorKeyedService* actor_service);
+  ~GlicActivityManager() override;
 
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
@@ -145,4 +145,4 @@ class GlicActorTaskIconManager : public KeyedService {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ACTOR_TASK_ICON_MANAGER_H_
+#endif  // CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_

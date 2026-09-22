@@ -63,7 +63,7 @@ class GlicActorNudgeController {
   virtual void OnBubbleVisibilityChange(bool is_bubble_open);
 
  private:
-  // Subscribe to updates from the GlicActorTaskIconManager.
+  // Subscribe to updates from the GlicActivityManager.
   void RegisterActorNudgeStateCallback();
 
   // Only update the nudge label if it's already showing, otherwise retrigger

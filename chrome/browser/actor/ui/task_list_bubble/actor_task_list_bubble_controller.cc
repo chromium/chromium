@@ -16,12 +16,12 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller_delegate.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -43,10 +43,10 @@ int GetPriorityForTaskState(actor::ActorTask::State task_state,
   // 2. Processed tasks needing attention
   // 3. Remaining tasks that need processing
   // 4. All other tasks
-  return glic::GlicActorTaskIconManager::RequiresAttention(task_state)
+  return glic::GlicActivityManager::RequiresAttention(task_state)
              ? (requires_processing ? 1 : 2)
-         : glic::GlicActorTaskIconManager::RequiresTaskProcessing(task_state,
-                                                                  feature_mode)
+         : glic::GlicActivityManager::RequiresTaskProcessing(task_state,
+                                                             feature_mode)
              ? 3
              : 4;
 }
@@ -59,7 +59,7 @@ bool ShouldShowConsentOverride(
                     state == actor::ActorTask::State::kReflecting)) {
     return false;
   }
-  return glic::GlicActorTaskIconManager::RequiresAttention(state) &&
+  return glic::GlicActivityManager::RequiresAttention(state) &&
          interrupt_reason == actor::ActorTask::InterruptReason::
                                  kWaitingForExperimentalTriggeringConsent;
 }
@@ -90,7 +90,7 @@ std::string GetRowSubtitle(
     return l10n_util::GetStringUTF8(
         IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
   }
-  if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
+  if (glic::GlicActivityManager::RequiresAttention(state)) {
     return l10n_util::GetStringUTF8(
         IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
   }
@@ -162,7 +162,7 @@ ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     }
 #endif
 
-    if (!has_tab && glic::GlicActorTaskIconManager::IsActiveExperimentalTask(
+    if (!has_tab && glic::GlicActivityManager::IsActiveExperimentalTask(
                         task_state.value(), feature_mode)) {
       // Treat experimental triggering tasks as having a tab even if they don't
       // have one associated yet. This ensures they are clickable and can bring
@@ -177,7 +177,7 @@ ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     std::string subtitle = GetRowSubtitle(task_state.value(), has_tab,
                                           feature_mode, task_interrupt_reason);
     bool needs_review =
-        glic::GlicActorTaskIconManager::RequiresAttention(task_state.value());
+        glic::GlicActivityManager::RequiresAttention(task_state.value());
 
     std::string title =
         is_waiting_for_consent
@@ -226,8 +226,8 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
-      browser_->GetProfile());
+  auto* manager =
+      glic::GlicActivityManagerFactory::GetForProfile(browser_->GetProfile());
   DCHECK(manager);
   bubble_state_change_callback_subscription_.push_back(
       manager->RegisterTaskListBubbleStateChange(
@@ -270,8 +270,8 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
     return;
   }
 
-  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
-      browser_->GetProfile());
+  auto* manager =
+      glic::GlicActivityManagerFactory::GetForProfile(browser_->GetProfile());
   DCHECK(manager);
 
   // If the browser is in the background, only show the bubble if this is a
@@ -372,9 +372,9 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   }
   // Regardless of tab navigation, process the row and close the bubble when
   // done.
-  auto* icon_manager =
-      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-  icon_manager->ProcessRowInTaskListBubble(task_id);
+  auto* activity_manager =
+      glic::GlicActivityManagerFactory::GetForProfile(profile);
+  activity_manager->ProcessRowInTaskListBubble(task_id);
   CloseBubble();
   actor::ui::LogTaskListBubbleRowClicked();
 }

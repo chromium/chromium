@@ -53,7 +53,7 @@ class ActorTaskListBubble : public views::WidgetObserver {
 
   raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
-  // From GlicActorTaskIconManager, profile scoped.
+  // From GlicActivityManager, profile scoped.
   raw_ref<const absl::flat_hash_map<actor::TaskId, bool>> task_list_;
   OnTaskClickedCallback on_row_clicked_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>

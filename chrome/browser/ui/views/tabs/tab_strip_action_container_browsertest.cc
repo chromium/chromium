@@ -14,11 +14,11 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -390,8 +390,8 @@ IN_PROC_BROWSER_TEST_F(
 
   actor_service()->GetTask(task_id2)->Pause(/*from_actor=*/true);
 
-  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
-      browser()->GetProfile());
+  auto* manager =
+      glic::GlicActivityManagerFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(RunUntil(
       [&]() { return manager->actor_task_list_bubble_rows().size() == 2; }));
   EXPECT_TRUE(
@@ -438,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   actor::TaskId task_id = CreateTask();
 
-  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
-      browser()->GetProfile());
+  auto* manager =
+      glic::GlicActivityManagerFactory::GetForProfile(browser()->GetProfile());
 
   actor_service()->GetTask(task_id)->SetState(actor::ActorTask::State::kActing);
   actor_service()->GetTask(task_id)->Interrupt();

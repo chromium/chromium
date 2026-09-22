@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -11,29 +11,28 @@ namespace glic {
 using actor::ActorKeyedServiceFactory;
 
 // static
-GlicActorTaskIconManagerFactory*
-GlicActorTaskIconManagerFactory::GetInstance() {
-  static base::NoDestructor<GlicActorTaskIconManagerFactory> instance;
+GlicActivityManagerFactory* GlicActivityManagerFactory::GetInstance() {
+  static base::NoDestructor<GlicActivityManagerFactory> instance;
   return instance.get();
 }
 
 // static
-GlicActorTaskIconManager* GlicActorTaskIconManagerFactory::GetForProfile(
+GlicActivityManager* GlicActivityManagerFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<GlicActorTaskIconManager*>(
+  return static_cast<GlicActivityManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-GlicActorTaskIconManagerFactory::GlicActorTaskIconManagerFactory()
-    : ProfileKeyedServiceFactory("GlicActorTaskIconManager") {
+GlicActivityManagerFactory::GlicActivityManagerFactory()
+    : ProfileKeyedServiceFactory("GlicActivityManager") {
   DependsOn(ActorKeyedServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
-GlicActorTaskIconManagerFactory::BuildServiceInstanceForBrowserContext(
+GlicActivityManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<GlicActorTaskIconManager>(
+  return std::make_unique<GlicActivityManager>(
       profile, ActorKeyedServiceFactory::GetActorKeyedService(context));
 }
 

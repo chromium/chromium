@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -28,40 +28,37 @@ using Text = ActorTaskNudgeState::Text;
 
 }  // namespace
 
-GlicActorTaskIconManager::GlicActorTaskIconManager(
-    Profile* profile,
-    ActorKeyedService* actor_service)
+GlicActivityManager::GlicActivityManager(Profile* profile,
+                                         ActorKeyedService* actor_service)
     : profile_(profile), actor_service_(actor_service) {
   CHECK(actor_service);
   RegisterSubscriptions();
 }
 
-GlicActorTaskIconManager::~GlicActorTaskIconManager() = default;
+GlicActivityManager::~GlicActivityManager() = default;
 
-void GlicActorTaskIconManager::RegisterSubscriptions() {
+void GlicActivityManager::RegisterSubscriptions() {
   callback_subscriptions_.push_back(
       actor::ui::ActorUiStateManager::Get(profile_)
-          ->RegisterActorTaskStateChange(base::BindRepeating(
-              &GlicActorTaskIconManager::OnActorTaskStateUpdate,
-              base::Unretained(this))));
+          ->RegisterActorTaskStateChange(
+              base::BindRepeating(&GlicActivityManager::OnActorTaskStateUpdate,
+                                  base::Unretained(this))));
   callback_subscriptions_.push_back(
       actor::ui::ActorUiStateManager::Get(profile_)->RegisterActorTaskStopped(
-          base::BindRepeating(
-              &GlicActorTaskIconManager::UpdateTaskIconComponents,
-              base::Unretained(this))));
+          base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
+                              base::Unretained(this))));
   callback_subscriptions_.push_back(
       actor::ui::ActorUiStateManager::Get(profile_)->RegisterActorTaskRemoved(
-          base::BindRepeating(
-              &GlicActorTaskIconManager::UpdateTaskIconComponents,
-              base::Unretained(this))));
+          base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
+                              base::Unretained(this))));
 }
 
-void GlicActorTaskIconManager::UpdateTaskIconComponents(actor::TaskId task_id) {
+void GlicActivityManager::UpdateTaskIconComponents(actor::TaskId task_id) {
   UpdateTaskListBubble(task_id);
   UpdateTaskNudge();
 }
 
-void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
+void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   actor::ActorTask* task = actor_service_->GetTask(task_id);
   if (!task) {
     return;
@@ -69,13 +66,13 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   UpdateTaskIconComponents(task_id);
 }
 
-void GlicActorTaskIconManager::OnTabAddedToTask(actor::TaskId task_id) {
+void GlicActivityManager::OnTabAddedToTask(actor::TaskId task_id) {
   UpdateTaskIconComponents(task_id);
 }
 
-void GlicActorTaskIconManager::Shutdown() {}
+void GlicActivityManager::Shutdown() {}
 
-void GlicActorTaskIconManager::UpdateTaskNudge() {
+void GlicActivityManager::UpdateTaskNudge() {
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
 
   bool needs_attention = false;
@@ -104,7 +101,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       show_bubble = true;
     }
 
-    if (GlicActorTaskIconManager::RequiresAttention(*state)) {
+    if (GlicActivityManager::RequiresAttention(*state)) {
       // Needs attention prioritized over other text
       needs_attention = true;
       break;
@@ -143,8 +140,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   }
 }
 
-void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
-    actor::TaskId task_id) {
+void GlicActivityManager::ProcessRowInTaskListBubble(actor::TaskId task_id) {
   if (auto it = actor_task_list_bubble_rows_.find(task_id);
       it != actor_task_list_bubble_rows_.end()) {
     it->second = false;
@@ -152,7 +148,7 @@ void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
   UpdateTaskNudge();
 }
 
-void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
+void GlicActivityManager::UpdateTaskListBubble(actor::TaskId task_id) {
   auto* manager = actor::ui::ActorUiStateManager::Get(profile_);
   const auto state = manager->GetActorTaskState(task_id);
   if (!state.has_value() || state.value() == ActorTask::State::kCancelled) {
@@ -221,41 +217,40 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
 }
 
 base::CallbackListSubscription
-GlicActorTaskIconManager::RegisterTaskNudgeStateChange(
+GlicActivityManager::RegisterTaskNudgeStateChange(
     TaskNudgeChangeCallback callback) {
   return task_nudge_state_change_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
-GlicActorTaskIconManager::RegisterTaskListBubbleStateChange(
+GlicActivityManager::RegisterTaskListBubbleStateChange(
     TaskListBubbleChangeCallback callback) {
   return task_list_bubble_change_callback_list_.Add(std::move(callback));
 }
 
-ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
-    const {
+ActorTaskNudgeState GlicActivityManager::GetCurrentActorTaskNudgeState() const {
   return current_actor_task_nudge_state_;
 }
-size_t GlicActorTaskIconManager::GetNumActorTasksNeedProcessing() const {
+size_t GlicActivityManager::GetNumActorTasksNeedProcessing() const {
   return std::ranges::count_if(
       actor_task_list_bubble_rows_,
       [](const auto& task) { return /*requires_processing=*/task.second; });
 }
 
 // static
-bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
+bool GlicActivityManager::RequiresAttention(TaskState state) {
   return state == TaskState::kPausedByActor ||
          state == TaskState::kWaitingOnUser;
 }
 
 // static
-bool GlicActorTaskIconManager::RequiresTaskProcessing(
+bool GlicActivityManager::RequiresTaskProcessing(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
   if (ShouldSuppressNotification(feature_mode, state)) {
     return false;
   }
-  return GlicActorTaskIconManager::RequiresAttention(state) ||
+  return GlicActivityManager::RequiresAttention(state) ||
          state == TaskState::kFinished || state == TaskState::kFailed ||
          IsActiveExperimentalTask(state, feature_mode) ||
          IsActiveUniversalCartTask(state, feature_mode) ||
@@ -263,7 +258,7 @@ bool GlicActorTaskIconManager::RequiresTaskProcessing(
 }
 
 // static
-bool GlicActorTaskIconManager::ShouldSuppressNotification(
+bool GlicActivityManager::ShouldSuppressNotification(
     glic::mojom::FeatureMode feature_mode,
     TaskState state) {
   return base::FeatureList::IsEnabled(
@@ -273,7 +268,7 @@ bool GlicActorTaskIconManager::ShouldSuppressNotification(
 }
 
 // static
-bool GlicActorTaskIconManager::IsActiveExperimentalTask(
+bool GlicActivityManager::IsActiveExperimentalTask(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
   return feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
@@ -281,7 +276,7 @@ bool GlicActorTaskIconManager::IsActiveExperimentalTask(
 }
 
 // static
-bool GlicActorTaskIconManager::IsActiveUniversalCartTask(
+bool GlicActivityManager::IsActiveUniversalCartTask(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
   return feature_mode == glic::mojom::FeatureMode::kUniversalCart &&
@@ -289,7 +284,7 @@ bool GlicActorTaskIconManager::IsActiveUniversalCartTask(
 }
 
 // static
-bool GlicActorTaskIconManager::IsActivePasswordChangeTask(
+bool GlicActivityManager::IsActivePasswordChangeTask(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
   return feature_mode == glic::mojom::FeatureMode::kPasswordChange &&
@@ -297,11 +292,11 @@ bool GlicActorTaskIconManager::IsActivePasswordChangeTask(
 }
 
 // static
-bool GlicActorTaskIconManager::ShouldShowBubble(
+bool GlicActivityManager::ShouldShowBubble(
     TaskState state,
     TaskDuration duration,
     glic::mojom::FeatureMode feature_mode) {
-  if (GlicActorTaskIconManager::RequiresAttention(state)) {
+  if (GlicActivityManager::RequiresAttention(state)) {
     return true;
   }
   if (ShouldSuppressNotification(feature_mode, state)) {
@@ -311,7 +306,7 @@ bool GlicActorTaskIconManager::ShouldShowBubble(
          duration != ActorTask::TaskDuration::kTransient;
 }
 
-bool GlicActorTaskIconManager::HasActiveExperimentalTask() const {
+bool GlicActivityManager::HasActiveExperimentalTask() const {
   auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_);
   if (!ui_state_manager) {
     return false;

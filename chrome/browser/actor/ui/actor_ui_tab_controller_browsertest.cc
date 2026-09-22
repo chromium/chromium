@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   actor::ui::StartTask start_task_event(task_id);
   ActorUiStateManager::Get(browser()->GetProfile())
       ->OnUiEvent(start_task_event);
-  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  // Need to wait for the AUSM to notify the GlicActivityManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ActorUiStateManager::Get(browser()->GetProfile())
       ->OnUiEvent(actor::ui::TaskStateChanged(
           task_id, actor::ActorTask::State::kWaitingOnUser));
-  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  // Need to wait for the AUSM to notify the GlicActivityManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
   // The static icon should be visible, but not the spinner.
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ActorUiStateManager::Get(browser()->GetProfile())
       ->OnUiEvent(actor::ui::TaskStateChanged(
           task_id, actor::ActorTask::State::kActing));
-  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  // Need to wait for the AUSM to notify the GlicActivityManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
   // State should return to before WaitingOnUser

@@ -86,6 +86,8 @@ source_set("glic") {
     "public/glic_submit_query_cui_tracker.h",
     "public/glic_window_invocation_tracker.cc",
     "public/glic_window_invocation_tracker.h",
+    "public/service/glic_activity_manager.h",
+    "public/service/glic_activity_manager_factory.h",
     "public/service/glic_instance_coordinator.h",
     "service/glic_instance_helper.h",
     "service/metrics/metrics_types.cc",
@@ -97,6 +99,8 @@ source_set("glic") {
     ":public_types",
     "//base",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui:states",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/glic/suggestions",
@@ -449,6 +453,8 @@ source_set("impl") {
     "public/glic_keyed_service.cc",
     "public/glic_keyed_service_factory.cc",
     "public/glic_perf_traits_tracker.cc",
+    "service/glic_activity_manager.cc",
+    "service/glic_activity_manager_factory.cc",
     "service/glic_instance_coordinator_impl.cc",
     "service/glic_instance_coordinator_impl.h",
     "service/glic_instance_helper.cc",
@@ -853,6 +859,7 @@ source_set("unit_tests") {
       "host/glic_cookie_synchronizer_unittest.cc",
       "public/glic_context_menu_invocation_helper_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",
+      "service/glic_activity_manager_unittest.cc",
       "service/glic_instance_helper_unittest.cc",
       "service/glic_instance_limit_calculator_unittest.cc",
       "service/glic_onboarding_tracker_unittest.cc",
@@ -867,6 +874,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/background",
       "//chrome/browser/glic/browser_ui:unit_tests",
       "//chrome/browser/glic/media:unit_tests",

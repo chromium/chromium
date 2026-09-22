@@ -27,7 +27,6 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/public/features.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
@@ -772,9 +772,9 @@ ToolbarView::CreateGlicActorTaskIcon() {
 
 void ToolbarView::OnGlicActorTaskIconClicked() {
   Profile* const profile = browser_view_->GetProfile();
-  auto* icon_manager =
-      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-  CHECK(icon_manager);
+  auto* activity_manager =
+      glic::GlicActivityManagerFactory::GetForProfile(profile);
+  CHECK(activity_manager);
 
   ActorTaskListBubbleController* controller =
       ActorTaskListBubbleController::From(browser_view_->browser());
@@ -784,7 +784,8 @@ void ToolbarView::OnGlicActorTaskIconClicked() {
     controller->ShowBubble(glic_actor_task_icon_);
   }
 
-  auto current_task_nudge_state = icon_manager->GetCurrentActorTaskNudgeState();
+  auto current_task_nudge_state =
+      activity_manager->GetCurrentActorTaskNudgeState();
   actor::ui::LogGlobalTaskIndicatorClick(current_task_nudge_state);
 }
 
@@ -978,8 +979,7 @@ void ToolbarView::ShowActorTaskListBubble() {
   }
   if (!actor_task_list_bubble_) {
     Profile* profile = browser_->GetProfile();
-    auto* manager =
-        glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    auto* manager = glic::GlicActivityManagerFactory::GetForProfile(profile);
     auto* controller = ActorTaskListBubbleController::From(browser_);
     if (manager && controller) {
       actor_task_list_bubble_ = std::make_unique<ActorTaskListBubble>(

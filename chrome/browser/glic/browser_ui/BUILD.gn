@@ -10,8 +10,6 @@ import("//chrome/common/features.gni")
 source_set("browser_ui") {
   sources = [
     "glic_actor_nudge_controller.h",
-    "glic_actor_task_icon_manager.h",
-    "glic_actor_task_icon_manager_factory.h",
     "glic_nudge_controller.h",
     "glic_split_button_controller.h",
     "glic_split_button_delegate.h",
@@ -55,8 +53,6 @@ source_set("browser_ui") {
 source_set("impl") {
   sources = [
     "glic_actor_nudge_controller.cc",
-    "glic_actor_task_icon_manager.cc",
-    "glic_actor_task_icon_manager_factory.cc",
     "glic_button_controller.cc",
     "glic_button_controller.h",
     "glic_nudge_controller.cc",
@@ -210,7 +206,6 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "glic_actor_task_icon_manager_unittest.cc",
       "glic_button_controller_unittest.cc",
       "glic_selection_widget_unittest.cc",
     ]

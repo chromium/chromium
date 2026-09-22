@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -13,9 +12,9 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -47,10 +46,10 @@ class MockTaskListBubbleChangeSubscriber {
   MOCK_METHOD(void, OnStateChanged, (bool is_start_notification));
 };
 
-class GlicActorTaskIconManagerTest : public testing::Test,
-                                     public testing::WithParamInterface<bool> {
+class GlicActivityManagerTest : public testing::Test,
+                                public testing::WithParamInterface<bool> {
  public:
-  GlicActorTaskIconManagerTest()
+  GlicActivityManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicActor,
@@ -70,11 +69,13 @@ class GlicActorTaskIconManagerTest : public testing::Test,
               Profile::FromBrowserContext(context));
         }));
     profile_ = builder.Build();
+#if !BUILDFLAG(IS_ANDROID)
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+#endif
     actor_service_ = static_cast<ActorKeyedServiceFake*>(
         actor::ActorKeyedService::Get(profile_.get()));
-    manager_ = GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
+    manager_ = GlicActivityManagerFactory::GetForProfile(profile_.get());
 
     nudge_subscription_ = manager()->RegisterTaskNudgeStateChange(
         base::BindRepeating(&MockTaskNudgeStateChangeSubscriber::OnStateChanged,
@@ -90,30 +91,35 @@ class GlicActorTaskIconManagerTest : public testing::Test,
     bubble_subscription_ = {};
     manager_ = nullptr;
     actor_service_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
     display_service_tester_.reset();
+#endif
     profile_.reset();
-    actor_service_ = nullptr;
     testing::Test::TearDown();
   }
 
   ActorKeyedServiceFake* actor_service() { return actor_service_; }
 
-  GlicActorTaskIconManager* manager() { return manager_; }
+  GlicActivityManager* manager() { return manager_; }
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   NotificationDisplayServiceTester* display_service_tester() {
     return display_service_tester_.get();
   }
+#endif
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+#endif
   raw_ptr<ActorKeyedServiceFake> actor_service_;
-  raw_ptr<GlicActorTaskIconManager> manager_;
+  raw_ptr<GlicActivityManager> manager_;
   base::CallbackListSubscription nudge_subscription_;
   base::CallbackListSubscription bubble_subscription_;
   MockTaskNudgeStateChangeSubscriber mock_nudge_subscriber_;
@@ -121,17 +127,17 @@ class GlicActorTaskIconManagerTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(GlicActorTaskIconManagerTest, DefaultState) {
+TEST_F(GlicActivityManagerTest, DefaultState) {
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
+TEST_F(GlicActivityManagerTest, NoActiveTasks_ReturnDefaultState) {
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
+TEST_F(GlicActivityManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
   EXPECT_CALL(
       mock_nudge_subscriber_,
       OnStateChanged(/*show_bubble=*/true,
@@ -164,7 +170,7 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
+TEST_F(GlicActivityManagerTest, NudgeShowsDefaultTextOnComplete) {
   EXPECT_CALL(mock_nudge_subscriber_, OnStateChanged(testing::_, testing::_))
       .Times(0);
 
@@ -176,8 +182,7 @@ TEST_F(GlicActorTaskIconManagerTest, NudgeShowsDefaultTextOnComplete) {
             ActorTaskNudgeState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
-       PausedTaskUpdatesNudgeAndBubbleSubscribers) {
+TEST_F(GlicActivityManagerTest, PausedTaskUpdatesNudgeAndBubbleSubscribers) {
   EXPECT_CALL(mock_nudge_subscriber_,
               OnStateChanged(
                   /*show_bubble=*/true,
@@ -195,8 +200,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetNumActorTasksNeedProcessing(), 1u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
-       ProcessingTaskInBubbleAlsoUpdatesTaskNudge) {
+TEST_F(GlicActivityManagerTest, ProcessingTaskInBubbleAlsoUpdatesTaskNudge) {
   EXPECT_CALL(mock_nudge_subscriber_,
               OnStateChanged(
                   /*show_bubble=*/true,
@@ -223,7 +227,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 1u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        MultipleTasksNeedAttentionNudgeShowsMultipleTasksText) {
   EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(false)).Times(2);
 
@@ -242,7 +246,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->GetNumActorTasksNeedProcessing(), 1u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        MultipleTasksNeedAttentionRemainsInPopoverUntilAllClicked) {
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
@@ -279,7 +283,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 2u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        OnActorTaskRemoved_RemovesTaskAndUpdatesBubbleAndNudge) {
   // Create a task.
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -303,7 +307,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().size(), 0u);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        OnActorTaskStopped_ProcessStoppedTasksAndUpdatesBubbleAndNudge) {
   // Create tasks.
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -339,7 +343,7 @@ TEST_F(GlicActorTaskIconManagerTest,
             ActorTaskNudgeState::Text::kCompleteTasks);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        NeedsAttentionNudgePrioritizesCompleteTasksNudge) {
   base::test::ScopedFeatureList scoped_features;
   // Create tasks.
@@ -354,7 +358,7 @@ TEST_F(GlicActorTaskIconManagerTest,
             ActorTaskNudgeState::Text::kNeedsAttention);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, TransientTaskDoesNotShowBubble) {
+TEST_F(GlicActivityManagerTest, TransientTaskDoesNotShowBubble) {
   TaskId task_id = actor_service()->CreateTransientTaskForTesting();
 
   // Pausing a transient task should still show the bubble (standard behavior).
@@ -378,51 +382,51 @@ TEST_F(GlicActorTaskIconManagerTest, TransientTaskDoesNotShowBubble) {
   manager()->UpdateTaskIconComponents(task_id);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, ShouldShowBubble_FeatureModeRules) {
+TEST_F(GlicActivityManagerTest, ShouldShowBubble_FeatureModeRules) {
   // 1. Experimental Triggering task in kActing state should NOT show the
   // bubble via nudge (startup bubble triggers are handled separately).
-  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_FALSE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kActing,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // 2. Experimental Triggering task in kCreated state should NOT show the
   // bubble (it hasn't started acting yet).
-  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_FALSE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kCreated,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // 3. Non-Experimental Triggering task in kActing state should NOT show the
   // bubble (prevent UI noise).
-  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_FALSE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kActing,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kUnspecified));
 
   // 4. Non-Experimental Triggering task that needs attention should still show
   // the bubble (fallback logic).
-  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_TRUE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kWaitingOnUser,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kUnspecified));
 
   // 5. Experimental Triggering task in kFinished state should NOT show the
   // bubble.
-  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_FALSE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kFinished,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // 6. Experimental Triggering task in kFailed state should NOT show the
   // bubble.
-  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_FALSE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kFailed,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        ExperimentalTriggeringTaskDoesNotShowDoneNotification) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -437,7 +441,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskIconComponents(task_id);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        ExperimentalTriggeringTaskShowsDoneNotificationWhenFlagDisabled) {
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(
@@ -456,7 +460,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskIconComponents(task_id);
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        ShouldShowBubble_FeatureModeRulesWithFlagDisabled) {
   base::test::ScopedFeatureList disabled_features;
   disabled_features.InitAndDisableFeature(
@@ -464,20 +468,20 @@ TEST_F(GlicActorTaskIconManagerTest,
 
   // Experimental Triggering task in kFinished state should show the
   // bubble when suppression flag is disabled.
-  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_TRUE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kFinished,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // Experimental Triggering task in kFailed state should show the
   // bubble when suppression flag is disabled.
-  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+  EXPECT_TRUE(GlicActivityManager::ShouldShowBubble(
       actor::ActorTask::State::kFailed,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 }
 
-TEST_F(GlicActorTaskIconManagerTest, HasActiveExperimentalTask) {
+TEST_F(GlicActivityManagerTest, HasActiveExperimentalTask) {
   EXPECT_FALSE(manager()->HasActiveExperimentalTask());
 
   TaskId task_id =
@@ -495,29 +499,29 @@ TEST_F(GlicActorTaskIconManagerTest, HasActiveExperimentalTask) {
   EXPECT_FALSE(manager()->HasActiveExperimentalTask());
 }
 
-TEST_F(GlicActorTaskIconManagerTest, RequiresTaskProcessing_FeatureModeRules) {
+TEST_F(GlicActivityManagerTest, RequiresTaskProcessing_FeatureModeRules) {
   // Experimental Triggering task in kActing state should return true.
-  EXPECT_TRUE(GlicActorTaskIconManager::RequiresTaskProcessing(
+  EXPECT_TRUE(GlicActivityManager::RequiresTaskProcessing(
       actor::ActorTask::State::kActing,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // Non-Experimental Triggering task in kActing state should return false.
-  EXPECT_FALSE(GlicActorTaskIconManager::RequiresTaskProcessing(
+  EXPECT_FALSE(GlicActivityManager::RequiresTaskProcessing(
       actor::ActorTask::State::kActing,
       glic::mojom::FeatureMode::kUnspecified));
 
   // Experimental Triggering task in kCreated state should return false.
-  EXPECT_FALSE(GlicActorTaskIconManager::RequiresTaskProcessing(
+  EXPECT_FALSE(GlicActivityManager::RequiresTaskProcessing(
       actor::ActorTask::State::kCreated,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 
   // Non-Experimental Triggering task that needs attention should return true.
-  EXPECT_TRUE(GlicActorTaskIconManager::RequiresTaskProcessing(
+  EXPECT_TRUE(GlicActivityManager::RequiresTaskProcessing(
       actor::ActorTask::State::kWaitingOnUser,
       glic::mojom::FeatureMode::kUnspecified));
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        ExperimentalTriggeringTaskShowsNudgeOnlyOnFirstTurn) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -563,7 +567,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskIconComponents(task_id);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, ShowsStartNotificationOnFirstActing) {
+TEST_F(GlicActivityManagerTest, ShowsStartNotificationOnFirstActing) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -583,8 +587,7 @@ TEST_F(GlicActorTaskIconManagerTest, ShowsStartNotificationOnFirstActing) {
   EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
-       StartNotificationNotRepeatedAfterRowClicked) {
+TEST_F(GlicActivityManagerTest, StartNotificationNotRepeatedAfterRowClicked) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -613,8 +616,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
 }
 
-TEST_F(GlicActorTaskIconManagerTest,
-       CancelledTaskClearsStartNotificationTracking) {
+TEST_F(GlicActivityManagerTest, CancelledTaskClearsStartNotificationTracking) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -643,10 +645,9 @@ TEST_F(GlicActorTaskIconManagerTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-class GlicActorTaskIconManagerOsNotificationTest
-    : public GlicActorTaskIconManagerTest {
+class GlicActivityManagerOsNotificationTest : public GlicActivityManagerTest {
  public:
-  GlicActorTaskIconManagerOsNotificationTest() {
+  GlicActivityManagerOsNotificationTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kGlicExperimentalTriggeringOsNotification);
   }
@@ -657,7 +658,7 @@ class GlicActorTaskIconManagerOsNotificationTest
 
 // Verifies that an OS notification is displayed when an experimental triggering
 // task starts and no browser window is active.
-TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+TEST_F(GlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_NoActiveBrowser_ShowsNotification) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -684,7 +685,7 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
 
 // Verifies that clicking the OS notification marks the task list row as
 // processed and dismisses the notification.
-TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+TEST_F(GlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_NotificationClicked_ProcessesRow) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -713,11 +714,13 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
 
 // Verifies that no OS notification is displayed when the feature flag is
 // disabled.
-TEST_F(GlicActorTaskIconManagerTest,
+TEST_F(GlicActivityManagerTest,
        ExperimentalTriggeringTask_FeatureDisabled_DoesNotShowNotification) {
+#if !BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kGlicExperimentalTriggeringOsNotification);
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -732,11 +735,12 @@ TEST_F(GlicActorTaskIconManagerTest,
   std::string notification_id =
       "actor_task_start_" + base::NumberToString(task_id.value());
   EXPECT_FALSE(
-      display_service_tester()->GetNotification(notification_id).has_value());
+      display_service_tester.GetNotification(notification_id).has_value());
+#endif
 }
 
 // Verifies that non-experimental actor tasks do not trigger an OS notification.
-TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+TEST_F(GlicActivityManagerOsNotificationTest,
        NonExperimentalTask_DoesNotShowNotification) {
   TaskId task_id = actor_service()->CreateTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -755,7 +759,7 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
 
 // Verifies that completing an experimental triggering task automatically
 // dismisses its OS notification.
-TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+TEST_F(GlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_TaskComplete_ClosesNotification) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -782,7 +786,7 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
 
 // Verifies that stopping/cancelling an experimental triggering task
 // automatically dismisses its OS notification.
-TEST_F(GlicActorTaskIconManagerOsNotificationTest,
+TEST_F(GlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_TaskCancelled_ClosesNotification) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
@@ -807,4 +811,5 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
       display_service_tester()->GetNotification(notification_id).has_value());
 }
 #endif
+
 }  // namespace glic
