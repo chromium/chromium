@@ -10483,6 +10483,7 @@ from previous Chrome versions.
   <int value="-1345471133" label="JourneysOmniboxAction:enabled"/>
   <int value="-1344775211"
       label="SyncChromeOSExplicitPassphraseSharing:disabled"/>
+  <int value="-1344602592" label="FeedbackDisabledDialog:enabled"/>
   <int value="-1344375439" label="ServiceWorkerPaymentApps:disabled"/>
   <int value="-1343259222" label="RegionalLocalesAsDisplayUI:disabled"/>
   <int value="-1342961844" label="InlineUpdateFlow:disabled"/>
@@ -16886,6 +16887,7 @@ from previous Chrome versions.
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
+  <int value="635135866" label="FeedbackDisabledDialog:disabled"/>
   <int value="635533110" label="ReleaseNotes:disabled"/>
   <int value="635892962" label="AndroidDeviceSignalsDisclaimer:disabled"/>
   <int value="635947051" label="DesktopRestructuredLanguageSettings:enabled"/>

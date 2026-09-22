@@ -6829,6 +6829,11 @@ inline constexpr char kEnableInputProtectionDescription[] =
     "prevents unintended events on security-sensitive UI that appears and "
     "activates unexpectedly.";
 
+inline constexpr char kFeedbackDisabledDialogName[] =
+    "Feedback Disabled Dialog";
+inline constexpr char kFeedbackDisabledDialogDescription[] =
+    "Enables the dialog shown when user feedback is disabled.";
+
 inline constexpr char kForceDriveDisclaimerAcceptedName[] =
     "Force Drive Disclaimer Accepted";
 inline constexpr char kForceDriveDisclaimerAcceptedDescription[] =
