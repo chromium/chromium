@@ -708,8 +708,14 @@ VideoImageReaderImageBacking::ProduceSkiaGraphite(
     return nullptr;
   }
 
-  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
-      manager, this, tracker, context_state, GetDrDcLock());
+  if (context_state->IsGraphiteDawn()) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
+        manager, this, tracker, context_state, GetDrDcLock());
+#endif
+  }
+
+  NOTREACHED();
 }
 #endif
 

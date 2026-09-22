@@ -441,6 +441,9 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
     GLuint service_id = 0;
   };
 
+  std::unique_ptr<VulkanImage> CreateVulkanImageFromAHB(
+      SharedContextState* context_state);
+
   std::optional<GLTextureParams> GetGLTextureParams();
 
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -684,28 +687,31 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->IsGraphiteDawn());
+
+  if (context_state->IsGraphiteDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  auto device = context_state->dawn_context_provider()->GetDevice();
-  auto backend_type = context_state->dawn_context_provider()->backend_type();
-  auto dawn_representation = ProduceDawn(manager, tracker, device, backend_type,
-                                         /*view_formats=*/{}, context_state);
-  if (!dawn_representation) {
-    LOG(ERROR) << "Could not create Dawn Representation";
-    return nullptr;
+    auto device = context_state->dawn_context_provider()->GetDevice();
+    auto backend_type = context_state->dawn_context_provider()->backend_type();
+    auto dawn_representation =
+        ProduceDawn(manager, tracker, device, backend_type,
+                    /*view_formats=*/{}, context_state);
+    if (!dawn_representation) {
+      LOG(ERROR) << "Could not create Dawn Representation";
+      return nullptr;
+    }
+
+    // Use GPU main recorder since this should only be called for
+    // fulfilling Graphite promise images on GPU main thread.
+    // NOTE: AHardwareBufferImageBacking doesn't support multiplanar formats,
+    // so there is no need to specify the `is_yuv_plane` or
+    // `legacy_plane_index` optional parameters.
+    return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
+        std::move(dawn_representation), context_state,
+        context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#endif
   }
 
-  // Use GPU main recorder since this should only be called for
-  // fulfilling Graphite promise images on GPU main thread.
-  // NOTE: AHardwareBufferImageBacking doesn't support multiplanar formats,
-  // so there is no need to specify the `is_yuv_plane` or
-  // `legacy_plane_index` optional parameters.
-  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
-      std::move(dawn_representation), context_state,
-      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
-#else
-  NOTREACHED();
-#endif
+  return nullptr;
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -718,28 +724,7 @@ AHardwareBufferImageBacking::ProduceSkiaGanesh(
   // Check whether we are in Vulkan mode OR GL mode and accordingly create
   // Skia representation.
   if (context_state->GrContextIsVulkan()) {
-    uint32_t queue_family = VK_QUEUE_FAMILY_EXTERNAL;
-    if (usage().Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      // Any Android API that consume or produce buffers (e.g SurfaceControl)
-      // requires a foreign queue.
-      queue_family = VK_QUEUE_FAMILY_FOREIGN_EXT;
-    }
-    auto vulkan_image = CreateVkImageFromAhbHandle(
-        GetAhbHandle(), context_state.get(), size(), format(), queue_family);
-
-    if (!vulkan_image) {
-      return nullptr;
-    }
-
-    // TODO(496392525, vasilyt): Move the following check to
-    // `AHardwareBufferImageBackingFactory::CreateSharedImage`
-    // (i.e calling AHardwareBuffer_Desc and reject if size of AHB doesn't match
-    // size of SI).
-    if (vulkan_image->size().width() < size().width() ||
-        vulkan_image->size().height() < size().height()) {
-      return nullptr;
-    }
-
+    auto vulkan_image = CreateVulkanImageFromAHB(context_state.get());
     return std::make_unique<SkiaVkAHBImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
         tracker);
@@ -875,6 +860,35 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   if (!allow_concurrent_read_write()) {
     read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
   }
+}
+
+std::unique_ptr<VulkanImage>
+AHardwareBufferImageBacking::CreateVulkanImageFromAHB(
+    SharedContextState* context_state) {
+  uint32_t queue_family = VK_QUEUE_FAMILY_EXTERNAL;
+  if (usage().Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+    // Any Android API that consume or produce buffers (e.g SurfaceControl)
+    // requires a foreign queue.
+    queue_family = VK_QUEUE_FAMILY_FOREIGN_EXT;
+  }
+
+  auto vulkan_image = CreateVkImageFromAhbHandle(
+      GetAhbHandle(), context_state, size(), format(), queue_family);
+
+  if (!vulkan_image) {
+    return nullptr;
+  }
+
+  // TODO(496392525, vasilyt): Move the following check to
+  // `AHardwareBufferImageBackingFactory::CreateSharedImage`
+  // (i.e calling AHardwareBuffer_Desc and reject if size of AHB doesn't match
+  // size of SI).
+  if (vulkan_image->size().width() < size().width() ||
+      vulkan_image->size().height() < size().height()) {
+    return nullptr;
+  }
+
+  return vulkan_image;
 }
 
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
