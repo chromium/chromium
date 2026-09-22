@@ -15,6 +15,7 @@
 class Browser;
 @class ManageAccountsDelegateBridge;
 @protocol SceneCommands;
+@protocol SceneSignInCommands;
 @class SceneState;
 @protocol SettingsCommands;
 @class SigninCoordinator;
@@ -81,6 +82,7 @@ class AccountConsistencyBrowserAgent
 
   UIViewController* base_view_controller_;
   id<SceneCommands> application_handler_;
+  id<SceneSignInCommands> scene_sign_in_handler_;
   id<SettingsCommands> settings_handler_;
   SigninCoordinator* add_account_coordinator_;
 

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
@@ -142,7 +143,7 @@ void TipsNotificationPresenter::ShowSignin() {
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:nil];
 
-  [HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands)
+  [HandlerForProtocol(browser_->GetCommandDispatcher(), SceneSignInCommands)
               showSignin:command
       baseViewController:nil];
 }

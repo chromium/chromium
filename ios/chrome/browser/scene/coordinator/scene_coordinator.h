@@ -7,10 +7,10 @@
 
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
@@ -20,15 +20,13 @@ class Browser;
 @protocol BrowserProviderInterface;
 enum class SafariDataImportEntryPoint;
 @protocol SafariDataImportUIHandler;
-@protocol SceneCommands;
 @class BrowserLayoutViewController;
 @class OpenNewTabCommand;
 @class SceneCoordinator;
+@protocol SceneSignInCommands;
 class SceneUrlLoadingService;
 @protocol SceneURLLoadingServiceDelegate;
 @class SettingsNavigationController;
-@class ShowSigninCommand;
-@class SigninCoordinator;
 @protocol TabOpening;
 enum class UserFeedbackSender;
 struct UrlLoadParams;
@@ -76,6 +74,10 @@ enum class WarningType;
 
 // A delegate for the Tab Grid coordinator.
 @property(nonatomic, weak) id<TabGridCoordinatorDelegate> tabGridDelegate;
+
+// The endpoint handling `SceneSignInCommands` for this scene. Callers must not
+// assume which object implements the protocol.
+@property(nonatomic, readonly) id<SceneSignInCommands> sceneSignInEndpoint;
 
 // Proxy properties for TabGridCoordinator.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;

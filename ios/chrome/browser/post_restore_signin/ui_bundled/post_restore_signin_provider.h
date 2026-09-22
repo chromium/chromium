@@ -18,7 +18,7 @@ class SyncService;
 
 class AuthenticationService;
 class PrefService;
-@protocol SceneCommands;
+@protocol SceneSignInCommands;
 
 // Provider for displaying the Post Restore Sign-in Promo.
 //
@@ -39,7 +39,7 @@ class PrefService;
 - (void)promoWasDisplayed;
 
 // The handler is used to start the sign-in flow.
-@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+@property(nonatomic, weak) id<SceneSignInCommands> sceneSignInHandler;
 
 @end
 

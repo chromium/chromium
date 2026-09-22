@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -160,6 +161,8 @@ class SceneControllerTest : public PlatformTest {
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
+    mock_scene_sign_in_handler_ =
+        OCMProtocolMock(@protocol(SceneSignInCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_scene_handler_
                              forProtocol:@protocol(SceneCommands)];
@@ -167,6 +170,8 @@ class SceneControllerTest : public PlatformTest {
                              forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_gemini_handler_
                              forProtocol:@protocol(GeminiCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_sign_in_handler_
+                             forProtocol:@protocol(SceneSignInCommands)];
 
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
@@ -176,12 +181,16 @@ class SceneControllerTest : public PlatformTest {
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state_ addAgent:reauth_agent];
 
+    BrowserCommandEndpoints command_endpoints = {
+        .sceneEndpoint = mock_scene_handler_,
+        .settingsEndpoint = mock_settings_handler_,
+        .geminiEndpoint = mock_gemini_handler_,
+        .sceneSignInEndpoint = mock_scene_sign_in_handler_,
+    };
     scene_controller_.browserLifecycleManager =
         [[BrowserLifecycleManager alloc] initWithProfile:profile_.get()
                                               sceneState:scene_state_
-                                           sceneEndpoint:mock_scene_handler_
-                                        settingsEndpoint:mock_settings_handler_
-                                          geminiEndpoint:mock_gemini_handler_];
+                                        commandEndpoints:command_endpoints];
     [scene_controller_
             .browserLifecycleManager createMainCoordinatorAndInterface];
 
@@ -251,6 +260,7 @@ class SceneControllerTest : public PlatformTest {
   id mock_scene_handler_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
+  id mock_scene_sign_in_handler_;
   SceneState* scene_state_;
   ProfileState* profile_state_;
   id<ConnectionInformation> connection_information_;

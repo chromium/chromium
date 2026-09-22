@@ -9,6 +9,7 @@
 
 class SceneUrlLoadingService;
 @protocol SceneCommands;
+@protocol SceneSignInCommands;
 
 // A scene agent that registers the CrossDeviceSigninURLInterceptor to intercept
 // cross-device sign-in URLs and trigger the sign-in flow.
@@ -18,6 +19,8 @@ class SceneUrlLoadingService;
 - (instancetype)initWithSceneURLLoadingService:
                     (SceneUrlLoadingService*)sceneURLLoadingService
                                   sceneHandler:(id<SceneCommands>)sceneHandler
+                            sceneSignInHandler:
+                                (id<SceneSignInCommands>)sceneSignInHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

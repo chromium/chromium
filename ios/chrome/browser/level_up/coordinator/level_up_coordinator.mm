@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -323,8 +323,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
       [[SnackbarMessage alloc] initWithTitle:messageText];
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.title = buttonText;
-  __weak id<SceneCommands> weakSceneHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  __weak id<SceneSignInCommands> weakSceneSignInHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SceneSignInCommands);
   __weak UIViewController* weakBaseViewController = self.baseViewController;
   action.handler = ^{
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -334,8 +334,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
               promoAction:signin_metrics::PromoAction::
                               PROMO_ACTION_NO_SIGNIN_PROMO
                completion:nil];
-    [weakSceneHandler showSignin:command
-              baseViewController:weakBaseViewController];
+    [weakSceneSignInHandler showSignin:command
+                    baseViewController:weakBaseViewController];
   };
   message.action = action;
   [snackbarHandler showSnackbarMessage:message];

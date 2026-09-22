@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -259,21 +259,21 @@
             accessPoint:signin_metrics::AccessPoint::kResigninInfobar];
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
+  id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
       chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
-      SceneCommands);
-  [sceneHandler showSignin:command baseViewController:baseViewController];
+      SceneSignInCommands);
+  [sceneSignInHandler showSignin:command baseViewController:baseViewController];
 }
 
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url {
   const GURL gURL = net::GURLWithNSURL(url);
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
+  id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
       chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
-      SceneCommands);
-  [sceneHandler showWebSigninPromoFromViewController:baseViewController
-                                                 URL:gURL];
+      SceneSignInCommands);
+  [sceneSignInHandler showWebSigninPromoFromViewController:baseViewController
+                                                       URL:gURL];
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -655,8 +656,8 @@
                                     profile)
                 identityManager:IdentityManagerFactory::GetForProfile(profile)
                     prefService:profile->GetPrefs()];
-  postRestoreSignInProvider.sceneHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  postRestoreSignInProvider.sceneSignInHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SceneSignInCommands);
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
       postRestoreSignInProvider;
 

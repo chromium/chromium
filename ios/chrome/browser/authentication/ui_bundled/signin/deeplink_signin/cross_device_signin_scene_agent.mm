@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -25,14 +26,18 @@
 
 @implementation CrossDeviceSigninSceneAgent {
   __weak id<SceneCommands> _sceneHandler;
+  __weak id<SceneSignInCommands> _sceneSignInHandler;
 }
 
 - (instancetype)initWithSceneURLLoadingService:
                     (SceneUrlLoadingService*)sceneURLLoadingService
-                                  sceneHandler:(id<SceneCommands>)sceneHandler {
+                                  sceneHandler:(id<SceneCommands>)sceneHandler
+                            sceneSignInHandler:
+                                (id<SceneSignInCommands>)sceneSignInHandler {
   self = [super init];
   if (self) {
     _sceneHandler = sceneHandler;
+    _sceneSignInHandler = sceneSignInHandler;
 
     GURL base_url(switches::kCrossDeviceSigninUrl.Get());
     if (base_url.is_valid()) {
@@ -86,21 +91,21 @@
                              PROMO_ACTION_NO_SIGNIN_PROMO
       externalEntryPoint:externalEntryPoint];
 
-  __weak id<SceneCommands> weakSceneHandler = _sceneHandler;
+  __weak id<SceneSignInCommands> weakSceneSignInHandler = _sceneSignInHandler;
   if (base::FeatureList::IsEnabled(switches::kCrossDeviceSigninDismissModals)) {
     // Dismiss any existing modal dialogs, or omnibox before presenting the
     // sign-in UI. This ensures that any in-flight modal or keyboard dismissals
     // from navigation are completed and the base view controller is ready to
     // present.
     [_sceneHandler dismissModalDialogsWithCompletion:^{
-      [weakSceneHandler showSignin:command baseViewController:nil];
+      [weakSceneSignInHandler showSignin:command baseViewController:nil];
     }];
   } else {
     // Defer the presentation of the sign-in UI to the next run loop turn.
     // This ensures that the view hierarchy is fully loaded, navigation action
     // is completed, and the base view controller is attached to the window.
     dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSceneHandler showSignin:command baseViewController:nil];
+      [weakSceneSignInHandler showSignin:command baseViewController:nil];
     });
   }
 }

@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -183,19 +183,19 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
 
 // Tests that the agent handles the sign-in request from the coordinator.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
-  // Mock the SceneCommands handler.
-  id<SceneCommands> scene_commands_mock =
-      OCMProtocolMock(@protocol(SceneCommands));
+  // Mock the sign-in handler.
+  id<SceneSignInCommands> mock_scene_sign_in_handler =
+      OCMProtocolMock(@protocol(SceneSignInCommands));
   [browser()->GetCommandDispatcher()
-      startDispatchingToTarget:scene_commands_mock
-                   forProtocol:@protocol(SceneCommands)];
+      startDispatchingToTarget:mock_scene_sign_in_handler
+                   forProtocol:@protocol(SceneSignInCommands)];
 
   // Create a mock coordinator.
   id coordinator_mock = OCMClassMock([AgeMismatchSignoutCoordinator class]);
   [agent_ setValue:coordinator_mock forKey:@"ageMismatchSignoutCoordinator"];
 
   // Expect the sign-in command to be shown.
-  OCMExpect([scene_commands_mock
+  OCMExpect([mock_scene_sign_in_handler
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
                 return command.accessPoint ==
@@ -218,7 +218,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
   [agent_ setValue:nil forKey:@"ageMismatchSignoutCoordinator"];
 
   // Verify that the sign-in command was shown.
-  EXPECT_OCMOCK_VERIFY((id)scene_commands_mock);
+  EXPECT_OCMOCK_VERIFY((id)mock_scene_sign_in_handler);
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
 }
 

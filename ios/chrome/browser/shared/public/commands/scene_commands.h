@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
-#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 enum class AccountMenuAccessPoint;
@@ -16,16 +15,12 @@ enum class AccountMenuAccessPoint;
 class GURL;
 @class OpenNewTabCommand;
 @protocol SafariDataImportUIHandler;
-@class ShowSigninCommand;
 @protocol SystemIdentity;
 @class UIViewController;
 namespace password_manager {
 enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
-namespace signin_metrics {
-enum class AccessPoint;
-}  // namespace signin_metrics
 enum class SafariDataImportEntryPoint;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
@@ -147,14 +142,6 @@ enum class TabGridOpeningMode {
 // URLLoader methods.
 - (void)openURLInNewTab:(OpenNewTabCommand*)command;
 
-// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
-// Shows the signin UI, presenting from `baseViewController`.
-// DISCLAIMER: If possible, prefer calling `[SigninCoordinator
-// signinCoordinatorWithCommand:browser:baseViewController]` instead.
-// Keep ownership of the `SigninCoordinator` and start it explicitly.
-- (void)showSignin:(ShowSigninCommand*)command
-    baseViewController:(UIViewController*)baseViewController;
-
 // Shows the account menu. On scenes with regular width, the account menu
 // appears as a popover. This command is ignored if there is already a UI being
 // presented. Also, redirects to `url` when the sign-in flow is complete and one
@@ -163,14 +150,6 @@ enum class TabGridOpeningMode {
 
 // Shows the account menu.
 - (void)showAccountMenuWithAccessPoint:(AccountMenuAccessPoint)accessPoint;
-
-// TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
-// Shows the consistency promo UI that allows users to sign in to Chrome using
-// the default accounts on the device.
-// Redirects to `url` when the sign-in flow is complete.
-- (void)showWebSigninPromoFromViewController:
-            (UIViewController*)baseViewController
-                                         URL:(const GURL&)url;
 
 // Shows a notification with the signed-in user account.
 - (void)showSigninAccountNotificationFromViewController:
@@ -209,11 +188,6 @@ enum class TabGridOpeningMode {
 
 // Closes the assistant and destroys its resources.
 - (void)closeAssistant;
-
-// Shows the fullscreen sign-in promo with a completion block that is called
-// when the promo is dismissed.
-- (void)showFullscreenSigninPromoWithCompletion:
-    (SigninCoordinatorCompletionCallback)dismissalCompletion;
 
 // Shows the user the modal that contains a button to start the workflow to
 // import Safari data to Chrome. Optionally attach a UI handler for the

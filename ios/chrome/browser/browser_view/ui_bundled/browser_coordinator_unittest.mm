@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -175,9 +176,13 @@ class BrowserCoordinatorTest : public PlatformTest {
     // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    id mock_scene_signin_handler =
+        OCMProtocolMock(@protocol(SceneSignInCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     [dispatcher startDispatchingToTarget:mock_scene_handler_
                              forProtocol:@protocol(SceneCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_signin_handler
+                             forProtocol:@protocol(SceneSignInCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
 

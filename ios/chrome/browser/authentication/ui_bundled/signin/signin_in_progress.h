@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol SceneCommands;
 class SigninInProgress;
 
 @protocol SignInInProgressAudience <NSObject>

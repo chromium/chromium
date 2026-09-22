@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -52,6 +53,8 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
   StartObserving(browser);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
+  scene_sign_in_handler_ =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneSignInCommands);
   settings_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
 }
@@ -149,7 +152,7 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   CHECK(reconcilor);
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       reconcilor->GetState());
-  [application_handler_
+  [scene_sign_in_handler_
       showWebSigninPromoFromViewController:base_view_controller_
                                        URL:url];
 }
@@ -204,7 +207,7 @@ void AccountConsistencyBrowserAgent::OnAddPrefilledAccount(
   } else {
     // The user is signed-out and the account is on the device, so they must
     // select the account in the account consistency view.
-    [application_handler_
+    [scene_sign_in_handler_
         showWebSigninPromoFromViewController:base_view_controller_
                                          URL:url];
   }

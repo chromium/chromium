@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
@@ -155,12 +156,29 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     return browser_list_observer_;
   }
 
+  BrowserCommandEndpoints command_endpoints() {
+    return {
+        .sceneEndpoint = mock_scene_handler_,
+        .settingsEndpoint = mock_settings_handler_,
+        .geminiEndpoint = mock_gemini_handler_,
+        .sceneSignInEndpoint = mock_scene_signin_handler_,
+    };
+  }
+
+  id mock_gemini_handler() { return mock_gemini_handler_; }
+  id mock_scene_signin_handler() { return mock_scene_signin_handler_; }
+
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
   SceneState* scene_state_;
+  id mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+  id mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
+  id mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
+  id mock_scene_signin_handler_ =
+      OCMProtocolMock(@protocol(SceneSignInCommands));
 
   // SessionRestorationObserver and its scoped observation.
   TestSessionRestorationObserver session_restoration_observer_;
@@ -178,18 +196,13 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
   // `task_environment_` must outlive all objects created by BVC, because those
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
-    id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
-    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-    id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state() addAgent:reauth_agent];
     BrowserLifecycleManager* wrangler =
         [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                               sceneState:scene_state()
-                                           sceneEndpoint:mock_scene_handler
-                                        settingsEndpoint:mock_settings_handler
-                                          geminiEndpoint:mock_gemini_handler];
+                                        commandEndpoints:command_endpoints()];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -219,18 +232,13 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
-  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
-  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
       initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                         sceneEndpoint:mock_scene_handler
-                                      settingsEndpoint:mock_settings_handler
-                                        geminiEndpoint:mock_gemini_handler];
+                                      commandEndpoints:command_endpoints()];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -293,18 +301,13 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
 }
 
 TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
-  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
-  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
       initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                         sceneEndpoint:mock_scene_handler
-                                      settingsEndpoint:mock_settings_handler
-                                        geminiEndpoint:mock_gemini_handler];
+                                      commandEndpoints:command_endpoints()];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
@@ -326,18 +329,13 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
 
 // Tests the session restoration logic.
 TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
-  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
-  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
       initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                         sceneEndpoint:mock_scene_handler
-                                      settingsEndpoint:mock_settings_handler
-                                        geminiEndpoint:mock_gemini_handler];
+                                      commandEndpoints:command_endpoints()];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.
@@ -363,18 +361,13 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
 // CommandDispatcher allows late invocations during teardown to fail silently
 // instead of throwing unrecognized selector exceptions.
 TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
-  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
-  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
       initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                         sceneEndpoint:mock_scene_handler
-                                      settingsEndpoint:mock_settings_handler
-                                        geminiEndpoint:mock_gemini_handler];
+                                      commandEndpoints:command_endpoints()];
 
   [wrangler createMainCoordinatorAndInterface];
   CommandDispatcher* dispatcher =
@@ -386,17 +379,26 @@ TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
   EXPECT_TRUE([gemini_proxy
       respondsToSelector:@selector(hideFloatyIfInvokedAnimated:fromSource:)]);
 
+  // Verify SceneSignInCommands handler is registered.
+  id<SceneSignInCommands> signin_proxy =
+      HandlerForProtocol(dispatcher, SceneSignInCommands);
+  EXPECT_TRUE([signin_proxy
+      respondsToSelector:@selector(
+                             stopSigninCoordinatorWithCompletionAnimated:)]);
+
   // Call prepareForShutdown before stopping/unregistering the target.
   [wrangler prepareForShutdown];
 
   // Unregister the target (simulating SceneCoordinator::stop).
-  [dispatcher stopDispatchingToTarget:mock_gemini_handler];
+  [dispatcher stopDispatchingToTarget:mock_gemini_handler()];
+  [dispatcher stopDispatchingToTarget:mock_scene_signin_handler()];
 
   // Because prepareForShutdown was called prior to unregistering, invoking a
-  // GeminiCommands method on the proxy during teardown should fail silently and
+  // command method on the proxy during teardown should fail silently and
   // not throw a doesNotRecognizeSelector exception.
   [gemini_proxy hideFloatyIfInvokedAnimated:NO
                                  fromSource:gemini::FloatyUpdateSource::Alert];
+  [signin_proxy stopSigninCoordinatorWithCompletionAnimated:NO];
 
   [wrangler shutdown];
 }

@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -41,9 +42,7 @@
   raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;
-  __weak id<SceneCommands> _sceneEndpoint;
-  __weak id<SettingsCommands> _settingsEndpoint;
-  __weak id<GeminiCommands> _geminiEndpoint;
+  BrowserCommandEndpoints _commandEndpoints;
 
   std::unique_ptr<Browser> _mainBrowser;
   std::unique_ptr<Browser> _otrBrowser;
@@ -56,18 +55,13 @@
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-                  sceneEndpoint:(id<SceneCommands>)sceneEndpoint
-               settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
-                 geminiEndpoint:(id<GeminiCommands>)geminiEndpoint {
+               commandEndpoints:(BrowserCommandEndpoints)commandEndpoints {
   TRACE_EVENT("ui", "-[BrowserLifecycleManager "
-                    "initWithProfile:sceneState:sceneEndpoint:settingsEndpoint:"
-                    "geminiEndpoint:]");
+                    "initWithProfile:sceneState:commandEndpoints:]");
   if ((self = [super init])) {
     _profile = profile;
     _sceneState = sceneState;
-    _sceneEndpoint = sceneEndpoint;
-    _settingsEndpoint = settingsEndpoint;
-    _geminiEndpoint = geminiEndpoint;
+    _commandEndpoints = commandEndpoints;
 
     // Create all browsers.
     _mainBrowser = Browser::Create(_profile, _sceneState);
@@ -303,11 +297,13 @@
   [dispatcher startDispatchingToTarget:reauthAgent
                            forProtocol:@protocol(IncognitoReauthCommands)];
 
-  [dispatcher startDispatchingToTarget:_sceneEndpoint
+  [dispatcher startDispatchingToTarget:_commandEndpoints.sceneEndpoint
                            forProtocol:@protocol(SceneCommands)];
-  [dispatcher startDispatchingToTarget:_settingsEndpoint
+  [dispatcher startDispatchingToTarget:_commandEndpoints.sceneSignInEndpoint
+                           forProtocol:@protocol(SceneSignInCommands)];
+  [dispatcher startDispatchingToTarget:_commandEndpoints.settingsEndpoint
                            forProtocol:@protocol(SettingsCommands)];
-  [dispatcher startDispatchingToTarget:_geminiEndpoint
+  [dispatcher startDispatchingToTarget:_commandEndpoints.geminiEndpoint
                            forProtocol:@protocol(GeminiCommands)];
 }
 

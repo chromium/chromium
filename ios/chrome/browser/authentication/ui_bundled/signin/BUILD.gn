@@ -170,7 +170,7 @@ source_set("signin_in_progress") {
     "signin_in_progress.h",
     "signin_in_progress.mm",
   ]
-  deps = [ "//ios/chrome/browser/shared/public/commands" ]
+  deps = [ "//base" ]
 }
 
 source_set("constants") {

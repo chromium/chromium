@@ -106,6 +106,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -202,6 +203,7 @@ inline LayoutStateScenePassKey PassKey() {
                                 PasswordSettingsCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
+                                SceneSignInCommands,
                                 SceneViewControllerDelegate,
                                 SettingsNavigationControllerDelegate,
                                 UndoSignoutCoordinatorDelegate,
@@ -1794,6 +1796,10 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 #pragma mark - Properties
+
+- (id<SceneSignInCommands>)sceneSignInEndpoint {
+  return self;
+}
 
 - (void)setTabGridDelegate:(id<TabGridCoordinatorDelegate>)delegate {
   _tabGridDelegate = delegate;

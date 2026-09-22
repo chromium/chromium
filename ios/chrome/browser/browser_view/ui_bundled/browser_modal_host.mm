@@ -151,6 +151,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_engine_choice_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -2137,7 +2138,7 @@ const char kContextPanelDismissedHistogram[] =
 - (void)showFullscreenSigninPromo {
   __weak __typeof(_promosManagerCoordinator) weakPromosManagerCoordinator =
       _promosManagerCoordinator;
-  [HandlerForProtocol(self.dispatcher, SceneCommands)
+  [HandlerForProtocol(self.dispatcher, SceneSignInCommands)
       showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
                                                 SigninCoordinatorResult result,
                                                 id<SystemIdentity>) {

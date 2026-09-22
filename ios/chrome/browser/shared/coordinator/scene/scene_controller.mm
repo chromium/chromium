@@ -141,6 +141,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -1586,12 +1587,16 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   _mainCoordinator.tabGridDelegate = self;
   _mainCoordinator.sceneURLLoadingService = _sceneURLLoadingService.get();
 
+  BrowserCommandEndpoints commandEndpoints = {
+      .sceneEndpoint = _mainCoordinator,
+      .settingsEndpoint = _mainCoordinator,
+      .geminiEndpoint = _mainCoordinator,
+      .sceneSignInEndpoint = _mainCoordinator.sceneSignInEndpoint,
+  };
   self.browserLifecycleManager =
       [[BrowserLifecycleManager alloc] initWithProfile:profile
                                             sceneState:sceneState
-                                         sceneEndpoint:_mainCoordinator
-                                      settingsEndpoint:_mainCoordinator
-                                        geminiEndpoint:_mainCoordinator];
+                                      commandEndpoints:commandEndpoints];
 
   // Create and start the BVC.
   [self.browserLifecycleManager createMainCoordinatorAndInterface];
@@ -1891,9 +1896,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
   self.sceneState.profileState.appState.fullscreenSigninPromoPresentedOnce =
       YES;
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      self.mainInterface.browser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler showFullscreenSigninPromoWithCompletion:nil];
+  id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), SceneSignInCommands);
+  [sceneSignInHandler showFullscreenSigninPromoWithCompletion:nil];
 }
 
 - (BOOL)canHandleIntents {
@@ -2097,11 +2102,14 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 
   if (base::FeatureList::IsEnabled(switches::kCrossDeviceSignin)) {
+    id<SceneSignInCommands> sceneSignInHandler =
+        HandlerForProtocol(mainCommandDispatcher, SceneSignInCommands);
     [sceneState
         addAgent:[[CrossDeviceSigninSceneAgent alloc]
                      initWithSceneURLLoadingService:_sceneURLLoadingService
                                                         .get()
-                                       sceneHandler:sceneHandler]];
+                                       sceneHandler:sceneHandler
+                                 sceneSignInHandler:sceneSignInHandler]];
   }
 
   // Add Cobalt scene agent if the feature is enabled and the profile management
