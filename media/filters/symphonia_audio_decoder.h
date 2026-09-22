@@ -71,12 +71,6 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   static bool IsCodecSupported(AudioCodec codec);
 
   // Static test helper methods.
-  static base::expected<scoped_refptr<AudioBuffer>, DecoderStatus>
-  ToMediaAudioBufferForTesting(
-      SymphoniaAudioBuffer&& symphonia_buffer,
-      const ChannelLayoutConfig& layout_config,
-      base::TimeDelta timestamp = base::Microseconds(0));
-
   static SymphoniaPacket ToSymphoniaPacketForTesting(
       const DecoderBuffer& buffer,
       std::optional<base::TimeDelta> first_frame_timestamp = std::nullopt);
@@ -113,6 +107,10 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // May result in zero or more calls to output_cb_.
   DecoderStatus SymphoniaDecode(const DecoderBuffer& buffer);
 
+  // Creates a media::AudioBuffer from the decoded SymphoniaAudioBuffer.
+  scoped_refptr<AudioBuffer> ToMediaAudioBuffer(
+      const SymphoniaAudioBuffer& symphonia_buffer,
+      base::TimeDelta timestamp);
   // Handles (re-)initializing the decoder with a (new) config.
   // Returns DecoderStatus::Codes::kOk if initialization was successful.
   DecoderStatus ConfigureDecoder(const AudioDecoderConfig& config);

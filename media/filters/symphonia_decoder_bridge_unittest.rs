@@ -10,8 +10,8 @@ use num_traits::ToBytes;
 use rust_gtest_interop::prelude::*;
 use symphonia::core::audio::{layouts, AudioBuffer, AudioMut, AudioSpec, GenericAudioBufferRef};
 use symphonia_decoder_bridge::{
-    create_audio_buffer, detect_mpeg_audio_codec_id, ffi, init_symphonia_decoder,
-    SymphoniaRawSampleBuffer,
+    copy_channel_to_slice, copy_samples_to_slice, create_audio_buffer, detect_mpeg_audio_codec_id,
+    ffi, init_symphonia_decoder, SymphoniaRawSampleBuffer,
 };
 
 fn test_conversion<S, E, F>(
@@ -758,5 +758,126 @@ fn test_pcm_large_packet() {
     let decode_result = result.decoder.decode(&packet);
     expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
     expect_eq!(decode_result.buffer.num_frames, 8192);
-    expect_eq!(decode_result.buffer.data.len(), pcm_data.len());
+
+    let mut dst = vec![0u8; pcm_data.len()];
+    expect_true!(result.decoder.copy_decoded_samples(&mut dst));
+    expect_eq!(dst, pcm_data);
+}
+
+// Verify that copy_channel_to_slice copies individual channel planes correctly
+// and handles error conditions safely.
+#[gtest(SymphoniaDecoderBridgeTest, PlanarF32CopyChannelToSlice)]
+fn test_planar_f32_copy_channel_to_slice() {
+    const SAMPLE_RATE: u32 = 48000;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<f32>::new(spec, 3);
+    audio_buf.render_uninit(Some(3));
+
+    // 3 frames = 12 bytes per channel plane.
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[0.25, 0.5, 0.75]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-0.25, -0.5, -0.75]);
+
+    // 32-byte destination plane for channel 0.
+    let mut dst_ch0 = vec![0xAAu8; 32];
+    expect_true!(copy_channel_to_slice(
+        GenericAudioBufferRef::F32(&audio_buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        0,
+        &mut dst_ch0,
+    ));
+    let ch0_samples: Vec<f32> =
+        dst_ch0[0..12].chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
+    expect_eq!(ch0_samples, &[0.25, 0.5, 0.75]);
+    expect_eq!(&dst_ch0[12..32], &[0xAAu8; 20]);
+
+    // 32-byte destination plane for channel 1.
+    let mut dst_ch1 = vec![0xBBu8; 32];
+    expect_true!(copy_channel_to_slice(
+        GenericAudioBufferRef::F32(&audio_buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        1,
+        &mut dst_ch1,
+    ));
+    let ch1_samples: Vec<f32> =
+        dst_ch1[0..12].chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
+    expect_eq!(ch1_samples, &[-0.25, -0.5, -0.75]);
+    expect_eq!(&dst_ch1[12..32], &[0xBBu8; 20]);
+
+    // Out-of-bounds channel should return false.
+    let mut dst_ch2 = vec![0xCCu8; 32];
+    expect_false!(copy_channel_to_slice(
+        GenericAudioBufferRef::F32(&audio_buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        2,
+        &mut dst_ch2,
+    ));
+
+    // Destination buffer too short (< 12 bytes) should return false.
+    let mut dst_short = vec![0u8; 8];
+    expect_false!(copy_channel_to_slice(
+        GenericAudioBufferRef::F32(&audio_buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        0,
+        &mut dst_short,
+    ));
+
+    // Non-F32 buffer format should return false.
+    let s16_buf =
+        AudioBuffer::<i16>::new(AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO), 3);
+    let mut dst_non_f32 = vec![0u8; 32];
+    expect_false!(copy_channel_to_slice(
+        GenericAudioBufferRef::S16(&s16_buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        0,
+        &mut dst_non_f32,
+    ));
+
+    // MP3 codec clamping and NaN handling.
+    let mut mp3_audio_buf =
+        AudioBuffer::<f32>::new(AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO), 4);
+    mp3_audio_buf.render_uninit(Some(4));
+    mp3_audio_buf.plane_mut(0).unwrap().copy_from_slice(&[2.0, -2.0, f32::NAN, 0.5]);
+    let mut dst_mp3 = vec![0u8; 16];
+    expect_true!(copy_channel_to_slice(
+        GenericAudioBufferRef::F32(&mp3_audio_buf),
+        ffi::SymphoniaAudioCodec::Mp3,
+        0,
+        &mut dst_mp3,
+    ));
+    let mp3_samples: Vec<f32> =
+        dst_mp3.chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
+    expect_eq!(mp3_samples, &[1.0, -1.0, 0.0, 0.5]);
+}
+
+// Verify that copy_samples_to_slice handles error conditions safely.
+#[gtest(SymphoniaDecoderBridgeTest, CopySamplesToSliceErrors)]
+fn test_copy_samples_to_slice_errors() {
+    const SAMPLE_RATE: u32 = 48000;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<i16>::new(spec, 4);
+    audio_buf.render_uninit(Some(4));
+    // 4 frames * 2 channels * 2 bytes = 16 bytes.
+    let mut dst_short = vec![0u8; 8];
+    expect_false!(copy_samples_to_slice(
+        GenericAudioBufferRef::S16(&audio_buf),
+        ffi::SymphoniaSampleFormat::S16,
+        &mut dst_short,
+    ));
+
+    let mut dst_valid = vec![0u8; 16];
+    expect_true!(copy_samples_to_slice(
+        GenericAudioBufferRef::S16(&audio_buf),
+        ffi::SymphoniaSampleFormat::S16,
+        &mut dst_valid,
+    ));
+
+    // Planar F32 should return false when passed to copy_samples_to_slice.
+    let f32_buf =
+        AudioBuffer::<f32>::new(AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO), 4);
+    let mut dst_f32 = vec![0u8; 32];
+    expect_false!(copy_samples_to_slice(
+        GenericAudioBufferRef::F32(&f32_buf),
+        ffi::SymphoniaSampleFormat::PlanarF32,
+        &mut dst_f32,
+    ));
 }

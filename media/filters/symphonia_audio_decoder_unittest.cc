@@ -16,11 +16,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
-#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/sample_format.h"
@@ -29,40 +29,10 @@
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/in_memory_url_protocol.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
-
-namespace {
-
-rust::Vec<uint8_t> CreateZeroedRustVec(size_t len) {
-  rust::Vec<uint8_t> data;
-  data.reserve(len);
-  for (size_t i = 0; i < len; ++i) {
-    data.push_back(0);
-  }
-  return data;
-}
-
-SymphoniaAudioBuffer CreateValidSymphoniaBuffer(
-    SymphoniaSampleFormat sample_format = SymphoniaSampleFormat::F32,
-    size_t channel_count = 2,
-    uint32_t sample_rate = 44100,
-    size_t num_frames = 100,
-    uint32_t channel_mask = 0) {
-  SymphoniaAudioBuffer buf;
-  buf.sample_format = sample_format;
-  buf.channel_count = channel_count;
-  buf.sample_rate = sample_rate;
-  buf.num_frames = num_frames;
-  buf.channel_mask = channel_mask;
-  const size_t bytes_per_sample =
-      sample_format == SymphoniaSampleFormat::F32 ? 4 : 2;
-  buf.data = CreateZeroedRustVec(num_frames * channel_count * bytes_per_sample);
-  return buf;
-}
-
-}  // namespace
 
 TEST(SymphoniaAudioDecoderTest, ToSymphoniaPacketNullTimestamp) {
   auto buffer = base::MakeRefCounted<DecoderBuffer>(10);
@@ -149,108 +119,59 @@ TEST(SymphoniaAudioDecoderTest, BackToBackDecodeErrorsFail) {
   }
 }
 
-TEST(SymphoniaAudioDecoderTest, ToMediaAudioBufferValidation) {
-  const ChannelLayoutConfig layout_config = ChannelLayoutConfig::Stereo();
+TEST(SymphoniaAudioDecoderTest, PlanarF32ZeroCopyAudioBusAlignment) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList features(kSymphoniaPcmDecoding);
 
-  // Valid buffer succeeds.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    auto audio_buf_or = SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-        std::move(buf), layout_config, base::Microseconds(0));
-    ASSERT_TRUE(audio_buf_or.has_value());
-    auto audio_buf = std::move(audio_buf_or).value();
-    ASSERT_TRUE(audio_buf);
-    EXPECT_EQ(audio_buf->sample_rate(), 44100);
-    EXPECT_EQ(audio_buf->channel_count(), 2);
-    EXPECT_EQ(audio_buf->frame_count(), 100);
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kPCM, kSampleFormatF32,
+                            ChannelLayoutConfig::Stereo(), 48000,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  base::test::TestFuture<scoped_refptr<AudioBuffer>> output_future;
+  base::test::TestFuture<DecoderStatus> init_future;
+  decoder->Initialize(config, nullptr, init_future.GetCallback(),
+                      output_future.GetRepeatingCallback(), base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
+
+  // 3 stereo frames of interleaved F32 PCM (3 frames * 4 bytes = 12 bytes per
+  // plane, not 32-byte aligned).
+  constexpr std::array<float, 6> kInputSamples = {0.1f,  -0.1f, 0.2f,
+                                                  -0.2f, 0.3f,  -0.3f};
+  auto buf = DecoderBuffer::CopyFrom(
+      base::as_byte_span(base::allow_nonunique_obj, kInputSamples));
+  buf->set_timestamp(base::TimeDelta());
+
+  base::test::TestFuture<DecoderStatus> decode_future;
+  decoder->Decode(std::move(buf), decode_future.GetCallback());
+  EXPECT_TRUE(decode_future.Get().is_ok());
+
+  scoped_refptr<AudioBuffer> decoded = output_future.Take();
+  ASSERT_TRUE(decoded);
+  EXPECT_EQ(decoded->sample_format(), kSampleFormatPlanarF32);
+  EXPECT_EQ(decoded->frame_count(), 3);
+  EXPECT_EQ(decoded->channel_count(), 2);
+
+  // Verify that every channel plane pointer is 32-byte aligned despite the odd
+  // frame count.
+  for (int ch = 0; ch < decoded->channel_count(); ++ch) {
+    EXPECT_TRUE(AudioBus::IsAligned(decoded->channel_data()[ch]));
   }
 
-  // Unknown sample format fails validation.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    buf.sample_format = SymphoniaSampleFormat::Unknown;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-  }
+  // Verify that WrapOrCopyToAudioBus wraps zero-copy instead of falling back
+  // to copying.
+  std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(decoded);
+  ASSERT_TRUE(bus);
+  EXPECT_EQ(bus->channel(0).data(),
+            reinterpret_cast<const float*>(decoded->channel_data()[0].get()));
+  EXPECT_EQ(bus->channel(1).data(),
+            reinterpret_cast<const float*>(decoded->channel_data()[1].get()));
 
-  // Invalid channel count fails validation.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    buf.channel_count = 0;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-
-    buf = CreateValidSymphoniaBuffer();
-    buf.channel_count = limits::kMaxChannels + 1;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-  }
-
-  // Invalid sample rate fails validation.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    buf.sample_rate = 0;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-
-    buf = CreateValidSymphoniaBuffer();
-    buf.sample_rate = limits::kMinSampleRate - 1;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-
-    buf = CreateValidSymphoniaBuffer();
-    buf.sample_rate = limits::kMaxSampleRate + 1;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-  }
-
-  // Invalid frame count fails validation.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    buf.num_frames = 0;
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-
-    buf = CreateValidSymphoniaBuffer();
-    buf.num_frames = static_cast<size_t>(limits::kMaxSamplesPerPacket) + 1;
-    buf.data = CreateZeroedRustVec(100);
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-  }
-
-  // Insufficient data size fails validation.
-  {
-    auto buf = CreateValidSymphoniaBuffer();
-    buf.data.clear();
-    EXPECT_FALSE(SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-                     std::move(buf), layout_config, base::Microseconds(0))
-                     .has_value());
-  }
-
-  // Channel count change with channel_mask == 0 safely resolves layout.
-  {
-    auto buf = CreateValidSymphoniaBuffer(SymphoniaSampleFormat::F32,
-                                          /*channel_count=*/1,
-                                          /*sample_rate=*/44100,
-                                          /*num_frames=*/100,
-                                          /*channel_mask=*/0);
-    auto audio_buf_or = SymphoniaAudioDecoder::ToMediaAudioBufferForTesting(
-        std::move(buf), layout_config, base::Microseconds(0));
-    ASSERT_TRUE(audio_buf_or.has_value());
-    auto audio_buf = std::move(audio_buf_or).value();
-    ASSERT_TRUE(audio_buf);
-    EXPECT_EQ(audio_buf->channel_layout(), CHANNEL_LAYOUT_MONO);
-    EXPECT_NE(audio_buf->channel_layout(), CHANNEL_LAYOUT_NONE);
-    EXPECT_NE(audio_buf->channel_layout(), CHANNEL_LAYOUT_UNSUPPORTED);
-  }
+  EXPECT_THAT(bus->channel(0), testing::ElementsAre(0.1f, 0.2f, 0.3f));
+  EXPECT_THAT(bus->channel(1), testing::ElementsAre(-0.1f, -0.2f, -0.3f));
 }
 
 TEST(SymphoniaAudioDecoderTest, DecodeMp3WithBlockTypeMismatchSucceeds) {
