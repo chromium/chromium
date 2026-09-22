@@ -45,7 +45,7 @@ class TestDistillerPage : public DistillerPage {
   };
 
   TestDistillerPage() {
-    SetMinimumAllowableDistilledContentLengthForTesting(0);
+    SetMinimumAllowableDistilledContentLength(0);
   }
 
   // Configures the mock to simulate a specific result.
@@ -281,7 +281,7 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
       "one two; three. four!  fivefive six, seven, eight nine ten";
   readability_result.Set(kReadabilityTextContent, text_content);
   TestDistillerPage distiller_page;
-  distiller_page.SetMinimumAllowableDistilledContentLengthForTesting(1000);
+  distiller_page.SetMinimumAllowableDistilledContentLength(1000);
   distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
 
   base::RunLoop run_loop;
@@ -301,6 +301,46 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
   histogram_tester_.ExpectUniqueSample(
       "DomDistiller.Distillation.Result",
       DistillationParseResult::kContentTooShort, 1);
+}
+
+TEST_F(DistillerPageTest,
+       DistillationSucceedsWhenCustomLowerMinContentLengthMet) {
+  base::DictValue readability_result;
+  const std::string title = "test_title";
+  readability_result.Set(kReadabilityTitle, title);
+  const std::string content = "test content";
+  readability_result.Set(kReadabilityContent, content);
+  const std::string dir = "ltr";
+  readability_result.Set(kReadabilityDir, dir);
+  const std::string text_content =
+      "one two; three. four!  fivefive six, seven, eight nine ten";
+  readability_result.Set(kReadabilityTextContent, text_content);
+
+  // Use a threshold (10 words) lower than the 100-word Android default and
+  // verify that a 10-word article succeeds.
+  TestDistillerPage distiller_page;
+  distiller_page.SetMinimumAllowableDistilledContentLength(10);
+  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+
+  base::RunLoop run_loop;
+  DistillerPage::DistillerPageCallback cb =
+      base::BindOnce(
+          [](std::string title, std::string content, std::string text_content,
+             std::string dir, int word_count,
+             std::unique_ptr<proto::DomDistillerResult> distilled_page,
+             DistillationParseResult result) {
+            EXPECT_EQ(DistillationParseResult::kSuccess, result);
+            AssertCorrectDomDistillerResult(*distilled_page.get(), title,
+                                            content, text_content, dir,
+                                            word_count);
+          },
+          title, content, text_content, dir, 10)
+          .Then(run_loop.QuitClosure());
+  distiller_page.DistillPage(GURL("http://example.com/success"),
+                             DistillerOptions(), std::move(cb));
+  run_loop.Run();
+  histogram_tester_.ExpectUniqueSample("DomDistiller.Distillation.Result",
+                                       DistillationParseResult::kSuccess, 1);
 }
 #endif
 

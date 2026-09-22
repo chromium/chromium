@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/dom_distiller/core/distiller_options.h"
@@ -70,7 +72,12 @@ class DistillerPage {
   virtual void OnDistillationDone(const GURL& page_url,
                                   const base::Value* value);
 
-  void SetMinimumAllowableDistilledContentLengthForTesting(int length) {
+  // Sets the minimum word count required for distillation to succeed. Shorter
+  // pages fail with `DistillationParseResult::kContentTooShort`. Must be
+  // called when the distiller is idle with a non-negative `length`.
+  void SetMinimumAllowableDistilledContentLength(int length) {
+    DCHECK(ready_);
+    DCHECK_GE(length, 0);
     min_content_length_ = length;
   }
 
