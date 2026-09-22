@@ -10,12 +10,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -26,6 +28,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget.h"
 
 BASE_FEATURE(kAnimationForDesktopCapturePermissionChecker,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -184,6 +187,7 @@ void DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane() {
           type_ == DesktopMediaList::Type::kScreen
               ? "GetDisplayMedia.PermissionPane.Screen.ClickedButton"
               : "GetDisplayMedia.PermissionPane.Window.ClickedButton"));
+      LowerFloatingWidget();
       base::ThreadPool::PostTask(FROM_HERE,
                                  open_screen_recording_settings_callback_);
       return;
@@ -194,6 +198,19 @@ void DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane() {
       break;
   }
   NOTREACHED();
+}
+
+void DesktopMediaPermissionPaneViewMac::LowerFloatingWidget() {
+  // A picker opened from a floating companion surface (e.g. a searchbox popup)
+  // floats above every other application's window, which would include the
+  // System Settings window that is about to be opened. Drop back to the normal
+  // window level so the user can actually reach it. This is not undone: the
+  // permission only takes effect after Chrome restarts, so this picker cannot
+  // outlive the missing permission.
+  views::Widget* const widget = GetWidget();
+  if (widget && widget->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow) {
+    SetMediaPickerFloatingTreatment(widget, false);
+  }
 }
 
 BEGIN_METADATA(DesktopMediaPermissionPaneViewMac)
