@@ -566,6 +566,20 @@ void ContextualCueingController::OnAllEligibilityChecksComplete(
       }
     }
     any_eligible = true;
+
+    CueTarget* target = GetTarget(r.type);
+    if (base::FeatureList::IsEnabled(
+            kContextualCueingV2AllowOverridingUcbScoring) &&
+        target && target->OverridesUcbScoring()) {
+      CUEING_LOG(base::StringPrintf(
+          "  Target '%s' overrides UCB scoring and automatically wins.",
+          GetName(r.type)));
+      best_score = std::numeric_limits<double>::infinity();
+      best_type = r.type;
+      winning_generator = std::move(r.generator);
+      break;
+    }
+
     double score = contextual_cueing_service_->GetUcbScore(r.type);
     CUEING_LOG(base::StringPrintf("  Target '%s' eligible, UCB score: %.4f",
                                   GetName(r.type), score));
