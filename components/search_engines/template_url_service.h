@@ -277,6 +277,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   TemplateURL* GetTemplateURLForHost(const std::string& host);
   const TemplateURL* GetTemplateURLForHost(const std::string& host) const;
 
+  // Looks up `id` and returns the best `TemplateURL` for it. Returns
+  // `nullptr` if the id was not found.
+  TemplateURL* GetTemplateURLForId(TemplateURLID id);
+  const TemplateURL* GetTemplateURLForId(TemplateURLID id) const;
+
   // Returns the `TemplateURL` corresponding to `starter_pack_id`, if any.
   TemplateURL* FindStarterPackTemplateURL(
       template_url_starter_pack_data::StarterPackId starter_pack_id);
@@ -748,6 +753,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   using GUIDToTURL =
       std::map<std::string, raw_ptr<TemplateURL, CtnExperimental>>;
 
+  using IdToTURL =
+      std::map<TemplateURLID, raw_ptr<TemplateURL, CtnExperimental>>;
+
   // A mapping from keywords to the corresponding TemplateURLs.
   // This is a multimap, so the system can
   // efficiently tolerate multiple engines with the same keyword, like from
@@ -806,14 +814,14 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void ApplyInitializersForTesting(
       base::span<const TemplateURLService::Initializer> initializers);
 
-  // Removes |template_url| from various internal maps
-  // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|).
+  // Removes `template_url` from various internal maps
+  // (`keyword_to_turl_`, `guid_to_turl_`, `id_to_turl_`, `provider_map_`).
   void RemoveFromMaps(const TemplateURL* template_url);
 
-  // Adds |template_url| to various internal maps
-  // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|) if
+  // Adds `template_url` to various internal maps
+  // (`keyword_to_turl_`, `guid_to_turl_`, `id_to_turl_`, `provider_map_`) if
   // appropriate.  (It might not be appropriate if, for instance,
-  // |template_url|'s keyword conflicts with the keyword of a custom search
+  // `template_url`'s keyword conflicts with the keyword of a custom search
   // engine already existing in the maps that is not allowed to be replaced.)
   void AddToMaps(TemplateURL* template_url);
 
@@ -1017,6 +1025,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Mapping from Sync GUIDs to the TemplateURL.
   GUIDToTURL guid_to_turl_;
+
+  // Mapping from IDs to the TemplateURL.
+  IdToTURL id_to_turl_;
 
   // Mapping from keyword to TemplateURLs created by the policy.
   base::flat_map<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>

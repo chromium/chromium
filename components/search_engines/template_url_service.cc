@@ -547,6 +547,16 @@ class TemplateURLService::PreLoadingProviders {
         host, &search_terms_data));
   }
 
+  // Returns the best `TemplateURL` found with a URL with the specified `id`,
+  // or nullptr if no such URL can be found.
+  const TemplateURL* GetTemplateURLForId(TemplateURLID id) const {
+    return GetTemplateURLForSelector(base::BindRepeating(
+        [](TemplateURLID id, const TemplateURL& turl) {
+          return turl.id() == id;
+        },
+        id));
+  }
+
  private:
   // Returns a pointer to a `TemplateURL` `t` such that `selector(t) == true`.
   // Prioritizes DSP.
@@ -820,6 +830,21 @@ const TemplateURL* TemplateURLService::GetTemplateURLForHost(
   return loaded_ ? nullptr
                  : pre_loading_providers_->GetTemplateURLForHost(
                        host, search_terms_data());
+}
+
+TemplateURL* TemplateURLService::GetTemplateURLForId(TemplateURLID id) {
+  return const_cast<TemplateURL*>(
+      static_cast<const TemplateURLService*>(this)->GetTemplateURLForId(id));
+}
+
+const TemplateURL* TemplateURLService::GetTemplateURLForId(
+    TemplateURLID id) const {
+  auto elem(id_to_turl_.find(id));
+  if (elem != id_to_turl_.end()) {
+    return elem->second;
+  }
+
+  return loaded_ ? nullptr : pre_loading_providers_->GetTemplateURLForId(id);
 }
 
 TemplateURL* TemplateURLService::Add(
@@ -2752,6 +2777,12 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
     }
   }
 
+  // Remove from `id_to_turl_`.
+  auto it = id_to_turl_.find(template_url->id());
+  if (it != id_to_turl_.end() && it->second == template_url) {
+    id_to_turl_.erase(it);
+  }
+
   if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
     return;
   }
@@ -2778,6 +2809,7 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
 void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   const std::u16string& keyword = template_url->keyword();
   keyword_to_turl_.insert(std::make_pair(keyword, template_url));
+  id_to_turl_.insert(std::make_pair(template_url->id(), template_url));
 
   if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
     return;

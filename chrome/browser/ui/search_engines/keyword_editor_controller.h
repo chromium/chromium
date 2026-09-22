@@ -86,7 +86,7 @@ class KeywordEditorController {
   // deactivates it if false.
   void SetIsActiveTemplateURL(TemplateURLID id, bool is_active);
 
-  // Return true if the |url_model_| data is loaded.
+  // Return true if the |template_url_service_| data is loaded.
   bool loaded() const;
 
   // Return the TemplateURL corresponding to the `id`. Returns
@@ -101,10 +101,7 @@ class KeywordEditorController {
   void Refresh();
 
  private:
-  raw_ptr<TemplateURLService> url_model_;
-
-  // Mapping from IDs to the TemplateURL.
-  absl::flat_hash_map<TemplateURLID, TemplateURL*> id_to_turl_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;
