@@ -1859,18 +1859,17 @@ targets.tests.isolated_script_test(
     name = "ondevice_stability_tests_light",
 )
 
-# TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
-# targets.tests.isolated_script_test(
-#     name = "litert_e2e_tests_gpu",
-#     mixins = [
-#         "has_native_resultdb_integration",
-#     ],
-#     args = [
-#         "--benchmark_binary_dir=./",
-#         "--backends=gpu",
-#     ],
-#     binary = "litert_e2e_tests",
-# )
+targets.tests.isolated_script_test(
+    name = "litert_e2e_tests_gpu",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--benchmark_binary_dir=./",
+        "--backends=gpu",
+    ],
+    binary = "litert_e2e_tests",
+)
 
 targets.tests.isolated_script_test(
     name = "litert_e2e_tests_cpu",

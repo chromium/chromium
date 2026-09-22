@@ -2300,6 +2300,21 @@
       },
     },
 
+    'litert_e2e_tests_gpu_suite': {
+      'litert_e2e_tests_gpu': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--benchmark_binary_dir=./',
+            '--backends=gpu',
+          ],
+        },
+        'test': 'litert_e2e_tests',
+      },
+    },
+
     'litert_lm_advanced_main_legacy_tests_cpu_suite': {
       'litert_lm_advanced_main_legacy_tests_cpu': {
         'test_common': {
@@ -3512,6 +3527,12 @@
           'non-gce',
         ],
       },
+      'litert_e2e_tests_gpu_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
       'litert_lm_advanced_main_legacy_tests_cpu_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
@@ -3539,6 +3560,7 @@
       'chrome_ai_wpt_tests_manifest_gemma4_suite': {},
       'chrome_ai_wpt_tests_manifest_suite': {},
       'litert_e2e_tests_cpu_suite': {},
+      'litert_e2e_tests_gpu_suite': {},
       'litert_lm_advanced_main_legacy_tests_cpu_suite': {},
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
@@ -3596,6 +3618,12 @@
         ],
       },
       'litert_e2e_tests_cpu_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'litert_e2e_tests_gpu_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'non-gce',
