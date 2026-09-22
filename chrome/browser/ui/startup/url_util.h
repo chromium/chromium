@@ -17,11 +17,13 @@ namespace startup {
 // integrations (such as local file: access and approved settings reset pages).
 bool ValidateLaunchUrlWebUnsafe(const GURL& url);
 
-// Validates a custom scheme redirect initiated by an untrusted web page running
-// inside a browser tab or iframe.
+// Validates a URL originating from an untrusted source, such as a custom
+// scheme redirect from a web page or a synchronized startup preference.
 //
-// This represents a WebSafe/In-Browser context. It strictly permits only
-// standard, low-privilege web schemes (http, https, about:blank).
+// This represents a WebSafe/In-Browser context. It is an explicit allowlist of
+// http, https and about:blank. Note that this is deliberately stricter than
+// ChildProcessSecurityPolicy::IsWebSafeScheme(), which also admits data:, ws:,
+// wss: and schemes registered via navigator.registerProtocolHandler().
 //
 // Banned nested schemes (filesystem: and blob:) are explicitly rejected to
 // prevent web pages from laundering privileged origins through WebSafe schemes.

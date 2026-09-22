@@ -421,5 +421,9 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
     public interface Natives {
         @JniType("std::vector<std::string>")
         List<String> getSessionStartupUrls(@JniType("PrefService*") PrefService prefService);
+
+        void setSessionStartupUrlsForTesting(
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("std::vector<std::string>") List<String> urls);
     }
 }
