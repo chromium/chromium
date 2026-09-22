@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 
+@class AutofillLegalMessageLine;
 @class TableViewItem;
 
 // Fake consumer for AutofillAIEntityEditMediator and Coordinator tests.
@@ -28,6 +29,9 @@
 
 // User email with the account.
 @property(nonatomic, strong) NSString* userEmail;
+
+// The legal message lines passed to the consumer.
+@property(nonatomic, strong) NSArray<AutofillLegalMessageLine*>* legalMessages;
 
 // YES if `setLoadingState:YES` was called on the consumer.
 @property(nonatomic, assign) BOOL showLoadingStateCalled;

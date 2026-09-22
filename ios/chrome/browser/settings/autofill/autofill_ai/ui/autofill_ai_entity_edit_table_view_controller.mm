@@ -7,7 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -31,6 +33,14 @@ namespace {
 // 16pt padding to make the combined padding between attributes and
 // the footer text 24pt.
 constexpr CGFloat kAttributesSectionFooterHeight = 16.0;
+
+// Blank line separating the storage notice from the disclosure legal messages
+// in the footer text.
+NSString* const kStorageNoticeSeparator = @"\n\n";
+
+// Line break separating consecutive disclosure legal messages in the footer
+// text.
+NSString* const kDisclosureLegalMessageSeparator = @"\n";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAttributes = kSectionIdentifierEnumZero,
@@ -59,6 +69,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // The user's email address to display in the footer.
   NSString* _userEmail;
+
+  // Legal message lines to display in the footer.
+  NSArray<AutofillLegalMessageLine*>* _legalMessages;
 
   // The bottom save button displayed when creating a new entity.
   ChromeButton* _saveButton;
@@ -152,20 +165,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  TableViewLinkHeaderFooterItem* footer =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-
-  if (_isServerWalletItem && _userEmail.length > 0) {
-    footer.text = autofill::GetSaveEntityToWalletFooterText(_userEmail);
-    footer.urls =
-        @[ [[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()] ];
-  } else {
-    footer.text =
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER);
+  if (![model hasSectionForSectionIdentifier:SectionIdentifierFooter]) {
+    [model addSectionWithIdentifier:SectionIdentifierFooter];
   }
-
-  [model addSectionWithIdentifier:SectionIdentifierFooter];
-  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierFooter];
+  [model setFooter:[self createFooterItem]
+      forSectionWithIdentifier:SectionIdentifierFooter];
 }
 
 #pragma mark - Setup
@@ -253,6 +257,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setUserEmail:(NSString*)userEmail {
   _userEmail = [userEmail copy];
+}
+
+// Sets the legal messages to be displayed in the footer.
+// Note: This does not dynamically reload the footer if the view is already
+// loaded, intentionally preventing legal disclosures from jarringly appearing
+// mid-session (e.g. while the user is typing or scrolling). Re-entering the
+// view (e.g. closing and tapping "+Add" again) creates a brand new
+// `UIViewController` instance, so the updated legal messages will be cleanly
+// rendered during the next presentation's initial `loadModel`.
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
+  _legalMessages = [legalMessages copy];
 }
 
 - (void)updateItem:(TableViewItem*)item {
@@ -810,6 +825,66 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
   _isTransitioningDatePickerStyle = NO;
+}
+
+// Returns the storage notice text shown at the top of the footer, which
+// explains where the entity is saved (this device or Google Wallet). This text
+// is authored by Chrome, as opposed to the disclosure legal messages below it,
+// which come from the server. Appends the URL it links to, if any, to `urls`.
+- (NSString*)textForStorageNoticeAppendingURLsTo:(NSMutableArray<CrURL*>*)urls {
+  if (!_isServerWalletItem || _userEmail.length == 0) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER);
+  }
+
+  // Entities already stored in Wallet cannot be updated from settings, so the
+  // Wallet notice always describes saving the entity to Wallet.
+  [urls
+      addObject:[[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()]];
+  return autofill::GetSaveEntityToWalletFooterText(_userEmail);
+}
+
+// Creates and configures the footer item based on current model data.
+// TODO(crbug.com/560036149): Dynamically reload the table view footer. Any
+// property contributing to `createFooterItem`, such as `_isServerWalletItem`,
+// `_userEmail` and `_legalMessages`, must ensure the footer reflects its
+// updated state. Such a change must preserve the deliberate behavior documented
+// on `setLegalMessages:`, which keeps disclosures from appearing mid-session.
+- (TableViewLinkHeaderFooterItem*)createFooterItem {
+  // `urls` must be filled in the same order the links appear in the text, so
+  // the storage notice is built before the disclosure legal messages.
+  NSMutableArray<CrURL*>* urls = [NSMutableArray array];
+  NSString* storageNoticeText = [self textForStorageNoticeAppendingURLsTo:urls];
+
+  NSMutableArray<NSString*>* disclosureLegalMessageTexts =
+      [NSMutableArray array];
+  for (AutofillLegalMessageLine* disclosureLegalMessage in _legalMessages) {
+    NSString* lineText = autofill::TextForDisclosureLegalMessageAppendingURLsTo(
+        disclosureLegalMessage, urls);
+    if (lineText.length > 0) {
+      [disclosureLegalMessageTexts addObject:lineText];
+    }
+  }
+
+  // The disclosure legal messages form a single block, separated from the
+  // storage notice by a blank line.
+  BOOL hasLegalMessages = disclosureLegalMessageTexts.count > 0;
+  NSString* text = storageNoticeText;
+  if (hasLegalMessages) {
+    text = [NSString
+        stringWithFormat:
+            @"%@%@%@", storageNoticeText, kStorageNoticeSeparator,
+            [disclosureLegalMessageTexts
+                componentsJoinedByString:kDisclosureLegalMessageSeparator]];
+  }
+
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  footer.text = text;
+  footer.urls = urls;
+  if (hasLegalMessages) {
+    footer.accessibilityIdentifier = kAutofillAISaveEntityLegalDisclosureId;
+  }
+  return footer;
 }
 
 @end

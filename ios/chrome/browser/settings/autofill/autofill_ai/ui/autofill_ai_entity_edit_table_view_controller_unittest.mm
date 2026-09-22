@@ -8,7 +8,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_date_picker_input_view.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -398,6 +400,109 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestSelectDateItem) {
   if (ShouldUsePopoverForDatePicker(view_controller.view)) {
     [mock_view_controller verify];
   }
+}
+
+// Tests that the footer displays the default storage notice and has no
+// accessibility identifier when no legal messages are provided.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestDefaultFooterWithoutLegalMessages) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  [view_controller loadModel];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER),
+              footerItem.text);
+  ASSERT_EQ(0U, footerItem.urls.count);
+
+  UIView* footerView = [view_controller tableView:view_controller.tableView
+                           viewForFooterInSection:1];
+  ASSERT_TRUE([footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
+  EXPECT_EQ(nil, footerView.accessibilityIdentifier);
+}
+
+// Tests that the footer displays both storage notice and formatted legal
+// messages when legal messages are set.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestFooterWithLegalMessages) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  AutofillLegalMessageLine* line = [[AutofillLegalMessageLine alloc] init];
+  line.messageText = @"By continuing, you agree to the Google Terms.";
+  line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(32, 12)] ];
+  line.linkURLs = {GURL("https://policies.google.com/terms")};
+
+  [view_controller setLegalMessages:@[ line ]];
+  [view_controller loadModel];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  NSString* expectedText = [NSString
+      stringWithFormat:
+          @"%@\n\nBy continuing, you agree to the BEGIN_LINKGoogle "
+          @"TermsEND_LINK.",
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER)];
+  EXPECT_NSEQ(expectedText, footerItem.text);
+  ASSERT_EQ(1U, footerItem.urls.count);
+  EXPECT_EQ(GURL("https://policies.google.com/terms"), footerItem.urls[0].gurl);
+
+  UIView* footerView = [view_controller tableView:view_controller.tableView
+                           viewForFooterInSection:1];
+  ASSERT_TRUE([footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
+  EXPECT_NSEQ(kAutofillAISaveEntityLegalDisclosureId,
+              footerView.accessibilityIdentifier);
+}
+
+// Tests that setting legal messages after the view is already loaded does not
+// mutate or reload the footer for the active session.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestSetLegalMessagesAfterViewLoadedDoesNotMutateFooter) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  [view_controller loadViewIfNeeded];
+
+  AutofillLegalMessageLine* line = [[AutofillLegalMessageLine alloc] init];
+  line.messageText = @"Privacy Policy";
+  line.linkRanges = @[ [NSValue valueWithRange:NSMakeRange(0, 14)] ];
+  line.linkURLs = {GURL("https://policies.google.com/privacy")};
+
+  [view_controller setLegalMessages:@[ line ]];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER),
+              footerItem.text);
+  ASSERT_EQ(0U, footerItem.urls.count);
+
+  UIView* footerView = [view_controller tableView:view_controller.tableView
+                           viewForFooterInSection:1];
+  ASSERT_TRUE([footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
+  EXPECT_EQ(nil, footerView.accessibilityIdentifier);
+}
+
+// Tests that tapping a link in the footer notifies the delegate.
+TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapLinkWithURL) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  CrURL* testURL =
+      [[CrURL alloc] initWithGURL:GURL("https://policies.google.com/terms")];
+  OCMExpect([mock_delegate_ didTapLinkWithURL:testURL]);
+
+  [view_controller view:nil didTapLinkURL:testURL];
+
+  [mock_delegate_ verify];
 }
 
 }  // namespace

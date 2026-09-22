@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class AutofillLegalMessageLine;
 @class TableViewItem;
 
 // Defines the presentation and behavioral mode of the view controller.
@@ -37,6 +38,9 @@ enum class AutofillAIEntityEditMode {
 
 // Sets the user email.
 - (void)setUserEmail:(NSString*)userEmail;
+
+// Sets the legal disclosure messages to be displayed in the footer.
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;

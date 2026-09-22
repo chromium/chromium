@@ -9,6 +9,8 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -181,6 +183,43 @@ NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name) {
 NSString* WrapInLinkTags(NSString* text) {
   return
       [NSString stringWithFormat:@"%@%@%@", kBeginLinkTag, text, kEndLinkTag];
+}
+
+NSString* TextForDisclosureLegalMessageAppendingURLsTo(
+    AutofillLegalMessageLine* legal_message,
+    NSMutableArray<CrURL*>* urls) {
+  NSString* lineText = legal_message.messageText;
+  NSArray<NSValue*>* linkRanges = legal_message.linkRanges;
+  const std::vector<GURL>& linkURLs = legal_message.linkURLs;
+
+  NSMutableArray<NSString*>* fragments = [NSMutableArray array];
+  NSUInteger currentIndex = 0;
+  for (NSUInteger i = 0; i < linkRanges.count && i < linkURLs.size(); ++i) {
+    NSRange range = [linkRanges[i] rangeValue];
+    if (range.location == NSNotFound || range.location < currentIndex ||
+        NSMaxRange(range) > lineText.length) {
+      continue;
+    }
+
+    [fragments
+        addObject:[lineText substringWithRange:NSMakeRange(currentIndex,
+                                                           range.location -
+                                                               currentIndex)]];
+
+    NSString* linkText = [lineText substringWithRange:range];
+    const GURL& url = linkURLs[i];
+    if (url.is_valid()) {
+      [fragments addObject:WrapInLinkTags(linkText)];
+      [urls addObject:[[CrURL alloc] initWithGURL:url]];
+    } else {
+      [fragments addObject:linkText];
+    }
+
+    currentIndex = NSMaxRange(range);
+  }
+
+  [fragments addObject:[lineText substringFromIndex:currentIndex]];
+  return [fragments componentsJoinedByString:@""];
 }
 
 NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
