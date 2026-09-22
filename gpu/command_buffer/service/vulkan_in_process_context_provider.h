@@ -13,6 +13,7 @@
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -26,7 +27,8 @@ struct GPUInfo;
 
 class GPU_GLES2_EXPORT VulkanInProcessContextProvider
     : public VulkanContextProvider,
-      public base::MemoryConsumer {
+      public base::MemoryConsumer,
+      public gpu::GraphiteSharedContext::Delegate {
  public:
   // If |sync_cpu_memory_limit| is set and greater than zero, it is the
   // threshold above which GPU work should be synchronized with the CPU to free
@@ -62,15 +64,23 @@ class GPU_GLES2_EXPORT VulkanInProcessContextProvider
   void Destroy();
 
   // VulkanContextProvider implementation
+  bool InitializeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options) override;
   bool InitializeGrContext(const GrContextOptions& context_options) override;
   VulkanImplementation* GetVulkanImplementation() override;
   VulkanDeviceQueue* GetDeviceQueue() override;
   GrDirectContext* GetGrContext() override;
+  GraphiteSharedContext* GetGraphiteContext() override;
   GrVkSecondaryCBDrawContext* GetGrSecondaryCBDrawContext() override;
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
   std::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
+
+  // GraphiteSharedContext::Delegate implementation:
+  void FlushBackend() override;
+  void MarkContextLost(gpu::error::ContextLostReason reason) override;
+  bool IsContextLost() const override;
 
  private:
   friend class VulkanInProcessContextProviderTest;
@@ -95,6 +105,7 @@ class GPU_GLES2_EXPORT VulkanInProcessContextProvider
   uint32_t GetCurrentGpuMemoryUsage() const;
 
   sk_sp<GrDirectContext> gr_context_;
+  std::unique_ptr<GraphiteSharedContext> graphite_context_;
   raw_ptr<VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<VulkanDeviceQueue> device_queue_;
   const uint32_t heap_memory_limit_;
@@ -103,6 +114,8 @@ class GPU_GLES2_EXPORT VulkanInProcessContextProvider
   std::atomic<base::TimeTicks> critical_memory_pressure_expiration_time_;
   std::atomic<uint32_t> active_sync_cpu_memory_limit_;
 #endif
+
+  std::atomic<bool> context_lost_ = false;
 
   std::unique_ptr<base::AsyncMemoryConsumerRegistration>
       memory_consumer_registration_;

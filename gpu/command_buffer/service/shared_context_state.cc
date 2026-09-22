@@ -391,6 +391,11 @@ gpu::GraphiteSharedContext* SharedContextState::graphite_shared_context()
     return dawn_context_provider_->GetGraphiteSharedContext();
   }
 #endif
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+  if (vk_context_provider_) {
+    return vk_context_provider_->GetGraphiteContext();
+  }
+#endif
   return nullptr;
 }
 
@@ -404,6 +409,11 @@ bool SharedContextState::IsUsingGL() const {
 bool SharedContextState::IsGraphiteDawn() const {
   return gr_context_type() == GrContextType::kGraphiteDawn &&
          dawn_context_provider();
+}
+
+bool SharedContextState::IsGraphiteVulkan() const {
+  return gr_context_type() == GrContextType::kGraphiteVulkan &&
+         vk_context_provider();
 }
 
 bool SharedContextState::IsGraphiteDawnMetal() const {
@@ -475,7 +485,8 @@ bool SharedContextState::InitializeSkia(
     return true;
   }
 
-  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
+  if (gr_context_type_ == GrContextType::kGraphiteDawn ||
+      gr_context_type_ == GrContextType::kGraphiteVulkan) {
     return InitializeGraphite(gpu_preferences, workarounds,
                               use_shader_cache_shm_count);
   }
@@ -610,15 +621,23 @@ bool SharedContextState::InitializeGraphite(
 
   gpu::GraphiteSharedContext* graphite_shared_context = nullptr;
 
+  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  CHECK_EQ(gr_context_type_, GrContextType::kGraphiteDawn);
-  CHECK(dawn_context_provider_);
-  if (dawn_context_provider_->InitializeGraphiteContext(
-          context_options, use_shader_cache_shm_count)) {
-    graphite_shared_context =
-        dawn_context_provider_->GetGraphiteSharedContext();
-  }
+    CHECK(dawn_context_provider_);
+    if (dawn_context_provider_->InitializeGraphiteContext(
+            context_options, use_shader_cache_shm_count)) {
+      graphite_shared_context =
+          dawn_context_provider_->GetGraphiteSharedContext();
+    }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
+  } else if (gr_context_type_ == GrContextType::kGraphiteVulkan) {
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+    CHECK(vk_context_provider_);
+    if (vk_context_provider_->InitializeGraphiteContext(context_options)) {
+      graphite_shared_context = vk_context_provider_->GetGraphiteContext();
+    }
+#endif  // BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+  }
 
   if (!graphite_shared_context) {
     // Note: the caller will handle this case by exiting the GPU process.
@@ -1442,7 +1461,7 @@ int32_t SharedContextState::GetMaxTextureSize() {
   if (IsUsingGL()) {
     gl::GLApi* const api = gl::g_current_gl_context;
     api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  } else if (GrContextIsVulkan()) {
+  } else if (GrContextIsVulkan() || IsGraphiteVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     max_texture_size = vk_context_provider()
                            ->GetDeviceQueue()

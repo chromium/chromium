@@ -138,6 +138,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool IsGraphiteDawnD3D12() const;
   bool IsGraphiteDawnVulkan() const;
   bool IsGraphiteDawnVulkanSwiftShader() const;
+  bool IsGraphiteVulkan() const;
 
   bool InitializeGL(const GpuPreferences& gpu_preferences,
                     const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,

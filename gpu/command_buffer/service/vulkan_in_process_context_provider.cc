@@ -15,6 +15,7 @@
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/buildflags.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -23,11 +24,16 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/vk/VulkanGraphiteContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
 #include "third_party/skia/include/gpu/vk/VulkanTypes.h"
+
+namespace gpu {
 
 namespace {
 
@@ -44,9 +50,71 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     // Pre-determined by AsyncMemoryConsumerRegistration on the GPU thread.
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous);
 
-}  // namespace
+skgpu::VulkanBackendContext GetBackendContextParams(
+    VulkanImplementation* vulkan_implementation_,
+    VulkanDeviceQueue* device_queue_,
+    skgpu::VulkanExtensions& vk_extensions) {
+  skgpu::VulkanBackendContext backend_context;
+  backend_context.fInstance = device_queue_->GetVulkanInstance();
+  backend_context.fPhysicalDevice = device_queue_->GetVulkanPhysicalDevice();
+  backend_context.fDevice = device_queue_->GetVulkanDevice();
+  backend_context.fQueue = device_queue_->GetVulkanQueue();
+  backend_context.fGraphicsQueueIndex = device_queue_->GetVulkanQueueIndex();
+  backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
+                                       ->vulkan_info()
+                                       .used_api_version;
+  backend_context.fMemoryAllocator = device_queue_->GetSkiaVkMemoryAllocator();
+  skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
+                                     VkDevice device) {
+    if (device) {
+      // Using vkQueue*Hook for all vkQueue* methods here to make both chrome
+      // side access and skia side access to the same queue thread safe.
+      // vkQueue*Hook routes all skia side access to the same
+      // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
+      // lock.
+      std::string_view proc_name_view(proc_name);
+      if (proc_name_view == "vkCreateGraphicsPipelines") {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::CreateGraphicsPipelinesHook);
+      } else if (proc_name_view == "vkQueueSubmit") {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueSubmitHook);
+      } else if (proc_name_view == "vkQueueWaitIdle") {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueWaitIdleHook);
+      } else if (proc_name_view == "vkQueuePresentKHR") {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueuePresentKHRHook);
+      }
+      return vkGetDeviceProcAddr(device, proc_name);
+    }
+    return vkGetInstanceProcAddr(instance, proc_name);
+  };
 
-namespace gpu {
+  const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
+                                        ->vulkan_info()
+                                        .enabled_instance_extensions;
+
+  std::vector<const char*> device_extensions;
+  device_extensions.reserve(device_queue_->enabled_extensions().size());
+  for (const auto& extension : device_queue_->enabled_extensions()) {
+    device_extensions.push_back(extension.data());
+  }
+  vk_extensions.init(get_proc,
+                     vulkan_implementation_->GetVulkanInstance()->vk_instance(),
+                     device_queue_->GetVulkanPhysicalDevice(),
+                     instance_extensions.size(), instance_extensions.data(),
+                     device_extensions.size(), device_extensions.data());
+  backend_context.fVkExtensions = &vk_extensions;
+  backend_context.fDeviceFeatures2 =
+      &device_queue_->enabled_device_features_2();
+  backend_context.fGetProc = get_proc;
+  backend_context.fProtectedContext = GrProtected::kNo;
+
+  return backend_context;
+}
+
+}  // namespace
 
 // static
 scoped_refptr<VulkanInProcessContextProvider>
@@ -145,64 +213,33 @@ void VulkanInProcessContextProvider::InitializeForCompositorGpuThread(
   device_queue_ = std::move(vulkan_device_queue);
 }
 
+bool VulkanInProcessContextProvider::InitializeGraphiteContext(
+    const skgpu::graphite::ContextOptions& options) {
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+  skgpu::VulkanExtensions vk_extensions;
+  auto backend_context = GetBackendContextParams(
+      vulkan_implementation_, device_queue_.get(), vk_extensions);
+  auto graphite_context =
+      skgpu::graphite::ContextFactory::MakeVulkan(backend_context, options);
+  if (!graphite_context) {
+    return false;
+  }
+
+  graphite_context_ = std::make_unique<gpu::GraphiteSharedContext>(
+      std::move(graphite_context), nullptr, /*is_thread_safe=*/false,
+      features::SkiaGraphiteMaxPendingRecordings(), this);
+
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+}
+
 bool VulkanInProcessContextProvider::InitializeGrContext(
     const GrContextOptions& context_options) {
-  skgpu::VulkanBackendContext backend_context;
-  backend_context.fInstance = device_queue_->GetVulkanInstance();
-  backend_context.fPhysicalDevice = device_queue_->GetVulkanPhysicalDevice();
-  backend_context.fDevice = device_queue_->GetVulkanDevice();
-  backend_context.fQueue = device_queue_->GetVulkanQueue();
-  backend_context.fGraphicsQueueIndex = device_queue_->GetVulkanQueueIndex();
-  backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
-                                       ->vulkan_info()
-                                       .used_api_version;
-  backend_context.fMemoryAllocator = device_queue_->GetSkiaVkMemoryAllocator();
-
-  skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
-                                     VkDevice device) {
-    if (device) {
-      // Using vkQueue*Hook for all vkQueue* methods here to make both chrome
-      // side access and skia side access to the same queue thread safe.
-      // vkQueue*Hook routes all skia side access to the same
-      // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
-      // lock.
-      std::string_view proc_name_view(proc_name);
-      if (proc_name_view == "vkCreateGraphicsPipelines") {
-        return reinterpret_cast<PFN_vkVoidFunction>(
-            &CreateGraphicsPipelinesHook);
-      } else if (proc_name_view == "vkQueueSubmit") {
-        return reinterpret_cast<PFN_vkVoidFunction>(&VulkanQueueSubmitHook);
-      } else if (proc_name_view == "vkQueueWaitIdle") {
-        return reinterpret_cast<PFN_vkVoidFunction>(&VulkanQueueWaitIdleHook);
-      } else if (proc_name_view == "vkQueuePresentKHR") {
-        return reinterpret_cast<PFN_vkVoidFunction>(&VulkanQueuePresentKHRHook);
-      }
-      return vkGetDeviceProcAddr(device, proc_name);
-    }
-    return vkGetInstanceProcAddr(instance, proc_name);
-  };
-
-  const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
-                                        ->vulkan_info()
-                                        .enabled_instance_extensions;
-
-  std::vector<const char*> device_extensions;
-  device_extensions.reserve(device_queue_->enabled_extensions().size());
-  for (const auto& extension : device_queue_->enabled_extensions()) {
-    device_extensions.push_back(extension.data());
-  }
   skgpu::VulkanExtensions vk_extensions;
-  vk_extensions.init(get_proc,
-                     vulkan_implementation_->GetVulkanInstance()->vk_instance(),
-                     device_queue_->GetVulkanPhysicalDevice(),
-                     instance_extensions.size(), instance_extensions.data(),
-                     device_extensions.size(), device_extensions.data());
-  backend_context.fVkExtensions = &vk_extensions;
-  backend_context.fDeviceFeatures2 =
-      &device_queue_->enabled_device_features_2();
-  backend_context.fGetProc = get_proc;
-  backend_context.fProtectedContext = GrProtected::kNo;
-
+  auto backend_context = GetBackendContextParams(
+      vulkan_implementation_, device_queue_.get(), vk_extensions);
   gr_context_ = GrDirectContexts::MakeVulkan(backend_context, context_options);
 
   return gr_context_ != nullptr;
@@ -221,6 +258,8 @@ void VulkanInProcessContextProvider::Destroy() {
     // execute pending flush done callbacks and release all resources.
     gr_context_->releaseResourcesAndAbandonContext();
     gr_context_.reset();
+  } else if (graphite_context_) {
+    graphite_context_.reset();
   }
 
   if (device_queue_) {
@@ -242,6 +281,11 @@ GrDirectContext* VulkanInProcessContextProvider::GetGrContext() {
   return gr_context_.get();
 }
 
+gpu::GraphiteSharedContext*
+VulkanInProcessContextProvider::GetGraphiteContext() {
+  return graphite_context_.get();
+}
+
 GrVkSecondaryCBDrawContext*
 VulkanInProcessContextProvider::GetGrSecondaryCBDrawContext() {
   return nullptr;
@@ -255,6 +299,19 @@ void VulkanInProcessContextProvider::EnqueueSecondaryCBSemaphores(
 void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
     base::OnceClosure closure) {
   NOTREACHED();
+}
+
+void VulkanInProcessContextProvider::FlushBackend() {
+  // Do nothing as this is Windows specific.
+}
+
+void VulkanInProcessContextProvider::MarkContextLost(
+    gpu::error::ContextLostReason reason) {
+  context_lost_.store(true, std::memory_order::relaxed);
+}
+
+bool VulkanInProcessContextProvider::IsContextLost() const {
+  return context_lost_.load(std::memory_order::relaxed);
 }
 
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
