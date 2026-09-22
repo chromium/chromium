@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -112,6 +113,29 @@ extern const char kGetCoordinatesJS[];
 // handle that, so if that is important for a test, it must manually call
 // `releasePointerCapture('*')`.
 std::string AddMockPointerCaptureFunctions(const char* target);
+
+// Maximum number of animation frames (~800ms at 60Hz) to wait for asynchronous
+// Mojo state changes and Lit element render cycles to settle before timing out.
+// Tests typically finish within 1-2 frames; this constant serves as an upper
+// bound to fail quickly rather than hanging until the browser test timeout.
+inline constexpr int kMaxWebUIWaitFrames = 50;
+
+// JavaScript snippet defining `findDeep(root, selectorOrPredicate)` to search
+// through open Shadow DOM trees to find an element matching either a CSS
+// selector string or a predicate function.
+extern const char kFindDeepJS[];
+
+// Fast-forwards and completes all active animations and CSS transitions across
+// all open ShadowRoot subtrees in `web_contents`.
+// If `custom_wait_js` is non-empty, it is executed first inside the async
+// runner before animations are gathered and finished. Note that
+// `findDeep(root, selectorOrPredicate)` is automatically defined in the script
+// context and is available to `custom_wait_js`.
+// Returns AssertionSuccess if the execution succeeds, or AssertionFailure with
+// the failure message if it fails.
+[[nodiscard]] ::testing::AssertionResult FinishWebUIAnimations(
+    content::WebContents* web_contents,
+    std::string_view custom_wait_js = "");
 
 // Dispatches an event to a WebUI toolbar button.
 // `selector`: The CSS selector for the button element.

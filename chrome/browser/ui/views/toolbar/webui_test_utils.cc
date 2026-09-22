@@ -980,3 +980,92 @@ void NavigationCounter::WaitForNoNavigations() {
   run_loop.Run();
   EXPECT_EQ(navigation_count_, 0u);
 }
+
+const char kFindDeepJS[] = R"(
+  function findDeep(root, selectorOrPredicate) {
+    if (!root) return null;
+    if (typeof selectorOrPredicate === 'string') {
+      if (root.matches?.(selectorOrPredicate)) return root;
+      const found = root.querySelector(selectorOrPredicate) ||
+                    root.shadowRoot?.querySelector(selectorOrPredicate);
+      if (found) return found;
+    } else if (selectorOrPredicate(root)) {
+      return root;
+    }
+    const children = [
+      ...(root.children || []),
+      ...(root.shadowRoot ? Array.from(root.shadowRoot.children) : []),
+    ];
+    for (const child of children) {
+      const found = findDeep(child, selectorOrPredicate);
+      if (found) return found;
+    }
+    return null;
+  }
+)";
+
+namespace {
+
+const char kGetAllAnimationsJS[] = R"(
+  function getAllAnimations(root) {
+    const anims = [];
+    function traverse(node) {
+      if (!node) return;
+      if (node.shadowRoot) {
+        anims.push(...node.shadowRoot.getAnimations());
+        for (const child of node.shadowRoot.children) {
+          traverse(child);
+        }
+      }
+      anims.push(...node.getAnimations());
+      for (const child of node.children || []) {
+        traverse(child);
+      }
+    }
+
+    anims.push(...document.getAnimations());
+    traverse(root);
+    return Array.from(new Set(anims));
+  }
+)";
+
+}  // namespace
+
+::testing::AssertionResult FinishWebUIAnimations(
+    content::WebContents* web_contents,
+    std::string_view custom_wait_js) {
+  if (!web_contents) {
+    return ::testing::AssertionFailure() << "web_contents is null";
+  }
+  const std::string script = base::StringPrintf(
+      R"((async () => {
+        %s
+        %s
+        %s
+        // Await an animation frame so that style and layout calculations run,
+        // ensuring any CSS transitions triggered by the preceding state changes
+        // or Lit renders are instantiated before we query animations.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const anims = getAllAnimations(document.body);
+        for (const anim of anims) {
+          try {
+            anim.finish();
+          } catch (e) {
+            // anim.finish() throws an
+            // InvalidStateError/InvalidModificationError if the animation has
+            // infinite iterations (e.g. infinite spin loaders) or an unresolved
+            // playback rate. In that case, attempt to fast-forward currentTime
+            // to the end of the duration as a fallback.
+            try {
+              anim.currentTime = anim.effect?.getTiming()?.duration || 0;
+            } catch (e2) {}
+          }
+        }
+        // Await a final animation frame so layout updates after fast-forwarding
+        // animations are committed and painted.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      })())",
+      kFindDeepJS, kGetAllAnimationsJS,
+      custom_wait_js.empty() ? "" : std::string(custom_wait_js).c_str());
+  return content::ExecJs(web_contents, script);
+}

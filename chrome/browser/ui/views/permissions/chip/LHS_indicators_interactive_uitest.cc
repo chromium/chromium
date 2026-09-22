@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,6 +43,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
@@ -164,6 +166,54 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
     omnibox_view->Update();
   }
 
+  void FinishWebUIAnimations() {
+    if (!features::IsWebUILocationBarEnabled()) {
+      return;
+    }
+
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    auto* webui_view = browser_view->toolbar_button_provider()
+                           ->GetWebUIToolbarViewForTesting();
+    if (!webui_view || !webui_view->GetWebViewForTesting()) {
+      return;
+    }
+    content::WebContents* contents =
+        webui_view->GetWebViewForTesting()->GetWebContents();
+    if (!contents) {
+      return;
+    }
+
+    const bool expected_bubble_showing =
+        GetChipController() && GetChipController()->IsBubbleShowing();
+
+    const std::string wait_script = base::StringPrintf(
+        R"(for (let i = 0; i < %d; ++i) {
+             const reqChip =
+                 findDeep(document.body, 'permission-chip#request-chip');
+             if (reqChip) {
+               await reqChip.updateComplete;
+             }
+
+             const indChip =
+                 findDeep(document.body, 'permission-chip#indicator-chip');
+             if (indChip) {
+               await indChip.updateComplete;
+             }
+
+             if (%s) {
+               if (reqChip && reqChip.hasAttribute('anchor-highlighted')) {
+                 break;
+               }
+             } else {
+               break;
+             }
+             await new Promise(resolve => requestAnimationFrame(resolve));
+           })",
+        kMaxWebUIWaitFrames, expected_bubble_showing ? "true" : "false");
+
+    EXPECT_TRUE(::FinishWebUIAnimations(contents, wait_script));
+  }
+
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {}
 
@@ -172,6 +222,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
     ScreenshotOptions screenshot_options;
     if (target_ == TargetViewToVerify::kLocationBar) {
       if (features::IsWebUILocationBarEnabled()) {
+        FinishWebUIAnimations();
         view_to_verify = BrowserView::GetBrowserViewForBrowser(browser())
                              ->toolbar_button_provider()
                              ->GetWebUIToolbarViewForTesting();

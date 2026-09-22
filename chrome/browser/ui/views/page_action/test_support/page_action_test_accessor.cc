@@ -22,9 +22,11 @@
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/base_event_utils.h"
@@ -42,29 +44,8 @@
 
 namespace page_actions {
 
-namespace {
-
-// JavaScript function for traversing shadow DOM trees to find an element
-// matching the predicate.
-constexpr char kFindDeepJS[] = R"(
-  function findDeep(root, predicate) {
-    if (!root) return null;
-    if (predicate(root)) return root;
-    const children = root.shadowRoot
-        ? Array.from(root.shadowRoot.querySelectorAll('*'))
-        : Array.from(root.querySelectorAll('*'));
-    for (const child of children) {
-      if (predicate(child)) return child;
-      if (child.shadowRoot) {
-        const found = findDeep(child, predicate);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-)";
-
-}  // namespace
+// Note: `kFindDeepJS` is defined in `webui_test_utils.h` for traversing shadow
+// DOM trees to find an element matching a CSS selector or predicate.
 
 PageActionTestAccessor::PageActionTestAccessor(BrowserWindowInterface* browser,
                                                actions::ActionId action_id)
@@ -531,49 +512,27 @@ void PageActionTestAccessor::FinishAnimation() const {
           webui_toolbar::ActionIdToMojomPageActionId(action_id_));
       const auto* model = GetModel();
       const bool expected_chip = model && model->ShouldShowSuggestionChip();
-      const std::string script = base::StringPrintf(
-          R"((async () => {
-            %s
-            // Wait for the page action state to catch up to the C++ model and
-            // complete its Lit render lifecycle before fast-forwarding
-            // animations.
-            for (let i = 0; i < 50; ++i) {
-              const el = findDeep(document.body,
-                                  e => e.state?.pageActionId === %d);
-              if (el) {
-                if (el.updateComplete) {
-                  await el.updateComplete;
-                }
-                const chipBtn =
-                    el.shadowRoot?.querySelector('toolbar-chip-button');
-                if (chipBtn && chipBtn.updateComplete) {
-                  await chipBtn.updateComplete;
-                }
-                if (Boolean(el.state?.shouldShowChip) === %s) {
-                  // Await a frame so that layout/style resolution occurs and
-                  // instantiates any CSS transitions before querying
-                  // animations.
-                  await new Promise(resolve => requestAnimationFrame(resolve));
-                  break;
-                }
-              }
-              await new Promise(resolve => requestAnimationFrame(resolve));
-            }
-
-            const anims = document.getAnimations({subtree: true});
-            for (const anim of anims) {
-              try {
-                anim.finish();
-              } catch (e) {
-                try {
-                  anim.currentTime = anim.effect?.getTiming()?.duration || 0;
-                } catch (e2) {}
-              }
-            }
-            return true;
-          })())",
-          kFindDeepJS, action_id_int, expected_chip ? "true" : "false");
-      std::ignore = content::EvalJs(contents, script);
+      const std::string wait_script = base::StringPrintf(
+          R"(for (let i = 0; i < %d; ++i) {
+               const el = findDeep(document.body,
+                                   e => e.state?.pageActionId === %d);
+               if (el) {
+                 if (el.updateComplete) {
+                   await el.updateComplete;
+                 }
+                 const chipBtn =
+                     el.shadowRoot?.querySelector('toolbar-chip-button');
+                 if (chipBtn && chipBtn.updateComplete) {
+                   await chipBtn.updateComplete;
+                 }
+                 if (Boolean(el.state?.shouldShowChip) === %s) {
+                   break;
+                 }
+               }
+               await new Promise(resolve => requestAnimationFrame(resolve));
+             })",
+          kMaxWebUIWaitFrames, action_id_int, expected_chip ? "true" : "false");
+      EXPECT_TRUE(FinishWebUIAnimations(contents, wait_script));
     }
   } else if (auto* pav = GetPageActionView()) {
     auto animation = std::make_unique<gfx::AnimationTestApi>(
