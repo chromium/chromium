@@ -385,10 +385,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
-  CHECK(image || rawImageData);
   LensImageSource* imageSource =
-      image ? [[LensImageSource alloc] initWithSnapshot:image]
-            : [[LensImageSource alloc] initWithRawImageData:rawImageData];
+      rawImageData ? [[LensImageSource alloc] initWithRawImageData:rawImageData]
+                   : [[LensImageSource alloc] initWithSnapshot:image];
   [self handleOverlayImageSourceFound:imageSource
                              animated:YES
                            completion:completion];
