@@ -57,7 +57,6 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -1038,33 +1037,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @Test
     public void useDividerLine_LowEndDevice() {
-        doReturn(8)
-                .when(mPCCTTestRule.mResources)
-                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
-        mPCCTTestRule.configPortraitMode();
-        createPcctAtHeight(1500);
-
-        assertEquals(
-                "Top margin should be zero because there is no shadow",
-                0,
-                mPCCTTestRule.mLayoutParams.topMargin);
-
-        // 900 dp landscape bottom sheet
-        mPCCTTestRule.configLandscapeMode();
-        createPcctAtHeight(3000);
-        assertEquals(
-                "Right margin should be zero because there is no shadow",
-                0,
-                mPCCTTestRule.mLayoutParams.rightMargin);
-        assertEquals(
-                "Left margin should not be zero because there is no shadow",
-                0,
-                mPCCTTestRule.mLayoutParams.leftMargin);
-    }
-
-    @Test
-    @DisabledTest // This needs to be re-worked for Q.
-    public void useDividerLine_OldOS() {
         doReturn(8)
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
