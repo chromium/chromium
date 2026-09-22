@@ -14,7 +14,7 @@ export function getHtml(this: SettingsGeicSubpageElement) {
     <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
     <settings-toggle-button
         id="tabstripButtonToggle"
-        pref-key="geic.pinned_to_tabstrip"
+        pref-key="glic.pinned_to_tabstrip"
         label="$i18n{glicTabstripButtonToggle}"
         sub-label="$i18n{glicTabstripButtonToggleSublabel}">
     </settings-toggle-button>
