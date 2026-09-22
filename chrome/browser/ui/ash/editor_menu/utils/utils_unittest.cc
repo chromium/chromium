@@ -31,7 +31,7 @@ struct GetEditorMenuBoundsTestParams {
   gfx::Rect editor_menu_bounds;
 };
 
-std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
+constexpr GetEditorMenuBoundsTestParams kGetEditorMenuBoundsTestCases[] = {
     // When:
     //  - Context menu covers left half of the screen.
     //  - Cursor point is on the right side of context menu (vertically middle).
@@ -309,7 +309,7 @@ TEST_P(GetEditorMenuBoundsTest, Verify) {
 
 INSTANTIATE_TEST_SUITE_P(GetEditorMenuBoundsTestAll,
                          GetEditorMenuBoundsTest,
-                         ValuesIn(get_editor_menu_bounds_test_cases));
+                         ValuesIn(kGetEditorMenuBoundsTestCases));
 
 }  // namespace
 

@@ -79,11 +79,6 @@ constexpr gfx::Insets kTextfieldContainerInsets = gfx::Insets(16);
 
 constexpr gfx::Size kTabbedPaneSize = gfx::Size(180, 36);
 
-const views::FlexSpecification kTabbedPaneFlexSpecification =
-    views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                             views::MaximumFlexSizeRule::kPreferred)
-        .WithWeight(1);
-
 const std::u16string GetEditorMenuAccessibilityName(
     TextAndImageMode text_and_image_mode) {
   if (text_and_image_mode == TextAndImageMode::kEditorRewriteAndLobster ||
@@ -322,8 +317,11 @@ void EditorMenuView::AddTitleContainer() {
     tabbed_pane_ =
         title_container_->AddChildView(std::make_unique<views::TabbedPane>());
     tabbed_pane_->SetPreferredSize(kTabbedPaneSize);
-    tabbed_pane_->SetProperty(views::kFlexBehaviorKey,
-                              kTabbedPaneFlexSpecification);
+    tabbed_pane_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithWeight(1));
     tabbed_pane_->AddTab(GetEditorMenuWriteCardTitle(),
                          std::make_unique<views::View>());
     tabbed_pane_->AddTab(GetEditorMenuLobsterTitle(),
