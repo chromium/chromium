@@ -109,6 +109,11 @@ public class TabUiTestHelper {
      * Open additional tabs for the provided activity. The added tabs will be opened to
      * "about:blank" and will not wait for the page to finish loading.
      *
+     * <p>Waits for the new tab animation to finish. {@code NewTabAnimationLayout#doneHiding()}
+     * selects the tab it animated, and it runs off the compositor's frame loop, so it can land well
+     * after the tab model itself has settled. Returning early therefore means a {@link
+     * TabModelUtils#setIndex} that follows is silently undone when the animation completes.
+     *
      * @param cta The activity to add the tabs to.
      * @param incognito Whether the tabs should be incognito.
      * @param count The number of tabs to create.
@@ -125,6 +130,7 @@ public class TabUiTestHelper {
                                         null);
                     });
         }
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     /**
