@@ -668,6 +668,7 @@ base::expected<SBStorePtr, V5ApplyUpdateResult> V5Store::ApplyUpdateInternal(
   new_store->has_valid_data_ = true;
   new_store->last_apply_update_result_ = apply_update_result;
   new_store->last_apply_update_time_millis_ = base::Time::Now();
+  new_store->checks_attempted_ = checks_attempted_;
 
   return std::move(new_store);
 }

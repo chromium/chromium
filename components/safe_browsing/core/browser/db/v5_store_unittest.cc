@@ -2559,6 +2559,7 @@ TEST_F(V5StoreTest, TestCollectStoreInfo) {
   EXPECT_EQ("kSuccess", updated_store_info.v5_update_status());
   EXPECT_EQ("new_version", updated_store_info.state());
   EXPECT_TRUE(updated_store_info.has_last_apply_update_time_millis());
+  EXPECT_EQ(2u, updated_store_info.checks_attempted());
 }
 
 TEST_F(V5StoreTest, TestRecordAndReturnFileSize) {
