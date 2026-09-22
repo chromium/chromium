@@ -181,10 +181,10 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
         changedProps.has('inputState')) {
       this.isCurrentTabChipShown_ = this.isContentSharingEnabled &&
           this.isLensSearchEligible && this.computeShowCurrentTabChip_();
-      this.isLensIconShown_ =
-          this.isContentSharingEnabled && this.isLensIconEligible;
       this.isLensChipShown_ = this.isContentSharingEnabled &&
           this.isLensSearchEligible && !this.isCurrentTabChipShown_;
+      this.isLensIconShown_ = this.isContentSharingEnabled &&
+          this.isLensIconEligible && !this.isLensChipShown_;
       this.applyContextButtonBackground_ =
           this.contextButtonHasBackground_ && !this.isLensChipShown_;
     }

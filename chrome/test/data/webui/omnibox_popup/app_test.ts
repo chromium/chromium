@@ -119,6 +119,7 @@ suite('AppTest', function() {
   test('LensIconShown', async () => {
     loadTimeData.overrideValues({
       composeboxShowLensIcon: true,
+      composeboxShowChip: false,
     });
 
     // Re-create app to apply loadTimeData overrides.

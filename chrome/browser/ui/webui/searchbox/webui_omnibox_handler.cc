@@ -466,12 +466,16 @@ void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
   bool cobrowse_blocked = (omnibox::kAskGCoBrowse.Get() ||
                            omnibox::kAskGCoBrowseWithVisualSelection.Get()) &&
                           client && !client->ShouldOpenCoBrowsePanel();
+  bool composebox_blocked = omnibox::kAskGComposeBox.Get() && client &&
+                            !client->ShouldOpenComposeboxForAskG();
+  bool ask_g_fallback_to_lens = cobrowse_blocked || composebox_blocked;
   // Check if there are zero suggest (either on NTP or on web) or the
   // input text is empty (necessary because `IsZeroSuggest()` is false on
   // clobber).
   page_->UpdateLensSearchEligibility(
       ContextualSearchProvider::LensEntrypointEligible(input, client) &&
-      !cobrowse_blocked && (input.IsZeroSuggest() || input.text().empty()));
+      !ask_g_fallback_to_lens &&
+      (input.IsZeroSuggest() || input.text().empty()));
 }
 
 void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,

@@ -1728,6 +1728,47 @@ TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
   EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
 }
 
+TEST_F(WebuiOmniboxHandlerTest,
+       OnStart_LensSearchEligibilityComposeboxBlocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGComposeBox", "true"}});
+
+  auto mock_client = std::make_unique<MockAutocompleteProviderClient>();
+  auto* mock_client_ptr = mock_client.get();
+  EXPECT_CALL(*mock_client_ptr, IsLensEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_client_ptr, AreLensEntrypointsVisible())
+      .WillRepeatedly(testing::Return(true));
+
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::move(mock_client), 0);
+
+  handler_->autocomplete_controller_observation_.Reset();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+
+  AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::OTHER,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  input.set_current_url(GURL("https://example.com"));
+
+  // When composebox is blocked, Lens search is ineligible (suppressed).
+  EXPECT_CALL(*mock_client_ptr, ShouldOpenComposeboxForAskG())
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(page_, UpdateLensSearchEligibility(false)).Times(1);
+  handler_->OnStart(handler_->autocomplete_controller(), input);
+  task_environment_.RunUntilIdle();
+
+  // When composebox is not blocked, Lens search is eligible.
+  EXPECT_CALL(*mock_client_ptr, ShouldOpenComposeboxForAskG())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(page_, UpdateLensSearchEligibility(true)).Times(1);
+  handler_->OnStart(handler_->autocomplete_controller(), input);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OpenMatchResumesNavigationWhenNoDialogShown) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
