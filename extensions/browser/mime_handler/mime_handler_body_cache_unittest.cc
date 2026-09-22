@@ -5,10 +5,13 @@
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/auto_reset.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -123,7 +126,7 @@ TEST_F(MimeHandlerBodyCacheTest, LargeData) {
   EXPECT_EQ(large_data, ReadAllData(std::move(new_consumer)));
 }
 
-TEST_F(MimeHandlerBodyCacheTest, IsNotCompleteBeforeDrain) {
+TEST_F(MimeHandlerBodyCacheTest, CreatePipeAsyncWaitsForDrain) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
@@ -131,12 +134,120 @@ TEST_F(MimeHandlerBodyCacheTest, IsNotCompleteBeforeDrain) {
   auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
   ASSERT_TRUE(cache);
 
-  EXPECT_FALSE(cache->is_complete());
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> pipe;
+  cache->CreatePipeAsync(pipe.GetCallback());
 
+  // Wait for bytes to land rather than for the cache to be ready: the point
+  // is that a request goes unanswered while the source is still open.
   WriteData(producer, "data");
+  ASSERT_TRUE(base::test::RunUntil([&] { return cache->cached_size() == 4u; }));
+  EXPECT_FALSE(pipe.IsReady());
+
+  producer.reset();
+  ASSERT_TRUE(pipe.Wait());
+  mojo::ScopedDataPipeConsumerHandle consumer_pipe = pipe.Take();
+  ASSERT_TRUE(consumer_pipe.is_valid());
+  EXPECT_EQ("data", ReadAllData(std::move(consumer_pipe)));
+}
+
+TEST_F(MimeHandlerBodyCacheTest, CreatePipeAsyncDefersRequestOnCompletedCache) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreateDataPipe(&producer, &consumer);
+
+  const std::string kData = "already-cached-body";
+  WriteData(producer, kData);
   producer.reset();
 
-  EXPECT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+  auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+  ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+
+  // A request made after caching settled is answered on a later task, so a
+  // caller is never re-entered while its own state is half-built.
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> pipe;
+  cache->CreatePipeAsync(pipe.GetCallback());
+  EXPECT_FALSE(pipe.IsReady());
+
+  ASSERT_TRUE(pipe.Wait());
+  mojo::ScopedDataPipeConsumerHandle consumer_pipe = pipe.Take();
+  ASSERT_TRUE(consumer_pipe.is_valid());
+  EXPECT_EQ(kData, ReadAllData(std::move(consumer_pipe)));
+}
+
+TEST_F(MimeHandlerBodyCacheTest, CreatePipeAsyncMultipleRequestsDuringCaching) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreateDataPipe(&producer, &consumer);
+
+  auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> first;
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> second;
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> third;
+  cache->CreatePipeAsync(first.GetCallback());
+  cache->CreatePipeAsync(second.GetCallback());
+  cache->CreatePipeAsync(third.GetCallback());
+
+  // Wait for bytes to land rather than for the cache to be ready: the point
+  // is that no request is answered while the source is still open.
+  constexpr std::string_view kData = "queued-request-body";
+  WriteData(producer, std::string(kData));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return cache->cached_size() == kData.size(); }));
+  EXPECT_FALSE(first.IsReady());
+  EXPECT_FALSE(second.IsReady());
+  EXPECT_FALSE(third.IsReady());
+
+  producer.reset();
+  ASSERT_TRUE(first.Wait());
+  ASSERT_TRUE(second.Wait());
+  ASSERT_TRUE(third.Wait());
+
+  mojo::ScopedDataPipeConsumerHandle first_pipe = first.Take();
+  mojo::ScopedDataPipeConsumerHandle second_pipe = second.Take();
+  mojo::ScopedDataPipeConsumerHandle third_pipe = third.Take();
+  ASSERT_TRUE(first_pipe.is_valid());
+  ASSERT_TRUE(second_pipe.is_valid());
+  ASSERT_TRUE(third_pipe.is_valid());
+
+  // Each request owns a separate pipe, so one consumer draining the body
+  // cannot starve another.
+  EXPECT_NE(first_pipe.get().value(), second_pipe.get().value());
+  EXPECT_NE(second_pipe.get().value(), third_pipe.get().value());
+  EXPECT_EQ(kData, ReadAllData(std::move(first_pipe)));
+  EXPECT_EQ(kData, ReadAllData(std::move(second_pipe)));
+  EXPECT_EQ(kData, ReadAllData(std::move(third_pipe)));
+}
+
+// Answering a request can drop the last reference to the cache, because the
+// stream that owns the cache is torn down from that callback. This verifies
+// the cache holds itself until every queued callback has run. It is only a
+// valid test while the cache stays empty: a replayed body makes the pipe hold
+// its own reference and the cache would survive for the wrong reason.
+TEST_F(MimeHandlerBodyCacheTest,
+       CreatePipeAsyncOutlivesRequestDroppingLastReference) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreateDataPipe(&producer, &consumer);
+
+  auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+
+  // The body must stay empty: a replayed body makes the pipe hold its own
+  // reference to the cache, which would keep the cache alive here for the
+  // wrong reason. With nothing to replay, dropping the last external reference
+  // from the first request leaves the run itself as the only owner.
+  cache->CreatePipeAsync(base::BindLambdaForTesting(
+      [&](mojo::ScopedDataPipeConsumerHandle) { cache.reset(); }));
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> second;
+  cache->CreatePipeAsync(second.GetCallback());
+
+  producer.reset();
+  ASSERT_TRUE(base::test::RunUntil([&] { return !cache; }));
+  ASSERT_TRUE(second.IsReady());
+  EXPECT_TRUE(second.Take().is_valid());
 }
 
 TEST_F(MimeHandlerBodyCacheTest, ForwardingBasic) {
@@ -433,6 +544,10 @@ TEST_F(MimeHandlerBodyCacheTest, OverCapCacheOnlyClosesSourceAndAbandons) {
       MimeHandlerBodyCache::Create(std::move(source_consumer), nullptr);
   ASSERT_TRUE(cache);
 
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> pipe;
+  cache->CreatePipeAsync(pipe.GetCallback());
+  EXPECT_FALSE(pipe.IsReady());
+
   // Without a live consumer there is no one to forward to, so an
   // over-cap response leaves nothing to do: stop reading and close the
   // source pipe.
@@ -441,7 +556,8 @@ TEST_F(MimeHandlerBodyCacheTest, OverCapCacheOnlyClosesSourceAndAbandons) {
 
   EXPECT_FALSE(cache->is_complete());
   EXPECT_EQ(0u, cache->cached_size());
-  EXPECT_FALSE(cache->CreatePipe().is_valid());
+  ASSERT_TRUE(pipe.Wait());
+  EXPECT_FALSE(pipe.Get().is_valid());
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return producer->QuerySignalsState().peer_closed(); }));
 }

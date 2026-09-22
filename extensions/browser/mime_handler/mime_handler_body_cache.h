@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -98,6 +99,14 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // Returns an invalid handle if the source is not yet fully drained.
   mojo::ScopedDataPipeConsumerHandle CreatePipe();
 
+  using CreatePipeCallback =
+      base::OnceCallback<void(mojo::ScopedDataPipeConsumerHandle)>;
+
+  // Runs `callback` once the cache is ready, whether it filled or was
+  // abandoned. An abandoned cache hands back an invalid handle so the caller
+  // can refetch the body.
+  void CreatePipeAsync(CreatePipeCallback callback);
+
  private:
   friend class base::RefCounted<MimeHandlerBodyCache>;
   ~MimeHandlerBodyCache();
@@ -165,6 +174,9 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
   // Handles source EOF (or a broken source pipe, which is
   // indistinguishable and treated the same way).
   void OnSourceDone();
+
+  // Fires the callbacks in `create_pipe_callbacks_` once the cache is ready.
+  void MaybeRunPendingCreatePipeCallbacks();
 
   // Outcome of pushing bytes into the forwarding pipe.
   enum class ForwardResult {
@@ -252,6 +264,8 @@ class MimeHandlerBodyCache : public base::RefCounted<MimeHandlerBodyCache> {
 
   // Number of bytes from `staging_` already accepted by the pipe.
   size_t staging_offset_ = 0;
+
+  std::vector<CreatePipeCallback> create_pipe_callbacks_;
 
   base::WeakPtrFactory<MimeHandlerBodyCache> weak_factory_{this};
 };

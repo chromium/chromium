@@ -8,6 +8,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -37,8 +38,12 @@ class StreamContainerBodyCacheTest : public testing::Test {
 };
 
 TEST_F(StreamContainerBodyCacheTest, InitiallyNoBodyCache) {
-  EXPECT_FALSE(stream_container_->GetFallbackDataPipe().is_valid());
   EXPECT_EQ(0u, stream_container_->GetCachedBodySize());
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> pipe;
+  stream_container_->GetFallbackDataPipeAsync(pipe.GetCallback());
+  EXPECT_FALSE(pipe.IsReady());
+  ASSERT_TRUE(pipe.Wait());
+  EXPECT_FALSE(pipe.Get().is_valid());
 }
 
 TEST_F(StreamContainerBodyCacheTest, GetFallbackDataPipeReplaysCachedBytes) {
@@ -56,11 +61,13 @@ TEST_F(StreamContainerBodyCacheTest, GetFallbackDataPipeReplaysCachedBytes) {
 
   stream_container_->SetBodyCache(cache);
   EXPECT_EQ(kData.size(), stream_container_->GetCachedBodySize());
-  auto fallback_pipe = stream_container_->GetFallbackDataPipe();
-  ASSERT_TRUE(fallback_pipe.is_valid());
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> fallback_pipe;
+  stream_container_->GetFallbackDataPipeAsync(fallback_pipe.GetCallback());
+  ASSERT_TRUE(fallback_pipe.Wait());
+  ASSERT_TRUE(fallback_pipe.Get().is_valid());
 
   mime_handler::StringDrainerClient client;
-  mojo::DataPipeDrainer drainer(&client, std::move(fallback_pipe));
+  mojo::DataPipeDrainer drainer(&client, fallback_pipe.Take());
   ASSERT_TRUE(base::test::RunUntil([&] { return client.complete(); }));
   EXPECT_EQ(kData, client.TakeAccumulated());
 }

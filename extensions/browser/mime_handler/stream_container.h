@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/mime_handler.mojom.h"
@@ -72,10 +73,12 @@ class StreamContainer {
   // replayed into a fresh data pipe on fallback.
   void SetBodyCache(scoped_refptr<MimeHandlerBodyCache> cache);
 
-  // Creates a new data pipe consumer containing the cached body data.
-  // Returns an invalid handle if no cache is attached or the source has not
-  // been fully drained yet.
-  mojo::ScopedDataPipeConsumerHandle GetFallbackDataPipe();
+  using FallbackDataPipeCallback =
+      base::OnceCallback<void(mojo::ScopedDataPipeConsumerHandle)>;
+
+  // Runs `callback` with a replay pipe once the body cache is ready, or with
+  // an invalid handle when no cache is attached.
+  void GetFallbackDataPipeAsync(FallbackDataPipeCallback callback);
 
   // Returns the number of cached body bytes currently held by the attached
   // body cache. Returns 0 if no cache is attached. The cache stores

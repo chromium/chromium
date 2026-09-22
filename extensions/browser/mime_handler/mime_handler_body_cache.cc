@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 
@@ -107,26 +108,27 @@ void MimeHandlerBodyCache::OnSourceReadable(
     const mojo::HandleSignalsState& state) {
   if (result != MOJO_RESULT_OK) {
     OnSourceDone();
-    return;
+  } else {
+    base::span<const uint8_t> data;
+    MojoResult read_result =
+        source_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
+    if (read_result == MOJO_RESULT_SHOULD_WAIT) {
+      source_watcher_.ArmOrNotify();
+      return;
+    }
+    if (read_result != MOJO_RESULT_OK) {
+      OnSourceDone();
+    } else {
+      // `data` is only valid until `EndReadData()`; the handler consumes
+      // it before that.
+      SourceReadResult dispatch = HandleSourceBytes(data);
+      source_->EndReadData(dispatch.consumed);
+      RunNextAction(dispatch.next_action);
+    }
   }
 
-  base::span<const uint8_t> data;
-  MojoResult read_result =
-      source_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
-  if (read_result == MOJO_RESULT_SHOULD_WAIT) {
-    source_watcher_.ArmOrNotify();
-    return;
-  }
-  if (read_result != MOJO_RESULT_OK) {
-    OnSourceDone();
-    return;
-  }
-
-  // `data` is only valid until `EndReadData()`; the handler consumes
-  // it before that.
-  SourceReadResult dispatch = HandleSourceBytes(data);
-  source_->EndReadData(dispatch.consumed);
-  RunNextAction(dispatch.next_action);
+  // Keep this last: a callback may delete this cache.
+  MaybeRunPendingCreatePipeCallbacks();
 }
 
 MimeHandlerBodyCache::SourceReadResult MimeHandlerBodyCache::HandleSourceBytes(
@@ -183,6 +185,20 @@ void MimeHandlerBodyCache::OnSourceDone() {
     case State::kComplete:
     case State::kStopped:
       NOTREACHED();
+  }
+}
+
+void MimeHandlerBodyCache::MaybeRunPendingCreatePipeCallbacks() {
+  if (state_ == State::kCaching || create_pipe_callbacks_.empty()) {
+    return;
+  }
+
+  // A callback can drop the last reference to this cache, so hold one until
+  // every queued callback has run.
+  scoped_refptr<MimeHandlerBodyCache> keep_alive(this);
+  auto callbacks = std::exchange(create_pipe_callbacks_, {});
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(CreatePipe());
   }
 }
 
@@ -409,6 +425,18 @@ mojo::ScopedDataPipeConsumerHandle MimeHandlerBodyCache::CreatePipe() {
                         std::unique_ptr<mojo::DataPipeProducer>, MojoResult) {},
                      base::WrapRefCounted(this), std::move(pipe_producer)));
   return consumer;
+}
+
+void MimeHandlerBodyCache::CreatePipeAsync(CreatePipeCallback callback) {
+  create_pipe_callbacks_.push_back(std::move(callback));
+  if (state_ == State::kCaching) {
+    // The drain answers the request when it ends.
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MimeHandlerBodyCache::MaybeRunPendingCreatePipeCallbacks,
+                     weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace extensions

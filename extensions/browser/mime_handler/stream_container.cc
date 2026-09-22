@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "net/http/http_response_headers.h"
 
@@ -52,11 +54,15 @@ void StreamContainer::SetBodyCache(scoped_refptr<MimeHandlerBodyCache> cache) {
   body_cache_ = std::move(cache);
 }
 
-mojo::ScopedDataPipeConsumerHandle StreamContainer::GetFallbackDataPipe() {
-  if (body_cache_ && body_cache_->is_complete()) {
-    return body_cache_->CreatePipe();
+void StreamContainer::GetFallbackDataPipeAsync(
+    FallbackDataPipeCallback callback) {
+  if (!body_cache_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  mojo::ScopedDataPipeConsumerHandle()));
+    return;
   }
-  return mojo::ScopedDataPipeConsumerHandle();
+  body_cache_->CreatePipeAsync(std::move(callback));
 }
 
 size_t StreamContainer::GetCachedBodySize() const {
