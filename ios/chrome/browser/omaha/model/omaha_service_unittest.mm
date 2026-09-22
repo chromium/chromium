@@ -19,6 +19,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/omaha/model/omaha_persistent_state.h"
 #import "ios/chrome/browser/omaha/model/omaha_ping.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -62,7 +63,8 @@ class OmahaServiceTest : public PlatformTest {
         need_update_(false) {
     GetApplicationContext()->GetLocalState()->SetInt64(
         metrics::prefs::kInstallDate, kUnknownInstallDate);
-    OmahaService::ClearPersistentStateForTests(base::Version());
+    OmahaPersistentState::SaveTo([NSUserDefaults standardUserDefaults],
+                                 OmahaPersistentState {});
   }
 
   OmahaServiceTest(const OmahaServiceTest&) = delete;
@@ -155,9 +157,13 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -183,9 +189,13 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -235,13 +245,19 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   });
 
   for (const TestCase& test_case : kTestCases) {
-    OmahaService::ClearPersistentStateForTests(
-        base::Version(test_case.previous_version));
+    OmahaPersistentState::SaveTo(
+        [NSUserDefaults standardUserDefaults], OmahaPersistentState {
+          .last_sent_version = base::Version(test_case.previous_version),
+        });
 
     OmahaService service(false);
-    service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                          base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                              base::Unretained(this)));
+    service.StartInternal(
+        OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+        GetPendingSharedURLLoaderFactoryCallback(),
+        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                            base::Unretained(this)),
+        base::BindRepeating(&OmahaPersistentState::SaveTo,
+                            [NSUserDefaults standardUserDefaults]));
 
     std::string content = service.GetPingContent(
         "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -261,13 +277,19 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
 }
 
 TEST_F(OmahaServiceTest, SendPingSuccess) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -290,12 +312,18 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
 }
 
 TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -310,12 +338,18 @@ TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -349,13 +383,19 @@ TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -381,13 +421,19 @@ TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
 }
 
 TEST_F(OmahaServiceTest, OneOffSuccess) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
@@ -411,13 +457,19 @@ TEST_F(OmahaServiceTest, OneOffSuccess) {
 }
 
 TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -445,13 +497,19 @@ TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
 }
 
 TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
@@ -484,13 +542,19 @@ TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
 }
 
 TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
@@ -522,12 +586,18 @@ TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
 }
 
 TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -562,9 +632,13 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
 TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -592,13 +666,19 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
 }
 
 TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -638,13 +718,19 @@ TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
 }
 
 TEST_F(OmahaServiceTest, SendPingFailure) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -691,9 +777,13 @@ TEST_F(OmahaServiceTest, SendPingFailure) {
 TEST_F(OmahaServiceTest, PersistStatesTest) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
@@ -706,9 +796,13 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   OmahaService service2(false);
-  service2.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                             base::Unretained(this)));
+  service2.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
@@ -735,9 +829,13 @@ TEST_F(OmahaServiceTest, BackoffTest) {
 TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -767,13 +865,19 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
 
 // Tests that active pings are not sent in rapid succession.
 TEST_F(OmahaServiceTest, NonSpammingTest) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   service.SendPing();
 
@@ -803,9 +907,13 @@ TEST_F(OmahaServiceTest, NonSpammingTest) {
 
 TEST_F(OmahaServiceTest, InstallRetryTest) {
   OmahaService service(false);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   EXPECT_FALSE(service.IsNextPingInstallRetry());
   std::string id1 = service.GetNextPingRequestId(OmahaPingEvent::kInstallEvent);
@@ -832,12 +940,18 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
 }
 
 TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
-  OmahaService::ClearPersistentStateForTests(version_info::GetVersion());
+  OmahaPersistentState::SaveTo(
+      [NSUserDefaults standardUserDefaults],
+      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
 
   OmahaService service(true);
-  service.StartInternal(GetPendingSharedURLLoaderFactoryCallback(),
-                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                                            base::Unretained(this)));
+  service.StartInternal(
+      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      GetPendingSharedURLLoaderFactoryCallback(),
+      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmahaPersistentState::SaveTo,
+                          [NSUserDefaults standardUserDefaults]));
 
   {
     base::subtle::ScopedTimeClockOverrides clock_overrides(
