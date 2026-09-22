@@ -124,10 +124,6 @@ void OmahaService::Start(
                      shared_url_loader_factory->Clone()),
       std::move(upgrade_recommended_callback));
 
-  service->locale_lang_ = GetApplicationContext()
-                              ->GetApplicationLocaleStorage()
-                              ->GetTag()
-                              .tag_string();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OmahaService::SendOrScheduleNextPing,
                                 base::Unretained(service)));
@@ -206,6 +202,10 @@ void OmahaService::StartInternal(
   started_ = true;
   pending_url_loader_factory_ = std::move(pending_url_loader_factory);
   upgrade_recommended_callback_ = std::move(upgrade_recommended_callback);
+  locale_lang_ = GetApplicationContext()
+                     ->GetApplicationLocaleStorage()
+                     ->GetTag()
+                     .tag_string();
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
