@@ -5545,6 +5545,12 @@ inline constexpr char kAndroidMediaInsertionName[] =
 inline constexpr char kAndroidMediaInsertionDescription[] =
     "Enables IMEs to insert media content such as images, gifs and stickers.";
 
+inline constexpr char kAndroidNewManagementNoticeName[] =
+    "Android New Management Notice";
+inline constexpr char kAndroidNewManagementNoticeDescription[] =
+    "Replaces the existing enterprise management notice shown during the "
+    "sign-in flow on Android with the new management notice.";
+
 inline constexpr char kAndroidPageInfoAsAppMenuItemName[] =
     "Android Page Info As App Menu Item";
 inline constexpr char kAndroidPageInfoAsAppMenuItemDescription[] =

@@ -450,6 +450,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-new-management-notice",
+    "owners": [ "ssolarewicz@google.com", "cec-growth-eng@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-open-incognito-as-window",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 170
