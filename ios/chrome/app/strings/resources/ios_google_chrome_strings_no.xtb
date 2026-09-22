@@ -270,6 +270,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7061455974939528301">Trykk og hold på Chrome-ikonet, og klikk på «Endre Hjem-skjermen»</translation>
 <translation id="7095110968493193530">I Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
+<translation id="7135936755418321901">For å dele posisjonen med nettsteder, trykk på Innstillinger for å la Chrome bruke posisjonen din.</translation>
 <translation id="7145599899567697473">Lagre og autofyll passord i Chrome</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
@@ -284,6 +285,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7272930098487145294">For å lagre bilder, trykk på Innstillinger for å la Chrome legge dem til i bildene dine</translation>
 <translation id="7275945473750112644">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chrome-dataene dine blir slettet fra denne enheten</translation>
 <translation id="7284245284340063465">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Hvis du velger eller ignorerer et forslag, tilpasser Chrome seg for å vise deg mer relevante forslag i fremtiden.</translation>
 <translation id="7296102444587051536">Chrome for iOS</translation>
 <translation id="7299681342915173313">Nå kan du bruke Chrome hver gang du trykker på linker i e-poster, dokumenter og andre apper.</translation>
 <translation id="7334364820047587268">Du har allerede passord for disse kontoene i Google Passordlagring. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
@@ -357,6 +359,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8544583291890527417">Varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome oppdager for deg.</translation>
 <translation id="855027533751209304">Chrome-tips: Søk det du ser</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="8589791109349384456">Selv om du slår av forslag, kontrollerer ikke det hvordan Chrome behandler sidetitler og nettadresser for andre funksjoner. Du kan administrere tilgangen til disse dataene i <ph name="BEGIN_LINK" />synkroniseringsinnstillingene<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Bruk Safari-passordene, -loggen, -bokmerkene og -kredittkortene dine i Chrome</translation>
 <translation id="8630122478628016441">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>

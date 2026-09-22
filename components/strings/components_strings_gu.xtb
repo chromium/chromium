@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">નવું</translation>
 <translation id="1927930548546198515">Chrome લૉગ કરે છે કે તમે સુવિધાનો ઉપયોગ કેવી રીતે કરો છો, જેમ કે તમારી વિનંતીઓ અને જ્યારે તમે સૂચનો સ્વીકારો છો અથવા અવગણો છો ત્યારે વર્તન</translation>
 <translation id="1932098463447129402">આની પહેલા નહીં</translation>
+<translation id="1932629105611536854">ડિલિવરીનો પિન કોડ</translation>
 <translation id="1935353813610900265">AI દ્વારા સંચાલિત, ઇતિહાસમાં શોધ સુવિધા માટે પ્રતિસાદ મોકલો</translation>
 <translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1938580037092872316">સાચવેલા સરનામામાં નવી માહિતી ઉમેરો</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">એન્વલપ વ્યક્તિગત</translation>
 <translation id="2048261947532620704">પેજનો અનુવાદ કરવામાં આવી રહ્યો છે</translation>
 <translation id="2055016614992422886">વાતચીત</translation>
+<translation id="2057654338925604102">પરિવહન કંપનીનું ડોમેન</translation>
 <translation id="2058468041496756763">તમે Chromeના સેટિંગમાં જઈને કોઈપણ સમયે તમારા શોધ એન્જિનમાં ફેરફાર કરી શકો છો. જો તમને તમારું પસંદગીનું શોધ એન્જિન ન દેખાય, તો તમે તેમની સાઇટ પરથી શોધી શકો છો. તમને તે Chrome સેટિંગમાં તાજેતરમાં મુલાકાત લીધેલા શોધ એન્જિન તરીકે સૂચિબદ્ધ દેખાશે અને તમે તેને તમારું ડિફૉલ્ટ બનાવી શકો છો.</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2059202684901022309">22 x 34 ઇંચ</translation>
@@ -1610,6 +1612,7 @@
 <translation id="3715597595485130451">વાઇ-ફાઇથી કનેક્ટ કરો</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />પ્રૉક્સી, ફાયરવૉલ અને DNS ગોઠવણી ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">ઇબાન</translation>
+<translation id="3724078054554953078">રવાના કર્યાની તારીખ</translation>
 <translation id="372429172604983730">જે ઍપ્લિકેશનોને કારણે આ ભૂલ થઈ શકે છે તેમાં ઍન્ટિવાયરસ, ફાયરવૉલ અને વેબ-ફિલ્ટરિંગ અથવા પ્રૉક્સી સૉફ્ટવેરનો સમાવેશ થાય છે.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slidesમાં કોઈ નવી Google પ્રસ્તુતિ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3727309136762649052">Namespace</translation>
@@ -2210,6 +2213,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ભાષા પૅક ડાઉનલોડ કરી રહ્યાં છીએ... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> તમારા ઉપકરણના સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="473414950835101501">તમારા કૅમેરાનો ઉપયોગ કરો</translation>
+<translation id="4736089601076994090">સમાપ્તિ તારીખ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium ને પુનઃપ્રારંભ કરો</translation>
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
@@ -2537,8 +2541,10 @@
 <translation id="5258473597674772367">ટૅબનું ગ્રૂપ "<ph name="GROUP_NAME" />" હવે ઉપલબ્ધ રહ્યું નથી</translation>
 <translation id="5260842098960755113">થ્રેડ બંધ કર્યો</translation>
 <translation id="5262342527470539728"><ph name="ACCOUNT" /> માટે તમારી માહિતી <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં સાચવવામાં આવી છે</translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">અપલોડ કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="5266128565379329178">ઉપરની બાજુએ જોડો</translation>
+<translation id="5268746892698450173">પરિવહન કંપનીનું નામ</translation>
 <translation id="5269225904387178860">નીચે ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" એ "<ph name="DATA_CONTROLS_RESTRICTION" />" માટે સપોર્ટેડ શરત નથી</translation>
 <translation id="527191520368130807">બહેતર બનાવો</translation>
@@ -2566,6 +2572,7 @@
 <translation id="5314967030527622926">બુકલેટ માર્કર</translation>
 <translation id="5316812925700871227">ઘડિયાળની વિપરિત દિશામાં ફેરવો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
+<translation id="5318654747230250818">કોડ: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />તમારા ડિફૉલ્ટ શોધ એન્જિન વડે તમે વેબ પર શોધ કરી શકો છો તેમજ તે Chromiumની સુવિધાઓને સશક્ત કરે છે<ph name="END_BOLD" /> જેમ કે, ઍડ્રેસ બારમાંથી તેમજ વેેબપેજ પરની છબીઓમાંથી શોધ કરવા જેવી સુવિધાઓ. તમારું શોધ એન્જિન સપોર્ટ ન કરતું હોય તેવી સુવિધા ઉપલબ્ધ ન હોય એમ બની શકે છે.</translation>
 <translation id="5323043727018853753">શામેલ કરેલા કન્ટેન્ટની મંજૂરી છે</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> માંથી <ph name="MATCH_POSITION" /></translation>
@@ -2614,7 +2621,6 @@
 <translation id="5398461103557553443">આગલી વખતે આ IBAN ઑટોમૅટિક રીતે ભરાય તે માટે, તેને Google Walletમાં સાચવો</translation>
 <translation id="5398772614898833570">જાહેરાતો અવરોધિત કરી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
-<translation id="5402715318763077894">સ્થાનિક નેટવર્ક ઍક્સેસની મંજૂરી આપવી છે?</translation>
 <translation id="540949333488055151">પ્લાસ્ટિક (રંગીન)</translation>
 <translation id="540969355065856584">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર આ સમયે માન્ય નથી. આ કોઇ ખોટી ગોઠવણીને કારણે થયું હોય અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો હોઇ શકે છે.</translation>
 <translation id="5411462078004183575">ઓછી કિંમતનો વિકલ્પ</translation>
@@ -2856,6 +2862,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
 <translation id="5794065675298686371">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
+<translation id="5794093550048860249">ટ્રૅકિંગ નંબર</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />અન્ય Google પ્રોડક્ટમાં સ્માર્ટ સુવિધાઓ<ph name="LINK_END" />” ચાલુ કરો</translation>
 <translation id="5797984091151707075">ઍડમિન પૉલિસી દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
@@ -4022,6 +4029,7 @@
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7766518757692125295">સ્કર્ટ</translation>
 <translation id="776749070095465053">કાપડ</translation>
+<translation id="7772659560036894129">પ્રોડક્ટના નામ</translation>
 <translation id="7773005668374414287">ઉપર તરફ તે જ ક્રમમાં</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> માટેનો ઍક્સેસ રદ કરો</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
@@ -4213,6 +4221,7 @@
 <translation id="8118506371121007279">પ્રતિસાદ આપો</translation>
 <translation id="812020627659652807">હંમણાં ફાઇલો ડિલીટ કરો</translation>
 <translation id="8120720167840853945">આ પૉલિસી અન્ય કોઈપણ પૉલિસીઓની ડિફૉલ્ટ વર્તણૂકને નિયંત્રિત કરી રહી નથી.</translation>
+<translation id="8120827570827570666">વેપારીનું ડોમેન</translation>
 <translation id="8127301229239896662">તમારા કમ્પ્યુટરમાં અથવા નેટવર્ક પર "<ph name="SOFTWARE_NAME" />" યોગ્ય રીતે ઇન્સ્ટૉલ થયું નથી. તમારા IT વ્યવસ્થાપકને આ સમસ્યા હલ કરવાનું કહો.</translation>
 <translation id="8130113808541743942">આમાં ખસેડો...</translation>
 <translation id="813024282736408069">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે વર્ચ્યુઅલ કાર્ડ ચાલુ કરો</translation>
@@ -4324,6 +4333,7 @@
 <translation id="830868413617744215">બીટા</translation>
 <translation id="8310477433309274098">કોઈ શુલ્ક નથી, ઓછામાં ઓછો 0% જેટલો APR</translation>
 <translation id="8312841338723044391">લાઇવ</translation>
+<translation id="8314036873065514376">વેપારીનું નામ</translation>
 <translation id="8316555157357957253">હમણાં ઉપયોગ કરી રહ્યાં છીએ</translation>
 <translation id="8319414634934645341">વિસ્તૃત કી ઉપયોગ</translation>
 <translation id="831997045666694187">સાંજ</translation>

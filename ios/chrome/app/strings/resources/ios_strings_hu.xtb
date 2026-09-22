@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Szervezete megköveteli az inkognitó mód használatát</translation>
 <translation id="1323735185997015385">Törlés</translation>
 <translation id="132683371494960526">Koppintson duplán a szülőmappa módosításához.</translation>
+<translation id="132969855425874290">A keresés és kitöltés bezárása</translation>
 <translation id="1333455942675373522">Billentyűzet</translation>
 <translation id="1334485477792811969">Webes szolgáltatások</translation>
 <translation id="1335767868357998043">Címsáv pozíciójának kiválasztása</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Link érkezett}other{{count} link érkezett}}</translation>
 <translation id="1941314575388338491">A másoláshoz koppintson duplán.</translation>
 <translation id="1943478190258551035">Menü → Beállítások</translation>
+<translation id="1944477975050820119">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1952728750904661634">Bejelentkezés felügyelt fiókkal</translation>
 <translation id="1955773397805078763">Fizetési mód hozzáadása</translation>
 <translation id="1956138802718275401">Hozzáférés a jelszavakhoz a kezdőképernyőről</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
 <translation id="2323697864063408084">Értesítéseket kaphat a lezárási képernyőn és üzenetszalagok formájában, hogy soha ne maradjon le semmiről, ami fontos Önnek</translation>
 <translation id="2326302612031521902">Egységválasztó</translation>
+<translation id="2326606747676847821">Váltás inkognitóra</translation>
 <translation id="2327445548174191329">Forrás: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Nincs védelem</translation>
 <translation id="233375395665273385">Törlés és kijelentkezés</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">A felhasználók véleményének elolvasása</translation>
 <translation id="2394659309569789395">Webhely megnyitása mindenképp</translation>
 <translation id="2403129868389095715">A csomag nem kézbesíthető</translation>
+<translation id="2408318953009664750">Engedélyezés egyszer</translation>
 <translation id="2410754283952462441">Válasszon fiókot</translation>
 <translation id="2422174748424038845">Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
 <translation id="2424805048070062787">Folytatás ezen a lapon</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Párbeszédablakok elrejtése</translation>
 <translation id="2542268842667970959">A „Biztonsági ellenőrzés” elrejtése</translation>
 <translation id="2551153019974022505">Fiókhiba</translation>
+<translation id="2559785333866467778">Gemini-javaslatok</translation>
 <translation id="2559843230610279254">Lapcsoport, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> lap.</translation>
 <translation id="257088987046510401">Témák</translation>
 <translation id="2573117291489209663">Kész</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Nyissa meg közvetlenül itt a linkeket</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
 <translation id="2721190673959776287">Terméken belüli kiterjedt súgó mintája a kontextus szerinti panelhez, amely naponta többször is megjelenik.</translation>
+<translation id="273318428051150387">Nem kap értesítést, amikor előrehalad a Level Up programban.</translation>
 <translation id="2739887572830526131">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.</translation>
 <translation id="2747003861858887689">Előző mező</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> webhely áthelyezve ebbe a pozícióba: <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
 <translation id="3183362380688692618">Új lapcsoport…</translation>
+<translation id="3185000827934321633">Navigálás…</translation>
 <translation id="3185760469172949183">A kamerával való keresés befejeződött.</translation>
 <translation id="3186796054637504691">Előzmények és webhelyadatok törlése</translation>
 <translation id="3190558889382726167">A jelszó mentése megtörtént</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 fizetési mód}other{# fizetési mód}}</translation>
 <translation id="3831560640878483188">Elveti a figyelmeztetést?</translation>
 <translation id="3832419617903252251">A jelszó csak ezen az eszközön van mentve</translation>
+<translation id="3835016165506903031">Engedélyezés a látogatáskor</translation>
 <translation id="3835964409414434850">Ugrás a következő lapra</translation>
 <translation id="3838691874161539578">A védelmi megoldások erősítése és az online biztonság növelése érdekében ellenőrizze mentett jelszavait</translation>
 <translation id="3838985624086228724">Árcsökkenés a nyomon követett terméknél: <ph name="PREVIOUS_PRICE" /> helyett <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">A(z) <ph name="WEBSITE" />-, a(z) <ph name="SECOND_WEBSITE" />- és további <ph name="NUMBER_OF_ACCOUNTS" /> fiók jelszavai törölve lesznek. A fiókjai nem törlődnek.</translation>
 <translation id="3853162385423733133">A Google-fiókjában (<ph name="EMAIL" />) lévő jelszavak használatának és mentésének folytatása</translation>
 <translation id="3853873210696342070">Importálás</translation>
+<translation id="3854052088499589035">Értesítést kap, amikor előrehalad a Level Up programban.</translation>
 <translation id="3857113360369572832">Nyissa meg a <ph name="BEGIN_BOLD" />Safari beállításait<ph name="END_BOLD" />.</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="386224966259596343">A következő alkalommal, amikor egy releváns űrlapot tölt ki, lehetősége lesz az adatok Walletbe való mentésére.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Mentett jelszavak lekérése más alkalmazásokban</translation>
 <translation id="4431224949908513835">Válassza ki a kitöltéshez használni kívánt fizetési módot.</translation>
 <translation id="4432122368769493392">Beállítások…</translation>
+<translation id="443295142249850475">A megnyitott lapok oldalcímeit és URL-jeit arra használja a böngésző, hogy releváns javaslatokat adjon Önnek.</translation>
 <translation id="4439968635693513370">Tervezze meg a hétvégét a következővel:</translation>
 <translation id="4442550905108052454">Nyissa meg a <ph name="BEGIN_BOLD" />Beállításokat<ph name="END_BOLD" />.</translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} találat áll rendelkezésre.}other{{count} találat áll rendelkezésre.}}</translation>
 <translation id="4445840280797509738">További lehetőségek a következőhöz: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Az előre- vagy visszalépéshez csúsztassa gyorsan ujját a képernyő szélére.</translation>
 <translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
@@ -2224,6 +2235,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8102130909719902723">Ú</translation>
 <translation id="8105368624971345109">Kikapcsolás</translation>
 <translation id="8106442513853561174">Pontos hely megosztása</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 jelszó automatikusan kitöltve}other{# jelszó automatikusan kitöltve}}</translation>
 <translation id="8114753159095730575">A fájlletöltés megvalósítható. A beállításokat a képernyő alján nyithatja meg.</translation>
 <translation id="8123502380991596210">Az újdonságok elrejtése</translation>
 <translation id="8123953306357309250">Megszakítja a szinkronizálást? A szinkronizálás bármikor bekapcsolható a beállításokban.</translation>

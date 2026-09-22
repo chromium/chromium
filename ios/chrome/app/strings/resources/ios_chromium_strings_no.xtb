@@ -53,6 +53,8 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="1965068424387304464">Chromium-tips: Lagre passord</translation>
 <translation id="1992653360331625459">Du har allerede passord for disse kontoene i Passordlagring. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
 <translation id="2006345422933397527">Chromium kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
+<translation id="2025935492422922097">Chromium behandler sidetitler og nettadresser i et privat område i skyen</translation>
+<translation id="2027881372245801507">Selv om du slår av forslag, kontrollerer ikke det Chromiums behandling av sidetitler og nettadresser for andre funksjoner. Du kan administrere tilgangen til disse dataene i <ph name="BEGIN_LINK" />synkroniseringsinnstillingene<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Se Chromium-loggen din</translation>
 <translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="2059365270911640413">Fullfør konfigureringen av Chromium</translation>
@@ -105,6 +107,7 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="3072591112723064972">Gjør Chromium til standardnettleser for å åpne linker her umiddelbart.</translation>
 <translation id="3115956258722352278">Vil du gjøre Chromium til standardnettleseren din?</translation>
 <translation id="3180939591219927904">Slå på «Lås inkognitofaner når du lukker Chromium»</translation>
+<translation id="3239426886813624481">For å dele posisjonen med nettsteder, trykk på Innstillinger for å la Chromium bruke posisjonen din.</translation>
 <translation id="327628223428512207">Skriv inn passordfrasen for å lagre dette passordet og få Chromium-data på alle enhetene dine</translation>
 <translation id="328933489847748230">{count,plural, =1{Viser nå 1 Chromium-vindu}other{Viser nå {count} Chromium-vinduer}}</translation>
 <translation id="3344204225393848305">Angi Chromium som standard</translation>
@@ -351,6 +354,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
 <translation id="8685813584220679697">Logg på dette nettstedet og Chromium.</translation>
+<translation id="8697693743327341604">Hvis du velger eller ignorerer et forslag, tilpasser Chromium seg for å vise deg mer relevante forslag i fremtiden.</translation>
 <translation id="869832267508702259">Gjør Chromium til standardnettleseren for å få Gemini-statistikk uansett hvor du surfer</translation>
 <translation id="8698780336333802489">Importer til Chromium</translation>
 <translation id="8730503818204408000">Åpner Chromium-innstillingen for å angi Chromium som standardnettleser.</translation>

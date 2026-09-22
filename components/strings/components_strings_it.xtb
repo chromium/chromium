@@ -550,6 +550,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1924727005275031552">Nuovo</translation>
 <translation id="1927930548546198515">Chrome registra il modo in cui utilizzi la funzionalità, ad esempio le richieste e il comportamento quando accetti o ignori i suggerimenti</translation>
 <translation id="1932098463447129402">Non prima</translation>
+<translation id="1932629105611536854">Codice postale di consegna</translation>
 <translation id="1935353813610900265">Invia feedback per la ricerca nella cronologia basata sull'AI</translation>
 <translation id="1935995810530254458">Copia comunque</translation>
 <translation id="1938580037092872316">Aggiungi nuove informazioni all'indirizzo salvato</translation>
@@ -615,6 +616,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2045871135676061132">Busta Personal</translation>
 <translation id="2048261947532620704">Traduzione della pagina in corso…</translation>
 <translation id="2055016614992422886">Conversazione</translation>
+<translation id="2057654338925604102">Dominio del corriere</translation>
 <translation id="2058468041496756763">Puoi modificare il motore di ricerca in qualsiasi momento nelle impostazioni di Chrome. Se non vedi il tuo motore di ricerca preferito, puoi eseguire una ricerca dal sito. Lo vedrai elencato come motore di ricerca visitato di recente nelle impostazioni di Chrome e potrai impostarlo come predefinito.</translation>
 <translation id="2059166748188874810">Comune</translation>
 <translation id="2059202684901022309">55,8 × 86,3 cm</translation>
@@ -1607,6 +1609,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3715597595485130451">Collegati alla rete Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controllare la configurazione del proxy, firewall e DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">Data di spedizione</translation>
 <translation id="372429172604983730">Le applicazioni che possono causare questo errore includono software antivirus, firewall e proxy o di filtraggio web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente una nuova presentazione Google in Presentazioni</translation>
 <translation id="3727309136762649052">Spazio dei nomi</translation>
@@ -2207,6 +2210,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4732860731866514038">Download del language pack <ph name="LANGUAGE" /> in corso… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vuole usare la posizione del dispositivo</translation>
 <translation id="473414950835101501">Utilizzare le fotocamere</translation>
+<translation id="4736089601076994090">Scadenza: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Riavvia Chromium</translation>
 <translation id="4736934858538408121">Carta virtuale</translation>
 <translation id="473775607612524610">Aggiorna</translation>
@@ -2534,8 +2538,10 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5258473597674772367">Il gruppo di schede "<ph name="GROUP_NAME" />" non è più disponibile</translation>
 <translation id="5260842098960755113">Thread chiuso</translation>
 <translation id="5262342527470539728">Le tue informazioni sono salvate in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" /></translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">La revisione è obbligatoria prima del caricamento</translation>
 <translation id="5266128565379329178">Rilegatura in alto</translation>
+<translation id="5268746892698450173">Nome del corriere</translation>
 <translation id="5269225904387178860">Perforatura quadrupla in basso</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" non è una condizione supportata per "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Perfeziona</translation>
@@ -2563,6 +2569,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5314967030527622926">Fascicola</translation>
 <translation id="5316812925700871227">Ruota in senso antiorario</translation>
 <translation id="5317780077021120954">Salva</translation>
+<translation id="5318654747230250818">Codice: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Il motore di ricerca predefinito ti consente di eseguire ricerche sul web e supporta le funzionalità di Chromium<ph name="END_BOLD" />, come la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web. Una funzionalità potrebbe non essere disponibile se il tuo motore di ricerca non la supporta.</translation>
 <translation id="5323043727018853753">Contenuti incorporati consentiti</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> di <ph name="NUM_MATCHES" /></translation>
@@ -2611,7 +2618,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5398461103557553443">Per compilare automaticamente questo IBAN la prossima volta, salvalo in Google Wallet</translation>
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
-<translation id="5402715318763077894">Consentire l'accesso alla rete locale?</translation>
 <translation id="540949333488055151">Plastica (colorata)</translation>
 <translation id="540969355065856584">Questo server non è riuscito a verificare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato valido in questa fase. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che ha intercettato la connessione.</translation>
 <translation id="5411462078004183575">Opzione prezzo basso</translation>
@@ -2853,6 +2859,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Questo metodo di pagamento verrà eliminato dal dispositivo</translation>
 <translation id="5794065675298686371">Attiva le notifiche per il monitoraggio dei prezzi</translation>
+<translation id="5794093550048860249">Numero di tracciamento</translation>
 <translation id="5796050750059455142">Attiva "<ph name="BEGIN_LINK" />Funzionalità intelligenti in altri prodotti Google<ph name="LINK_END" />"</translation>
 <translation id="5797984091151707075">Bloccato dalla policy dell'amministratore</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
@@ -3638,7 +3645,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> altro}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">È richiesto l'aggiornamento del server a TLS 1.2 o versione successiva.</translation>
 <translation id="7156885531105222428">Impossibile trovare la pagina richiesta nell'applicazione</translation>
-<translation id="7157447397944182926">Chiedi a <ph name="AI_ENGINE_NAME" /> nella Ricerca di <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7157447397944182926">Chiedi ad <ph name="AI_ENGINE_NAME" /> nella Ricerca <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Per inviare questo file usando <ph name="FEATURE_NAME" />, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file utilizzando <ph name="FEATURE_NAME" />, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
 <translation id="7162277662076933695">Lettore di smart card</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vuoi copiare il file riservato?}other{Vuoi copiare i file riservati?}}</translation>
@@ -4018,6 +4025,7 @@ Ulteriori dettagli:
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Tessuto</translation>
+<translation id="7772659560036894129">Nomi dei prodotti</translation>
 <translation id="7773005668374414287">Stesso ordine a faccia in su</translation>
 <translation id="7779418012194492374">Revoca l'accesso per <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ieri</translation>
@@ -4209,6 +4217,7 @@ Ulteriori dettagli:
 <translation id="8118506371121007279">Invia feedback</translation>
 <translation id="812020627659652807">Elimina i file ora</translation>
 <translation id="8120720167840853945">Questa policy non controlla il comportamento predefinito di altre policy.</translation>
+<translation id="8120827570827570666">Dominio del commerciante</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" non è stato installato correttamente sul computer o sulla rete. Chiedi all'amministratore IT di risolvere il problema.</translation>
 <translation id="8130113808541743942">Sposta in…</translation>
 <translation id="813024282736408069">Attiva una carta virtuale per la compilazione automatica</translation>
@@ -4320,6 +4329,7 @@ Ulteriori dettagli:
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Nessuna commissione, TAEG minimo dello 0%</translation>
 <translation id="8312841338723044391">IN DIRETTA</translation>
+<translation id="8314036873065514376">Nome del commerciante</translation>
 <translation id="8316555157357957253">In uso</translation>
 <translation id="8319414634934645341">Utilizzo chiave esteso</translation>
 <translation id="831997045666694187">Sera</translation>

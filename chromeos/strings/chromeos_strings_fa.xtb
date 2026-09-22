@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">جریان خاک</translation>
 <translation id="102432830749687801">‏قبل‌از اینکه دسترسی‌تان را ازدست بدهید، حتماً داده‌های حساب تحصیلی خود را بااستفاده از برنامه «انتقال محتوا» که Google ارائه کرده است به حساب شخصی خود انتقال دهید.</translation>
 <translation id="1026212596705997935">از این میان‌بر برای «<ph name="CONFLICT_ACCEL_NAME" />» استفاده می‌شود. میان‌بر جدیدی اختصاص دهید. برای جایگزین کردن میان‌بر موجود، این میان‌بر را دوباره فشار دهید.</translation>
-<translation id="1030856839388844477">بازنشانی مصرف داده</translation>
 <translation id="1047095725494118091">بارگیری نشد. دوباره امتحان کنید یا <ph name="DEVICE_TYPE" /> خود را بازراه‌اندازی کنید.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
 <translation id="1047773237499189053">ویژگی جدید دردسترس است، برای اطلاعات بیشتر از کلید «پیکان روبه بالا» استفاده کنید.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">درحال به‌روزرسانی (<ph name="PERCENTAGE_VALUE" />٪ تکمیل شد)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="1310380015393971138">هیچ شبکه‌ <ph name="NETWORK_NAME" /> دردسترس نیست</translation>
-<translation id="131421566576084655">تاریخ آخرین بازنشانی داده دردسترس نیست</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">شبکه اصلی، بدون فراگردی</translation>
 <translation id="1327977588028644528">دروازه</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">عنوان ویرایش شد</translation>
 <translation id="1423591390236870726">کلید <ph name="KEY_NAME" /> فشار داده نشد</translation>
 <translation id="1432110487435300883">برای دستیابی به نتیجه تقریبی، مقدار <ph name="CATEGORY_TEXT" /> را بر <ph name="CONVERSION_RATE" /> تقسیم کنید</translation>
-<translation id="1435763214710588005">مصرف داده را در روز انتخاب‌شده از هر ماه به‌طور خودکار بازنشانی می‌کند</translation>
 <translation id="1442433966118452622">منبع تصویر</translation>
 <translation id="1446954767133808402">یاقوت کبود</translation>
 <translation id="1449035143498573192">‏باز کردن در «جستجوی Google»</translation>
@@ -161,9 +158,8 @@
 <translation id="1604959087182679653">پنهان کردن ترانویسی</translation>
 <translation id="160633243685262989">پیش‌دید کردن تصویر</translation>
 <translation id="1611649489706141841">هدایت</translation>
-<translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">استفاده از زمینه</translation>
-<translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
+<translation id="1621067168122174824">اجرای آزمایش شارژشدن</translation>
 <translation id="1622402072367425417">حباب‌های درخشان</translation>
 <translation id="1626590945318984973">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و <ph name="META_KEY" /> فشار دهید.</translation>
 <translation id="163774412591892664">سرپرست شما دستگاهتان را غیرفعال کرده است و می‌تواند به مکان آن دسترسی داشته باشد.</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">خوب (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">اکنون فقط می‌توانید از «ابزارهای کلاسی» استفاده کنید</translation>
 <translation id="1762483337755424125">ترانویسی</translation>
 <translation id="1765169783255151332">کلیدها را به‌سرعت جابه‌جا کنید</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">چشمه آب‌گرم</translation>
 <translation id="2203642483788377106">صخره</translation>
 <translation id="2208388655216963643">امپرسیونیست</translation>
-<translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
 <translation id="2215920961700443347">به اینترنت متصل نیستید. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">‏بازخورد درباره ویژگی mahi</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">‏دستگاه Chromebook شما میزان مصرف داده را اندازه‌گیری می‌کند. مقدار آن ممکن است با اندازه‌گیری فراهم‌ساز خدمات متفاوت باشد.</translation>
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">صفحه‌کلید تاریک‌شده</translation>
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3852931845120288955">عنوان (الف تا ی)</translation>
-<translation id="3858860766373142691">نام</translation>
 <translation id="3862598938296403232">شرح الزامی است</translation>
 <translation id="386280020966669610">ایده جدید بده</translation>
 <translation id="3864554910039562428">صخره مرجانی</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">شناسایی خودکار صداهای متمایز و اختصاص برچسب عمومی به آن‌ها، مثل «گوینده ۱» و «گوینده ۲»</translation>
 <translation id="38811596981744338">مسئله حقوقی</translation>
 <translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
-<translation id="3889914174935857450">بازنشانی تاریخ</translation>
 <translation id="3889954687526985291">موتورسیکلت آینده‌نگری با چراغ‌های نئونی که از کاغذ سیاه ساخته شد است در پس‌زمینه تاریک</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3902271751020176019">زبان ترانویسی</translation>
 <translation id="390890062090528082">آسمان پرستاره</translation>
 <translation id="391412459402535266">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، به حالت رایانه کیفی بروید.</translation>
 <translation id="3916998944874125962">گرفتن نماگرفت</translation>
-<translation id="3923184630988645767">مصرف داده</translation>
 <translation id="392943705803418306">جلسه «ابزارهای کلاسی» شما به‌پایان رسیده است</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
 <translation id="3934185438132762746">تخصیص ‫<ph name="CONTROL_TYPE" /> لغو شد</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">پایین آوردن صدا</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ویرایش دکمه <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">مصرف داده بازنشانی شده است</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5744175046705638478">ترجمه کردن «<ph name="QUERY" />»</translation>
 <translation id="5757187557809630523">آهنگ بعدی</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">سرپرست <ph name="MANAGER" /> زمان‌هایی را که می‌توان از این <ph name="DEVICE_TYPE" /> استفاده کرد تنظیم کرده است</translation>
 <translation id="594552776027197022">ایجد جفت‌کلید تصادفی</translation>
 <translation id="5946538341867151940">‏هنوز متصل نیستید. اگر شرکت مخابراتی تلفن همراه توصیه می‌کند از APN سفارشی استفاده کنید، اطلاعات APN را با انتخاب «+ APN جدید» وارد کنید.</translation>
-<translation id="5947266287934282605">اگر آخرین روز ماهْ پیش‌از این روز باشد، داده‌ها در آخرین روز ماه بازنشانی می‌شود</translation>
 <translation id="5948460390109837040">سگ</translation>
 <translation id="594989847980441553">برای ایجاد تصویر با هوش مصنوعی، «ایجاد» را انتخاب کنید.
         همه تصاویر ایجادشده به‌طور خودکار اینجا نشان داده خواهند شد.</translation>
-<translation id="5972388717451707488">به‌روزرسانی موتور</translation>
 <translation id="5972801171078377748">دیگر نشان ندادن</translation>
 <translation id="5975130252842127517">مرجانی</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">عنوان‌های تولیدشده:</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6019566113895157499">میان‌برهای مهم</translation>
-<translation id="6034694447310538551">فعال کردن بازنشانی خودکار ماهانه</translation>
 <translation id="6037291330010597344">تغذیه‌کننده سند اسکنر خالی است. اسناد را اضافه کنید و دوباره امتحان کنید.</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6040852767465482106">شناسه ناشناس</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">کلید انتخاب‌شده <ph name="KEYS" /> است. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">جهت‌نمای راست</translation>
 <translation id="6278428485366576908">زمینه</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">تعریف کردن «<ph name="QUERY" />»</translation>
 <translation id="6283581480003247988">آبی و بنفش</translation>
 <translation id="6284632978374966585">روشن کردن زمینه تاریک</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">لطفاً بعداً دوباره امتحان کنید</translation>
 <translation id="7118522231018231199">‏حتماً APN ارائه‌شده ازسوی شرکت مخابرات سیار یا سرپرستتان را انتخاب کنید. با انتخاب APN جدید، همه موارد APN سفارشی غیرفعال می‌شود. APN نامعتبر می‌تواند اتصال همراهتان را مختل کند.</translation>
 <translation id="7119389851461848805">روشن/خاموش</translation>
-<translation id="7129287270910503851">مصرف داده شما هر ماه در این روز بازنشانی می‌شود</translation>
 <translation id="7130438335435247835">‏نام نقطه دسترسی (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">خنثی</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">آخرین زمان بازنشانی</translation>
 <translation id="7633068090678117093">تصویر پس‌زمینه</translation>
 <translation id="763873111564339966">نیلی</translation>
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">کلید وجود ندارد. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7805768142964895445">وضعیت</translation>
-<translation id="7811024689617730980">روز بازنشانی خودکار را از بازه ۱ تا ۳۱ انتخاب کنید (شامل روز اول و آخر)</translation>
 <translation id="7813073042185856802">کوه</translation>
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
 <translation id="7824219488248240180">پُست‌امپرسیونیست</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8131740175452115882">تأیید کردن</translation>
-<translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>
 <translation id="8135609423982943441">‏‫Chromebook شما به تنظیمات پیش‌فرض ایمن بازگردانده شد. هر زمان که بخواهید می‌توانید این تغییرات را در «تنظیمات» اصلاح کنید.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">کاغذدیواری خودتان را بسازید</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">‏نشانی IP</translation>
 <translation id="8491311378305535241">‏نمی‌توان در برنامه‌های Android ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>
 <translation id="8495070016475833911">نمد</translation>
-<translation id="8498220429738806196">شمارش‌گرهای ترافیک</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
 <translation id="8505011850330200833">‏مدل Gemini برای پردازش ترانویسی‌ها و ایجاد خلاصه از قطعه‌های ضبط‌شده به ۲ گیگابایت فضای ذخیره‌سازی نیاز دارد</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">پوشیده از برف</translation>
 <translation id="8508640263392900755">جزئیات «نام نقطه دستیابی»</translation>
 <translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چای‌خانه</translation>
 <translation id="8531692079895415839">مه‌آلود</translation>
 <translation id="8538236298648811558">‏با بهره‌گیری از «هوشواره Google»</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">تاریک‌تر کردن صفحه‌کلید</translation>
 <translation id="8863170912498892583">فعال کردن زمینه تاریک</translation>
 <translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>
-<translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8882789155418924367">جغد</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">استفاده از این ویدیو</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
 <translation id="9088994563996376283">ساده کردن</translation>
-<translation id="909856219855259344">اطلاعات بیشتر درباره «تاریخ بازنشانی»</translation>
 <translation id="9100765901046053179">تنظیمات پیشرفته</translation>
 <translation id="910415269708673980">بازآوری بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>

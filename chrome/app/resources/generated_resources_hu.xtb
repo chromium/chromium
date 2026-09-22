@@ -1078,7 +1078,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1822517323280215012">Szürke</translation>
 <translation id="1822635184853104396">Teljes letöltési előzmények megjelenítése új lapon</translation>
 <translation id="1823768272150895732">Betűtípus</translation>
-<translation id="1823781806707127806">A meglévő böngészési adatok hozzáadása a felügyelt profilhoz</translation>
 <translation id="1825073796163165618">Linkek engedélyezése</translation>
 <translation id="1825565032302550710">A port számának 1024 és 65535 között kell lennie</translation>
 <translation id="18260074040409954">A mentett jelszavakat bármelyik eszközön használhatja. A következő fiókhoz társított <ph name="GOOGLE_PASSWORD_MANAGER" /> alkalmazásba menti őket a rendszer: <ph name="EMAIL" />.</translation>
@@ -1393,6 +1392,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2062354623176996748">Internetezzen a böngészési előzmények mentése nélkül inkognitó ablakban</translation>
 <translation id="206308717637808771">Adatok törlése az összes ablak bezárásakor. Az adatokat a rendszer ugyanúgy kezeli, mint az éppen megtekintett webhelyet.</translation>
 <translation id="2066700471214517561">Nyalábformáló mikrofon, hogy a Chromebookot használó személy hangja tisztán szóljon.</translation>
+<translation id="2067778293100584091">A Google Walletben kezelheti az <ph name="BEGIN_LINK1" />adatokat és az adatvédelmi beállításokat<ph name="END_LINK1" />, valamint a <ph name="BEGIN_LINK2" />fizetési módokat<ph name="END_LINK2" /> és a <ph name="BEGIN_LINK3" />kártyákat<ph name="END_LINK3" /> (például a hűségkártyákat, a személyazonosító okmányokat és az ajánlatokat).</translation>
 <translation id="2068581968816126410">Könyvjelzők használata több eszközön</translation>
 <translation id="2069020119963193894">&amp;Méret</translation>
 <translation id="2071393345806050157">Nincs helyi naplófájl.</translation>
@@ -2389,6 +2389,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2813094189969465044">Szülői felügyelet</translation>
 <translation id="2814489978934728345">Oldal betöltésének leállítása</translation>
 <translation id="2816319641769218778">Ha szeretné jelszavait Google-fiókjába menteni, kapcsolja be a szinkronizálást.</translation>
+<translation id="281678554528702272">Megjegyzés: Ezeket a webhely-hozzáférési beállításokat felülbírálhatják a vállalati irányelvek vagy a hatékony API-k.</translation>
 <translation id="2817435998497102771">Háttérkép és stílus beállítása</translation>
 <translation id="2817861546829549432">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a rendszer egy kérelmet is csatol a böngészési forgalomhoz. Ennek hatása attól függ, hogy a webhely válaszol-e a kérelemre, és hogyan értelmezi azt. Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is begyűjti és felhasználja a böngészési adatokat például a biztonság növelése, továbbá tartalom, szolgáltatások, hirdetések és ajánlások biztosítása, valamint jelentésekhez használt statisztika előállítása céljából.</translation>
 <translation id="2818476747334107629">Nyomtató részletei</translation>
@@ -5065,6 +5066,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485088796993065002">A webhelyek lejátszhatnak hangot, hogy a zeneszámok, videók és egyéb médiatartalmak hallhatók legyenek</translation>
 <translation id="4850919322897956733">Adatok törölve.</translation>
+<translation id="4851973858921178330">Webhelyek szűrése</translation>
 <translation id="4852030988197799562">A JavaScript-optimalizálóhoz való hozzáférés letiltása az újonnan felkeresett webhelyeken</translation>
 <translation id="4852383141291180386">Alkalmazásértesítések kezelése</translation>
 <translation id="4852916668365817106">Egér színe</translation>
@@ -5160,7 +5162,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4913573660390710463">Hozzáférhet csomagolt internetes alkalmazásokhoz bővített képességekkel. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4913695564084524048">Nem találhatók alkalmazásadatok</translation>
 <translation id="4915961947098019832">Megjeleníthetnek képeket</translation>
-<translation id="491779113051926205">ChromeOS-forgalomszámlálók</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> kommunikálni szeretne a(z) „<ph name="EXTENSION_NAME" />” bővítménnyel.</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4918762404810341788">Másolás és megnyitás</translation>
@@ -7480,6 +7481,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6754359471209693699">Új keresés indítása</translation>
 <translation id="6755702685749429945">Szótár hozzáadása</translation>
 <translation id="6756643207511618722">Beszédmotorok</translation>
+<translation id="6756882635793733911">Kérdezzen bármiről, ami a képernyőjén van</translation>
 <translation id="6757431299485455321">Megkönnyítheti más eszközök számára ennek a hotspotnak a megtalálását.</translation>
 <translation id="6757615605516049275">Kérjük, oldja fel <ph name="TOKEN_NAME" /> eszközét.</translation>
 <translation id="6758056191028427665">Ossza meg velünk, mennyire van megelégedve munkánkkal.</translation>
@@ -10765,6 +10767,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="96756691973639907">További műveletek a következőhöz: <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Tárolt adatok</translation>
 <translation id="96774243435178359">Kezelt nyomtatók</translation>
+<translation id="967745417352972504">A Google Walletben hozzáadhatja és kezelheti a <ph name="BEGIN_LINK_PAYMENT_METHODS" />fizetési módokat<ph name="END_LINK_PAYMENT_METHODS" /> és a <ph name="BEGIN_LINK_PASSES" />kártyákat<ph name="END_LINK_PASSES" /> (például a hűségkártyákat, a személyazonosító okmányokat és az ajánlatokat).</translation>
 <translation id="968000525894980488">Kapcsolja be a Google Play-szolgáltatásokat.</translation>
 <translation id="968037381421390582">„<ph name="SEARCH_TERMS" />” be&amp;illesztése és keresése</translation>
 <translation id="969096075394517431">Nyelvek módosítása</translation>

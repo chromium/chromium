@@ -284,6 +284,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="7272930098487145294">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chrome menambahkannya ke galeri foto Anda</translation>
 <translation id="7275945473750112644">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chrome Anda akan dihapus dari perangkat ini</translation>
 <translation id="7284245284340063465">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Jika Anda memilih atau mengabaikan saran, Chrome akan menyesuaikan untuk membantu menampilkan saran yang lebih relevan kepada Anda pada masa mendatang.</translation>
 <translation id="7296102444587051536">Chrome untuk iOS</translation>
 <translation id="7299681342915173313">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di email, dokumen, dan aplikasi lainnya.</translation>
 <translation id="7334364820047587268">Anda sudah memiliki sandi untuk akun ini di Pengelola Sandi Google Anda. Jika Anda memilih untuk mengimpor salah satu sandi di bawah ini, sandi tersebut akan menggantikan sandi yang sudah ada.</translation>
@@ -357,6 +358,7 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
 <translation id="8544583291890527417">Notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="855027533751209304">Tips Chrome: Telusuri hal yang Anda lihat</translation>
 <translation id="8558480467877843976">Anda kini dapat menggunakan Chrome kapan saja dengan mengakses atau mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
+<translation id="8589791109349384456">Menonaktifkan saran tidak memengaruhi cara Chrome memproses judul halaman dan URL untuk fitur lainnya. Anda dapat mengelola akses ke data ini di <ph name="BEGIN_LINK" />setelan sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Gunakan sandi, histori, bookmark, dan kartu kredit Safari Anda di Chrome</translation>
 <translation id="8630122478628016441">Aktifkan "Kunci tab Samaran saat Anda menutup Chrome".</translation>

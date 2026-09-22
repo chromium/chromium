@@ -72,6 +72,7 @@
             පිටුසන්, ඉතිහාසය සහ සුරැකි මුරපද බලපෑමට ලක් නොවනු ඇත.</translation>
 <translation id="1619887657840448962">Chrome වඩාත් ආරක්ෂිත කිරීම සඳහා, අප විසින් <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ලැයිස්තුගත කර නොමැති හා ඔබේ දැනුමෙන් තොරව එක් කර ඇති ඇතැම් දිගු අබල කර ඇත.</translation>
 <translation id="1628000112320670027">Chrome සමගින් උදවු ලබා ගන්න</translation>
+<translation id="1632241302126471515">Chrome Canary ඔස්සේ සොයන්න</translation>
 <translation id="1640672724030957280">බාගනිමින්...</translation>
 <translation id="1651617469580841801">ඔබ Google Lens භාවිත කරන විට, PDF ඇතුළු පිටු මාතෘකාව, URL සහ අන්තර්ගතය Google වෙත යවනු ලැබේ. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex පිළිබඳ</translation>
@@ -208,7 +209,6 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ජාල පුරනය - Chrome</translation>
 <translation id="2970681950995291301">Chrome වෙතින් ඔබේ Google ගිණුම ඉවත් කිරීමට, සැකසීම් පිටුව තුළින් Chrome වෙතින් වරන්න</translation>
 <translation id="2976869732253036751">ඔබේ දුරකථනයෙන් Chrome සමග මිල නිරීක්ෂණ ඇඟවීම් ලබා ගන්න</translation>
-<translation id="2985091279808606502">මෙම වෙබ් අඩවිය සඳහා Chrome හට ස්ථානික ජාල අවසරය අවශ්‍යයි</translation>
 <translation id="2991167882679440829">ඔබේ Google ගිණුමේ සුරකින ලද ඔබේ මුරපද සහ අනෙකුත් Chrome දත්ත මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ. ඒවා නැවත Chrome තුළ භාවිතා කිරීමට, නැවත පුරන්න.</translation>
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> යල් පැන ගියහොත් එය ප්‍රතිසාධනය කිරීම සඳහා සංකේතන සේවා සහ ආරක්ෂිත ක්‍රමයක් සපයයි. මෙම සේවාව අබල කර ඇත්නම්, <ph name="BROWSER_NAME" /> හට සංකේතිත දත්ත වෙත ප්‍රවේශය අහිමි විය හැකි අතර, <ph name="BROWSER_NAME" /> හට ප්‍රතිසාධනය වීමට නොහැකි විය හැක.</translation>
 <translation id="3003694935412297923">සියලු කාර්යයන්</translation>
@@ -276,6 +276,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ}=1{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="3597003331831379823">උසස් වරප්‍රසාද සහිත පිහිටුවීම් ධාවනය කිරීමට අසමත් විය. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">පද්ධති තැටියේ Chrome තුළ Gemini පෙන්වන්න</translation>
+<translation id="3616622400661108683">වෙනත් යෙදුම් හෝ ගොනු වැනි Chrome වලින් පිටත අන්තර්ගතය ගැන විමසන්න</translation>
 <translation id="3622716124581627104">දේවල් හෝ ස්ථාන හඳුනාගෙන පෙළ පිටපත් කරන්න හෝ පරිවර්තනය කරන්න. ඔබ Google Lens භාවිත කරන විට, පිටුවේ තිර රුවක් Google වෙත යවනු ලැබේ. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">දැන් Chrome ඔබගේ Google ගිණුම සහ බෙදාගත් පරිගණක මත භාවිතා කිරීමට වඩාත් පහසුයි.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chrome හට පුරන්න. ඔබේ සියලු උපාංගවල ඔබේ සුරකින ලද තතු සහ තවත් දේ ඔබට ලැබෙනු ඇත.</translation>
@@ -756,7 +757,9 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8162006532256575008">ගිණුමක් නොමැතිව Chrome භාවිත කරන්න</translation>
 <translation id="8172231188687329735">යන ගමන් මුරපද සුරැකීමට Chrome යෙදුම ලබා ගන්න</translation>
 <translation id="8177472873527554730">පිටුවේ අන්තර්ගතය සොයාගත නොහැක</translation>
+<translation id="8196526165798579689">Chrome Dev ඔස්සේ සොයන්න</translation>
 <translation id="8221491193165283816">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. මෙම වෙබ් අඩවියට ඔබට දැනුම්දීමට ඉඩ දීමට, මෙහි ක්ලික් කරන්න.</translation>
+<translation id="8227493674161801700">Chrome Beta ඔස්සේ සොයන්න</translation>
 <translation id="8253851811470049684">ඕනෑම යෙදුමකින් Chrome හි සබැඳි විවෘත කර ඔබේ කාර්ය තීරුවේ බ්‍රව්සරය ප්‍රවේශ විය හැකිව තබා ගන්න</translation>
 <translation id="8255190535488645436">Google Chrome ඔබේ කැමරාව හා මයික්‍රෆෝනය භාවිත කරයි.</translation>
 <translation id="8260086374035800939">Chrome තුළ Gemini විවෘත නම්, නව පටිති තැනීමේ දී පැති පුවරුව විවෘතව පවතී</translation>

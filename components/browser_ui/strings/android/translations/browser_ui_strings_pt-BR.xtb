@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Não permitir que sites saibam quando você está usando o dispositivo ativamente</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1476700086976862423">Cor do tema: Sépia</translation>
+<translation id="1497214680865404175">Imagem enviada pelo usuário</translation>
 <translation id="1500473259453106018">Ocultar nas guias o card de redução no preço</translation>
 <translation id="1508931164824684991">Os sites podem usar JavaScript</translation>
 <translation id="1510341833810331442">Os sites não podem salvar dados no seu dispositivo</translation>

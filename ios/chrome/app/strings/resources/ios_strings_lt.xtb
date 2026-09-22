@@ -110,7 +110,9 @@
 <translation id="1322735045095424339">Organizacija reikalauja naudoti inkognito režimą</translation>
 <translation id="1323735185997015385">Ištrinti</translation>
 <translation id="132683371494960526">Dukart palieskite, kad pakeistumėte viršaplankį.</translation>
+<translation id="132969855425874290">Uždaryti radimą ir užpildymą</translation>
 <translation id="1333455942675373522">Klaviatūra</translation>
+<translation id="1333669029961409292">Veiksmas „Patikrinti slaptažodžius“ atliktas!</translation>
 <translation id="1334485477792811969">Žin. pasl.</translation>
 <translation id="1335767868357998043">Adreso juostos pozicijos pasirinkimas</translation>
 <translation id="1347468774581902829">Tvarkyti veiklą</translation>
@@ -217,6 +219,7 @@
 <translation id="1634520742547161889">MM-mm</translation>
 <translation id="1636234353664774105">Gaukite nuoseklias nuorodas į kelionės tikslą naudodami navigacijos funkciją</translation>
 <translation id="1641113438599504367">Saugus naršymas</translation>
+<translation id="1644229815617955289">Tvarkykite istoriją, slapukus ir kt., kad apsaugotumėte privatumą</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Žymė išsaugota}one{Žymės išsaugotos}few{Žymės išsaugotos}many{Žymės išsaugotos}other{Žymės išsaugotos}}</translation>
 <translation id="1650979352027263879">Pašalintos išvaizdos nuostatos</translation>
@@ -313,6 +316,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Nuoroda gauta}one{Gauta {count} nuoroda}few{Gautos {count} nuorodos}many{Gauta {count} nuorodos}other{Gauta {count} nuorodų}}</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
 <translation id="1943478190258551035">Meniu → „Nustatymai“</translation>
+<translation id="1944477975050820119">Gaukite pasiūlymų realiuoju laiku, kurie gali padėti rasti naujų būdų naršyti naudojant DI. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Prisijunkite naudodami valdomą paskyrą</translation>
 <translation id="1955773397805078763">Pridėti mokėjimo metodą</translation>
 <translation id="1956138802718275401">Galimybė pasiekti slaptažodžius iš pagrindinio ekrano</translation>
@@ -404,6 +408,7 @@
 <translation id="2240256190924001613">Pasiekiamas konfigūracijos profilis</translation>
 <translation id="2244080985779413662">Ši svetainė nori atsisiųsti failą ir atidaryti jį sistemoje „Wallet“.</translation>
 <translation id="2245007488813216650">Verčiama…</translation>
+<translation id="2246445006133863463">Tai suteikia galimybę kalbėti su „Gemini“ balsu</translation>
 <translation id="2249119578464404734">Ekrano viršuje palieskite paieškos piktogramą</translation>
 <translation id="2251686759395008410">Meniu → „Istorija“</translation>
 <translation id="2252378061043785266">Niekada nerodyti šios svetainės</translation>
@@ -433,6 +438,7 @@
 <translation id="2321086116217818302">Ruošiami slaptažodžiai…</translation>
 <translation id="2323697864063408084">Gaukite pranešimus užrakinimo ekrane ir reklamjuostėse, kad niekada nepraleistumėte to, kas svarbu</translation>
 <translation id="2326302612031521902">Matavimo vieneto parinkiklis</translation>
+<translation id="2326606747676847821">Įjungti inkognito režimą</translation>
 <translation id="2327445548174191329">Iš <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Apsaugos nėra</translation>
 <translation id="233375395665273385">Ištrinti ir atsijungti</translation>
@@ -458,6 +464,7 @@
 <translation id="2393230427496852974">Skaitykite, ką žmonės sako</translation>
 <translation id="2394659309569789395">Vis tiek atidaryti svetainę</translation>
 <translation id="2403129868389095715">Siuntinio pristatyti negalima</translation>
+<translation id="2408318953009664750">Leisti kartą</translation>
 <translation id="2410754283952462441">Pasirinkite paskyrą</translation>
 <translation id="2422174748424038845">Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“ ir ji bus ištrinta iš visų įrenginių.</translation>
 <translation id="2424805048070062787">Tęsti naudojant šį skirtuką</translation>
@@ -502,6 +509,7 @@
 <translation id="2540111494300686866">Nerodyti dialogo langų</translation>
 <translation id="2542268842667970959">Slėpti parinktį „Saugos patikra“</translation>
 <translation id="2551153019974022505">Paskyros klaida</translation>
+<translation id="2559785333866467778">„Gemini“ pasiūlymai</translation>
 <translation id="2559843230610279254">Skirtukų grupė „<ph name="GROUP_TITLE" />“, skirtukų: <ph name="TABS_NUMBER" />.</translation>
 <translation id="257088987046510401">Temos</translation>
 <translation id="2573117291489209663">Atlikta</translation>
@@ -556,6 +564,7 @@
 <translation id="2715440913764382254">Paleiskite nuorodas tiesiogiai čia</translation>
 <translation id="2718352093833049315">Tik su „Wi–Fi“</translation>
 <translation id="2721190673959776287">Pavyzdinio kontekstinis skydelio raiškiosios medijos pagalba produkte, kuri turi būti rodoma kelis kartus per dieną.</translation>
+<translation id="273318428051150387">Negausite atnaujinimų, kai pasieksite aukštesnį lygį</translation>
 <translation id="2739887572830526131">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba ištrinkite, jei jos nebereikia.</translation>
 <translation id="2747003861858887689">Ankstesnis laukas</translation>
 <translation id="2750583038402718064">Išklotinės elementas „<ph name="WEBSITE_TITLE" />“ perkeltas į <ph name="POSITION" /> padėtį</translation>
@@ -684,6 +693,7 @@
 <translation id="3177338796769255211">Prisijunkite, kad visuose įrenginiuose gautumėte žymes ir kt.</translation>
 <translation id="3181954750937456830">Saugus naršymas (apsaugo jus ir jūsų įrenginį nuo pavojingų svetainių)</translation>
 <translation id="3183362380688692618">Nauja skirtukų grupė...</translation>
+<translation id="3185000827934321633">Naršoma</translation>
 <translation id="3185760469172949183">Paieška naudojant fotoaparatą baigta!</translation>
 <translation id="3186796054637504691">Išvalyti istoriją ir svetainės duomenis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
@@ -862,6 +872,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 mokėjimo metodas}one{# mokėjimo metodas}few{# mokėjimo metodai}many{# mokėjimo metodo}other{# mokėjimo metodų}}</translation>
 <translation id="3831560640878483188">Uždaryti perspėjimą?</translation>
 <translation id="3832419617903252251">Slaptažodis išsaugotas tik šiame įrenginyje</translation>
+<translation id="3835016165506903031">Leisti lankantis</translation>
 <translation id="3835964409414434850">Eiti į kitą skirtuką</translation>
 <translation id="3838691874161539578">Patikrinkite išsaugotus slaptažodžius, kad būtumėte geriau apsaugoti internete</translation>
 <translation id="3838985624086228724">Sumažinta stebimo produkto kaina: iš <ph name="PREVIOUS_PRICE" /> į <ph name="PRICE" />, „<ph name="PRODUCT_NAME" />“, <ph name="DOMAIN" /></translation>
@@ -869,6 +880,8 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir kitų (dar <ph name="NUMBER_OF_ACCOUNTS" />) slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="3853162385423733133">Toliau naudokite ir išsaugokite slaptažodžius „Google“ paskyroje <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importuoti</translation>
+<translation id="3854052088499589035">Gausite atnaujinimų, kai pasieksite aukštesnį lygį</translation>
+<translation id="3854214753902617617">Tyrinėti Sustiprintą saugų naršymą</translation>
 <translation id="3857113360369572832">Atidarykite <ph name="BEGIN_BOLD" />„Safari“ nustatymus<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="386224966259596343">Turėsite galimybę išsaugoti šią informaciją „Wallet“ kitą kartą, kai užpildysite atitinkamą formą.</translation>
@@ -939,6 +952,7 @@
 <translation id="4047337302138771011">Slaptažodžių bendrinimas</translation>
 <translation id="4049419681095579435">Siuntinys jau stebimas</translation>
 <translation id="4049507953662678203">Įsitikinkite, kad yra tinklo ryšys ir bandykite dar kartą.</translation>
+<translation id="4052951214266508382">Leidimas „Gemini“ naudoti mikrofoną</translation>
 <translation id="4054290211988862686">Failo pasirinkimas</translation>
 <translation id="4070132839822635162">Neprisijungti</translation>
 <translation id="4072473499345702662">Eiti į „Level Up“</translation>
@@ -1047,8 +1061,10 @@
 <translation id="4430505936695785931">Gaukite išsaugotus slaptažodžius kitose programose</translation>
 <translation id="4431224949908513835">Pasirinkite mokėjimo metodą, kuris turi būti užpildytas automatiškai.</translation>
 <translation id="4432122368769493392">Nustatymai…</translation>
+<translation id="443295142249850475">Atidarytų skirtukų puslapių pavadinimai ir URL naudojami siekiant pateikti jums aktualių pasiūlymų.</translation>
 <translation id="4439968635693513370">Suplanuokite savaitgalį naudodami</translation>
 <translation id="4442550905108052454">Atidarykite skiltį <ph name="BEGIN_BOLD" />Nustatymai<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{Pateikiamas {count} rezultatas.}one{Pateikiamas {count} rezultatas.}few{Pateikiami {count} rezultatai.}many{Pateikiama {count} rezultato.}other{Pateikiama {count} rezultatų.}}</translation>
 <translation id="4445840280797509738">Daugiau „<ph name="CELL_ACCESSIBILITY_LABEL" />“ parinkčių</translation>
 <translation id="4455710003856931944">Galite perbraukti kraštą, kad pereitumėte atgal arba pirmyn.</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
@@ -1470,6 +1486,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="574762237186762643">Įvykiai</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5753021559215751319">Išsaugoti slaptažodį</translation>
+<translation id="5756200167514420691">Atidarykite skirtukus inkognito režimu, kad galėtumėte naršyti žiniatinklį privačiau</translation>
 <translation id="5756525336488841345">Slėpti žymes</translation>
 <translation id="5758631781033351321">Čia rasite skaitymo sąrašą</translation>
 <translation id="57586589942790530">Netinkamas kortelės numeris</translation>
@@ -1540,6 +1557,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5988097621740394599">Žr. sumažintas kainas skirtukuose.</translation>
 <translation id="5988851877894965432">Atidaryti URL naršyklėje „Chrome“</translation>
 <translation id="599343768974649785">Aiškus tekstas</translation>
+<translation id="6000893618966378846">Veiksmas „Ištrinti naršymo duomenis“ atliktas!</translation>
 <translation id="6004988584831654445">Viskas nustatyta! Gaukite pranešimus, kai gaunamos naujos užduotys.</translation>
 <translation id="6006672969046233841">Naujas skirtukas</translation>
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
@@ -1964,6 +1982,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7311244614769792472">Rezultatų nerasta</translation>
 <translation id="7312823817809783355">Jūsų užduotys</translation>
 <translation id="7313347584264171202">Čia rasite inkognito skirtukus</translation>
+<translation id="7318555235645532245">Veiksmas „Įjungti inkognito režimą“ baigtas!</translation>
 <translation id="7322186060879266048">{count,plural, =1{Virš klaviatūros pasiekiama {count} automatinio pildymo parinktis.}one{Virš klaviatūros pasiekiama {count} automatinio pildymo parinktis.}few{Virš klaviatūros pasiekiamos {count} automatinio pildymo parinktys.}many{Virš klaviatūros pasiekiama {count} automatinio pildymo parinkties.}other{Virš klaviatūros pasiekiama {count} automatinio pildymo parinkčių.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Atsisiųsta <ph name="PERCENT" /> proc.</translation>
@@ -2140,6 +2159,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7857520352710212030">Svetainė prisegta</translation>
 <translation id="7859988229622350291">Niekada neversti</translation>
 <translation id="7863211248337747225">Gauti programą</translation>
+<translation id="7863990181930071932">Prieiga prie vietovės informacijos išjungta</translation>
 <translation id="7865127013871431856">Vertimo parinktys</translation>
 <translation id="7866872729285243843">Norėdami gauti skaitymo sąrašą visuose įrenginiuose, nustatymuose įjunkite „Skaitymo sąrašas“.</translation>
 <translation id="7874107544081154809">Automatiškai užpildyti formą naudojant: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2224,6 +2244,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Išjungti</translation>
 <translation id="8106442513853561174">Tikslios vietovės bendrinimas</translation>
+<translation id="8110894698020598040">{count,plural, =1{Automatiškai užpildytas 1 slaptažodis}one{Automatiškai užpildytas # slaptažodis}few{Automatiškai užpildyti # slaptažodžiai}many{Automatiškai užpildyta # slaptažodžio}other{Automatiškai užpildyti # slaptažodžiai}}</translation>
 <translation id="8114753159095730575">Galima atsisiųsti failą. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="8123502380991596210">Slėpti naujienas</translation>
 <translation id="8123953306357309250">Atšaukti sinchronizavimą? Galite bet kada įjungti sinchronizavimą nustatymuose.</translation>
@@ -2447,6 +2468,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8786100550345425552">Redaguoti leidimus</translation>
 <translation id="878871978861915380">Slėpti parinktį „Kainų stebėjimas“</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
+<translation id="8795809107245894196">Naudokite slaptažodžio tikrinimo funkciją, kad įsitikintumėte, jog slaptažodžiai saugūs</translation>
 <translation id="8796634520835503150">Pasiekiamas skaitymo režimas</translation>
 <translation id="8803526663383843427">Kada įjungta</translation>
 <translation id="8803639129939845298">Saugūs</translation>

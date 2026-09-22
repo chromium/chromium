@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը</translation>
 <translation id="1323735185997015385">Ջնջել</translation>
 <translation id="132683371494960526">Կրկնակի հպեք՝ վերադաս պանակը փոխելու համար:</translation>
+<translation id="132969855425874290">Փակել «Գտնել և լրացնել» գործառույթը</translation>
 <translation id="1333455942675373522">Ստեղնաշար</translation>
 <translation id="1334485477792811969">Վեբ ծառայություններ</translation>
 <translation id="1335767868357998043">Ընտրեք հասցեագոտու դիրքը</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Հղում է ստացվել}one{{count} հղում է ստացվել}other{{count} հղում է ստացվել}}</translation>
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
 <translation id="1943478190258551035">Ընտրացանկ → Կարգավորումներ</translation>
+<translation id="1944477975050820119">Ստացեք իրական ժամանակում հուշումներ, որոնք կօգնեն ձեզ գտնել ԱԲ-ի միջոցով դիտարկելու նոր եղանակներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Մուտք գործեք կառավարվող հաշիվ</translation>
 <translation id="1955773397805078763">Ավելացնել վճարման եղանակ</translation>
 <translation id="1956138802718275401">Գաղտնաբառերի հասանելիություն հիմնական էկրանից</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Արտահանման նախապատրաստում…</translation>
 <translation id="2323697864063408084">Ստացեք ծանուցումներ ձեր կողպէկրանին և ազդերիզի տեսքով, որպեսզի երբեք բաց չթողնեք այն, ինչ ձեզ համար կարևոր է</translation>
 <translation id="2326302612031521902">Միավորի ընտրիչ</translation>
+<translation id="2326606747676847821">Ինկոգնիտո</translation>
 <translation id="2327445548174191329">Աղբյուրը՝ <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Պաշտպանություն չկա</translation>
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Կարդալ մարդկանց կարծիքները</translation>
 <translation id="2394659309569789395">Միևնույն է բացել կայքը</translation>
 <translation id="2403129868389095715">Ձեր փաթեթը հնարավոր չէ ուղարկել</translation>
+<translation id="2408318953009664750">Թույլատրել մեկ անգամ</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="2422174748424038845">Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
 <translation id="2424805048070062787">Շարունակել այս ներդիրի դիտումը</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Արգելափակել երկխոսության պատուհանները</translation>
 <translation id="2542268842667970959">Թաքցնել «Անվտանգության ստուգում» գործառույթը</translation>
 <translation id="2551153019974022505">Հաշվի սխալ</translation>
+<translation id="2559785333866467778">Gemini-ի առաջարկներ</translation>
 <translation id="2559843230610279254">Ներդիրների խումբ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ներդիր։</translation>
 <translation id="257088987046510401">Թեմաներ</translation>
 <translation id="2573117291489209663">Պատրաստ է</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Հղումները բացեք անմիջապես այստեղ</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
 <translation id="2721190673959776287">Ապրանքի հետ կապված մանրամասն օգնության նմուշ Համատեքստային վահանակի համար, որը պետք է հայտնվի օրական մի քանի անգամ։</translation>
+<translation id="273318428051150387">Դուք չեք ստանա ծանուցումներ՝ Level Up ծրագրում ձեր առաջընթացի մասին</translation>
 <translation id="2739887572830526131">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> կայքը տեղափոխվել է դիրք <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3183362380688692618">Ներդիրների նոր խումբ...</translation>
+<translation id="3185000827934321633">Նավիգացիա</translation>
 <translation id="3185760469172949183">Դուք կարդացիք տեսախցիկի միջոցով որոնման մասին խորհուրդը։</translation>
 <translation id="3186796054637504691">Մաքրել պատմությունը և կայքերի տվյալները</translation>
 <translation id="3190558889382726167">Գաղտնաբառը պահվեց</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{վճարման 1 եղանակ}one{վճարման # եղանակ}other{վճարման # եղանակ}}</translation>
 <translation id="3831560640878483188">Փակե՞լ նախազգուշացումը</translation>
 <translation id="3832419617903252251">Գաղտնաբառը պահվեց միայն այս սարքում</translation>
+<translation id="3835016165506903031">Թույլատրել այցելելիս</translation>
 <translation id="3835964409414434850">Անցնել հաջորդ ներդիր</translation>
 <translation id="3838691874161539578">Ստուգեք պահված գաղտնաբառերը՝ համացանցում ձեր պաշտպանությունն ուժեղացնելու համար</translation>
 <translation id="3838985624086228724">Գնիջեցում ձեր հետևած ապրանքի վրա՝<ph name="PREVIOUS_PRICE" />-ից մինչև՝ <ph name="PRICE" />,<ph name="PRODUCT_NAME" /> <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Կջնջվեն <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ու ևս <ph name="NUMBER_OF_ACCOUNTS" /> հաշվի գաղտնաբառերը։ Ձեր հաշիվները չեն ջնջվի։</translation>
 <translation id="3853162385423733133">Շարունակեք օգտագործել և պահել գաղտնաբառեր ձեր Google հաշվում՝ <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Ներմուծել</translation>
+<translation id="3854052088499589035">Դուք կստանաք ծանուցումներ՝ Level Up ծրագրում ձեր առաջընթացի մասին</translation>
 <translation id="3857113360369572832">Բացեք <ph name="BEGIN_BOLD" />Safari-ի կարգավորումները<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="386224966259596343">Հաջորդ անգամ, երբ համապատասխան ձև լրացնեք, կկարողանաք պահել այս տեղեկությունները Wallet-ում։</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Ստացեք պահված գաղտնաբառերը այլ հավելվածներում</translation>
 <translation id="4431224949908513835">Ընտրեք, թե վճարման որ եղանակն օգտագործել։</translation>
 <translation id="4432122368769493392">Կարգավորումներ…</translation>
+<translation id="443295142249850475">Բաց ներդիրների էջերի վերնագրերն ու URL-ները օգտագործվում են՝ ձեզ համապատասխան առաջարկներ տրամադրելու համար։</translation>
 <translation id="4439968635693513370">Պլանավորեք ձեր հանգստյան օրերը</translation>
 <translation id="4442550905108052454">Բացեք <ph name="BEGIN_BOLD" />Կարգավորումները<ph name="END_BOLD" />։</translation>
+<translation id="4444574452810111637">{count,plural, =1{Հասանելի է {count} արդյունք։}one{Հասանելի է {count} արդյունք։}other{Հասանելի է {count} արդյունք։}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />. այլ ընտրանքներ</translation>
 <translation id="4455710003856931944">Առաջ կամ հետ անցնելու համար մատը սահեցրեք էկրանի եզրով։</translation>
 <translation id="4460014764210899310">Ապախմբավորել</translation>
@@ -2224,6 +2235,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8102130909719902723">Ն</translation>
 <translation id="8105368624971345109">Անջատել</translation>
 <translation id="8106442513853561174">Կիսվել ճշգրիտ տեղադրությամբ</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 գաղտնաբառ ավտոմատ լրացվել է}one{# գաղտնաբառ ավտոմատ լրացվել է}other{# գաղտնաբառ ավտոմատ լրացվել է}}</translation>
 <translation id="8114753159095730575">Ֆայլը հասանելի է ներբեռնման համար: Ընտրանքները հասանելի են էկրանի ներքևի հատվածում:</translation>
 <translation id="8123502380991596210">Թաքցնել «Ինչ նոր բան կա» կետը</translation>
 <translation id="8123953306357309250">Չեղարկե՞լ համաժամացումը։ Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում։</translation>

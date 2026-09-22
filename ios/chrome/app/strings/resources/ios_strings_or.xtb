@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଇନକଗ୍ନିଟୋ ମୋଡର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="1323735185997015385">ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="132683371494960526">ମୂଳ ଫୋଲ୍ଡର୍‌କୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଦୁଇଥର ଟାପ୍ କରନ୍ତୁ।</translation>
+<translation id="132969855425874290">ଖୋଜି ପୂରଣ କରନ୍ତୁକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1333455942675373522">କୀବୋର୍ଡ</translation>
 <translation id="1334485477792811969">ୱେବ ସେବା</translation>
 <translation id="1335767868357998043">ଠିକଣା ବାରର ପୋଜିସନ ବାଛନ୍ତୁ</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{ଲିଙ୍କ ମିଳିଛି}other{{count} ଲିଙ୍କ ମିଳିଛି}}</translation>
 <translation id="1941314575388338491">କପି କରିବାକୁ ଦୁଇଥର ଟାପ୍‌ କରନ୍ତୁ।</translation>
 <translation id="1943478190258551035">ମେନୁ → ସେଟିଂସ</translation>
+<translation id="1944477975050820119">AI ସହ ବ୍ରାଉଜ କରିବାର ନୂଆ ଉପାୟଗୁଡ଼ିକ ଖୋଜିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରୁଥିବା ରିଅଲ-ଟାଇମ ପରାମର୍ଶଗୁଡ଼ିକ ପାଆନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">ପରିଚାଳିତ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="1955773397805078763">ପେମେଣ୍ଟ ପଦ୍ଧତି ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1956138802718275401">ହୋମ ସ୍କ୍ରିନରୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପାଆନ୍ତୁ</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ପ୍ରସ୍ତୁତ ହେଉଛି…</translation>
 <translation id="2323697864063408084">ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ହୋଇଥିବା ବିଷୟଗୁଡ଼ିକୁ ନହରାଇବାକୁ ଆପଣଙ୍କ ଲକ ସ୍କ୍ରିନରେ ଏବଂ ବେନର ଭାବେ ବିଜ୍ଞପ୍ତି ପାଆନ୍ତୁ</translation>
 <translation id="2326302612031521902">ୟୁନିଟ ଚୟନକାରୀ</translation>
+<translation id="2326606747676847821">ଇନକଗ୍ନିଟୋ ମୋଡକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />ରୁ</translation>
 <translation id="2330607597130465898">କୌଣସି ସୁରକ୍ଷା ନାହିଁ</translation>
 <translation id="233375395665273385">ଡିଲିଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">ଲୋକମାନେ କଣ କହୁଛନ୍ତି ପଢ଼ନ୍ତୁ</translation>
 <translation id="2394659309569789395">ଯେ କୌଣସି ମତେ ସାଇଟ ଖୋଲନ୍ତୁ</translation>
 <translation id="2403129868389095715">ଆପଣଙ୍କ ପେକେଜକୁ ଡେଲିଭର କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="2408318953009664750">ଥରେ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2410754283952462441">ଗୋଟିଏ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
 <translation id="2422174748424038845">ଯଦି ଆପଣ ଏହାକୁ ଡିଲିଟ କରନ୍ତି, ତେବେ ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="2424805048070062787">ଏହି ଟାବ ମାଧ୍ୟମରେ ଜାରି ରଖନ୍ତୁ</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">ଡାଏଲଗ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="2542268842667970959">"ସୁରକ୍ଷା ଯାଞ୍ଚ"କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2551153019974022505">ଆକାଉଣ୍ଟରେ ତ୍ରୁଟି</translation>
+<translation id="2559785333866467778">Gemini ପରାମର୍ଶ</translation>
 <translation id="2559843230610279254">ଟାବ ଗ୍ରୁପ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ଟାବ।</translation>
 <translation id="257088987046510401">ଥିମ୍</translation>
 <translation id="2573117291489209663">ହୋଇଗଲା</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">ଏଠାରେ ସିଧାସଳଖ ଲିଙ୍କଗୁଡ଼ିକୁ ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2718352093833049315">କେବଳ ୱାଇ-ଫାଇରେ</translation>
 <translation id="2721190673959776287">ପ୍ରାସଙ୍ଗିକ ପେନେଲ ପାଇଁ ନମୁନା ରିଚ ଇନ-ପ୍ରଡକ୍ଟ ସହାୟତା, ଯାହା ଦିନକୁ ଏକାଧିକ ଥର ଦେଖାଯିବା ଉଚିତ।</translation>
+<translation id="273318428051150387">ଆପଣ ଲେଭେଲ ଅପରେ ପ୍ରୋଗ୍ରେସ କଲେ ଅପଡେଟଗୁଡ଼ିକ ପାଇବେ ନାହିଁ</translation>
 <translation id="2739887572830526131">ପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ୱା ଆପଣଙ୍କୁ ଯଦି ଆଉ ଏହା ଆବଶ୍ୟକ ନାହିଁ, ତେବେ ଏହାକୁ ଡିଲିଟ କରିଦିଅନ୍ତୁ।</translation>
 <translation id="2747003861858887689">ପୂର୍ବବର୍ତ୍ତୀ ଫିଲ୍ଡ</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" />କୁ <ph name="POSITION" /> ପୋଜିସନକୁ ମୁଭ କରାଯାଇଛି</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3181954750937456830">ସେଫ୍ ବ୍ରାଉଜିଂ (ଆପଣଙ୍କୁ ଏବଂ ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ ବିପଜ୍ଜନକ ସାଇଟ୍‍ଗୁଡ଼ିକରୁ ରକ୍ଷା କରେ)</translation>
 <translation id="3183362380688692618">ନୂଆ ଟାବ ଗ୍ରୁପ...</translation>
+<translation id="3185000827934321633">ନାଭିଗେଟ କରାଯାଉଛି</translation>
 <translation id="3185760469172949183">କେମେରା ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="3186796054637504691">ଇତିହାସ ଏବଂ ୱେବସାଇଟ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3190558889382726167">ପାସୱାର୍ଡ ସେଭ୍‍ କରାଯାଇଛି</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ପେମେଣ୍ଟ ପଦ୍ଧତି}other{# ପେମେଣ୍ଟ ପଦ୍ଧତି}}</translation>
 <translation id="3831560640878483188">ଚେତାବନୀକୁ ଖାରଜ କରିବେ?</translation>
 <translation id="3832419617903252251">କେବଳ ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡକୁ ସେଭ କରାଯାଇଛି</translation>
+<translation id="3835016165506903031">ଭିଜିଟ କରିବା ସମୟରେ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3835964409414434850">ପରବର୍ତ୍ତୀ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3838691874161539578">ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ସୁଦୃଢ଼ କରିବା ଏବଂ ଅନଲାଇନରେ ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3838985624086228724">ଆପଣଙ୍କ ଟ୍ରାକ କରାଯାଇଥିବା ପ୍ରଡକ୍ଟରେ ମୂଲ୍ୟ ହ୍ରାସ, <ph name="PREVIOUS_PRICE" />ରୁ <ph name="PRICE" />କୁ, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />ର ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ <ph name="NUMBER_OF_ACCOUNTS" />ଟି ପାସୱାର୍ଡ ଡିଲିଟ ହୋଇଯିବ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଡିଲିଟ ହେବ ନାହିଁ।</translation>
 <translation id="3853162385423733133">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="EMAIL" />ରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="3853873210696342070">ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="3854052088499589035">ଆପଣ ଲେଭେଲ ଅପରେ ପ୍ରୋଗ୍ରେସ କଲେ ଅପଡେଟଗୁଡ଼ିକ ପାଇବେ</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ସେଟିଂସ<ph name="END_BOLD" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="386224966259596343">ପରବର୍ତ୍ତୀ ଥର ଏକ ପ୍ରାସଙ୍ଗିକ ଫର୍ମକୁ ଆପଣ ପୂରଣ କରିବା ସମୟରେ ଏହି ସୂଚନାକୁ Walletରେ ସେଭ କରିବାର ଏକ ସୁଯୋଗ ପାଇବେ।</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">ଅନ୍ୟ ଆପ୍ସରେ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପାଆନ୍ତୁ</translation>
 <translation id="4431224949908513835">ପୂରଣ କରିବା ପାଇଁ ଏକ ପେମେଣ୍ଟ ପଦ୍ଧତି ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4432122368769493392">ସେଟିଂସ…</translation>
+<translation id="443295142249850475">ଆପଣଙ୍କୁ ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶଗୁଡ଼ିକ ଦେବା ପାଇଁ ଆପଣଙ୍କ ଖୋଲା ଟାବଗୁଡ଼ିକର ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଏ।</translation>
 <translation id="4439968635693513370">ଏହା ସହ ଆପଣଙ୍କ ୱିକେଣ୍ଡ ପ୍ଲାନ କରନ୍ତୁ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ସେଟିଂସ୍<ph name="END_BOLD" /> ଖୋଲନ୍ତୁ</translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି।}other{{count} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="4455710003856931944">ପଛକୁ କିମ୍ବା ଆଗକୁ ଯିବା ପାଇଁ ଆପଣ ଧାରକୁ ସ୍ୱାଇପ କରିପାରିବେ।</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
@@ -2224,6 +2235,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8106442513853561174">ସଠିକ ଲୋକେସନ ସେୟାର କରନ୍ତୁ</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 ପାସୱାର୍ଡ ଅଟୋଫିଲ କରାଯାଇଛି}other{# ପାସୱାର୍ଡକୁ ଅଟୋଫିଲ କରାଯାଇଛି}}</translation>
 <translation id="8114753159095730575">ଫାଇଲ୍‍ ଡାଉନ୍‌ଲୋଡ୍‌ କରିବା ଉପଲବ୍ଧ ଅଛି। ସ୍କ୍ରିନ୍‌ର ତଳ ପାର୍ଶ୍ୱରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="8123502380991596210">'ନୂଆ କଣ ଅଛି'କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8123953306357309250">ସିଙ୍କ ବାତିଲ କରିବେ? ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ ଚାଲୁ କରିପାରିବେ।</translation>

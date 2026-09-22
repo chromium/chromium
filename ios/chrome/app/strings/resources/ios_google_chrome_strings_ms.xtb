@@ -270,6 +270,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7061455974939528301">Tekan dan tahan ikon Chrome dan klik "Edit skrin utama"</translation>
 <translation id="7095110968493193530">Kepada Google Password Manager untuk <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Pastikan Chrome terkini</translation>
+<translation id="7135936755418321901">Untuk berkongsi lokasi anda dengan laman web, ketik Tetapan untuk membenarkan Chrome menggunakan lokasi anda.</translation>
 <translation id="7145599899567697473">Simpan dan autolengkap kata laluan dalam Chrome</translation>
 <translation id="7161390184744336561">Google Chrome sudah lapuk</translation>
 <translation id="7165736900384873061">Mula menggunakan pengimbas QR Google Chrome</translation>
@@ -284,6 +285,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7272930098487145294">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chrome membuat penambahan pada foto anda.</translation>
 <translation id="7275945473750112644">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chrome anda akan dikosongkan daripada peranti ini</translation>
 <translation id="7284245284340063465">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Jika anda memilih atau mengabaikan cadangan, Chrome akan menyesuaikan diri untuk membantu anda memaparkan cadangan yang lebih berkaitan pada masa hadapan.</translation>
 <translation id="7296102444587051536">Chrome untuk iOS</translation>
 <translation id="7299681342915173313">Kini anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam e-mel, dokumen dan apl lain.</translation>
 <translation id="7334364820047587268">Anda sudah mempunyai kata laluan untuk akaun ini dalam Google Password Manager anda. Jika anda memilih untuk mengimport salah satu kata laluan di bawah, kata laluan itu akan menggantikan kata laluan sedia ada.</translation>
@@ -357,6 +359,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8544583291890527417">Makluman tentang sebarang masalah privasi atau keselamatan yang dikesan oleh Chrome untuk anda.</translation>
 <translation id="855027533751209304">Petua Chrome: Cari perkara yang anda lihat</translation>
 <translation id="8558480467877843976">Kini anda boleh menggunakan Chrome pada bila-bila masa anda menyemak imbas atau mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="8589791109349384456">Tindakan mematikan cadangan tidak mengawal pemprosesan tajuk halaman dan URL Chrome untuk ciri lain. Anda boleh mengurus akses kepada data ini dalam <ph name="BEGIN_LINK" />tetapan penyegerakan<ph name="END_LINK" /> anda.</translation>
 <translation id="8603022514504485810">Google Password Manager tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Google Account anda.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Gunakan kata laluan, sejarah, penanda halaman dan kad kredit Safari anda dalam Chrome</translation>
 <translation id="8630122478628016441">Hidupkan “Kunci tab Inkognito apabila anda menutup Chrome”.</translation>

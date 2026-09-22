@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="102432830749687801">Maak seker dat jy die Inhoudoordragapp deur Google gebruik om jou skoolrekeningdata na jou persoonlike rekening toe te skuif voordat jy toegang verloor.</translation>
 <translation id="1026212596705997935">Kortpad word gebruik vir “<ph name="CONFLICT_ACCEL_NAME" />”. Druk ’n nuwe kortpad. Druk hierdie kortpad weer om die oorspronklike kortpad te vervang.</translation>
-<translation id="1030856839388844477">Terugsteldatagebruik</translation>
 <translation id="1047095725494118091">Kan nie aflaai nie. Probeer weer of herbegin jou <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> drade, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minute</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beskikbaar nie</translation>
-<translation id="131421566576084655">Datum van laaste dataterugstelling is nie beskikbaar nie</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Tuisnetwerk, swerf tans nie</translation>
 <translation id="1327977588028644528">Deurgang</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Titel is gewysig</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" />-sleutel is nie gedruk nie</translation>
 <translation id="1432110487435300883">Vir ’n benaderde resultaat, deel die <ph name="CATEGORY_TEXT" />-waarde deur <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Stel datagebruik outomaties elke maand op ’n gekose dag terug</translation>
 <translation id="1442433966118452622">Prentbron</translation>
 <translation id="1446954767133808402">saffier</translation>
 <translation id="1449035143498573192">Maak in Google Search oop</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Versteek transkripsie</translation>
 <translation id="160633243685262989">Voorbeskou prent</translation>
 <translation id="1611649489706141841">vorentoe</translation>
-<translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gebruik ’n tema</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1622402072367425417">gloeiende borrels</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Jy kan nou net Klasnutsgoed gebruik</translation>
 <translation id="1762483337755424125">Transkripsie</translation>
 <translation id="1765169783255151332">Wissel vinnig sleutels</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">warmbron</translation>
 <translation id="2203642483788377106">krans</translation>
 <translation id="2208388655216963643">impressionisties</translation>
-<translation id="2209788852729124853">Stel verkeertellers terug</translation>
 <translation id="2212733584906323460">Naamresolusie</translation>
 <translation id="2215920961700443347">Geen internet nie. Koppel aan die internet en probeer weer.</translation>
 <translation id="2217935453350629363">Huidige spoed</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Terugvoer vir mahi-kenmerk</translation>
 <translation id="3488065109653206955">Deels geaktiveer</translation>
 <translation id="3492882532495507361">’n <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> skakerings</translation>
-<translation id="3493187369049186498">Data word deur jou Chromebook gemeet. Dit kan van verskafferdata verskil.</translation>
 <translation id="3502426834823382181">bekyk alle apps</translation>
 <translation id="3510890413042482857">Stuur <ph name="BEGIN_LINK1" />werkverrigtingnasporingdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">sleutelbord verdonker</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3852931845120288955">Titel (A tot Z)</translation>
-<translation id="3858860766373142691">Naam</translation>
 <translation id="3862598938296403232">Beskrywing word vereis</translation>
 <translation id="386280020966669610">Inspireer my</translation>
 <translation id="3864554910039562428">koraalrif</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Bespeur outomaties kenmerkende stemme en gee vir elke spreker ’n generiese etiket soos Spreker 1 en Spreker 2</translation>
 <translation id="38811596981744338">Wetlike kwessie</translation>
 <translation id="3885327323343477505">Verander sluimerskerm</translation>
-<translation id="3889914174935857450">Stel datum terug</translation>
 <translation id="3889954687526985291">’n futuristiese motorfiets gemaak van swart papier met neonligte op donker agtergrond</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3902271751020176019">Transkripsietaal</translation>
 <translation id="390890062090528082">stergevulde lug</translation>
 <translation id="391412459402535266">Kan nie toestel toets nie. Skakel oor na skootrekenaarmodus om te toets.</translation>
 <translation id="3916998944874125962">neem skermskoot</translation>
-<translation id="3923184630988645767">Datagebruik</translation>
 <translation id="392943705803418306">Klasnutsgoedsessie het vir jou geëindig</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
 <translation id="3934185438132762746">Ontoegewysde <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">volume sagter</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Wysig-knoppie vir <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Datagebruik is teruggestel</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744175046705638478">Vertaal "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">volgende snit</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Die <ph name="MANAGER" />-administrateur het gestel wanneer hierdie <ph name="DEVICE_TYPE" /> gebruik kan word</translation>
 <translation id="594552776027197022">Genereer ewekansige sleutelpaar</translation>
 <translation id="5946538341867151940">Jy is nog nie gekoppel nie. As jou selfoondiensverskaffer ’n gepasmaakte APN aanbeveel, kan jy “+ Nuwe APN” kies om die APN-inligting in te voer.</translation>
-<translation id="5947266287934282605">As die laaste dag van die maand voor hierdie dag is, sal die data op die laaste dag van die maand teruggestel word</translation>
 <translation id="5948460390109837040">honde</translation>
 <translation id="594989847980441553">Kies "Skep" om ’n prent met KI te skep.
         Alle prente wat geskep word, sal outomaties hier wys.</translation>
-<translation id="5972388717451707488">Opdateringenjin</translation>
 <translation id="5972801171078377748">Moenie weer wys nie</translation>
 <translation id="5975130252842127517">koraal</translation>
 <translation id="5982621672636444458">Rangskikopsies</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Gegenereerde teëls:</translation>
 <translation id="6017514345406065928">Groen</translation>
 <translation id="6019566113895157499">Kortpadsleutels</translation>
-<translation id="6034694447310538551">Aktiveer outomatiese maandelikse terugstelling</translation>
 <translation id="6037291330010597344">Die skandeerder se dokumentvoerder is leeg. Voeg dokumente by en probeer weer.</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6040852767465482106">Anonieme identiteit</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Gekose sleutel is <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Regspyl</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Definieer "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">blou en pers</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Probeer later weer</translation>
 <translation id="7118522231018231199">Maak seker dat jy APN’s kies wat deur jou mobielediensverskaffer of administrateur verskaf word. As jy ’n APN kies sal dit enige gepasmaakte APN's deaktiveer. Ongeldige APN's kan jou mobiele verbinding ontwrig.</translation>
 <translation id="7119389851461848805">krag</translation>
-<translation id="7129287270910503851">Jou datagebruik sal elke maand op hierdie dag teruggestel word</translation>
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naambediener}other{Naambedieners}}</translation>
 <translation id="7135814714616751706">Soek kortpaaie</translation>
@@ -1496,7 +1480,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Kom meer te wete in Hulpsentrum</translation>
 <translation id="7623327321610992184">OnTask-pod</translation>
-<translation id="763165478673169849">Laas teruggestel</translation>
 <translation id="7633068090678117093">Agtergrondprent</translation>
 <translation id="763873111564339966">indigo</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
@@ -1532,7 +1515,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7802764839223122985">Sleutel ontbreek. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7811024689617730980">Kies ’n outomatiese terugsteldag wat wissel van 1 tot en met 31</translation>
 <translation id="7813073042185856802">berg</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
 <translation id="7824219488248240180">postimpressionisties</translation>
@@ -1608,7 +1590,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Bevestig</translation>
-<translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8135609423982943441">Jou Chromebook is teruggestel na veilige verstekke. Jy kan hierdie veranderinge enige tyd in Instellings verstel.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Skep jou eie</translation>
@@ -1691,7 +1672,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan nie deur brandmuur van Android-programme af aan HTTP-webwerwe koppel nie</translation>
 <translation id="8495070016475833911">vilt</translation>
-<translation id="8498220429738806196">Verkeertellers</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8503836310948963452">Net 'n paar minute …</translation>
 <translation id="8505011850330200833">Die Gemini-model benodig 2 GB se berging om transkripsies te verwerk en opsommings te skep</translation>
@@ -1699,7 +1679,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8506394543220680287">bedek met sneeu</translation>
 <translation id="8508640263392900755">APN-besonderhede</translation>
 <translation id="8522687886059337719">Jy het nou toegang tot nuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />muurpapiere<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />sluimerskerm<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>
 <translation id="8531692079895415839">mistig</translation>
 <translation id="8538236298648811558">Aangedryf deur Google KI</translation>
@@ -1764,7 +1743,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="885704831271383379">sleutelbord donkerder</translation>
 <translation id="8863170912498892583">Aktiveer donkertema</translation>
 <translation id="8864415976656252616">Geen voorgestelde inhoud nie. Sien beste hulpinhoud.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Toestel is 'n tablet.</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
 <translation id="8882789155418924367">uile</translation>
@@ -1824,7 +1802,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="9082718469794970195">Gebruik hierdie video</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
 <translation id="9088994563996376283">Vereenvoudig</translation>
-<translation id="909856219855259344">Meer inligting oor terugsteldatum</translation>
 <translation id="9100765901046053179">Gevorderde instellings</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>

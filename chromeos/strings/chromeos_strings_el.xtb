@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
 <translation id="102432830749687801">Φροντίστε να χρησιμοποιήσετε την εφαρμογή Μεταφορά περιεχομένου της Google, για να μεταφέρετε τα δεδομένα του σχολικού λογαριασμού στον προσωπικό λογαριασμό σας, προτού χάσετε την πρόσβαση.</translation>
 <translation id="1026212596705997935">Η συντόμευση χρησιμοποιείται για τη λειτουργία <ph name="CONFLICT_ACCEL_NAME" />. Πατήστε μια νέα συντόμευση. Για να αντικαταστήσετε την υπάρχουσα συντόμευση, πατήστε ξανά αυτή τη συντόμευση.</translation>
-<translation id="1030856839388844477">Επαναφορά χρήσης δεδομένων</translation>
 <translation id="1047095725494118091">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε τη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Πραγματοποιείται ενημέρωση (ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="1310380015393971138">Δεν υπάρχει διαθέσιμο δίκτυο <ph name="NETWORK_NAME" /></translation>
-<translation id="131421566576084655">Η ημερομηνία της τελευταίας επαναφοράς δεδομένων δεν είναι διαθέσιμη</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Εγχώριο δίκτυο, χωρίς περιαγωγή </translation>
 <translation id="1327977588028644528">Πύλη</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Έγινε επεξεργασία του τίτλου</translation>
 <translation id="1423591390236870726">Το πλήκτρο <ph name="KEY_NAME" /> δεν πατήθηκε</translation>
 <translation id="1432110487435300883">Για ένα αποτέλεσμα κατά προσέγγιση, διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Επαναφέρει αυτόματα τη χρήση δεδομένων κάθε μήνα κατά την επιλεγμένη ημέρα</translation>
 <translation id="1442433966118452622">Προέλευση εικόνας</translation>
 <translation id="1446954767133808402">ζαφείρι</translation>
 <translation id="1449035143498573192">Άνοιγμα στην Αναζήτηση Google</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Απόκρυψη μεταγραφής</translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
-<translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Χρήση θέματος</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1622402072367425417">λαμπερές φούσκες</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Καλό (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Μπορείτε πλέον να χρησιμοποιείτε μόνο τα Εργαλεία για την τάξη</translation>
 <translation id="1762483337755424125">Μεταγραφή</translation>
 <translation id="1765169783255151332">Γρήγορη εναλλαγή πλήκτρων</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">θερμοπηγή</translation>
 <translation id="2203642483788377106">γκρεμό</translation>
 <translation id="2208388655216963643">ιμπρεσιονισμού</translation>
-<translation id="2209788852729124853">Επαναφορά μετρητών επισκεψιμότητας</translation>
 <translation id="2212733584906323460">Ανάλυση ονόματος</translation>
 <translation id="2215920961700443347">Δεν υπάρχει σύνδεση στο διαδίκτυο. Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="2217935453350629363">Τρέχουσα ταχύτητα</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Σχόλια για τη λειτουργία mahi</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3492882532495507361">Ένα <ph name="OFFICE_STYLE" /> γραφείο σε <ph name="OFFICE_COLOR" /> τόνους</translation>
-<translation id="3493187369049186498">Τα δεδομένα μετρώνται από το Chromebook. Αυτά τα δεδομένα ενδέχεται να διαφέρουν από τα δεδομένα παρόχου.</translation>
 <translation id="3502426834823382181">προβολή όλων των εφαρμογών</translation>
 <translation id="3510890413042482857">Αποστολή <ph name="BEGIN_LINK1" />δεδομένων εντοπισμού απόδοσης<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">μείωση φωτισμού πληκτρολογίου</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3852931845120288955">Τίτλος (Α έως Ω)</translation>
-<translation id="3858860766373142691">Όνομα</translation>
 <translation id="3862598938296403232">Η περιγραφή απαιτείται</translation>
 <translation id="386280020966669610">Δώσε μου έμπνευση</translation>
 <translation id="3864554910039562428">κοραλλιογενής ύφαλος</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Να εντοπίζει αυτόματα ξεχωριστές φωνές και να εκχωρεί μια γενική ετικέτα σε κάθε ομιλητή, όπως Ομιλητής 1 και Ομιλητής 2</translation>
 <translation id="38811596981744338">Νομικό ζήτημα</translation>
 <translation id="3885327323343477505">Αλλαγή προφύλαξης οθόνης</translation>
-<translation id="3889914174935857450">Επαναφορά ημερομηνίας</translation>
 <translation id="3889954687526985291">φουτουριστική μοτοσικλέτα από μαύρο χαρτί με φώτα νέον σε σκούρο φόντο</translation>
 <translation id="3897092660631435901">Μενού</translation>
 <translation id="3902271751020176019">Γλώσσα μεταγραφής</translation>
 <translation id="390890062090528082">έναστρος ουρανός</translation>
 <translation id="391412459402535266">Δεν είναι δυνατή η δοκιμή της συσκευής. Μεταβείτε στη λειτουργία φορητού υπολογιστή για δοκιμή.</translation>
 <translation id="3916998944874125962">λήψη στιγμιότυπου οθόνης</translation>
-<translation id="3923184630988645767">Χρήση δεδομένων</translation>
 <translation id="392943705803418306">Η περίοδος λειτουργίας της λειτουργίας Εργαλεία για την τάξη έληξε για εσάς</translation>
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> που δεν έχει εκχωρηθεί</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">μείωση έντασης ήχου</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Κουμπί επεξεργασίας για <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Έγινε επαναφορά της χρήσης δεδομένων</translation>
 <translation id="574392208103952083">Μέτριο</translation>
 <translation id="5744175046705638478">Μετάφραση "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">επόμενο κομμάτι</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί αυτή η συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
 <translation id="5946538341867151940">Δεν έχετε συνδεθεί ακόμα. Εάν η εταιρεία κινητής τηλεφωνίας προτείνει ένα προσαρμοσμένο APN, εισαγάγετε τις πληροφορίες του APN επιλέγοντας "+ Νέο APN"</translation>
-<translation id="5947266287934282605">Αν η τελευταία ημέρα του μήνα είναι πριν από αυτή την ημέρα, θα γίνει επαναφορά των δεδομένων την τελευταία ημέρα του μήνα</translation>
 <translation id="5948460390109837040">σκυλιά</translation>
 <translation id="594989847980441553">Επιλέξτε Δημιουργία, για να δημιουργήσετε μια εικόνα με AI.
         Όλες οι εικόνες που δημιουργούνται θα εμφανίζονται αυτόματα εδώ.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Να μην εμφανιστεί ξανά</translation>
 <translation id="5975130252842127517">κοραλί</translation>
 <translation id="5982621672636444458">Επιλογές ταξινόμησης</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Τίτλοι που δημιουργήθηκαν:</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6019566113895157499">Συντομεύσεις πληκτρολογίου</translation>
-<translation id="6034694447310538551">Ενεργοποίηση αυτόματης μηνιαίας επαναφοράς</translation>
 <translation id="6037291330010597344">Ο τροφοδότης εγγράφων του σαρωτή είναι άδειος. Προσθέστε έγγραφα και δοκιμάστε ξανά.</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6040852767465482106">Ανώνυμη ταυτότητα</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Δεξί βέλος</translation>
 <translation id="6278428485366576908">Θέμα</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Ορισμός "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">μπλε και μοβ</translation>
 <translation id="6284632978374966585">Ενεργοποίηση σκούρου θέματος</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Δοκιμάστε ξανά αργότερα</translation>
 <translation id="7118522231018231199">Βεβαιωθείτε ότι έχετε επιλέξει τα APN που παρέχονται από τον πάροχο κινητής τηλεφωνίας ή τον διαχειριστή σας. Η επιλογή ενός APN θα απενεργοποιήσει τυχόν προσαρμοσμένα APN. Τα μη έγκυρα APN ενδέχεται να προκαλέσουν προβλήματα στη σύνδεση κινητής τηλεφωνίας.</translation>
 <translation id="7119389851461848805">ενεργοποίηση</translation>
-<translation id="7129287270910503851">Θα γίνεται επαναφορά της χρήσης δεδομένων κάθε μήνα αυτή την ημέρα</translation>
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
 <translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7633068090678117093">Εικόνα φόντου</translation>
 <translation id="763873111564339966">λουλακί</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">Το πλήκτρο λείπει. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
-<translation id="7811024689617730980">Επιλέξτε μια ημέρα για την αυτόματη επαναφορά, από 1 μέχρι και 31</translation>
 <translation id="7813073042185856802">βουνό</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
 <translation id="7824219488248240180">μεταϊμπρεσιονισμού</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
-<translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
 <translation id="8135609423982943441">Έγινε επαναφορά του Chromebook στις ασφαλείς προεπιλογές. Μπορείτε να προσαρμόσετε αυτές τις αλλαγές ανά πάσα στιγμή στις Ρυθμίσεις.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Δημιουργήστε τη δική σας</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8491311378305535241">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP μέσω εφαρμογών Android</translation>
 <translation id="8495070016475833911">τσόχα</translation>
-<translation id="8498220429738806196">Μετρητές επισκεψιμότητας</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8505011850330200833">Το μοντέλο Gemini απαιτεί 2 GB αποθηκευτικού χώρου για την επεξεργασία μεταγραφών και τη δημιουργία συνόψεων</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">καλυμμένα από χιόνι</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
 <translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προφύλαξη οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>
 <translation id="8531692079895415839">ομιχλώδης</translation>
 <translation id="8538236298648811558">Με την υποστήριξη του Google AI</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">λιγότερο φωτεινό πληκτρολόγιο</translation>
 <translation id="8863170912498892583">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="8864415976656252616">Δεν υπάρχει προτεινόμενο περιεχόμενο. Ανατρέξτε στο κορυφαίο περιεχόμενο βοήθειας.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
 <translation id="8882789155418924367">κουκουβάγιες</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">Χρήση αυτού του βίντεο</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="9088994563996376283">Απλοποίηση</translation>
-<translation id="909856219855259344">Περισσότερες πληροφορίες για την ημερομηνία επαναφοράς</translation>
 <translation id="9100765901046053179">Σύνθετες ρυθμίσεις</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>

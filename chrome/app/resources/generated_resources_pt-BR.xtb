@@ -1078,7 +1078,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1822517323280215012">Cinza</translation>
 <translation id="1822635184853104396">Mostrar o histórico de downloads completo em uma nova guia</translation>
 <translation id="1823768272150895732">Fonte</translation>
-<translation id="1823781806707127806">Adicionar os dados de navegação existentes ao perfil gerenciado</translation>
 <translation id="1825073796163165618">Ativar links</translation>
 <translation id="1825565032302550710">A porta precisa estar entre 1.024 e 65.535</translation>
 <translation id="18260074040409954">Você pode usar as senhas salvas em qualquer dispositivo. Elas ficam armazenadas no <ph name="GOOGLE_PASSWORD_MANAGER" /> da conta <ph name="EMAIL" />.</translation>
@@ -4103,7 +4102,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4089235344645910861">Configurações salvas. Sincronização iniciada.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Ativar o acesso verificado</translation>
-<translation id="4092709865241032354">Para ajudar o Gerenciador de senhas do Google a salvar suas informações de login, adicione seu nome de usuário desse site</translation>
+<translation id="4092709865241032354">Para salvar suas informações de login no Gerenciador de Senhas do Google, adicione seu nome de usuário deste site</translation>
 <translation id="4093173301198419723">Precisa ter letras maiúsculas, minúsculas, números e símbolos</translation>
 <translation id="4093955363990068916">Arquivo local:</translation>
 <translation id="4094647278880271855">Você está usando uma variável de ambiente não compatível: <ph name="BAD_VAR" />. Isso causará problemas de estabilidade e segurança.</translation>
@@ -5070,6 +5069,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Os sites podem tocar sons para oferecer áudio de músicas, vídeos e outras mídias</translation>
 <translation id="4850919322897956733">Dados excluídos.</translation>
+<translation id="4851973858921178330">Filtrar sites</translation>
 <translation id="4852030988197799562">Bloqueia o acesso ao otimizador de JavaScript quando você visita sites pela primeira vez</translation>
 <translation id="4852383141291180386">Gerenciar notificações de apps</translation>
 <translation id="4852916668365817106">Cor do mouse</translation>
@@ -5165,7 +5165,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4913573660390710463">Acesse o pacote de aplicativos da web com recursos avançados. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Não foi possível encontrar dados do app</translation>
 <translation id="4915961947098019832">Permitir a exibição de imagens</translation>
-<translation id="491779113051926205">Contadores de tráfego do ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> deseja se comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4918762404810341788">Copiar e abrir</translation>
@@ -7174,7 +7173,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
-<translation id="6520087076882753524">Você pode ver e gerenciar senhas salvas no Gerenciador de senhas do Google</translation>
+<translation id="6520087076882753524">Você pode ver e gerenciar senhas salvas no Gerenciador de Senhas do Google</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> quer confirmar sua identidade. Digite o PIN alfanumérico do Gerenciador de senhas do Google.</translation>
 <translation id="6520876759015997832">Resultado da pesquisa <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pressione Enter para navegar até a seção.</translation>
 <translation id="6521214596282732365">Geralmente, os sites usam suas fontes para que você possa criar conteúdo de alta fidelidade usando ferramentas on-line gráficas e de design</translation>
@@ -7487,6 +7486,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6754359471209693699">Começar nova pesquisa</translation>
 <translation id="6755702685749429945">Adicionar dicionário</translation>
 <translation id="6756643207511618722">Mecanismos de fala</translation>
+<translation id="6756882635793733911">Pergunte sobre qualquer coisa que está na tela</translation>
 <translation id="6757431299485455321">Ajude outros dispositivos a encontrarem esse ponto de acesso.</translation>
 <translation id="6757615605516049275">Desbloqueie o <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Diga como estamos nos saindo.</translation>

@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
 <translation id="132683371494960526">Tocca due volte per cambiare la cartella principale.</translation>
+<translation id="132969855425874290">Chiudi Trova e compila</translation>
 <translation id="1333455942675373522">Tastiera</translation>
 <translation id="1334485477792811969">Servizi web</translation>
 <translation id="1335767868357998043">Scegli la posizione della barra degli indirizzi</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Link ricevuto}other{{count} link ricevuti}}</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1943478190258551035">Menu → Impostazioni</translation>
+<translation id="1944477975050820119">Ricevi suggerimenti in tempo reale che possono aiutarti a trovare nuovi modi per navigare con l'AI. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Accedi con l'account gestito</translation>
 <translation id="1955773397805078763">Aggiungi metodo di pagamento</translation>
 <translation id="1956138802718275401">Accedi alle password dalla schermata Home</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Preparazione delle password…</translation>
 <translation id="2323697864063408084">Ricevi notifiche sulla schermata di blocco e come banner per non perderti mai ciò che ti interessa</translation>
 <translation id="2326302612031521902">Selettore unità</translation>
+<translation id="2326606747676847821">Naviga in incognito</translation>
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Nessuna protezione</translation>
 <translation id="233375395665273385">Elimina ed esci</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Leggi cosa dicono le persone</translation>
 <translation id="2394659309569789395">Apri comunque il sito</translation>
 <translation id="2403129868389095715">Il pacco non può essere consegnato</translation>
+<translation id="2408318953009664750">Solo una volta</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
 <translation id="2422174748424038845">Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi.</translation>
 <translation id="2424805048070062787">Continua con questa scheda</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Elimina finestre di dialogo</translation>
 <translation id="2542268842667970959">Nascondi "Controllo di sicurezza"</translation>
 <translation id="2551153019974022505">Errore dell'account</translation>
+<translation id="2559785333866467778">Suggerimenti di Gemini</translation>
 <translation id="2559843230610279254">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede.</translation>
 <translation id="257088987046510401">Temi</translation>
 <translation id="2573117291489209663">Fine</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Apri i link direttamente qui</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
 <translation id="2721190673959776287">Esempio di guida nel prodotto dettagliata per il riquadro contestuale, che dovrebbe essere visualizzato più volte al giorno.</translation>
+<translation id="273318428051150387">Non riceverai aggiornamenti sui tuoi progressi in Level Up</translation>
 <translation id="2739887572830526131">Mantieni questo gruppo per aggiungere schede in un secondo momento o eliminalo se non ti serve più.</translation>
 <translation id="2747003861858887689">Campo precedente</translation>
 <translation id="2750583038402718064">Il riquadro <ph name="WEBSITE_TITLE" /> è stato spostato nella posizione <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Accedi per avere a disposizione i tuoi preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
 <translation id="3183362380688692618">Nuovo gruppo di schede...</translation>
+<translation id="3185000827934321633">Navigazione</translation>
 <translation id="3185760469172949183">Ricerca con la fotocamera completata.</translation>
 <translation id="3186796054637504691">Cancella dati siti web e cronologia</translation>
 <translation id="3190558889382726167">Password salvata</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metodo di pagamento}other{# metodi di pagamento}}</translation>
 <translation id="3831560640878483188">Ignorare l'avviso?</translation>
 <translation id="3832419617903252251">Password salvata solo su questo dispositivo</translation>
+<translation id="3835016165506903031">Consenti durante la visita</translation>
 <translation id="3835964409414434850">Passa alla scheda successiva</translation>
 <translation id="3838691874161539578">Controlla le password salvate per aumentare la tua sicurezza e proteggerti meglio online</translation>
 <translation id="3838985624086228724">Calo di prezzo nel prodotto monitorato, da <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Le password di <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e di altri <ph name="NUMBER_OF_ACCOUNTS" /> siti verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="3853162385423733133">Continua a usare e salvare le password nel tuo Account Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importa</translation>
+<translation id="3854052088499589035">Riceverai aggiornamenti sui tuoi progressi in Level Up</translation>
 <translation id="3857113360369572832">Apri <ph name="BEGIN_BOLD" />Impostazioni di Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Avrai la possibilità di salvare queste informazioni in Wallet la prossima volta che compilerai un modulo pertinente.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Recupera le password salvate in altre app</translation>
 <translation id="4431224949908513835">Seleziona un metodo di pagamento da inserire.</translation>
 <translation id="4432122368769493392">Impostazioni</translation>
+<translation id="443295142249850475">I titoli delle pagine e gli URL delle schede aperte vengono utilizzati per fornirti suggerimenti pertinenti.</translation>
 <translation id="4439968635693513370">Programma il tuo weekend con</translation>
 <translation id="4442550905108052454">Apri <ph name="BEGIN_BOLD" />Impostazioni<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} risultato disponibile.}other{{count} risultati disponibili.}}</translation>
 <translation id="4445840280797509738">Altre opzioni per <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Puoi far scorrere il bordo per andare avanti o indietro.</translation>
 <translation id="4460014764210899310">Separa</translation>
@@ -2224,6 +2235,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Disattiva</translation>
 <translation id="8106442513853561174">Condividi la posizione esatta</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 password compilata automaticamente}other{# password compilate automaticamente}}</translation>
 <translation id="8114753159095730575">È possibile il download dei file. Le opzioni sono disponibili nella parte inferiore della schermata.</translation>
 <translation id="8123502380991596210">Nascondi Novità</translation>
 <translation id="8123953306357309250">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>

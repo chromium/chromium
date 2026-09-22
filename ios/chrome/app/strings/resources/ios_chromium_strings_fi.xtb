@@ -53,6 +53,8 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="1965068424387304464">Chromium-vinkki: Tallenna salasanat</translation>
 <translation id="1992653360331625459">Sinulla on jo salasanoja näillä tileillä Salasanoissa. Jos päätät viedä alla olevan salasanan, se korvaa aiemman salasanan.</translation>
 <translation id="2006345422933397527">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
+<translation id="2025935492422922097">Chromium käsittelee sivujen otsikoita ja URL-osoitteita yksityisessä tilassa pilvessä</translation>
+<translation id="2027881372245801507">Ehdotusten laittaminen pois päältä ei vaikuta siihen, miten Chromium käsittelee sivujen otsikoita ja URL-osoitteita muiden ominaisuuksien osalta. Voit muuttaa pääsyä tähän dataan <ph name="BEGIN_LINK" />synkronointiasetuksista<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Näytä Chromium-historia</translation>
 <translation id="2052320862053429062">Chromium vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="2059365270911640413">Viimeistele Chromiumin käyttöönotto</translation>
@@ -105,6 +107,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="3072591112723064972">Tee Chromiumista oletusselain, niin voit avata linkkejä täällä heti.</translation>
 <translation id="3115956258722352278">Tehdäänkö Chromiumista oletusselain?</translation>
 <translation id="3180939591219927904">Laita "Lukitse incognito-välilehdet, kun suljet Chromiumin" päälle</translation>
+<translation id="3239426886813624481">Jos haluat jakaa sijaintisi verkkosivustoille, valitse Asetukset ja anna Chromiumille lupa käyttää sijaintiasi.</translation>
 <translation id="327628223428512207">Lisää tunnuslause, niin voit tallentaa salasanan ja käyttää Chromium-dataa kaikilla laitteilla</translation>
 <translation id="328933489847748230">{count,plural, =1{Nyt näkyvissä 1 Chromium-ikkuna}other{Nyt näkyvissä {count} Chromium-ikkunaa}}</translation>
 <translation id="3344204225393848305">Aseta Chromium oletukseksi</translation>
@@ -351,6 +354,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="865600487977764604">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8685813584220679697">Kirjaudu tälle sivustolle ja Chromiumiin.</translation>
+<translation id="8697693743327341604">Jos valitset ehdotuksen tai ohitat sen, Chromium mukautuu näyttääkseen sinulle osuvampia ehdotuksia jatkossa.</translation>
 <translation id="869832267508702259">Tee Chromiumista oletusselain, niin saat Gemini-vinkkejä mitä tahansa selaatkin</translation>
 <translation id="8698780336333802489">Tuo Chromiumiin</translation>
 <translation id="8730503818204408000">Avaa asetuksen, jolla voi valita Chromiumin oletusselaimeksi.</translation>

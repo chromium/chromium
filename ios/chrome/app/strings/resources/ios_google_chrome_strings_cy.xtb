@@ -270,6 +270,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7061455974939528301">Pwyswch a daliwch yr eicon Chrome a chliciwch ar 'Golygu'r sgrîn hafan'</translation>
 <translation id="7095110968493193530">I Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
+<translation id="7135936755418321901">I rannu eich lleoliad â gwefannau, tapiwch ar Gosodiadau i adael i Chrome ddefnyddio eich lleoliad.</translation>
 <translation id="7145599899567697473">Cadw ac awtolenwi cyfrineiriau yn Chrome</translation>
 <translation id="7161390184744336561">Mae Google Chrome yn hen</translation>
 <translation id="7165736900384873061">Dechreuwch ddefnyddio sganiwr codau QR Google Chrome</translation>
@@ -284,6 +285,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7272930098487145294">I gadw lluniau, tapiwch ar Gosodiadau i ganiatáu i Chrome ychwanegu at eich lluniau</translation>
 <translation id="7275945473750112644">Mae'ch cyfrif yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, felly bydd eich data Chrome yn cael eu clirio o'r ddyfais hon</translation>
 <translation id="7284245284340063465">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Os byddwch yn dewis neu'n anwybyddu awgrym, bydd Chrome yn addasu i helpu i ddangos awgrymiadau mwy perthnasol i chi yn y dyfodol.</translation>
 <translation id="7296102444587051536">Chrome ar gyfer iOS</translation>
 <translation id="7299681342915173313">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn e-byst, dogfennau ac apiau eraill.</translation>
 <translation id="7334364820047587268">Mae eisoes gennych gyfrineiriau ar gyfer y cyfrifon hyn yn eich Rheolwr Cyfrineiriau Google. Os dewiswch fewnforio un o'r cyfrineiriau isod, bydd yn disodli'r un presennol.</translation>
@@ -357,6 +359,7 @@ Cafodd eich data eu hamgryptio gyda'ch cyfrinymadrodd ar <ph name="TIME" />. Rho
 <translation id="8544583291890527417">Rhybuddion ar unrhyw faterion preifatrwydd neu ddiogelwch y mae Chrome yn eu canfod i chi.</translation>
 <translation id="855027533751209304">Awgrym Chrome: Chwilio yr hyn a welwch</translation>
 <translation id="8558480467877843976">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn pori neu'n tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="8589791109349384456">Nid yw diffodd awgrymiadau yn rheoli prosesu teitlau tudalennau ac URLau gan Chrome ar gyfer nodweddion eraill. Gallwch reoli mynediad at y data hyn yn eich <ph name="BEGIN_LINK" />gosodiadau cysoni<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Defnyddiwch eich cyfrineiriau, hanes, nodau tudalen a chardiau credyd Safari yn Chrome</translation>
 <translation id="8630122478628016441">Troi "Cloi tabiau anhysbys pan fyddwch yn cau Chrome" ymlaen.</translation>

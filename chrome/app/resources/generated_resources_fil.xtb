@@ -1078,7 +1078,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1822517323280215012">Gray</translation>
 <translation id="1822635184853104396">Ipakita ang buong history ng pag-download sa bagong tab</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Magdagdag ng kasalukuyang data mula sa pag-browse sa pinapamahalaang profile</translation>
 <translation id="1825073796163165618">I-enable ang mga link</translation>
 <translation id="1825565032302550710">Dapat ay nasa pagitan ng 1024 at 65535 ang port</translation>
 <translation id="18260074040409954">Puwede mong gamitin ang mga naka-save na password sa anumang device. Mase-save ang mga ito sa <ph name="GOOGLE_PASSWORD_MANAGER" /> para sa <ph name="EMAIL" />.</translation>
@@ -1395,6 +1394,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2062354623176996748">Gamitin ang web nang hindi nase-save ang iyong history ng pag-browse gamit ang isang Incognito window</translation>
 <translation id="206308717637808771">I-delete ang data kapag isinara mo ang lahat ng window. Ituturing ang data nang katulad ng site na tinitingnan mo</translation>
 <translation id="2066700471214517561">Beamforming mic para malinaw ang tunog ng taong gumagamit ng Chromebook.</translation>
+<translation id="2067778293100584091">Bisitahin ang Google Wallet para kontrolin ang <ph name="BEGIN_LINK1" />mga preference sa data at privacy<ph name="END_LINK1" /> o pamahalaan ang <ph name="BEGIN_LINK2" />mga paraan ng pagbabayad<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />pass<ph name="END_LINK3" /> tulad ng mga loyalty card, ID, at alok</translation>
 <translation id="2068581968816126410">Gumamit ng mga bookmark sa lahat ng device</translation>
 <translation id="2069020119963193894">&amp;Sukat</translation>
 <translation id="2071393345806050157">Walang lokal na log file.</translation>
@@ -2391,6 +2391,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2813094189969465044">Mga kontrol ng magulang</translation>
 <translation id="2814489978934728345">Ihinto ang pagkarga sa pahinang ito</translation>
 <translation id="2816319641769218778">Para mag-save ng mga password sa iyong Google Account, i-on ang pag-sync.</translation>
+<translation id="281678554528702272">Tandaan: Posibleng i-override ng mga patakaran ng enterprise o malalakas na API ang mga setting ng access sa site na ito.</translation>
 <translation id="2817435998497102771">Itakda ang iyong wallpaper at style</translation>
 <translation id="2817861546829549432">Nangangahulugan ang pag-enable sa "Huwag Subaybayan" na isasama ang isang kahilingan sa iyong trapiko ng pagba-browse. Nakadepende ang anumang epekto sa kung tutugon sa kahilingan ang isang website, at paano naunawaan ang kahilingan. Halimbawa, maaaring tumugon ang ilang website sa kahilingang ito sa pamamagitan ng pagpapakita sa iyo ng mga ad na hindi nakabatay sa iba pang mga website na binisita mo. Maraming website ang mangongolekta at gagamit pa rin ang iyong data sa pag-browse - halimbawa upang mapabuti ang seguridad, upang magbigay ng content, mga serbisyo, ad at rekomendasyon sa kanilang mga website at upang makabuo ng mga istatistika sa pag-uulat.</translation>
 <translation id="2818476747334107629">Mga detalye ng printer</translation>
@@ -5068,6 +5069,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485088796993065002">Posibleng mag-play ng tunog ang mga site para magbigay ng audio para sa musika, mga video, at iba pang media</translation>
 <translation id="4850919322897956733">Na-delete ang data.</translation>
+<translation id="4851973858921178330">I-filter ang mga site</translation>
 <translation id="4852030988197799562">I-block ang access sa optimizer sa JavaScript sa mga bagong binisitang site</translation>
 <translation id="4852383141291180386">Pamahalaan ang mga notification sa app</translation>
 <translation id="4852916668365817106">Kulay ng mouse</translation>
@@ -5163,7 +5165,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4913573660390710463">Mga naka-package ng access na web application na may mga pinahusay na kakayahan. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Hindi makita ang data ng app</translation>
 <translation id="4915961947098019832">Pinapayagang magpakita ng mga larawan</translation>
-<translation id="491779113051926205">Mga Traffic Counter ng ChromeOS</translation>
 <translation id="4918021164741308375">Gusto ng <ph name="ORIGIN" /> na makipag-ugnayan sa extension na "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4918762404810341788">Kopyahin at buksan</translation>
@@ -7484,6 +7485,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6754359471209693699">Magsimula ng bagong paghahanap</translation>
 <translation id="6755702685749429945">Magdagdag ng diksyunaryo</translation>
 <translation id="6756643207511618722">Mga speech engine</translation>
+<translation id="6756882635793733911">Magtanong tungkol sa anumang nasa screen mo</translation>
 <translation id="6757431299485455321">Tulungan ang iba pang device na mahanap ang hotspot na ito.</translation>
 <translation id="6757615605516049275">Paki-unlock ang <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Ipaalam sa amin kung ano ang iyong palagay sa ginagawa namin.</translation>
@@ -10772,6 +10774,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="96756691973639907">Higit pang pagkilos para sa <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Naka-store na data</translation>
 <translation id="96774243435178359">Mga pinapamahalaang printer</translation>
+<translation id="967745417352972504">Bisitahin ang Google Wallet para magdagdag o mamahala ng <ph name="BEGIN_LINK_PAYMENT_METHODS" />mga paraan ng pagbabayad<ph name="END_LINK_PAYMENT_METHODS" /> at <ph name="BEGIN_LINK_PASSES" />pass<ph name="END_LINK_PASSES" /> tulad ng mga loyalty card, ID, at alok</translation>
 <translation id="968000525894980488">I-on ang mga serbisyo ng Google Play.</translation>
 <translation id="968037381421390582">I-pa&amp;ste at Hanapin ang “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Palitan ang mga wika</translation>

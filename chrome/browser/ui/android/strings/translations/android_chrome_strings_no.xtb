@@ -2126,6 +2126,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="948276827484905248">Opprett QR-kode</translation>
 <translation id="95817756606698420">Chrome kan bruke <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for søk i Kina. Du kan endre dette i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Organisasjonen din krever at du logger på for å bruke Chrome</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963246339335003378">Åpne Oppgavebehandling</translation>
 <translation id="966337994629449077">Du er logget på som <ph name="FROM_EMAIL" />.\n\nFor å fortsette fra datamaskinen, bytt til <ph name="TO_EMAIL" />. Du får passordene, bokmerkene med mer fra denne kontoen.</translation>

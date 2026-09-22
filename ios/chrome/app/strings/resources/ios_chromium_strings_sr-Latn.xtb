@@ -53,6 +53,8 @@ Ne možete da sačuvate nove obeleživače na nalogu dok neke ne izbrišete. Ako
 <translation id="1965068424387304464">Napomena za Chromium: Sačuvajte lozinke</translation>
 <translation id="1992653360331625459">Već imate lozinke za ove naloge u Menadžeru lozinki. Ako odlučite da uvezete neku od lozinki u nastavku, ona će zameniti postojeću.</translation>
 <translation id="2006345422933397527">Chromium ne može da traži ažuriranja. Proverite internet vezu.</translation>
+<translation id="2025935492422922097">Chromium obrađuje naslove stranica i URL-ove u privatnom prostoru u klaudu</translation>
+<translation id="2027881372245801507">Isključivanje predloga ne utiče na to kako Chromium obrađuje naslove stranica i URL-ove za druge funkcije. Pristupom tim podacima možete da upravljate u <ph name="BEGIN_LINK" />podešavanjima sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Pregledajte Chromium istoriju</translation>
 <translation id="2052320862053429062">Chromium povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="2059365270911640413">Dovršite podešavanje Chromium-a</translation>
@@ -351,6 +353,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="865600487977764604">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>
+<translation id="8697693743327341604">Ako izaberete ili zanemarite predlog, Chromium će se prilagoditi tako da vam ubuduće prikazuje relevantnije predloge.</translation>
 <translation id="869832267508702259">Podesite Chromium kao podrazumevani pregledač da biste dobijali Gemini uvide gde god da pregledate</translation>
 <translation id="8698780336333802489">Uvezi u Chromium</translation>
 <translation id="8730503818204408000">Otvara podešavanje Chromium-a da bi ga podesilo kao podrazumevani pregledač.</translation>

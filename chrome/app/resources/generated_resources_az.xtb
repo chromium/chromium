@@ -1069,7 +1069,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1822517323280215012">Boz</translation>
 <translation id="1822635184853104396">Tam endirmə tarixçəsini yeni tabda göstərin</translation>
 <translation id="1823768272150895732">Şrift</translation>
-<translation id="1823781806707127806">İdarə olunan profilə mövcud baxış datasını əlavə edin</translation>
 <translation id="1825073796163165618">Keçidləri aktivləşdirin</translation>
 <translation id="1825565032302550710">Port 1024 və 65535 arasında olmalıdır</translation>
 <translation id="18260074040409954">İstənilən cihazda saxlanmış parollarınızı istifadə edə bilərsiniz. Onlar <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanılır.</translation>
@@ -1385,6 +1384,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2062354623176996748">Axtarış tarixçənizi Anonim pəncərədə saxlamadan vebdən istifadə edin</translation>
 <translation id="206308717637808771">Bütün pəncərələri bağladığınız zaman datanı silin. Dataya baxdığınız saytla eyni şəkildə yanaşılır</translation>
 <translation id="2066700471214517561">Chromebook-dan istifadə edən şəxsin aydın səslənməsi üçün şüalı mikrofon.</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />Data və məxfilik tərcihlərinə<ph name="END_LINK1" /> nəzarət etmək və ya <ph name="BEGIN_LINK2" />ödəniş metodlarını<ph name="END_LINK2" />, eləcə də loyallıq kartları, ID-lər və təkliflər kimi <ph name="BEGIN_LINK3" />giriş talonlarını<ph name="END_LINK3" /> idarə etmək üçün Google Pulqabına daxil olun</translation>
 <translation id="2068581968816126410">Cihazlar arasında əlfəcinlərdən istifadə edin</translation>
 <translation id="2069020119963193894">&amp;Ölçü</translation>
 <translation id="2071393345806050157">Lokal qeydiyyat faylı yoxdur.</translation>
@@ -2381,6 +2381,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2813094189969465044">Valideyn nəzarətləri</translation>
 <translation id="2814489978934728345">Bu səhifəni yükləməyi dayandırın</translation>
 <translation id="2816319641769218778">Parolları Google Hesabınızda saxlamaq üçün sinxronlaşdırmanı aktiv edin.</translation>
+<translation id="281678554528702272">Qeyd: Bu sayta giriş ayarları müəssisə siyasətləri və ya güclü API-lar tərəfindən ləğv edilə bilər.</translation>
 <translation id="2817435998497102771">Divar kağızı və üslubunuzu ayarlayın</translation>
 <translation id="2817861546829549432">İzlənilməyin qadağan edilməsi o deməkdir ki, sorğu brauzer trafikinizə daxil ediləcək. İstənilən effekt saytın sorğuya cavab verməsindən və sorğunun necə anlaşılmasından asılıdır. Məsələn, bəzi saytlar bu sorğuya ziyarət etdiyiniz saytlarda olmayan reklamları göstərməklə cavab verə bilər. Bir çox saytlar hələ də brauzinq datanızı toplayacaq və istifadə edəcək. Məqsədləri güvənliyin artırılması, kontent, xidmət, reklam, tövsiyə təqdim edilməsi və raport statistikasının yaradılması ola bilər.</translation>
 <translation id="2818476747334107629">Printer detalları</translation>
@@ -5056,6 +5057,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="485088796993065002">Saytlar musiqi, video və digər media üçün audio təmin etmək məqsədilə səsi oxuda bilər</translation>
 <translation id="4850919322897956733">Data silindi.</translation>
+<translation id="4851973858921178330">Saytları filtrləyin</translation>
 <translation id="4852030988197799562">Yeni daxil olunan saytlarda JavaScript optimallaşdırıcısına girişi bloklayın</translation>
 <translation id="4852383141291180386">Tətbiq bildirişlərini idarə edin</translation>
 <translation id="4852916668365817106">Maus rəngi</translation>
@@ -5151,7 +5153,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4913573660390710463">Təkmil imkanlara malik qruplaşdırılmış veb-tətbiqlərə giriş əldə edin. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Tətbiq datası tapılmır</translation>
 <translation id="4915961947098019832">Şəkilləri göstərmək icazəsi verilib</translation>
-<translation id="491779113051926205">ChromeOS trafik sayğacları</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" artırması ilə əlaqə yaratmaq istəyir</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
 <translation id="4918762404810341788">Kopyalayın və açın</translation>
@@ -7470,6 +7471,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6754359471209693699">Yeni axtarışa başlayın</translation>
 <translation id="6755702685749429945">Lüğət əlavə edin</translation>
 <translation id="6756643207511618722">Nitq sistemləri</translation>
+<translation id="6756882635793733911">Ekranınızdakı hər şey haqqında soruşun</translation>
 <translation id="6757431299485455321">Digər cihazlara bu hotspotu tapmağa kömək edin.</translation>
 <translation id="6757615605516049275"><ph name="TOKEN_NAME" /> cihazını kiliddən çıxarın.</translation>
 <translation id="6758056191028427665">Necə işlədiyimizi bizə bildirin.</translation>
@@ -10753,6 +10755,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 <translation id="96774243435178359">İdarə edilən printerlər</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />Ödəniş metodları<ph name="END_LINK_PAYMENT_METHODS" /> və loyallıq kartları, ID-lər və təkliflər kimi <ph name="BEGIN_LINK_PASSES" />giriş talonları<ph name="END_LINK_PASSES" /> əlavə etmək və ya idarə etmək üçün Google Pulqabına daxil olun</translation>
 <translation id="968000525894980488">Google Play xidmətlərini aktiv edin.</translation>
 <translation id="968037381421390582">"<ph name="SEARCH_TERMS" />" ifadəsini yerləşdirib axtarın</translation>
 <translation id="969096075394517431">Dilləri dəyişin</translation>

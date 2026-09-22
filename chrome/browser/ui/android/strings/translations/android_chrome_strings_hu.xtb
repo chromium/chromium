@@ -2126,6 +2126,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="948276827484905248">QR-kód létrehozása</translation>
 <translation id="95817756606698420">A Chrome igénybe veheti a <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> keresőszolgáltatást, hogy Kínában kereshessen. Ezt a <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> módosíthatja.</translation>
+<translation id="959544960061022767">Szervezete megköveteli a bejelentkezést a Chrome használatához</translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="963246339335003378">Feladatkezelő megnyitása</translation>
 <translation id="966337994629449077">Ezzel a fiókkal van bejelentkezve: <ph name="FROM_EMAIL" />.\n\nHa a számítógépén szeretné folytatni, váltson a következő fiókra: <ph name="TO_EMAIL" />. Hozzáférhet majd az ebben a fiókban lévő jelszavakhoz, könyvjelzőkhöz és egyebekhez.</translation>

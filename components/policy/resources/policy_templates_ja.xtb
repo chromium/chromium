@@ -1070,6 +1070,13 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
       注: この設定は <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> より優先されます（指定されている場合）。</translation>
 <translation id="1723571018091915166">組み込みの <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> とのスマートタブ共有を許可しない。</translation>
 <translation id="172374442286684480">ローカル データの設定をすべてのサイトに許可する</translation>
+<translation id="1726467454355516626">このポリシーを True に設定した場合、Chrome アプリのデフォルトの有効化設定に関係なく、管理者がインストールした Chrome アプリの実行とインストールが引き続き許可されます。
+
+このポリシーを未設定のままにするか False に設定した場合、デバイスで定義されているデフォルトの動作が使用されます。
+
+ユーザーが無効になっている Chrome アプリを起動しようとすると、アプリが起動されなかった理由を説明するメッセージが表示され、IT 部門に連絡するよう促されます。
+
+ChromeOS M184 は、Chrome アプリをサポートする最後の ChromeOS マイルストーンとなります。</translation>
 <translation id="1729169799290004131">このポリシーでは、画面の明るさの割合（%）を指定できます。このとき、明るさの自動調整機能は無効になります。初期画面の明るさはポリシーの値に調整されますが、ユーザーはこの設定を変更できます。
 
       このポリシーを未設定のままにした場合、ユーザーによる画面制御と明るさの自動調整機能には影響しません。
@@ -4510,6 +4517,7 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="3965339130942650562">アイドル状態のユーザーがログアウトされるまでのタイムアウト</translation>
 <translation id="396536755218079668">監視対象ユーザー</translation>
 <translation id="3968218878014278212">Eche の有効化を許可します。</translation>
+<translation id="396848310647682467">管理者がインストールした Chrome アプリを強制的に許可する</translation>
 <translation id="3971673686578912106">このポリシーを有効に設定した場合、<ph name="PLUGIN_VM_NAME" /> がデバイスでオンになります（ただし他の設定でも許可されている必要があります）。<ph name="PLUGIN_VM_NAME" /> を実行するには、<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> と <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> を True に設定し、<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> または <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> のいずれかを設定する必要があります。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PLUGIN_VM_NAME" /> はデバイスでオンになりません。</translation>
@@ -4533,9 +4541,6 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="3982624306233556415">ブラウザで Extensible Enterprise SSO を使用できない ID プロバイダのブロックリスト</translation>
 <translation id="3983162212222338509">システムの DNS 解決を、システム設定と機能フラグに応じて、ネットワーク プロセス内、ネットワーク プロセス外、または部分的にそのどちらかで実行できるようにする。</translation>
 <translation id="3986700049001404598">Chrome タスク マネージャーでのプロセスの終了をユーザーに許可する</translation>
-<translation id="398884292557092447">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI でクレジット カードの自動入力候補を管理できます。
-
-      このポリシーを False に設定した場合、クレジット カード情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中にクレジット カード情報を送信した場合もその情報が追加で保存されることはありません。</translation>
 <translation id="3989635538409502728">ログアウト</translation>
 <translation id="3989829840000169163">ブラウザの従来の拡張機能ポイントをブロックする</translation>
 <translation id="3990391739475801018">バッテリー セーバー モードを無効にする。</translation>
@@ -4957,6 +4962,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="4275048399551500192">他のデバイスによって開始された <ph name="PRODUCT_NAME" /> セッションのメディア コントロールを表示しない</translation>
+<translation id="4278195158478376952">デフォルトの動作を使用する。</translation>
 <translation id="4278656834593750050">充電時のサウンドを有効にする</translation>
 <translation id="4281322231545828290">自動パスワード変更を有効にする</translation>
 <translation id="4282243913059705499">ツールバーに <ph name="PRODUCT_NAME" /> アイコンを常に表示する</translation>
@@ -6143,7 +6149,6 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 このポリシーを False にすると、マシンを識別できる情報は収集されません。
 
 <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。</translation>
-<translation id="5017369989680827157">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
 <translation id="5017691827598069017">ファスト ペアリング（ファスト Bluetooth ペアリング）を有効にする</translation>
 <translation id="5021550478471824215">このポリシーでは、事前設定のネットワーク ファイル共有のリストを指定できます。個々の項目は、<ph name="SHARE_URL_FIELD_NAME" /> と <ph name="MODE_FIELD_NAME" /> の 2 つのプロパティで構成されるオブジェクトとなります。
 
@@ -8906,7 +8911,6 @@ False に設定すると、P2P は使用されません。
       このポリシーが true に設定されている場合、<ph name="PLUGIN_VM_NAME" /> はユーザーに対して有効になります（ただし他の設定でも許可されている必要があります）。<ph name="PLUGIN_VM_NAME" /> を実行するには、<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> と <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> を true に設定し、<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> または <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> のいずれかを設定する必要があります。</translation>
 <translation id="6741318452269220158">このポリシーを True に設定した場合、デフォルトの動作でネイティブ クライアントが無効になっている場合でもネイティブ クライアントの実行を許可します。
 このポリシーを False に設定するか未設定のままにした場合、デフォルトの動作が使用されます。</translation>
-<translation id="6749641778238480311">事前のユーザー操作やユーザーの確認なしで、subApps API の呼び出しを許可する</translation>
 <translation id="6750902920405577210">電波強度に変化があった場合に報告するテレメトリー データのリスト。
 
       指定した各テレメトリー データは、それを制御するポリシーで無効にされていない場合のみ報告されます。
@@ -9193,13 +9197,6 @@ false に設定するか未設定のままにした場合、このレイアウ�
 <translation id="6938524853892166974">リアルタイム翻訳を無効にする</translation>
 <translation id="6940243892299228102">デスク テンプレートの使用をユーザーに許可しない</translation>
 <translation id="6943577887654905793">Mac/Linux 設定名:</translation>
-<translation id="6944302005022384441">セキュリティ上の理由から、<ph name="SHOW_SUBAPPS_APP_API_NAME" />、<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" />、<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> ウェブ API を呼び出すには、事前のユーザー操作（「一時的な有効化」）が必要で、操作がない場合は呼び出せません。さらに、ユーザーには確認ダイアログで操作の確認が求められます。
-
-このポリシーでは、事前のユーザー操作やユーザーに確認を求めることなく、これらの API を呼び出せるオリジンを指定できます。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。このポリシーの値に「*」は使用できません。
-
-このポリシーを未設定のままにした場合、すべてのオリジンで、これらの API の呼び出しに事前のユーザー操作が必要となり、ユーザーに確認ダイアログが表示されます。</translation>
 <translation id="694602410134474029"><ph name="PRODUCT_NAME" /> で個別のサービス プロセスからプリンタ ドライバを操作するどうかを制御します。プラットフォーム印刷では、利用可能なプリンタの検出、プリンタ ドライバ設定の取得、印刷ドキュメントのローカル プリンタへの送信をサービス プロセスから呼び出します。これらの呼び出しをブラウザ プロセス外に移動すると、安定性が向上し、印刷プレビューで UI の動作がフリーズしにくくなります。
 
 このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は個別のサービス プロセスを使用してプラットフォーム印刷のタスクを実行します。
@@ -11738,6 +11735,7 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="859579553230883285">ユーザーが <ph name="PRIVACY_SANDBOX_NAME" /> のウェブサイトによる広告の提案の設定を変更できないようにする。</translation>
 <translation id="8596784129804979039">ネットワーク サービスのサンドボックス化にデフォルト設定を使用する</translation>
 <translation id="8597758693275075382">インストール中に VM に渡す SMBIOS OEM 文字列です。デフォルトは空のリストです。</translation>
+<translation id="8598252733604444967">管理者がインストールした Chrome アプリの実行を許可する。</translation>
 <translation id="8598786284856179541">バージョン情報のレポートを有効にする</translation>
 <translation id="859937827887158048">ピアツーピアの自動更新のダウンロードを許可しない</translation>
 <translation id="8600280933078435582">Linux アプリケーション</translation>

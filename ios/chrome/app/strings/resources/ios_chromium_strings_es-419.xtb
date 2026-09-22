@@ -53,6 +53,8 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="1965068424387304464">Sugerencia de Chromium: Guardar contraseñas</translation>
 <translation id="1992653360331625459">Ya tienes contraseñas para estas cuentas en el Administrador de contraseñas. Si decides importar una de las contraseñas a continuación, se reemplazará la contraseña existente.</translation>
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
+<translation id="2025935492422922097">Chromium procesa las URLs y los títulos de las páginas en un espacio privado en la nube</translation>
+<translation id="2027881372245801507">Desactivar las sugerencias no controla el procesamiento de Chromium de los títulos de las páginas y las URLs para otras funciones. Puedes administrar el acceso a estos datos en la <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Ver tu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
@@ -351,6 +353,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Accede a este sitio y a Chromium.</translation>
+<translation id="8697693743327341604">Si seleccionas o ignoras una sugerencia, Chromium se adaptará para mostrarte sugerencias más pertinentes en el futuro.</translation>
 <translation id="869832267508702259">Establece Chromium como navegador predeterminado para obtener información de Gemini dondequiera que navegues</translation>
 <translation id="8698780336333802489">Importar a Chromium</translation>
 <translation id="8730503818204408000">Abre la configuración de Chromium para establecer Chromium como navegador predeterminado.</translation>

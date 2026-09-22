@@ -1069,7 +1069,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1822517323280215012">Gris</translation>
 <translation id="1822635184853104396">Afficher l'historique complet des téléchargements dans un nouvel onglet</translation>
 <translation id="1823768272150895732">Police</translation>
-<translation id="1823781806707127806">Ajouter des données de navigation existantes au profil géré</translation>
 <translation id="1825073796163165618">Activer les liens</translation>
 <translation id="1825565032302550710">Vous devez saisir un numéro de port compris entre 1024 et 65535</translation>
 <translation id="18260074040409954">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2062354623176996748">Parcourez le Web sans enregistrer l'historique de votre navigation à l'aide d'une fenêtre de navigation privée</translation>
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez.</translation>
 <translation id="2066700471214517561">Micro à formation de faisceau pour que la personne utilisant le Chromebook soit bien entendue.</translation>
+<translation id="2067778293100584091">Accédez à Google Wallet pour contrôler les <ph name="BEGIN_LINK1" />préférences concernant les données et la confidentialité<ph name="END_LINK1" /> ou gérer les <ph name="BEGIN_LINK2" />modes de paiement<ph name="END_LINK2" /> et les <ph name="BEGIN_LINK3" />pass<ph name="END_LINK3" /> comme les cartes de fidélité, les pièces d'identité et les offres</translation>
 <translation id="2068581968816126410">Utilisez vos favoris sur tous vos appareils</translation>
 <translation id="2069020119963193894">&amp;Taille</translation>
 <translation id="2071393345806050157">Aucun fichier journal local.</translation>
@@ -2378,6 +2378,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2813094189969465044">Contrôle parental</translation>
 <translation id="2814489978934728345">Arrêter le chargement de cette page</translation>
 <translation id="2816319641769218778">Pour enregistrer vos mots de passe dans votre compte Google, activez la synchronisation.</translation>
+<translation id="281678554528702272">Remarque : Ces paramètres d'accès au site peuvent être remplacés par des règles d'entreprise ou des API puissantes.</translation>
 <translation id="2817435998497102771">Définir votre fond d'écran et style</translation>
 <translation id="2817861546829549432">L'activation de la demande "Interdire le suivi" implique l'inclusion de cette dernière avec votre trafic de navigation. Le résultat dépend de la réponse d'un site Web à cette demande et de la façon dont cette dernière est interprétée. Par exemple, des annonces qui ne sont pas basées sur d'autres sites que vous avez consultés peuvent s'afficher sur certains sites Web en réponse à cette demande. Vos données de navigation continuent d'être collectées et utilisées sur de nombreux sites Web, notamment pour améliorer le niveau de sécurité, ou pour fournir du contenu, des services, des annonces et des recommandations sur le site, ainsi que pour générer des statistiques destinées à la création de rapports.</translation>
 <translation id="2818476747334107629">Détails de l'imprimante</translation>
@@ -5052,6 +5053,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485088796993065002">Le son des sites est activé pour qu'ils puissent diffuser le son de la musique, des vidéos et d'autres contenus multimédias</translation>
 <translation id="4850919322897956733">Données supprimées.</translation>
+<translation id="4851973858921178330">Filtrer les sites</translation>
 <translation id="4852030988197799562">Bloque l'accès à l'optimiseur JavaScript sur les sites inconnus</translation>
 <translation id="4852383141291180386">Gérer les notifications des applis</translation>
 <translation id="4852916668365817106">Couleur du curseur</translation>
@@ -5147,7 +5149,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4913573660390710463">Accédez aux applications Web empaquetées avec des fonctionnalités avancées. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Données de l'application introuvables</translation>
 <translation id="4915961947098019832">Autorisé à afficher des images</translation>
-<translation id="491779113051926205">Compteurs de trafic ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> souhaite communiquer avec l'extension "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918762404810341788">Copier et ouvrir</translation>
@@ -7468,6 +7469,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
 <translation id="6755702685749429945">Ajouter un dictionnaire</translation>
 <translation id="6756643207511618722">Moteurs de synthèse vocale</translation>
+<translation id="6756882635793733911">Posez des questions sur n'importe quel élément à l'écran</translation>
 <translation id="6757431299485455321">Aidez d'autres appareils à détecter ce point d'accès.</translation>
 <translation id="6757615605516049275">Veuillez déverrouiller <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Faites-nous part de vos commentaires.</translation>
@@ -8903,7 +8905,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7849264908733290972">Ouvrir l'&amp;image dans un nouvel onglet</translation>
 <translation id="784934925303690534">Période</translation>
 <translation id="7850320739366109486">Ne pas déranger</translation>
-<translation id="7851303446278533774">Créer, planifier, résumer</translation>
+<translation id="7851303446278533774">Créez, planifiez, résumez</translation>
 <translation id="7851716364080026749">Toujours bloquer l'accès à la caméra et au micro</translation>
 <translation id="78526636422538552">La fonctionnalité d'ajout d'autres comptes Google est désactivée</translation>
 <translation id="7855258394151767387">Utiliser "W" pour appuyer sur un bouton de la souris</translation>
@@ -10754,6 +10756,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="96756691973639907">Plus d'actions pour <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="96774243435178359">Imprimantes gérées</translation>
+<translation id="967745417352972504">Accédez à Google Wallet pour ajouter ou gérer des <ph name="BEGIN_LINK_PAYMENT_METHODS" />modes de paiement<ph name="END_LINK_PAYMENT_METHODS" /> et des <ph name="BEGIN_LINK_PASSES" />pass<ph name="END_LINK_PASSES" /> comme les cartes de fidélité, les pièces d'identité et les offres</translation>
 <translation id="968000525894980488">Activez les services Google Play.</translation>
 <translation id="968037381421390582">Coller et chercher "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Modifier les langues</translation>

@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">انقر مرّتين لتغيير المجلد الرئيسي.</translation>
+<translation id="132969855425874290">إغلاق ميزة "البحث عن المعلومات وتعبئتها"</translation>
 <translation id="1333455942675373522">لوحة المفاتيح</translation>
 <translation id="1334485477792811969">خدمات ويب</translation>
 <translation id="1335767868357998043">اختيار موضع شريط العناوين</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{تم استلام رابط واحد}zero{تم استلام {count} رابط}two{تم استلام رابطَين ({count})}few{تم استلام {count} روابط}many{تم استلام {count} رابطًا}other{تم استلام {count} رابط}}</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1943478190258551035">القائمة ← الإعدادات</translation>
+<translation id="1944477975050820119">يمكنك الحصول على اقتراحات في الوقت الفعلي تساعدك في العثور على طُرق جديدة للتصفّح باستخدام الذكاء الاصطناعي. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
 <translation id="1955773397805078763">إضافة طريقة دفع</translation>
 <translation id="1956138802718275401">الوصول إلى كلمات المرور من الشاشة الرئيسية</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
 <translation id="2323697864063408084">يمكنك تلقّي الإشعارات على شاشة القفل وعلى شكل بانرات حتى لا تفوتك الأحداث المهمّة</translation>
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
+<translation id="2326606747676847821">الانتقال إلى وضع التصفُّح المتخفّي</translation>
 <translation id="2327445548174191329">من جهاز "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2330607597130465898">بلا حماية</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">قراءة آراء الجمهور</translation>
 <translation id="2394659309569789395">فتح الموقع الإلكتروني على أي حال</translation>
 <translation id="2403129868389095715">يتعذَّر تسليم الطرد.</translation>
+<translation id="2408318953009664750">‏السماح مرّة واحدة (Allow Once)</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
 <translation id="2422174748424038845">في حال حذف المجموعة، سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة.</translation>
 <translation id="2424805048070062787">المتابعة باستخدام علامة التبويب هذه</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">إيقاف مربعات الحوار</translation>
 <translation id="2542268842667970959">إخفاء ميزة "التحقّق من الأمان"</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
+<translation id="2559785333866467778">‏اقتراحات Gemini</translation>
 <translation id="2559843230610279254">مجموعة علامات تبويب تحمل اسم "<ph name="GROUP_TITLE" />"، وعدد علامات التبويب فيها <ph name="TABS_NUMBER" /></translation>
 <translation id="257088987046510401">المظاهر</translation>
 <translation id="2573117291489209663">تم</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">هنا يمكنك فتح الروابط مباشرةً</translation>
 <translation id="2718352093833049315">‏على Wi-Fi فقط</translation>
 <translation id="2721190673959776287">اطّلِع على عيّنة من المعلومات عدة مرات في اليوم لتقديم مساعدة مفيدة لك ضِمن "لوحة السياق".</translation>
+<translation id="273318428051150387">‏لن تصلك إشعارات عند تقدّمك في برنامج Level Up</translation>
 <translation id="2739887572830526131">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو حذفها إذا لم تعُد بحاجة إليها.</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2750583038402718064">تم نقل "<ph name="WEBSITE_TITLE" />" إلى الموضع "<ph name="POSITION" />"</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3183362380688692618">مجموعة علامات تبويب جديدة…</translation>
+<translation id="3185000827934321633">التنقّل</translation>
 <translation id="3185760469172949183">اكتملت مهمة البحث باستخدام الكاميرا.</translation>
 <translation id="3186796054637504691">محو السجلّ وبيانات المواقع الإلكترونية</translation>
 <translation id="3190558889382726167">تم حفظ كلمة المرور</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{طريقة دفع واحدة}zero{‫# طريقة دفع}two{طريقتا دفع}few{‫# طُرق دفع}many{‫# طريقة دفع}other{‫# طريقة دفع}}</translation>
 <translation id="3831560640878483188">هل تريد إغلاق رسالة التحذير؟</translation>
 <translation id="3832419617903252251">تم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
+<translation id="3835016165506903031">‏السماح بالاستخدام أثناء زيارة الموقع الإلكتروني (Allow While Visiting)</translation>
 <translation id="3835964409414434850">الانتقال إلى علامة التبويب التالية</translation>
 <translation id="3838691874161539578">يُرجى التحقّق من كلمات المرور المحفوظة لتعزيز مستوى الحماية وتصفُّح الإنترنت بأمان.</translation>
 <translation id="3838985624086228724">انخفاض في سعر المنتج "<ph name="PRODUCT_NAME" />" الذي يتم تتبُّعه، من ‫<ph name="PREVIOUS_PRICE" /> إلى ‫<ph name="PRICE" />، على النطاق <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
 <translation id="3853162385423733133">‏يُرجى مواصلة استخدام كلمات المرور وحفظها في حسابك على Google: <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">استيراد</translation>
+<translation id="3854052088499589035">‏ستصلك إشعارات عند تقدّمك في برنامج Level Up</translation>
 <translation id="3857113360369572832">‏افتح <ph name="BEGIN_BOLD" />إعدادات Safari‏<ph name="END_BOLD" /> (Safari Settings)</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="386224966259596343">‏ستتاح لك فرصة حفظ هذه المعلومات في "محفظة Google" عند ملء نموذج ذي صلة في المرة القادمة.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">أصبح بإمكانك الآن ملء كلمات المرور المحفوظة في تطبيقات أخرى</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
 <translation id="4432122368769493392">الإعدادات…</translation>
+<translation id="443295142249850475">‏يتم استخدام عناوين الصفحات وعناوين URL لعلامات التبويب المفتوحة لتقديم اقتراحات ذات صلة.</translation>
 <translation id="4439968635693513370">فرصتك لتخطيط عطلة نهاية الأسبوع مع</translation>
 <translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{تتوفّر نتيجة واحدة ({count}).}zero{تتوفّر {count} نتيجة.}two{تتوفّر نتيجتان ({count}).}few{تتوفّر {count} نتائج.}many{تتوفّر {count} نتيجة.}other{تتوفّر {count} نتيجة.}}</translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
@@ -2222,6 +2233,7 @@
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">إيقاف</translation>
 <translation id="8106442513853561174">مشاركة الموقع الجغرافي الدقيق</translation>
+<translation id="8110894698020598040">{count,plural, =1{تم ملء كلمة مرور واحدة تلقائيًا}zero{تم ملء # كلمة مرور تلقائيًا}two{تم ملء كلمتَي مرور تلقائيًا}few{تم ملء # كلمات مرور تلقائيًا}many{تم ملء # كلمة مرور تلقائيًا}other{تم ملء # كلمة مرور تلقائيًا}}</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
 <translation id="8123502380991596210">إخفاء الميزات الجديدة</translation>
 <translation id="8123953306357309250">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت من الإعدادات.</translation>

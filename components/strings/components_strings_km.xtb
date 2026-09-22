@@ -1308,6 +1308,7 @@
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3209034400446768650">ទំព័រអាច​នឹង​គិតប្រាក់</translation>
 <translation id="3209071504641569648">សំណើ ចំណងជើងទំព័រ និង URL របស់អ្នកត្រូវបានបញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យ ដើម្បីកែលម្អការបំពេញស្វ័យប្រវត្តិរហ័ស</translation>
+<translation id="3211727636285361260">បើក​តំណ<ph name="PROTOCOL" />តាមរយៈ <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">បាន​ចាប់ផ្ដើម​ការទាញយក។ ដើម្បី​ឃើញវា សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
 <translation id="3212581601480735796">សកម្មភាព​របស់អ្នក​នៅលើ <ph name="HOSTNAME" /> កំពុងត្រូវ​បានឃ្លាំមើល</translation>
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
@@ -2091,6 +2092,7 @@
 <translation id="449126573531210296">អ៊ីនគ្រីប​ពាក្យសម្ងាត់​ដែលបាន​ធ្វើសមកាលកម្ម​ជាមួយគណនី Google របស់អ្នក</translation>
 <translation id="4493480324863638523">URL គ្មានសុពលភាព។ ត្រូវតែជា URL ដែលមានគម្រោងស្តង់ដារ ឧ. http://example.com ឬ https://example.com ។</translation>
 <translation id="4497010149473852018">កាតសមាជិក​ដែលអាចប្រើ​សម្រាប់​បំពេញ​នៅពេលចុច។ បាន​លាក់​ក្ដារចុច។</translation>
+<translation id="4497843134750481377">គ្រប់គ្រង​ការផ្ដល់ជូន</translation>
 <translation id="4500587658229086076">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="4501939680615452918">រកមើលកន្លែងទំនេរនៅភោជនីយដ្ឋានដែលកំពុងពេញនិយម</translation>
 <translation id="4503459574136856756">សរសេរជីវប្រវត្តិរបស់ខ្ញុំឡើងវិញ ដើម្បីឱ្យស្ដាប់ទៅកាន់តែមានលក្ខណៈវិជ្ជាជីវៈ</translation>
@@ -2217,6 +2219,7 @@
 <translation id="4732860731866514038">កំពុង​ទាញយក​កញ្ចប់​ភាសា<ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ចង់ប្រើ​ទីតាំង​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="473414950835101501">ប្រើកាមេរ៉ារបស់អ្នក</translation>
+<translation id="4736089601076994090">ផុតកំណត់៖ <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">ចាប់ផ្តើម Chromium ឡើងវិញ</translation>
 <translation id="4736934858538408121">កាតនិម្មិត</translation>
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
@@ -2575,6 +2578,7 @@
 <translation id="5314967030527622926">ឧបករណ៍​ធ្វើកូន​សៀវភៅ</translation>
 <translation id="5316812925700871227">បង្វិលបញ្ច្រាសទ្រនិចនាឡិកា</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
+<translation id="5318654747230250818">កូដ៖ <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />ម៉ាស៊ីន​ស្វែងរកលំនាំដើម​របស់អ្នក​អាច​ឱ្យ​អ្នក​ស្វែងរកលើ​អ៊ីនធឺណិត និង​ដំណើរការ​មុខងារ Chromium<ph name="END_BOLD" /> ដូចជា​ការស្វែងរក​ពី​របារអាសយដ្ឋាន និង​ពី​រូបភាព​នៅលើ​ទំព័រ​បណ្ដាញជាដើម។ អ្នកប្រហែលមិនអាចប្រើមុខងារមួយ​បានទេ ប្រសិនបើ​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​មិន​ស្គាល់មុខងារនោះ។</translation>
 <translation id="5323043727018853753">អនុញ្ញាតខ្លឹមសារ​ដែលបានបង្កប់</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> ក្នុង​ចំណោម <ph name="NUM_MATCHES" /></translation>
@@ -2623,7 +2627,6 @@
 <translation id="5398461103557553443">ដើម្បី​បំពេញ IBAN នេះ​ដោយ​ស្វ័យប្រវត្តិ​នៅលើកក្រោយ សូមរក្សាទុកវា​នៅក្នុង Google Wallet</translation>
 <translation id="5398772614898833570">បាន​ទប់ស្កាត់​ការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="5400836586163650660">ប្រផេះ</translation>
-<translation id="5402715318763077894">អនុញ្ញាតឱ្យចូលប្រើបណ្ដាញមូលដ្ឋានឬ?</translation>
 <translation id="540949333488055151">ប្លាស្ទិក (ពណ៌)</translation>
 <translation id="540969355065856584">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> នោះទេ វិញ្ញាបនបត្រសុវត្ថិភាពរបស់វាមិនមានសុពលភាពទេនៅពេលនេះ។ វាអាចបណ្តាលមកពីការកំណត់រចនាសម្ព័ន្ធមិនត្រឹមត្រូវ ឬមានអ្នកវាយប្រហារកំពុងរារាំងការតភ្ជាប់របស់អ្នក។</translation>
 <translation id="5411462078004183575">ជម្រើស​តម្លៃទាប</translation>
@@ -3753,6 +3756,7 @@
 <translation id="7347640536700429009">ឈ្មោះ​នៅលើ​កាត​មិនត្រឹមត្រូវ​ទេ</translation>
 <translation id="7352651011704765696">មានបញ្ហាអ្វីមួយកើតឡើង</translation>
 <translation id="7353601530677266744">អត្ថបទបញ្ជា</translation>
+<translation id="7358055687760675498">បើក​តំណ<ph name="PROTOCOL" />តាមរយៈ <ph name="HANDLER_HOSTNAME" /> ជំនួសឱ្យ <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">បាន​ទប់ស្កាត់​ការផ្សាយ​ពាណិជ្ជកម្ម។</translation>
 <translation id="7362281996276843968">ក្រុមនេះ​ត្រូវបានបិទ</translation>
 <translation id="7363096869660964304">ប៉ុន្តែ គេនៅតែ​មើលឃើញអ្នក។ ការប្រើមុខងារ​ឯកជន​មិនលាក់ការរុករក​របស់អ្នក​ពីនិយោជក​របស់អ្នក ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​របស់អ្នក ឬគេហទំព័រ​ដែលអ្នកចូលមើលឡើយ។</translation>

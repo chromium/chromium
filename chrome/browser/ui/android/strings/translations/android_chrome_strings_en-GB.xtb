@@ -2126,6 +2126,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="948276827484905248">Create QR code</translation>
 <translation id="95817756606698420">Chrome can use <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for search in China. You can change this in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Your organisation requires you to sign in to use Chrome</translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963246339335003378">Open task manager</translation>
 <translation id="966337994629449077">You’re signed in as <ph name="FROM_EMAIL" />.\n\nTo continue from your computer, switch to <ph name="TO_EMAIL" />. You'll get the passwords, bookmarks and more from this account.</translation>

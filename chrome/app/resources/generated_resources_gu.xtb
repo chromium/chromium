@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">ગ્રે</translation>
 <translation id="1822635184853104396">કોઈ નવા ટૅબમાં સંપૂર્ણ ડાઉનલોડ ઇતિહાસ બતાવો</translation>
 <translation id="1823768272150895732">ફોન્ટ</translation>
-<translation id="1823781806707127806">મેનેજ કરેલી પ્રોફાઇલમાં હાલનો બ્રાઉઝિંગ ડેટા ઉમેરો</translation>
 <translation id="1825073796163165618">લિંક ચાલુ કરો</translation>
 <translation id="1825565032302550710">પોર્ટ 1024 અને 65535ની વચ્ચે હોવું આવશ્યક છે</translation>
 <translation id="18260074040409954">તમે કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો. તેમને <ph name="EMAIL" /> માટે <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવે છે.</translation>
@@ -5058,6 +5057,7 @@
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="485088796993065002">મ્યુઝિક, વીડિયો અને અન્ય મીડિયા માટે ઑડિયો આપવા માટે, સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="4850919322897956733">ડેટા ડિલીટ કરવામાં આવ્યો.</translation>
+<translation id="4851973858921178330">સાઇટ ફિલ્ટર કરો</translation>
 <translation id="4852030988197799562">મુલાકાત લીધેલી નવી સાઇટ પર JavaScript ઑપ્ટિમાઇઝરનો ઍક્સેસ બ્લૉક કરો</translation>
 <translation id="4852383141291180386">ઍપના નોટિફિકેશન મેનેજ કરો</translation>
 <translation id="4852916668365817106">માઉસનો રંગ</translation>
@@ -5153,7 +5153,6 @@
 <translation id="4913573660390710463">બહેતર બનાવેલી ક્ષમતાઓ સાથેની વેબ ઍપ્લિકેશનનું પૅકેજ ઍક્સેસ કરો. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ઍપનો ડેટા શોધી શકતા નથી</translation>
 <translation id="4915961947098019832">છબીઓ બતાવવાની મંજૂરી છે</translation>
-<translation id="491779113051926205">ChromeOS ટ્રાફિક કાઉન્ટર</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> એ એક્સ્ટેન્શન "<ph name="EXTENSION_NAME" />" સાથે વાર્તાલાપ કરવા માંગે છે</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4918762404810341788">કૉપિ કરો અને પેસ્ટ કરો</translation>
@@ -7476,6 +7475,7 @@ USB ડિવાઇસ</translation>
 <translation id="6754359471209693699">નવી શોધ શરૂ કરો</translation>
 <translation id="6755702685749429945">શબ્દકોશ ઉમેરો</translation>
 <translation id="6756643207511618722">સ્પીચ એન્જિન</translation>
+<translation id="6756882635793733911">તમારી સ્ક્રીન પર જે કંઈ પણ દેખાય છે તે વિશે પૂછો</translation>
 <translation id="6757431299485455321">આ હૉટસ્પૉટ શોધવામાં અન્ય ડિવાઇસની સહાય કરો.</translation>
 <translation id="6757615605516049275">કૃપા કરીને <ph name="TOKEN_NAME" /> અનલૉક કરો.</translation>
 <translation id="6758056191028427665">અમને જણાવો કે અમે કેવું કાર્ય કરી રહ્યાં છીએ.</translation>

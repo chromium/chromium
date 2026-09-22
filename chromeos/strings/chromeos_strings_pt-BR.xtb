@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="102432830749687801">Use o app Transferência de conteúdo do Google para transferir os dados da conta escolar para a pessoal antes de perder o acesso.</translation>
 <translation id="1026212596705997935">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho, pressione-o de novo.</translation>
-<translation id="1030856839388844477">Redefinir o uso de dados</translation>
 <translation id="1047095725494118091">Não foi possível fazer o download. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Atualizando (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
 <translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
-<translation id="131421566576084655">A data da última redefinição não está disponível</translation>
 <translation id="1314565355471455267">VPN do Android</translation>
 <translation id="131461803491198646">Rede doméstica, não está em roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Título editado</translation>
 <translation id="1423591390236870726">A tecla <ph name="KEY_NAME" /> não foi pressionada</translation>
 <translation id="1432110487435300883">Para um resultado aproximado, divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Redefine automaticamente o uso de dados a cada mês em um dia selecionado</translation>
 <translation id="1442433966118452622">Origem da imagem</translation>
 <translation id="1446954767133808402">safira</translation>
 <translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Ocultar transcrição</translation>
 <translation id="160633243685262989">Imagem de prévia</translation>
 <translation id="1611649489706141841">avançar</translation>
-<translation id="1615335640928990664">Uso de dados desde <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar um tema</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1622402072367425417">bolhas brilhantes</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Bom (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Agora você só pode usar as ferramentas para sala de aula</translation>
 <translation id="1762483337755424125">Transcrição</translation>
 <translation id="1765169783255151332">Trocar teclas rapidamente</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">Água termal</translation>
 <translation id="2203642483788377106">penhasco</translation>
 <translation id="2208388655216963643">impressionista</translation>
-<translation id="2209788852729124853">Redefinir contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nome</translation>
 <translation id="2215920961700443347">Sem Internet. Conecte-se à Internet e tente de novo.</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Feedback sobre o recurso em mahi</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3492882532495507361">Um escritório <ph name="OFFICE_STYLE" /> com tons <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">Os dados são medidos pelo seu Chromebook. Eles podem ser diferentes dos dados do provedor.</translation>
 <translation id="3502426834823382181">mostrar todos os apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualização do ChromeOS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">escurecer teclado</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3852931845120288955">Título (de A a Z)</translation>
-<translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">A descrição é obrigatória</translation>
 <translation id="386280020966669610">Buscar inspiração</translation>
 <translation id="3864554910039562428">Recife de corais</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Detectar vozes diferentes automaticamente e atribuir um identificador genérico a cada pessoa, como Falante 1 e Falante 2.</translation>
 <translation id="38811596981744338">Problema jurídico</translation>
 <translation id="3885327323343477505">Mudar o protetor de tela</translation>
-<translation id="3889914174935857450">Redefinir data</translation>
 <translation id="3889954687526985291">uma motocicleta futurista feita de papel preto com luzes de néon em um fundo escuro</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3902271751020176019">Idioma da transcrição</translation>
 <translation id="390890062090528082">céu estrelado</translation>
 <translation id="391412459402535266">Não foi possível testar o dispositivo. Mude para o modo laptop para testar.</translation>
 <translation id="3916998944874125962">fazer captura de tela</translation>
-<translation id="3923184630988645767">Uso de dados</translation>
 <translation id="392943705803418306">Sua sessão das ferramentas para sala de aula terminou</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sem atribuição</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botão "Editar" para o atalho <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">O uso de dados foi redefinido</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744175046705638478">Traduzir "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">O administrador do <ph name="MANAGER" /> definiu quando este <ph name="DEVICE_TYPE" /> pode ser usado</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
 <translation id="5946538341867151940">Sua rede ainda não está conectada. Se a sua operadora de celular recomendar um APN personalizado, insira as informações dele selecionando "+ Novo APN"</translation>
-<translation id="5947266287934282605">Os dados serão redefinidos no último dia do mês se ele for antes dessa data</translation>
 <translation id="5948460390109837040">cães</translation>
 <translation id="594989847980441553">Selecione "Criar" para gerar uma imagem com IA.
         Todas as imagens criadas aparecem aqui automaticamente.</translation>
-<translation id="5972388717451707488">Mecanismo de atualização</translation>
 <translation id="5972801171078377748">Não mostrar novamente</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5982621672636444458">Opções de classificação</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Títulos gerados:</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Atalhos do teclado</translation>
-<translation id="6034694447310538551">Ativar redefinição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6040852767465482106">Identidade anônima</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">A tecla selecionada é <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Seta para a direita</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Definir "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">azul e roxo</translation>
 <translation id="6284632978374966585">Ativar o tema escuro</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Tente novamente mais tarde</translation>
 <translation id="7118522231018231199">Selecione os APNs fornecidos pela operadora ou pelo administrador. Selecionar um APN desativa todos os APNs personalizados. APNs inválidos podem interromper sua conexão móvel.</translation>
 <translation id="7119389851461848805">power</translation>
-<translation id="7129287270910503851">Seu uso de dados será redefinido todos os meses neste dia</translation>
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Pesquisar atalhos</translation>
@@ -1496,7 +1480,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Saiba mais na Central de Ajuda</translation>
 <translation id="7623327321610992184">Pod OnTask</translation>
-<translation id="763165478673169849">Horário da última redefinição</translation>
 <translation id="7633068090678117093">Imagem de plano de fundo</translation>
 <translation id="763873111564339966">índigo</translation>
 <translation id="7648838807254605802">Latência de HTTPS alta</translation>
@@ -1532,7 +1515,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7802764839223122985">A tecla está em branco. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7811024689617730980">Selecione um dia de redefinição automática entre 1 e 31</translation>
 <translation id="7813073042185856802">montanha</translation>
 <translation id="7819857487979277519">Pre-shared key (PSK): WPA ou RSN</translation>
 <translation id="7824219488248240180">pós-impressionista</translation>
@@ -1608,7 +1590,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="811820734797650957">(Android) O gateway pode receber um ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8135609423982943441">Seu Chromebook foi redefinido para os padrões seguros. Ajuste essas mudanças nas Configurações quando quiser.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8140591278915222789">Crie o seu</translation>
@@ -1691,7 +1672,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8491311378305535241">O firewall impediu a conexão de apps Android a sites HTTP</translation>
 <translation id="8495070016475833911">feltro</translation>
-<translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
 <translation id="8505011850330200833">O modelo do Gemini requer 2 GB de armazenamento para processar transcrições e criar resumos</translation>
@@ -1699,7 +1679,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8506394543220680287">com neve</translation>
 <translation id="8508640263392900755">Detalhes do APN</translation>
 <translation id="8522687886059337719">Agora você tem acesso a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />planos de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protetores de tela<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">casa de chá</translation>
 <translation id="8531692079895415839">neblina</translation>
 <translation id="8538236298648811558">Com a tecnologia de IA do Google</translation>
@@ -1764,7 +1743,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="885704831271383379">teclado mais escuro</translation>
 <translation id="8863170912498892583">Ativar o tema escuro</translation>
 <translation id="8864415976656252616">Nenhum conteúdo sugerido. Consulte o conteúdo de ajuda principal.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Este dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8882789155418924367">corujas</translation>
@@ -1824,7 +1802,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="9088994563996376283">Simplificar</translation>
-<translation id="909856219855259344">Mais informações sobre a data de redefinição</translation>
 <translation id="9100765901046053179">Configurações avançadas</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>

@@ -1078,7 +1078,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1822517323280215012">Abu-Abu</translation>
 <translation id="1822635184853104396">Tampilkan histori download lengkap di tab baru</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Tambahkan data penjelajahan yang sudah ada ke profil terkelola</translation>
 <translation id="1825073796163165618">Aktifkan link</translation>
 <translation id="1825565032302550710">Port harus antara 1024 dan 65535</translation>
 <translation id="18260074040409954">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
@@ -1394,6 +1393,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2062354623176996748">Gunakan web tanpa menyimpan histori penjelajahan dengan jendela Samaran</translation>
 <translation id="206308717637808771">Hapus data saat Anda menutup semua jendela. Data diperlakukan sama seperti situs yang Anda lihat</translation>
 <translation id="2066700471214517561">Memanfaatkan teknologi beamforming pada mikrofon agar suara pengguna Chromebook terdengar jelas.</translation>
+<translation id="2067778293100584091">Buka Google Wallet untuk mengontrol <ph name="BEGIN_LINK1" />preferensi data dan privasi<ph name="END_LINK1" /> atau mengelola <ph name="BEGIN_LINK2" />metode pembayaran<ph name="END_LINK2" /> serta <ph name="BEGIN_LINK3" />kartu pas<ph name="END_LINK3" /> seperti kartu loyalitas, tanda pengenal, dan penawaran</translation>
 <translation id="2068581968816126410">Gunakan bookmark di berbagai perangkat</translation>
 <translation id="2069020119963193894">&amp;Ukuran</translation>
 <translation id="2071393345806050157">Tidak ada file log lokal.</translation>
@@ -2390,6 +2390,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2813094189969465044">Kontrol orang tua</translation>
 <translation id="2814489978934728345">Berhenti membuka halaman ini</translation>
 <translation id="2816319641769218778">Untuk menyimpan sandi ke Akun Google Anda, aktifkan sinkronisasi.</translation>
+<translation id="281678554528702272">Catatan: Setelan akses situs ini dapat diganti oleh kebijakan perusahaan atau API yang canggih.</translation>
 <translation id="2817435998497102771">Setel wallpaper &amp; gaya Anda</translation>
 <translation id="2817861546829549432">Mengaktifkan "Jangan Lacak" berarti sebuah permintaan akan disertakan dengan traffic penjelajahan Anda. Pengaruh apa pun tergantung pada apakah situs web menanggapi permintaan atau tidak, dan cara permintaan diinterpretasikan. Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangkan iklan kepada Anda yang bukan berdasarkan situs web yang telah Anda kunjungi. Banyak situs web akan tetap mengumpulkan dan menggunakan data penjelajahan Anda - misalnya untuk meningkatkan keamanan, menyediakan konten, layanan, iklan, dan saran di situs web mereka, serta untuk membuat statistik pelaporan.</translation>
 <translation id="2818476747334107629">Detail printer</translation>
@@ -5067,6 +5068,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485088796993065002">Situs mungkin dapat memutar suara guna memberikan audio untuk musik, video, dan media lainnya</translation>
 <translation id="4850919322897956733">Data dihapus.</translation>
+<translation id="4851973858921178330">Filter situs</translation>
 <translation id="4852030988197799562">Blokir akses ke pengoptimal JavaScript di situs yang baru dikunjungi</translation>
 <translation id="4852383141291180386">Kelola notifikasi aplikasi</translation>
 <translation id="4852916668365817106">Warna mouse</translation>
@@ -5162,7 +5164,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4913573660390710463">Akses aplikasi web terpaket dengan kemampuan yang ditingkatkan. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Tidak dapat menemukan data aplikasi</translation>
 <translation id="4915961947098019832">Diizinkan menampilkan gambar</translation>
-<translation id="491779113051926205">Penghitung Traffic ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ingin berkomunikasi dengan ekstensi "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4918762404810341788">Salin dan buka</translation>
@@ -7481,6 +7482,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6754359471209693699">Mulai penelusuran baru</translation>
 <translation id="6755702685749429945">Tambahkan kamus</translation>
 <translation id="6756643207511618722">Mesin ucapan</translation>
+<translation id="6756882635793733911">Tanyakan tentang apa pun di layar Anda</translation>
 <translation id="6757431299485455321">Bantu perangkat lain menemukan hotspot ini.</translation>
 <translation id="6757615605516049275">Buka kunci <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Berikan masukan Anda tentang kinerja kami.</translation>
@@ -10766,6 +10768,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="96756691973639907">Tindakan lainnya untuk <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Printer terkelola</translation>
+<translation id="967745417352972504">Buka Google Wallet untuk menambahkan atau mengelola <ph name="BEGIN_LINK_PAYMENT_METHODS" />metode pembayaran<ph name="END_LINK_PAYMENT_METHODS" /> dan <ph name="BEGIN_LINK_PASSES" />kartu<ph name="END_LINK_PASSES" /> seperti kartu loyalitas, tanda pengenal, dan penawaran</translation>
 <translation id="968000525894980488">Aktifkan layanan Google Play.</translation>
 <translation id="968037381421390582">Tempel dan Telusuri “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Ubah bahasa</translation>

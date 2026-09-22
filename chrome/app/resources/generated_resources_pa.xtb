@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">ਸਲੇਟੀ</translation>
 <translation id="1822635184853104396">ਪੂਰੇ ਡਾਊਨਲੋਡ ਇਤਿਹਾਸ ਨੂੰ ਨਵੇਂ ਟੈਬ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="1823768272150895732">ਫ਼ੌਂਟ</translation>
-<translation id="1823781806707127806">ਪ੍ਰਬੰਧਿਤ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਮੌਜੂਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1825073796163165618">ਲਿੰਕਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1825565032302550710">ਪੋਰਟ 1024 ਅਤੇ 65535 ਦੇ ਵਿਚਕਾਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="18260074040409954">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਉਨ੍ਹਾਂ ਨੂੰ <ph name="EMAIL" /> ਲਈ <ph name="GOOGLE_PASSWORD_MANAGER" /> 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -1395,6 +1394,7 @@
 <translation id="2062354623176996748">ਕਿਸੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਨਾਲ ਆਪਣਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਰੱਖਿਅਤ ਕੀਤੇ ਬਿਨਾਂ ਵੈੱਬ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="206308717637808771">ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਵੇਲੇ ਡਾਟਾ ਮਿਟਾਓ। ਦੇਖੀ ਜਾ ਰਹੀ ਸਾਈਟ ਲਈ ਸਟੋਰੇਜ ਪਹੁੰਚ ਦੀ ਚੁਣੀ ਗਈ ਸੈਟਿੰਗ, ਡਾਟੇ ਲਈ ਵੀ ਲਾਗੂ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="2066700471214517561">ਬੀਮਫਾਰਮਿੰਗ ਮਾਈਕ ਨਾਲ Chromebook ਵਰਤਣ ਵਾਲੇ ਵਿਅਕਤੀ ਦੀ ਅਵਾਜ਼ ਸਾਫ਼ ਸੁਣਾਈ ਦਿੰਦੀ ਹੈ।</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />ਡਾਟਾ ਅਤੇ ਪਰਦੇਦਾਰੀ ਤਰਜੀਹਾਂ<ph name="END_LINK1" /> ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਜਾਂ <ph name="BEGIN_LINK2" />ਭੁਗਤਾਨ ਵਿਧੀਆਂ<ph name="END_LINK2" /> ਅਤੇ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ, ਆਈਡੀਆਂ ਅਤੇ ਪੇਸ਼ਕਸ਼ਾਂ ਵਰਗੇ <ph name="BEGIN_LINK3" />ਪਾਸਾਂ<ph name="END_LINK3" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Google Wallet 'ਤੇ ਜਾਓ</translation>
 <translation id="2068581968816126410">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਬੁੱਕਮਾਰਕਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="2069020119963193894">ਆਕਾਰ</translation>
 <translation id="2071393345806050157">ਕੋਈ ਸਥਾਨਕ ਲੌਗ ਫ਼ਾਈਲ ਨਹੀਂ।</translation>
@@ -2391,6 +2391,7 @@
 <translation id="2813094189969465044">ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ</translation>
 <translation id="2814489978934728345">ਇਹ ਸਫ਼ਾ ਲੋਡ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="2816319641769218778">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="281678554528702272">ਨੋਟ ਕਰੋ: ਇਨ੍ਹਾਂ ਸਾਈਟ ਪਹੁੰਚ ਸੰਬੰਧੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਨੀਤੀਆਂ ਜਾਂ ਸ਼ਕਤੀਸ਼ਾਲੀ API ਵੱਲੋਂ ਓਵਰਰਾਈਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2817435998497102771">ਆਪਣੇ ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="2817861546829549432">‘ਟਰੈਕ ਨਾ ਕਰੋ’ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਇੱਕ ਬੇਨਤੀ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਟ੍ਰੈਫਿਕ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤੀ ਜਾਏਗੀ। ਕੋਈ ਵੀ ਪ੍ਰਭਾਵ ਇਸਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਕਿ ਇੱਕ ਵੈੱਬਸਾਈਟ ਬੇਨਤੀ ਦਾ ਜਵਾਬ ਦਿੰਦੀ ਹੈ ਜਾਂ ਨਹੀਂ ਅਤੇ ਬੇਨਤੀ ਦਾ ਅਰਥ ਕਿਵੇਂ ਕੱਢਿਆ ਜਾਂਦਾ ਹੈ।
 
@@ -5068,6 +5069,7 @@
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485088796993065002">ਸੰਗੀਤ, ਵੀਡੀਓ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਸਮੱਗਰੀ ਲਈ ਆਡੀਓ ਮੁਹੱਈਆ ਕਰਨ ਵਾਸਤੇ, ਸਾਈਟਾਂ ਧੁਨੀ ਵਜਾ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4850919322897956733">ਡਾਟਾ ਮਿਟਾਇਆ ਗਿਆ।</translation>
+<translation id="4851973858921178330">ਸਾਈਟਾਂ ਨੂੰ ਫਿਲਟਰ ਕਰੋ</translation>
 <translation id="4852030988197799562">ਨਵੀਆਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ 'ਤੇ JavaScript ਔਪਟੀਮਾਈਜ਼ਰ ਦੀ ਪਹੁੰਚ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="4852383141291180386">ਐਪ ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4852916668365817106">ਮਾਊਸ ਦਾ ਰੰਗ</translation>
@@ -5163,7 +5165,6 @@
 <translation id="4913573660390710463">ਵਿਸਤ੍ਰਿਤ ਸਮਰੱਥਾਵਾਂ ਨਾਲ ਪੈਕੇਜ ਕੀਤੀਆਂ ਗਈਆਂ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ਐਪ ਡਾਟਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="4915961947098019832">ਚਿੱਤਰਾਂ ਨੂੰ ਦਿਖਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
-<translation id="491779113051926205">ChromeOS ਦੇ ਟਰੈਫ਼ਿਕ ਕਾਊਂਟਰ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਨਾਲ ਸੰਚਾਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="4918086044614829423">ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="4918762404810341788">ਕਾਪੀ ਕਰ ਕੇ ਖੋਲ੍ਹੋ</translation>
@@ -7484,6 +7485,7 @@
 <translation id="6754359471209693699">ਨਵੀਂ ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="6755702685749429945">ਸ਼ਬਦਕੋਸ਼ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6756643207511618722">ਬੋਲੀ ਇੰਜਣ</translation>
+<translation id="6756882635793733911">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਕਿਸੇ ਵੀ ਚੀਜ਼ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="6757431299485455321">ਇਸ ਹੌਟਸਪੌਟ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਦੂਜੇ ਡੀਵਾਈਸਾਂ ਦੀ ਮਦਦ ਕਰੋ।</translation>
 <translation id="6757615605516049275">ਕਿਰਪਾ ਕਰਕੇ <ph name="TOKEN_NAME" /> ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
 <translation id="6758056191028427665">ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਸਾਡਾ ਪ੍ਰਦਰਸ਼ਨ ਕਿਹੋ ਜਿਹਾ ਹੈ।</translation>
@@ -10769,6 +10771,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="967624055006145463">ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ</translation>
 <translation id="96774243435178359">ਪ੍ਰਬੰਧਿਤ ਪ੍ਰਿੰਟਰ</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />ਭੁਗਤਾਨ ਵਿਧੀਆਂ<ph name="END_LINK_PAYMENT_METHODS" /> ਅਤੇ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ, ਆਈਡੀਆਂ ਅਤੇ ਪੇਸ਼ਕਸ਼ਾਂ ਵਰਗੇ <ph name="BEGIN_LINK_PASSES" />ਪਾਸਾਂ<ph name="END_LINK_PASSES" /> ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਜਾਂ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Google Wallet 'ਤੇ ਜਾਓ</translation>
 <translation id="968000525894980488">Google Play ਸੇਵਾਵਾਂ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="968037381421390582">“<ph name="SEARCH_TERMS" />” ਪੇਸਟ ਕਰਕੇ ਖੋਜੋ</translation>
 <translation id="969096075394517431">ਭਾਸ਼ਾਵਾਂ ਬਦਲੋ</translation>

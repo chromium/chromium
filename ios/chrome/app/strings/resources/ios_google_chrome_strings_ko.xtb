@@ -284,6 +284,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7272930098487145294">이미지를 저장하려면 '설정'을 탭하여 Chrome에 사진 추가 권한을 부여하세요.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
 <translation id="7284245284340063465">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
+<translation id="7287957555760192025">추천을 선택하거나 무시하면 Chrome에서 향후 더 관련성 높은 추천이 표시되도록 조정합니다.</translation>
 <translation id="7296102444587051536">iOS용 Chrome</translation>
 <translation id="7299681342915173313">이제 언제든 이메일, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다</translation>
 <translation id="7334364820047587268">Google 비밀번호 관리자에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
@@ -357,6 +358,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8544583291890527417">Chrome에서 감지한 개인 정보 보호 또는 보안 문제에 대한 알림입니다.</translation>
 <translation id="855027533751209304">Chrome 도움말: 눈앞에 보이는 사물 검색하기</translation>
 <translation id="8558480467877843976">이제 언제든지 메시지, 문서, 기타 앱에서 탐색하거나 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
+<translation id="8589791109349384456">추천을 사용 중지해도 다른 기능을 위해 Chrome에서 페이지 제목과 URL을 처리하는 방식을 제어하는 데에는 영향을 미치지 않습니다. <ph name="BEGIN_LINK" />동기화 설정<ph name="END_LINK" />에서 이 데이터에 대한 액세스를 관리할 수 있습니다.</translation>
 <translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="8610372330814566250">Chrome에서 Safari 비밀번호, 방문 기록, 북마크, 신용카드를 사용하세요</translation>
 <translation id="8630122478628016441">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>

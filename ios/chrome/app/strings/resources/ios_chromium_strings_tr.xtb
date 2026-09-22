@@ -53,6 +53,8 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="1965068424387304464">Chromium İpucu: Şifreleri Kaydedin</translation>
 <translation id="1992653360331625459">Şifre Yöneticinizde bu hesaplar için zaten şifreleriniz var. Aşağıdaki şifrelerden birini içe aktarmayı seçerseniz bu şifre mevcut şifrenin yerini alır.</translation>
 <translation id="2006345422933397527">Chromium, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
+<translation id="2025935492422922097">Chromium, sayfa başlıklarını ve URL'leri buluttaki özel bir alanda işler</translation>
+<translation id="2027881372245801507">Önerileri devre dışı bıraktığınızda Chromium'un diğer özellikler için sayfa başlıklarını ve URL'leri işleme şekli değişmez. Bu verilere erişimi <ph name="BEGIN_LINK" />senkronizasyon ayarlarınızdan<ph name="END_LINK" /> yönetebilirsiniz.</translation>
 <translation id="2042889939382983733">Chromium geçmişimi göster</translation>
 <translation id="2052320862053429062">Chromium, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="2059365270911640413">Chromium kurulumunu tamamlayın</translation>
@@ -351,6 +353,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8685813584220679697">Bu sitede ve Chromium'da oturum açın.</translation>
+<translation id="8697693743327341604">Bir öneriyi seçerseniz veya yoksayarsanız Chromium, gelecekte daha alakalı öneriler göstermek için uyum sağlar.</translation>
 <translation id="869832267508702259">Chromium'u varsayılan tarayıcınız yaparak gezindiğiniz her yerde Gemini analizlerinden yararlanın</translation>
 <translation id="8698780336333802489">Chromium'a aktar</translation>
 <translation id="8730503818204408000">Chromium'u varsayılan tarayıcı olarak ayarlamak için Chromium ayarlarını açar.</translation>

@@ -70,6 +70,7 @@
             書籤、歷史記錄和儲存的密碼不受影響。</translation>
 <translation id="1619887657840448962">為了讓 Chrome 的安全性更有保障，我們停用了以下這個未列在「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」中的擴充功能 (它可能是在您不知情的情況下加入瀏覽器)。</translation>
 <translation id="1628000112320670027">前往 Chrome 說明頁面</translation>
+<translation id="1632241302126471515">使用 Chrome Canary 搜尋</translation>
 <translation id="1640672724030957280">下載中…</translation>
 <translation id="1651617469580841801">使用 Google 智慧鏡頭時，系統會將網頁標題、網址和內容 (包括 PDF) 傳送給 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">關於 ChromeOS Flex</translation>
@@ -202,7 +203,6 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="2970681950995291301">如要從 Chrome 中移除 Google 帳戶，請前往「設定」頁面登出 Chrome</translation>
 <translation id="2976869732253036751">在手機上透過 Chrome 接收價格追蹤通知</translation>
-<translation id="2985091279808606502">Chrome 需要區域網路權限，才能讓這個網站正常運作</translation>
 <translation id="2991167882679440829">Google 帳戶中儲存的密碼和其他 Chrome 資料將從這部裝置上移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
 <translation id="2994465299455873643">提供加密服務，以及安全復原 <ph name="BROWSER_NAME" /> 的方式 (如果已過期)。如果停用這項服務，<ph name="BROWSER_NAME" /> 可能會無法存取加密的資料，而且 <ph name="BROWSER_NAME" /> 可能無法自行復原。</translation>
 <translation id="3003694935412297923">所有工作</translation>
@@ -270,6 +270,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">在系統匣顯示 Chrome 內建 Gemini</translation>
+<translation id="3616622400661108683">查詢 Chrome 以外的內容，例如其他應用程式或檔案</translation>
 <translation id="3622716124581627104">可以辨識物品或地點，也可複製或翻譯文字。使用 Google 智慧鏡頭時，系統會將網頁截圖傳送給 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
 <translation id="3628103251823745322">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取已儲存的資訊和其他資料。</translation>
@@ -749,7 +750,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8162006532256575008">使用 Chrome 但不登入帳戶</translation>
 <translation id="8172231188687329735">取得 Chrome 應用程式，隨時隨地儲存密碼</translation>
 <translation id="8177472873527554730">找不到網頁內容</translation>
+<translation id="8196526165798579689">使用 Chrome 開發人員版搜尋</translation>
 <translation id="8221491193165283816">你通常會封鎖通知。如要允許這個網站傳送通知給你，請按這裡。</translation>
+<translation id="8227493674161801700">使用 Chrome Beta 版搜尋</translation>
 <translation id="8253851811470049684">使用 Chrome 開啟任何應用程式中的連結，並將瀏覽器固定在工作列，方便隨時使用</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用你的攝影機和麥克風。</translation>
 <translation id="8260086374035800939">建立新分頁時，如果 Chrome 內建 Gemini 已開啟，側邊面板也會保持開啟狀態</translation>

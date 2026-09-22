@@ -110,7 +110,9 @@
 <translation id="1322735045095424339">Organisasi anda menghendaki Mod inkognito digunakan</translation>
 <translation id="1323735185997015385">Padam</translation>
 <translation id="132683371494960526">Ketik dua kali untuk menukar folder induk.</translation>
+<translation id="132969855425874290">Tutup cari dan isi</translation>
 <translation id="1333455942675373522">Papan kekunci</translation>
+<translation id="1333669029961409292">"Semak kata laluan anda" selesai!</translation>
 <translation id="1334485477792811969">Perkhidmatan web</translation>
 <translation id="1335767868357998043">Pilih Kedudukan Bar Alamat</translation>
 <translation id="1347468774581902829">Urus aktiviti</translation>
@@ -217,6 +219,7 @@
 <translation id="1634520742547161889">BB/TT</translation>
 <translation id="1636234353664774105">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
+<translation id="1644229815617955289">Urus sejarah, kuki anda dan pelbagai lagi untuk melindungi privasi anda</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="164673457281113247">{count,plural, =1{Penanda halaman disimpan}other{Penanda halaman disimpan}}</translation>
 <translation id="1650979352027263879">Pilihan penampilan anda telah dialih keluar</translation>
@@ -313,6 +316,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Pautan diterima}other{{count} pautan diterima}}</translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Tetapan</translation>
+<translation id="1944477975050820119">Dapatkan cadangan masa nyata yang boleh membantu anda menemukan cara baharu untuk menyemak imbas dengan AI. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Log masuk dengan akaun terurus</translation>
 <translation id="1955773397805078763">Tambahkan kaedah pembayaran</translation>
 <translation id="1956138802718275401">Akses kata laluan daripada skrin utama</translation>
@@ -404,6 +408,7 @@
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
 <translation id="2244080985779413662">Laman web ini mahu memuat turun fail dan membuka fail tersebut dalam Wallet anda.</translation>
 <translation id="2245007488813216650">Menterjemahkan…</translation>
+<translation id="2246445006133863463">Tindakan ini membolehkan anda bersembang dengan Gemini menggunakan suara anda</translation>
 <translation id="2249119578464404734">Pada bahagian atas skrin, ketik ikon Carian</translation>
 <translation id="2251686759395008410">Menu → Sejarah</translation>
 <translation id="2252378061043785266">Jangan Tunjukkan Laman Ini</translation>
@@ -433,6 +438,7 @@
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
 <translation id="2323697864063408084">Dapatkan pemberitahuan pada Skrin Kunci anda dan sebagai Sepanduk supaya anda tidak terlepas perkara yang penting bagi anda</translation>
 <translation id="2326302612031521902">Pemilih unit</translation>
+<translation id="2326606747676847821">Gunakan Inkognito</translation>
 <translation id="2327445548174191329">Daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Tiada perlindungan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
@@ -458,6 +464,7 @@
 <translation id="2393230427496852974">Baca ulasan pengguna</translation>
 <translation id="2394659309569789395">Buka Laman Juga</translation>
 <translation id="2403129868389095715">Pakej anda tidak dapat dihantar</translation>
+<translation id="2408318953009664750">Benarkan Sekali</translation>
 <translation id="2410754283952462441">Pilih akaun</translation>
 <translation id="2422174748424038845">Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan akan dipadamkan daripada semua peranti.</translation>
 <translation id="2424805048070062787">Teruskan dengan tab ini</translation>
@@ -502,6 +509,7 @@
 <translation id="2540111494300686866">Sekat dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keselamatan"</translation>
 <translation id="2551153019974022505">Ralat akaun</translation>
+<translation id="2559785333866467778">Cadangan Gemini</translation>
 <translation id="2559843230610279254">Kumpulan tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
 <translation id="257088987046510401">Tema</translation>
 <translation id="2573117291489209663">Selesai</translation>
@@ -685,6 +693,7 @@
 <translation id="3177338796769255211">Log masuk untuk mendapatkan penanda halaman dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
 <translation id="3183362380688692618">Kumpulan Tab Baharu...</translation>
+<translation id="3185000827934321633">Menavigasi</translation>
 <translation id="3185760469172949183">Buat carian dengan kamera selesai!</translation>
 <translation id="3186796054637504691">Kosongkan Data Sejarah dan Laman Web</translation>
 <translation id="3190558889382726167">Kata laluan yang disimpan</translation>
@@ -863,6 +872,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 kaedah pembayaran}other{# kaedah Pembayaran}}</translation>
 <translation id="3831560640878483188">Ketepikan amaran?</translation>
 <translation id="3832419617903252251">Kata laluan hanya disimpan pada peranti ini</translation>
+<translation id="3835016165506903031">Benarkan Semasa Melawat</translation>
 <translation id="3835964409414434850">Pergi ke Tab Seterusnya</translation>
 <translation id="3838691874161539578">Semak kata laluan anda yang disimpan untuk mengukuhkan keselamatan anda dan kekal lebih selamat dalam talian</translation>
 <translation id="3838985624086228724">Penurunan harga pada produk yang dijejaki, daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -871,6 +881,7 @@
 <translation id="3853162385423733133">Kekal menggunakan dan menyimpan kata laluan dalam Google Account anda <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Import</translation>
 <translation id="3854052088499589035">Anda akan menerima kemaskinian apabila anda membuat kemajuan dalam Level Up</translation>
+<translation id="3854214753902617617">Terokai Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="3857113360369572832">Buka <ph name="BEGIN_BOLD" />Tetapan Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan berpeluang menyimpan maklumat ini pada Wallet apabila anda mengisi borang yang berkaitan pada masa hadapan.</translation>
@@ -941,6 +952,7 @@
 <translation id="4047337302138771011">Kongsi Kata Laluan Anda</translation>
 <translation id="4049419681095579435">Pakej sudah dijejaki</translation>
 <translation id="4049507953662678203">Pastikan anda mempunyai sambungan rangkaian dan cuba lagi.</translation>
+<translation id="4052951214266508382">Benarkan “Gemini” menggunakan mikrofon anda</translation>
 <translation id="4054290211988862686">Pilih Fail</translation>
 <translation id="4070132839822635162">Jangan log masuk</translation>
 <translation id="4072473499345702662">Akses Level Up</translation>
@@ -1049,8 +1061,10 @@
 <translation id="4430505936695785931">Dapatkan kata laluan yang disimpan dalam apl lain</translation>
 <translation id="4431224949908513835">Pilih kaedah pembayaran untuk diisi.</translation>
 <translation id="4432122368769493392">Tetapan…</translation>
+<translation id="443295142249850475">Tajuk halaman dan URL tab anda yang terbuka digunakan untuk memberi anda cadangan yang berkaitan.</translation>
 <translation id="4439968635693513370">Rancang hujung minggu anda dengan</translation>
 <translation id="4442550905108052454">Buka <ph name="BEGIN_BOLD" />Tetapan<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} hasil carian tersedia.}other{{count} hasil carian tersedia.}}</translation>
 <translation id="4445840280797509738">Lagi pilihan untuk <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Anda boleh meleret bahagian tepi untuk kembali atau maju.</translation>
 <translation id="4460014764210899310">Nyahkumpulan</translation>
@@ -1472,6 +1486,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="574762237186762643">Acara</translation>
 <translation id="5749158352074143502">Teruskan dengan tab ini</translation>
 <translation id="5753021559215751319">Simpan kata laluan</translation>
+<translation id="5756200167514420691">Buka tab dalam Mod inkognito untuk menyemak imbas web dengan lebih peribadi</translation>
 <translation id="5756525336488841345">Sembunyikan Penanda Halaman</translation>
 <translation id="5758631781033351321">Anda dapat menemukan senarai bacaan anda di sini</translation>
 <translation id="57586589942790530">Nombor kad tidak sah</translation>
@@ -1542,6 +1557,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5988097621740394599">Lihat penurunan harga pada tab anda.</translation>
 <translation id="5988851877894965432">Buka URL dalam Chrome</translation>
 <translation id="599343768974649785">Teks Eksplisit</translation>
+<translation id="6000893618966378846">"Padamkan data semakan imbas" selesai!</translation>
 <translation id="6004988584831654445">Anda sudah sedia! Dapatkan pemberitahuan apabila tugasan baharu tiba.</translation>
 <translation id="6006672969046233841">Tab Baharu</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
@@ -1966,6 +1982,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7312823817809783355">Tugasan anda</translation>
 <translation id="7313347584264171202">Anda dapat menemukan tab Inkognito anda di sini</translation>
+<translation id="7318555235645532245">"Tukar kepada Inkognito" selesai!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} pilihan autolengkap tersedia pada sebelah atas papan kekunci anda.}other{{count} pilihan autolengkap tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> peratus dimuat turun</translation>
@@ -2142,6 +2159,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7857520352710212030">Laman disematkan</translation>
 <translation id="7859988229622350291">Jangan terjemah</translation>
 <translation id="7863211248337747225">Dapatkan apl</translation>
+<translation id="7863990181930071932">Akses Lokasi Dilumpuhkan</translation>
 <translation id="7865127013871431856">Pilihan Translate</translation>
 <translation id="7866872729285243843">Untuk mendapatkan senarai bacaan pada semua peranti anda, hidupkan “Senarai Bacaan” dalam tetapan.</translation>
 <translation id="7874107544081154809">Autoisi borang dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2450,6 +2468,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8786100550345425552">Edit kebenaran</translation>
 <translation id="878871978861915380">Sembunyikan "Penjejakan harga"</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8795809107245894196">Gunakan Semakan Kata Laluan untuk memastikan kata laluan anda selamat</translation>
 <translation id="8796634520835503150">Mod membaca tersedia</translation>
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8803639129939845298">Selamat</translation>

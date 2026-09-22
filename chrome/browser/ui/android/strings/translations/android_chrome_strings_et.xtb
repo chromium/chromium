@@ -2126,6 +2126,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="948276827484905248">Loo QR-kood</translation>
 <translation id="95817756606698420">Chrome saab Hiinas otsimiseks kasutada teenust <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Seda saate muuta menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse.</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>
 <translation id="963246339335003378">Ava tegumihaldur</translation>
 <translation id="966337994629449077">Olete sisse logitud kasutajana <ph name="FROM_EMAIL" />.\n\nArvutis jätkamiseks vahetage kontot <ph name="TO_EMAIL" />. Saate selle konto paroolid, järjehoidjad ja muu.</translation>

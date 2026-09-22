@@ -270,6 +270,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="7095110968493193530">„Google“ slaptažodžių tvarkytuvė, naudotojas <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
+<translation id="7135936755418321901">Jei norite bendrinti vietovės informaciją su svetainėmis, palieskite „Nustatymai“ ir leiskite „Chrome“ naudoti vietovės informaciją.</translation>
 <translation id="7145599899567697473">Išsaugoti ir automatiškai pildyti slaptažodžius naršyklėje „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
@@ -284,6 +285,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7272930098487145294">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chrome“ pridėti jūsų nuotraukas</translation>
 <translation id="7275945473750112644">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chrome“ duomenys bus išvalyti iš šio įrenginio</translation>
 <translation id="7284245284340063465">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Jei pasirinksite pasiūlymą arba jo nepaisysite, „Chrome“ prisitaikys, kad ateityje galėtų rodyti daugiau jums aktualių pasiūlymų.</translation>
 <translation id="7296102444587051536">„Chrome“, skirta „iOS“</translation>
 <translation id="7299681342915173313">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas el. laiškuose, dokumentuose ir kitose programose.</translation>
 <translation id="7334364820047587268">„Google“ slaptažodžių tvarkyklėje jau yra šių paskyrų slaptažodžiai. Jei pasirinksite importuoti vieną iš toliau nurodytų slaptažodžių, jis pakeis esamą.</translation>
@@ -357,6 +359,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8544583291890527417">Įspėjama apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ aptinka.</translation>
 <translation id="855027533751209304">„Chrome“ patarimas: ieškokite to, ką matote</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="8589791109349384456">Išjungus pasiūlymus, „Chrome“ puslapių pavadinimų ir URL apdorojimas kitoms funkcijoms nevaldomas. Prieigą prie šių duomenų galite tvarkyti <ph name="BEGIN_LINK" />sinchronizavimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Naudokite „Safari“ slaptažodžius, istoriją, žymes ir kredito korteles naršyklėje „Chrome“</translation>
 <translation id="8630122478628016441">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>

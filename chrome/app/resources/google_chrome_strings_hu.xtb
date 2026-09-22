@@ -70,6 +70,7 @@
             Nem lesz hatással a könyvjelzőkre, az előzményekre és a mentett jelszavakra.</translation>
 <translation id="1619887657840448962">A Chrome biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="1628000112320670027">Segítség a Chrome használatával kapcsolatban</translation>
+<translation id="1632241302126471515">Keresés a Chrome Canaryval</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1651617469580841801">A Google Lens használatakor a rendszer elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">A ChromeOS Flex névjegye</translation>
@@ -204,7 +205,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chrome</translation>
 <translation id="2970681950995291301">Ha el szeretné távolítani Google-fiókját a Chrome-ból, jelentkezzen ki a Chrome-ból a Beállítások oldalon</translation>
 <translation id="2976869732253036751">Árfigyelési értesítések fogadása a Chrome-mal a telefonján</translation>
-<translation id="2985091279808606502">A Chrome-nak helyi hálózati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="2991167882679440829">A Google-fiókjába mentett jelszavai és egyéb Chrome-adatai el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chrome-ban, jelentkezzen be újra.</translation>
 <translation id="2994465299455873643">Titkosítási szolgáltatásokat, valamint elavulás esetén biztonságos módot kínál a(z) <ph name="BROWSER_NAME" /> helyreállítására. Ha ez a szolgáltatás le van tiltva, a <ph name="BROWSER_NAME" /> elveszítheti a titkosított adatokhoz való hozzáférést, és a <ph name="BROWSER_NAME" /> nem tudja magát helyreállítani.</translation>
 <translation id="3003694935412297923">Az összes feladat</translation>
@@ -272,6 +272,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3596080736082218006">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="3597003331831379823">Nem sikerült futtatni a beállítást emelt szintű jogosultságokkal. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">A Gemini a Chrome-ban megjelenítése a tálcán</translation>
+<translation id="3616622400661108683">Kérdezhet a Chrome-on kívüli tartalmakról, például más alkalmazásokról vagy fájlokról</translation>
 <translation id="3622716124581627104">Azonosíthat dolgokat és helyeket, valamint szöveget másolhat vagy fordíthat le. A Google Lens használatakor a rendszer elküldi az oldal képernyőképét a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Google-fiókjával most még egyszerűbben használhatja a Chrome-ot közösen használt számítógépeken.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chrome-ban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a mentett adataihoz is hozzáférhet bármely eszközén.</translation>
@@ -750,7 +751,9 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8162006532256575008">Chrome használata fiók nélkül</translation>
 <translation id="8172231188687329735">A Chrome app letöltésével útközben is mentheti jelszavait</translation>
 <translation id="8177472873527554730">Nem található tartalom az oldalon</translation>
+<translation id="8196526165798579689">Keresés a Chrome Devvel</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
+<translation id="8227493674161801700">Keresés a Chrome Bétával</translation>
 <translation id="8253851811470049684">Bármelyik alkalmazásból megnyithatja a linkeket a Chrome-ban, és a böngésző a tálcán is hozzáférhető marad</translation>
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
 <translation id="8260086374035800939">Ha a Gemini a Chrome-ban szolgáltatás meg van nyitva, az oldalsó panel megnyitva marad új lapok létrehozásakor</translation>

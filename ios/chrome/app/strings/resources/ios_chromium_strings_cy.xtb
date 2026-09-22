@@ -53,6 +53,8 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="1965068424387304464">Awgrym Chromium: Cadw Cyfrineiriau</translation>
 <translation id="1992653360331625459">Mae gennych gyfrineiriau ar gyfer y cyfrifon hyn yn eich Rheolwr Cyfrineiriau Google eisoes. Os dewiswch fewnforio un o'r cyfrineiriau isod, bydd yn disodli'r un presennol.</translation>
 <translation id="2006345422933397527">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
+<translation id="2025935492422922097">Mae Chromium yn prosesu teitlau tudalennau a chyfeiriadau URL mewn man preifat yn y cwmwl</translation>
+<translation id="2027881372245801507">Nid yw diffodd awgrymiadau yn rheoli prosesu Chromium o deitlau tudalennau ac URLau ar gyfer nodweddion eraill. Gallwch reoli mynediad at y data hyn yn eich <ph name="BEGIN_LINK" />gosodiadau cysoni<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Gweld Eich Hanes Chromium</translation>
 <translation id="2052320862053429062">Mae Chromium o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
 <translation id="2059365270911640413">Gorffen gosod Chromium</translation>
@@ -105,6 +107,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3072591112723064972">Gwneud Chromium yn borwr diofyn i lansio dolenni yma ar unwaith.</translation>
 <translation id="3115956258722352278">Gwneud Chromium yn borwr diofyn i chi?</translation>
 <translation id="3180939591219927904">Troi "Cloi tabiau Anhysbys pan fyddwch yn cau Chromium" ymlaen</translation>
+<translation id="3239426886813624481">I rannu eich lleoliad â gwefannau, tapiwch ar Gosodiadau i adael i Chromium ddefnyddio eich lleoliad.</translation>
 <translation id="327628223428512207">Rhowch gyfrinymadrodd i gadw'r cyfrinair hwn a chael data Chromium ar eich holl ddyfeisiau</translation>
 <translation id="328933489847748230">{count,plural, =1{Nawr yn dangos 1 ffenestr Chromium}zero{Nawr yn dangos {count} ffenestr Chromium}two{Nawr yn dangos {count} ffenestr Chromium}few{Nawr yn dangos {count} ffenestr Chromium}many{Nawr yn dangos {count} ffenestr Chromium}other{Nawr yn dangos {count} ffenestr Chromium}}</translation>
 <translation id="3344204225393848305">Gosod Chromium fel y Porwr Diofyn</translation>
@@ -351,6 +354,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="865600487977764604">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="8663480472502753423">Cadwch Chromium yn gyfredol</translation>
 <translation id="8685813584220679697">Mewngofnodi i'r wefan hon a Chromium.</translation>
+<translation id="8697693743327341604">Os byddwch yn dewis neu'n anwybyddu awgrym, bydd Chromium yn addasu i helpu i ddangos awgrymiadau mwy perthnasol i chi yn y dyfodol.</translation>
 <translation id="869832267508702259">Gwnewch Chromium yn borwr diofyn i gael mewnwelediadau Gemini yn unrhyw le rydych chi'n pori</translation>
 <translation id="8698780336333802489">Mewnforio i Chromium</translation>
 <translation id="8730503818204408000">Yn agor y Gosodiad Chromium i osod Chromium fel y Porwr Diofyn.</translation>

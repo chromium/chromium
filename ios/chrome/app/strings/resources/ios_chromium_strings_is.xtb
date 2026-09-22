@@ -53,6 +53,8 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="1965068424387304464">Chromium-ráð: Vistaðu aðgangsorð</translation>
 <translation id="1992653360331625459">Þú ert þegar með aðgangsorð fyrir þessa reikninga í Aðgangsorðastjórnun. Ef þú velur að flytja inn eitthvert aðgangsorðanna hér að neðan mun það koma í stað fyrirliggjandi aðgangsorðs.</translation>
 <translation id="2006345422933397527">Chromium gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
+<translation id="2025935492422922097">Chromium vinnur úr síðutitlum og vefslóðum í lokuðu rými í skýinu</translation>
+<translation id="2027881372245801507">Þó slökkt sé á tillögum stjórnar það ekki úrvinnslu Chromium á síðutitlum og vefslóðum fyrir aðra eiginleika. Þú getur stjórnað aðgangi að þessum gögnum í <ph name="BEGIN_LINK" />stillingum samstillingar<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Skoða Chromium-ferilinn þinn</translation>
 <translation id="2052320862053429062">Chromium athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="2059365270911640413">Ljúktu við uppsetningu Chromium</translation>
@@ -351,6 +353,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="865600487977764604">Gætir öryggis þíns í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="8663480472502753423">Haltu Chromium uppfærðu</translation>
 <translation id="8685813584220679697">Skráðu þig inn á þetta vefsvæði og Chromium.</translation>
+<translation id="8697693743327341604">Ef þú velur eða hunsar tillögu mun Chromium aðlagast því til að birta þér gagnlegri tillögur í framtíðinni.</translation>
 <translation id="869832267508702259">Gerðu Chromium að sjálfgefnum vafra til að fá innsýn Gemini hvar sem þú skoðar þig um á netinu</translation>
 <translation id="8698780336333802489">Flytja inn í Chromium</translation>
 <translation id="8730503818204408000">Opnar Chromium-stillingar til að stilla Chromium sem sjálfgefinn vafra.</translation>

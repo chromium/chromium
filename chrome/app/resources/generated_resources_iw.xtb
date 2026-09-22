@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">אפור</translation>
 <translation id="1822635184853104396">הצגה של היסטוריית ההורדות המלאה בכרטיסייה חדשה</translation>
 <translation id="1823768272150895732">גופן</translation>
-<translation id="1823781806707127806">הוספת נתוני הגלישה הקיימים לפרופיל מנוהל</translation>
 <translation id="1825073796163165618">הפעלת קישורים</translation>
 <translation id="1825565032302550710">היציאה חייבת להיות בין 1024 ל-65535</translation>
 <translation id="18260074040409954">אפשר להשתמש בסיסמאות השמורות שלך בכל מכשיר. הן נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /> של <ph name="EMAIL" />.</translation>
@@ -1394,6 +1393,7 @@
 <translation id="2062354623176996748">חלון אנונימי מאפשר לגלוש באינטרנט בלי לשמור את היסטוריית הגלישה</translation>
 <translation id="206308717637808771">כשכל החלונות נסגרים, הנתונים נמחקים. אופן הטיפול בנתונים זהה לאופן הטיפול באתר הזה</translation>
 <translation id="2066700471214517561">‏מיקרופון בטכנולוגיית אלומה כדי שהקול של המשתמש ב-Chromebook ישמע בצורה ברורה.</translation>
+<translation id="2067778293100584091">‏כדי לשנות את <ph name="BEGIN_LINK1" />העדפות הנתונים והפרטיות<ph name="END_LINK1" /> או לעדכן את <ph name="BEGIN_LINK2" />אמצעי התשלום<ph name="END_LINK2" /> וה<ph name="BEGIN_LINK3" />כרטיסים<ph name="END_LINK3" /> (כמו כרטיסי מועדון לקוחות, תעודות מזהות ומבצעים), אפשר לעבור ל-Google Wallet</translation>
 <translation id="2068581968816126410">שימוש בסימניות בכמה מכשירים</translation>
 <translation id="2069020119963193894">&amp;גודל</translation>
 <translation id="2071393345806050157">אין קובץ יומן מקומי.</translation>
@@ -2390,6 +2390,7 @@
 <translation id="2813094189969465044">בקרת הורים</translation>
 <translation id="2814489978934728345">הפסקת טעינת הדף</translation>
 <translation id="2816319641769218778">‏כדי לשמור סיסמאות בחשבון Google, יש להפעיל את הסנכרון.</translation>
+<translation id="281678554528702272">‏הערה: יכול להיות שכללי מדיניות ארגוניים או ממשקי API חזקים יבטלו את הגדרות הגישה האלה לאתר.</translation>
 <translation id="2817435998497102771">הגדרה של הטפט והסגנון שלך</translation>
 <translation id="2817861546829549432">הפעלת התכונה 'ללא מעקב' תגרום להכללת בקשה בתנועת הגלישה שלך. ההשפעה שלה תלויה בנכונות של אתר להגיב לבקשה, ובאופן שבו הבקשה תפורש. לדוגמה, אתרים מסוימים עשויים להגיב לבקשה זו על ידי הצגת מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרי אינטרנט רבים עדיין יאספו את נתוני הגלישה שלך וישתמשו בהם - למשל, כדי לשפר את האבטחה, לספק תוכן, שירותים, מודעות והמלצות באתרי האינטרנט שלהם ולהפיק סטטיסטיקת דיווח.</translation>
 <translation id="2818476747334107629">פרטי מדפסת</translation>
@@ -5163,7 +5164,6 @@
 <translation id="4913573660390710463">גישה לאפליקציות אינטרנט ארוזות עם יכולות משופרות. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">לא ניתן למצוא את נתוני האפליקציה</translation>
 <translation id="4915961947098019832">מורשים להציג תמונות</translation>
-<translation id="491779113051926205">‏מוני התנועה של ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> רוצה לתקשר עם התוסף "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4918762404810341788">העתקה ופתיחה</translation>
@@ -10772,6 +10772,7 @@
 <translation id="96756691973639907">עוד פעולות לגבי <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
 <translation id="96774243435178359">מדפסות מנוהלות</translation>
+<translation id="967745417352972504">‏כדי להוסיף או לעדכן את <ph name="BEGIN_LINK_PAYMENT_METHODS" />אמצעי התשלום<ph name="END_LINK_PAYMENT_METHODS" /> וה<ph name="BEGIN_LINK_PASSES" />כרטיסים<ph name="END_LINK_PASSES" /> (כמו כרטיסי מועדון לקוחות, תעודות מזהות ומבצעים), אפשר לעבור ל-Google Wallet</translation>
 <translation id="968000525894980488">‏מפעילים את שירותי Google Play.</translation>
 <translation id="968037381421390582">הד&amp;בקה וחיפוש של "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">החלפת שפות</translation>

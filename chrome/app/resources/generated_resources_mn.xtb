@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">Саарал</translation>
 <translation id="1822635184853104396">Таталтын бүтэн түүхийг шинэ табд харуулах</translation>
 <translation id="1823768272150895732">Фонт</translation>
-<translation id="1823781806707127806">Удирддаг профайлд одоо байгаа интернэтээр үзсэн өгөгдөл нэмэх</translation>
 <translation id="1825073796163165618">Холбооснуудыг идэвхжүүлэх</translation>
 <translation id="1825565032302550710">Порт нь 1024 болон 65535-ын хооронд байх ёстой</translation>
 <translation id="18260074040409954">Та дурын төхөөрөмж дээр хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="EMAIL" />-д зориулж <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгалсан.</translation>
@@ -5068,6 +5067,7 @@
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485088796993065002">Сайтууд хөгжим, видео болон бусад медиад аудио өгөхийн тулд дуу чимээ тоглуулж болзошгүй</translation>
 <translation id="4850919322897956733">Өгөгдлийг устгалаа.</translation>
+<translation id="4851973858921178330">Сайтуудыг шүүх</translation>
 <translation id="4852030988197799562">Шинээр зочилсон сайт дээр JavaScript-н оновчтой болгогчид хандах эрхийг блоклох</translation>
 <translation id="4852383141291180386">Аппын мэдэгдлүүдийг удирдах</translation>
 <translation id="4852916668365817106">Хулганын өнгө</translation>
@@ -5163,7 +5163,6 @@
 <translation id="4913573660390710463">Сайжруулсан чадамжтай багцалсан веб аппликейшнуудад хандана уу. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Аппын өгөгдлийг олох боломжгүй</translation>
 <translation id="4915961947098019832">Зураг харуулахыг зөвшөөрсөн</translation>
-<translation id="491779113051926205">ChromeOS ачаалал тоологч</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" өргөтгөлтэй холбогдох хүсэлтэй байна</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
 <translation id="4918762404810341788">Хуулаад, нээх</translation>
@@ -7482,6 +7481,7 @@
 <translation id="6754359471209693699">Шинээр хайж эхлэх</translation>
 <translation id="6755702685749429945">Толь бичиг нэмэх</translation>
 <translation id="6756643207511618722">Ярианы хөдөлгүүр</translation>
+<translation id="6756882635793733911">Дэлгэц дээрээ байгаа аливаа зүйлийн талаар асуугаарай</translation>
 <translation id="6757431299485455321">Бусад төхөөрөмжүүдэд энэ сүлжээний цэгийг олоход тусална уу.</translation>
 <translation id="6757615605516049275"><ph name="TOKEN_NAME" />-н түгжээг тайлна уу.</translation>
 <translation id="6758056191028427665">Биднийг хэр ажиллаж байгааг мэдэгдэнэ үү.</translation>

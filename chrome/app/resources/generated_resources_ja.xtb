@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">グレー</translation>
 <translation id="1822635184853104396">新しいタブですべてのダウンロード履歴を表示する</translation>
 <translation id="1823768272150895732">フォント</translation>
-<translation id="1823781806707127806">既存の閲覧データを管理対象プロファイルに追加する</translation>
 <translation id="1825073796163165618">リンクを有効にする</translation>
 <translation id="1825565032302550710">ポートは 1024～65535 の範囲で指定してください</translation>
 <translation id="18260074040409954">保存したパスワードはどのデバイスでも使用できます。パスワードは、<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
@@ -1384,6 +1383,7 @@
 <translation id="2062354623176996748">シークレット ウィンドウを使うと、閲覧履歴を残さずにウェブを閲覧できます</translation>
 <translation id="206308717637808771">すべてのウィンドウを閉じるときにデータを削除します。データは表示しているサイトと同じように扱われます</translation>
 <translation id="2066700471214517561">Chromebook を使用しているユーザーの声がはっきりと聞こえるようにマイクのビームフォーミングを行います。</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />データとプライバシーの設定<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />お支払い方法<ph name="END_LINK2" />やポイントカード、ID、特典などの<ph name="BEGIN_LINK3" />パス<ph name="END_LINK3" />を管理するには、Google ウォレットにアクセスしてください</translation>
 <translation id="2068581968816126410">複数のデバイスで同じブックマークを使用</translation>
 <translation id="2069020119963193894">サイズ(&amp;S)</translation>
 <translation id="2071393345806050157">ローカルのログ ファイルがありません。</translation>
@@ -2377,6 +2377,7 @@
 <translation id="2813094189969465044">保護者による使用制限</translation>
 <translation id="2814489978934728345">このページの読み込みを停止します</translation>
 <translation id="2816319641769218778">パスワードを Google アカウントに保存するには、同期を有効にします。</translation>
+<translation id="281678554528702272">注: これらのサイトアクセスの設定は、エンタープライズ ポリシーまたは強力な API によってオーバーライドされる場合があります。</translation>
 <translation id="2817435998497102771">壁紙とスタイルを設定</translation>
 <translation id="2817861546829549432">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに組み込まれます。その効果は、ウェブサイトがリクエストに応じるかどうか、およびリクエストがどう解釈されるかによって異なります。たとえば、一部のウェブサイトでは、その閲覧者のウェブサイト アクセス履歴を基にした広告表示を行わない、という対応をしています。トラッキングを拒否しても、多くのウェブサイトではユーザーの閲覧データが収集され利用されるのが現状です。たとえば、セキュリティの強化、コンテンツ、サービス、広告、ウェブサイトのおすすめ情報の提供、レポート統計情報の作成などにこれらのデータが利用されます。</translation>
 <translation id="2818476747334107629">プリンタの詳細</translation>
@@ -5051,6 +5052,7 @@
 <translation id="4850886885716139402">表示</translation>
 <translation id="485088796993065002">音楽や動画などのメディアの音声を再生するサイトもあります。</translation>
 <translation id="4850919322897956733">データを削除しました。</translation>
+<translation id="4851973858921178330">サイトをフィルタ</translation>
 <translation id="4852030988197799562">初めてアクセスするサイトで JavaScript オプティマイザーへのアクセスをブロックする</translation>
 <translation id="4852383141291180386">アプリの通知を管理する</translation>
 <translation id="4852916668365817106">マウスの色</translation>
@@ -5146,7 +5148,6 @@
 <translation id="4913573660390710463">機能強化されたパッケージ化ウェブ アプリケーションにアクセスします。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">アプリデータが見つかりません</translation>
 <translation id="4915961947098019832">画像の表示を許可するサイト</translation>
-<translation id="491779113051926205">ChromeOS トラフィック カウンタ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918762404810341788">コピーして開く</translation>
@@ -6112,7 +6113,7 @@
 <translation id="5695184138696833495">Linux Android アプリ ADB</translation>
 <translation id="5696143504434933566">「<ph name="EXTENSION_NAME" />」の不正行為を報告する</translation>
 <translation id="5696679855467848181">現在使用中の PPD ファイル: <ph name="PPD_NAME" /></translation>
-<translation id="5697664819730124632">画像を追加してイメージどおりに加工します</translation>
+<translation id="5697664819730124632">画像を追加して再創作</translation>
 <translation id="5697832193891326782">絵文字選択ツール</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> のデータを削除しようとしています</translation>
 <translation id="5698815246352480266">タブを切り替えることなく、AI モードでチャットを続けることができます。開始するには、本人確認を行ってください。これにより、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
@@ -7462,6 +7463,7 @@
 <translation id="6754359471209693699">新しい検索を開始</translation>
 <translation id="6755702685749429945">辞書を追加</translation>
 <translation id="6756643207511618722">読み上げエンジン</translation>
+<translation id="6756882635793733911">画面に表示されるあらゆるものについて質問できます</translation>
 <translation id="6757431299485455321">このアクセス ポイントを他のデバイスで検出できるようにします。</translation>
 <translation id="6757615605516049275"><ph name="TOKEN_NAME" /> のロックを解除してください。</translation>
 <translation id="6758056191028427665">アンケートにご協力ください。</translation>
@@ -9696,7 +9698,7 @@
 <translation id="8459596896605939741">ヒント: いつでも手元で存分にオンライン ショッピング</translation>
 <translation id="8460448946170646641">プライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="8460490661223303637">メモリを節約するため、Chrome により一部のコンテンツが削除されました</translation>
-<translation id="8460932807646981183">検索エンジンとサイト内検索を管理する</translation>
+<translation id="8460932807646981183">検索エンジンとサイト内検索を管理</translation>
 <translation id="8461572080432076264">このページを読み上げ</translation>
 <translation id="8461914792118322307">プロキシ</translation>
 <translation id="8461973047386722744">パスワードは見つかりませんでした</translation>
@@ -10747,6 +10749,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> に対するその他の操作</translation>
 <translation id="967624055006145463">保存データ</translation>
 <translation id="96774243435178359">管理対象プリンタ</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />お支払い方法<ph name="END_LINK_PAYMENT_METHODS" />や、ポイントカード、ID、特典などの<ph name="BEGIN_LINK_PASSES" />パス<ph name="END_LINK_PASSES" />を追加、管理するには、Google ウォレットにアクセスしてください</translation>
 <translation id="968000525894980488">Google Play 開発者サービスを有効にします。</translation>
 <translation id="968037381421390582">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="969096075394517431">言語を変更</translation>

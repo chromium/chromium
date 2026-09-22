@@ -48,7 +48,7 @@
 <translation id="1784567647421309104">Ukladajte si heslá v Chrome</translation>
 <translation id="1790080846677398234">Pridá vložené webové adresy do záložiek v Chrome.</translation>
 <translation id="1799920918471566157">Tipy pre Chrome</translation>
-<translation id="1802420021606590788">Chrome spracúva názvy stránok a webové adresy v súkromnom priestore v cloude</translation>
+<translation id="1802420021606590788">Chrome spracúva názvy a webové adresy stránok v súkromnom priestore v cloude</translation>
 <translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1891812034154776216">Skrývajte otvorené karty inkognito pri zatváraní Chromu</translation>
 <translation id="1894434821386148799">Nastavenia Chromu a ďalšie konfigurácie nájdete tu</translation>
@@ -284,6 +284,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7272930098487145294">Ak chcete uložiť obrázky, klepnutím na Nastavenia povoľte Chromu pridávať do vašich fotiek</translation>
 <translation id="7275945473750112644">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia vymazané</translation>
 <translation id="7284245284340063465">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Ak určitý návrh vyberiete alebo odignorujete, Chrome sa prispôsobí, aby sa vám v budúcnosti zobrazovali relevantnejšie návrhy.</translation>
 <translation id="7296102444587051536">Chrome pre iOS</translation>
 <translation id="7299681342915173313">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="7334364820047587268">Heslá týchto účtov už máte v Správcovi hesiel Google. Ak importujete jedno z hesiel uvedených nižšie, nahradí existujúce.</translation>
@@ -357,6 +358,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8544583291890527417">Upozornenia na všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás Chrome zistí.</translation>
 <translation id="855027533751209304">Tip pre Chrome: vyhľadajte, čo vidíte</translation>
 <translation id="8558480467877843976">Chrome môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="8589791109349384456">Vypnutie návrhov nemá vplyv na to, ako Chrome spracúva názvy a webové adresy stránok pri iných funkciách. Prístup k týmto údajom môžete spravovať v <ph name="BEGIN_LINK" />nastaveniach synchronizácie<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Používajte heslá, históriu, záložky a kreditné karty z prehliadača Safari v Chrome</translation>
 <translation id="8630122478628016441">Zapnite Uzamknúť karty inkognito pri zavretí Chromu.</translation>

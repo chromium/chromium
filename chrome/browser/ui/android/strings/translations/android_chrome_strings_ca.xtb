@@ -2126,6 +2126,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="948276827484905248">Crea un codi QR</translation>
 <translation id="95817756606698420">Chrome pot utilitzar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> per fer cerques a la Xina. Per canviar-ho, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">La teva organització requereix que iniciïs la sessió per utilitzar Chrome</translation>
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="963246339335003378">Obre el gestor de tasques</translation>
 <translation id="966337994629449077">Tens la sessió iniciada com a <ph name="FROM_EMAIL" />.\n\nPer continuar des de l'ordinador, canvia a <ph name="TO_EMAIL" />. Obtindràs les contrasenyes, les adreces d'interès i més d'aquest compte.</translation>

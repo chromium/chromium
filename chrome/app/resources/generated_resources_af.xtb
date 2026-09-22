@@ -1078,7 +1078,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1822517323280215012">Grys</translation>
 <translation id="1822635184853104396">Wys volledige aflaaigeskiedenis in ’n nuwe oortjie</translation>
 <translation id="1823768272150895732">Lettertipe</translation>
-<translation id="1823781806707127806">Voeg bestaande blaaierdata by bestuurde profiel</translation>
 <translation id="1825073796163165618">Aktiveer skakels</translation>
 <translation id="1825565032302550710">Poort moet tussen 1024 en 65535 wees</translation>
 <translation id="18260074040409954">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle is in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor vir <ph name="EMAIL" />.</translation>
@@ -1395,6 +1394,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2062354623176996748">Gebruik 'n Incognito-venster om die web te gebruik sonder om jou blaaigeskiedenis te stoor</translation>
 <translation id="206308717637808771">Vee data uit wanneer jy alle vensters toemaak. Data word dieselfde hanteer as die werf wat jy tans bekyk</translation>
 <translation id="2066700471214517561">Straalvorm tans die mikrofoon sodat die persoon wat die Chromebook gebruik duidelik klink.</translation>
+<translation id="2067778293100584091">Besoek Google Wallet om <ph name="BEGIN_LINK1" />data- en privaatheidvoorkeure<ph name="END_LINK1" /> te beheer of <ph name="BEGIN_LINK2" />betaalmetodes<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />passe<ph name="END_LINK3" />, soos lojaliteitskaarte, ID’s en aanbiedings, te bestuur</translation>
 <translation id="2068581968816126410">Gebruik boekmerke op alle toestelle</translation>
 <translation id="2069020119963193894">&amp;Grootte</translation>
 <translation id="2071393345806050157">Geen plaaslike loglêer nie.</translation>
@@ -2391,6 +2391,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2813094189969465044">Ouerkontroles</translation>
 <translation id="2814489978934728345">Hou op om hierdie bladsy te laai</translation>
 <translation id="2816319641769218778">Skakel sinkronisering aan om wagwoorde in jou Google-rekening te stoor.</translation>
+<translation id="281678554528702272">Let wel: Hierdie werftoeganginstellings kan deur ondernemingbeleide of kragtige API’s geïgnoreer word.</translation>
 <translation id="2817435998497102771">Stel jou muurpapier en styl</translation>
 <translation id="2817861546829549432">Wanneer jy "Moenie naspoor nie" aktiveer, beteken dit dat 'n versoek by jou blaaiverkeer ingesluit sal word. Enige uitwerking hang af van of 'n webwerf op die versoek reageer en hoe die versoek geïnterpreteer word. Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advertensies te wys wat nie gegrond is op ander webwerwe wat jy besoek het nie. Baie webwerwe sal steeds jou blaaidata versamel en gebruik – om byvoorbeeld sekuriteit te verbeter, inhoud, advertensies en aanbevelings op hul webwerwe te voorsien, en verslaggewingstatistieke te genereer.</translation>
 <translation id="2818476747334107629">Drukkerbesonderhede</translation>
@@ -5068,6 +5069,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="485088796993065002">Werwe kan dalk klank speel om oudio vir musiek, video's en ander media te verskaf</translation>
 <translation id="4850919322897956733">Data is uitgevee.</translation>
+<translation id="4851973858921178330">Filtreer werwe</translation>
 <translation id="4852030988197799562">Blokkeer toegang tot die JavaScript-optimeerder op nuut besoekte werwe</translation>
 <translation id="4852383141291180386">Bestuur appkennisgewings</translation>
 <translation id="4852916668365817106">Muiskleur</translation>
@@ -5163,7 +5165,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4913573660390710463">Kry toegang tot verpakte webapps met verbeterde vermoëns. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Kan nie appdata opspoor nie</translation>
 <translation id="4915961947098019832">Mag prente wys</translation>
-<translation id="491779113051926205">ChromeOS-verkeerstellers</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wil met die uitbreiding "<ph name="EXTENSION_NAME" />" kommunikeer</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4918762404810341788">Kopieer en maak oop</translation>
@@ -7483,6 +7484,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6754359471209693699">Begin nuwe soektog</translation>
 <translation id="6755702685749429945">Voeg woordeboek by</translation>
 <translation id="6756643207511618722">Spraakenjins</translation>
+<translation id="6756882635793733911">Vra oor enigiets op jou skerm</translation>
 <translation id="6757431299485455321">Help ander toestelle om hierdie warmkol te kry.</translation>
 <translation id="6757615605516049275">Ontsluit <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Sê vir ons hoe ons vaar.</translation>
@@ -10768,6 +10770,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="96756691973639907">Meer handelinge vir <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data geberg</translation>
 <translation id="96774243435178359">Bestuurde drukkers</translation>
+<translation id="967745417352972504">Besoek Google Wallet om <ph name="BEGIN_LINK_PAYMENT_METHODS" />betaalmetodes<ph name="END_LINK_PAYMENT_METHODS" /> en <ph name="BEGIN_LINK_PASSES" />passe<ph name="END_LINK_PASSES" />, soos lojaliteitskaarte, ID’s en aanbiedings, by te voeg of te bestuur</translation>
 <translation id="968000525894980488">Skakel Google Play Dienste aan.</translation>
 <translation id="968037381421390582">Plak en soek vir “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Verander tale</translation>

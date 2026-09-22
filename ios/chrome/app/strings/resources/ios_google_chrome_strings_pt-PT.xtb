@@ -284,6 +284,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7272930098487145294">Para guardar imagens, toque em Definições para permitir que o Chrome as adicione às suas fotos.</translation>
 <translation id="7275945473750112644">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chrome serão limpos deste dispositivo</translation>
 <translation id="7284245284340063465">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Se selecionar ou ignorar uma sugestão, o Chrome adapta-se para ajudar a mostrar-lhe sugestões mais relevantes no futuro.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Agora, pode usar o Chrome sempre que tocar em links de emails, documentos e outras apps.</translation>
 <translation id="7334364820047587268">Já tem palavras-passe para estas contas no Gestor de Palavras-passe da Google. Se optar por importar uma das palavras-passe abaixo, esta substitui a palavra-passe existente.</translation>
@@ -357,6 +358,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8544583291890527417">Alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chrome.</translation>
 <translation id="855027533751209304">Dica do Chrome: pesquise o que vê</translation>
 <translation id="8558480467877843976">Agora, pode usar o Chrome sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
+<translation id="8589791109349384456">A desativação das sugestões não controla o processamento de títulos de páginas e URLs do Chrome para outras funcionalidades. Pode gerir o acesso a estes dados nas suas <ph name="BEGIN_LINK" />definições de sincronização<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Use as suas palavras-passe, histórico, marcadores e cartões de crédito do Safari no Chrome</translation>
 <translation id="8630122478628016441">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>

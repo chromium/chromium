@@ -1922,7 +1922,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="84594714173170813">Nadal korzystaj z danych Chrome na koncie Google</translation>
 <translation id="8460008946585880786">Przeciągnij i upuść jedną kartę na drugą</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
-<translation id="8460932807646981183">Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
+<translation id="8460932807646981183">Zarządzaj wyszukiwarkami i wyszukiwaniem w witrynach</translation>
 <translation id="8465252176946159372">Nieważne</translation>
 <translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{Otwórz w nowym oknie}few{Otwórz wszystkie (#) w nowym oknie}many{Otwórz wszystkie (#) w nowym oknie}other{Otwórz wszystkie (#) w nowym oknie}}</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
@@ -2126,6 +2126,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="948276827484905248">Utwórz kod QR</translation>
 <translation id="95817756606698420">Chrome może używać <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> do wyszukiwania w Chinach. Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>
 <translation id="963246339335003378">Otwórz menedżera zadań</translation>
 <translation id="966337994629449077">Korzystasz z konta <ph name="FROM_EMAIL" />.\n\nAby kontynuować na komputerze, przełącz się na konto <ph name="TO_EMAIL" />. Będziesz mieć dostęp do haseł, zakładek i innych danych z tego konta.</translation>

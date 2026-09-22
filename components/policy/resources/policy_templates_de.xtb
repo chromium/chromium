@@ -1105,6 +1105,13 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
       Hinweis: Sofern vorhanden, wird <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> mit dieser Einstellung überschrieben.</translation>
 <translation id="1723571018091915166">Intelligentes Teilen von Tabs mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />-Integrationen nicht zulassen.</translation>
 <translation id="172374442286684480">Speichern von lokalen Daten für alle Websites zulassen</translation>
+<translation id="1726467454355516626">Wenn diese Richtlinie auf „True“ gesetzt ist, können vom Administrator installierte Chrome-Apps unabhängig von der Standardeinstellung für Chrome-Apps weiterhin ausgeführt und installiert werden.
+
+Ist diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt, wird das auf dem Gerät festgelegte Standardverhalten verwendet.
+
+Beim Versuch, eine deaktivierte Chrome-App zu starten, wird eine Meldung angezeigt, die dem Nutzer erklärt, warum die App nicht gestartet wurde, und ihn auffordert, sich an die IT-Abteilung zu wenden.
+
+ChromeOS M184 ist der letzte ChromeOS-Meilenstein, der Chrome-Apps unterstützt.</translation>
 <translation id="1729169799290004131">Wenn die Richtlinie konfiguriert ist, wird die Bildschirmhelligkeit in % festgelegt und Funktionen zur automatischen Anpassung der Bildschirmhelligkeit werden deaktiviert. Die Bildschirmhelligkeit wird anfangs an den Richtlinienwert angepasst, aber der Nutzer kann sie später ändern.
 
       Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
@@ -4619,6 +4626,7 @@ Auf Desktop-Plattformen kann das Herunterladen von Modellen auch deaktiviert wer
 <translation id="3965339130942650562">Zeitlimit bis zur Abmeldung eines inaktiven Nutzers</translation>
 <translation id="396536755218079668">Betreute Nutzer</translation>
 <translation id="3968218878014278212">Aktivieren von „Eche“ zulassen.</translation>
+<translation id="396848310647682467">Das Zulassen von vom Administrator installierten Chrome-Apps erzwingen</translation>
 <translation id="3971673686578912106">Wenn die Richtlinie aktiviert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät aktiviert, solange andere Einstellungen dies ebenfalls zulassen. „<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" />“ und „<ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />“ müssen „True“ sein und entweder „<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" />“ oder „<ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />“ muss für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät nicht aktiviert.</translation>
@@ -4642,9 +4650,6 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3982624306233556415">Sperrliste von Identitätsanbietern, die nicht die erweiterbare Enterprise-SSO für den Browser verwenden können</translation>
 <translation id="3983162212222338509">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="3986700049001404598">Nutzern erlauben, Prozesse mit dem Task-Manager von Chrome zu beenden</translation>
-<translation id="398884292557092447">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Vorschläge zum automatischen Ausfüllen von Kreditkartendaten in der UI steuern.
-
-      Ist sie auf „False“ gesetzt, schlägt die Autofill-Funktion keine Kreditkartendaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Kreditkartendaten gespeichert, die Nutzer beim Surfen im Internet eventuell senden.</translation>
 <translation id="3989635538409502728">Abmelden</translation>
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
@@ -5070,6 +5075,7 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
+<translation id="4278195158478376952">Standardverhalten verwenden.</translation>
 <translation id="4278656834593750050">Ladetöne aktivieren</translation>
 <translation id="4281322231545828290">Automatische Passwortänderung aktivieren</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-Symbol immer in der Symbolleiste anzeigen</translation>
@@ -6333,9 +6339,6 @@ Ist diese Richtlinie auf „True“ gesetzt oder nicht konfiguriert, werden Date
 Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine Daten zur Identifizierung von Geräten erhoben.
 
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.</translation>
-<translation id="5017369989680827157">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer das automatische Ausfüllen von Adressdaten in der UI steuern.
-
-      Ist sie auf „False“ gesetzt, schlägt Autofill keine Adressdaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Adressinformationen gespeichert, die Nutzer beim Surfen im Internet senden.</translation>
 <translation id="5017691827598069017">Schnelles Pairing (schnelles Bluetooth-Koppeln) aktivieren</translation>
 <translation id="5021550478471824215">Wenn diese Richtlinie konfiguriert ist, wird eine Liste mit voreingestellten Netzwerkfreigaben festgelegt. Jedes Element ist ein Objekt mit zwei Properties: <ph name="SHARE_URL_FIELD_NAME" /> und <ph name="MODE_FIELD_NAME" />.
 
@@ -9188,7 +9191,6 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Ist die Richtlinie auf "true" gesetzt, ist <ph name="PLUGIN_VM_NAME" /> für den Nutzer aktiviert, solange andere Einstellungen dies ebenfalls zulassen. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> und <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> müssen "true" sein und entweder <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> oder <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> müssen für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.</translation>
 <translation id="6741318452269220158">Wenn die Richtlinie auf „True“ gesetzt ist, kann Native Client weiterhin ausgeführt werden, auch wenn diese Technologie in der Standardeinstellung deaktiviert ist.
 Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, wird das Standardverhalten verwendet.</translation>
-<translation id="6749641778238480311">Zulassen, dass SubApps-APIs ohne vorherige Nutzergeste bzw. ohne Bestätigung durch den Nutzer aufgerufen werden können.</translation>
 <translation id="6750902920405577210">Liste der Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden sollen.
 
       Die Telemetriedaten werden nur gesendet, wenn sie nicht durch die steuernde Richtlinie deaktiviert wurden.
@@ -9489,13 +9491,6 @@ Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert wer
 <translation id="6938524853892166974">Live-Übersetzung deaktivieren</translation>
 <translation id="6940243892299228102">Nutzer dürfen keine Desktopvorlagen verwenden</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
-<translation id="6944302005022384441">Aus Sicherheitsgründen erfordert das Aufrufen der Web-APIs <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> und <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> eine vorherige Nutzergeste („vorübergehende Aktivierung“) – ansonsten schlägt das Aufrufen fehl. Außerdem wird der Nutzer aufgefordert, den Vorgang über ein Bestätigungsdialogfeld zu bestätigen.
-
-Wenn diese Richtlinie konfiguriert ist, können Administratoren Ursprünge festlegen, von denen diese APIs ohne vorherige Nutzergeste aufgerufen werden können, und ohne, dass der Nutzer um Bestätigung gebeten wird.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. * ist kein akzeptierter Wert für diese Richtlinie.
-
-Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs unabhängig vom Ursprung eine Nutzergeste ausgeführt werden. Außerdem wird dem Nutzer ein Bestätigungsdialogfeld angezeigt.</translation>
 <translation id="694602410134474029">Legt fest, ob <ph name="PRODUCT_NAME" /> mit Druckertreibern aus einem separaten Dienstprozess interagiert. Aufrufe zum Drucken über die Plattform, um verfügbare Drucker abzufragen, Druckertreiber-Einstellungen abzurufen und Dokumente zum Druck an lokale Drucker zu übermitteln, erfolgen über einen Dienstprozess. Wenn man solche Aufrufe aus dem Browserprozess hinaus verschiebt, verbessert dies die Stabilität und reduziert das Einfrieren der Benutzeroberfläche in der Druckvorschau.
 
 Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> einen separaten Dienstprozess für das Drucken über die Plattform.
@@ -12127,6 +12122,7 @@ Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt
 <translation id="859579553230883285">Dadurch wird die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.</translation>
 <translation id="8596784129804979039">Standardkonfiguration für die Netzwerkdienst-Sandbox verwenden</translation>
 <translation id="8597758693275075382">SMBIOS-OEM-Strings, die während der Installation an die VM weitergeleitet werden. Die Standardeinstellung ist die leere Liste.</translation>
+<translation id="8598252733604444967">Ausführung von vom Administrator installierten Chrome-Apps zulassen.</translation>
 <translation id="8598786284856179541">Erfassen von Versionsinformationen aktivieren</translation>
 <translation id="859937827887158048">Keine Peer-to-Peer-Downloads von automatischen Updates zulassen</translation>
 <translation id="8600280933078435582">Linux-Apps</translation>

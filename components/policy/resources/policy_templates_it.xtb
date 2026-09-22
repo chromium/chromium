@@ -1140,6 +1140,13 @@ policy era la versione 121. È stata rimossa nella versione 122.</translation>
       Nota: questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se presente.</translation>
 <translation id="1723571018091915166">Non consentire la condivisione intelligente delle schede con le integrazioni di <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Consenti a tutti i siti di impostare i dati locali</translation>
+<translation id="1726467454355516626">Se questa policy viene impostata su True, le app di Chrome installate dall'amministratore possono continuare a essere eseguite e installate, indipendentemente dall'abilitazione predefinita delle app di Chrome.
+
+Se questa policy non viene configurata o se viene impostata su False, verrà usato il comportamento predefinito definito sul dispositivo.
+
+Se si tenta di avviare un'app di Chrome disabilitata, all'utente viene mostrato un messaggio che spiega perché l'app non è stata avviata e che suggerisce di contattare il reparto IT.
+
+ChromeOS M184 sarà l'ultima versione di ChromeOS a supportare le app di Chrome.</translation>
 <translation id="1729169799290004131">La configurazione della policy consente di specificare la percentuale di luminosità dello schermo, che comporta la disattivazione delle funzionalità di luminosità automatica. Il valore iniziale di luminosità dello schermo viene regolato il base al valore della policy, ma gli utenti possono modificarlo.
 
       Se la policy non viene configurata, i controlli o le funzionalità di luminosità automatica dello schermo dell'utente rimangono invariati.
@@ -4687,6 +4694,7 @@ Sulle piattaforme desktop, il download del modello può essere disattivato anche
 <translation id="3965339130942650562">Timeout fino a esecuzione uscita utente non attivo</translation>
 <translation id="396536755218079668">Utenti supervisionati</translation>
 <translation id="3968218878014278212">Consenti l'attivazione di Eche.</translation>
+<translation id="396848310647682467">Forza l'autorizzazione delle app di Chrome installate dall'amministratore</translation>
 <translation id="3971673686578912106">Se la policy viene impostata su Attivata, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostate su True e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurate per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
@@ -4710,9 +4718,6 @@ Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia 
 <translation id="3982624306233556415">Lista bloccata dei provider di identità che non possono utilizzare Extensible Enterprise SSO per il browser</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
-<translation id="398884292557092447">Se la policy viene impostata su true o se non viene configurata, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
-
-      Se la policy è impostata su false, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul web.</translation>
 <translation id="3989635538409502728">Esci</translation>
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
@@ -5151,6 +5156,7 @@ Questa policy è stata utilizzata per disattivare l'upgrade automatico dei conte
 
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="4275048399551500192">Non mostrare i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
+<translation id="4278195158478376952">Usa il comportamento predefinito.</translation>
 <translation id="4278656834593750050">Attiva i suoni di ricarica</translation>
 <translation id="4281322231545828290">Abilita la modifica automatica delle password</translation>
 <translation id="4282243913059705499">Mostra sempre l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti</translation>
@@ -6421,9 +6427,6 @@ Se la policy non viene configurata o viene impostata su True, le informazioni ch
 Se la policy viene impostata su False, le informazioni che possono essere utilizzate per identificare le macchine non vengono raccolte.
 
 Questa policy viene applicata soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5017369989680827157">Se la policy è impostata su True o se non viene configurata, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
-
-      Se la policy è impostata su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul web.</translation>
 <translation id="5017691827598069017">Attiva la funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="5021550478471824215">La configurazione della policy consente di specificare un elenco di condivisioni file di rete preimpostate. Ogni elemento ha un oggetto con 2 proprietà: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
@@ -9333,7 +9336,6 @@ Se questa policy viene impostata su Disattivata, agli utenti non è consentito u
       Se è impostata su True, <ph name="PLUGIN_VM_NAME" /> viene attivato per l'utente, a condizione che anche le altre impostazioni lo permettano. Il valore delle policy <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> deve essere True ed è necessario impostare le policy <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="6741318452269220158">Se la policy viene impostata su True, Native Client può continuare a essere eseguito anche se il comportamento predefinito prevede che sia disattivato.
 Se la policy viene impostata su False o se non viene configurata, verrà utilizzato il comportamento predefinito.</translation>
-<translation id="6749641778238480311">Consenti di chiamare le API subApps senza un gesto precedente dell'utente o senza richiedere la conferma.</translation>
 <translation id="6750902920405577210">L'elenco di dati di telemetria da segnalare per gli eventi di variazione dell'intensità del segnale.
 
       Ogni dato di telemetria specificato verrà segnalato soltanto se non è stato disattivato tramite la relativa policy di controllo.
@@ -9642,23 +9644,6 @@ Se configuri la policy, gli utenti non possono modificarla. Se la policy non è 
 <translation id="6938524853892166974">Disattiva Traduzione dal Vivo</translation>
 <translation id="6940243892299228102">Gli utenti non possono usare i modelli di scrivanie</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
-<translation id="6944302005022384441">Per motivi di sicurezza, le API web
-<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
-<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
-<ph name="SHOW_SUBAPPS_LIST_API_NAME" />
-richiedono che l'utente abbia eseguito un'attivazione precedente ("attivazione temporanea"). In caso contrario, la chiamata all'API
-non andrà a buon fine. Inoltre, all'utente verrà chiesto di confermare
-l'operazione tramite una finestra di dialogo.
-
-Con questa policy, gli amministratori possono specificare le origini da cui è possibile
-chiamare le API senza un'attivazione precedente dell'utente né la richiesta di conferma.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina
-https://chromeenterprise.google/policies/url-patterns/. * non è
-un valore accettato per questa policy.
-
-Se questa policy non viene impostata, tutte le origini richiederanno un'attivazione precedente dell'utente per chiamare
-queste API e all'utente verrà mostrata una finestra di dialogo di conferma.</translation>
 <translation id="694602410134474029">Consente di stabilire se <ph name="PRODUCT_NAME" /> interagisce con i driver di stampa da un processo di servizio separato. Le chiamate della stampa della piattaforma per eseguire query sulle stampanti disponibili, ottenere le impostazioni dei driver di stampa e inviare documenti per la stampa alle stampanti locali vengono effettuate tramite un processo di servizio. Lo spostamento di queste chiamate all'esterno del processo del browser contribuisce a migliorare la stabilità e a ridurre il comportamento dell'UI bloccata nell'anteprima di stampa.
 
 Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> userà un processo di servizio separato per le attività di stampa della piattaforma.
@@ -12333,6 +12318,7 @@ A partire dalla versione 147 di <ph name="PRODUCT_NAME" />, questa policy verrà
 <translation id="859579553230883285">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti per i tuoi utenti.</translation>
 <translation id="8596784129804979039">Utilizza la configurazione predefinita per la sandbox del servizio di rete</translation>
 <translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
+<translation id="8598252733604444967">Consenti l'esecuzione delle app di Chrome installate dall'amministratore.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>
 <translation id="859937827887158048">Non consentire i download di aggiornamento automatico peer-to-peer</translation>
 <translation id="8600280933078435582">Applicazioni per Linux</translation>

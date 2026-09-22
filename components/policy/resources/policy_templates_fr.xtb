@@ -1101,6 +1101,13 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
 <translation id="1723571018091915166">Ne pas autoriser le partage intelligent d'onglets avec les intégrations du <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Autoriser tous les sites à définir des données locales</translation>
+<translation id="1726467454355516626">Si cette règle est définie sur "True", les applications Chrome installées par l'administrateur peuvent continuer à s'exécuter et à être installées, quel que soit leur état d'activation par défaut.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le comportement par défaut défini sur l'appareil est appliqué.
+
+Si l'utilisateur tente de lancer une Application Chrome désactivée, un message lui indique pourquoi elle n'a pas été lancée et lui suggère de contacter son service informatique.
+
+ChromeOS M184 sera la dernière version de ChromeOS compatible avec les Applications Chrome.</translation>
 <translation id="1729169799290004131">Cette règle permet de définir le niveau de luminosité de l'écran (en pourcentage), ce qui désactive les fonctionnalités de réglage automatique de la luminosité. En outre, le niveau initial de luminosité de l'écran est ajusté à la valeur définie dans cette règle. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
       Si cette règle n'est pas configurée, les réglages de l'utilisateur concernant l'écran ou les fonctionnalités de réglage automatique de la luminosité ne sont pas affectés.
@@ -4617,6 +4624,7 @@ Sur les plates-formes de bureau, le téléchargement du modèle peut également 
 <translation id="3965339130942650562">Délai avant exécution de la déconnexion de l'utilisateur en cas d'inactivité</translation>
 <translation id="396536755218079668">Utilisateurs supervisés</translation>
 <translation id="3968218878014278212">Autoriser le lancement de l'application Eche.</translation>
+<translation id="396848310647682467">Forcer l'autorisation des Applications Chrome installées par l'administrateur</translation>
 <translation id="3971673686578912106">Si cette règle est activée, <ph name="PLUGIN_VM_NAME" /> est activé pour l'appareil tant que d'autres paramètres le permettent également. Les règles "<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" />" et "<ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />" doivent être définies sur "True", et l'une des deux règles "<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" />" et "<ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />" doit être configurée pour que <ph name="PLUGIN_VM_NAME" /> puisse être exécuté.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour l'appareil.</translation>
@@ -4640,9 +4648,6 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3982624306233556415">Liste de blocage des fournisseurs d'identité qui ne peuvent pas utiliser l'extension SSO d'entreprise pour le navigateur</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
 <translation id="3986700049001404598">Autoriser les utilisateurs à mettre fin aux processus dans le gestionnaire de tâches Chrome</translation>
-<translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
-
-      Si cette règle est définie sur "False", les informations de carte de crédit ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires de carte de crédit que l'utilisateur est susceptible de fournir sur une page Web ne sont pas enregistrées.</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
 <translation id="3989829840000169163">Bloquer les anciens points d'extension du navigateur</translation>
 <translation id="3990391739475801018">Le mode Économiseur de batterie sera désactivé.</translation>
@@ -5068,6 +5073,7 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="4275048399551500192">Ne pas afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
+<translation id="4278195158478376952">Utiliser le comportement par défaut.</translation>
 <translation id="4278656834593750050">Activer les sons de recharge</translation>
 <translation id="4281322231545828290">Activer la modification automatique du mot de passe</translation>
 <translation id="4282243913059705499">Toujours afficher l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils</translation>
@@ -6335,9 +6341,6 @@ Si cette règle n'est pas configurée ou si elle est définie sur "True", des in
 Si cette règle est définie sur "False", aucune information pouvant servir à identifier les ordinateurs n'est collectée.
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5017369989680827157">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
-
-      Si cette règle est définie sur "False", les adresses ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires liées à une adresse que les utilisateurs fournissent sur une page Web ne sont pas enregistrées.</translation>
 <translation id="5017691827598069017">Activer l'Association express (association Bluetooth rapide)</translation>
 <translation id="5021550478471824215">Cette règle permet de spécifier une liste de partages de fichiers en réseau prédéfinis. Chaque élément est un objet comprenant deux propriétés : <ph name="SHARE_URL_FIELD_NAME" /> et <ph name="MODE_FIELD_NAME" />.
 
@@ -9202,7 +9205,6 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas effectuer de d
       Si elle est définie sur "True", <ph name="PLUGIN_VM_NAME" /> est activé pour l'appareil à condition que les autres paramètres l'y autorisent aussi. Les règles <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> et <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> doivent être définies sur "True", et <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> doivent être configurés de sorte à permettre l'exécution de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="6741318452269220158">Si cette règle est définie sur "True", Native Client peut continuer à s'exécuter même si cette technologie est désactivée par le comportement par défaut.
 Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, c'est le comportement par défaut qui est appliqué.</translation>
-<translation id="6749641778238480311">Autoriser l'appel des API subApps sans geste préalable de l'utilisateur ni demander confirmation à celui-ci.</translation>
 <translation id="6750902920405577210">Liste des données de télémétrie à signaler sur les événements de modification de l'intensité du signal.
 
       Chaque donnée de télémétrie spécifiée n'est signalée que si elle n'a pas été désactivée par la règle qui la contrôle.
@@ -9503,13 +9505,6 @@ Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la co
 <translation id="6938524853892166974">Désactiver la traduction instantanée</translation>
 <translation id="6940243892299228102">Ne pas autoriser les utilisateurs à se servir de modèles de bureau</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
-<translation id="6944302005022384441">Pour des raisons de sécurité, les API Web <ph name="SHOW_SUBAPPS_APP_API_NAME" /> ,<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> et <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> nécessitent un geste préalable de l'utilisateur ("activation temporaire") pour être appelées, sans quoi l'appel échouera. L'utilisateur est également invité à confirmer l'opération via une boîte de dialogue dédiée.
-
-Lorsque cette règle est configurée, les administrateurs peuvent spécifier les origines sur lesquelles ces API peuvent être appelées sans geste préalable de l'utilisateur ni demande de confirmation à l'utilisateur.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/. La valeur * n'est pas acceptée pour cette règle.
-
-Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler ces API, et proposent à l'utilisateur une boîte de dialogue de confirmation.</translation>
 <translation id="694602410134474029">Détermine si <ph name="PRODUCT_NAME" /> interagit avec les pilotes de l'imprimante via un processus de service distinct. Les appels d'impression de plate-forme pour interroger les imprimantes disponibles, obtenir les paramètres du pilote d'impression et envoyer des documents pour impression sur des imprimantes locales sont effectués via un processus de service. Retirer ces appels du processus du navigateur permet d'améliorer la stabilité et de réduire les blocages de l'UI dans l'aperçu avant impression.
 
 Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise un processus de service distinct pour les tâches d'impression de plate-forme.
@@ -12149,6 +12144,7 @@ Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à 
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8596784129804979039">Utiliser la configuration par défaut pour le bac à sable du service réseau</translation>
 <translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
+<translation id="8598252733604444967">Autoriser l'exécution des Applications Chrome installées par l'administrateur.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>
 <translation id="859937827887158048">Ne pas autoriser le téléchargement automatique de mises à jour peer-to-peer</translation>
 <translation id="8600280933078435582">Applis Linux</translation>

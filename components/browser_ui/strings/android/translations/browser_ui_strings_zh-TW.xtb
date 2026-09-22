@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">禁止網站偵測你使用裝置的時間</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
 <translation id="1476700086976862423">主題顏色：深褐色</translation>
+<translation id="1497214680865404175">使用者上傳的圖片</translation>
 <translation id="1500473259453106018">隱藏「分頁中的降價資訊」資訊卡</translation>
 <translation id="1508931164824684991">網站可以使用 JavaScript</translation>
 <translation id="1510341833810331442">禁止網站將資料儲存到裝置</translation>

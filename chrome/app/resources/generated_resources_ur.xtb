@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">خاکستری</translation>
 <translation id="1822635184853104396">ایک نئے ٹیب میں ڈاؤن لوڈ کی مکمل سرگزشت دکھائیں</translation>
 <translation id="1823768272150895732">فونٹ</translation>
-<translation id="1823781806707127806">موجودہ براؤزنگ ڈیٹا کو نظم کردہ پروفائل میں شامل کریں</translation>
 <translation id="1825073796163165618">لنکس فعال کریں</translation>
 <translation id="1825565032302550710">پورٹ 1024 اور 65535 کے درمیان ہونی چاہیے</translation>
 <translation id="18260074040409954">آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ <ph name="EMAIL" /> کے لیے وہ <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہیں۔</translation>
@@ -1385,6 +1384,7 @@
 <translation id="2062354623176996748">ایک پوشیدگی ونڈو کے ذریعے اپنی براؤزنگ کی سرگزشت کو محفوظ کیے بغیر ویب استعمال کریں</translation>
 <translation id="206308717637808771">سبھی ونڈوز بند کرنے پر ڈیٹا حذف کریں۔ ڈیٹا کے ساتھ اس سائٹ کی طرح سلوک کیا جاتا ہے جسے آپ دیکھ رہے ہیں</translation>
 <translation id="2066700471214517561">‏مائیک کو بیم فارم کیا جا رہا ہے تاکہ Chromebook استعمال کرنے والا شخص صاف نظر آئے۔</translation>
+<translation id="2067778293100584091">‏<ph name="BEGIN_LINK1" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK1" /> کو کنٹرول کرنے یا <ph name="BEGIN_LINK2" />ادائیگی کے طریقوں<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />پاسز<ph name="END_LINK3" /> جیسے لائلٹی کارڈز، IDs اور پیشکشوں کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں</translation>
 <translation id="2068581968816126410">تمام آلات پر بُک مارکس کا استعمال کریں</translation>
 <translation id="2069020119963193894">سائز</translation>
 <translation id="2071393345806050157">کوئی مقامی لاگ فائل نہیں ہے۔</translation>
@@ -2378,6 +2378,7 @@
 <translation id="2813094189969465044">پیرنٹل کنٹرولز</translation>
 <translation id="2814489978934728345">یہ صفحہ لوڈ کرنا بند کریں</translation>
 <translation id="2816319641769218778">‏اپنے Google اکاؤنٹ میں پاس ورڈز محفوظ کرنے کیلئے، مطابقت پذیری آن کریں۔</translation>
+<translation id="281678554528702272">‏نوٹ: یہ سائٹ تک رسائی کی ترتیبات انٹرپرائز پالیسیوں یا طاقتور APIs کے ذریعے اوور رائیڈ ہو سکتی ہیں۔</translation>
 <translation id="2817435998497102771">اپنا وال پیپر اور اسٹائل سیٹ کریں</translation>
 <translation id="2817861546829549432">"ٹریک نہ کریں" کو فعال کرنے کا مطلب یہ ہے کہ آپ کی براؤزنگ ٹریفک کے ساتھ ایک درخواست شامل کر دی جائے گی۔ کسی بھی اثر کا انحصار اس بات پر ہوتا ہے کہ آیا ویب سائٹ درخواست کا جواب دیتی ہے اور درخواست کی ترجمانی کس طرح کی جاتی ہے۔ مثلاً، کچھ ویب سائٹس آپ کو ایسے اشتہارات دکھا کر اس درخواست کا جواب دے سکتی ہیں جو آپ کے ملاحظہ کردہ دوسری ویب سائٹس پر مبنی نہ ہوں۔ بہت ساری ویب سائٹس اب بھی آپ کا براؤزنگ ڈیٹا اکٹھا اور استعمال کریں گی - مثلاً، سیکیورٹی کو بہتر بنانے، اپنی ویب سائٹس پر مواد، سروسز، اشتہارات اور تجاویز فراہم کرنے اوراطلاع دہندگی کے اعداد و شمار تیار کرنے کیلئے۔</translation>
 <translation id="2818476747334107629">پرنٹر کی تفصیلات</translation>
@@ -5052,6 +5053,7 @@
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="485088796993065002">سائٹس موسیقی، ویڈیوز اور دیگر میڈیا کے لیے آڈیو فراہم کرنے کے لیے آواز چلا سکتی ہیں</translation>
 <translation id="4850919322897956733">ڈیٹا حذف ہوگیا۔</translation>
+<translation id="4851973858921178330">سائٹس کو فلٹر کریں</translation>
 <translation id="4852030988197799562">‏نئی ملاحظہ کردہ سائٹس پر JavaScript آپٹیمائزر تک رسائی کو بلاک کریں</translation>
 <translation id="4852383141291180386">ایپ کی اطلاعات کا نظم کریں</translation>
 <translation id="4852916668365817106">ماؤس کا رنگ</translation>
@@ -5147,7 +5149,6 @@
 <translation id="4913573660390710463">بہتر صلاحیتوں والے پیکیجڈ ویب ایپلیکیشنز تک رسائی حاصل کریں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ایپ کا ڈیٹا نہیں مل سکا</translation>
 <translation id="4915961947098019832">تصاویر دکھانے کی اجازت ہے</translation>
-<translation id="491779113051926205">‏ChromeOS ٹریفک کاؤنٹرز</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ایکسٹینشن "<ph name="EXTENSION_NAME" />" کے ساتھ مواصلت کرنا چاہتا ہے</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
 <translation id="4918762404810341788">کاپی کریں اور کھولیں</translation>
@@ -7464,6 +7465,7 @@
 <translation id="6754359471209693699">نئی تلاش شروع کریں</translation>
 <translation id="6755702685749429945">لغت شامل کریں</translation>
 <translation id="6756643207511618722">اسپیچ انجنز</translation>
+<translation id="6756882635793733911">اپنی اسکرین پر کسی بھی چیز کے بارے میں پوچھیں</translation>
 <translation id="6757431299485455321">اس ہاٹ اسپاٹ کو تلاش کرنے میں دیگر آلات کی مدد کریں۔</translation>
 <translation id="6757615605516049275">براہ کرم <ph name="TOKEN_NAME" /> کو غیر مقفل کریں۔</translation>
 <translation id="6758056191028427665">ہماری کارکردگی کے بارے میں ہمیں بتائیں۔</translation>
@@ -10749,6 +10751,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> کے لیے مزید کارروائیاں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 <translation id="96774243435178359">نظم کردہ پرنٹز</translation>
+<translation id="967745417352972504">‏<ph name="BEGIN_LINK_PAYMENT_METHODS" />ادائیگی کے طریقے<ph name="END_LINK_PAYMENT_METHODS" /> اور <ph name="BEGIN_LINK_PASSES" />پاسز<ph name="END_LINK_PASSES" /> جیسے لائلٹی کارڈز، IDs اور پیشکشیں شامل کرنے یا ان کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں</translation>
 <translation id="968000525894980488">‏Google Play سروسز کو آن کریں۔</translation>
 <translation id="968037381421390582">پیسٹ کریں اور “<ph name="SEARCH_TERMS" />” تلاش کریں</translation>
 <translation id="969096075394517431">زبانیں تبدیل کریں</translation>

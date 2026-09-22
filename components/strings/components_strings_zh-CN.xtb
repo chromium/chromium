@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">新</translation>
 <translation id="1927930548546198515">Chrome 会记录您对该功能的使用情况，例如您的请求以及您在面对建议时是选择接受还是忽略</translation>
 <translation id="1932098463447129402">不早于</translation>
+<translation id="1932629105611536854">配送邮政编码</translation>
 <translation id="1935353813610900265">发送有关由 AI 技术提供支持的历史记录搜索的反馈</translation>
 <translation id="1935995810530254458">仍然复制</translation>
 <translation id="1938580037092872316">向已保存的地址添加新信息</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">Personal 信封</translation>
 <translation id="2048261947532620704">正在翻译网页</translation>
 <translation id="2055016614992422886">对话</translation>
+<translation id="2057654338925604102">运输公司网域</translation>
 <translation id="2058468041496756763">您可以随时在 Chrome 的设置中更改搜索引擎。如果您没有看到自己偏好的搜索引擎，可以前往其网站进行搜索。您会在 Chrome 设置中看到它被列为近期访问过的搜索引擎，并且可以将其设为默认搜索引擎。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 英寸</translation>
@@ -1606,6 +1608,7 @@
 <translation id="3715597595485130451">连接到 Wi-Fi 网络</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">发货日期</translation>
 <translation id="372429172604983730">可能导致此错误的应用包括防病毒软件、防火墙软件和网络过滤/代理软件。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 幻灯片中快速创建新的 Google 演示文稿</translation>
 <translation id="3727309136762649052">命名空间</translation>
@@ -2206,6 +2209,7 @@
 <translation id="4732860731866514038">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 想使用您设备的位置信息</translation>
 <translation id="473414950835101501">使用摄像头</translation>
+<translation id="4736089601076994090">到期日期：<ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">重新启动 Chromium</translation>
 <translation id="4736934858538408121">虚拟卡</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2533,8 +2537,10 @@
 <translation id="5258473597674772367">“<ph name="GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="5260842098960755113">已关闭会话串</translation>
 <translation id="5262342527470539728">您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">上传前需要检查</translation>
 <translation id="5266128565379329178">装订（顶部）</translation>
+<translation id="5268746892698450173">运输公司名称</translation>
 <translation id="5269225904387178860">四孔（底部）</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />”不是“<ph name="DATA_CONTROLS_RESTRICTION" />”支持的条件</translation>
 <translation id="527191520368130807">波兰语</translation>
@@ -2562,6 +2568,7 @@
 <translation id="5314967030527622926">手册制作工具</translation>
 <translation id="5316812925700871227">逆时针旋转</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5318654747230250818">代码：<ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />默认搜索引擎让您可在网络中搜索信息，并支持某些 Chromium 功能<ph name="END_BOLD" />，例如通过地址栏和网页上的图片进行搜索。如果您所用的搜索引擎不支持某项功能，您可能无法使用该功能。</translation>
 <translation id="5323043727018853753">允许嵌入内容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，第 <ph name="MATCH_POSITION" /> 个（共 <ph name="NUM_MATCHES" /> 个）</translation>
@@ -2610,7 +2617,6 @@
 <translation id="5398461103557553443">如需下次自动填充此 IBAN，请将其保存到 Google 钱包中</translation>
 <translation id="5398772614898833570">广告已被拦截</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="5402715318763077894">要授予本地网络访问权限吗？</translation>
 <translation id="540949333488055151">塑料（彩色）</translation>
 <translation id="540969355065856584">此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书目前无效。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="5411462078004183575">低价选项</translation>
@@ -2852,6 +2858,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5794065675298686371">开启价格跟踪通知</translation>
+<translation id="5794093550048860249">跟踪编号</translation>
 <translation id="5796050750059455142">开启“<ph name="BEGIN_LINK" />其他 Google 产品中的智能功能<ph name="LINK_END" />”</translation>
 <translation id="5797984091151707075">已被管理员政策屏蔽</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -4017,6 +4024,7 @@
 <translation id="7765158879357617694">移动</translation>
 <translation id="7766518757692125295">裙式</translation>
 <translation id="776749070095465053">织物</translation>
+<translation id="7772659560036894129">商品名称</translation>
 <translation id="7773005668374414287">顺序不变，正面朝上</translation>
 <translation id="7779418012194492374">撤消对“<ph name="DEVICE_NAME" />”的访问权限</translation>
 <translation id="7781829728241885113">昨天</translation>
@@ -4208,6 +4216,7 @@
 <translation id="8118506371121007279">提供反馈</translation>
 <translation id="812020627659652807">立即删除文件</translation>
 <translation id="8120720167840853945">此政策没有控制任何其他政策的默认行为。</translation>
+<translation id="8120827570827570666">商家网域</translation>
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8130113808541743942">移至…</translation>
 <translation id="813024282736408069">开启虚拟卡自动填充功能</translation>
@@ -4319,6 +4328,7 @@
 <translation id="830868413617744215">测试版</translation>
 <translation id="8310477433309274098">免手续费，年利率低至 0%</translation>
 <translation id="8312841338723044391">实时</translation>
+<translation id="8314036873065514376">商家名称</translation>
 <translation id="8316555157357957253">正在使用中</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="831997045666694187">晚上</translation>

@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="102432830749687801">Usa a aplicación Transferencia de contido de Google para pasar os datos da túa conta de centro educativo á túa conta persoal antes de perder o acceso.</translation>
 <translation id="1026212596705997935">Este atallo está usándose para <ph name="CONFLICT_ACCEL_NAME" />. Preme outro novo. Para substituír o atallo orixinal, preme estoutro de novo.</translation>
-<translation id="1030856839388844477">Restablecer uso de datos</translation>
 <translation id="1047095725494118091">Non se puido realizar a descarga. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
 <translation id="1310380015393971138">Non hai ningunha rede <ph name="NETWORK_NAME" /> dispoñible</translation>
-<translation id="131421566576084655">Non está dispoñible a data do último restablecemento dos datos</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Rede doméstica, sen itinerancia</translation>
 <translation id="1327977588028644528">Pasarela</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Editouse o título</translation>
 <translation id="1423591390236870726">Tecla <ph name="KEY_NAME" /> sen premer</translation>
 <translation id="1432110487435300883">Para obter un resultado aproximado, divide o valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Restablece automaticamente o uso de datos todos os meses nun día seleccionado</translation>
 <translation id="1442433966118452622">Fonte da imaxe</translation>
 <translation id="1446954767133808402">zafiro</translation>
 <translation id="1449035143498573192">Abrir na Busca de Google</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Ocultar a transcrición</translation>
 <translation id="160633243685262989">Mostrar vista previa da imaxe</translation>
 <translation id="1611649489706141841">adiante</translation>
-<translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
 <translation id="1622402072367425417">burbullas brillantes</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Agora só podes usar Ferramentas de clase</translation>
 <translation id="1762483337755424125">Transcrición</translation>
 <translation id="1765169783255151332">Cambia rapidamente de tecla</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">manancial de augas termais</translation>
 <translation id="2203642483788377106">cantil</translation>
 <translation id="2208388655216963643">impresionista</translation>
-<translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nomes</translation>
 <translation id="2215920961700443347">Non hai conexión a Internet. Conéctate a Internet e téntao de novo.</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Comentarios sobre a función mahi</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3492882532495507361">Despacho de aparencia <ph name="OFFICE_STYLE" /> cunha tonalidade <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">escurecemento do teclado</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3852931845120288955">Título (do A ao Z)</translation>
-<translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">A descrición é obrigatoria</translation>
 <translation id="386280020966669610">Inspírame</translation>
 <translation id="3864554910039562428">arrecife de coral</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Detectar automaticamente as distintas voces e atribuírlles unha etiqueta xenérica a cada unha (por exemplo, Falante 1 e Falante 2)</translation>
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
-<translation id="3889914174935857450">Restablecer data</translation>
 <translation id="3889954687526985291">moto futurista feita de papel negro con luces de neon sobre fondo escuro</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3902271751020176019">Idioma da transcrición</translation>
 <translation id="390890062090528082">ceo estrelado</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
-<translation id="3923184630988645767">Uso de datos</translation>
 <translation id="392943705803418306">Finalizou a túa sesión de Ferramentas de clase</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sen asignar</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">baixa o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botón para editar de <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Uso de datos restablecido</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744175046705638478">Traducir "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">pista seguinte</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
 <translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
-<translation id="5947266287934282605">Os datos restableceranse o último día do mes se este cae antes desta data</translation>
 <translation id="5948460390109837040">cans</translation>
 <translation id="594989847980441553">Para xerar unha imaxe con IA, selecciona a opción Crear.
         Todas as imaxes que se creen mostraranse aquí automaticamente.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Non mostrar outra vez</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5982621672636444458">Opcións de ordenación</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Títulos xerados:</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Atallos de teclado</translation>
-<translation id="6034694447310538551">Activar restablecemento mensual automático</translation>
 <translation id="6037291330010597344">O alimentador de documentos do escáner está baleiro. Engade algún documento e téntao de novo.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6040852767465482106">Identidade anónima</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">A tecla seleccionada é <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Frecha dereita</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Definir "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">azul e violeta</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Téntao de novo máis tarde</translation>
 <translation id="7118522231018231199">Asegúrate de seleccionar os APN que forneza o teu operador móbil ou persoa administradora. Ao seleccionar un APN, desactivaranse os APN personalizados. Os APN non válidos poden provocar que se desconecte a conexión móbil.</translation>
 <translation id="7119389851461848805">alimentación</translation>
-<translation id="7129287270910503851">O teu uso de datos restablecerase este día de cada mes</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
@@ -1496,7 +1480,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Última hora de restablecemento</translation>
 <translation id="7633068090678117093">Imaxe de fondo</translation>
 <translation id="763873111564339966">índigo</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
@@ -1532,7 +1515,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7802764839223122985">Falta a tecla. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7805768142964895445">Estado</translation>
-<translation id="7811024689617730980">Selecciona un día do 1 ao 31 (ambos os dous incluídos) para o restablecemento automático</translation>
 <translation id="7813073042185856802">montaña</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7824219488248240180">postimpresionista</translation>
@@ -1608,7 +1590,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="811820734797650957">(Android) pódeselle facer ping á pasarela</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8135609423982943441">Restableceuse o teu Chromebook aos valores predeterminados seguros. Podes axustar estes cambios cando queiras na configuración.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crear un propio</translation>
@@ -1691,7 +1672,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8483248364096924578">Enderezo IP</translation>
 <translation id="8491311378305535241">Non se puido establecer conexión con sitios web HTTP desde aplicacións para Android a través do firewall</translation>
 <translation id="8495070016475833911">feltro</translation>
-<translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8505011850330200833">O modelo de Gemini ocupa 2 GB de almacenamento para procesar transcricións e crear resumos</translation>
@@ -1699,7 +1679,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8506394543220680287">cuberto de neve</translation>
 <translation id="8508640263392900755">Detalles do APN</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tipo casa de té</translation>
 <translation id="8531692079895415839">néboa</translation>
 <translation id="8538236298648811558">Con tecnoloxía da IA de Google</translation>
@@ -1764,7 +1743,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="885704831271383379">teclado máis escuro</translation>
 <translation id="8863170912498892583">Activar tema escuro</translation>
 <translation id="8864415976656252616">Non hai contido suxerido. Consulta o contido de axuda destacado.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8882789155418924367">mouchos</translation>
@@ -1824,7 +1802,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="9088994563996376283">Simplificar</translation>
-<translation id="909856219855259344">Máis información sobre a data de restablecemento</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

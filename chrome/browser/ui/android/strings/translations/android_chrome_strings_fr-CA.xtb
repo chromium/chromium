@@ -2126,6 +2126,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="948276827484905248">Créer un code QR</translation>
 <translation id="95817756606698420">Google Chrome peut faire appel à <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour effectuer des recherches en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Votre organisation vous demande de vous connecter pour utiliser Chrome</translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966337994629449077">Vous êtes connecté en tant que <ph name="FROM_EMAIL" />.\n\nPour continuer à partir de votre ordinateur, passez à <ph name="TO_EMAIL" />. Vous obtiendrez les mots de passe, les favoris et plus encore à partir de ce compte.</translation>

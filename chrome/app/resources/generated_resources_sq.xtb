@@ -1069,7 +1069,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1822517323280215012">Gri</translation>
 <translation id="1822635184853104396">Shfaq historikun e plotë të shkarkimeve në një skedë të re</translation>
 <translation id="1823768272150895732">Fonti</translation>
-<translation id="1823781806707127806">Shto të dhënat ekzistuese të shfletimit te profili i menaxhuar</translation>
 <translation id="1825073796163165618">Aktivizo lidhjet</translation>
 <translation id="1825565032302550710">Porta duhet të jetë mes 1024 dhe 65535</translation>
 <translation id="18260074040409954">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato ruhen në <ph name="GOOGLE_PASSWORD_MANAGER" /> për <ph name="EMAIL" />.</translation>
@@ -1384,6 +1383,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2062354623176996748">Përdor uebin pa ruajtur historikun tënd të shfletimit me një dritare "të fshehtë"</translation>
 <translation id="206308717637808771">Fshiji të dhënat kur mbyll të gjitha dritaret. Të dhënat trajtohen njëlloj si sajti që po shikon</translation>
 <translation id="2066700471214517561">Mikrofoni me teknikën "Beamforming", në mënyrë që tingujt e personit që po përdor Chromebook të jenë të qartë.</translation>
+<translation id="2067778293100584091">Vizito "Portofolin e Google" për të kontrolluar <ph name="BEGIN_LINK1" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK1" /> ose për të menaxhuar <ph name="BEGIN_LINK2" />mënyrat e pagesës<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />dokumentet dixhitale<ph name="END_LINK3" /> si kartat e besnikërisë, dokumentet e identifikimit dhe ofertat</translation>
 <translation id="2068581968816126410">Përdor faqeshënuesit mes pajisjeve të ndryshme</translation>
 <translation id="2069020119963193894">&amp;Madhësia</translation>
 <translation id="2071393345806050157">Nuk ka skedar lokal të regjistrit.</translation>
@@ -2378,6 +2378,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2813094189969465044">Kontrollet prindërore</translation>
 <translation id="2814489978934728345">Ndalo ngarkimin e kësaj faqeje</translation>
 <translation id="2816319641769218778">Për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", aktivizo sinkronizimin.</translation>
+<translation id="281678554528702272">Shënim. Këto cilësime të qasjes te sajti mund të anulohen nga politikat e ndërmarrjes ose API-të e fuqishme.</translation>
 <translation id="2817435998497102771">Cakto imazhin e sfondit dhe stilin</translation>
 <translation id="2817861546829549432">Aktivizimi i "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një faqe interneti i përgjigjet kërkesës dhe se si interpretohet kërkesa. Për shembull, disa faqe interneti mund t'i përgjigjen kësaj kërkese duke të të treguar reklama që nuk bazohen në faqe të tjera interneti që ke vizituar. Shumë faqe interneti do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, shërbime, reklama dhe rekomandime në faqet e tyre të internetit, si dhe për të krijuar statistika raportimi.</translation>
 <translation id="2818476747334107629">Detajet e printerit</translation>
@@ -5054,6 +5055,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485088796993065002">Sajtet mund të luajnë tinguj për të siguruar audion për muzikën, videot dhe media të tjera</translation>
 <translation id="4850919322897956733">Të dhënat u fshinë.</translation>
+<translation id="4851973858921178330">Filtro sajtet</translation>
 <translation id="4852030988197799562">Blloko qasjen tek optimizuesi i JavaScript në sajtet e vizituara rishtas</translation>
 <translation id="4852383141291180386">Menaxho njoftimet e aplikacioneve</translation>
 <translation id="4852916668365817106">Ngjyra e kursorit të miut</translation>
@@ -5149,7 +5151,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4913573660390710463">Qasu tek aplikacionet e uebit në paketa me aftësi të përmirësuara. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Të dhënat e aplikacionit nuk mund të gjenden</translation>
 <translation id="4915961947098019832">Lejohen të shfaqin imazhe</translation>
-<translation id="491779113051926205">Matësit e trafikut të ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> kërkon të komunikojë me shtesën "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Prano</translation>
 <translation id="4918762404810341788">Kopjo dhe hap</translation>
@@ -7467,6 +7468,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6754359471209693699">Fillo një kërkim të ri</translation>
 <translation id="6755702685749429945">Shto fjalorin</translation>
 <translation id="6756643207511618722">Motorët e ligjërimit</translation>
+<translation id="6756882635793733911">Pyet për çdo gjë në ekranin tënd</translation>
 <translation id="6757431299485455321">Ndihmoji pajisjet e tjera të gjejnë këtë zonë të qasjes për internet.</translation>
 <translation id="6757615605516049275">Shkyç <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Na trego se si po ecim.</translation>
@@ -10752,6 +10754,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="96756691973639907">Më shumë veprime për "<ph name="MODULE_NAME" />"</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>
 <translation id="96774243435178359">Printerët e menaxhuar</translation>
+<translation id="967745417352972504">Vizito "Portofolin e Google" për të shtuar ose menaxhuar <ph name="BEGIN_LINK_PAYMENT_METHODS" />mënyrat e pagesës<ph name="END_LINK_PAYMENT_METHODS" /> dhe <ph name="BEGIN_LINK_PASSES" />dokumentet dixhitale<ph name="END_LINK_PASSES" /> si kartat e besnikërisë, dokumentet e identifikimit dhe ofertat</translation>
 <translation id="968000525894980488">Aktivizo shërbimet e Google Play.</translation>
 <translation id="968037381421390582">Ngj&amp;it dhe kërko për “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Ndrysho gjuhët</translation>

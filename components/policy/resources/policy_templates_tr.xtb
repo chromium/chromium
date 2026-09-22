@@ -1129,6 +1129,13 @@ desteklendi. 122 sürümünde ise kaldırıldı.</translation>
       Not: Bu ayar mevcut olması halinde <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> politikasını geçersiz kılar.</translation>
 <translation id="1723571018091915166"><ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> entegrasyonlarıyla akıllı sekme paylaşımına izin verme.</translation>
 <translation id="172374442286684480">Tüm sitelerin yerel verileri ayarlamasına izin verme</translation>
+<translation id="1726467454355516626">Bu politikanın Doğru değerine ayarlanması, yönetici tarafından yüklenen Chrome Uygulamalarının varsayılan Chrome Uygulamaları etkinleştirmesinden bağımsız olarak çalışmaya ve yüklenmeye devam etmesini sağlar.
+
+Bu politika ayarlanmadan bırakılır veya Yanlış değerine ayarlanırsa cihazda tanımlanan varsayılan davranış kullanılır.
+
+Devre dışı bırakılmış bir Chrome Uygulaması başlatılmaya çalışıldığında, kullanıcıya uygulamanın neden başlatılamadığına dair bir mesaj gösterilir ve BT departmanlarıyla iletişime geçmeleri önerilir.
+
+ChromeOS M184, Chrome uygulamalarını destekleyen son ChromeOS sürümü olacak.</translation>
 <translation id="1729169799290004131">Politika ayarlandığında otomatik parlaklık özellikleri devre dışı bırakılır ve ekran parlaklığı yüzdesi belirtilir. Başlangıçtaki ekran parlaklığı, politika değerine ayarlanır, ancak kullanıcılar bunu değiştirebilir.
 
       Politika ayarlanmadan bırakıldığında kullanıcı ekran kontrolleri veya otomatik parlaklık özellikleri etkilenmez.
@@ -4722,6 +4729,7 @@ Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENAB
 <translation id="3965339130942650562">Boştaki kullanıcının çıkış yapması için geçecek zaman aşımı süresi</translation>
 <translation id="396536755218079668">Denetlenen kullanıcılar</translation>
 <translation id="3968218878014278212">Eche uygulamasının etkinleştirilmesine izin ver.</translation>
+<translation id="396848310647682467">Yönetici tarafından yüklenen Chrome Uygulamalarına izin vermeye zorla</translation>
 <translation id="3971673686578912106">Politika, Etkin değerine ayarlanırsa diğer ayarlar izin verdiği sürece cihaz için <ph name="PLUGIN_VM_NAME" /> açılır. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> ile <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> Doğru değerine ayarlanmalı ve <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> veya <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />, <ph name="PLUGIN_VM_NAME" /> adlı sanal makinenin çalışması için ayarlanmalıdır.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PLUGIN_VM_NAME" /> cihaz için açık değildir.</translation>
@@ -4745,9 +4753,6 @@ Not: Bu ayar sonucunda ana makine ve istemci tarafında her iki tarafın destekl
 <translation id="3982624306233556415">Tarayıcı için Genişletilebilir Enterprise SSO'yu kullanamayan kimlik sağlayıcıları içeren engellenenler listesi</translation>
 <translation id="3983162212222338509">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında ya da kısmen içinde kısmen dışında çalıştırılabilir.</translation>
 <translation id="3986700049001404598">Kullanıcıların, Chrome görev yöneticisini kullanarak işlemleri sona erdirmesine izin ver</translation>
-<translation id="398884292557092447">Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, kullanıcı arayüzünde kredi kartları için otomatik doldurma önerilerini kontrol edebilirler.
-
-      Politika False (Yanlış) değerine ayarlanırsa otomatik doldurma hiçbir zaman kredi kartı bilgilerini önermez ve doldurmaz, ayrıca kullanıcının web'de gezinirken gönderdiği ek kredi kartı bilgileri kaydedilmez.</translation>
 <translation id="3989635538409502728">Çıkış</translation>
 <translation id="3989829840000169163">Tarayıcıdaki Eski Uzantı Noktalarını Engelle</translation>
 <translation id="3990391739475801018">Pil Tasarrufu Modu devre dışı bırakılır.</translation>
@@ -5186,6 +5191,7 @@ Bu politika, iOS'te karma içeriklerin otomatik olarak yükseltilmesini devre d�
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilirler.</translation>
 <translation id="4275048399551500192">Diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini gösterme</translation>
+<translation id="4278195158478376952">Varsayılan davranışı kullan.</translation>
 <translation id="4278656834593750050">Şarj Seslerini Etkinleştir</translation>
 <translation id="4281322231545828290">Otomatik şifre değişikliğini etkinleştir</translation>
 <translation id="4282243913059705499">Araç çubuğunda her zaman <ph name="PRODUCT_NAME" /> simgesini göster</translation>
@@ -6442,9 +6448,6 @@ Bu politika ayarlanmadan bırakıldığında veya Doğru değerine ayarlandığ�
 Bu politika Yanlış değerine ayarlandığında makineleri tanımlamak için kullanılabilecek bilgiler toplanmaz.
 
 Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.</translation>
-<translation id="5017369989680827157">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcı arayüzünde adresler için Otomatik doldurma kontrolünü kullanıcıya verir.
-
-      Politikayı False (Yanlış) değerine ayarlamak, Otomatik doldurmanın hiçbir zaman öneride bulunmayacağı, adres bilgilerini doldurmayacağı ve kullanıcının web'e göz atarken gönderdiği ek adres bilgilerini kaydetmeyeceği anlamına gelir.</translation>
 <translation id="5017691827598069017">Hızlı Eşleme'yi etkinleştir (hızlı Bluetooth eşleme)</translation>
 <translation id="5021550478471824215">Politikanın ayarlanması, hazır ayar ağ üzerinde dosya paylaşımı listesini belirtir. Her öğe, 2 özelliği olan bir nesnedir: <ph name="SHARE_URL_FIELD_NAME" /> ve <ph name="MODE_FIELD_NAME" />.
 
@@ -9356,7 +9359,6 @@ Bu politika Devre dışı değerine ayarlanırsa kullanıcılar, uzaktan hata ay
       True (doğru) olarak ayarlanırsa diğer ayarlar izin verdiği sürece <ph name="PLUGIN_VM_NAME" /> kullanıcı için etkinleştirilir. <ph name="PLUGIN_VM_NAME" /> adlı sanal makinenin çalışmasına izin verilebilmesi için <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> ile <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> politikasının true (doğru) değerine ayarlanması ve <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> veya <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> politikasının ayarlanması gerekir.</translation>
 <translation id="6741318452269220158">Politika, Doğru değerine ayarlanırsa varsayılan davranış Native Client'ın devre dışı bırakılması olsa bile Native Client çalışmaya devam eder.
 Politika, Yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa varsayılan davranış kullanılır.</translation>
-<translation id="6749641778238480311">Önceki kullanıcının hareketi olmadan veya kullanıcı onayı istemeden subApps API'lerinin çağrılmasına izin ver.</translation>
 <translation id="6750902920405577210">Sinyal gücü değişikliği etkinlikleri hakkında raporlanacak telemetri verilerinin listesi.
 
       Belirtilen her telemetri verisi yalnızca kendi kontrol politikası tarafından devre dışı bırakılmadığı takdirde raporlanır.
@@ -9666,23 +9668,6 @@ Politika, 2 değerine ayarlanırsa yalıtılmış web uygulaması kaynaklarını
 <translation id="6938524853892166974">Canlı Çeviri'yi devre dışı bırak</translation>
 <translation id="6940243892299228102">Kullanıcıların masa şablonları kullanmalarına izin verme</translation>
 <translation id="6943577887654905793">Mac/Linux tercih adı:</translation>
-<translation id="6944302005022384441"><ph name="SHOW_SUBAPPS_APP_API_NAME" />,
-<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> ve
-<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> web API'leri,
-güvenlik nedenleriyle önceki kullanıcının hareketinin
-("geçici etkinleştirme") çağrılmasını zorunlu kılar ve çağrılmadığı takdirde
-başarısız olur. Ayrıca, kullanıcıdan onay iletişim kutusu aracılığıyla
-işlemi onaylaması istenir.
-
-Bu politika ayarlandığında yöneticiler, önceki kullanıcının hareketi olmadan veya
-kullanıcıdan onay istemeden bu API'lerin çağrılabileceği kaynakları belirtebilir.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için
-https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. * 
-bu politikada kabul edilen bir değer değildir.
-
-Bu politika ayarlanmazsa tüm kaynaklar, bu API'leri çağırmak için önceki kullanıcı
-hareketini zorunlu kılar ve kullanıcıya bir onay iletişim kutusu gösterir.</translation>
 <translation id="694602410134474029"><ph name="PRODUCT_NAME" /> öğesinin, yazıcı sürücüleriyle ayrı bir hizmet işleminden etkileşime geçip geçmediğini kontrol eder. Mevcut yazıcıları sorgulamak, yazdırma sürücüsü ayarlarını almak ve doküman göndererek yerel yazıcılara yazdırmak için yapılan platform yazdırma çağrıları, hizmet işleminden gerçekleştirilir. Bu tür çağrıları, tarayıcı işleminin dışına taşımak, kararlılığı iyileştirmeye ve Yazdırma Önizleme'deki donmuş kullanıcı arayüzü davranışını azaltmaya yardımcı olur.
 
 Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, platform yazdırma görevleri için ayrı bir hizmet işlemi kullanır.
@@ -12376,6 +12361,7 @@ Bu politikanın desteği, <ph name="PRODUCT_NAME" /> 147 sürümünden itibaren 
 <translation id="859579553230883285">Kullanıcılar için <ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarını devre dışı bırak.</translation>
 <translation id="8596784129804979039">Ağ hizmeti korumalı alanı için varsayılan yapılandırmayı kullan</translation>
 <translation id="8597758693275075382">Yükleme sırasında sanal makineye iletilecek SMBIOS OEM dizeleri. Varsayılan olarak boş liste kullanılır.</translation>
+<translation id="8598252733604444967">Yönetici tarafından yüklenen Chrome uygulamalarının çalışmasına izin ver.</translation>
 <translation id="8598786284856179541">Sürüm bilgilerinin raporlanmasını etkinleştir</translation>
 <translation id="859937827887158048">İndirilenlerin eşler arası otomatik güncellenmesine izin verme</translation>
 <translation id="8600280933078435582">Linux uygulamaları</translation>

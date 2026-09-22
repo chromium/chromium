@@ -500,7 +500,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
-<translation id="2980545254049127870">Dễ dàng mở đường liên kết từ tin nhắn, tài liệu và các ứng dụng khác</translation>
+<translation id="2980545254049127870">Dễ dàng mở đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="2983398917942897288">Không hoạt động (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Thoát chế độ hình trong hình</translation>
 <translation id="2984978667043170458">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google</translation>
@@ -2126,6 +2126,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="948276827484905248">Tạo mã QR</translation>
 <translation id="95817756606698420">Chrome có thể sử dụng <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> để tìm kiếm tại Trung Quốc. Bạn có thể thay đổi điều này trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Tổ chức của bạn yêu cầu bạn đăng nhập để dùng Chrome</translation>
 <translation id="961856697154696964">Xoá dữ liệu duyệt web</translation>
 <translation id="963246339335003378">Mở Trình quản lý tác vụ</translation>
 <translation id="966337994629449077">Bạn đã đăng nhập bằng tài khoản <ph name="FROM_EMAIL" />.\n\nĐể tiếp tục trên máy tính, hãy chuyển sang tài khoản <ph name="TO_EMAIL" />. Bạn có thể sử dụng mật khẩu, dấu trang và nhiều dữ liệu khác từ tài khoản này.</translation>

@@ -53,6 +53,8 @@ Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada 
 <translation id="1965068424387304464">Savjet za Chromium: sačuvajte lozinke</translation>
 <translation id="1992653360331625459">Već imate lozinke za ove račune na Upravitelju lozinki. Ako uvezete jednu od lozinki u nastavku, ona će zamijeniti postojeću.</translation>
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
+<translation id="2025935492422922097">Chromium obrađuje naslove stranica i URL-ove u privatnom prostoru u oblaku</translation>
+<translation id="2027881372245801507">Isključivanje prijedloga ne upravlja Chromiumovom obradom naslova stranica i URL-ova za druge funkcije. Pristupom ovim podacima možete upravljati u <ph name="BEGIN_LINK" />postavkama sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="2059365270911640413">Završite postavljanje Chromiuma</translation>
@@ -351,6 +353,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="865600487977764604">Štiti vas na Chromiumu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažurirajte Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovu web lokaciju i u Chromium.</translation>
+<translation id="8697693743327341604">Ako odaberete ili zanemarite prijedlog, Chromium će se prilagoditi da vam u budućnosti prikazuje relevantnije prijedloge.</translation>
 <translation id="869832267508702259">Postavite Chromium kao zadani preglednik da dobijate Geminijeve uvide gdje god pregledate</translation>
 <translation id="8698780336333802489">Uvezi u Chromium</translation>
 <translation id="8730503818204408000">Otvara Chromiumovu postavku za namještanje Chromiuma kao zadanog preglednika.</translation>

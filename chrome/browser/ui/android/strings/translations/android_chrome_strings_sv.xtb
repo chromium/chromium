@@ -2127,6 +2127,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="948276827484905248">Skapa QR-kod</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Organisationen kräver att du loggar in för att använda Chrome</translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="963246339335003378">Öppna Aktivitetshanteraren</translation>
 <translation id="966337994629449077">Du är inloggad som <ph name="FROM_EMAIL" />.\n\nOm du vill fortsätta från datorn byter du till <ph name="TO_EMAIL" />. Du får lösenord, bokmärken med mera från det här kontot.</translation>

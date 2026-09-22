@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Don't allow sites to know when you're actively using your device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1476700086976862423">Theme colour sepia</translation>
+<translation id="1497214680865404175">User-uploaded image</translation>
 <translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1508931164824684991">Sites can use JavaScript</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>

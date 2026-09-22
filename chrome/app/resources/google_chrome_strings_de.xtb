@@ -70,6 +70,7 @@
             Diese Aktion wirkt sich nicht auf Lesezeichen, den Verlauf und gespeicherte Passwörter aus.</translation>
 <translation id="1619887657840448962">Um Chrome sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne dein Wissen hinzugefügt.</translation>
 <translation id="1628000112320670027">Hilfe für Chrome aufrufen</translation>
+<translation id="1632241302126471515">Mit Chrome Canary suchen</translation>
 <translation id="1640672724030957280">Download wird ausgeführt...</translation>
 <translation id="1651617469580841801">Wenn du Google Lens verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Über Chrome OS Flex</translation>
@@ -204,7 +205,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chrome</translation>
 <translation id="2970681950995291301">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich auf der Seite „Einstellungen“ von Chrome ab</translation>
 <translation id="2976869732253036751">Mit Chrome Preis-Tracking-Benachrichtigungen auf dem Smartphone erhalten</translation>
-<translation id="2985091279808606502">Chrome benötigt die Berechtigung für das lokale Netzwerk für diese Website</translation>
 <translation id="2991167882679440829">Deine Passwörter und anderen in deinem Google-Konto gespeicherten Chrome-Daten werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chrome verwenden möchtest, melde dich einfach wieder an.</translation>
 <translation id="2994465299455873643">Bietet Verschlüsselungsdienste und eine sichere Möglichkeit, <ph name="BROWSER_NAME" /> wiederherzustellen, falls der Browser veraltet ist. Wenn dieser Dienst deaktiviert ist, verliert <ph name="BROWSER_NAME" /> möglicherweise den Zugriff auf verschlüsselte Daten und <ph name="BROWSER_NAME" /> kann sich möglicherweise nicht selbst wiederherstellen.</translation>
 <translation id="3003694935412297923">Alle Tasks</translation>
@@ -272,6 +272,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Gemini in Chrome in der Taskleiste anzeigen</translation>
+<translation id="3616622400661108683">Fragen zu Inhalten außerhalb von Chrome stellen, z. B. zu anderen Apps oder Dateien</translation>
 <translation id="3622716124581627104">Du kannst Dinge oder Orte erkennen und Text kopieren oder übersetzen. Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen.</translation>
@@ -749,7 +750,9 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8162006532256575008">Chrome ohne Konto verwenden</translation>
 <translation id="8172231188687329735">Mit der Chrome App kannst du Passwörter unterwegs speichern</translation>
 <translation id="8177472873527554730">Inhalt auf der Seite nicht gefunden</translation>
+<translation id="8196526165798579689">Mit Chrome Dev suchen</translation>
 <translation id="8221491193165283816">Normalerweise blockierst du Benachrichtigungen. Klicke hier, wenn du von dieser Website Benachrichtigungen erhalten möchtest.</translation>
+<translation id="8227493674161801700">Mit Chrome Beta suchen</translation>
 <translation id="8253851811470049684">So kannst du über jede App Links in Chrome öffnen und den Browser über die Taskleiste aufrufen</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
 <translation id="8260086374035800939">Wenn Gemini in Chrome geöffnet ist, bleibt die Seitenleiste beim Erstellen neuer Tabs geöffnet</translation>

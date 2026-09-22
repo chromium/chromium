@@ -550,6 +550,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927930548546198515">O Chrome regista a forma como usa a funcionalidade, por exemplo, os seus pedidos e comportamento quando aceita ou ignora sugestões</translation>
 <translation id="1932098463447129402">Não anterior a</translation>
+<translation id="1932629105611536854">Código postal de entrega</translation>
 <translation id="1935353813610900265">Envie feedback para a pesquisa do histórico com tecnologia de IA</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1938580037092872316">Adicione novas informações à morada guardada</translation>
@@ -615,6 +616,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">A traduzir a página</translation>
 <translation id="2055016614992422886">Conversa</translation>
+<translation id="2057654338925604102">Domínio da transportadora</translation>
 <translation id="2058468041496756763">Pode alterar o seu motor de pesquisa em qualquer altura nas definições do Chrome. Se não vir o seu motor de pesquisa preferido, pode fazer uma pesquisa a partir do respetivo site. Vai ser apresentado como um motor de pesquisa visitado recentemente nas definições do Chrome e pode torná-lo o seu motor de pesquisa predefinido.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
@@ -1610,6 +1612,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3715597595485130451">Estabelecer ligação a redes Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">Data de envio</translation>
 <translation id="372429172604983730">As aplicações que podem causar este erro incluem antivírus, firewalls e software de filtragem Web ou proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova apresentação do Google no Slides</translation>
 <translation id="3727309136762649052">Espaço de nomes</translation>
@@ -2210,6 +2213,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4732860731866514038">A transferir o pacote de idiomas <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quer utilizar a localização do seu dispositivo.</translation>
 <translation id="473414950835101501">Usar as suas câmaras</translation>
+<translation id="4736089601076994090">Expira a: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Reiniciar o Chromium</translation>
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
@@ -2537,8 +2541,10 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5258473597674772367">O grupo de separadores "<ph name="GROUP_NAME" />" já não está disponível</translation>
 <translation id="5260842098960755113">Discussão fechada</translation>
 <translation id="5262342527470539728">As suas informações são guardadas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" /></translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">É necessária uma revisão antes de carregar</translation>
 <translation id="5266128565379329178">Encadernar parte superior</translation>
+<translation id="5268746892698450173">Nome da transportadora</translation>
 <translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" não é uma condição suportada para "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Melhorar</translation>
@@ -2566,6 +2572,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5314967030527622926">Criador de folhetos</translation>
 <translation id="5316812925700871227">Rodar para a esquerda</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5318654747230250818">Código: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chromium<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de pesquisa não a suportar.</translation>
 <translation id="5323043727018853753">Conteúdo incorporado permitido</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
@@ -2614,7 +2621,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5398461103557553443">Para preencher automaticamente este IBAN da próxima vez, guarde-o na Carteira do Google</translation>
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
-<translation id="5402715318763077894">Permitir o acesso à rede local?</translation>
 <translation id="540949333488055151">Plástico (colorido)</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
 <translation id="5411462078004183575">Opção de preço baixo</translation>
@@ -2856,6 +2862,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de acompanhamento de preço</translation>
+<translation id="5794093550048860249">Número de acompanhamento</translation>
 <translation id="5796050750059455142">Ative as "<ph name="BEGIN_LINK" />Funcionalidades inteligentes noutros produtos Google<ph name="LINK_END" />"</translation>
 <translation id="5797984091151707075">Bloqueado pela política do administrador</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -4021,6 +4028,7 @@ Detalhes adicionais:
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Tecido</translation>
+<translation id="7772659560036894129">Nomes dos produtos</translation>
 <translation id="7773005668374414287">Na mesma ordem, com orientação para cima</translation>
 <translation id="7779418012194492374">Revogar acesso a <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ontem</translation>
@@ -4212,6 +4220,7 @@ Detalhes adicionais:
 <translation id="8118506371121007279">Envie feedback</translation>
 <translation id="812020627659652807">Eliminar ficheiros agora</translation>
 <translation id="8120720167840853945">Esta política não está a controlar o comportamento predefinido de outras políticas.</translation>
+<translation id="8120827570827570666">Domínio do comerciante</translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8130113808541743942">Mova para…</translation>
 <translation id="813024282736408069">Ative um cartão virtual para o preenchimento automático</translation>
@@ -4323,6 +4332,7 @@ Detalhes adicionais:
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Sem taxas e TAE de 0%</translation>
 <translation id="8312841338723044391">EM DIRETO</translation>
+<translation id="8314036873065514376">Nome do comerciante</translation>
 <translation id="8316555157357957253">A usar agora</translation>
 <translation id="8319414634934645341">Utilização alargada da chave</translation>
 <translation id="831997045666694187">Noite</translation>

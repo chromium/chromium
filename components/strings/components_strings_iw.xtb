@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1927930548546198515">‏‫Chrome מתעד את השימוש שלך בתכונה, למשל את הבקשות שלך ואת בחירתך לקבל הצעות או להתעלם מהן</translation>
 <translation id="1932098463447129402">לא לפני</translation>
+<translation id="1932629105611536854">מיקוד הכתובת למשלוח</translation>
 <translation id="1935353813610900265">‏שליחת משוב על חיפוש בהיסטוריה באמצעות AI</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
 <translation id="1938580037092872316">הוספת פרטים חדשים לכתובת השמורה</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">מעטפה אישית</translation>
 <translation id="2048261947532620704">הדף בתהליך תרגום…</translation>
 <translation id="2055016614992422886">שיחה</translation>
+<translation id="2057654338925604102">דומיין חברת התובלה</translation>
 <translation id="2058468041496756763">‏תמיד אפשר לשנות את מנוע החיפוש בהגדרות של Chrome. אם מנוע החיפוש הרצוי לא מופיע ברשימה, אפשר להיכנס ישירות לאתר שלו ולחפש משם. הוא יופיע בהגדרות של Chrome ברשימת מנועי החיפוש שביקרת בהם לאחרונה, ותהיה לך אפשרות להגדיר אותו כברירת מחדל.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2059202684901022309">‏22x34 אינץ'</translation>
@@ -1610,6 +1612,7 @@
 <translation id="3715597595485130451">‏התחברות ל-Wi-Fi</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />לבדוק את תצורת ה-DNS, חומת האש ושרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">תאריך המשלוח</translation>
 <translation id="372429172604983730">‏אפליקציות שיכולות לגרום לשגיאה הזו כוללות תוכנות אנטי-וירוס, חומות אש ותוכנות proxy או סינון אתרים.</translation>
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות מצגת חדשה ב-Google Slides</translation>
 <translation id="3727309136762649052">מרחב שמות</translation>
@@ -2541,8 +2544,10 @@ Del</translation>
 <translation id="5258473597674772367">קבוצת הכרטיסיות "<ph name="GROUP_NAME" />" לא זמינה יותר</translation>
 <translation id="5260842098960755113">השרשור נסגר</translation>
 <translation id="5262342527470539728">הפרטים שלך נשמרו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> של <ph name="ACCOUNT" /></translation>
+<translation id="5263202631354741256">מזהה</translation>
 <translation id="5263867360296733198">נדרשת בדיקה לפני ההעלאה</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
+<translation id="5268746892698450173">שם חברת התובלה</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
 <translation id="5271381225185906340">התנאי '<ph name="DATA_CONTROLS_ATTRIBUTE" />' לא נתמך עבור '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="527191520368130807">ליטוש</translation>
@@ -2618,7 +2623,6 @@ Del</translation>
 <translation id="5398461103557553443">‏כדי לאפשר מילוי אוטומטי של מספר ה-IBAN הזה בפעם הבאה, צריך לשמור אותו ב-Google Wallet</translation>
 <translation id="5398772614898833570">מודעות חסומות</translation>
 <translation id="5400836586163650660">אפור</translation>
-<translation id="5402715318763077894">לתת גישה לרשת המקומית?</translation>
 <translation id="540949333488055151">Plastic (Colored)</translation>
 <translation id="540969355065856584">שרת זה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אינו תקף כעת. הסיבה לכך עשויה להיות תצורה שגויה או שתוקף מיירט את החיבור שלך.</translation>
 <translation id="5411462078004183575">אפשרות במחיר נמוך</translation>
@@ -2861,6 +2865,7 @@ Del</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
 <translation id="5794065675298686371">הפעלת התראות על מעקב מחירים</translation>
+<translation id="5794093550048860249">מספר מעקב</translation>
 <translation id="5796050750059455142">‏מפעילים את ההגדרה <ph name="BEGIN_LINK" />תכונות חכמות במוצרים אחרים של Google<ph name="LINK_END" /></translation>
 <translation id="5797984091151707075">התוכן נחסם בגלל מדיניות האדמין</translation>
 <translation id="5804241973901381774">הרשאות</translation>
@@ -4027,6 +4032,7 @@ Del</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Fabric</translation>
+<translation id="7772659560036894129">שמות מוצרים</translation>
 <translation id="7773005668374414287">באותו סדר עם הפנים כלפי מעלה</translation>
 <translation id="7779418012194492374">ביטול הגישה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">אתמול</translation>
@@ -4218,6 +4224,7 @@ Del</translation>
 <translation id="8118506371121007279">שליחת משוב</translation>
 <translation id="812020627659652807">אפשר למחוק את הקבצים כבר עכשיו</translation>
 <translation id="8120720167840853945">המדיניות הזו לא קובעת את פעולת ברירת המחדל של כללי מדיניות אחרים.</translation>
+<translation id="8120827570827570666">דומיין המוֹכר</translation>
 <translation id="8127301229239896662">‏הייתה בעיה בהתקנה של "<ph name="SOFTWARE_NAME" />" במחשב שלך או ברשת. יש לבקש ממנהל ה-IT לפתור את הבעיה.</translation>
 <translation id="8130113808541743942">העברה אל...</translation>
 <translation id="813024282736408069">הפעלת כרטיס וירטואלי למילוי אוטומטי</translation>
@@ -4329,6 +4336,7 @@ Del</translation>
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8310477433309274098">בלי עמלות, ריבית שנתית בשיעור של 0%</translation>
 <translation id="8312841338723044391">בשידור חי</translation>
+<translation id="8314036873065514376">שם המוֹכר</translation>
 <translation id="8316555157357957253">בשימוש עכשיו</translation>
 <translation id="8319414634934645341">שימוש מורחב במפתח</translation>
 <translation id="831997045666694187">ערב</translation>

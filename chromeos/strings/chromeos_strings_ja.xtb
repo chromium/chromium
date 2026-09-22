@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">地球の動き</translation>
 <translation id="102432830749687801">Google のコンテンツ移行アプリを使用して、アクセス権が失われる前に、学校用アカウントのデータを個人アカウントに移動してください。</translation>
 <translation id="1026212596705997935">ショートカットは「<ph name="CONFLICT_ACCEL_NAME" />」で使用しています。新しいショートカットを押してください。既存のショートカットを置き換えるには、このショートカットをもう一度押します。</translation>
-<translation id="1030856839388844477">データ使用量をリセット</translation>
 <translation id="1047095725494118091">ダウンロードできません。もう一度お試しになるか、<ph name="DEVICE_TYPE" /> を再起動してください。</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">更新中（<ph name="PERCENTAGE_VALUE" />% 完了）</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分</translation>
 <translation id="1310380015393971138">利用できる <ph name="NETWORK_NAME" /> ネットワークがありません</translation>
-<translation id="131421566576084655">前回のデータリセット日は不明です</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ホーム ネットワーク、ローミングなし</translation>
 <translation id="1327977588028644528">ゲートウェイ</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">タイトルを編集しました</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> キーが押されていません</translation>
 <translation id="1432110487435300883">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
-<translation id="1435763214710588005">指定した日に毎月データ使用量が自動的にリセットされます</translation>
 <translation id="1442433966118452622">画像ソース</translation>
 <translation id="1446954767133808402">サファイア</translation>
 <translation id="1449035143498573192">Google 検索で開く</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">文字起こしを非表示</translation>
 <translation id="160633243685262989">プレビュー画像</translation>
 <translation id="1611649489706141841">進む</translation>
-<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
 <translation id="1618566998877964907">テーマを使用</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
 <translation id="1622402072367425417">輝く泡</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">良好（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">現在、クラスツールのみ使用できます</translation>
 <translation id="1762483337755424125">文字起こし</translation>
 <translation id="1765169783255151332">キーをすばやく切り替え</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">温泉</translation>
 <translation id="2203642483788377106">崖</translation>
 <translation id="2208388655216963643">印象派</translation>
-<translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2215920961700443347">インターネットに接続されていません。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="2217935453350629363">現在の速度</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">mahi 機能に関するフィードバック</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調の<ph name="OFFICE_STYLE" />オフィス</translation>
-<translation id="3493187369049186498">お使いの Chromebook で測定されたデータ使用量です。測定結果はプロバイダのデータとは異なる場合があります。</translation>
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">キーボードを暗く</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3852931845120288955">タイトル（昇順）</translation>
-<translation id="3858860766373142691">名前</translation>
 <translation id="3862598938296403232">説明は必須です</translation>
 <translation id="386280020966669610">おまかせ</translation>
 <translation id="3864554910039562428">サンゴ礁</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">異なる話し手を自動的に検出し、それぞれに「スピーカー 1」や「スピーカー 2」などの汎用的なラベルを付ける</translation>
 <translation id="38811596981744338">法的問題</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
-<translation id="3889914174935857450">リセット日</translation>
 <translation id="3889954687526985291">黒い紙で作られた近未来的なバイクとネオンライトの暗い背景</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3902271751020176019">音声文字変換の言語</translation>
 <translation id="390890062090528082">星空</translation>
 <translation id="391412459402535266">デバイスをテストできません。テストするにはノートパソコン モードに切り替えます。</translation>
 <translation id="3916998944874125962">スクリーンショットを撮る</translation>
-<translation id="3923184630988645767">データ使用</translation>
 <translation id="392943705803418306">クラスツールのセッションが終了しました</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3934185438132762746">未割り当ての <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">音量を下げる</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> の編集ボタン。</translation>
-<translation id="5736820754189340309">データ使用量をリセットしました</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744175046705638478">「<ph name="QUERY" />」を翻訳</translation>
 <translation id="5757187557809630523">次のトラック</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094"><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
 <translation id="5946538341867151940">まだ接続されていません。携帯通信会社がカスタム APN を推奨している場合は、[+ 新しい APN] を選択して APN 情報を入力します。</translation>
-<translation id="5947266287934282605">月の最終日がこの日より前の場合、データはその月の最終日にリセットされます</translation>
 <translation id="5948460390109837040">イヌ</translation>
 <translation id="594989847980441553">[作成] を選択すると AI により画像が作成されます。
         作成された画像はすべて自動的にここに表示されます。</translation>
-<translation id="5972388717451707488">エンジンを更新</translation>
 <translation id="5972801171078377748">次回から表示しない</translation>
 <translation id="5975130252842127517">コーラル</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">生成されたタイトル:</translation>
 <translation id="6017514345406065928">緑</translation>
 <translation id="6019566113895157499">キー ショートカット</translation>
-<translation id="6034694447310538551">毎月の自動リセットを有効にする</translation>
 <translation id="6037291330010597344">スキャナの給紙トレイが空です。用紙を追加してから、もう一度お試しください。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6040852767465482106">匿名 ID</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">選択したキーは <ph name="KEYS" /> です。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">右矢印</translation>
 <translation id="6278428485366576908">モード</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">「<ph name="QUERY" />」を定義</translation>
 <translation id="6283581480003247988">青色と紫色</translation>
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">しばらくしてからもう一度お試しください</translation>
 <translation id="7118522231018231199">携帯通信会社または管理者から提供された APN を選択してください。APN を選択すると、カスタム APN はすべて無効になります。APN が無効な場合、モバイル接続が中断される可能性があります。</translation>
 <translation id="7119389851461848805">電源</translation>
-<translation id="7129287270910503851">毎月この日にデータ使用量がリセットされます</translation>
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7633068090678117093">背景画像</translation>
 <translation id="763873111564339966">藍色</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">キーが設定されていません。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">利用しない</translation>
 <translation id="7805768142964895445">ステータス</translation>
-<translation id="7811024689617730980">自動リセットの日付として 1～31 のうちいずれかを選択します</translation>
 <translation id="7813073042185856802">山</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
 <translation id="7824219488248240180">後期印象派</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">（Android）ゲートウェイへの ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8132480444149501833">トラフィック カウンタをリクエスト</translation>
 <translation id="8135609423982943441">Chromebook を安全なデフォルトにリセットしました。これらの変更は [設定] でいつでも調整できます。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">独自に作成</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8491311378305535241">Android アプリからファイアウォールを介して HTTP ウェブサイトに接続できません</translation>
 <translation id="8495070016475833911">フェルト</translation>
-<translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8505011850330200833">Gemini モデルを使用した文字起こしと要約の作成には 2 GB の保存容量が必要です</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">雪景色</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ティーハウス</translation>
 <translation id="8531692079895415839">霧</translation>
 <translation id="8538236298648811558">Google AI を搭載</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">キーボードを暗くする</translation>
 <translation id="8863170912498892583">ダークモードを有効にする</translation>
 <translation id="8864415976656252616">コンテンツの候補はありません。関連するヘルプ コンテンツをご覧ください。</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8882789155418924367">フクロウ</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">この動画を使う</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="9088994563996376283">簡略化</translation>
-<translation id="909856219855259344">リセット日の詳細</translation>
 <translation id="9100765901046053179">詳細設定</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>

@@ -1069,7 +1069,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1822517323280215012">Gri</translation>
 <translation id="1822635184853104396">Afișează istoricul complet al descărcărilor într-o filă nouă</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Adaugă datele de navigare existente în profilul gestionat</translation>
 <translation id="1825073796163165618">Activează linkurile</translation>
 <translation id="1825565032302550710">Portul trebuie să aibă o valoare între 1024 și 65535</translation>
 <translation id="18260074040409954">Poți folosi parolele salvate pe orice dispozitiv. Ele se salvează pe <ph name="GOOGLE_PASSWORD_MANAGER" /> pentru <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2062354623176996748">Folosește internetul fără a salva istoricul de navigare, într-o fereastră incognito</translation>
 <translation id="206308717637808771">Șterge datele când închizi toate ferestrele. Datele sunt tratate la fel ca site-ul pe care îl accesezi</translation>
 <translation id="2066700471214517561">Microfon cu formarea fasciculului, astfel încât persoana care folosește Chromebookul să se audă clar.</translation>
+<translation id="2067778293100584091">Accesează Portofelul Google ca să gestionezi <ph name="BEGIN_LINK1" />datele și preferințele de confidențialitate<ph name="END_LINK1" /> sau <ph name="BEGIN_LINK2" />metodele de plată<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />permisele<ph name="END_LINK3" />, cum ar fi cardurile de fidelitate, actele de identitate și ofertele</translation>
 <translation id="2068581968816126410">Folosește marcajele pe toate dispozitivele</translation>
 <translation id="2069020119963193894">Dimen&amp;siune</translation>
 <translation id="2071393345806050157">Niciun fișier jurnal local.</translation>
@@ -2378,6 +2378,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2813094189969465044">Control parental</translation>
 <translation id="2814489978934728345">Oprește încărcarea acestei pagini</translation>
 <translation id="2816319641769218778">Activează sincronizarea ca să salvezi parolele în Contul tău Google.</translation>
+<translation id="281678554528702272">Notă: aceste setări de acces la site pot fi modificate de politicile de companie sau de API-uri eficiente.</translation>
 <translation id="2817435998497102771">Setează imaginea de fundal și stilul</translation>
 <translation id="2817861546829549432">Dacă activați opțiunea „Nu urmăriți”, o solicitare va fi inclusă împreună cu traficul de navigare. Efectul variază în funcție de răspunsul site-ului la solicitare și în funcție de modul în care este interpretată solicitarea. De exemplu, unele site-uri pot răspunde la această solicitare afișând anunțuri care nu se bazează pe alte site-uri accesate de dvs. Numeroase site-uri vor culege și utiliza în continuare datele de navigare. De exemplu, pentru a îmbunătăți securitatea, pentru a oferi conținut, servicii, anunțuri și recomandări pe site-urile proprii și pentru a genera statistici cu privire la raportare.</translation>
 <translation id="2818476747334107629">Detaliile imprimantei</translation>
@@ -5053,6 +5054,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="485088796993065002">Site-urile pot reda sunet pentru muzică, videoclipuri și alte tipuri de conținut media</translation>
 <translation id="4850919322897956733">Datele au fost șterse.</translation>
+<translation id="4851973858921178330">Filtrează site-urile</translation>
 <translation id="4852030988197799562">Blochează accesul la instrumentul de optimizare pentru JavaScript pe site-urile accesate recent</translation>
 <translation id="4852383141291180386">Gestionează notificările pentru aplicații</translation>
 <translation id="4852916668365817106">Culoarea mouse-ului</translation>
@@ -5148,7 +5150,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4913573660390710463">Accesează aplicații web în pachet cu funcții îmbunătățite. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Datele aplicației nu au fost găsite</translation>
 <translation id="4915961947098019832">Au permisiunea de a afișa imagini</translation>
-<translation id="491779113051926205">Contoare de trafic ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> dorește să comunice cu extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4918762404810341788">Copiază și deschide</translation>
@@ -7468,6 +7469,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6754359471209693699">Începe o căutare nouă</translation>
 <translation id="6755702685749429945">Adaugă un dicționar</translation>
 <translation id="6756643207511618722">Motoare de vorbire</translation>
+<translation id="6756882635793733911">Întreabă despre orice de pe ecran</translation>
 <translation id="6757431299485455321">Ajută alte dispozitive să găsească acest hotspot.</translation>
 <translation id="6757615605516049275">Deblochează <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Spune-ne cum ne descurcăm.</translation>
@@ -10754,6 +10756,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="96756691973639907">Mai multe acțiuni pentru <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Date stocate</translation>
 <translation id="96774243435178359">Imprimante gestionate</translation>
+<translation id="967745417352972504">Accesează Portofelul Google pentru a adăuga sau a gestiona <ph name="BEGIN_LINK_PAYMENT_METHODS" />metode de plată<ph name="END_LINK_PAYMENT_METHODS" /> și <ph name="BEGIN_LINK_PASSES" />permise<ph name="END_LINK_PASSES" />, cum ar fi cardurile de fidelitate, actele de identitate și ofertele</translation>
 <translation id="968000525894980488">Activează serviciile Google Play.</translation>
 <translation id="968037381421390582">In&amp;serează și caută „<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Schimbați limbile</translation>

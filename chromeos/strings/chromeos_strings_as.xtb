@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
 <translation id="102432830749687801">আপুনি এক্সেছ হেৰুওৱাৰ আগতেই আপোনাৰ বিদ্যালয়ৰ একাউণ্টৰ ডেটা আপোনাৰ ব্যক্তিগত একাউণ্টলৈ নিবলৈ Googleৰ Content Transfer এপ্‌টো ব্যৱহাৰ কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="1026212596705997935">শ্বৰ্টকাটটো "<ph name="CONFLICT_ACCEL_NAME" />"ৰ বাবে ব্যৱহাৰ কৰি থকা হৈছে। এটা নতুন শ্বৰ্টকাটত টিপক। আগৰে পৰা থকা শ্বৰ্টকাটটো সলনি কৰিবলৈ, এই শ্বৰ্টকাটটোত পুনৰ টিপক।</translation>
-<translation id="1030856839388844477">ডেটাৰ ব্যৱহাৰ ৰিছেট কৰক</translation>
 <translation id="1047095725494118091">ডাউনল’ড কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰক বা আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">আপডে’ট কৰি থকা হৈছে (<ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হৈছে)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="1310380015393971138">কোনো <ph name="NETWORK_NAME" /> নেটৱৰ্ক উপলব্ধ নহয়</translation>
-<translation id="131421566576084655">অন্তিমবাৰ ডেটা ৰিছেট কৰাৰ তাৰিখ উপলব্ধ নহয়</translation>
 <translation id="1314565355471455267">Android ভিপিএন</translation>
 <translation id="131461803491198646">গৃহ নেটৱৰ্ক, ৰ’মিং নহয়</translation>
 <translation id="1327977588028644528">গে’টৱে’</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">শিৰোনাম সম্পাদনা কৰা হৈছে</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> কীটো টিপা নাই</translation>
 <translation id="1432110487435300883">এটা আনুমানিক ফলাফলৰ বাবে, <ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
-<translation id="1435763214710588005">প্ৰতি মাহৰ এটা নিৰ্দিষ্ট তাৰিখত ডেটাৰ ব্যৱহাৰ স্বয়ংক্ৰিয়ভাৱে ৰিছেট হয়</translation>
 <translation id="1442433966118452622">প্ৰতিচ্ছবিৰ উৎস</translation>
 <translation id="1446954767133808402">নীলম</translation>
 <translation id="1449035143498573192">Google Searchত খোলক</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">ট্ৰেন্সক্ৰিপ্ট লুকুৱাওক</translation>
 <translation id="160633243685262989">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
-<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="1618566998877964907">এটা থীম ব্যৱহাৰ কৰক</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1622402072367425417">উজ্জ্বল বাবল</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">আপুনি এতিয়া কেৱল Class Tools ব্যৱহাৰ কৰিব পাৰিব</translation>
 <translation id="1762483337755424125">ট্ৰান্সক্ৰিপ্ট</translation>
 <translation id="1765169783255151332">ক্ষিপ্ৰতাৰে কীসমূহ সালসলনি কৰক</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">গৰম বসন্ত</translation>
 <translation id="2203642483788377106">শিলৰ গৰা</translation>
 <translation id="2208388655216963643">ইম্প্ৰেশ্বনিষ্ট</translation>
-<translation id="2209788852729124853">ট্ৰেফিক কাউণ্টাৰ ৰিছেট কৰক</translation>
 <translation id="2212733584906323460">নামৰ ৰিজ’লিউশ্বন</translation>
 <translation id="2215920961700443347">ইণ্টাৰনেট সংযোগ নাই। ইণ্টাৰনেটৰ লগত সংযোগ কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2217935453350629363">বৰ্তমানৰ গতিবেগ</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">mahi সুবিধাৰ বাবে মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ট’নৰ সৈতে <ph name="OFFICE_STYLE" /> অফিচ</translation>
-<translation id="3493187369049186498">আপোনাৰ Chromebookএ ডেটাৰ জোখ-মাখ কৰে। এইটো প্ৰদানকাৰীৰ ডেটাতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="3502426834823382181">আটাইবোৰ এপ্‌ চাওক</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />কাৰ্যদক্ষতাৰ ট্ৰে’চ ডেটা<ph name="END_LINK1" /> পঠিয়াওক</translation>
 <translation id="3517001332549868749">ChromeOSৰ আপডে’ট</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">কীব’ৰ্ড গাঢ় কৰা</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3852931845120288955">শিৰোনাম (Aৰ পৰা Zলৈ)</translation>
-<translation id="3858860766373142691">নাম</translation>
 <translation id="3862598938296403232">বিৱৰণৰ আৱশ্যক</translation>
 <translation id="386280020966669610">মোক অনুপ্ৰেৰণা দিয়ক</translation>
 <translation id="3864554910039562428">প্ৰৱাল-প্ৰাচীৰ</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">স্বয়ংক্ৰিয়ভাৱে ভইচ চিনাক্ত কৰক আৰু প্ৰতিগৰাকী স্পীকাৰত এটা সাধাৰণ লেবেল যোগ দিয়ক, যেনে, স্পীকাৰ ১ আৰু স্পীকাৰ ২</translation>
 <translation id="38811596981744338">আইনী সমস্যা</translation>
 <translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
-<translation id="3889914174935857450">ৰিছেট কৰাৰ তাৰিখ</translation>
 <translation id="3889954687526985291">নিয়ন লাইটৰ গাঢ় পটভূমিত ক’লা কাগজৰ পৰা নিৰ্মিত এখন অত্যাধুনিক মটৰ চাইকেল</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3902271751020176019">ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা</translation>
 <translation id="390890062090528082">তৰাৰে ভৰা আকাশ</translation>
 <translation id="391412459402535266">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ লেপটপ ম’ডলৈ সলনি কৰক।</translation>
 <translation id="3916998944874125962">স্ক্ৰীনশ্বট লওক</translation>
-<translation id="3923184630988645767">ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="392943705803418306">আপোনাৰ বাবে ক্লাছৰ সঁজুলিৰ ছেশ্বন সমাপ্ত হৈছে</translation>
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
 <translation id="3934185438132762746">আৱণ্টন নকৰা <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">ভলিউম কমাওক</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />ৰ বাবে সম্পাদনা কৰাৰ বুটাম।</translation>
-<translation id="5736820754189340309">ডেটাৰ ব্যৱহাৰ ৰিছেট কৰা হৈছে</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" অনুবাদ কৰক</translation>
 <translation id="5757187557809630523">পৰৱৰ্তী ট্ৰেক</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">এই <ph name="DEVICE_TYPE" />টো কেতিয়া ব্যৱহাৰ কৰিব পাৰি <ph name="MANAGER" /> প্ৰশাসকে সেয়া ছেট কৰিছে</translation>
 <translation id="594552776027197022">যাদৃচ্ছিক কী পেয়াৰ সৃষ্টি কৰক</translation>
 <translation id="5946538341867151940">আপুনি এতিয়ালৈকে সংযুক্ত হোৱা নাই। যদি আপোনাৰ ম'বাইলৰ বাহকে এটা কাষ্টম এপিএন চুপাৰিছ কৰে, "+ নতুন এপিএন" বাছনি কৰি এপিএনৰ তথ্যখিনি দিয়ক</translation>
-<translation id="5947266287934282605">যদি মাহটোৰ শেষৰ দিনটো এই দিনটোৰ আগৰ, ডেটা মাহটোৰ শেষ দিনটোত ৰিছেট কৰা হ’ব</translation>
 <translation id="5948460390109837040">কুকুৰ</translation>
 <translation id="594989847980441553">AIৰ জৰিয়তে কোনো প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ "সৃষ্টি কৰক" বাছনি কৰক।
         সৃষ্টি কৰা আটাইবোৰ প্ৰতিচ্ছবি ইয়াত স্বয়ংক্ৰিয়ভাৱে দেখা পোৱা যাব।</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">পুনৰাই নেদেখুৱাব</translation>
 <translation id="5975130252842127517">প্ৰৱাল</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">সৃষ্টি কৰা শিৰোনামসমূহ:</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
-<translation id="6034694447310538551">স্বয়ংক্ৰিয়ভাৱে মাহিলী ৰিছেট হোৱাৰ সুবিধাটো সক্ষম কৰক</translation>
 <translation id="6037291330010597344">স্কেনাৰৰ নথিৰ ফীডাৰটো খালী আছে। নথি যোগ দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6040852767465482106">অজ্ঞাত পৰিচয়</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">বাছনি কৰা কীটো <ph name="KEYS" />। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ৰাইট এৰ’</translation>
 <translation id="6278428485366576908">থীম</translation>
-<translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6281936070694347328">"<ph name="QUERY" />"ৰ সংজ্ঞা দিয়ক</translation>
 <translation id="6283581480003247988">নীলা আৰু বেঙুনীয়া</translation>
 <translation id="6284632978374966585">গাঢ় ৰঙৰ থীম অন কৰক</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="7118522231018231199">আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা এপিএনসমূহ বাছনি কৰাটো নিশ্চিত কৰক। কোনো এপিএন বাছনি কৰাটোৱে যিকোনো কাষ্টম এপিএন অক্ষম কৰিব। অমান্য এপিএনসমূহে আপোনাৰ ম’বাইল সংযোগত ব্যাঘাত জন্মাব পাৰে।</translation>
 <translation id="7119389851461848805">পাৱাৰ</translation>
-<translation id="7129287270910503851">প্ৰতিমাহে এই দিনটোত আপোনাৰ ডেটাৰ ব্যৱহাৰ ৰিছেট কৰা হ’ব</translation>
 <translation id="7130438335435247835">এক্সেছ পইণ্টৰ নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
 <translation id="7135814714616751706">সন্ধানৰ শ্বৰ্টকাট</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="7623327321610992184">OnTask পড</translation>
-<translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
 <translation id="7633068090678117093">নেপথ্যৰ প্ৰতিচ্ছবি</translation>
 <translation id="763873111564339966">ইণ্ডিগ’</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">কী নাই। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
-<translation id="7811024689617730980">১ৰ পৰা ৩১ৰ পৰিসৰৰ পৰা এটা স্বয়ংক্ৰিয়ভাৱে ৰিছেট হোৱা দিন বাছনি কৰক</translation>
 <translation id="7813073042185856802">পৰ্বত</translation>
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7824219488248240180">প’ষ্ট-ইম্প্ৰেশ্বনিষ্ট</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
-<translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8135609423982943441">আপোনাৰ Chromebook সুৰক্ষিত ডিফ’ল্টলৈ ৰিছেট কৰা হৈছে। আপুনি যিকোনো সময়তে ছেটিঙত এই সালসলনিসমূহ মিলাব পাৰে।</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">আপোনাৰ নিজৰ সৃষ্টি কৰক</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP ঠিকনা</translation>
 <translation id="8491311378305535241">Android এপৰ পৰা ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="8495070016475833911">ফেল্ট</translation>
-<translation id="8498220429738806196">ট্ৰেফিক কাউণ্টাৰ</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
 <translation id="8505011850330200833">ট্ৰেন্সক্ৰিপ্ট প্ৰক্ৰিয়াকৰণ কৰিবলৈ আৰু সাৰাংশ সৃষ্টি কৰিবলৈ Gemini মডেলটোৰ বাবে ২ জিবি ষ্ট’ৰেজৰ আৱশ্যক</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">তুষাৰপাতেৰে ঢকা</translation>
 <translation id="8508640263392900755">এপিএনৰ সবিশেষ</translation>
 <translation id="8522687886059337719">আপোনাৰ এতিয়া নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ৱালপেপাৰ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আৰু <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />স্ক্ৰীন ছেভাৰ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ৰ এক্সেছ আছে</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">চাহৰ দোকান</translation>
 <translation id="8531692079895415839">কুঁৱলীময়</translation>
 <translation id="8538236298648811558">Google AIৰ দ্বাৰা সঞ্চালিত</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">কীব’ৰ্ড অধিক গাঢ় কৰা</translation>
 <translation id="8863170912498892583">গাঢ় ৰঙৰ থীম সক্ষম কৰক</translation>
 <translation id="8864415976656252616">পৰামৰ্শ হিচাপে আগবঢ়োৱা কোনো সমল নাই। সহায় বিষয়ক সৰ্বোত্তম সমল চাওক।</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8882789155418924367">ফেঁচা</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">এই ভিডিঅ'টো ব্যৱহাৰ কৰক</translation>
 <translation id="9088306295921699330">এতিয়ালৈকে কৰা ব্যৱহাৰৰ পৰিমাণ</translation>
 <translation id="9088994563996376283">সৰলীকৰণ কৰক</translation>
-<translation id="909856219855259344">তাৰিখ ৰিছেট কৰাৰ বিষয়ে অধিক তথ্য</translation>
 <translation id="9100765901046053179">উন্নত ছেটিংসমূহ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>

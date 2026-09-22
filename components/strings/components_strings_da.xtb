@@ -87,7 +87,7 @@
 <translation id="1143142264369994168">Certifikatunderskriver</translation>
 <translation id="1149617035358809955">verificer din identitet, så dine betalingsoplysninger kan udfyldes</translation>
 <translation id="1150979032973867961">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da operativsystemet på din computer ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
-<translation id="1151858212483238980">Du kan udfylde kort, der er gemt i Google Wallet, automatisk</translation>
+<translation id="1151858212483238980">Du kan bruge kort, der er gemt i Wallet, til automatisk udfyldning.</translation>
 <translation id="1151972924205500581">En adgangskode er påkrævet</translation>
 <translation id="1156303062776767266">Du får vist en lokal eller delt fil</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> lukkede forbindelsen uventet.</translation>
@@ -124,7 +124,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1201895884277373915">Mere fra dette website</translation>
 <translation id="1204184165594298176">{0,plural, =1{FIlen er blokeret, så den ikke kan kopieres}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan kopieres}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan kopieres}}</translation>
-<translation id="1205344127823614428">Du kan udfylde kort, der er gemt i Google Wallet, automatisk.</translation>
+<translation id="1205344127823614428">Du kan bruge kort, der er gemt i Wallet, til automatisk udfyldning.</translation>
 <translation id="1206967143813997005">Ugyldig første signatur</translation>
 <translation id="1209206284964581585">Skjul indtil videre</translation>
 <translation id="121201262018556460">Du har forsøgt at få fat i <ph name="DOMAIN" />, men serveren har præsenteret et certifikat med en svag nøgle. En hacker kan have knækket den private nøgle, og serveren er muligvis ikke den forventede server (du kommunikerer muligvis med en hacker).</translation>
@@ -550,6 +550,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927930548546198515">Chrome registrerer, hvordan du bruger funktionen, f.eks. dine anmodninger og din adfærd, når du accepterer eller ignorerer forslag</translation>
 <translation id="1932098463447129402">Ikke før</translation>
+<translation id="1932629105611536854">Postnummer for levering</translation>
 <translation id="1935353813610900265">Send feedback om søgning i historikken, som er baseret på AI</translation>
 <translation id="1935995810530254458">Kopiér alligevel</translation>
 <translation id="1938580037092872316">Føj nye oplysninger til den gemte adresse</translation>
@@ -615,6 +616,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2045871135676061132">Konvolut Personlig</translation>
 <translation id="2048261947532620704">Oversætter siden</translation>
 <translation id="2055016614992422886">Samtale</translation>
+<translation id="2057654338925604102">Fragtfirmaets domæne</translation>
 <translation id="2058468041496756763">Du kan til enhver tid ændre din søgemaskine i Chrome-indstillingerne. Hvis du ikke kan se din foretrukne søgemaskine, kan du foretage en søgning på dens website. Du kan se den angivet som en søgemaskine, du har besøgt for nylig, i Chrome-indstillingerne, og du kan angive den som din standardsøgemaskine.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
@@ -1610,6 +1612,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3715597595485130451">Opret forbindelse til Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Tjekke proxy-, firewall- og DNS-konfigurationen<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">Afsendelsesdato</translation>
 <translation id="372429172604983730">Apps, der kan forårsage denne fejl, er blandt andet antivirus-, firewall- og webfiltrerings- eller proxysoftware.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny Google-præsentation i Slides</translation>
 <translation id="3727309136762649052">Navneområde</translation>
@@ -2210,6 +2213,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
 <translation id="473414950835101501">Brug dine kameraer</translation>
+<translation id="4736089601076994090">Udløber: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
@@ -2537,8 +2541,10 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5258473597674772367">Fanegruppen "<ph name="GROUP_NAME" />" er ikke længere tilgængelig</translation>
 <translation id="5260842098960755113">Tråden er lukket</translation>
 <translation id="5262342527470539728">Dine oplysninger gemmes i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
+<translation id="5263202631354741256">Id</translation>
 <translation id="5263867360296733198">Gennemgang er påkrævet før upload</translation>
 <translation id="5266128565379329178">Bind øverst</translation>
+<translation id="5268746892698450173">Navn på fragtfirma</translation>
 <translation id="5269225904387178860">Fire huller nederst</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" er ikke en understøttet betingelse for "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Finpuds</translation>
@@ -2566,6 +2572,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5314967030527622926">Brochureværktøj</translation>
 <translation id="5316812925700871227">Rotér mod uret</translation>
 <translation id="5317780077021120954">Gem</translation>
+<translation id="5318654747230250818">Kode: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chromium-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen eller billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="5323043727018853753">Indlejret indhold er tilladt</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES" /></translation>
@@ -2614,7 +2621,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5398461103557553443">Hvis du vil udfylde dette IBAN-nummer automatisk næste gang, skal du gemme det i Google Wallet</translation>
 <translation id="5398772614898833570">Annoncer er blokeret</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="5402715318763077894">Vild du tillade lokal netværksadgang?</translation>
 <translation id="540949333488055151">Plast (farvet)</translation>
 <translation id="540969355065856584">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat ikke er gyldigt i øjeblikket. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="5411462078004183575">Købsmulighed med lav pris</translation>
@@ -2856,6 +2862,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Betalingsmetoden slettes fra denne enhed</translation>
 <translation id="5794065675298686371">Aktivér prissporingsnotifikationer</translation>
+<translation id="5794093550048860249">Sporingsnummer</translation>
 <translation id="5796050750059455142">Aktivér "<ph name="BEGIN_LINK" />Smartfunktioner i andre Google-produkter<ph name="LINK_END" />"</translation>
 <translation id="5797984091151707075">Blokeret af administratorpolitikken</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
@@ -4022,6 +4029,7 @@ Yderligere oplysninger:
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7766518757692125295">Skørte</translation>
 <translation id="776749070095465053">Stof</translation>
+<translation id="7772659560036894129">Produktnavne</translation>
 <translation id="7773005668374414287">Samme rækkefølge med forside opad</translation>
 <translation id="7779418012194492374">Tilbagekald adgang for <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">I går</translation>
@@ -4213,6 +4221,7 @@ Yderligere oplysninger:
 <translation id="8118506371121007279">Giv feedback</translation>
 <translation id="812020627659652807">Slet filer nu</translation>
 <translation id="8120720167840853945">Denne politik styrer ikke standardadfærden for andre politikker.</translation>
+<translation id="8120827570827570666">Sælgerdomæne</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" blev ikke korrekt installeret på computeren eller netværket. Bed din IT-administrator om at løse problemet.</translation>
 <translation id="8130113808541743942">Flyt til…</translation>
 <translation id="813024282736408069">Aktivér et virtuelt kort til autofyld</translation>
@@ -4324,6 +4333,7 @@ Yderligere oplysninger:
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Ingen gebyrer, helt ned til 0 % ÅOP</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8314036873065514376">Sælgernavn</translation>
 <translation id="8316555157357957253">Bruges nu</translation>
 <translation id="8319414634934645341">Udvidet brug af nøgle</translation>
 <translation id="831997045666694187">Aften</translation>

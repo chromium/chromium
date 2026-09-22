@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="1323735185997015385">ਮਿਟਾਓ</translation>
 <translation id="132683371494960526">ਪੇਰੈਂਟ ਫੋਲਡਰ ਨੂੰ ਬਦਲਣ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
+<translation id="132969855425874290">'ਲੱਭੋ ਅਤੇ ਭਰੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1333455942675373522">ਕੀ-ਬੋਰਡ</translation>
 <translation id="1334485477792811969">ਵੈੱਬ ਸੇਵਾਵਾਂ</translation>
 <translation id="1335767868357998043">ਪਤਾ ਬਾਰ ਸਥਿਤੀ ਚੁਣੋ</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}one{{count} ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}other{{count} ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਏ}}</translation>
 <translation id="1941314575388338491">ਕਾਪੀ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
 <translation id="1943478190258551035">ਮੀਨੂ → ਸੈਟਿੰਗਾਂ</translation>
+<translation id="1944477975050820119">ਅਸਲ-ਸਮੇਂ ਦੇ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰੋ, ਜੋ AI ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੇ ਨਵੇਂ ਤਰੀਕੇ ਲੱਭਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦੇ ਹਨ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1955773397805078763">ਭੁਗਤਾਨ ਵਿਧੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1956138802718275401">ਹੋਮ ਸਕ੍ਰੀਨ ਤੋਂ ਪਾਸਵਰਡਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
 <translation id="2323697864063408084">ਲਾਕ ਸਕ੍ਰੀਨ ਅਤੇ ਡੀਵਾਈਸ ਵਰਤਣ ਦੌਰਾਨ, ਬੈਨਰ ਵਜੋਂ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਜ਼ਰੂਰੀ ਸੂਚਨਾਵਾਂ ਨਾ ਖੁੰਝਾਓ</translation>
 <translation id="2326302612031521902">ਇਕਾਈ ਚੋਣਕਾਰ</translation>
+<translation id="2326606747676847821">ਗੁਮਨਾਮ ਜਾਓ</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ਤੋਂ</translation>
 <translation id="2330607597130465898">ਬਿਨਾਂ ਸੁਰੱਖਿਆ</translation>
 <translation id="233375395665273385">ਮਿਟਾਓ ਅਤੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">ਪੜ੍ਹੋ ਕਿ ਲੋਕਾਂ ਦਾ ਕੀ ਕਹਿਣਾ ਹੈ</translation>
 <translation id="2394659309569789395">ਸਾਈਟ ਨੂੰ ਫਿਰ ਵੀ ਖੋਲ੍ਹੋ</translation>
 <translation id="2403129868389095715">ਤੁਹਾਡਾ ਪੈਕੇਜ ਡਿਲੀਵਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="2408318953009664750">ਇੱਕ ਵਾਰ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="2410754283952462441">ਕੋਈ ਖਾਤਾ ਚੁਣੋ</translation>
 <translation id="2422174748424038845">ਜੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਮਿਟਾਉਂਦੇ ਹੋ, ਤਾਂ ਹਰ ਕੋਈ "<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਇਸ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2424805048070062787">ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">ਡਾਇਲੌਗਾਂ ਨੂੰ ਰੋਕੋ</translation>
 <translation id="2542268842667970959">"ਸੁਰੱਖਿਆ ਜਾਂਚ" ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="2551153019974022505">ਖਾਤੇ ਵਿੱਚ ਗੜਬੜ ਹੋਈ</translation>
+<translation id="2559785333866467778">Gemini ਦੇ ਸੁਝਾਅ</translation>
 <translation id="2559843230610279254">ਟੈਬ ਗਰੁੱਪ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ਟੈਬ।</translation>
 <translation id="257088987046510401">ਵਿਸ਼ੇ</translation>
 <translation id="2573117291489209663">ਹੋ ਗਿਆ</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">ਲਿੰਕਾਂ ਨੂੰ ਸਿੱਧਾ ਇੱਥੇ ਲਾਂਚ ਕਰੋ</translation>
 <translation id="2718352093833049315">ਕੇਵਲ ਵਾਈ-ਫਾਈ 'ਤੇ</translation>
 <translation id="2721190673959776287">ਸੰਦਰਭੀ ਪੈਨਲ ਲਈ ਵਧੀਆ ਸੈਂਪਲ ਨਾਲ ਉਤਪਾਦ-ਅੰਦਰ ਮਦਦ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ, ਜੋ ਦਿਨ ਵਿੱਚ ਕਈ ਵਾਰ ਦਿਖਾਈ ਦੇਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
+<translation id="273318428051150387">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਪਹੁੰਚਣ ਵੇਲੇ ਤੁਹਾਨੂੰ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ</translation>
 <translation id="2739887572830526131">ਬਾਅਦ ਵਿੱਚ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖੋ ਜਾਂ ਜੇ ਤੁਹਾਨੂੰ ਇਸਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤਾਂ ਇਸ ਨੂੰ ਮਿਟਾਓ।</translation>
 <translation id="2747003861858887689">ਪਿਛਲਾ ਖੇਤਰ</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> ਨੂੰ <ph name="POSITION" /> ਸਥਿਤੀ 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3181954750937456830">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਡੀ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ)</translation>
 <translation id="3183362380688692618">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ...</translation>
+<translation id="3185000827934321633">ਨੈਵੀਗੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3185760469172949183">ਕੈਮਰੇ ਨਾਲ ਖੋਜਣ ਦਾ ਕੰਮ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="3186796054637504691">ਇਤਿਹਾਸ ਅਤੇ ਵੈੱਬਸਾਈਟ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ਭੁਗਤਾਨ ਵਿਧੀ}one{# ਭੁਗਤਾਨ ਵਿਧੀ}other{# ਭੁਗਤਾਨ ਵਿਧੀਆਂ}}</translation>
 <translation id="3831560640878483188">ਕੀ ਚਿਤਾਵਨੀ ਨੂੰ ਖਾਰਜ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3832419617903252251">ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3835016165506903031">ਸਾਈਟ 'ਤੇ ਜਾਣ ਵੇਲੇ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="3835964409414434850">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="3838691874161539578">ਆਪਣੀ ਸੁਰੱਖਿਆ ਨੂੰ ਮਜ਼ਬੂਤ ਬਣਾਉਣ ਅਤੇ ਆਨਲਾਈਨ ਵਧੇਰੇ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3838985624086228724">ਤੁਹਾਡੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ 'ਤੇ ਕੀਮਤ ਘਟੀ, <ph name="DOMAIN" /> 'ਤੇ <ph name="PRODUCT_NAME" /> ਦੀ ਕੀਮਤ <ph name="PREVIOUS_PRICE" /> ਤੋਂ ਘਟ ਕੇ <ph name="PRICE" /> ਹੋ ਗਈ ਹੈ</translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, ਅਤੇ ਹੋਰ <ph name="NUMBER_OF_ACCOUNTS" /> ਦੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਤੁਹਾਡੇ ਖਾਤਿਆਂ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ।</translation>
 <translation id="3853162385423733133">ਆਪਣੇ Google ਖਾਤੇ <ph name="EMAIL" /> ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਵਰਤਣਾ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="3853873210696342070">ਆਯਾਤ ਕਰੋ</translation>
+<translation id="3854052088499589035">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਪਹੁੰਚਣ ਵੇਲੇ ਤੁਹਾਨੂੰ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਹੋਣਗੇ</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ਸੈਟਿੰਗਾਂ<ph name="END_BOLD" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="386224966259596343">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਢੁਕਵਾਂ ਫ਼ਾਰਮ ਭਰੋਗੇ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦਾ ਮੌਕਾ ਹੋਵੇਗਾ।</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4431224949908513835">ਭਰਨ ਲਈ ਕੋਈ ਭੁਗਤਾਨ ਵਿਧੀ ਚੁਣੋ।</translation>
 <translation id="4432122368769493392">ਸੈਟਿੰਗਾਂ…</translation>
+<translation id="443295142249850475">ਤੁਹਾਨੂੰ ਢੁਕਵੇਂ ਸੁਝਾਅ ਦੇਣ ਲਈ, ਤੁਹਾਡੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਦੇ ਪੰਨਾ ਸਿਰਲੇਖਾਂ ਅਤੇ URL ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4439968635693513370">ਇਸ ਨਾਲ ਆਪਣੇ ਵੀਕੈਂਡ ਦੀ ਯੋਜਨਾ ਬਣਾਓ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ਸੈਟਿੰਗਾਂ<ph name="END_BOLD" /> ਖੋਲ੍ਹੋ</translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} ਨਤੀਜਾ ਉਪਲਬਧ ਹੈ।}one{{count} ਨਤੀਜਾ ਉਪਲਬਧ ਹੈ।}other{{count} ਨਤੀਜੇ ਉਪਲਬਧ ਹਨ।}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> ਲਈ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="4455710003856931944">ਤੁਸੀਂ ਪਿੱਛੇ ਜਾਂ ਅੱਗੇ ਜਾਣ ਲਈ ਕੋਨੇ 'ਤੇ ਸਵਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4460014764210899310">ਗਰੁੱਪ ਹਟਾਓ</translation>
@@ -2224,6 +2235,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">ਬੰਦ ਕਰੋ</translation>
 <translation id="8106442513853561174">ਸਟੀਕ ਟਿਕਾਣਾ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 ਪਾਸਵਰਡ ਆਟੋਫਿਲ ਕੀਤਾ ਗਿਆ}one{# ਪਾਸਵਰਡ ਆਟੋਫਿਲ ਕੀਤਾ ਗਿਆ}other{# ਪਾਸਵਰਡ ਆਟੋਫਿਲ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="8114753159095730575">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨਾ ਉਪਲਬਧ ਹੈ। ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਕੋਲ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="8123502380991596210">"ਨਵਾਂ ਕੀ ਹੈ" ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="8123953306357309250">ਕੀ ਸਿੰਕ ਰੱਦ ਕਰਨਾ ਹੈ? ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸਿੰਕ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>

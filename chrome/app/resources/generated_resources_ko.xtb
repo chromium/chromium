@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">회색</translation>
 <translation id="1822635184853104396">새 탭에서 전체 다운로드 기록을 봅니다.</translation>
 <translation id="1823768272150895732">글꼴</translation>
-<translation id="1823781806707127806">기존 인터넷 사용 기록을 관리 프로필에 추가</translation>
 <translation id="1825073796163165618">링크 사용 설정</translation>
 <translation id="1825565032302550710">포트 번호는 1024와 65535 사이여야 합니다.</translation>
 <translation id="18260074040409954">어느 기기에서든 저장된 비밀번호를 사용할 수 있습니다. <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
@@ -1396,6 +1395,7 @@
 <translation id="2062354623176996748">시크릿 창에서는 인터넷 사용 기록을 저장하지 않고 웹을 사용할 수 있습니다.</translation>
 <translation id="206308717637808771">모든 창을 닫으면 데이터를 삭제합니다. 데이터는 현재 보고 있는 사이트와 동일하게 처리됩니다.</translation>
 <translation id="2066700471214517561">빔포밍 마이크로 Chromebook 사용자의 목소리가 선명하게 전달됩니다.</translation>
+<translation id="2067778293100584091">Google 월렛으로 이동하여 <ph name="BEGIN_LINK1" />데이터 및 개인 정보 보호 환경설정<ph name="END_LINK1" />을 제어하거나 포인트 카드, 신분증, 혜택 같은 <ph name="BEGIN_LINK3" />패스<ph name="END_LINK3" />와 <ph name="BEGIN_LINK2" />결제 수단<ph name="END_LINK2" />을 관리하세요.</translation>
 <translation id="2068581968816126410">여러 기기에서 북마크 사용</translation>
 <translation id="2069020119963193894">크기(S)</translation>
 <translation id="2071393345806050157">로컬 로그 파일이 없습니다.</translation>
@@ -2392,6 +2392,7 @@
 <translation id="2813094189969465044">자녀 보호 기능</translation>
 <translation id="2814489978934728345">해당 페이지 로드 중지</translation>
 <translation id="2816319641769218778">Google 계정에 비밀번호를 저장하려면 동기화를 사용 설정하세요.</translation>
+<translation id="281678554528702272">참고: 이러한 사이트 액세스 설정은 엔터프라이즈 정책 또는 강력한 API에 의해 재정의될 수 있습니다.</translation>
 <translation id="2817435998497102771">배경화면 및 스타일 설정</translation>
 <translation id="2817861546829549432">‘추적 안함’을 사용하도록 설정하면 요청이 사용자 탐색 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지와 요청이 해석되는 방법에 따라 결과가 결정됩니다. 예를 들어, 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않은 광고를 표시하여 이 요청에 응답합니다. 많은 웹사이트가 보안을 개선하거나 웹사이트에 콘텐츠, 서비스, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하는 등 여러 목적으로 사용자의 인터넷 사용 기록을 수집하고 사용합니다.</translation>
 <translation id="2818476747334107629">프린터 세부정보</translation>
@@ -3174,7 +3175,7 @@
 <translation id="3414974735818878791">가운데 마우스 버튼 길게 클릭</translation>
 <translation id="3415580428903497523">운영체제에서 가져온 로컬 인증서 사용</translation>
 <translation id="341589277604221596">실시간 자막 - <ph name="LANGUAGE" /></translation>
-<translation id="3416468988018290825">항상 전체 URL 표시</translation>
+<translation id="3416468988018290825">전체 URL 항상 표시</translation>
 <translation id="3417835166382867856">탭 검색</translation>
 <translation id="3417836307470882032">24시간제</translation>
 <translation id="3418798368381485936">이 계정으로는 로그인할 수 없습니다.</translation>
@@ -5067,6 +5068,7 @@
 <translation id="4850886885716139402">보기</translation>
 <translation id="485088796993065002">사이트에서는 음악, 동영상, 기타 미디어의 오디오를 제공하기 위해 소리를 재생할 수 있습니다.</translation>
 <translation id="4850919322897956733">데이터가 삭제되었습니다.</translation>
+<translation id="4851973858921178330">사이트 필터링</translation>
 <translation id="4852030988197799562">새로 방문한 사이트에서 JavaScript 최적화 도구 액세스 차단</translation>
 <translation id="4852383141291180386">앱 알림 관리하기</translation>
 <translation id="4852916668365817106">마우스 색상</translation>
@@ -5162,7 +5164,6 @@
 <translation id="4913573660390710463">향상된 기능을 갖춘 패키징된 웹 애플리케이션에 액세스합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">앱 데이터를 찾을 수 없습니다.</translation>
 <translation id="4915961947098019832">이미지 표시가 허용됨</translation>
-<translation id="491779113051926205">ChromeOS 트래픽 카운터</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 확장 프로그램과 통신하려고 합니다.</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4918762404810341788">복사하여 열기</translation>
@@ -6131,7 +6132,7 @@
 <translation id="5695184138696833495">Linux Android 앱 ADB</translation>
 <translation id="5696143504434933566">'<ph name="EXTENSION_NAME" />'의 악용사례 신고</translation>
 <translation id="5696679855467848181">현재 사용 중인 PPD 파일: <ph name="PPD_NAME" /></translation>
-<translation id="5697664819730124632">이미지를 추가하고 변신시켜 보세요</translation>
+<translation id="5697664819730124632">이미지를 추가하고 변신시켜 보세요.</translation>
 <translation id="5697832193891326782">그림 이모티콘 선택 도구</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> 데이터를 삭제하려고 합니다</translation>
 <translation id="5698815246352480266">탭을 전환하지 않고도 AI 모드로 계속 채팅할 수 있습니다. 시작하려면 본인 인증을 진행하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
@@ -7481,6 +7482,7 @@
 <translation id="6754359471209693699">새 검색 시작</translation>
 <translation id="6755702685749429945">사전 추가</translation>
 <translation id="6756643207511618722">음성 엔진</translation>
+<translation id="6756882635793733911">화면에 표시된 내용에 관해 무엇이든 물어보세요.</translation>
 <translation id="6757431299485455321">다른 기기가 이 핫스팟을 찾도록 돕습니다.</translation>
 <translation id="6757615605516049275"><ph name="TOKEN_NAME" />의 잠금을 해제하세요.</translation>
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
@@ -9450,7 +9452,7 @@
 <translation id="8251441930213048644">지금 새로고침</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> 기기와 페어링 중</translation>
 <translation id="8251578425305135684">미리보기 이미지가 삭제되었습니다.</translation>
-<translation id="825238165904109940">항상 전체 URL 표시</translation>
+<translation id="825238165904109940">전체 URL 항상 표시</translation>
 <translation id="8252569384384439529">업로드 중...</translation>
 <translation id="8253198102038551905">'+'를 클릭하여 네트워크 속성 보기</translation>
 <translation id="8255212965098517578">최근 사진, 알림, 앱</translation>
@@ -10766,6 +10768,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 <translation id="96774243435178359">관리되는 프린터</translation>
+<translation id="967745417352972504">Google 월렛으로 이동하여 <ph name="BEGIN_LINK_PAYMENT_METHODS" />결제 수단<ph name="END_LINK_PAYMENT_METHODS" />과 포인트 카드, 신분증, 혜택과 같은 <ph name="BEGIN_LINK_PASSES" />패스<ph name="END_LINK_PASSES" />를 추가하거나 관리하세요.</translation>
 <translation id="968000525894980488">Google Play 서비스를 사용 설정합니다.</translation>
 <translation id="968037381421390582">'<ph name="SEARCH_TERMS" />' 붙여넣기 및 검색(&amp;S)</translation>
 <translation id="969096075394517431">언어 변경</translation>

@@ -284,6 +284,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="7272930098487145294">Hvis du vil gemme billeder, kan du trykke på Indstillinger for at give Chrome tilladelse til at tilføje billeder</translation>
 <translation id="7275945473750112644">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chrome-data ryddet fra denne enhed</translation>
 <translation id="7284245284340063465">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Hvis du vælger eller ignorerer et forslag, tilpasses Chrome, så du får vist mere relevante forslag fremover.</translation>
 <translation id="7296102444587051536">Chrome til iOS</translation>
 <translation id="7299681342915173313">Du kan nu bruge Chrome, hver gang du trykker på links i mails, dokumenter og andre apps.</translation>
 <translation id="7334364820047587268">Du har allerede adgangskoder til disse konti i Google Adgangskodeadministrator. Hvis du vælger at importere én af adgangskoderne nedenfor, vil den erstatte den eksisterende adgangskode.</translation>
@@ -357,6 +358,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8544583291890527417">Underretninger om eventuelle privatlivsrelaterede eller sikkerhedsmæssige problemer, som Chrome registrerer for dig.</translation>
 <translation id="855027533751209304">Tip til Chrome: Søg efter det, du ser</translation>
 <translation id="8558480467877843976">Du kan nu bruge Chrome, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="8589791109349384456">Hvis du deaktiverer forslag, påvirker det ikke Chromes behandling af sidetitler og webadresser i forbindelse med andre funktioner. Du kan administrere adgangen til disse data i dine <ph name="BEGIN_LINK" />synkroniseringsindstillinger<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google Adgangs­kode­admin­istrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Brug dine adgangskoder, din historik, dine bogmærker og dine kreditkort fra Safari i Chrome</translation>
 <translation id="8630122478628016441">Aktivér "Lås inkognitofaner, når du lukker Chrome".</translation>

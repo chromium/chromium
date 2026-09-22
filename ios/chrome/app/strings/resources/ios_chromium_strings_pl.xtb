@@ -53,6 +53,8 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="1965068424387304464">Wskazówka od Chromium: zapisuj hasła</translation>
 <translation id="1992653360331625459">Menedżer haseł przechowuje już hasła do tych kont. Jeśli zechcesz zaimportować jedno z poniższych haseł, zastąpi ono dotychczasowe.</translation>
 <translation id="2006345422933397527">Chromium nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
+<translation id="2025935492422922097">Chromium przetwarza tytuły stron i adresy URL w przestrzeni prywatnej w chmurze</translation>
+<translation id="2027881372245801507">Wyłączenie sugestii nie ma wpływu na przetwarzanie przez Chromium tytułów stron i adresów URL na potrzeby innych funkcji. Możesz zarządzać dostępem do tych danych w <ph name="BEGIN_LINK" />ustawieniach synchronizacji<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Wyświetl historię Chromium</translation>
 <translation id="2052320862053429062">Co jakiś czas Chromium sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="2059365270911640413">Dokończ konfigurowanie Chromium</translation>
@@ -105,6 +107,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="3072591112723064972">Ustaw Chromium jako domyślną przeglądarkę, aby natychmiast otwierać w niej linki.</translation>
 <translation id="3115956258722352278">Ustawić Chromium jako przeglądarkę domyślną?</translation>
 <translation id="3180939591219927904">Włącz opcję „Po zamknięciu Chromium blokuj karty incognito”</translation>
+<translation id="3239426886813624481">Aby udostępniać swoją lokalizację witrynom, kliknij Ustawienia i pozwól Chromium na używanie Twojej lokalizacji.</translation>
 <translation id="327628223428512207">Wpisz hasło wielowyrazowe, aby zapisać to hasło i uzyskać dostęp do danych z Chromium na wszystkich swoich urządzeniach</translation>
 <translation id="328933489847748230">{count,plural, =1{Pokazuję 1 okno Chromium}few{Pokazuję {count} okna Chromium}many{Pokazuję {count} okien Chromium}other{Pokazuję {count} okna Chromium}}</translation>
 <translation id="3344204225393848305">Ustaw Chromium jako przeglądarkę domyślną</translation>
@@ -351,6 +354,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="865600487977764604">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="8663480472502753423">Zawsze używaj aktualnej wersji Chromium</translation>
 <translation id="8685813584220679697">Zaloguj się w na tej stronie i w Chromium.</translation>
+<translation id="8697693743327341604">Jeśli wybierzesz lub zignorujesz sugestię, Chromium dostosuje się tak, aby w przyszłości wyświetlać trafniejsze sugestie.</translation>
 <translation id="869832267508702259">Ustaw Chromium jako przeglądarkę domyślną, aby otrzymywać statystyki Gemini podczas przeglądania internetu</translation>
 <translation id="8698780336333802489">Importuj do Chromium</translation>
 <translation id="8730503818204408000">Otwiera opcję Chromium pozwalającą ustawić Chromium jako przeglądarkę domyślną.</translation>

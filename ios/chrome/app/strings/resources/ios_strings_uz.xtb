@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Yuqori jildni o‘zgartirish uchun ustiga ikki marta bosing.</translation>
 <translation id="132969855425874290">Topish va kiritishni yopish</translation>
 <translation id="1333455942675373522">Klaviatura</translation>
+<translation id="1333669029961409292">“Parollarni tekshirish” bajarildi!</translation>
 <translation id="1334485477792811969">Veb-xizmatlar</translation>
 <translation id="1335767868357998043">Manzillar qatori joylashuvini tanlang</translation>
 <translation id="1347468774581902829">Tarixni boshqarish</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">OO/YY</translation>
 <translation id="1636234353664774105">Navigatsiya yordamida manzilgacha qadamli koʻrsatkichlarni oling</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
+<translation id="1644229815617955289">Maxfiylikni himoyalash uchun tarix, cookie fayllar va boshqalarni boshqaring</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="164673457281113247">{count,plural, =1{Bukmark saqlandi}other{Bukmarklar saqlandi}}</translation>
 <translation id="1650979352027263879">Mavzu sozlamalari olib tashlandi</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Profil konfiguratsiyasi mavjud</translation>
 <translation id="2244080985779413662">Bu sayt faylni yuklab olib, Wallet hamyoningizda ochmoqchi.</translation>
 <translation id="2245007488813216650">Tarjima qilinmoqda…</translation>
+<translation id="2246445006133863463">Bu sizga ovozingiz yordamida Gemini bilan suhbatlashish imkonini beradi</translation>
 <translation id="2249119578464404734">Ekranning yuqori qismida qidiruv belgisini bosing</translation>
 <translation id="2251686759395008410">Menyu → Tarix</translation>
 <translation id="2252378061043785266">Bu sayt hech qachon chiqarilmasin</translation>
@@ -435,6 +438,7 @@
 <translation id="2321086116217818302">Parollar tayyorlanmoqda…</translation>
 <translation id="2323697864063408084">Muhim narsalarni oʻtkazib yubormaslik uchun ekran qulfida bildirishnomalarni banner shaklida oling.</translation>
 <translation id="2326302612031521902">Oʻlchov birligini tanlash</translation>
+<translation id="2326606747676847821">Inkognito rejimi</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> orqali</translation>
 <translation id="2330607597130465898">Himoyasiz</translation>
 <translation id="233375395665273385">Oʻchirish va hisobdan chiqish</translation>
@@ -877,6 +881,7 @@
 <translation id="3853162385423733133">Parollarni Google hisobingizda (<ph name="EMAIL" />) saqlab, ulardan foydalanishda davom eting</translation>
 <translation id="3853873210696342070">Import qilish</translation>
 <translation id="3854052088499589035">Level Up darajangiz oshganda bildirishnoma olasiz</translation>
+<translation id="3854214753902617617">Saytlarni kuchaytirilgan rejimda xavfsiz kezish bilan tanishing</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari sozlamalarini<ph name="END_BOLD" /> oching</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="386224966259596343">Keyingi safar tegishli shaklni toʻldirganingizda bu maʼlumotni Walletga saqlash imkoniga ega boʻlasiz.</translation>
@@ -947,6 +952,7 @@
 <translation id="4047337302138771011">Parollarni ulashing</translation>
 <translation id="4049419681095579435">Paket allqachon kuzatuvda</translation>
 <translation id="4049507953662678203">Internet yoniqligini tekshiring va qayta urinib ko‘ring.</translation>
+<translation id="4052951214266508382">Gemini mikrofoningizdan foydalanishiga ruxsat bering</translation>
 <translation id="4054290211988862686">Fayl tanlang</translation>
 <translation id="4070132839822635162">Bekor qilish</translation>
 <translation id="4072473499345702662">Level Up sahifasini ochish</translation>
@@ -1480,6 +1486,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="574762237186762643">Tadbirlar</translation>
 <translation id="5749158352074143502">Shu varaqda davom etish</translation>
 <translation id="5753021559215751319">Parolni saqlash</translation>
+<translation id="5756200167514420691">Internetni yanada maxfiyroq kezish uchun varaqlarni Inkognito rejimida oching</translation>
 <translation id="5756525336488841345">Bukmarklarni berkitish</translation>
 <translation id="5758631781033351321">Brauzer mutolaa roʻyxati shu yerda chiqadi</translation>
 <translation id="57586589942790530">Karta raqami noto‘g‘ri</translation>
@@ -1550,6 +1557,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5988097621740394599">Narxlar tushishini varaqlarda kuzating.</translation>
 <translation id="5988851877894965432">URL manzillarni Chrome orqali ochish</translation>
 <translation id="599343768974649785">Behayo matn</translation>
+<translation id="6000893618966378846">“Brauzer maʼlumotlarini oʻchirish” bajarildi!</translation>
 <translation id="6004988584831654445">Tayyor! Yangi vazifa kelganda bildirishnoma oling.</translation>
 <translation id="6006672969046233841">Yangi varaq</translation>
 <translation id="6011308810877101166">Qidiruv takliflarini yaxshilash</translation>
@@ -1974,6 +1982,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7311244614769792472">Hech narsa topilmadi</translation>
 <translation id="7312823817809783355">Vazifalaringiz</translation>
 <translation id="7313347584264171202">Brauzer Inkognito varaqlari shu yerda chiqadi</translation>
+<translation id="7318555235645532245">“Inkognito rejimiga kirish” bajarildi!</translation>
 <translation id="7322186060879266048">{count,plural, =1{Klaviatura ustida {count} xil avtomatik kiritish usuli chiqadi.}other{Klaviatura ustida {count} xil avtomatik kiritish usuli chiqadi.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% yuklab olindi</translation>
@@ -2150,6 +2159,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7857520352710212030">Sayt qadaldi</translation>
 <translation id="7859988229622350291">Hech qachon tarjima qilinmasin</translation>
 <translation id="7863211248337747225">Ilovani yuklab olish</translation>
+<translation id="7863990181930071932">Joylashuv ruxsati faolsizlantirilgan</translation>
 <translation id="7865127013871431856">Tarjima parametrlari</translation>
 <translation id="7866872729285243843">Saqlangan sahifalardan barcha qurilmalarda foydalanish uchun sozlamalardan Saqlangan sahifalar bandini yoqing.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> orqali avtomatik kiritish</translation>
@@ -2458,6 +2468,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8786100550345425552">Ruxsatlarni tahrirlash</translation>
 <translation id="878871978861915380">“Narx kuzatuvi” chiqmasin</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8795809107245894196">Parollaringiz xavfsiz ekaniga ishonch hosil qilish uchun Parol tekshiruvidan foydalaning</translation>
 <translation id="8796634520835503150">Mutolaa rejimi mavjud</translation>
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
 <translation id="8803639129939845298">Xavfsiz</translation>

@@ -905,6 +905,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2493122313108999546">Diubah saiz</translation>
 <translation id="249376477913017009">Autolengkap daripada Gmail dan notis lain dibuka</translation>
 <translation id="2495083838625180221">Penghurai JSON</translation>
+<translation id="2495909791227061512">Sambung kepada peranti berdekatan?</translation>
 <translation id="2496402116964818747">Anda boleh menukar sama ada anda mahu menggunakan cap jari anda untuk mengisi kata laluan pada <ph name="SETTINGS" /> atau tidak</translation>
 <translation id="2498091847651709837">Imbas kad baharu</translation>
 <translation id="2501270939904835585">Label (Satin)</translation>
@@ -1305,6 +1306,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3207960819495026254">Ditandai halaman</translation>
 <translation id="3209034400446768650">Halaman mungkin mengenakan bayaran berbentuk wang</translation>
 <translation id="3209071504641569648">Permintaan, tajuk halaman dan URL anda dihantar kepada Google dan mungkin disemak untuk meningkatkan autolengkap dipertingkatkan</translation>
+<translation id="3211727636285361260">Buka pautan <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Muat turun dimulakan. Untuk melihat muat turun, seret dari bahagian atas dan sentuh butang kembali</translation>
 <translation id="3212581601480735796">Aktiviti anda pada <ph name="HOSTNAME" /> sedang dipantau</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
@@ -2088,6 +2090,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="449126573531210296">Sulitkan kata laluan yang disegerakkan menggunakan Google Account anda</translation>
 <translation id="4493480324863638523">URL tidak sah. Mestilah URL dengan skema standard, mis http://example.com atau https://example.com.</translation>
 <translation id="4497010149473852018">Kad kesetiaan tersedia untuk diisi apabila disentuh. Papan kekunci tersembunyi.</translation>
+<translation id="4497843134750481377">Urus tawaran</translation>
 <translation id="4500587658229086076">kandungan tidak selamat</translation>
 <translation id="4501939680615452918">Cari tempat kosong di restoran sohor kini</translation>
 <translation id="4503459574136856756">Tulis semula biografi saya agar kedengaran lebih profesional</translation>
@@ -2214,6 +2217,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4732860731866514038">Memuat turun pek bahasa <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> mahu menggunakan lokasi peranti anda</translation>
 <translation id="473414950835101501">Gunakan kamera anda</translation>
+<translation id="4736089601076994090">Tamat tempoh: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Mulakan semula Chromium</translation>
 <translation id="4736934858538408121">Kad maya</translation>
 <translation id="473775607612524610">Kemas kini</translation>
@@ -2572,6 +2576,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5314967030527622926">Pembuat buku kecil</translation>
 <translation id="5316812925700871227">Putar lawan arah jam</translation>
 <translation id="5317780077021120954">Simpan</translation>
+<translation id="5318654747230250818">Kod: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chromium<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="5323043727018853753">Kandungan terbenam dibenarkan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES" /></translation>
@@ -2620,7 +2625,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5398461103557553443">Untuk membuat autolengkap IBAN ini pada masa hadapan, simpan maklumat IBAN ini dalam Google Wallet</translation>
 <translation id="5398772614898833570">Iklan disekat</translation>
 <translation id="5400836586163650660">Kelabu</translation>
-<translation id="5402715318763077894">Benarkan akses rangkaian setempat?</translation>
 <translation id="540949333488055151">Plastik (Berwarna)</translation>
 <translation id="540969355065856584">Pelayan ini tidak dapat membuktikan bahawa pelayan adalah <ph name="DOMAIN" />; sijil keselamatan pelayan tidak sah pada masa ini. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
 <translation id="5411462078004183575">Pilihan Harga Murah</translation>
@@ -3751,6 +3755,7 @@ Butiran tambahan:
 <translation id="7347640536700429009">Nama pada kad tidak sah</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
+<translation id="7358055687760675498">Buka pautan <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" /> dan bukannya <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Iklan disekat.</translation>
 <translation id="7362281996276843968">Kumpulan ini ditutup</translation>
 <translation id="7363096869660964304">Walau bagaimanapun, anda tidak halimunan. Apabila anda menggunakan mod Inkognito, penyemakan imbas anda tidak akan disembunyikan daripada majikan anda, penyedia perkhidmatan Internet anda atau laman web yang anda lawati.</translation>

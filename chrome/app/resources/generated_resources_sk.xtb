@@ -1069,7 +1069,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1822517323280215012">Sivá</translation>
 <translation id="1822635184853104396">Zobraziť celú históriu sťahovania na novej karte</translation>
 <translation id="1823768272150895732">Písmo</translation>
-<translation id="1823781806707127806">Pridávať existujúce dáta prehliadania do spravovaného profilu</translation>
 <translation id="1825073796163165618">Povoliť odkazy</translation>
 <translation id="1825565032302550710">Port musí byť v rozsahu od 1024 do 65535</translation>
 <translation id="18260074040409954">Uložené heslá môžete používať v ľubovoľnom zariadení. Ukladajú sa do služby <ph name="GOOGLE_PASSWORD_MANAGER" /> účtu <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2062354623176996748">Používajte internet bez ukladania histórie prehliadania v okne inkognito</translation>
 <translation id="206308717637808771">Odstraňujte údaje pri zavretí všetkých okien. Prístup k údajom je rovnaký ako na webe, ktorý si prezeráte.</translation>
 <translation id="2066700471214517561">Mikrofón s podporou beamformingu, aby bol hlas osoby používajúcej Chromebook zreteľný.</translation>
+<translation id="2067778293100584091">Ak chcete spravovať <ph name="BEGIN_LINK1" />predvoľby údajov a ochrany súkromia<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />spôsoby platby<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />karty<ph name="END_LINK3" />, ako sú vernostné karty, doklady totožnosti a ponuky, prejdite do Peňaženky Google</translation>
 <translation id="2068581968816126410">Používanie záložiek v rôznych zariadeniach</translation>
 <translation id="2069020119963193894">&amp;Veľkosť</translation>
 <translation id="2071393345806050157">Žiadny miestny súbor denníka nie je k dispozícii.</translation>
@@ -2378,6 +2378,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2813094189969465044">Rodičovská kontrola</translation>
 <translation id="2814489978934728345">Zastaviť otváranie tejto stránky</translation>
 <translation id="2816319641769218778">Ak chcete ukladať heslá do svojho účtu Google, zapnite synchronizáciu.</translation>
+<translation id="281678554528702272">Poznámka: Tieto nastavenia prístupu k webu môžu byť prepísané podnikovými pravidlami alebo výkonnými rozhraniami API.</translation>
 <translation id="2817435998497102771">Nastaviť tapety a štýl</translation>
 <translation id="2817861546829549432">Ak povolíte možnosť Nesledovať, k odosielaným údajom prehliadania sa pridá žiadosť. Akýkoľvek účinok závisí od toho, či budú webové stránky na žiadosť reagovať, a od interpretácie žiadosti. Niektoré webové stránky môžu napríklad na túto žiadosť reagovať tak, že vám zobrazia reklamy, ktoré nie sú založené na ostatných webových stránkach, ktoré ste navštívili. Mnoho webových stránok bude stále zhromažďovať a používať vaše údaje prehliadania, napríklad na zlepšenie zabezpečenia, poskytovanie obsahových služieb, reklám a odporúčaní na svojich webových stránkach a na generovanie štatistiky prehľadov.</translation>
 <translation id="2818476747334107629">Podrobnosti tlačiarne</translation>
@@ -5054,6 +5055,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="485088796993065002">Weby môžu prehrávať zvuk na poskytnutie zvukovej stopy hudby, videí a ďalších médií</translation>
 <translation id="4850919322897956733">Dáta boli odstránené.</translation>
+<translation id="4851973858921178330">Filtrovať weby</translation>
 <translation id="4852030988197799562">Blokujte prístup k optimalizátoru JavaScriptu na weboch navštívených prvý raz</translation>
 <translation id="4852383141291180386">Spravovať upozornenia aplikácií</translation>
 <translation id="4852916668365817106">Farba myši</translation>
@@ -5149,7 +5151,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4913573660390710463">Získajte prístup k zbaleným webovým aplikácie s rozšírenými funkciami. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Dáta aplikácie sa nedajú nájsť</translation>
 <translation id="4915961947098019832">Môže zobrazovať obrázky</translation>
-<translation id="491779113051926205">Počítadlá návštevnosti v systéme ChromeOS</translation>
 <translation id="4918021164741308375">Web <ph name="ORIGIN" /> chce komunikovať s rozšírením <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4918762404810341788">Skopírovať a otvoriť</translation>
@@ -7471,6 +7472,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6754359471209693699">Spustenie nového vyhľadávania</translation>
 <translation id="6755702685749429945">Pridať slovník</translation>
 <translation id="6756643207511618722">Hlasové nástroje</translation>
+<translation id="6756882635793733911">Spýtajte sa na čokoľvek na obrazovke</translation>
 <translation id="6757431299485455321">Umožnite ostatným zariadeniam nájsť tento hotspot.</translation>
 <translation id="6757615605516049275">Odomknite <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Dajte nám tak vedieť, ako sa nám darí v našom úsilí.</translation>
@@ -10756,6 +10758,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="96756691973639907">Ďalšie akcie pre modul <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Uložené dáta</translation>
 <translation id="96774243435178359">Spravované tlačiarne</translation>
+<translation id="967745417352972504">Ak chcete pridať či spravovať <ph name="BEGIN_LINK_PAYMENT_METHODS" />spôsoby platby<ph name="END_LINK_PAYMENT_METHODS" /> a <ph name="BEGIN_LINK_PASSES" />karty<ph name="END_LINK_PASSES" />, ako sú vernostné karty, doklady totožnosti a ponuky, prejdite do Peňaženky Google.</translation>
 <translation id="968000525894980488">Zapnite Služby Google Play</translation>
 <translation id="968037381421390582">Prilepiť a vyhľadať dopyt <ph name="SEARCH_TERMS" /></translation>
 <translation id="969096075394517431">Zmeniť jazyky</translation>

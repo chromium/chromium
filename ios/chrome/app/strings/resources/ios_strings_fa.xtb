@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">سازمانتان استفاده از «حالت ناشناس» را الزامی کرده است</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">برای تغییر پوشه والد دو ضربه سریع بزنید.</translation>
+<translation id="132969855425874290">بستن «پیدا کردن و پر کردن»</translation>
 <translation id="1333455942675373522">صفحه‌کلید</translation>
 <translation id="1334485477792811969">سرویس‌های وبی</translation>
 <translation id="1335767868357998043">انتخاب کردن جای نوار نشانی</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{پیوند دریافت شد}one{‫{count} پیوند دریافت شد}other{‫{count} پیوند دریافت شد}}</translation>
 <translation id="1941314575388338491">برای کپی کردن دو ضربه سریع بزنید.</translation>
 <translation id="1943478190258551035">تنظیمات ← منو</translation>
+<translation id="1944477975050820119">دریافت پیشنهادهای لحظه‌ای که می‌توانند در پیدا کردن روش‌های جدیدی برای مرور کردن با هوشواره به شما کمک کنند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">ورود به سیستم با حساب مدیریت‌شده</translation>
 <translation id="1955773397805078763">افزودن روش پرداخت</translation>
 <translation id="1956138802718275401">از صفحه اصلی به گذرواژه‌ها دسترسی پیدا کنید</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="2323697864063408084">اعلان‌ها را در «صفحه قفل» و به‌صورت «برنما» دریافت کنید تا هرگز چیزهایی را که برایتان مهم است ازدست ندهید</translation>
 <translation id="2326302612031521902">گزینشگر واحد</translation>
+<translation id="2326606747676847821">ناشناس شوید</translation>
 <translation id="2327445548174191329">از <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">بدون محافظت</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">نظرات دیگران را بخوانید</translation>
 <translation id="2394659309569789395">سایت درهرصورت باز شود</translation>
 <translation id="2403129868389095715">بسته شما را نمی‌توان تحویل داد</translation>
+<translation id="2408318953009664750">یک‌بار مجاز باشد</translation>
 <translation id="2410754283952462441">انتخاب حساب</translation>
 <translation id="2422174748424038845">اگر گروه زبانه را حذف کنید، همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه زبانه از همه دستگاه‌ها حذف می‌شود.</translation>
 <translation id="2424805048070062787">ادامه کار با این زبانه</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">جلوگیری از کادرهای گفتگو</translation>
 <translation id="2542268842667970959">پنهان کردن «کنترل ایمنی»</translation>
 <translation id="2551153019974022505">خطای حساب</translation>
+<translation id="2559785333866467778">‏پیشنهادهای Gemini</translation>
 <translation id="2559843230610279254">گروه زبانه، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> زبانه.</translation>
 <translation id="257088987046510401">طرح‌‌های قسمت</translation>
 <translation id="2573117291489209663">تمام</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">باز کردن پیوندها مستقیماً در اینجا</translation>
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2721190673959776287">نمونه راهنمای غنی درون‌محصولی برای «پانل زمینه‌ای» که هر روز چندین بار ظاهر می‌شود.</translation>
+<translation id="273318428051150387">‏با پیشرفت در «Level Up»، به‌روزرسانی ها را دریافت نخواهید کرد</translation>
 <translation id="2739887572830526131">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به آن نیاز ندارید، آن را حذف کنید.</translation>
 <translation id="2747003861858887689">فیلد قبلی</translation>
 <translation id="2750583038402718064">‏<ph name="WEBSITE_TITLE" /> به موقعیت <ph name="POSITION" /> منتقل شد</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">به سیستم وارد شوید تا نشانک‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
 <translation id="3183362380688692618">گروه زبانه جدید…</translation>
+<translation id="3185000827934321633">پیمایش</translation>
 <translation id="3185760469172949183">جستجو با دوربین تکمیل شد!</translation>
 <translation id="3186796054637504691">‏‫Clear History and Website Data (پاک کردن داده‌های وب‌سایت و سابقه)</translation>
 <translation id="3190558889382726167">گذرواژه ذخیره شد</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{‫۱ روش پرداخت}one{‫# روش پرداخت}other{‫# روش پرداخت}}</translation>
 <translation id="3831560640878483188">هشدار بسته شود؟</translation>
 <translation id="3832419617903252251">گذرواژه فقط در این دستگاه ذخیره شده است</translation>
+<translation id="3835016165506903031">مجاز کردن حین بازدید</translation>
 <translation id="3835964409414434850">رفتن به برگه بعدی</translation>
 <translation id="3838691874161539578">برای تقویت امنیت و ایمنی بیشتر در اینترنت، گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید</translation>
 <translation id="3838985624086228724">کاهش قیمت محصول ردیابی‌شده، از <ph name="PREVIOUS_PRICE" /> به <ph name="PRICE" />،‏ <ph name="PRODUCT_NAME" />،‏ <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">گذرواژه‌های <ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" />، و <ph name="NUMBER_OF_ACCOUNTS" /> مورد دیگر حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="3853162385423733133">‏به استفاده و ذخیره کردن گذرواژه‌هایتان در «حساب Google» خود (‏<ph name="EMAIL" />) ادامه دهید</translation>
 <translation id="3853873210696342070">وارد کردن</translation>
+<translation id="3854052088499589035">‏با پیشرفت در «Level Up»، به‌روزرسانی ها را دریافت خواهید کرد</translation>
 <translation id="3857113360369572832">‏‫<ph name="BEGIN_BOLD" />Safari Settings (تنظیمات Safari)<ph name="END_BOLD" /> را باز کنید</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="386224966259596343">دفعه بعد که فرم مربوطی را تکمیل کنید، فرصت خواهید داشت که این اطلاعات را در کیف پول ذخیره کنید.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">گذرواژه‌های ذخیره‌شده را در برنامه‌های دیگر دریافت کنید</translation>
 <translation id="4431224949908513835">روش پرداختی را برای تکمیل انتخاب کنید.</translation>
 <translation id="4432122368769493392">تنظیمات…</translation>
+<translation id="443295142249850475">برای ارائه پیشنهادهای مرتبط، از عنوان صفحه‌ها و نشانی‌های وب در زبانه‌های باز شما استفاده می‌شود.</translation>
 <translation id="4439968635693513370">برنامه‌ریزی کردن برای آخر هفته با</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />تنظیمات<ph name="END_BOLD" /> را باز کنید</translation>
+<translation id="4444574452810111637">{count,plural, =1{‫{count} نتیجه دردسترس است.}one{‫{count} نتیجه دردسترس است.}other{‫{count} نتیجه دردسترس است.}}</translation>
 <translation id="4445840280797509738">گزینه‌های بیشتر برای <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">برای رفتن به‌عقب یا جلو، می‌توانید از لبه تند بکشید.</translation>
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
@@ -2224,6 +2235,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8102130909719902723">ج</translation>
 <translation id="8105368624971345109">خاموش کردن</translation>
 <translation id="8106442513853561174">هم‌رسانی مکان دقیق</translation>
+<translation id="8110894698020598040">{count,plural, =1{‫۱ گذرواژه به‌طور خودکار تکمیل شد}one{‫# گذرواژه ها به‌طور خودکار تکمیل شدند}other{‫# گذرواژه ها به‌طور خودکار تکمیل شدند}}</translation>
 <translation id="8114753159095730575">بارگیری فایل دردسترس است. گزینه‌ها نزدیک انتهای صفحه دردسترس است.</translation>
 <translation id="8123502380991596210">پنهان کردن «تازه‌ها»</translation>
 <translation id="8123953306357309250">همگام‌سازی لغو شود؟ هر زمان که بخواهید می‌توانید همگام‌سازی را در تنظیمات روشن کنید.</translation>

@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Nie zezwalaj witrynom na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
 <translation id="1476700086976862423">Kolor motywu: sepia</translation>
+<translation id="1497214680865404175">Obraz przesłany przez użytkownika</translation>
 <translation id="1500473259453106018">Ukryj kartę Obniżki cen na kartach</translation>
 <translation id="1508931164824684991">Strony mogą używać JavaScriptu</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>

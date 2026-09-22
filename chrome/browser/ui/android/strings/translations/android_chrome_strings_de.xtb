@@ -768,7 +768,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4072805772816336153">Versuch es später noch einmal</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="4092709865241032354">Nutzername für diese Website hinzufügen, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
+<translation id="4092709865241032354">Füge deinen Nutzernamen für diese Website hinzu, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
 <translation id="4105527135143631701">Update des Google Passwortmanagers geöffnet</translation>
@@ -2126,6 +2126,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="948276827484905248">QR-Code erstellen</translation>
 <translation id="95817756606698420">Chrome kann in China <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> für die Suche verwenden. Du kannst dies unter <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> ändern.</translation>
+<translation id="959544960061022767">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>
 <translation id="963246339335003378">Task-Manager öffnen</translation>
 <translation id="966337994629449077">Du bist als <ph name="FROM_EMAIL" /> angemeldet.\n\nWenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="TO_EMAIL" />. Du erhältst die Passwörter, Lesezeichen und mehr aus diesem Konto.</translation>

@@ -1922,7 +1922,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="84594714173170813">Google アカウントの Chrome データを引き続き使用してください</translation>
 <translation id="8460008946585880786">タブを別のタブにドラッグ＆ドロップする</translation>
 <translation id="8460448946170646641">プライバシーとセキュリティに関する重要な設定を確認します</translation>
-<translation id="8460932807646981183">検索エンジンとサイト内検索を管理する</translation>
+<translation id="8460932807646981183">検索エンジンとサイト内検索を管理</translation>
 <translation id="8465252176946159372">無効です</translation>
 <translation id="8472353072135865937">{NUM_BOOKMARKS,plural, =1{新しいウィンドウで開く}other{新しいウィンドウですべて（# 個）開く}}</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
@@ -2126,6 +2126,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="948276827484905248">QR コードを作成</translation>
 <translation id="95817756606698420">中国のユーザーは Chrome での検索に <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> を使用できます。この設定は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で変更可能です。</translation>
+<translation id="959544960061022767">Chrome を使用するにあたって、組織がログインを求めています</translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>
 <translation id="963246339335003378">タスク マネージャーを開く</translation>
 <translation id="966337994629449077"><ph name="FROM_EMAIL" /> としてログインしています。\n\nパソコンから続行するには、<ph name="TO_EMAIL" /> に切り替えてください。このアカウントのパスワードやブックマークなどを使用できるようになります。</translation>

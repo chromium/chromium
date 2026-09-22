@@ -72,6 +72,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
             Þetta hefur ekki áhrif á bókamerki, feril og vistuð aðgangsorð.</translation>
 <translation id="1619887657840448962">Til að gera Chrome öruggara höfum við slökkt á eftirfarandi viðbót sem ekki er á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="1628000112320670027">Fá hjálp með Chrome</translation>
+<translation id="1632241302126471515">Leita með Chrome Canary</translation>
 <translation id="1640672724030957280">Sækir...</translation>
 <translation id="1651617469580841801">Þegar þú notar Google-linsu verða titill síðu, vefslóð og innihald, að meðtöldum PDF-skjölum, send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Um ChromeOS Flex</translation>
@@ -208,7 +209,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – innskráning á net – Chrome</translation>
 <translation id="2970681950995291301">Skráðu þig út af Chrome á stillingarsíðunni til að fjarlægja Google-reikninginn þinn af Chrome</translation>
 <translation id="2976869732253036751">Fáðu verðrakningartilkynningar með Chrome í símanum þínum</translation>
-<translation id="2985091279808606502">Chrome þarf heimild fyrir staðarnet fyrir þetta vefsvæði</translation>
 <translation id="2991167882679440829">Lykilorðið þitt og önnur Chrome-gögn sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chrome skaltu skrá þig aftur inn.</translation>
 <translation id="2994465299455873643">Sér <ph name="BROWSER_NAME" /> fyrir dulkóðunarþjónustu og öruggri endurheimt ef vafrinn úreldist. Ef slökkt er á þjónustunni kann <ph name="BROWSER_NAME" /> að glata aðgangi að dulkóðuðum gögnum og <ph name="BROWSER_NAME" /> mun hugsanlega ekki geta endurheimt sig.</translation>
 <translation id="3003694935412297923">Öll verkefni</translation>
@@ -276,6 +276,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3596080736082218006">{COUNT,plural, =0{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu}=1{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="3597003331831379823">Ekki tókst að hefja uppsetningu með auknum heimildum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Sýna Gemini í Chrome í kerfisbakka</translation>
+<translation id="3616622400661108683">Spyrja um efni utan Chrome, eins og önnur forrit eða skrár</translation>
 <translation id="3622716124581627104">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar Google-linsu er skjámynd af síðunni send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nú er auðveldara að nota Chrome með Google reikningnum þínum og í samnýttum tölvum.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum.</translation>
@@ -757,7 +758,9 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8162006532256575008">Nota Chrome án reiknings</translation>
 <translation id="8172231188687329735">Sæktu Chrome-forritið til að vista aðgangsorð á ferðinni</translation>
 <translation id="8177472873527554730">Ekki tókst að finna efni á síðu</translation>
+<translation id="8196526165798579689">Leita með Chrome Dev</translation>
 <translation id="8221491193165283816">Þú lokar yfirleitt á tilkynningar. Ef þú vilt leyfa þessu vefsvæði að birta þér tilkynningar skaltu smella hér.</translation>
+<translation id="8227493674161801700">Leita með Chrome Beta</translation>
 <translation id="8253851811470049684">Opnaðu tengla í Chrome úr hvaða forriti sem er og hafðu vafrann aðgengilegan á forritastikunni</translation>
 <translation id="8255190535488645436">Google Chrome er að nota myndavélina þína og hljóðnema.</translation>
 <translation id="8260086374035800939">Ef Gemini í Chrome er opið verður hliðarglugginn áfram opinn þegar nýir flipar eru búnir til</translation>

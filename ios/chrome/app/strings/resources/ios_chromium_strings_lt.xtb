@@ -53,6 +53,8 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="1965068424387304464">„Chromium“ patarimas: išsaugokite slaptažodžius</translation>
 <translation id="1992653360331625459">Slaptažodžių tvarkyklėje jau yra šių paskyrų slaptažodžiai. Jei pasirinksite importuoti vieną iš toliau nurodytų slaptažodžių, jis pakeis esamą.</translation>
 <translation id="2006345422933397527">„Chromium“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
+<translation id="2025935492422922097">„Chromium“ apdoroja puslapių pavadinimus ir URL privačioje erdvėje debesyje</translation>
+<translation id="2027881372245801507">Išjungus pasiūlymus, „Chromium“ puslapių pavadinimų ir URL apdorojimas kitoms funkcijoms nevaldomas. Prieigą prie šių duomenų galite tvarkyti <ph name="BEGIN_LINK" />sinchronizavimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">„Chromium“ istorijos peržiūra</translation>
 <translation id="2052320862053429062">„Chromium“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
 <translation id="2059365270911640413">Užbaikite „Chromium“ sąranką</translation>
@@ -105,6 +107,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="3072591112723064972">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad galėtumėte iš karto paleisti nuorodas čia.</translation>
 <translation id="3115956258722352278">Nustatyti „Chromium“ kaip numatytąją naršyklę?</translation>
 <translation id="3180939591219927904">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chromium“</translation>
+<translation id="3239426886813624481">Jei norite bendrinti vietovę su svetainėmis, palieskite „Nustatymai“ ir leiskite „Chromium“ naudoti jūsų vietovę.</translation>
 <translation id="327628223428512207">Įveskite slaptafrazę, kad išsaugotumėte šį slaptažodį ir gautumėte „Chromium“ duomenis visuose įrenginiuose</translation>
 <translation id="328933489847748230">{count,plural, =1{Dabar rodomas vienas „Chromium“ langas}one{Dabar rodomas {count} „Chromium“ langas}few{Dabar rodomi {count} „Chromium“ langai}many{Dabar rodoma {count} „Chromium“ lango}other{Dabar rodoma {count} „Chromium“ langų}}</translation>
 <translation id="3344204225393848305">Nustatyti „Chromium“ kaip numatytąją naršyklę</translation>
@@ -351,6 +354,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="865600487977764604">Apsaugo jus naršyklėje „Chromium“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="8663480472502753423">Atnaujinkite „Chromium“</translation>
 <translation id="8685813584220679697">Prisijunkite prie šios svetainės ir „Chromium“.</translation>
+<translation id="8697693743327341604">Jei pasirinksite pasiūlymą arba jo nepaisysite, „Chromium“ prisitaikys, kad ateityje galėtų rodyti daugiau jums aktualių pasiūlymų.</translation>
 <translation id="869832267508702259">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad gautumėte „Gemini“ įžvalgų naršydami bet kur</translation>
 <translation id="8698780336333802489">Importuoti į „Chromium“</translation>
 <translation id="8730503818204408000">Atidaromas „Chromium“ nustatymas nustatyti „Chromium“ kaip numatytąją naršyklę.</translation>

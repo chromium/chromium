@@ -433,6 +433,7 @@
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
 <translation id="2323697864063408084">Recibe notificacións na pantalla de bloqueo e como báners para non perder nada do que che importa</translation>
 <translation id="2326302612031521902">Selector de unidades</translation>
+<translation id="2326606747676847821">Entrar en modo de incógnito</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Sen protección</translation>
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
@@ -556,6 +557,7 @@
 <translation id="2715440913764382254">Abre as ligazóns directamente aquí</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
 <translation id="2721190673959776287">Exemplo de axuda detallada integrada no produto para o panel contextual, que debería mostrarse varias veces ao día.</translation>
+<translation id="273318428051150387">Non recibirás notificacións cando avances en Level Up</translation>
 <translation id="2739887572830526131">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> moveuse á posición <ph name="POSITION" /></translation>
@@ -869,6 +871,7 @@
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3853162385423733133">Sigue utilizando e gardando contrasinais na túa Conta de Google (<ph name="EMAIL" />)</translation>
 <translation id="3853873210696342070">Importar</translation>
+<translation id="3854052088499589035">Recibirás notificacións cando avances en Level Up</translation>
 <translation id="3857113360369572832">Abre a <ph name="BEGIN_BOLD" />configuración de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Terás a oportunidade de gardar esta información en Wallet a próxima vez que completes un formulario relevante.</translation>
@@ -2224,6 +2227,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8106442513853561174">Compartir localización precisa</translation>
+<translation id="8110894698020598040">{count,plural, =1{Autocompletouse 1 contrasinal}other{Autocompletáronse # contrasinais}}</translation>
 <translation id="8114753159095730575">Podes descargar ficheiros. Tes opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="8123502380991596210">Ocultar Novidades</translation>
 <translation id="8123953306357309250">Queres cancelar a sincronización? Podes activar a sincronización en calquera momento na configuración.</translation>

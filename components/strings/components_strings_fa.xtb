@@ -2211,6 +2211,7 @@
 <translation id="4732860731866514038">درحال بارگیری بسته زبان <ph name="LANGUAGE" />… ‏<ph name="PERCENT" />٪</translation>
 <translation id="4733082559415072992"><ph name="URL" /> می‌خواهد از مکان دستگاهتان استفاده کند</translation>
 <translation id="473414950835101501">استفاده از دوربین‌های شما</translation>
+<translation id="4736089601076994090">تاریخ انقضا: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">‏Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="4736934858538408121">کارت مجازی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
@@ -2567,6 +2568,7 @@
 <translation id="5314967030527622926">دفترچه‌ساز</translation>
 <translation id="5316812925700871227">چرخش خلاف جهت عقربه‌های ساعت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
+<translation id="5318654747230250818">کد: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />موتور جستجوی پیش‌فرض به شما امکان می‌دهد در وب جستجو کنید و ویژگی‌های Chromium را تقویت می‌کند<ph name="END_BOLD" />، مثلاً جستجو از نوار نشانی و از تصاویر موجود در صفحه‌های وب. اگر موتور جستجوی شما از ویژگی خاصی پشتیبانی نکند، شاید آن ویژگی دردسترس نباشد.</translation>
 <translation id="5323043727018853753">محتوای جاسازی‌شده مجاز است</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES" /></translation>
@@ -2615,7 +2617,6 @@
 <translation id="5398461103557553443">‏برای اینکه این IBAN دفعه بعد به‌طور خودکار تکمیل شود، آن را در «کیف پول Google» ذخیره کنید</translation>
 <translation id="5398772614898833570">آگهی‌ها مسدود شدند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
-<translation id="5402715318763077894">آیا اجازه دسترسی به شبکه محلی داده شود؟</translation>
 <translation id="540949333488055151">پلاستیک (رنگی)</translation>
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
 <translation id="5411462078004183575">گزینه ارزان‌قیمت</translation>

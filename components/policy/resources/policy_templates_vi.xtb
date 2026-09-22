@@ -1117,6 +1117,13 @@ gặp sự cố do thay đổi này. Phiên bản cuối cùng hỗ trợ chính
       Lưu ý: Tùy chọn cài đặt này sẽ ghi đè chính sách <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, nếu có.</translation>
 <translation id="1723571018091915166">Không cho phép chia sẻ thẻ thông minh với các công cụ tích hợp <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Cho phép tất cả trang web lưu dữ liệu trên máy</translation>
+<translation id="1726467454355516626">Khi bạn đặt chính sách này thành True (Đúng), các Ứng dụng Chrome do quản trị viên cài đặt có thể tiếp tục chạy và được cài đặt, bất kể trạng thái bật Ứng dụng Chrome theo mặc định.
+
+Nếu bạn đặt chính sách này thành False (Sai) hoặc không đặt, chế độ mặc định được xác định trên thiết bị sẽ được sử dụng.
+
+Khi cố gắng khởi chạy một Ứng dụng Chrome đang tắt, người dùng sẽ thấy thông báo giải thích lý do ứng dụng không khởi chạy và đề xuất liên hệ với bộ phận CNTT.
+
+ChromeOS M184 sẽ là mốc quan trọng cuối cùng của ChromeOS hỗ trợ các Ứng dụng Chrome.</translation>
 <translation id="1729169799290004131">Việc đặt chính sách này sẽ chỉ định tỷ lệ phần trăm độ sáng màn hình, tắt các tính năng tự động điều chỉnh độ sáng. Độ sáng màn hình ban đầu sẽ thay đổi theo giá trị của chính sách nhưng người dùng có thể thay đổi giá trị này.
 
       Nếu bạn không đặt chính sách này, các tùy chọn kiểm soát màn hình của người dùng và tính năng tự động điều chỉnh độ sáng sẽ không bị ảnh hưởng.
@@ -4659,6 +4666,7 @@ Trên nền tảng máy tính, bạn cũng có thể tắt tính năng tải mô
 <translation id="3965339130942650562">Thời gian chờ cho tới khi đăng xuất của người dùng không hoạt động được thực thi</translation>
 <translation id="396536755218079668">Người dùng được giám sát</translation>
 <translation id="3968218878014278212">Cho phép bật Eche.</translation>
+<translation id="396848310647682467">Buộc cho phép các Ứng dụng Chrome do quản trị viên cài đặt</translation>
 <translation id="3971673686578912106">Khi bạn đặt chính sách này thành Bật, <ph name="PLUGIN_VM_NAME" /> sẽ bật cho thiết bị, với điều kiện là các tùy chọn cài đặt khác cũng cho phép chính sách này. Bạn phải đặt <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> và <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> thành Bật, đồng thời đặt <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> hoặc <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> để <ph name="PLUGIN_VM_NAME" /> có thể chạy.
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, <ph name="PLUGIN_VM_NAME" /> sẽ không bật cho thiết bị.</translation>
@@ -4682,9 +4690,6 @@ Lưu ý: Nếu chế độ cài đặt của cả máy chủ và máy khách kh�
 <translation id="3982624306233556415">Danh sách các nhà cung cấp dịch vụ danh tính bị chặn và không thể sử dụng Extensible Enterprise SSO cho trình duyệt</translation>
 <translation id="3983162212222338509">Quá trình phân giải DNS của hệ thống có thể chạy trong hoặc ngoài quy trình mạng, hoặc có một phần chạy trong và một phần chạy ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.</translation>
 <translation id="3986700049001404598">Cho phép người dùng kết thúc quá trình bằng trình quản lý tác vụ Chrome</translation>
-<translation id="398884292557092447">Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
-
-      Nếu bạn đặt chính sách này thành False, thì tính năng tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin thẻ tín dụng hay lưu thông tin thẻ tín dụng bổ sung mà người dùng có thể gửi trong khi duyệt web.</translation>
 <translation id="3989635538409502728">Đăng xuất</translation>
 <translation id="3989829840000169163">Chặn các điểm tiện ích cũ của trình duyệt</translation>
 <translation id="3990391739475801018">Chế độ tiết kiệm pin sẽ tắt.</translation>
@@ -5128,6 +5133,7 @@ Chính sách này dùng để tắt tính năng tự động nâng cấp nội d
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="4275048399551500192">Không hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác bắt đầu</translation>
+<translation id="4278195158478376952">Sử dụng chế độ mặc định.</translation>
 <translation id="4278656834593750050">Bật chuông báo khi sạc</translation>
 <translation id="4281322231545828290">Cho phép sử dụng tính năng tự động thay đổi mật khẩu</translation>
 <translation id="4282243913059705499">Luôn hiển thị biểu tượng <ph name="PRODUCT_NAME" /> trên thanh công cụ</translation>
@@ -6416,9 +6422,6 @@ Khi bạn không đặt hoặc đặt chính sách này thành True, thì nhữn
 Khi bạn đặt chính sách này thành False, thì những thông tin có thể dùng để nhận dạng máy sẽ không được thu thập.
 
 Chính sách này chỉ có hiệu lực khi máy đã đăng ký bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> đối với <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5017369989680827157">Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng sẽ có quyền kiểm soát tính năng Tự động điền cho địa chỉ trong giao diện người dùng.
-
-      Nếu bạn đặt chính sách này thành False, thì tính năng Tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin địa chỉ hay lưu thông tin địa chỉ bổ sung mà người dùng gửi trong khi duyệt web.</translation>
 <translation id="5017691827598069017">Bật tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh)</translation>
 <translation id="5021550478471824215">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách các lượt chia sẻ tệp trong mạng đã đặt trước. Mỗi mục là một đối tượng có 2 thuộc tính: <ph name="SHARE_URL_FIELD_NAME" /> và <ph name="MODE_FIELD_NAME" />.
 
@@ -9364,7 +9367,6 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt), người dùng s�
       Nếu bạn đặt chính sách này thành true, thì <ph name="PLUGIN_VM_NAME" /> sẽ được bật cho người dùng miễn là các tùy chọn cài đặt khác cũng cho phép điều này. Bạn cần phải đặt <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> và <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> thành true, cũng như phải đặt <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> hoặc <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> để cho phép chạy <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="6741318452269220158">Việc đặt chính sách này thành Đúng sẽ cho phép Native Client tiếp tục chạy ngay cả khi chế độ mặc định là Native Client đã tắt.
 Nếu bạn đặt chính sách này thành Sai hoặc không đặt chính sách này, thì chế độ mặc định sẽ được sử dụng.</translation>
-<translation id="6749641778238480311">Cho phép gọi các API subApps mà không cần cử chỉ trước đó của người dùng hay yêu cầu người dùng xác nhận.</translation>
 <translation id="6750902920405577210">Danh sách dữ liệu đo từ xa sẽ được báo cáo khi xảy ra sự kiện thay đổi cường độ tín hiệu.
 
       Mỗi dữ liệu đo từ xa được chỉ định sẽ chỉ được báo cáo khi không bị chính sách kiểm soát tắt.
@@ -9669,23 +9671,6 @@ Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay
 <translation id="6938524853892166974">Tắt tính năng Dịch trực tiếp</translation>
 <translation id="6940243892299228102">Không cho phép người dùng sử dụng các mẫu không gian làm việc</translation>
 <translation id="6943577887654905793">Tên tùy chọn Mac/Linux:</translation>
-<translation id="6944302005022384441">Vì lý do bảo mật, API web
-<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
-<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> và
-<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> yêu cầu
-phải có cử chỉ trước đó của người dùng ("kích hoạt tạm thời") để gọi API nếu không sẽ
-không thành công. Ngoài ra, người dùng sẽ được yêu cầu xác nhận
-hoạt động thông qua hộp thoại xác nhận.
-
-Khi đặt chính sách này, quản trị viên có thể chỉ định những nguồn gốc có thể gọi
-các API này mà không cần cử chỉ trước đó của người dùng hay yêu cầu người dùng xác nhận.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào
-https://chromeenterprise.google/policies/url-patterns/. Chúng tôi không chấp nhận giá trị *
-đối với chính sách này.
-
-Nếu bạn không đặt chính sách này, tất cả nguồn gốc sẽ yêu cầu cử chỉ trước đó của người dùng để gọi
-các API này và hiển thị hộp thoại xác nhận cho người dùng.</translation>
 <translation id="694602410134474029">Kiểm soát việc <ph name="PRODUCT_NAME" /> có tương tác với trình điều khiển máy in qua một quy trình dịch vụ riêng biệt hay không. Lệnh gọi in trên nền tảng để truy vấn máy in hiện có, lấy chế độ cài đặt trình điều khiển in và gửi tài liệu cần in tới máy in cục bộ sẽ được đưa ra từ một quy trình dịch vụ. Việc chuyển các lệnh gọi này ra khỏi quy trình của trình duyệt giúp cải thiện độ ổn định và giảm hành vi giao diện người dùng bị treo trong chế độ Xem trước bản in.
 
 Khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, <ph name="PRODUCT_NAME" /> sẽ sử dụng một quy trình dịch vụ riêng biệt cho các tác vụ in trên nền tảng.
@@ -12359,6 +12344,7 @@ Kể từ <ph name="PRODUCT_NAME" /> 147, chính sách này sẽ không được
 <translation id="859579553230883285">Tắt chế độ cài đặt Quảng cáo do trang web đề xuất của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng.</translation>
 <translation id="8596784129804979039">Sử dụng cấu hình mặc định cho hộp cát dịch vụ mạng</translation>
 <translation id="8597758693275075382">Chuỗi SMBIOS của OEM (Nhà sản xuất thiết bị gốc) được truyền đến máy ảo trong quá trình cài đặt. Giá trị mặc định là danh sách trống.</translation>
+<translation id="8598252733604444967">Cho phép các Ứng dụng Chrome do quản trị viên cài đặt hoạt động.</translation>
 <translation id="8598786284856179541">Bật chính sách báo cáo thông tin phiên bản</translation>
 <translation id="859937827887158048">Không cho phép tự động tải bản cập nhật xuống thông qua kết nối ngang hàng</translation>
 <translation id="8600280933078435582">Ứng dụng Linux</translation>

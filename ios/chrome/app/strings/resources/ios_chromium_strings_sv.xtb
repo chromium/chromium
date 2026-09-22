@@ -53,6 +53,8 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="1965068424387304464">Tips för Chromium: Spara lösenord</translation>
 <translation id="1992653360331625459">Du har redan lösenord för dessa konton i Lösenordshantering. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
+<translation id="2025935492422922097">Chromium behandlar sidrubriker och webbadresser i ett privat utrymme i molnet</translation>
+<translation id="2027881372245801507">Om du inaktiverar förslag styr det inte Chromiums behandling av sidrubriker och webbadresser för andra funktioner. Du kan hantera åtkomsten till denna data i <ph name="BEGIN_LINK" />synkroniseringsinställningarna<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
 <translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="2059365270911640413">Slutför inställningen av Chromium</translation>
@@ -351,6 +353,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="865600487977764604">Skyddar dig i Chromium och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="8663480472502753423">Håll Chromium uppdaterad</translation>
 <translation id="8685813584220679697">Logga in på den här webbplatsen och i Chromium.</translation>
+<translation id="8697693743327341604">Om du väljer eller ignorerar ett förslag anpassar Chromium sig för att visa mer relevanta förslag i framtiden.</translation>
 <translation id="869832267508702259">Använd Chromium som standard för att få Gemini-insikter var du än surfar</translation>
 <translation id="8698780336333802489">Importera till Chromium</translation>
 <translation id="8730503818204408000">Öppnar Chromium-inställningen för att ställa in Chromium som standardwebbläsare.</translation>

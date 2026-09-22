@@ -260,7 +260,6 @@
 
           **Sugerir preguntas:** Genera una lista con viñetas de 3 a 5 preguntas que inviten a la reflexión que un usuario podría hacer para comprender mejor la captura de pantalla. Estas preguntas deben incluir al menos una que sea específicamente sobre un objeto visual, su diseño o su ubicación.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium necesita permiso de acceso a la red local para este sitio</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza y controla Chromium. Una alerta necesita tu atención. Haz clic para ver los detalles.</translation>
 <translation id="3889543394854987837">Haz clic en tu nombre para abrir Chromium y empezar a navegar.</translation>
@@ -589,6 +588,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7213407614656404070">Usa Chromium cada vez que hagas clic en vínculos de mensajes, documentos y otras apps</translation>
 <translation id="7216228761061470870">Cuando usas la Búsqueda con imágenes en la computadora, el título de la página, la URL y el contenido, incluidos los archivos PDF, se envían al servidor</translation>
 <translation id="7223968959479464213">Administrador de tareas - Chromium</translation>
+<translation id="7226331818892775989">Preguntar sobre contenido fuera de Chromium, como otras apps o archivos</translation>
 <translation id="7227958669698166857">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu información guardada y más en todos tus dispositivos.</translation>
 <translation id="7252276985725323153">Comienza a navegar al instante: Chromium ahora se puede ejecutar cuando se inicia Windows.</translation>
 <translation id="7274695763216404502">Se fijó. Vuelve a usar la Búsqueda con imágenes desde la barra de herramientas.</translation>

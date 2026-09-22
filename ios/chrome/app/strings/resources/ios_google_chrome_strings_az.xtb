@@ -284,6 +284,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən dig�
 <translation id="7272930098487145294">Şəkilləri yadda saxlamaq üçün, Ayarlara toxunaraq Chrome'a fotolarınıza əlavə etmək icazəsi verin</translation>
 <translation id="7275945473750112644">Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə Chrome datanız bu cihazdan silinəcək</translation>
 <translation id="7284245284340063465">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Təklifi seçsəniz və ya nəzərə almasanız, Chrome gələcəkdə sizə daha uyğun təkliflər göstərmək üçün uyğunlaşacaq.</translation>
 <translation id="7296102444587051536">iOS üçün Chrome</translation>
 <translation id="7299681342915173313">E-məktub, sənəd və digər tətbiqlərdə linklərə toxunduqda Chrome istifadə edə bilərsiniz.</translation>
 <translation id="7334364820047587268">Google Parol Menecerində bu hesabların parolları var. Aşağıdakı parollardan birini import etməyi seçsəniz, mövcud olan əvəzlənəcək.</translation>
@@ -357,6 +358,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8544583291890527417">Chrome-un aşkar etdiyi hər hansı məxfilik və ya güvənlik məsələləri ilə bağlı xəbərdarlıq edir.</translation>
 <translation id="855027533751209304">Chrome ipucusu: Gördüyünüzü axtarın</translation>
 <translation id="8558480467877843976">İndi istənilən vaxt axtarış edərkən və ya mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
+<translation id="8589791109349384456">Təkliflərin deaktiv edilməsi Chrome-un digər funksiyalar üçün səhifə başlıqlarını və URL-ləri emal etməsinə nəzarət etmir. Bu dataya girişi <ph name="BEGIN_LINK" />sinxronizasiya ayarlarında<ph name="END_LINK" /> idarə edə bilərsiniz.</translation>
 <translation id="8603022514504485810">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Chrome-da Safari parollarınızı, tarixçənizi, əlfəcinlərinizi və kredit kartlarınızı istifadə edin</translation>
 <translation id="8630122478628016441">"Chrome-u bağladıqda Anonim tabları kilidləyin" seçimini aktiv edin.</translation>

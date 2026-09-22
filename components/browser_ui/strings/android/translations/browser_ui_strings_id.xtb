@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Jangan izinkan situs mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> situs}other{<ph name="SITE_COUNT" /> situs}}</translation>
 <translation id="1476700086976862423">Warna tema sepia</translation>
+<translation id="1497214680865404175">Gambar yang diupload pengguna</translation>
 <translation id="1500473259453106018">Sembunyikan kartu penurunan harga di tab</translation>
 <translation id="1508931164824684991">Situs dapat menggunakan JavaScript</translation>
 <translation id="1510341833810331442">Situs tidak diizinkan menyimpan data di perangkat Anda</translation>

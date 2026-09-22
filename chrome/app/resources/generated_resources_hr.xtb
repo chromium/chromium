@@ -1069,7 +1069,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1822517323280215012">Siva</translation>
 <translation id="1822635184853104396">Prikaži cijelu povijest preuzimanja u novoj kartici</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Dodajte upravljanom profilu postojeće podatke o pregledavanju</translation>
 <translation id="1825073796163165618">Omogućite veze</translation>
 <translation id="1825565032302550710">Priključak mora biti između 1024 i 65535</translation>
 <translation id="18260074040409954">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2062354623176996748">Pomoću anonimnog prozora surfajte na webu bez spremanja povijesti pregledavanja</translation>
 <translation id="206308717637808771">Brisanje podataka nakon zatvaranja svih prozora. Podaci se tretiraju jednako kao web-lokacija koju pregledavate</translation>
 <translation id="2066700471214517561">Beamforming mikrofon kako bi osoba koja upotrebljava Chromebook zvučala jasno.</translation>
+<translation id="2067778293100584091">Otvorite Google Wallet da biste upravljali <ph name="BEGIN_LINK1" />postavkama podataka i privatnosti<ph name="END_LINK1" /> ili <ph name="BEGIN_LINK2" />načinima plaćanja<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />propusnicama<ph name="END_LINK3" /> kao što su kartice vjernosti, osobni dokumenti i ponude</translation>
 <translation id="2068581968816126410">Upotrebljavajte oznake na različitim uređajima</translation>
 <translation id="2069020119963193894">&amp;Veličina</translation>
 <translation id="2071393345806050157">Nema lokalne datoteke zapisnika.</translation>
@@ -2379,6 +2379,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2813094189969465044">Roditeljski nadzor</translation>
 <translation id="2814489978934728345">Prekini učitavanje ove stranice</translation>
 <translation id="2816319641769218778">Da biste spremili zaporke na Google račun, uključite sinkronizaciju.</translation>
+<translation id="281678554528702272">Napomena: te postavke pristupa web-lokaciji mogu se nadjačati pravilima na razini organizacije ili naprednim API-jima.</translation>
 <translation id="2817435998497102771">Postavite pozadinu i stil</translation>
 <translation id="2817861546829549432">Omogućavanje opcije "Nemoj pratiti" znači da će zahtjev biti uključen uz promet pregledavanja. Učinak toga ovisi o tome odgovara li web-lokacija na zahtjev te kako je zahtjev protumačen. Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikažu oglase koji se ne temelje na drugim web-lokacijama koje ste posjetili. Mnoge web-lokacije i dalje će prikupljati i upotrebljavati vaše podatke o pregledavanju – primjerice, za poboljšanje sigurnosti, pružanje sadržaja, usluga, oglasa i preporuka na svojim web-lokacijama, kao i za generiranje statističkih izvješća.</translation>
 <translation id="2818476747334107629">Pojedinosti o pisaču</translation>
@@ -5054,6 +5055,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485088796993065002">Web-lokacije mogu reproducirati zvuk koji služi kao audiozapis za glazbu, videozapise i druge medijske sadržaje</translation>
 <translation id="4850919322897956733">Podaci su izbrisani.</translation>
+<translation id="4851973858921178330">Filtriranje web-lokacija</translation>
 <translation id="4852030988197799562">Blokirajte pristup alatu za optimizaciju JavaScripta na novoposjećenim web-lokacijama</translation>
 <translation id="4852383141291180386">Upravljanje obavijestima aplikacija</translation>
 <translation id="4852916668365817106">Boja miša</translation>
@@ -5149,7 +5151,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4913573660390710463">Pristupite pakiranim web-aplikacijama s poboljšanim mogućnostima. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Nije moguće pronaći podatke aplikacije</translation>
 <translation id="4915961947098019832">Dopušteno je prikazivanje slika</translation>
-<translation id="491779113051926205">Brojači prometa u ChromeOS-u</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi komunicirati s proširenjem "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4918762404810341788">Kopiraj i otvori</translation>
@@ -7468,6 +7469,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6754359471209693699">Pokretanje novog pretraživanja</translation>
 <translation id="6755702685749429945">Dodajte rječnik</translation>
 <translation id="6756643207511618722">Alati za pretvaranje teksta u govor</translation>
+<translation id="6756882635793733911">Postavite pitanje o bilo čemu na zaslonu</translation>
 <translation id="6757431299485455321">Pomozite drugim uređajima da pronađu ovu žarišnu točku.</translation>
 <translation id="6757615605516049275">Otključajte <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Recite nam koliko ste zadovoljni nama.</translation>
@@ -10754,6 +10756,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="96756691973639907">Više radnji za <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 <translation id="96774243435178359">Upravljani pisači</translation>
+<translation id="967745417352972504">Otvorite Google Wallet da biste dodali <ph name="BEGIN_LINK_PAYMENT_METHODS" />načine plaćanja<ph name="END_LINK_PAYMENT_METHODS" /> i <ph name="BEGIN_LINK_PASSES" />propusnice<ph name="END_LINK_PASSES" /> kao što su kartice vjernosti, osobni dokumenti i ponude ili upravljali njima</translation>
 <translation id="968000525894980488">Uključite Google Play usluge.</translation>
 <translation id="968037381421390582">Za&amp;lijepi i traži pojam "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Promijenite jezike</translation>

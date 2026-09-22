@@ -51,6 +51,8 @@
 <translation id="1965068424387304464">Dica do Chromium: salve senhas</translation>
 <translation id="1992653360331625459">Você já tem senhas destas contas no Gerenciador de Senhas. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
+<translation id="2025935492422922097">O Chromium processa títulos de páginas e URLs em um espaço privado na nuvem</translation>
+<translation id="2027881372245801507">Desativar as sugestões não controla o processamento de títulos de páginas e URLs do Chromium para outros recursos. Você pode gerenciar o acesso a esses dados nas <ph name="BEGIN_LINK" />configurações de sincronização<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Abrir histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="2059365270911640413">Terminar a configuração do Chromium</translation>
@@ -349,6 +351,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8685813584220679697">Faça login neste site e no Chromium.</translation>
+<translation id="8697693743327341604">Se você selecionar ou ignorar uma sugestão, o Chromium vai se adaptar para mostrar sugestões mais relevantes no futuro.</translation>
 <translation id="869832267508702259">Defina o Chromium como padrão para receber insights do Gemini em qualquer lugar que você navegar</translation>
 <translation id="8698780336333802489">Importar para o Chromium</translation>
 <translation id="8730503818204408000">Abre as configurações do Chromium para defini-lo como o navegador padrão.</translation>

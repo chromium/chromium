@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Tillåt inte att webbplatser vet om du använder din enhet aktivt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webbplats}other{<ph name="SITE_COUNT" /> webbplatser}}</translation>
 <translation id="1476700086976862423">Temafärg: sepia</translation>
+<translation id="1497214680865404175">Bild uppladdad av användaren</translation>
 <translation id="1500473259453106018">Dölj kortet Sänkta priser på flikar</translation>
 <translation id="1508931164824684991">Webbplatser får använda JavaScript</translation>
 <translation id="1510341833810331442">Webbplatser får inte spara data på enheten</translation>

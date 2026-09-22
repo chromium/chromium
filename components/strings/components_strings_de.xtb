@@ -87,7 +87,7 @@
 <translation id="1143142264369994168">Signaturgeber des Zertifikats</translation>
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
-<translation id="1151858212483238980">In Google Wallet gespeicherte Karteninformaitonen können automatisch eingefügt werden</translation>
+<translation id="1151858212483238980">In Google Wallet gespeicherte Karteninformationen können automatisch eingefügt werden</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Du siehst dir eine lokale oder freigegebene Datei an</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> hat die Verbindung unerwartet geschlossen.</translation>
@@ -550,6 +550,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927930548546198515">Chrome protokolliert, wie du die Funktion verwendest, z. B. deine Anfragen und dein Verhalten, wenn du Vorschläge annimmst oder ignorierst</translation>
 <translation id="1932098463447129402">Nicht vor</translation>
+<translation id="1932629105611536854">Postleitzahl des Lieferorts</translation>
 <translation id="1935353813610900265">Feedback zur KI‑gestützten Verlaufssuche senden</translation>
 <translation id="1935995810530254458">Trotzdem kopieren</translation>
 <translation id="1938580037092872316">Neue Informationen zu gespeicherter Adresse hinzufügen</translation>
@@ -615,6 +616,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2045871135676061132">Umschlag Personal</translation>
 <translation id="2048261947532620704">Seite wird übersetzt</translation>
 <translation id="2055016614992422886">Unterhaltung</translation>
+<translation id="2057654338925604102">Domain des Transportunternehmens</translation>
 <translation id="2058468041496756763">Du kannst deine Suchmaschine jederzeit in den Einstellungen von Chrome ändern. Wenn deine bevorzugte Suchmaschine nicht angezeigt wird, kannst du eine Suche auf der entsprechenden Website durchführen. Dann wird diese Suchmaschine in den Chrome-Einstellungen als zuletzt verwendete Suchmaschine aufgeführt und du kannst sie als Standard festlegen.</translation>
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
@@ -1608,6 +1610,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3715597595485130451">WLAN-Verbindung herstellen</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">Versanddatum</translation>
 <translation id="372429172604983730">Anwendungen, die diesen Fehler verursachen können, sind Antivirensoftware, Firewalls, Webfilter- oder Proxy-Software.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="3727309136762649052">Namespace</translation>
@@ -2077,7 +2080,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4480760608050410381">MP4-Video</translation>
 <translation id="4489023393592172404">Umschlag Kaku 4</translation>
-<translation id="4489977488133295402">Vor Autofill-Nutzung Identität bestätigen</translation>
+<translation id="4489977488133295402">Vor Autofill für Zahlungsmethoden Identität bestätigen</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
@@ -2208,6 +2211,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4732860731866514038">Sprachpaket für <ph name="LANGUAGE" /> wird heruntergeladen… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> möchte den Standort deines Geräts verwenden</translation>
 <translation id="473414950835101501">Kamera verwenden</translation>
+<translation id="4736089601076994090">Gültig bis: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium neu starten</translation>
 <translation id="4736934858538408121">Virtuelle Karte</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
@@ -2447,7 +2451,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
-<translation id="5116015291385561204">Vor Autofill-Nutzung Identität bestätigen</translation>
+<translation id="5116015291385561204">Vor Autofill von vertraulichen Daten Identität bestätigen</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5124797626438336458">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
@@ -2535,8 +2539,10 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5258473597674772367">Die Tabgruppe „<ph name="GROUP_NAME" />“ ist nicht mehr verfügbar</translation>
 <translation id="5260842098960755113">Thread geschlossen</translation>
 <translation id="5262342527470539728">Deine Informationen werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> für <ph name="ACCOUNT" /> gespeichert</translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">Vor dem Upload ist eine Überprüfung erforderlich</translation>
 <translation id="5266128565379329178">Bindung oben</translation>
+<translation id="5268746892698450173">Name des Transportunternehmens</translation>
 <translation id="5269225904387178860">Vierfache Lochung unten</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ ist keine unterstützte Bedingung für „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="527191520368130807">Optimieren</translation>
@@ -2564,6 +2570,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5314967030527622926">Falzmaschine</translation>
 <translation id="5316812925700871227">Gegen den Uhrzeigersinn drehen</translation>
 <translation id="5317780077021120954">Speichern</translation>
+<translation id="5318654747230250818">Code: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Mit der Standardsuchmaschine hast du die Möglichkeit, im Web zu suchen und Chromium-Funktionen zu nutzen.<ph name="END_BOLD" /> Du kannst beispielsweise über die Adressleiste oder über Bilder auf Webseiten suchen. Eine Funktion ist möglicherweise nicht verfügbar, wenn sie nicht von deiner Suchmaschine unterstützt wird.</translation>
 <translation id="5323043727018853753">Eingebettete Inhalte zulässig</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> von <ph name="NUM_MATCHES" /></translation>
@@ -2612,7 +2619,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5398461103557553443">Wenn diese IBAN beim nächsten Mal automatisch eingefügt werden soll, speichere sie in Google Wallet</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
-<translation id="5402715318763077894">Zugriff auf lokales Netzwerk zulassen?</translation>
 <translation id="540949333488055151">Kunststoff (bunt)</translation>
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5411462078004183575">Preisgünstige Option</translation>
@@ -2854,6 +2860,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Diese Zahlungsmethode wird von diesem Gerät gelöscht</translation>
 <translation id="5794065675298686371">Benachrichtigungen zum Preis-Tracking aktivieren</translation>
+<translation id="5794093550048860249">Sendungsnummer</translation>
 <translation id="5796050750059455142">Aktiviere „<ph name="BEGIN_LINK" />Smarte Funktionen in anderen Google-Produkten<ph name="LINK_END" />“</translation>
 <translation id="5797984091151707075">Durch Administratorrichtlinie blockiert</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
@@ -4020,6 +4027,7 @@ Weitere Details:
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="776749070095465053">Stoff</translation>
+<translation id="7772659560036894129">Produktnamen</translation>
 <translation id="7773005668374414287">Gleiche Reihenfolge Vorderseite nach oben</translation>
 <translation id="7779418012194492374">Zugriff für <ph name="DEVICE_NAME" /> widerrufen</translation>
 <translation id="7781829728241885113">Gestern</translation>
@@ -4211,6 +4219,7 @@ Weitere Details:
 <translation id="8118506371121007279">Feedback geben</translation>
 <translation id="812020627659652807">Dateien jetzt löschen</translation>
 <translation id="8120720167840853945">Mit dieser Richtlinie wird derzeit das Standardverhalten von keinen anderen Richtlinien festgelegt.</translation>
+<translation id="8120827570827570666">Händlerdomain</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" war nicht ordnungsgemäß auf deinem Computer oder im Netzwerk installiert. Bitte deinen IT-Administrator, das Problem zu lösen.</translation>
 <translation id="8130113808541743942">Verschieben nach...</translation>
 <translation id="813024282736408069">Virtuelle Karte für Autofill aktivieren</translation>
@@ -4322,6 +4331,7 @@ Weitere Details:
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">Keine Gebühren, bis zu 0 % effektiver Jahreszins</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8314036873065514376">Händlername</translation>
 <translation id="8316555157357957253">Wird verwendet</translation>
 <translation id="8319414634934645341">Erweiterte Schlüsselverwendung</translation>
 <translation id="831997045666694187">Abends</translation>
@@ -4653,7 +4663,7 @@ Weitere Details:
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8918062451146297192">CVC für virtuelle Karte</translation>
 <translation id="8919895429178014996">Alle Elemente ausblenden</translation>
-<translation id="8919989290032064330">Identität bestätigen, um Zahlungsmethoden automatisch auszufüllen?</translation>
+<translation id="8919989290032064330">Vor Autofill für Zahlungsmethoden Identität bestätigen?</translation>
 <translation id="8922013791253848639">Werbung auf dieser Website immer zulassen</translation>
 <translation id="8922734931659847428">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>

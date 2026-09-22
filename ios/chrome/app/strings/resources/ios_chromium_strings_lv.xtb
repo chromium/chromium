@@ -53,6 +53,8 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="1965068424387304464">Chromium padoms: paroļu saglabāšana</translation>
 <translation id="1992653360331625459">Jums jau ir šo kontu paroles Paroļu pārvaldniekā. Ja izvēlēsieties importēt kādu no tālāk norādītajām parolēm, tā aizstās esošo paroli.</translation>
 <translation id="2006345422933397527">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
+<translation id="2025935492422922097">Chromium apstrādā lapu nosaukumus un vietrāžus URL privātā telpā mākonī.</translation>
+<translation id="2027881372245801507">Ieteikumu izslēgšana neietekmē to, kā Chromium apstrādā lapu nosaukumus un vietrāžus URL citām funkcijām. Varat pārvaldīt piekļuvi šiem datiem savos <ph name="BEGIN_LINK" />sinhronizācijas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Chromium vēstures skatīšana</translation>
 <translation id="2052320862053429062">Pārlūkā Chromium tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="2059365270911640413">Chromium iestatīšanas pabeigšana</translation>
@@ -351,6 +353,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="865600487977764604">Šis režīms nodrošina jūsu aizsardzību pārlūkprogrammā Chromium un var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8685813584220679697">Pierakstieties šajā vietnē un pārlūkā Chromium.</translation>
+<translation id="8697693743327341604">Ja atlasīsiet vai ignorēsiet kādu ieteikumu, pārlūkā Chromium tiks veiktas izmaiņas, lai turpmāk jums tiktu rādīti atbilstošāki ieteikumi.</translation>
 <translation id="869832267508702259">Iestatiet Chromium kā noklusējuma pārlūku, lai saņemtu Gemini ieskatus jebkurā vietnē, ko pārlūkojat.</translation>
 <translation id="8698780336333802489">Importēt pārlūkā Chromium</translation>
 <translation id="8730503818204408000">Tiek atvērts Chromium iestatījums, lai iestatītu Chromium kā noklusējuma pārlūku.</translation>

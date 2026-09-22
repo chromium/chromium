@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Organisasi Anda mengharuskan mode Samaran</translation>
 <translation id="1323735185997015385">Hapus</translation>
 <translation id="132683371494960526">Ketuk dua kali untuk mengubah folder induk.</translation>
+<translation id="132969855425874290">Tutup temukan dan isi</translation>
 <translation id="1333455942675373522">Keyboard</translation>
 <translation id="1334485477792811969">Layanan web</translation>
 <translation id="1335767868357998043">Pilih Posisi Kolom URL</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Link diterima}other{{count} link diterima}}</translation>
 <translation id="1941314575388338491">Ketuk dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Setelan</translation>
+<translation id="1944477975050820119">Dapatkan saran real-time yang dapat membantu Anda menemukan cara baru untuk menjelajah dengan AI. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Login dengan akun terkelola</translation>
 <translation id="1955773397805078763">Tambahkan metode pembayaran</translation>
 <translation id="1956138802718275401">Akses sandi dari layar utama</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Mempersiapkan sandi…</translation>
 <translation id="2323697864063408084">Dapatkan notifikasi di Layar Kunci dan sebagai Banner agar Anda tidak melewatkan hal penting</translation>
 <translation id="2326302612031521902">Pemilih satuan</translation>
+<translation id="2326606747676847821">Buka Mode Samaran</translation>
 <translation id="2327445548174191329">Dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Tidak ada perlindungan</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Baca ulasan orang lain</translation>
 <translation id="2394659309569789395">Tetap Buka Situs</translation>
 <translation id="2403129868389095715">Paket Anda tidak dapat dikirim</translation>
+<translation id="2408318953009664750">Izinkan Sekali</translation>
 <translation id="2410754283952462441">Pilih akun</translation>
 <translation id="2422174748424038845">Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />", dan grup tersebut akan dihapus dari semua perangkat.</translation>
 <translation id="2424805048070062787">Lanjutkan dengan tab ini</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Sembunyikan dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
 <translation id="2551153019974022505">Error akun</translation>
+<translation id="2559785333866467778">Saran Gemini</translation>
 <translation id="2559843230610279254">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
 <translation id="257088987046510401">Tema</translation>
 <translation id="2573117291489209663">Selesai</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Luncurkan link langsung di sini</translation>
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
 <translation id="2721190673959776287">Contoh bantuan dalam produk lengkap untuk Panel Kontekstual, yang akan muncul beberapa kali dalam sehari.</translation>
+<translation id="273318428051150387">Anda tidak akan menerima info terbaru saat Anda membuat progres di Level Up</translation>
 <translation id="2739887572830526131">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.</translation>
 <translation id="2747003861858887689">Bidang sebelumnya</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> dipindahkan ke posisi <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
 <translation id="3183362380688692618">Grup Tab Baru...</translation>
+<translation id="3185000827934321633">Membuka</translation>
 <translation id="3185760469172949183">Penelusuran dengan kamera selesai.</translation>
 <translation id="3186796054637504691">Hapus Histori dan Data Situs</translation>
 <translation id="3190558889382726167">Sandi tersimpan</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metode pembayaran}other{# metode pembayaran}}</translation>
 <translation id="3831560640878483188">Tutup peringatan?</translation>
 <translation id="3832419617903252251">Sandi hanya disimpan di perangkat ini</translation>
+<translation id="3835016165506903031">Izinkan Saat Mengunjungi</translation>
 <translation id="3835964409414434850">Buka Tab Berikutnya</translation>
 <translation id="3838691874161539578">Periksa sandi tersimpan untuk memperkuat keamanan Anda dan tetap aman saat online</translation>
 <translation id="3838985624086228724">Penurunan harga pada produk yang dipantau, dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Sandi untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, dan <ph name="NUMBER_OF_ACCOUNTS" /> lainnya akan dihapus. Akun Anda tidak akan dihapus.</translation>
 <translation id="3853162385423733133">Tetap gunakan dan simpan sandi di Akun Google Anda <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Impor</translation>
+<translation id="3854052088499589035">Anda akan menerima info terbaru saat Anda membuat progres di Level Up</translation>
 <translation id="3857113360369572832">Buka <ph name="BEGIN_BOLD" />Setelan Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan memiliki kesempatan untuk menyimpan info ini ke Wallet saat Anda mengisi formulir terkait lagi.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Dapatkan sandi tersimpan di aplikasi lainnya</translation>
 <translation id="4431224949908513835">Pilih metode pembayaran untuk diisi.</translation>
 <translation id="4432122368769493392">Setelan…</translation>
+<translation id="443295142249850475">Judul halaman dan URL tab yang terbuka digunakan untuk memberikan saran yang relevan.</translation>
 <translation id="4439968635693513370">Buat rencana akhir pekan dengan</translation>
 <translation id="4442550905108052454">Buka <ph name="BEGIN_BOLD" />Setelan<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} hasil tersedia.}other{{count} hasil tersedia.}}</translation>
 <translation id="4445840280797509738">Opsi lainnya untuk <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Anda dapat menggeser tepi untuk kembali atau maju.</translation>
 <translation id="4460014764210899310">Pisahkan</translation>
@@ -2224,6 +2235,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8102130909719902723">B</translation>
 <translation id="8105368624971345109">Nonaktifkan</translation>
 <translation id="8106442513853561174">Bagikan lokasi presisi</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 sandi diisi otomatis}other{# sandi diisi otomatis}}</translation>
 <translation id="8114753159095730575">Download file tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="8123502380991596210">Sembunyikan Yang Baru</translation>
 <translation id="8123953306357309250">Batalkan sinkronisasi? Anda dapat mengaktifkan sinkronisasi kapan saja di setelan.</translation>

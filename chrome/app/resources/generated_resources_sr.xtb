@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">Сива</translation>
 <translation id="1822635184853104396">Прикажите комплетну историју преузимања на новој картици</translation>
 <translation id="1823768272150895732">Фонт</translation>
-<translation id="1823781806707127806">Додај профилу којим се управља постојеће податке прегледања</translation>
 <translation id="1825073796163165618">Омогућите линкове</translation>
 <translation id="1825565032302550710">Порт мора да буде између 1024 и 65535</translation>
 <translation id="18260074040409954">Можете да користите сачуване лозинке на било ком уређају. Чувају се у <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -1384,6 +1383,7 @@
 <translation id="2062354623176996748">Прегледајте веб без чувања историје прегледања у прозору без архивирања</translation>
 <translation id="206308717637808771">Избришите податке када затворите све прозоре. Подаци се третирају исто као и сајт који прегледате</translation>
 <translation id="2066700471214517561">Микрофон са просторним филтрирањем да би се особа која користи Chromebook јасно чула.</translation>
+<translation id="2067778293100584091">Идите у Google новчаник да бисте контролисали <ph name="BEGIN_LINK1" />подешавања података и приватности<ph name="END_LINK1" /> или управљали <ph name="BEGIN_LINK2" />начинима плаћања<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />картама<ph name="END_LINK3" /> као што су картице лојалности, лични документи и понуде</translation>
 <translation id="2068581968816126410">Користите обележиваче на свим уређајима</translation>
 <translation id="2069020119963193894">&amp;Величина</translation>
 <translation id="2071393345806050157">Нема локалне датотеке евиденције.</translation>
@@ -2377,6 +2377,7 @@
 <translation id="2813094189969465044">Родитељски надзор</translation>
 <translation id="2814489978934728345">Прекините учитавање ове странице</translation>
 <translation id="2816319641769218778">Да бисте сачували лозинке на Google налогу, укључите синхронизацију.</translation>
+<translation id="281678554528702272">Напомена: Ова подешавања приступа сајту могу да замене смернице за предузећа или моћни API-ји.</translation>
 <translation id="2817435998497102771">Подеси позадину и стил</translation>
 <translation id="2817861546829549432">Ако омогућите „Не прати“, то значи да ће захтев бити послат са саобраћајем прегледања. Било какав утицај зависи од тога да ли ће веб-сајт одговорити на захтев, као и како се захтев тумачи. На пример, неки веб-сајтови могу да одговарају на овај захтев тако што ће вам приказивати огласе који нису засновани на другим веб-сајтовима које сте посетили. Многи веб-сајтови ће и даље прикупљати и користити податке прегледања – на пример, да би побољшали безбедност и пружали садржај, услуге, огласе и препоруке, као и за генерисање статистике извештавања.</translation>
 <translation id="2818476747334107629">Детаљи о штампачу</translation>
@@ -5054,6 +5055,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485088796993065002">Сајтови могу да пуштају звук да бисте чули музику, видео снимке и друге медије</translation>
 <translation id="4850919322897956733">Подаци су избрисани.</translation>
+<translation id="4851973858921178330">Филтрирајте сајтове</translation>
 <translation id="4852030988197799562">Блокирај приступ оптимизатору JavaScript-а на сајтовима које први пут посећујем</translation>
 <translation id="4852383141291180386">Управљајте обавештењима апликација</translation>
 <translation id="4852916668365817106">Боја миша</translation>
@@ -5149,7 +5151,6 @@
 <translation id="4913573660390710463">Приступ веб-апликацијама у пакету са побољшаним могућностима. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Не могу да пронађем податке апликације</translation>
 <translation id="4915961947098019832">Дозвољено им је да приказују слике</translation>
-<translation id="491779113051926205">Бројачи саобраћаја за ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> жели да комуницира са додатком „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Прихвати</translation>
 <translation id="4918762404810341788">Копирај и отвори</translation>
@@ -7471,6 +7472,7 @@
 <translation id="6754359471209693699">Започните нову претрагу</translation>
 <translation id="6755702685749429945">Додај речник</translation>
 <translation id="6756643207511618722">Механизми говора</translation>
+<translation id="6756882635793733911">Поставите питање о било чему на екрану</translation>
 <translation id="6757431299485455321">Помаже другим уређајима да пронађу овај хотспот.</translation>
 <translation id="6757615605516049275">Откључајте: <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Поделите утиске о нашем учинку.</translation>
@@ -10757,6 +10759,7 @@
 <translation id="96756691973639907">Још радњи за: <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
 <translation id="96774243435178359">Управљани штампачи</translation>
+<translation id="967745417352972504">Идите у Google новчаник да бисте додали <ph name="BEGIN_LINK_PAYMENT_METHODS" />начине плаћања<ph name="END_LINK_PAYMENT_METHODS" /> и <ph name="BEGIN_LINK_PASSES" />карте<ph name="END_LINK_PASSES" /> као што су картице лојалности, лични документи и понуде или управљали њима</translation>
 <translation id="968000525894980488">Укључите Google Play услуге.</translation>
 <translation id="968037381421390582">Налепи и претражи „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="969096075394517431">Промени језике</translation>

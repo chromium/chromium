@@ -70,6 +70,7 @@
             Dấu trang, nhật ký và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
 <translation id="1619887657840448962">Để làm cho Chrome an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="1628000112320670027">Nhận trợ giúp về Chrome</translation>
+<translation id="1632241302126471515">Tìm kiếm bằng Chrome Canary</translation>
 <translation id="1640672724030957280">Đang tải xuống...</translation>
 <translation id="1651617469580841801">Khi bạn sử dụng Google Ống kính thì nội dung, URL và tiêu đề của trang, bao gồm cả tệp PDF, sẽ được gửi tới Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Giới thiệu về ChromeOS Flex</translation>
@@ -206,7 +207,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng – Chrome</translation>
 <translation id="2970681950995291301">Để xoá Tài khoản Google của bạn khỏi Chrome, hãy vào trang Cài đặt rồi đăng xuất khỏi Chrome</translation>
 <translation id="2976869732253036751">Nhận thông báo theo dõi giá từ Chrome trên điện thoại</translation>
-<translation id="2985091279808606502">Chrome cần có quyền truy cập vào mạng cục bộ đối với trang web này</translation>
 <translation id="2991167882679440829">Mật khẩu và các dữ liệu khác trên Chrome mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chrome, hãy đăng nhập lại.</translation>
 <translation id="2994465299455873643">Cung cấp dịch vụ mã hoá và một phương thức an toàn để khôi phục <ph name="BROWSER_NAME" /> nếu trình duyệt đã lỗi thời. Nếu dịch vụ này tắt, <ph name="BROWSER_NAME" /> có thể mất quyền truy cập vào dữ liệu đã mã hoá và <ph name="BROWSER_NAME" /> có thể không tự khôi phục được.</translation>
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
@@ -274,6 +274,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3596080736082218006">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="3597003331831379823">Không thể chạy quy trình thiết lập bằng đặc quyền cấp cao. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Hiện Gemini trong Chrome trong khay hệ thống</translation>
+<translation id="3616622400661108683">Hỏi về nội dung bên ngoài Chrome, chẳng hạn như các ứng dụng hoặc tệp khác</translation>
 <translation id="3622716124581627104">Xác định đồ vật hoặc địa điểm, sao chép hoặc dịch văn bản. Khi bạn sử dụng Google Ống kính, ảnh chụp màn hình của trang này sẽ được gửi tới Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Giờ đây, việc sử dụng Chrome bằng tài khoản Google của bạn và trên máy tính được chia sẻ trở nên dễ dàng hơn.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể truy cập thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
@@ -754,7 +755,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8162006532256575008">Dùng Chrome mà không cần tài khoản</translation>
 <translation id="8172231188687329735">Tải ứng dụng Chrome để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
+<translation id="8196526165798579689">Tìm kiếm bằng Chrome Dev</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
+<translation id="8227493674161801700">Tìm kiếm bằng Chrome Beta</translation>
 <translation id="8253851811470049684">Mở đường liên kết trong Chrome từ ứng dụng bất kỳ và giữ cho trình duyệt luôn có thể truy cập được trên thanh tác vụ</translation>
 <translation id="8255190535488645436">Google Chrome đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="8260086374035800939">Nếu Gemini trong Chrome đang mở, thì bảng điều khiển bên sẽ vẫn mở khi bạn tạo thẻ mới</translation>

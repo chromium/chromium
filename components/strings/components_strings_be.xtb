@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">Новая форма</translation>
 <translation id="1927930548546198515">Chrome рэгіструе, як вы выкарыстоўваеце гэту функцыю, у прыватнасці вашы запыты і дзеянні, калі вы прымаеце або ігнаруеце прапановы</translation>
 <translation id="1932098463447129402">Не раней</translation>
+<translation id="1932629105611536854">Паштовы індэкс дастаўкі</translation>
 <translation id="1935353813610900265">Адпраўце водгук на пошук у гісторыі з дапамогай штучнага інтэлекту</translation>
 <translation id="1935995810530254458">Усё роўна капіраваць</translation>
 <translation id="1938580037092872316">Дадайце новую інфармацыю ў захаваны адрас</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">Канверт Personal</translation>
 <translation id="2048261947532620704">Ідзе пераклад старонкі</translation>
 <translation id="2055016614992422886">Размова</translation>
+<translation id="2057654338925604102">Дамен перавозчыка</translation>
 <translation id="2058468041496756763">Вы можаце змяніць пошукавую сістэму ў любы час у наладах Chrome. Калі вы не бачыце патрэбную пошукавую сістэму, вы можаце здзейсніць пошук на яе сайце. Вы ўбачыце яе ў спісе нядаўна наведаных пошукавых сістэм у наладах Chrome і зможаце зрабіць яе стандартнай.</translation>
 <translation id="2059166748188874810">Муніцыпальная акруга</translation>
 <translation id="2059202684901022309">22 x 34 цалі</translation>
@@ -1304,6 +1306,7 @@
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3209034400446768650">На старонцы могуць спаганяцца грошы</translation>
 <translation id="3209071504641569648">Запыты, загалоўкі старонак і URL-адрасы адпраўляюцца ў Google і могуць разглядацца для ўдасканалення палепшанага аўтазапаўнення</translation>
+<translation id="3211727636285361260">Адкрываць спасылкі "<ph name="PROTOCOL" />" праз <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Спампоўванне пачалося. Каб паглядзець, правядзіце пальцам па экране зверху ўніз і націсніце кнопку "Назад".</translation>
 <translation id="3212581601480735796">Вашы дзеянні на <ph name="HOSTNAME" /> адсочваюцца</translation>
 <translation id="3215092763954878852">Не ўдалося выкарыстаць WebAuthn</translation>
@@ -1610,6 +1613,7 @@
 <translation id="3715597595485130451">Падключэнне да Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Праверыць проксі-сервер, брандмаўэр і канфігурацыю DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">Дата адпраўкі</translation>
 <translation id="372429172604983730">Выклікаць гэту памылку могуць такія праграмы, як антывірусы, брандмаўэры, сістэмы вэб-фільтрацыі і проксі-серверы.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі", націсніце Tab, затым Enter</translation>
 <translation id="3727309136762649052">Прастора імён</translation>
@@ -2084,6 +2088,7 @@
 <translation id="449126573531210296">Шыфраваць сінхранізаваныя паролі з дапамогай даных Уліковага запісу Google</translation>
 <translation id="4493480324863638523">Няправільны URL-адрас. Патрабуецца URL-адрас са стандартнай структурай, напрыклад http://example.com ці https://example.com.</translation>
 <translation id="4497010149473852018">Карткі лаяльнасці, інфармацыю з якіх можна ўвесці, націснуўшы на іх. Клавіятура схавана.</translation>
+<translation id="4497843134750481377">Кіраваць прапановамі</translation>
 <translation id="4500587658229086076">небяспечнае змесціва</translation>
 <translation id="4501939680615452918">Знайдзі месцы ў трэндавых рэстаранах</translation>
 <translation id="4503459574136856756">Перапішы маю біяграфію ў больш прафесійным стылі</translation>
@@ -2210,6 +2215,7 @@
 <translation id="4732860731866514038">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запытвае дазвол на выкарыстанне звестак аб месцазнаходжанні прылады</translation>
 <translation id="473414950835101501">Выкарыстоўваць камеры</translation>
+<translation id="4736089601076994090">Тэрмін дзеяння: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Перазапусціце Chromium</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
@@ -2536,8 +2542,10 @@
 <translation id="5258473597674772367">Група ўкладак "<ph name="GROUP_NAME" />" больш не даступная</translation>
 <translation id="5260842098960755113">Ланцужок закрыты</translation>
 <translation id="5262342527470539728">Звесткі ўліковага запісу <ph name="ACCOUNT" /> захоўваюцца тут: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
+<translation id="5263202631354741256">Ідэнтыфікатар</translation>
 <translation id="5263867360296733198">Перш чым запампоўваць файлы, іх неабходна праверыць</translation>
 <translation id="5266128565379329178">Пераплёт зверху</translation>
+<translation id="5268746892698450173">Назва перавозчыка</translation>
 <translation id="5269225904387178860">Чатыры дзіркі знізу</translation>
 <translation id="5271381225185906340">Умова "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не падтрымліваецца для правіла "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
 <translation id="527191520368130807">Удасканаліць</translation>
@@ -2565,6 +2573,7 @@
 <translation id="5314967030527622926">Стварэнне брашур</translation>
 <translation id="5316812925700871227">Павярнуць супраць гадзіннікавай стрэлкі</translation>
 <translation id="5317780077021120954">Захаваць</translation>
+<translation id="5318654747230250818">Код: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chromium<ph name="END_BOLD" /> (напрыклад, выконваць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Некаторыя функцыі могуць быць недаступнымі, калі выбраная пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="5323043727018853753">Убудаванае змесціва дазволена</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
@@ -2613,7 +2622,6 @@
 <translation id="5398461103557553443">Каб у наступны раз гэты нумар IBAN уводзіўся аўтаматычна, захавайце яго ў Google Кашальку</translation>
 <translation id="5398772614898833570">Рэклама заблакіравана</translation>
 <translation id="5400836586163650660">Шэры</translation>
-<translation id="5402715318763077894">Даць дазвол на падключэнне да прылад у лакальнай сетцы?</translation>
 <translation id="540949333488055151">Каляровы пластык</translation>
 <translation id="540969355065856584">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; сертыфікат бяспекі гэтага сайта не распазнаецца як сапраўдны. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="5411462078004183575">Недарагі варыянт</translation>
@@ -2855,6 +2863,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Гэты спосаб аплаты будзе выдалены з прылады</translation>
 <translation id="5794065675298686371">Уключыце апавяшчэнні для адсочвання цэн</translation>
+<translation id="5794093550048860249">Нумар для адсочвання</translation>
 <translation id="5796050750059455142">Уключыце <ph name="BEGIN_LINK" />разумныя функцыі ў іншых прадуктах Google<ph name="LINK_END" /></translation>
 <translation id="5797984091151707075">Заблакіравана ў адпаведнасці з палітыкай адміністратара</translation>
 <translation id="5804241973901381774">Дазволы</translation>
@@ -3742,6 +3751,7 @@
 <translation id="7347640536700429009">Імя на картцы няправільнае</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7353601530677266744">Камандны радок</translation>
+<translation id="7358055687760675498">Адкрываць спасылкі "<ph name="PROTOCOL" />" праз <ph name="HANDLER_HOSTNAME" /> замест праграмы "<ph name="REPLACED_HANDLER_TITLE" />"</translation>
 <translation id="7359588939039777303">Рэклама заблакіравана.</translation>
 <translation id="7362281996276843968">Гэта закрытая група</translation>
 <translation id="7363096869660964304">Але памятайце, што вы не становіцеся нябачнымі. Праца ў рэжыме інкогніта не дазволіць вам схаваць свае дзеянні ў інтэрнэце ад працадаўцы, інтэрнэт-правайдара і наведаных вэб-сайтаў.</translation>
@@ -4021,6 +4031,7 @@
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7766518757692125295">Край</translation>
 <translation id="776749070095465053">Тканіна</translation>
+<translation id="7772659560036894129">Назвы прадуктаў</translation>
 <translation id="7773005668374414287">У тым жа парадку, рабочым бокам уверх</translation>
 <translation id="7779418012194492374">Адклікаць доступ да прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7781829728241885113">Учора</translation>
@@ -4212,6 +4223,7 @@
 <translation id="8118506371121007279">Пакінуць водгук</translation>
 <translation id="812020627659652807">Выдаліць файлы</translation>
 <translation id="8120720167840853945">Гэта палітыка не кіруе стандартнымі дзеяннямі іншых палітык.</translation>
+<translation id="8120827570827570666">Дамен прадаўца</translation>
 <translation id="8127301229239896662">Праграма "<ph name="SOFTWARE_NAME" />" не была належным чынам усталявана на камп’ютар або ў сетцы: папрасіце IT-адміністратара вырашыць гэту праблему.</translation>
 <translation id="8130113808541743942">Перамясціць у…</translation>
 <translation id="813024282736408069">Уключыце віртуальную картку для аўтазапаўнення</translation>
@@ -4323,6 +4335,7 @@
 <translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8310477433309274098">Без камісій, з гадавой працэнтнай стаўкай 0%</translation>
 <translation id="8312841338723044391">УЖЫВУЮ</translation>
+<translation id="8314036873065514376">Назва (імя) прадаўца</translation>
 <translation id="8316555157357957253">Выкарыстоўваецца зараз</translation>
 <translation id="8319414634934645341">Пашыранае выкарыстанне ключа</translation>
 <translation id="831997045666694187">Вечар</translation>

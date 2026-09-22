@@ -72,6 +72,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
             Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të preken.</translation>
 <translation id="1619887657840448962">Për ta bërë më të sigurt Chrome, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="1628000112320670027">Merr ndihmë për Chrome</translation>
+<translation id="1632241302126471515">Kërko me Chrome Canary</translation>
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
@@ -208,7 +209,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
 <translation id="2970681950995291301">Për ta hequr "Llogarinë tënde të Google" nga Chrome, dil nga llogaria në Chrome te faqja e "Cilësimeve"</translation>
 <translation id="2976869732253036751">Merr sinjalizime për monitorimin e çmimeve me Chrome në telefonin tënd</translation>
-<translation id="2985091279808606502">Chrome ka nevojë për lejen e rrjetit lokal për këtë sajt</translation>
 <translation id="2991167882679440829">Fjalëkalimet e tua dhe të dhënat e tjera të Chrome që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chrome, identifikohu përsëri.</translation>
 <translation id="2994465299455873643">Ofron shërbime enkriptimi dhe një mënyrë të sigurt për të rikuperuar <ph name="BROWSER_NAME" /> nëse vjetrohet. Nëse ky shërbim është i çaktivizuar, <ph name="BROWSER_NAME" /> mund të humbasë qasjen në të dhënat e enkriptuara dhe <ph name="BROWSER_NAME" /> mund të mos jetë në gjendje të vetërikuperohet.</translation>
 <translation id="3003694935412297923">Të gjitha detyrat</translation>
@@ -276,6 +276,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3597003331831379823">Ekzekutimi i konfigurimit me privilegje të larta dështoi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Shfaq Gemini në Chrome në tabakanë e sistemit</translation>
+<translation id="3616622400661108683">Pyet për përmbajtjet jashtë Chrome, si p.sh. aplikacione ose skedarë të tjerë</translation>
 <translation id="3622716124581627104">Identifiko gjërat ose vendet dhe kopjo ose përkthe tekstin. Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu informacionet e ruajtura etj. në të gjitha pajisjet e tua.</translation>
@@ -755,7 +756,9 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8162006532256575008">Përdor Chrome pa pasur llogari</translation>
 <translation id="8172231188687329735">Merr aplikacionin e Chrome për t'i ruajtur fjalëkalimet kur je në lëvizje</translation>
 <translation id="8177472873527554730">Nuk mund të gjenden përmbajtjet në faqe</translation>
+<translation id="8196526165798579689">Kërko me Chrome Dev</translation>
 <translation id="8221491193165283816">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko këtu.</translation>
+<translation id="8227493674161801700">Kërko me Chrome Beta</translation>
 <translation id="8253851811470049684">Hap lidhjet në Chrome nga çdo aplikacion dhe mbaje shfletuesin të qasshëm në shiritin e detyrave</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8260086374035800939">Nëse Gemini në Chrome është i hapur, paneli anësor qëndron i hapur kur krijohen skeda të reja</translation>

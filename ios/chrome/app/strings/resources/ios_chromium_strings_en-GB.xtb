@@ -53,6 +53,8 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="1965068424387304464">Chromium tip: Save passwords</translation>
 <translation id="1992653360331625459">You already have passwords for these accounts in your Password Manager. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="2006345422933397527">Chromium couldn't check for updates. Try checking your Internet connection.</translation>
+<translation id="2025935492422922097">Chromium processes page titles and URLs in a private space in the cloud</translation>
+<translation id="2027881372245801507">Turning off suggestions doesn't control Chromium's processing of page titles and URLs for other features. You can manage access to this data in your <ph name="BEGIN_LINK" />sync settings<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">View Your Chromium History</translation>
 <translation id="2052320862053429062">Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="2059365270911640413">Finish setting up Chromium</translation>
@@ -351,6 +353,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8685813584220679697">Sign in to this site and Chromium.</translation>
+<translation id="8697693743327341604">If you select or ignore a suggestion, Chromium will adapt to help show you more relevant suggestions in the future.</translation>
 <translation id="869832267508702259">Make Chromium your default to get Gemini insights anywhere that you browse</translation>
 <translation id="8698780336333802489">Import to Chromium</translation>
 <translation id="8730503818204408000">Opens the Chromium Setting to set Chromium as Default Browser.</translation>

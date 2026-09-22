@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
 <translation id="132683371494960526">輕觸兩下即可變更上層資料夾。</translation>
+<translation id="132969855425874290">關閉「尋找並填入」</translation>
 <translation id="1333455942675373522">鍵盤</translation>
 <translation id="1334485477792811969">網路服務</translation>
 <translation id="1335767868357998043">選擇網址列的位置</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{收到 1 個連結}other{收到 {count} 個連結}}</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
+<translation id="1944477975050820119">取得 AI 即時建議，體驗全新瀏覽方式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">使用代管帳戶登入</translation>
 <translation id="1955773397805078763">新增付款方式</translation>
 <translation id="1956138802718275401">從主畫面快速查詢密碼</translation>
@@ -393,7 +395,7 @@
 <translation id="2196428379625389579">在網路上搜尋</translation>
 <translation id="2199562093267256223">這麼做會將此群組從已登入 <ph name="USER_EMAIL" /> 的所有裝置中刪除。</translation>
 <translation id="2202084845446535117">沒有電子郵件帳戶</translation>
-<translation id="2214453882118345682">用相機翻譯、辨認眼前的一切，看到心儀商品輕鬆買。</translation>
+<translation id="2214453882118345682">透過相機購買、翻譯、辨認眼前的一切。</translation>
 <translation id="2216366330550244277">前往商品頁面</translation>
 <translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的私密資料</translation>
 <translation id="2220529011494928058">回報問題</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">正在準備匯出密碼…</translation>
 <translation id="2323697864063408084">在螢幕鎖定畫面以橫幅形式接收通知，絕不錯過任何重要資訊</translation>
 <translation id="2326302612031521902">單位選取器</translation>
+<translation id="2326606747676847821">進入無痕模式</translation>
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">無防護</translation>
 <translation id="233375395665273385">刪除並登出</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">閱讀評論</translation>
 <translation id="2394659309569789395">仍要開啟網站</translation>
 <translation id="2403129868389095715">無法配送包裹</translation>
+<translation id="2408318953009664750">允許一次</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2422174748424038845">如果刪除，所有使用者都會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組將從所有裝置中刪除。</translation>
 <translation id="2424805048070062787">繼續瀏覽此分頁</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">禁止顯示對話方塊</translation>
 <translation id="2542268842667970959">隱藏「安全檢查」</translation>
 <translation id="2551153019974022505">帳戶錯誤</translation>
+<translation id="2559785333866467778">Gemini 建議</translation>
 <translation id="2559843230610279254">分頁群組，<ph name="GROUP_TITLE" />，<ph name="TABS_NUMBER" /> 個分頁。</translation>
 <translation id="257088987046510401">主題</translation>
 <translation id="2573117291489209663">完成</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">直接在這裡開啟連結</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2721190673959776287">這是內容面板的產品內詳細說明文字範例，這個面板每天會多次顯示。</translation>
+<translation id="273318428051150387">你不會在 Level Up 進度更新時收到通知</translation>
 <translation id="2739887572830526131">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> 已移到位置 <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">只要在裝置上登入帳戶，即可存取書籤和其他資訊</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
 <translation id="3183362380688692618">新增分頁群組......</translation>
+<translation id="3185000827934321633">正在前往該網頁</translation>
 <translation id="3185760469172949183">「相機搜尋」已完成！</translation>
 <translation id="3186796054637504691">清除歷史記錄和網站資料</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 種付款方式}other{# 種付款方式}}</translation>
 <translation id="3831560640878483188">要忽略警告嗎？</translation>
 <translation id="3832419617903252251">系統只會將密碼儲存在這部裝置上</translation>
+<translation id="3835016165506903031">造訪時允許</translation>
 <translation id="3835964409414434850">前往下一個分頁</translation>
 <translation id="3838691874161539578">請檢查已儲存的密碼，強化安全性並保護自己的線上安全</translation>
 <translation id="3838985624086228724">追蹤的產品降價，原價為 <ph name="PREVIOUS_PRICE" />，現價為 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除你的帳戶。</translation>
 <translation id="3853162385423733133">請繼續將密碼儲存到 Google 帳戶 (<ph name="EMAIL" />)，或使用帳戶中的密碼</translation>
 <translation id="3853873210696342070">匯入</translation>
+<translation id="3854052088499589035">你會在 Level Up 進度更新時收到通知</translation>
 <translation id="3857113360369572832">開啟「Safari 設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="386224966259596343">下次填寫相關表單時，系統會詢問你是否要將這項資訊儲存至錢包。</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">取得在其他應用程式中儲存的密碼</translation>
 <translation id="4431224949908513835">請選取要填入的付款方式。</translation>
 <translation id="4432122368769493392">設定…</translation>
+<translation id="443295142249850475">系統會使用你開啟的分頁標題和網址，提供相關建議。</translation>
 <translation id="4439968635693513370">想規劃週末行程，就用</translation>
 <translation id="4442550905108052454">開啟「設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{有 {count} 項結果。}other{有 {count} 項結果。}}</translation>
 <translation id="4445840280797509738">更多「<ph name="CELL_ACCESSIBILITY_LABEL" />」的選項</translation>
 <translation id="4455710003856931944">滑動邊緣即可前往上一個或下一個畫面。</translation>
 <translation id="4460014764210899310">取消分組</translation>
@@ -1143,7 +1154,7 @@
 <translation id="4742142641516465928">開啟「自動填入和密碼」</translation>
 <translation id="4742407542027196863">管理密碼…</translation>
 <translation id="4744428388659507035">如要將書籤同步到所有裝置，請在設定中開啟「書籤」。</translation>
-<translation id="4746926359847517643">你隨時可以從歷史記錄重新開啟這些分頁。</translation>
+<translation id="4746926359847517643">你隨時可以從歷史記錄重新開啟。</translation>
 <translation id="4749529195026091676">{count,plural, =1{已匯入 {count} 張卡片}other{已匯入 {count} 張卡片}}</translation>
 <translation id="4751645464639803239">新無痕分頁</translation>
 <translation id="4752348350801431746">關閉安全檢查通知…</translation>
@@ -1606,7 +1617,7 @@
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
-<translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />變更。</translation>
 <translation id="6213281885682386884">找不到地址</translation>
 <translation id="6218508144653756827">紫紅色主題</translation>
 <translation id="6218758465102657583">將網址列移至頂端</translation>
@@ -2211,7 +2222,7 @@
 <translation id="8061584726507121204">歷史記錄</translation>
 <translation id="8065136076319366194">不建議儲存</translation>
 <translation id="8065556469005366939">分享分頁，即可取得更符合需求的回覆</translation>
-<translation id="8069394452933076548">選擇多久後，可以將最近沒有使用的分頁移至閒置分頁區塊。</translation>
+<translation id="8069394452933076548">選擇在多久之後，最近未使用的分頁會移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079530767338315840">重複播放</translation>
@@ -2224,6 +2235,7 @@
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8106442513853561174">分享精確位置</translation>
+<translation id="8110894698020598040">{count,plural, =1{已自動填入 1 組密碼}other{已自動填入 # 組密碼}}</translation>
 <translation id="8114753159095730575">可下載檔案，相關選項位於畫面底部。</translation>
 <translation id="8123502380991596210">隱藏「新功能」</translation>
 <translation id="8123953306357309250">要取消同步處理嗎？你隨時可以在設定中開啟同步功能。</translation>
@@ -2312,7 +2324,7 @@
 <translation id="8385363453480067273">使用 Google 智慧鏡頭搜尋你的視界</translation>
 <translation id="8386068868580335421">重設</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
-<translation id="8393889347136007944">已有 <ph name="THRESHOLD" /> 天未使用的分頁</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未使用的分頁</translation>
 <translation id="8395180897620197612">停止記錄</translation>
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="8407831512155324054">你的密碼強度夠高</translation>

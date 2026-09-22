@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">ছাই-বৰণীয়া</translation>
 <translation id="1822635184853104396">এটা নতুন টেবত সম্পূৰ্ণ ডাউনল’ডৰ ইতিহাস দেখুৱাওক</translation>
 <translation id="1823768272150895732">ফণ্ট</translation>
-<translation id="1823781806707127806">ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা পৰিচালিত প্ৰ’ফাইলত যোগ দিয়ক</translation>
 <translation id="1825073796163165618">লিংক সক্ষম কৰক</translation>
 <translation id="1825565032302550710">প’ৰ্টটো ১০২৪ আৰু ৬৫৫৩৫ৰ ভিতৰত হ’বই লাগিব</translation>
 <translation id="18260074040409954">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইবোৰ <ph name="EMAIL" />ত <ph name="GOOGLE_PASSWORD_MANAGER" /> ছেভ কৰা হয়।</translation>
@@ -1395,6 +1394,7 @@
 <translation id="2062354623176996748">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ছেভ নকৰাকৈ কোনো ইনক’গনিট’ ৱিণ্ড’ৰ জৰিয়তে ৱেব ব্যৱহাৰ কৰক</translation>
 <translation id="206308717637808771">আপুনি আটাইবোৰ ৱিণ্ড’ বন্ধ কৰিলে ডেটা মচক। ডেটাখিনিক আপুনি চাই থকা ছাইটটোৰ দৰেই গণ্য কৰা হয়</translation>
 <translation id="2066700471214517561">মাইক বীমফৰ্মিং হৈছে, গতিকে Chromebook ব্যৱহাৰ কৰা ব্যক্তিগৰাকীৰ মাত স্পষ্টকৈ শুনা গৈছে।</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />ডেটা আৰু গোপনীয়তাৰ অগ্ৰাধিকাৰ<ph name="END_LINK1" /> নিয়ন্ত্ৰণ কৰিবলৈ বা <ph name="BEGIN_LINK2" />পৰিশোধ পদ্ধতি<ph name="END_LINK2" /> আৰু লয়েল্টী কাৰ্ড, আইডি আৰু অফাৰৰ দৰে <ph name="BEGIN_LINK3" />পাছ<ph name="END_LINK3" /> পৰিচালনা কৰিবলৈ Google Walletলৈ যাওক</translation>
 <translation id="2068581968816126410">সমগ্ৰ ডিভাইচত বুকমাৰ্ক ব্যৱহাৰ কৰক</translation>
 <translation id="2069020119963193894">আকাৰ</translation>
 <translation id="2071393345806050157">কোনো স্থানীয় লগ ফাইল নাই।</translation>
@@ -2391,6 +2391,7 @@
 <translation id="2813094189969465044">অভিভাৱকীয় নিয়ন্ত্ৰণবোৰ</translation>
 <translation id="2814489978934728345">এই পৃষ্ঠাটো ল'ড কৰাটো বন্ধ কৰক</translation>
 <translation id="2816319641769218778">আপোনাৰ Google একাউণ্টটোত পাছৱৰ্ডবোৰ ছেভ কৰিবলৈ ছিংক অন কৰক।</translation>
+<translation id="281678554528702272">টোকা: এই ছাইটৰ এক্সেছৰ ছেটিং এণ্টাৰপ্ৰাইজৰ নীতি বা শক্তিশালী APIৰ দ্বাৰা অ’ভাৰৰাইড কৰা হ’ব পাৰে।</translation>
 <translation id="2817435998497102771">আপোনাৰ ৱালপেপাৰ আৰু ষ্টাইল ছেট কৰক</translation>
 <translation id="2817861546829549432">"ট্ৰেক নকৰিব" সুবিধাটো সক্ষম কৰা মানে আপোনাৰ ব্ৰাউজিং ট্ৰেফিকৰ সৈতে এটা অনুৰোধ অন্তৰ্ভুক্ত কৰা হ’ব। কোনো ৱেবছাইটে অনুৰোধটোক সঁহাৰি জনোৱা বা নজনোৱা আৰু অনুৰোধটো কেনেকৈ কাৰ্যকৰী কৰে তাৰ ওপৰত ফলাফলসমূহ নিৰ্ভৰ কৰে। উদাহৰণস্বৰূপে, কিছুমান ৱেবছাইটে আপোনাক আপুনি চোৱা অন্য ৱেবছাইটসমূহৰ ভিত্তিক নোহোৱা কিছুমান বিজ্ঞাপন প্ৰদৰ্শন কৰি এই অনুৰোধলৈ সঁহাৰি জনাব পাৰে। বহুতো ৱেবছাইটে তথাপিও আপোনাৰ ব্ৰাউজিং ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব - উদাহৰণস্বৰূপে, সুৰক্ষা উন্নত কৰিবলৈ, সমল যোগান ধৰিবলৈ, সেই ৱেবছাইটসমূহত সেৱা, বিজ্ঞাপন আৰু চুপাৰিছসমূহ প্ৰদান কৰিবলৈ আৰু ৰিপৰ্টিং কৰা পৰিসংখ্যা সৃষ্টি কৰিবলৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব।</translation>
 <translation id="2818476747334107629">প্ৰিণ্টাৰৰ সবিশেষ</translation>
@@ -5067,6 +5068,7 @@
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485088796993065002">ছাইটসমূহে সংগীত, ভিডিঅ' আৰু অন্য মিডিয়াত অডিঅ' প্ৰদান কৰিবলৈ ধ্বনি প্লে' কৰিব পাৰে</translation>
 <translation id="4850919322897956733">ডেটা মচা হ’ল।</translation>
+<translation id="4851973858921178330">ছাইটসমূহ ফিল্টাৰ কৰক</translation>
 <translation id="4852030988197799562">নতুনকৈ চোৱা ছাইটসমূহত JavaScript অপ্টিমাইজাৰৰ এক্সেছ অৱৰোধ কৰক</translation>
 <translation id="4852383141291180386">পৰিচালিত এপৰ জাননী</translation>
 <translation id="4852916668365817106">মাউছৰ ৰং</translation>
@@ -5162,7 +5164,6 @@
 <translation id="4913573660390710463">বৰ্ধিত সক্ষমতাৰ সৈতে পেকেজ কৰা ৱেব এপ্লিকেশ্বন। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">এপ্‌ ডেটা বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4915961947098019832">প্ৰতিচ্ছবি দেখুওৱাৰ অনুমতি আছে</translation>
-<translation id="491779113051926205">ChromeOS ট্ৰেফিক কাউণ্টাৰ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />এ এক্সটেনশ্বন "<ph name="EXTENSION_NAME" />"ৰ সৈতে যোগাযোগ কৰিব বিচাৰে</translation>
 <translation id="4918086044614829423">গ্ৰহণ কৰক</translation>
 <translation id="4918762404810341788">প্ৰতিলিপি কৰক আৰু খোলক</translation>
@@ -7483,6 +7484,7 @@
 <translation id="6754359471209693699">নতুন সন্ধান আৰম্ভ কৰক</translation>
 <translation id="6755702685749429945">অভিধান যোগ দিয়ক</translation>
 <translation id="6756643207511618722">কথন ইঞ্জিন</translation>
+<translation id="6756882635793733911">আপোনাৰ স্ক্ৰীনত থকা যিকোনো বস্তুৰ বিষয়ে সোধক</translation>
 <translation id="6757431299485455321">অন্য ডিভাইচক এই হটস্পটটো বিচৰাত সহায় কৰক।</translation>
 <translation id="6757615605516049275">অনুগ্ৰহ কৰি <ph name="TOKEN_NAME" /> আনলক কৰক।</translation>
 <translation id="6758056191028427665">আমি কেনে প্ৰদৰ্শন কৰিছোঁ আমাক জনাওক৷</translation>
@@ -10768,6 +10770,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" />ৰ বাবে অধিক কাৰ্য</translation>
 <translation id="967624055006145463">ডেটা ষ্ট’ৰ কৰা হ’ল</translation>
 <translation id="96774243435178359">পৰিচালিত প্ৰিণ্টাৰ</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />পৰিশোধ পদ্ধতি<ph name="END_LINK_PAYMENT_METHODS" /> আৰু লয়েল্টী কাৰ্ড, আইডি আৰু অফাৰৰ দৰে <ph name="BEGIN_LINK_PASSES" />পাছ<ph name="END_LINK_PASSES" /> যোগ দিবলৈ বা পৰিচালনা কৰিবলৈ Google Walletলৈ যাওক</translation>
 <translation id="968000525894980488">Google Play সেৱাসমূহ অন কৰক।</translation>
 <translation id="968037381421390582">পে&amp;ষ্ট কৰি “<ph name="SEARCH_TERMS" />”ৰ সন্ধান কৰক</translation>
 <translation id="969096075394517431">ভাষা সলনি কৰক</translation>

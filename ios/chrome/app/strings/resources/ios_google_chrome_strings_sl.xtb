@@ -284,6 +284,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7272930098487145294">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chrome dodaja fotografijam</translation>
 <translation id="7275945473750112644">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromu izbrisani iz te naprave.</translation>
 <translation id="7284245284340063465">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Če izberete ali prezrete predlog, se bo Chrome prilagodil, da vam bo v prihodnje prikazoval ustreznejše predloge.</translation>
 <translation id="7296102444587051536">Chrome za iOS</translation>
 <translation id="7299681342915173313">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v e-poštnih sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7334364820047587268">Gesla za te račune že imate v Googlovem upravitelju gesel. Če izberete uvoz enega od spodnjih gesel, bo nadomestilo obstoječe.</translation>
@@ -357,6 +358,7 @@ Podatki so bili z geslom šifrirani: <ph name="TIME" />. Vnesite ga, če želite
 <translation id="8544583291890527417">Opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome zazna.</translation>
 <translation id="855027533751209304">Nasvet za Chrome: Iščite, kar vidite</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
+<translation id="8589791109349384456">Če izklopite predloge, to ne vpliva na Chromovo obdelavo naslovov strani in URL-jev za druge funkcije. Dostop do teh podatkov lahko upravljate v <ph name="BEGIN_LINK" />nastavitvah sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Uporabljajte gesla, zgodovino, zaznamke in kreditne kartice iz Safarija v Chromu</translation>
 <translation id="8630122478628016441">Vklopite »Zaklepanje anonimnih zavihkov po zaprtju Chroma«.</translation>

@@ -299,7 +299,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2196695604589508993">Abrir histórico</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, guia de compartilhamento fixada</translation>
-<translation id="22091350895006575">Adicione um nome de usuário</translation>
+<translation id="22091350895006575">Adicionar nome de usuário</translation>
 <translation id="2211043920024403606">Informações do perfil</translation>
 <translation id="221494669172414749">Se você abrir o Chrome sem um bloqueio de perfil, as senhas e formas de pagamento salvas serão removidas do carro. O uso do bloqueio de perfil protege esses dados.</translation>
 <translation id="2226826835915474236">Atalhos inativos</translation>
@@ -768,7 +768,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4072805772816336153">Tente novamente mais tarde</translation>
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="4092709865241032354">Para ajudar o Gerenciador de senhas do Google a salvar suas informações de login, adicione seu nome de usuário desse site</translation>
+<translation id="4092709865241032354">Para salvar suas informações de login no Gerenciador de Senhas do Google, adicione seu nome de usuário deste site</translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
 <translation id="4095483462103784441">Criar novo grupo de guias</translation>
 <translation id="4105527135143631701">A atualização do Gerenciador de senhas do Google foi aberta</translation>
@@ -2127,6 +2127,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="948276827484905248">Criar QR code</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Sua organização exige que você faça login para usar o Chrome</translation>
 <translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963246339335003378">Abrir o gerenciador de tarefas</translation>
 <translation id="966337994629449077">A conta <ph name="FROM_EMAIL" /> está conectada.\n\nPara continuar no computador, mude para <ph name="TO_EMAIL" />. Você vai receber as senhas, os favoritos e outros itens dessa conta.</translation>

@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Земята</translation>
 <translation id="102432830749687801">Използвайте приложението „Прехвърляне на съдържание“ от Google, за да преместите в личния си профил данните от училищния, преди да загубите достъп до него.</translation>
 <translation id="1026212596705997935">Клавишната комбинация служи за „<ph name="CONFLICT_ACCEL_NAME" />“. Използвайте друга. За да замените съществуващата комбинация, натиснете тази отново.</translation>
-<translation id="1030856839388844477">Нулиране на преноса на данни</translation>
 <translation id="1047095725494118091">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
 <translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
 <translation id="1310380015393971138">Няма налична <ph name="NETWORK_NAME" /> мрежа</translation>
-<translation id="131421566576084655">Няма данни за датата на последното нулиране на преноса</translation>
 <translation id="1314565355471455267">VPN за Android</translation>
 <translation id="131461803491198646">Собствената мрежа, не роуминг</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Заглавието е редактирано</translation>
 <translation id="1423591390236870726">Клавишът <ph name="KEY_NAME" /> не е натиснат</translation>
 <translation id="1432110487435300883">За приблизителен резултат разделете стойността за <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Преносът на данни се нулира автоматично всеки месец в избрания ден</translation>
 <translation id="1442433966118452622">Източник на изображението</translation>
 <translation id="1446954767133808402">сапфир</translation>
 <translation id="1449035143498573192">Отваряне в Google Търсене</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Скриване на преписа</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
-<translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Използване на тема</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1622402072367425417">светещи балончета</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Добра (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Вече можете да използвате само инструментите за класната стая</translation>
 <translation id="1762483337755424125">Препис</translation>
 <translation id="1765169783255151332">Бързо превключване на клавишите</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">Горещ извор</translation>
 <translation id="2203642483788377106">скала</translation>
 <translation id="2208388655216963643">импресионизъм</translation>
-<translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
 <translation id="2215920961700443347">Не сте онлайн. Свържете се с интернет и опитайте отново.</translation>
 <translation id="2217935453350629363">Текуща скорост</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Отзиви за функцията mahi</translation>
 <translation id="3488065109653206955">Частично активиран</translation>
 <translation id="3492882532495507361">Офис в(ъв) <ph name="OFFICE_STYLE" /> стил с(ъс) <ph name="OFFICE_COLOR" /> тонове</translation>
-<translation id="3493187369049186498">Данните се измерват от вашия Chromebook. Стойностите, отчетени от доставчика, може да са различни.</translation>
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">потъмняване на клавиатурата</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3852931845120288955">Заглавие (от А към Я)</translation>
-<translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описанието е задължително</translation>
 <translation id="386280020966669610">Вдъхнови ме</translation>
 <translation id="3864554910039562428">Коралов риф</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">автоматично разпознаване на различните гласове и обозначаване на говорещите с типов етикет, като например „Говорещ 1“ и „Говорещ 2“;</translation>
 <translation id="38811596981744338">Правен проблем</translation>
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
-<translation id="3889914174935857450">Дата на нулиране</translation>
 <translation id="3889954687526985291">футуристичен мотоциклет от черна хартия с неонови светлини на тъмен фон</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3902271751020176019">Език на преписите</translation>
 <translation id="390890062090528082">звездно небе</translation>
 <translation id="391412459402535266">Устройството не може да бъде тествано. За целта превключете към режим на лаптоп.</translation>
 <translation id="3916998944874125962">създаване на екранна снимка</translation>
-<translation id="3923184630988645767">Пренос на данни</translation>
 <translation id="392943705803418306">Сесията в „Инструменти за класната стая“ приключи за вас</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
 <translation id="3934185438132762746">Незададен <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">намаляване на силата на звука</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Бутон за редактиране на <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Преносът на данни е нулиран</translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5744175046705638478">Превод на „<ph name="QUERY" />“</translation>
 <translation id="5757187557809630523">следващ запис</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5946538341867151940">Още нямате връзка. Ако мобилният ви оператор препоръчва персонализирано име на точката за достъп (APN), въведете съответната информация, като изберете „+ Ново име на точка за достъп (APN)“</translation>
-<translation id="5947266287934282605">Ако последният ден от месеца е преди този ден, информацията за преноса на данни ще бъде нулирана в края на месеца</translation>
 <translation id="5948460390109837040">кучета</translation>
 <translation id="594989847980441553">Изберете „Създаване“, за да създадете изображение с AI.
         Всички създадени изображения автоматично ще се показват тук.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Да не се показва отново</translation>
 <translation id="5975130252842127517">оранжево-червено</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Генерирани заглавия:</translation>
 <translation id="6017514345406065928">Зелено</translation>
 <translation id="6019566113895157499">Клавишни комбинации</translation>
-<translation id="6034694447310538551">Активиране на автоматичното ежемесечно нулиране</translation>
 <translation id="6037291330010597344">Подавачът на документи на скенера е празен. Добавете документи и опитайте отново.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6040852767465482106">Анонимна самоличност</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Избраният клавиш е <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Стрелка за надясно</translation>
 <translation id="6278428485366576908">Тема</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Дефиниране на „<ph name="QUERY" />“</translation>
 <translation id="6283581480003247988">синьо и лилаво</translation>
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Моля, опитайте отново по-късно</translation>
 <translation id="7118522231018231199">Не забравяйте да изберете имената на точките за достъп (APN), предоставени от мобилния оператор или администратора ви. Избирането на APN ще деактивира всички персонализирани имена на точки за достъп. Невалидните APN може да прекъснат мобилната ви връзка.</translation>
 <translation id="7119389851461848805">захранване</translation>
-<translation id="7129287270910503851">Преносът на данни ще се нулира всеки месец на този ден</translation>
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7135814714616751706">Търсете комбинации</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7633068090678117093">Фоново изображение</translation>
 <translation id="763873111564339966">индиговосин</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">Липсва клавиш. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7805768142964895445">Състояние</translation>
-<translation id="7811024689617730980">Избиране на ден за автоматично нулиране в диапазона от 1 до 31 включително</translation>
 <translation id="7813073042185856802">планина</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионизъм</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
-<translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8135609423982943441">Безопасните стандартни настройки на вашия Chromebook бяха възстановени. Имате възможност да коригирате тези промени по всяко време от настройките.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Създаване на ваша собствена</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP адрес</translation>
 <translation id="8491311378305535241">През защитната стена не може да се установи връзка от приложения за Android с уебсайтове, работещи с HTTP</translation>
 <translation id="8495070016475833911">филц</translation>
-<translation id="8498220429738806196">Броячи за трафика</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8503836310948963452">Само още няколко минути…</translation>
 <translation id="8505011850330200833">Моделът на Gemini се нуждае от 2 GB място в хранилището, за да обработва преписи и да създава обобщения</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">покрито със сняг</translation>
 <translation id="8508640263392900755">Подробности за името на точката за достъп (APN)</translation>
 <translation id="8522687886059337719">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скрийнсейвър<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайна</translation>
 <translation id="8531692079895415839">мъгла</translation>
 <translation id="8538236298648811558">Базирано на AI на Google</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">по-тъмна клавиатура</translation>
 <translation id="8863170912498892583">Активиране на тъмната тема</translation>
 <translation id="8864415976656252616">Няма предложено съдържание. Вижте най-популярното помощно съдържание.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8882789155418924367">сови</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">Използване на този видеоклип</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="9088994563996376283">Опростяване</translation>
-<translation id="909856219855259344">Още информация за датата на нулиране</translation>
 <translation id="9100765901046053179">Разширени настройки</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>

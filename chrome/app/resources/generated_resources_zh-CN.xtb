@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">灰色</translation>
 <translation id="1822635184853104396">在新标签页中显示完整的下载记录</translation>
 <translation id="1823768272150895732">字体</translation>
-<translation id="1823781806707127806">将现有浏览数据添加到受管理个人资料名下</translation>
 <translation id="1825073796163165618">启用链接</translation>
 <translation id="1825565032302550710">端口必须介于 1024 到 65535 之间</translation>
 <translation id="18260074040409954">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
@@ -1385,6 +1384,7 @@
 <translation id="2062354623176996748">如果您使用无痕式窗口浏览网页，系统便不会保存您的浏览记录</translation>
 <translation id="206308717637808771">关闭所有窗口时删除数据。在数据处理方面，与您正在查看的网站相同</translation>
 <translation id="2066700471214517561">波束成形麦克风，让 Chromebook 使用者的声音更清晰。</translation>
+<translation id="2067778293100584091">请前往 Google 钱包控制<ph name="BEGIN_LINK1" />数据和隐私偏好设置<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />支付方式<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />卡券<ph name="END_LINK3" />（例如会员卡、身份证件和优惠）</translation>
 <translation id="2068581968816126410">跨设备使用书签</translation>
 <translation id="2069020119963193894">调整大小(&amp;S)</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
@@ -2378,6 +2378,7 @@
 <translation id="2813094189969465044">家长控制</translation>
 <translation id="2814489978934728345">停止加载此页</translation>
 <translation id="2816319641769218778">若想将密码保存到您的 Google 账号中，请开启同步功能。</translation>
+<translation id="281678554528702272">注意：这些网站访问权限设置可能会被企业政策或强大的 API 覆盖。</translation>
 <translation id="2817435998497102771">设置您的壁纸与风格</translation>
 <translation id="2817861546829549432">如果您启用了“请勿跟踪”，您的浏览流量中将会包含一个请求。具体影响取决于网站是否回应该请求以及如何解读该请求。例如：某些网站在收到该请求后，可能会向您展示广告（这些广告并不是根据您访问过的其他网站展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了在网站上提供相关内容、服务、广告和推荐内容，以及为了生成报告统计信息。</translation>
 <translation id="2818476747334107629">打印机详细信息</translation>
@@ -5051,6 +5052,7 @@
 <translation id="4850886885716139402">查看</translation>
 <translation id="485088796993065002">网站可能会播放声音来为音乐、视频和其他媒体提供音频</translation>
 <translation id="4850919322897956733">已删除数据。</translation>
+<translation id="4851973858921178330">过滤网站</translation>
 <translation id="4852030988197799562">禁止在新访问的网站上使用 JavaScript 优化工具</translation>
 <translation id="4852383141291180386">管理应用通知</translation>
 <translation id="4852916668365817106">鼠标光标颜色</translation>
@@ -5146,7 +5148,6 @@
 <translation id="4913573660390710463">访问功能更强大的封装版 Web 应用。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">找不到应用数据</translation>
 <translation id="4915961947098019832">允许显示图片</translation>
-<translation id="491779113051926205">ChromeOS 流量计数器</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”扩展程序通信</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918762404810341788">复制并打开</translation>
@@ -7461,6 +7462,7 @@
 <translation id="6754359471209693699">开始新的搜索</translation>
 <translation id="6755702685749429945">添加字典</translation>
 <translation id="6756643207511618722">语音引擎</translation>
+<translation id="6756882635793733911">针对屏幕上的任何内容提问</translation>
 <translation id="6757431299485455321">有助于其他设备发现此热点。</translation>
 <translation id="6757615605516049275">请解锁“<ph name="TOKEN_NAME" />”。</translation>
 <translation id="6758056191028427665">让我们知道您的满意度。</translation>
@@ -10747,6 +10749,7 @@
 <translation id="96756691973639907">可对“<ph name="MODULE_NAME" />”执行的更多操作</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 <translation id="96774243435178359">受管理的打印机</translation>
+<translation id="967745417352972504">请前往 Google 钱包添加或管理<ph name="BEGIN_LINK_PAYMENT_METHODS" />支付方式<ph name="END_LINK_PAYMENT_METHODS" />和<ph name="BEGIN_LINK_PASSES" />卡券<ph name="END_LINK_PASSES" />（例如会员卡、身份证件和优惠）</translation>
 <translation id="968000525894980488">开启 Google Play 服务。</translation>
 <translation id="968037381421390582">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">更改语言</translation>

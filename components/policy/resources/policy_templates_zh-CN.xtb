@@ -1094,6 +1094,13 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
       注意：此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />（若已设置）。</translation>
 <translation id="1723571018091915166">不允许与 <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />集成功能智能分享标签页。</translation>
 <translation id="172374442286684480">允许所有网站设置本地数据</translation>
+<translation id="1726467454355516626">如果此政策设为 True，管理员安装的 Chrome 应用将能继续运行和安装，无论 Chrome 应用是否默认已启用。
+
+如果此政策未设置或设为 False，系统将使用设备上定义的默认行为。
+
+当用户尝试启动已停用的 Chrome 应用时，系统会向用户显示一条消息，说明该应用未启动的原因，并建议用户联系其 IT 部门。
+
+ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本。</translation>
 <translation id="1729169799290004131">通过设置此政策，您可以指定屏幕亮度百分比（关闭自动调节亮度功能）。系统会根据政策值调整初始屏幕亮度，但用户可以更改相关设置。
 
       如果此政策未设置，用户对屏幕的控制能力以及自动调节亮度功能都不会受到影响。
@@ -4596,6 +4603,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="3965339130942650562">对待机用户执行退出操作前的超时时间</translation>
 <translation id="396536755218079668">受监管用户</translation>
 <translation id="3968218878014278212">允许启用 Eche。</translation>
+<translation id="396848310647682467">强制允许管理员安装的 Chrome 应用</translation>
 <translation id="3971673686578912106">如果此政策已启用，系统便会为相应设备开启 <ph name="PLUGIN_VM_NAME" />，但前提是其他设置也允许该设备运行它。若要允许 <ph name="PLUGIN_VM_NAME" /> 运行，必须将 <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 设为 True，并且必须设置 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />。
 
       如果此政策已停用或未设置，系统便不会为相应设备开启 <ph name="PLUGIN_VM_NAME" />。</translation>
@@ -4619,9 +4627,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="3982624306233556415">无法为浏览器使用可扩展的企业单点登录的身份提供方屏蔽名单</translation>
 <translation id="3983162212222338509">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，或部分在网络进程中、部分在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="3986700049001404598">允许用户通过 Chrome 任务管理器终止进程</translation>
-<translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
-
-      如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="3989635538409502728">退出</translation>
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
@@ -5047,6 +5052,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4275048399551500192">不显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
+<translation id="4278195158478376952">使用默认行为。</translation>
 <translation id="4278656834593750050">启用充电提示音</translation>
 <translation id="4281322231545828290">启用自动密码更改功能</translation>
 <translation id="4282243913059705499">始终在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标</translation>
@@ -6281,9 +6287,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如果设为 False，则系统不会收集可用于识别设备的信息。
 
 对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后才有效。</translation>
-<translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
-
-      如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
 <translation id="5017691827598069017">启用快速配对（快速蓝牙配对）</translation>
 <translation id="5021550478471824215">通过设置此政策，您能以列表形式指定一系列预先配置的网络文件共享。每个列表项都是一个包含下面这 2 项属性的对象：<ph name="SHARE_URL_FIELD_NAME" /> 和 <ph name="MODE_FIELD_NAME" />。
 
@@ -9131,7 +9134,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
       如果此政策设为 true，系统会为该用户启用 <ph name="PLUGIN_VM_NAME" />，但前提是其他设置也允许该用户运行它。若要允许 <ph name="PLUGIN_VM_NAME" /> 运行，您需将 <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 设为 true，并设置 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />。</translation>
 <translation id="6741318452269220158">如果此政策设为 True，即使默认行为是已停用 Native Client，系统也会允许 Native Client 继续运行。
 如果此政策设为 False 或未设置，系统将使用默认行为。</translation>
-<translation id="6749641778238480311">允许在不使用以往用户手势或要求用户确认的情况下调用 subApps API。</translation>
 <translation id="6750902920405577210">要针对信号强度变化事件报告的遥测数据列表。
 
       仅当所指定的每项遥测数据未被其控制政策停用时，系统才会报告该数据。
@@ -9427,13 +9429,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="6938524853892166974">停用“实时翻译”功能</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
-<translation id="6944302005022384441">出于安全考虑，调用 <ph name="SHOW_SUBAPPS_APP_API_NAME" />、<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> 和 <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> Web API 需要使用过往用户手势（“暂时性激活”），否则将会失败。此外，用户还需要通过确认对话框确认相应操作。
-
-通过设置此政策，管理员可以指定哪些源不需要过往用户手势，也无需请求用户确认，即可调用这些 API。
-
-如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns/。“*”不是此政策可接受的值。
-
-如果未设置此政策，所有源都需要过往用户手势才能调用这些 API，并且系统会向用户显示确认对话框。</translation>
 <translation id="694602410134474029">控制 <ph name="PRODUCT_NAME" /> 是否使用独立的服务进程与打印机驱动程序交互。用于查询可用打印机、获取打印驱动程序设置、将待打印的文档提交至本地打印机的平台打印任务调用，均通过一项服务进程执行。将这类调用从浏览器进程中移出有助于提升稳定性，并减少打印预览中的界面冻结行为。
 
 如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 将会使用独立的服务进程执行平台打印任务。
@@ -12041,6 +12036,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="859579553230883285">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
 <translation id="8596784129804979039">对网络服务沙盒使用默认配置</translation>
 <translation id="8597758693275075382">要在安装过程中向虚拟机传递的 SMBIOS OEM 字符串。默认为空列表。</translation>
+<translation id="8598252733604444967">允许运行管理员安装的 Chrome 应用。</translation>
 <translation id="8598786284856179541">启用关于版本信息的报告</translation>
 <translation id="859937827887158048">不允许点对点下载自动更新</translation>
 <translation id="8600280933078435582">Linux 应用</translation>

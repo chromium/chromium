@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Ne dozvolite sajtovima da znaju kada aktivno koristite uređaj</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
 <translation id="1476700086976862423">Boja teme sepija</translation>
+<translation id="1497214680865404175">Korisnička slika</translation>
 <translation id="1500473259453106018">Sakrij sniženja na karticama</translation>
 <translation id="1508931164824684991">Sajtovi mogu da koriste JavaScript</translation>
 <translation id="1510341833810331442">Sajtovima nije dozvoljeno da čuvaju podatke na uređaju</translation>

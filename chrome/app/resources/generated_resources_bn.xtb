@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">ধূসর</translation>
 <translation id="1822635184853104396">নতুন একটি ট্যাবে, ডাউনলোডের সম্পূর্ণ ইতিহাস দেখুন</translation>
 <translation id="1823768272150895732">হরফ</translation>
-<translation id="1823781806707127806">ম্যানেজ করা প্রোফাইলে আগে থেকে থাকা ব্রাউজ করা ডেটা যোগ করুন</translation>
 <translation id="1825073796163165618">লিঙ্ক চালু করুন</translation>
 <translation id="1825565032302550710">পোর্ট অবশ্যই ১০২৪ ও ৬৫৫৩৫-এর মধ্যে থাকতে হবে</translation>
 <translation id="18260074040409954">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। সেগুলি <ph name="EMAIL" />-এর জন্য <ph name="GOOGLE_PASSWORD_MANAGER" />-এ সেভ হয়</translation>
@@ -1395,6 +1394,7 @@
 <translation id="2062354623176996748">ব্রাউজিং ইতিহাস সেভ না করেই ওয়েব ব্রাউজ করতে ছদ্মবেশী উইন্ডো ব্যবহার করুন</translation>
 <translation id="206308717637808771">আপনি যখন সমস্ত উইন্ডো বন্ধ করেন তখন ডেটা মুছুন। আপনি যে সাইটটি দেখছেন সেটির মতোই ডেটা ব্যবহার করা হয়</translation>
 <translation id="2066700471214517561">বিমফর্মিং মাইকের সাহায্যে, Chromebook ব্যবহারকারীর আওয়াজ স্পষ্ট শুনতে পাওয়া যায়।</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />ডেটা ও গোপনীয়তা সংক্রান্ত পছন্দ<ph name="END_LINK1" /> কন্ট্রোল করতে অথবা লয়ালটি কার্ড, আইডি ও অফারের মতো <ph name="BEGIN_LINK2" />পেমেন্ট পদ্ধতি<ph name="END_LINK2" /> ও <ph name="BEGIN_LINK3" />পাস<ph name="END_LINK3" /> ম্যানেজ করতে Google Wallet ভিজিট করুন</translation>
 <translation id="2068581968816126410">বিভিন্ন ডিভাইস জুড়ে বুকমার্ক ব্যবহার করুন</translation>
 <translation id="2069020119963193894">&amp;সাইজ</translation>
 <translation id="2071393345806050157">কোনো স্থানীয় লগ ফাইল নেই।</translation>
@@ -2391,6 +2391,7 @@
 <translation id="2813094189969465044">অভিভাবকীয় নিয়ন্ত্রণ</translation>
 <translation id="2814489978934728345">এই পৃষ্ঠা লোড করা বন্ধ করুন</translation>
 <translation id="2816319641769218778">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করতে, সিঙ্ক চালু করুন।</translation>
+<translation id="281678554528702272">মনে রাখবেন: এন্টারপ্রাইজ নীতি বা শক্তিশালী API-এর মাধ্যমে এইসব সাইট অ্যাক্সেস সেটিংস ওভাররাইড করা হতে পারে।</translation>
 <translation id="2817435998497102771">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
 <translation id="2817861546829549432">''ট্র্যাক করবেন না'' সক্ষম করার অর্থ হল আপনার ব্রাউজিং ট্র্যাফিকের সাথে একটি অনুরোধ অন্তর্ভুক্ত হবে৷ অনুরোধটিতে কোনো ওয়েবসাইট প্রতিক্রিয়া করে কি না, এবং অনুরোধটিকে কীভাবে ব্যাখ্যা করা হয় যেকোনো প্রভাব তার উপর নির্ভর করে৷ উদাহরণস্বরূপ, কিছু ওয়েবসাইট আপনার দেখা অন্য ওয়েবসাইট ভিত্তিক নয় এমন বিজ্ঞাপন দেখিয়ে এই অনুরোধে প্রতিক্রিয়া জানাতে পারে৷ অনেক ওয়েবসাইট এখনও আপনার ব্রাউজিং ডেটা সংগ্রহ এবং ব্যবহার করে - উদাহরণস্বরূপ আপনার নিরাপত্তা বাড়াতে, সামগ্রী, পরিষেবা, বিজ্ঞাপন এবং তাদের ওয়েবসাইতগুলিতে প্রস্তাবনা প্রদান করতে, এবং প্রতিবেদন পরিসংখ্যান তৈরি করতে৷</translation>
 <translation id="2818476747334107629">প্রিন্টারের বিশদ বিবরণ</translation>
@@ -5068,6 +5069,7 @@
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485088796993065002">মিউজিক, ভিডিও ও অন্যান্য মিডিয়া কন্টেন্টের জন্য অডিও প্রদান করতে, সাইট সাউন্ড চালাতে পারে</translation>
 <translation id="4850919322897956733">ডেটা মোছা হয়েছে।</translation>
+<translation id="4851973858921178330">সাইট ফিল্টার করুন</translation>
 <translation id="4852030988197799562">নতুন ভিজিট করা সাইটে JavaScript অপ্টিমাইজারের অ্যাক্সেস ব্লক করুন</translation>
 <translation id="4852383141291180386">অ্যাপের বিজ্ঞপ্তি ম্যানেজ করুন</translation>
 <translation id="4852916668365817106">মাউসের রঙ</translation>
@@ -5163,7 +5165,6 @@
 <translation id="4913573660390710463">আরও উন্নত কার্যকারিতা সহ প্যাকেজ করা ওয়েব অ্যাপ্লিকেশন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">অ্যাপ ডেটা পাওয়া যাচ্ছে না</translation>
 <translation id="4915961947098019832">ছবি দেখানোর অনুমতি দেওয়া হয়েছে</translation>
-<translation id="491779113051926205">ChromeOS ট্রাফিক কাউন্টার</translation>
 <translation id="4918021164741308375">"<ph name="EXTENSION_NAME" />" এক্সটেনশন দ্বারা <ph name="ORIGIN" /> যোগাযোগ করতে চায়</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4918762404810341788">কপি করুন এবং খুলুন</translation>
@@ -7485,6 +7486,7 @@
 <translation id="6754359471209693699">নতুন সার্চ শুরু করুন</translation>
 <translation id="6755702685749429945">অভিধান যোগ করুন</translation>
 <translation id="6756643207511618722">স্পিচ ইঞ্জিন</translation>
+<translation id="6756882635793733911">আপনার স্ক্রিনে থাকা যেকোনও কিছু সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="6757431299485455321">এই হটস্পট খুঁজতে অন্যান্য ডিভাইসকে সহায়তা করে।</translation>
 <translation id="6757615605516049275"><ph name="TOKEN_NAME" /> আনলক করুন।</translation>
 <translation id="6758056191028427665">আমাদের পরিষেবা কেমন লাগছে তা জানান।</translation>
@@ -10771,6 +10773,7 @@
 <translation id="96756691973639907"><ph name="MODULE_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 <translation id="96774243435178359">ম্যানেজ করা প্রিন্টার</translation>
+<translation id="967745417352972504">লয়ালটি কার্ড, আইডি ও অফারের মতো <ph name="BEGIN_LINK_PAYMENT_METHODS" />পেমেন্ট পদ্ধতি<ph name="END_LINK_PAYMENT_METHODS" /> ও <ph name="BEGIN_LINK_PASSES" />পাস<ph name="END_LINK_PASSES" /> যোগ বা ম্যানেজ করতে Google Wallet ভিজিট করুন</translation>
 <translation id="968000525894980488">Google Play পরিষেবা চালু করুন।</translation>
 <translation id="968037381421390582">“<ph name="SEARCH_TERMS" />” পে&amp;স্ট করে সার্চ করুন</translation>
 <translation id="969096075394517431">ভাষাগুলি পরিবর্তন করুন</translation>

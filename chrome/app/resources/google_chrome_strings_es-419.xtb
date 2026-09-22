@@ -70,6 +70,7 @@
             Esta acción no afectará los favoritos, el historial ni las contraseñas guardadas.</translation>
 <translation id="1619887657840448962">Para que Chrome sea más seguro, inhabilitamos algunas extensiones que no aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
 <translation id="1628000112320670027">Obtener ayuda con Chrome</translation>
+<translation id="1632241302126471515">Buscar con Chrome Canary</translation>
 <translation id="1640672724030957280">Descargando...</translation>
 <translation id="1651617469580841801">Cuando usas Google Lens, el título de la página, la URL y el contenido, incluidos los archivos PDF, se envían a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Acerca de ChromeOS Flex</translation>
@@ -204,7 +205,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="2970681950995291301">Sal de Chrome en la página de Configuración para quitar tu Cuenta de Google</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimiento de precios con Chrome en tu teléfono</translation>
-<translation id="2985091279808606502">Chrome necesita permiso de acceso a la red local para este sitio</translation>
 <translation id="2991167882679440829">Se quitarán de este dispositivo tus contraseñas y otros datos de Chrome que guardaste en tu Cuenta de Google. Para volver a usarlas en Chrome, vuelve a acceder.</translation>
 <translation id="2994465299455873643">Proporciona servicios de encriptación y una forma segura de recuperar <ph name="BROWSER_NAME" /> si está desactualizado. Si se inhabilita este servicio, es posible que <ph name="BROWSER_NAME" /> pierda el acceso a los datos encriptados y que <ph name="BROWSER_NAME" /> no pueda recuperarse.</translation>
 <translation id="3003694935412297923">Todas las tareas</translation>
@@ -272,6 +272,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="3596080736082218006">{COUNT,plural, =0{El administrador necesita que reinicies Chrome para aplicar una actualización}=1{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3597003331831379823">No se pudo ejecutar la configuración con privilegios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Mostrar Gemini en Chrome en la bandeja del sistema</translation>
+<translation id="3616622400661108683">Preguntar sobre contenido fuera de Chrome, como otras apps o archivos</translation>
 <translation id="3622716124581627104">Identifica objetos o lugares, y copia o traduce texto. Cuando usas Google Lens, se envía una captura de pantalla de la página a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ahora es más sencillo utilizar Chrome con la cuenta de Google y en computadoras compartidas.</translation>
 <translation id="3628103251823745322">Ya accedió <ph name="EXISTING_USER" />. Para mantener separados los datos de navegación, accede a Chrome en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu información guardada y más en todos tus dispositivos.</translation>
@@ -750,7 +751,9 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
 <translation id="8172231188687329735">Obtén la app de Chrome para guardar contraseñas estés donde estés</translation>
 <translation id="8177472873527554730">No se puede encontrar el contenido de la página</translation>
+<translation id="8196526165798579689">Buscar con Chrome Dev</translation>
 <translation id="8221491193165283816">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio las muestre, haz clic aquí.</translation>
+<translation id="8227493674161801700">Buscar con Chrome Beta</translation>
 <translation id="8253851811470049684">Abre vínculos en Chrome desde cualquier app y mantén el navegador accesible en la barra de tareas</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
 <translation id="8260086374035800939">Si Gemini en Chrome está abierto, el panel lateral permanecerá abierto cuando se crean pestañas nuevas</translation>

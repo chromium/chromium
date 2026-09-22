@@ -1078,7 +1078,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1822517323280215012">Grey</translation>
 <translation id="1822635184853104396">Show full download history in a new tab</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Add existing browsing data to managed profile</translation>
 <translation id="1825073796163165618">Enable links</translation>
 <translation id="1825565032302550710">Port must be between 1024 and 65535</translation>
 <translation id="18260074040409954">You can use saved passwords on any device. They're saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
@@ -1395,6 +1394,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2062354623176996748">Use the web without saving your browsing history with an Incognito window</translation>
 <translation id="206308717637808771">Delete data when you close all windows. Data is treated the same as the site that you’re viewing</translation>
 <translation id="2066700471214517561">Beamforming mic so that the person using the Chromebook sounds clear.</translation>
+<translation id="2067778293100584091">Visit Google Wallet to control <ph name="BEGIN_LINK1" />data and privacy preferences<ph name="END_LINK1" /> or manage <ph name="BEGIN_LINK2" />payment methods<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" /> like loyalty cards, IDs and offers</translation>
 <translation id="2068581968816126410">Use bookmarks across devices</translation>
 <translation id="2069020119963193894">&amp;Size</translation>
 <translation id="2071393345806050157">No local log file.</translation>
@@ -2391,6 +2391,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2813094189969465044">Parental controls</translation>
 <translation id="2814489978934728345">Stop loading this page</translation>
 <translation id="2816319641769218778">To save passwords to your Google account, turn on sync.</translation>
+<translation id="281678554528702272">Note: These site access settings may be overridden by enterprise policies or powerful APIs.</translation>
 <translation id="2817435998497102771">Set your wallpaper and style</translation>
 <translation id="2817861546829549432">Enabling "Do Not Track" means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted. For example, some websites may respond to this request by showing you ads that aren't based on other websites you've visited. Many websites will still collect and use your browsing data; for example to improve security, to provide content, services, ads and recommendations on their websites, and to generate reporting statistics.</translation>
 <translation id="2818476747334107629">Printer details</translation>
@@ -5068,6 +5069,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485088796993065002">Sites might play sound to provide audio for music, videos and other media</translation>
 <translation id="4850919322897956733">Data deleted.</translation>
+<translation id="4851973858921178330">Filter sites</translation>
 <translation id="4852030988197799562">Block access to the JavaScript optimiser on newly visited sites</translation>
 <translation id="4852383141291180386">Manage app notifications</translation>
 <translation id="4852916668365817106">Mouse colour</translation>
@@ -5163,7 +5165,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4913573660390710463">Access packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Can't find app data</translation>
 <translation id="4915961947098019832">Allowed to show images</translation>
-<translation id="491779113051926205">ChromeOS Traffic Counters</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wants to communicate with the extension "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4918762404810341788">Copy and open</translation>
@@ -7482,6 +7483,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6754359471209693699">Start new search</translation>
 <translation id="6755702685749429945">Add dictionary</translation>
 <translation id="6756643207511618722">Speech engines</translation>
+<translation id="6756882635793733911">Ask about anything on your screen</translation>
 <translation id="6757431299485455321">Help other devices find this hotspot.</translation>
 <translation id="6757615605516049275">Please unlock <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
@@ -10768,6 +10770,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="96756691973639907">More actions for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="96774243435178359">Managed printers</translation>
+<translation id="967745417352972504">Visit Google Wallet to add or manage <ph name="BEGIN_LINK_PAYMENT_METHODS" />payment methods<ph name="END_LINK_PAYMENT_METHODS" /> and <ph name="BEGIN_LINK_PASSES" />passes<ph name="END_LINK_PASSES" /> like loyalty cards, IDs and offers</translation>
 <translation id="968000525894980488">Turn on Google Play services.</translation>
 <translation id="968037381421390582">Paste and search for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="969096075394517431">Change languages</translation>

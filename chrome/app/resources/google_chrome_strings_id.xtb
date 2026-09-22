@@ -70,6 +70,7 @@
             Bookmark, histori, dan sandi tersimpan tidak akan terpengaruh.</translation>
 <translation id="1619887657840448962">Agar Chrome lebih aman, kami menonaktifkan ekstensi berikut yang tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="1628000112320670027">Dapatkan bantuan Chrome</translation>
+<translation id="1632241302126471515">Telusuri dengan Chrome Canary</translation>
 <translation id="1640672724030957280">Mengunduh...</translation>
 <translation id="1651617469580841801">Saat Anda menggunakan Google Lens, judul halaman, URL, dan konten halaman, termasuk PDF, akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tentang ChromeOS Flex</translation>
@@ -204,7 +205,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="2970681950995291301">Untuk menghapus Akun Google Anda dari Chrome, logout dari Chrome di halaman Setelan</translation>
 <translation id="2976869732253036751">Dapatkan notifikasi pemantauan harga dengan Chrome di ponsel Anda</translation>
-<translation id="2985091279808606502">Chrome memerlukan izin jaringan lokal untuk situs ini</translation>
 <translation id="2991167882679440829">Sandi dan data Chrome Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chrome, login kembali.</translation>
 <translation id="2994465299455873643">Menyediakan layanan enkripsi dan cara yang aman untuk memulihkan <ph name="BROWSER_NAME" /> jika browser tidak update. Jika layanan ini dinonaktifkan, <ph name="BROWSER_NAME" /> mungkin kehilangan akses ke data yang dienkripsi, dan <ph name="BROWSER_NAME" /> mungkin tidak dapat memulihkan data.</translation>
 <translation id="3003694935412297923">Semua tugas</translation>
@@ -272,6 +272,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3597003331831379823">Gagal menjalankan penyiapan dengan hak istimewa yang ditingkatkan. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Tampilkan Gemini di Chrome di area notifikasi</translation>
+<translation id="3616622400661108683">Tanyakan tentang konten di luar Chrome, seperti aplikasi atau file lain</translation>
 <translation id="3622716124581627104">Identifikasi berbagai hal atau tempat, serta salin atau terjemahkan teks. Saat Anda menggunakan Google Lens, screenshot halaman akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan info tersimpan dan data lainnya di semua perangkat Anda.</translation>
@@ -748,7 +749,9 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8162006532256575008">Gunakan Chrome Tanpa Akun</translation>
 <translation id="8172231188687329735">Dapatkan aplikasi Chrome untuk menyimpan sandi kapan saja di mana saja</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
+<translation id="8196526165798579689">Telusuri dengan Chrome Dev</translation>
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
+<translation id="8227493674161801700">Telusuri dengan Chrome Beta</translation>
 <translation id="8253851811470049684">Buka link di Chrome dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="8260086374035800939">Jika Gemini di Chrome terbuka, panel samping akan tetap terbuka saat membuat tab baru</translation>

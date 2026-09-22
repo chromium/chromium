@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
 <translation id="1476700086976862423">主题颜色：深褐色</translation>
+<translation id="1497214680865404175">用户上传的图片</translation>
 <translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
 <translation id="1508931164824684991">网站可以使用 JavaScript</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>

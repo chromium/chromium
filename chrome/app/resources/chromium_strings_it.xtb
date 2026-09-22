@@ -261,7 +261,6 @@
 
           **Suggerisci domande:** genera un elenco puntato di 3-5 domande stimolanti che un utente potrebbe porre per comprendere meglio lo screenshot. Queste domande devono includerne almeno una che riguardi specificamente un oggetto visivo, il suo design o il suo posizionamento.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium deve avere l'autorizzazione di accesso alla rete locale per questo sito</translation>
 <translation id="3885770153807205175">Selettore lingua</translation>
 <translation id="388648406173476553">Personalizza e controlla Chromium. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="3889543394854987837">Fai clic sul tuo nome per aprire Chromium e iniziare a navigare.</translation>
@@ -592,6 +591,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7213407614656404070">Usa Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7216228761061470870">Quando utilizzi la Ricerca immagini su desktop, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati al server</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
+<translation id="7226331818892775989">Chiedi informazioni su contenuti esterni a Chromium, come altre app o file</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> ha già eseguito l’accesso. Per tenere separata la tua navigazione, accedi a Chromium nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere alle informazioni salvate e ad altri dati su tutti i tuoi dispositivi.</translation>
 <translation id="7252276985725323153">Inizia subito a navigare: ora Chromium può essere avviato all'avvio di Windows.</translation>
 <translation id="7274695763216404502">Riquadro fissato. Usa di nuovo la ricerca immagini dalla barra degli strumenti</translation>

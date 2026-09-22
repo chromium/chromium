@@ -22,7 +22,7 @@
 <translation id="107147699690128016">Si cambias la extensión del archivo, el archivo podría abrirse en una aplicación diferente y convertirse en un riesgo potencial para tu dispositivo.</translation>
 <translation id="1073328695547557412">Toca el icono de Google Lens</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
-<translation id="1080116354587839789">Se ajusta al ancho</translation>
+<translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1087799850623149508">Puedes mantener pulsada la barra de direcciones para moverla a la parte inferior</translation>
 <translation id="1089606299949659462">Revisión completada</translation>
@@ -782,7 +782,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4137746084635924146">Idioma actual del dispositivo</translation>
 <translation id="414128724510021958">Sitios para ordenadores solicitados de forma predeterminada</translation>
 <translation id="4162867837470729563">Lista de opciones para compartir abierta a altura completa.</translation>
-<translation id="4164642020717536140">Navegación web rápida y segura</translation>
+<translation id="4164642020717536140">Navega por la Web de forma rápida y segura</translation>
 <translation id="4165077084524712774">Más herramientas</translation>
 <translation id="4169156312706405526">Adjuntar archivos de Drive</translation>
 <translation id="4170577491341606575">Obteniendo tus cosas\u2026</translation>
@@ -2054,7 +2054,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9015111999662965458">Para asegurarse de que este dispositivo se puede usar de forma segura, es posible que tu organización necesite ver información sobre su sistema operativo, navegador, configuración y el software instalado en el dispositivo</translation>
 <translation id="9019199799064251516">¿Continuar sin un bloqueo de perfil del coche?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
-<translation id="9024318700713112071">Establecer Chrome como navegador predeterminado</translation>
+<translation id="9024318700713112071">Establecer Chrome como predeterminado</translation>
 <translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
 <translation id="904146253922032365">Mantén pulsado para mostrar las pestañas en vertical</translation>
@@ -2126,6 +2126,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="948276827484905248">Crear código QR</translation>
 <translation id="95817756606698420">Chrome puede utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para hacer búsquedas en China. Puedes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Tu organización requiere que inicies sesión para usar Chrome</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="963246339335003378">Abrir administrador de tareas</translation>
 <translation id="966337994629449077">Has iniciado sesión como <ph name="FROM_EMAIL" />.\n\nPara continuar desde tu ordenador, cambia a <ph name="TO_EMAIL" />. Podrás acceder a las contraseñas, los marcadores y otro contenido de esta cuenta.</translation>

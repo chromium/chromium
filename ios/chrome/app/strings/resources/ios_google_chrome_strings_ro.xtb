@@ -284,6 +284,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7272930098487145294">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chrome să adauge fotografiile</translation>
 <translation id="7275945473750112644">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chrome vor fi șterse de pe acest dispozitiv</translation>
 <translation id="7284245284340063465">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Dacă selectezi sau ignori o sugestie, Chrome se va adapta pentru a-ți afișa sugestii mai relevante pe viitor.</translation>
 <translation id="7296102444587051536">Chrome pentru iOS</translation>
 <translation id="7299681342915173313">Acum poți folosi Chrome oricând atingi linkuri din e-mailuri, documente și alte aplicații.</translation>
 <translation id="7334364820047587268">Ai deja parole pentru aceste conturi în Managerul de parole Google. Dacă alegi să imporți una dintre parolele de mai jos, aceasta o va înlocui pe cea existentă.</translation>
@@ -357,6 +358,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8544583291890527417">Alerte cu privire la orice probleme de confidențialitate sau de securitate pe care Chrome le detectează pentru tine.</translation>
 <translation id="855027533751209304">Sfat pentru Chrome: caută ceea ce vezi</translation>
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="8589791109349384456">Dezactivarea sugestiilor nu controlează procesarea de către Chrome a titlurilor paginilor și a adreselor URL pentru alte funcții. Poți gestiona accesul la aceste date în <ph name="BEGIN_LINK" />setările de sincronizare<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Folosește parolele, istoricul, marcajele și cardurile de credit din Safari în Chrome</translation>
 <translation id="8630122478628016441">Activează Blochează filele incognito când închizi Chrome.</translation>

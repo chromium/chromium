@@ -1078,7 +1078,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1822517323280215012">Grár</translation>
 <translation id="1822635184853104396">Sýna allan niðurhalsferilinn í nýjum flipa</translation>
 <translation id="1823768272150895732">Leturgerð</translation>
-<translation id="1823781806707127806">Bæta núverandi vefskoðunargögnum við stýrðan prófíl</translation>
 <translation id="1825073796163165618">Virkja tengla</translation>
 <translation id="1825565032302550710">Gátt verður að vera á milli 1024 og 65535</translation>
 <translation id="18260074040409954">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í <ph name="GOOGLE_PASSWORD_MANAGER" /> fyrir <ph name="EMAIL" />.</translation>
@@ -5070,6 +5069,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="485088796993065002">Vefsvæði gætu spilað hljóð til að þú heyrir tónlist og hljóð í myndskeiðum og öðru efni</translation>
 <translation id="4850919322897956733">Gögnum var eytt.</translation>
+<translation id="4851973858921178330">Sía vefsvæði</translation>
 <translation id="4852030988197799562">Loka á aðgang að JavaScript-fínstillingu á nýlega heimsóttum vefsvæðum</translation>
 <translation id="4852383141291180386">Stjórna forritstilkynningum</translation>
 <translation id="4852916668365817106">Litur músar</translation>
@@ -5165,7 +5165,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4913573660390710463">Aðgangur að pökkuðum vefforritum með ítareiginleikum. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Ekki tókst að finna forritsgögn</translation>
 <translation id="4915961947098019832">Mega birta myndir</translation>
-<translation id="491779113051926205">ChromeOS-umferðartalning</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill eiga samskipti við viðbótina „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4918762404810341788">Afrita og opna</translation>
@@ -7486,6 +7485,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6754359471209693699">Hefja nýja leit</translation>
 <translation id="6755702685749429945">Bæta orðabók við</translation>
 <translation id="6756643207511618722">Talgervlar</translation>
+<translation id="6756882635793733911">Spyrðu um hvað sem er á skjánum</translation>
 <translation id="6757431299485455321">Hjálpaðu öðrum tækjum að finna þennan heita reit.</translation>
 <translation id="6757615605516049275">Taktu <ph name="TOKEN_NAME" /> úr lás.</translation>
 <translation id="6758056191028427665">Láttu okkur vita hvernig við stöndum okkur.</translation>

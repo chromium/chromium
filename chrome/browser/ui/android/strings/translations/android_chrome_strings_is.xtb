@@ -2126,6 +2126,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="948276827484905248">Búa til QR-kóða</translation>
 <translation id="95817756606698420">Chrome getur notast við <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> fyrir leit í Kína. Þú getur breytt þessu í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome</translation>
 <translation id="961856697154696964">Eyða vefskoðunargögnum</translation>
 <translation id="963246339335003378">Opna verkstjórn</translation>
 <translation id="966337994629449077">Þú ert skráð(ur) inn sem <ph name="FROM_EMAIL" />.\n\nTil að halda áfram í tölvunni þinni skaltu skipta yfir í <ph name="TO_EMAIL" />. Þú færð aðgangsorðin, bókamerkin og fleira af þessum reikningi.</translation>

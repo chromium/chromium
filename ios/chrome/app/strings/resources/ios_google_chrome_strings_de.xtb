@@ -284,6 +284,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7272930098487145294">Um Bilder zu speichern, gib Chrome unter „Einstellungen“ die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="7275945473750112644">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chrome-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="7284245284340063465">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Wenn du einen Vorschlag auswählst oder ignorierst, passt sich Chrome an, damit du in Zukunft relevantere Vorschläge siehst.</translation>
 <translation id="7296102444587051536">Chrome für iOS</translation>
 <translation id="7299681342915173313">Du kannst jetzt Chrome jederzeit nutzen, wenn du in E‑Mails, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="7334364820047587268">Du hast bereits Passwörter für diese Konten im Google Passwortmanager. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
@@ -357,6 +358,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8544583291890527417">Benachrichtigungen bei von Chrome erkannten Problemen mit dem Datenschutz und der Sicherheit.</translation>
 <translation id="855027533751209304">Chrome-Tipp: Suchen, was du siehst</translation>
 <translation id="8558480467877843976">Du kannst jetzt Chrome jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
+<translation id="8589791109349384456">Wenn du Vorschläge deaktivierst, hat das keine Auswirkungen auf die Verarbeitung von Seitentiteln und URLs für andere Funktionen durch Chrome. Du kannst den Zugriff auf diese Daten in deinen <ph name="BEGIN_LINK" />Synchronisierungseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">In Safari gespeicherte Passwörter, Verlauf, Lesezeichen und Kreditkarten in Chrome verwenden</translation>
 <translation id="8630122478628016441">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>

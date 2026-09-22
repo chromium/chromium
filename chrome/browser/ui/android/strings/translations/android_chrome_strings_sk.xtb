@@ -2126,6 +2126,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="948276827484905248">Vytvoriť QR kód</translation>
 <translation id="95817756606698420">Chrome môže použiť <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> na vyhľadávanie v Číne. Táto možnosť sa dá zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Vaša organizácia vyžaduje, aby ste sa na používanie Chromu prihlásili</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
 <translation id="963246339335003378">Otvoriť správcu úloh</translation>
 <translation id="966337994629449077">Prihlásili ste sa ako <ph name="FROM_EMAIL" />.\n\nAk chcete pokračovať v počítači, prepnite na účet <ph name="TO_EMAIL" />. Získate heslá, záložky a ďalší obsah z tohto účtu.</translation>

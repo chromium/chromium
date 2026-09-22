@@ -284,6 +284,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="7272930098487145294">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chrome thêm vào ảnh của bạn</translation>
 <translation id="7275945473750112644">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="7284245284340063465">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Nếu bạn chọn hoặc bỏ qua một đề xuất, Chrome sẽ điều chỉnh để giúp hiển thị những đề xuất phù hợp hơn trong tương lai.</translation>
 <translation id="7296102444587051536">Chrome cho iOS</translation>
 <translation id="7299681342915173313">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong email, tài liệu và các ứng dụng khác.</translation>
 <translation id="7334364820047587268">Bạn đã có mật khẩu cho các tài khoản này trong Trình quản lý mật khẩu của Google. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
@@ -356,7 +357,8 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chrome phát hiện ra.</translation>
 <translation id="855027533751209304">Mẹo khi dùng Chrome: Tìm thông tin về những gì bạn thấy</translation>
-<translation id="8558480467877843976">Giờ bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào liên kết trong thư/tin nhắn, tài liệu, v.v.</translation>
+<translation id="8558480467877843976">Giờ bạn có thể dùng Chrome mỗi khi duyệt web hoặc nhấn vào đường liên kết trong thư/tin nhắn, tài liệu, v.v.</translation>
+<translation id="8589791109349384456">Việc tắt tính năng đề xuất sẽ không kiểm soát cách Chrome xử lý tiêu đề trang và URL cho các tính năng khác. Bạn có thể quản lý quyền truy cập vào dữ liệu này trong phần <ph name="BEGIN_LINK" />cài đặt đồng bộ hoá<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Sử dụng mật khẩu, nhật ký, dấu trang và thẻ tín dụng từ Safari trong Chrome</translation>
 <translation id="8630122478628016441">Bật chế độ "Khoá các thẻ Ẩn danh khi bạn đóng Chrome".</translation>

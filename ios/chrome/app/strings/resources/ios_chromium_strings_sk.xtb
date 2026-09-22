@@ -53,6 +53,8 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="1965068424387304464">Tip pre Chromium: Ukladanie hesiel</translation>
 <translation id="1992653360331625459">Heslá týchto účtov už máte v Správcovi hesiel. Ak importujete jedno z hesiel uvedených nižšie, nahradí existujúce.</translation>
 <translation id="2006345422933397527">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
+<translation id="2025935492422922097">Chromium spracúva názvy a webové adresy stránok v súkromnom priestore v cloude</translation>
+<translation id="2027881372245801507">Vypnutie návrhov nemá vplyv na to, ako Chromium spracúva názvy a webové adresy stránok pri iných funkciách. Prístup k týmto údajom môžete spravovať v <ph name="BEGIN_LINK" />nastaveniach synchronizácie<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Zobraziť históriu prehliadača Chromium</translation>
 <translation id="2052320862053429062">Chromium pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="2059365270911640413">Dokončite nastavovanie prehliadača Chromium</translation>
@@ -351,6 +353,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="865600487977764604">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>
+<translation id="8697693743327341604">Ak určitý návrh vyberiete alebo odignorujete, Chromium sa prispôsobí, aby sa vám v budúcnosti zobrazovali relevantnejšie návrhy.</translation>
 <translation id="869832267508702259">Nastavte si Chromium ako predvolený prehliadač a získavajte štatistiky od Gemini, nech prehliadate kdekoľvek</translation>
 <translation id="8698780336333802489">Importovať do prehliadača Chromium</translation>
 <translation id="8730503818204408000">Otvorí nastavenia prehliadača Chromium, aby bolo možné Chromium nakonfigurovať ako predvolený prehliadač.</translation>

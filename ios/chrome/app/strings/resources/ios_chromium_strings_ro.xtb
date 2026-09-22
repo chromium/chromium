@@ -53,6 +53,8 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="1965068424387304464">Sfat pentru Chromium: salvează parolele</translation>
 <translation id="1992653360331625459">Ai deja parole pentru aceste conturi în Managerul de parole. Dacă alegi să imporți una dintre parolele de mai jos, aceasta o va înlocui pe cea existentă.</translation>
 <translation id="2006345422933397527">Chromium nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
+<translation id="2025935492422922097">Chromium procesează titlurile paginilor și adresele URL într-un spațiu privat în cloud</translation>
+<translation id="2027881372245801507">Dezactivarea sugestiilor nu influențează modul în care Chromium procesează titlurile paginilor și adresele URL pentru alte funcții. Poți gestiona accesul la aceste date în <ph name="BEGIN_LINK" />setările de sincronizare<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Vezi istoricul Chromium</translation>
 <translation id="2052320862053429062">Chromium compară periodic parolele tale cu cele din listele publicate online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
 <translation id="2059365270911640413">Finalizează configurarea Chromium</translation>
@@ -351,6 +353,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="865600487977764604">Te protejează în Chromium și poate fi folosit pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
 <translation id="8685813584220679697">Conectează-te la acest site și la Chromium.</translation>
+<translation id="8697693743327341604">Dacă selectezi sau ignori o sugestie, Chromium se va adapta pentru a-ți afișa sugestii mai relevante pe viitor.</translation>
 <translation id="869832267508702259">Setează Chromium ca browser prestabilit pentru a primi statistici de la Gemini oriunde navighezi</translation>
 <translation id="8698780336333802489">Importă în Chromium</translation>
 <translation id="8730503818204408000">Deschide setarea Chromium pentru a seta Chromium ca browser prestabilit.</translation>

@@ -1076,7 +1076,6 @@
 <translation id="1822517323280215012">ግራጫ</translation>
 <translation id="1822635184853104396">ሙሉ የውርድ ታሪክን በአዲስ ትር ውስጥ አሳይ</translation>
 <translation id="1823768272150895732">ቅርጸ ቁምፊ</translation>
-<translation id="1823781806707127806">መገለጫን ለማስተዳደር ነባሪ የአሰሳ ውሂብን ያክሉ</translation>
 <translation id="1825073796163165618">አገናኞችን አንቃ</translation>
 <translation id="1825565032302550710">ወደብ በ1024 እና 65535 መካከል መሆን አለበት</translation>
 <translation id="18260074040409954">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ። ለ<ph name="EMAIL" /> በ<ph name="GOOGLE_PASSWORD_MANAGER" /> ላይ ይቀመጣሉ።</translation>
@@ -1392,6 +1391,7 @@
 <translation id="2062354623176996748">ማንነት በማያሳውቅ መስኮት አማካኝነት የአሰሳ ታሪክዎን ሳያስቀምጡ ድሩን ይጠቀሙ</translation>
 <translation id="206308717637808771">ሁሉንም መስኮቶች ሲዘጉ ውሂብ ይሰርዙ። ውሂብ የሚስተናገደው እየተመለከቱት እንዳለው ጣቢያ ነው</translation>
 <translation id="2066700471214517561">Chromebook የሚጠቀሙት ሰው ግልፅ ሆነው መደመጥ እንዲችሉ ማይክን ሞገድ በማሠራት ላይ።</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />የውሂብ እና የግላዊነት ምርጫዎችን<ph name="END_LINK1" /> ለመቆጣጠር ወይም እንደ የታማኝነት ካርዶች፣ መታወቂያዎች እና ቅናሾች ያሉ <ph name="BEGIN_LINK2" />የመክፈያ ዘዴዎችን<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />ይለፎችን<ph name="END_LINK3" /> ለማስተዳደር Google Wallet ይጎብኙ</translation>
 <translation id="2068581968816126410">በመላ መሣሪያዎች ላይ ዕልባቶችን ይጠቀሙ</translation>
 <translation id="2069020119963193894">&amp;መጠን</translation>
 <translation id="2071393345806050157">ምንም አካባቢያዊ የምዝግብ ማስታወሻ ፋይል የለም።</translation>
@@ -2386,6 +2386,7 @@
 <translation id="2813094189969465044">የወላጅ መቆጣጠሪያዎች</translation>
 <translation id="2814489978934728345">ይህን ገፅ መጫን አቁም</translation>
 <translation id="2816319641769218778">የይለፍ ቃላትን ውወደ Google መለያዎ ለማስቀመት ስምረትን ያብሩ።</translation>
+<translation id="281678554528702272">ማስታወሻ፦ እነዚህ የጣቢያ መዳረሻ ቅንብሮች በድርጅት መመሪያዎች ወይም ኃይለኛ ኤፒአዮች ተሽረው ሊሆን ይችላሉ።</translation>
 <translation id="2817435998497102771">የእርስዎን ልጣፍ እና ቅጥ ያቀናብሩ</translation>
 <translation id="2817861546829549432">«አትከታተል»ን ማንቃት ማለት አንድ ጥያቄ በአሰሳ ታሪክዎ ላይ ይካተታል ማለት ነው። ማንኛውም ውጤት አንድ ድር ጣቢያ ለጥያቄው በሚሰጠው ምላሽ ላይና ጥያቄውን በሚተረጎምበት መንገድ ላይ የሚወሰን ነው። ለምሳሌ፣ አንዳንድ ድር ጣቢያዎች እርስዎ በጎበኟቸው ድር ጣቢያዎች ላይ ያልተመሠረቱ ማስታወቂያዎችን በማሳየት ለዚህ ጥያቄ ምላሽ ይሰጣሉ። ብዙ ድር ጣቢያዎች አሁንም የአሰሳ ውሂብዎን ይሰበስቡና ይጠቀሙበታል - ለምሳሌ ደህንነትን ለማሻሻል፤ በድር ጣቢያዎቻቸው ላይ ይዘትን፣ አገልግሎቶችን፣ ማስታወቂያዎችንና ምክሮችን ለማቅረብ፤ እና የሪፖርት አደራረግ ስታቲስቲክስን ለማመንጨት።</translation>
 <translation id="2818476747334107629">የአታሚ ዝርዝሮች</translation>
@@ -5061,6 +5062,7 @@
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="485088796993065002">ጣቢያዎች ለሙዚቃ፣ ለቪዲዮዎች እና ለሌላ ሚዲያ ኦዲዮ ለማቅረብ ድምጻቸውን መጫወት ይችሉ ይሆናል</translation>
 <translation id="4850919322897956733">ውሂብ ተሰርዟል።</translation>
+<translation id="4851973858921178330">ጣቢያዎችን አጣራ</translation>
 <translation id="4852030988197799562">አዲስ በተጎበኙ ጣቢያዎች ላይ የጃቫስክሪፕት አመቻች መዳረሻን ያግዱ</translation>
 <translation id="4852383141291180386">የመተግበሪያ ማሳወቂያዎችን አስተዳድር</translation>
 <translation id="4852916668365817106">የመዳፊት ቀለም</translation>
@@ -5156,7 +5158,6 @@
 <translation id="4913573660390710463">የተሻሻሉ ችሎታዎች ያሏቸው ጥቅል የተደረጉ ድር መተግበሪያዎችን ይድረሱ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">የመተግበሪያ ውሂብን ማግኘት አልተቻለም</translation>
 <translation id="4915961947098019832">ምስሎችን ለማሳየት ተፈቅዷል</translation>
-<translation id="491779113051926205">የChromeOS ትራፊክ ቆጣሪዎች</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ከቅጥያ «<ph name="EXTENSION_NAME" />» ጋር መገናኘት ይፈልጋል</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
 <translation id="4918762404810341788">ቅዳ እና ክፈት</translation>
@@ -7477,6 +7478,7 @@
 <translation id="6754359471209693699">አዲስ ፍለጋ ጀምር</translation>
 <translation id="6755702685749429945">መዝገበ ቃላት አክል</translation>
 <translation id="6756643207511618722">የንግግር ፍርግሞች</translation>
+<translation id="6756882635793733911">በማያ ገጽዎ ላይ ስላለ ማንኛውም ነገር ይጠይቁ</translation>
 <translation id="6757431299485455321">ሌሎች መሣሪያዎች ይህን መገናኛ ነጥብ እንዲያገኙ ያግዟቸው</translation>
 <translation id="6757615605516049275">እባክዎ <ph name="TOKEN_NAME" />ን ይክፈቱ።</translation>
 <translation id="6758056191028427665">እንዴት እኛ እያደርግን እንደሆነ እንድናውቅ ያድርጉን።</translation>
@@ -10768,6 +10770,7 @@ nil</translation>
 <translation id="96756691973639907">ለ<ph name="MODULE_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>
 <translation id="96774243435178359">የሚተዳደሩ ማተሚያዎች</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />የመክፈያ ዘዴዎችን<ph name="END_LINK_PAYMENT_METHODS" /> እና እንደ የታማኝነት ካርዶች፣ መታወቂያዎች እና ቅናሾች ያሉ <ph name="BEGIN_LINK_PASSES" />ይለፎችን<ph name="END_LINK_PASSES" /> ለማከል ወይም ለማስተዳደር Google Walletን ይጎብኙ</translation>
 <translation id="968000525894980488">Google Play አገልግሎቶችን ያብሩ።</translation>
 <translation id="968037381421390582">ይለጥፉና «<ph name="SEARCH_TERMS" />»ን ይፈልጉ</translation>
 <translation id="969096075394517431">ቋንቋዎችን ይቀይሩ</translation>

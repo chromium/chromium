@@ -904,6 +904,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2493122313108999546">Oʻlchami oʻzgartirildi</translation>
 <translation id="249376477913017009">Gmail va boshqa xizmatlardan avtomatik kiritish haqidagi bildirishnoma ochildi</translation>
 <translation id="2495083838625180221">JSON tahlil qilish dasturi</translation>
+<translation id="2495909791227061512">Atrofdagi qurilmalarga ulansinmi?</translation>
 <translation id="2496402116964818747">Parollarni kiritishda barmoq izidan foydalanishni <ph name="SETTINGS" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="2498091847651709837">Yangi kartani skanerlash</translation>
 <translation id="2501270939904835585">Yorliqlar (satin)</translation>
@@ -1302,6 +1303,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3209034400446768650">Sahifa pul yechib olishi mumkin</translation>
 <translation id="3209071504641569648">Soʻrovlaringiz, sahifa sarlavhalari va URL manzillar Googlega yuboriladi hamda yaxshilangan avtomatik kiritish funksiyasini takomillashtirish maqsadida koʻrib chiqilishi mumkin</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" /> havolalarini <ph name="HANDLER_HOSTNAME" /> orqali ochish</translation>
 <translation id="3212468046572043669">Yuklab olish boshlandi. Uni koʻrish uchun ekranni yuqori chetidan pastga toring va “Orqaga” tugmasini bosing.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> saytidagi harakatlaringiz kuzatuv ostida</translation>
 <translation id="3215092763954878852">WebAuthn ishlatib boʻlmadi</translation>
@@ -2082,6 +2084,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="449126573531210296">Sinxronlangan parollarni Google hisob maʼlumotlari bilan shifrlang</translation>
 <translation id="4493480324863638523">URL manzil yaroqsiz. URL manzillar standart andozada boʻlishi zarur (masalan: “http://example.com” yoki “https://example.com”).</translation>
 <translation id="4497010149473852018">Sodiq mijoz kartalari roʻyxati teginganda avtomatik kiritiladi. Klaviatura yashirildi.</translation>
+<translation id="4497843134750481377">Takliflarni boshqarish</translation>
 <translation id="4500587658229086076">zararli kontent</translation>
 <translation id="4501939680615452918">Ommabop restoranlardagi boʻsh joylarni topib ber</translation>
 <translation id="4503459574136856756">Biografiyamni professionalroq koʻrinishga keltirib ber</translation>
@@ -2616,7 +2619,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5398461103557553443">IBAN raqami kelgusida avtomatik kiritilishi uchun uni Google Walletga saqlang</translation>
 <translation id="5398772614898833570">Reklamalar bloklandi</translation>
 <translation id="5400836586163650660">Kulrang</translation>
-<translation id="5402715318763077894">Mahalliy tarmoqqa ruxsat berilsinmi?</translation>
 <translation id="540949333488055151">Plastik (rangli)</translation>
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="5411462078004183575">Past narxdagi variant</translation>
@@ -3745,6 +3747,7 @@ Batafsil axborot:
 <translation id="7347640536700429009">Kartadagi ism yaroqsiz</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7353601530677266744">Buyruqlar qatori</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" /> havolalarini <ph name="REPLACED_HANDLER_TITLE" /> oʻrniga <ph name="HANDLER_HOSTNAME" /> orqali ochish</translation>
 <translation id="7359588939039777303">Reklamalar bloklandi.</translation>
 <translation id="7362281996276843968">Bu guruh yopilgan</translation>
 <translation id="7363096869660964304">Inkognito oynasidagi bajargan ishlaringiz va tashrif buyurgan saytlaringiz tizim administratori va internet-provayderingizga ko‘rinadi.</translation>

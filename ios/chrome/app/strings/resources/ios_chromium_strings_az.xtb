@@ -53,6 +53,8 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="1965068424387304464">Chromium ipucusu: Parolları yadda saxlayın</translation>
 <translation id="1992653360331625459">Parol Menecerində bu hesabların parolları artıq var. Aşağıdakı parollardan birini import etməyi seçsəniz, mövcud olan əvəzlənəcək.</translation>
 <translation id="2006345422933397527">Chromium güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
+<translation id="2025935492422922097">Chromium səhifə başlıqları və URL-ləri buludda şəxsi sahədə emal edir</translation>
+<translation id="2027881372245801507">Təkliflərin deaktiv edilməsi Chromium-un digər funksiyalar üçün səhifə başlıqları və URL-ləri emal etməsinə nəzarət etmir. Bu dataya girişi <ph name="BEGIN_LINK" />sinxronizasiya ayarlarında<ph name="END_LINK" /> idarə edə bilərsiniz.</translation>
 <translation id="2042889939382983733">Chromium tarixçənizə baxın</translation>
 <translation id="2052320862053429062">Chromium müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
 <translation id="2059365270911640413">Chromium-u ayarlamağı tamamlayın</translation>
@@ -351,6 +353,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="865600487977764604">Daxil olduğunuzda Chromium'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>
 <translation id="8663480472502753423">Chromium'u yeni saxlayın</translation>
 <translation id="8685813584220679697">Bu sayta və Chromium'a daxil olun.</translation>
+<translation id="8697693743327341604">Təklifi seçsəniz və ya nəzərə almasanız, Chromium gələcəkdə sizə daha uyğun təkliflər göstərmək üçün uyğunlaşacaq.</translation>
 <translation id="869832267508702259">Axtarış etdiyiniz hər yerdə Gemini-dan statistik məlumatlar əldə etmək üçün Chromium-u defolt brauzer edin</translation>
 <translation id="8698780336333802489">Chromium-a import edin</translation>
 <translation id="8730503818204408000">Chromium-u defolt brauzer təyin etmək üçün Chromium ayarı açılır.</translation>

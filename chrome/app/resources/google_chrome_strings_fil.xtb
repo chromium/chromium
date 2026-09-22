@@ -72,6 +72,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
             Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
 <translation id="1619887657840448962">Upang mas gawing ligtas ang Chrome, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="1628000112320670027">Humingi ng tulong sa Chrome</translation>
+<translation id="1632241302126471515">Maghanap gamit ang Chrome Canary</translation>
 <translation id="1640672724030957280">Dina-download...</translation>
 <translation id="1651617469580841801">Kapag ginamit mo ang Google Lens, ipapadala sa Google ang pamagat ng page, URL, at content, pati ang mga PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
@@ -208,7 +209,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chrome</translation>
 <translation id="2970681950995291301">Para alisin ang iyong Google Account sa Chrome, mag-sign out sa Chrome sa page na Mga Setting</translation>
 <translation id="2976869732253036751">Makatanggap ng mga alerto sa pagsubaybay sa presyo gamit ang Chrome sa iyong telepono</translation>
-<translation id="2985091279808606502">Kailangan ng Chrome ng pahintulot sa lokal na network para sa site na ito</translation>
 <translation id="2991167882679440829">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chrome na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chrome, mag-sign in ulit.</translation>
 <translation id="2994465299455873643">Nagbibigay ng mga serbisyo ng pag-encrypt at ligtas na paraan ng pag-recover ng <ph name="BROWSER_NAME" /> kung maluluma na ito. Kung naka-disable ang serbisyong ito, posibleng mawalan ng access ang <ph name="BROWSER_NAME" /> sa naka-encrypt na data, at posibleng hindi ma-recover ng <ph name="BROWSER_NAME" /> ang sarili nito.</translation>
 <translation id="3003694935412297923">Lahat ng gawain</translation>
@@ -276,6 +276,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3596080736082218006">{COUNT,plural, =0{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang isang update}=1{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang isang update. Hindi bubukas ulit ang iyong Incognito window.}one{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang isang update. Hindi bubukas ulit ang iyong # Incognito window.}other{Ipinag-aatas ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang isang update. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3597003331831379823">Hindi napagana ang pag-set up na may mga mas mataas na pribilehiyo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Ipakita ang Gemini sa Chrome sa system tray</translation>
+<translation id="3616622400661108683">Magtanong tungkol sa content sa labas ng Chrome, tulad ng iba pang app o file</translation>
 <translation id="3622716124581627104">Tukuyin ang mga bagay o lugar at kopyahin o isalin ang text. Kapag ginamit mo ang Google Lens, magpapadala ng screenshot ng page sa Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ngayon, mas madali nang gamitin ang Chrome sa iyong Google Account at sa mga nakabahaging computer.</translation>
 <translation id="3628103251823745322">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo.</translation>
@@ -758,7 +759,9 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8162006532256575008">Gamitin ang Chrome nang Walang Account</translation>
 <translation id="8172231188687329735">I-download ang Chrome app para mag-save ng mga password on the go</translation>
 <translation id="8177472873527554730">Hindi makita ang content sa page</translation>
+<translation id="8196526165798579689">Maghanap gamit ang Chrome Dev</translation>
 <translation id="8221491193165283816">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, mag-click dito.</translation>
+<translation id="8227493674161801700">Maghanap gamit ang Chrome Beta</translation>
 <translation id="8253851811470049684">Magbukas ng mga link sa Chrome mula sa anumang app at panatilihing naa-access ang browser sa iyong taskbar</translation>
 <translation id="8255190535488645436">Ginagamit ng Google Chrome ang iyong camera at mikropono.</translation>
 <translation id="8260086374035800939">Kung nakabukas ang Gemini sa Chrome, mananatiling nakabukas ang panel sa gilid kapag gumagawa ng mga bagong tab</translation>

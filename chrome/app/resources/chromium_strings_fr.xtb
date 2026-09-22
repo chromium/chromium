@@ -262,7 +262,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 
           **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium a besoin de l'autorisation d'accéder au réseau local pour ce site</translation>
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="388648406173476553">Personnalisez et contrôlez Chromium. Une action de votre part est requise. Cliquez pour en savoir plus.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
@@ -593,6 +592,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="7213407614656404070">Utilisez Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="7216228761061470870">Lorsque vous utilisez la recherche dans des images sur ordinateur, le titre, l'URL et le contenu de la page, y compris les PDF, sont envoyés au serveur</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
+<translation id="7226331818892775989">Posez des questions sur du contenu en dehors de Chromium, comme d'autres applis ou fichiers</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> est déjà connecté. Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données sur tous vos appareils.</translation>
 <translation id="7252276985725323153">Commencez à naviguer instantanément : Chromium peut désormais se lancer au démarrage de Windows.</translation>
 <translation id="7274695763216404502">Recherche dans des images épinglée. Réutilisez-la à partir de la barre d'outils.</translation>

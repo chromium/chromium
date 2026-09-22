@@ -53,6 +53,8 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="1965068424387304464">Chromium-erako aholkua: gorde pasahitzak</translation>
 <translation id="1992653360331625459">Jadanik badauzkazu kontu hauetarako pasahitzak Pasahitz-kudeatzailea zerbitzuan. Beheko pasahitzetako bat inportatzea aukeratzen baduzu, lehendik dagoena ordeztuko du.</translation>
 <translation id="2006345422933397527">Chromium-ek ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
+<translation id="2025935492422922097">Chromium-ek hodeiko eremu pribatu batean prozesatzen ditu orrien izenak eta URLak</translation>
+<translation id="2027881372245801507">Iradokizunak desaktibatuta ere, ez da kontrolatuko Chromium-ek beste eginbide batzuen orrien izenak eta URLak nola prozesatzen dituen. Datu horietarako sarbidea kudeatzeko, joan <ph name="BEGIN_LINK" />sinkronizazio-ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Ikusi Chromium-eko historia</translation>
 <translation id="2052320862053429062">Sarean argitaratu diren zerrendetan ea zure pasahitzak dauden egiaztatzen du noizean behin Chromium-ek. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
 <translation id="2059365270911640413">Amaitu Chromium konfiguratzen</translation>
@@ -351,6 +353,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="865600487977764604">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna areagotzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
 <translation id="8685813584220679697">Hasi saioa webgune honetan eta Chromium-en.</translation>
+<translation id="8697693743327341604">Iradokizun bat hautatzen edo baztertzen baduzu, Chromium etorkizunean iradokizun egokiagoak erakusteko egokituko da.</translation>
 <translation id="869832267508702259">Edonon arakatzen duzula ere Gemini-ren estatistikak lortzeko, ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="8698780336333802489">Inportatu Chromium-era</translation>
 <translation id="8730503818204408000">Chromium arakatzaile lehenetsi gisa ezartzeko Chromium-en ezarpena irekitzen du.</translation>

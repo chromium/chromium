@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Žemės srautas</translation>
 <translation id="102432830749687801">Įsitikinkite, kad naudojate „Google“ programą „Turinio perkėlimo įrankis“, kad perkeltumėte mokyklos paskyros duomenis į asmeninę paskyrą, kol nepraradote prieigos.</translation>
 <translation id="1026212596705997935">Naudojamas „<ph name="CONFLICT_ACCEL_NAME" />“ spartusis klavišas. Paspauskite naują spartųjį klavišą. Jei norite pakeisti esamą spartųjį klavišą, dar kartą paspauskite šį spartųjį klavišą.</translation>
-<translation id="1030856839388844477">Nustatyti duomenų naudojimą iš naujo</translation>
 <translation id="1047095725494118091">Nepavyko atsisiųsti. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Atnaujinama (atlikta <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min.</translation>
 <translation id="1310380015393971138">Nėra jokių pasiekiamų „<ph name="NETWORK_NAME" />“ tinklų</translation>
-<translation id="131421566576084655">Pastarojo duomenų nustatymo iš naujo data nepasiekiama</translation>
 <translation id="1314565355471455267">„Android“ VPN</translation>
 <translation id="131461803491198646">Namų tinklas, ne tarptinklinis ryšys</translation>
 <translation id="1327977588028644528">Tinklų sietuvas</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Pavadinimas suredaguotas</translation>
 <translation id="1423591390236870726">Nepaspaustas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Norint apytiksliai apskaičiuoti rezultatą, reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Pasirinktą dieną automatiškai iš naujo nustatomas duomenų naudojimas kiekvieną mėnesį</translation>
 <translation id="1442433966118452622">Vaizdo šaltinis</translation>
 <translation id="1446954767133808402">safyro</translation>
 <translation id="1449035143498573192">Atidaryti „Google“ paieškoje</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Slėpti transkribuotą tekstą</translation>
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
-<translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Temos naudojimas</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1622402072367425417">šviečiantys burbulai</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Geras (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Dabar galite naudoti tik Mokymosi įrankius</translation>
 <translation id="1762483337755424125">Transkribuotas tekstas</translation>
 <translation id="1765169783255151332">Sparčiai perjunkite klavišus</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">karšto vandens šaltinis</translation>
 <translation id="2203642483788377106">uola</translation>
 <translation id="2208388655216963643">impresionizmas</translation>
-<translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
 <translation id="2212733584906323460">Pavadinimo skyra</translation>
 <translation id="2215920961700443347">Nėra interneto ryšio. Prisijunkite prie interneto ir bandykite dar kartą.</translation>
 <translation id="2217935453350629363">Dabartinė sparta</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Atsiliepimas apie „mahi“ funkciją</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> biuras su <ph name="OFFICE_COLOR" /> tonais</translation>
-<translation id="3493187369049186498">Duomenys matuojami „Chromebook“ įrenginiu. Dėl to gali skirtis nuo teikėjo duomenų.</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">klaviatūros tamsinimas</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3852931845120288955">Pavadinimas (A–Ž)</translation>
-<translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3862598938296403232">Reikalingas aprašas</translation>
 <translation id="386280020966669610">Įkvėpk mane</translation>
 <translation id="3864554910039562428">koralinis rifas</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Automatiškai aptikti skirtingus balsus ir kiekvienam kalbančiajam suteikti bendrojo pobūdžio etiketę, pvz., „1 kalbantysis“ ir „2 kalbantysis“</translation>
 <translation id="38811596981744338">Teisinė problema</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
-<translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
 <translation id="3889954687526985291">futuristinis motociklas iš juodo popieriaus su neoninėmis šviesomis tamsiame fone</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3902271751020176019">Transkribavimo kalba</translation>
 <translation id="390890062090528082">žvaigždėtas dangus</translation>
 <translation id="391412459402535266">Nepavyko išbandyti įrenginio. Perjunkite į nešiojamojo kompiuterio režimą, kad išbandytumėte.</translation>
 <translation id="3916998944874125962">padaryti ekrano kopiją</translation>
-<translation id="3923184630988645767">Duomenų naudojimas</translation>
 <translation id="392943705803418306">Jūsų Mokymosi įrankių seansas baigėsi</translation>
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
 <translation id="3934185438132762746">Nepriskirta: <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">garsumo mažinimas</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> iš <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">„<ph name="SHORTCUT_DESCRIPTION" />“ redagavimo mygtukas.</translation>
-<translation id="5736820754189340309">Duomenų naudojimas nustatytas iš naujo</translation>
 <translation id="574392208103952083">Vidutinis</translation>
 <translation id="5744175046705638478">Versti „<ph name="QUERY" />“</translation>
 <translation id="5757187557809630523">kitas takelis</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094"><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką</translation>
 <translation id="594552776027197022">Generuoti atsitiktinę raktų porą</translation>
 <translation id="5946538341867151940">Dar nesate prisijungę. Jei jūsų mobiliojo ryšio operatorius rekomenduoja tinkintą APN, įveskite APN informaciją pasirinkdami „+ Naujas APN“</translation>
-<translation id="5947266287934282605">Jei paskutinė mėnesio diena yra anksčiau nei ši diena, duomenys bus nustatyti iš naujo paskutinę mėnesio dieną</translation>
 <translation id="5948460390109837040">šunys</translation>
 <translation id="594989847980441553">Pasirinkite „Sukurti“, kad sukurtumėte vaizdą naudodami DI.
         Visi sukurti vaizdai bus automatiškai rodomi čia.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Neberodyti</translation>
 <translation id="5975130252842127517">koralų spalvos</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Sugeneruoti pavadinimai:</translation>
 <translation id="6017514345406065928">Žalia</translation>
 <translation id="6019566113895157499">Pagrindiniai šaukiniai</translation>
-<translation id="6034694447310538551">Įgalinti automatinį nustatymą iš naujo kas mėnesį</translation>
 <translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6040852767465482106">Anoniminė tapatybė</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Pasirinktas klavišas yra „<ph name="KEYS" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Rodyklė dešinėn</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Apibrėžti „<ph name="QUERY" />“</translation>
 <translation id="6283581480003247988">mėlynos ir violetinės spalvų</translation>
 <translation id="6284632978374966585">Įjungti tamsiąją temą</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Vėliau bandykite dar kartą</translation>
 <translation id="7118522231018231199">Būtinai pasirinkite mobiliojo ryšio teikėjo arba administratoriaus teikiamus APN. Pasirinkus APN bus išjungti visi tinkinti APN. Netinkami APN gali sutrikdyti mobilųjį ryšį.</translation>
 <translation id="7119389851461848805">maitinimas</translation>
-<translation id="7129287270910503851">Duomenų naudojimas bus nustatomas iš naujo kiekvieną mėnesį šią dieną</translation>
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
@@ -1496,7 +1480,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
 <translation id="7633068090678117093">Fono vaizdas</translation>
 <translation id="763873111564339966">indigo spalvos</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
@@ -1532,7 +1515,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7802764839223122985">Trūksta klavišo. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7805768142964895445">Būsena</translation>
-<translation id="7811024689617730980">Pasirinkite automatinio nustatymo iš naujo dieną nuo 1 iki 31 imtinai</translation>
 <translation id="7813073042185856802">kalnas</translation>
 <translation id="7819857487979277519">PSK (WPA ar RSN)</translation>
 <translation id="7824219488248240180">postimpresionizmas</translation>
@@ -1608,7 +1590,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="811820734797650957">(„Android“) Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
-<translation id="8132480444149501833">Pateikti srauto skaitiklių užklausą</translation>
 <translation id="8135609423982943441">„Chromebook“ buvo iš naujo nustatyti saugūs numatytieji nustatymai. Šiuos pakeitimus galite bet kada koreguoti skiltyje „Nustatymai“.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Sukurkite savo</translation>
@@ -1691,7 +1672,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8483248364096924578">IP adresas</translation>
 <translation id="8491311378305535241">Nepavyko iš „Android“ programų prisijungti per užkardą prie HTTP svetainių</translation>
 <translation id="8495070016475833911">veltinio</translation>
-<translation id="8498220429738806196">Srauto skaitikliai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
 <translation id="8505011850330200833">„Gemini“ modeliui reikia 2 GB saugyklos vietos, kad būtų galima apdoroti transkribuotą tekstą ir kurti santraukas</translation>
@@ -1699,7 +1679,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8506394543220680287">apsnigta</translation>
 <translation id="8508640263392900755">Išsami APN informacija</translation>
 <translation id="8522687886059337719">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ir <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrano užsklandą<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">arbatos namai</translation>
 <translation id="8531692079895415839">ūkanota</translation>
 <translation id="8538236298648811558">Pagrįsta „Google“ AI</translation>
@@ -1764,7 +1743,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="885704831271383379">klaviatūra tamsesnė</translation>
 <translation id="8863170912498892583">Įgalinti tamsiąją temą</translation>
 <translation id="8864415976656252616">Siūlomo turinio nėra. Peržiūrėkite svarbiausią pagalbos centro turinį.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8882789155418924367">pelėdos</translation>
@@ -1824,7 +1802,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9082718469794970195">Naudoti šį vaizdo įrašą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="9088994563996376283">Supaprastinimas</translation>
-<translation id="909856219855259344">Daugiau informacijos apie nustatymo iš naujo datą</translation>
 <translation id="9100765901046053179">Išplėstiniai nustatymai</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>

@@ -52,6 +52,8 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="1965068424387304464">Tip pro Chromium: Ukládání hesel</translation>
 <translation id="1992653360331625459">Hesla pro tyto účty už ve Správci hesel máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="2006345422933397527">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
+<translation id="2025935492422922097">Chromium zpracovává názvy stránek a adresy URL v soukromém prostoru v cloudu</translation>
+<translation id="2027881372245801507">Vypnutí návrhů nemá vliv na zpracování názvů stránek a adres URL prohlížečem Chromium pro jiné funkce. Přístup k těmto datům můžete spravovat v <ph name="BEGIN_LINK" />nastavení synchronizace<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Zobrazit historii prohlížeče Chromium</translation>
 <translation id="2052320862053429062">Chromium vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
 <translation id="2059365270911640413">Dokončete nastavení prohlížeče Chromium</translation>
@@ -350,6 +352,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="865600487977764604">Zajišťuje vám bezpečí v prohlížeči Chromium a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>
+<translation id="8697693743327341604">Pokud některý návrh vyberete nebo ignorujete, Chromium se přizpůsobí, aby se vám v budoucnu zobrazovaly relevantnější návrhy.</translation>
 <translation id="869832267508702259">Nastavte si Chromium jako výchozí prohlížeč a využívejte postřehy od Gemini, ať už procházíte cokoli</translation>
 <translation id="8698780336333802489">Importovat do Chromia</translation>
 <translation id="8730503818204408000">Otevře nastavení prohlížeče Chromium, pomocí něhož ho lze nastavit jako výchozí prohlížeč.</translation>

@@ -4806,9 +4806,6 @@ Observação: se a configuração resultar em métodos de autenticação aceitos
 <translation id="3982624306233556415">Lista de bloqueio de provedores de identidade que não podem usar o SSO empresarial extensível para o navegador</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
-<translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na interface.
-
-      Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="3989635538409502728">Sair</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
 <translation id="3990391739475801018">O modo de economia de bateria vai ser desativado.</translation>
@@ -6562,9 +6559,6 @@ Quando esta política não for definida ou for definida como verdadeira, as info
 Quando ela for definida como falsa, as informações que podem ser usadas para identificar máquinas não serão coletadas.
 
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na interface.
-
-      Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="5017691827598069017">Ativar o pareamento rápido (pareamento rápido por Bluetooth)</translation>
 <translation id="5021550478471824215">A definição da política especifica uma lista de compartilhamentos de arquivos de rede predefinidos. Cada item é um objeto com duas propriedades: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
@@ -9556,7 +9550,6 @@ Se esta política for definida como "Desativada", os usuários não poderão usa
       Se for definida como verdadeira, o <ph name="PLUGIN_VM_NAME" /> será ativado para o usuário desde que permitido por outras configurações. É necessário definir <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como verdadeiras, e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> precisam ser definidas para que <ph name="PLUGIN_VM_NAME" /> possa ser executado.</translation>
 <translation id="6741318452269220158">Se a política for definida como verdadeira, o Cliente nativo vai continuar em execução mesmo que o comportamento padrão seja desativado.
 Se ela for definida como falsa ou deixada sem definição, o comportamento padrão será usado.</translation>
-<translation id="6749641778238480311">Permitir que APIs de subApps sejam chamadas sem o gesto anterior do usuário e sem a necessidade de confirmação dele.</translation>
 <translation id="6750902920405577210">Lista de dados de telemetria a serem informados em eventos de mudança da intensidade do sinal.
 
       Os dados de telemetria especificados só vão ser informados se não tiverem sido desativados pela política de controle.
@@ -9874,22 +9867,6 @@ Se você definir a política, os usuários não poderão mudá-la. Se a polític
 <translation id="6938524853892166974">Desativar a tradução instantânea</translation>
 <translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6943577887654905793">Nome de preferência Mac/Linux:</translation>
-<translation id="6944302005022384441">Por motivos de segurança, as APIs da web
-<ph name="SHOW_SUBAPPS_APP_API_NAME" />,
-<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> e
-<ph name="SHOW_SUBAPPS_LIST_API_NAME" /> exigem que uma interação anterior do usuário ("ativação temporária") seja chamada. Caso contrário, vai haver
-uma falha. Além disso, será pedido que o usuário confirme a
-operação em uma caixa de diálogo.
-
-Com esse conjunto de políticas, os admins conseguem especificar origens em que essas APIs podem ser
-chamadas sem a interação anterior e sem pedir confirmação do usuário.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://chromeenterprise.google/policies/url-patterns/. O valor *
-não é aceito para esta política.
-
-Se a política for deixada sem definição, todas as origens vão exigir uma interação anterior para chamar
-essas APIs e vão apresentar uma caixa de diálogo de confirmação ao usuário.</translation>
 <translation id="694602410134474029">Controla se o <ph name="PRODUCT_NAME" /> interage com os drivers de impressora de um processo de serviço separado. As chamadas de impressão da plataforma são feitas com base em um processo de serviço. Elas são usadas para consultar as impressoras disponíveis, acessar as configurações do driver de impressão e enviar documentos para impressoras locais. Remover essas chamadas do processo do navegador ajuda a melhorar a estabilidade e reduzir o comportamento congelado da interface na visualização da impressão.
 
 Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai usar um processo de serviço separado para tarefas de impressão da plataforma.

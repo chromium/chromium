@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">ਧਰਤੀ ਪ੍ਰਵਾਹ</translation>
 <translation id="102432830749687801">ਆਪਣੇ ਸਕੂਲੀ ਖਾਤੇ ਸੰਬੰਧੀ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ Google ਦੀ ਕੰਟੈਂਟ ਟ੍ਰਾਂਸਫ਼ਰ ਐਪ ਵਰਤੋ ਅਤੇ ਪਹੁੰਚ ਗੁਆਉਣ ਤੋਂ ਪਹਿਲਾਂ ਯਾਦ ਨਾਲ ਇਹ ਕਰ ਲਓ।</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। ਮੌਜੂਦਾ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਬਦਲਣ ਲਈ, ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ।</translation>
-<translation id="1030856839388844477">ਡਾਟਾ ਵਰਤੋਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="1047095725494118091">ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ <ph name="DEVICE_TYPE" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ਥ੍ਰੈੱਡ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਹੈ, ਹੋਰ ਜਾਣਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PERCENTAGE_VALUE" />% ਪੂਰਾ ਹੋ ਗਿਆ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="1310380015393971138">ਕੋਈ <ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
-<translation id="131421566576084655">ਪਿਛਲੇ ਡਾਟਾ ਰੀਸੈੱਟ ਦੀ ਤਾਰੀਖ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ਘਰੇਲੂ ਨੈੱਟਵਰਕ, ਰੋਮਿੰਗ ਨਹੀਂ</translation>
 <translation id="1327977588028644528">ਗੇਟਵੇ</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">ਸਿਰਲੇਖ ਦਾ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਨਹੀਂ ਦਬਾਈ ਗਈ</translation>
 <translation id="1432110487435300883">ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
-<translation id="1435763214710588005">ਚੁਣੇ ਹੋਏ ਦਿਨ 'ਤੇ, ਹਰ ਮਹੀਨੇ ਡਾਟਾ ਵਰਤੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="1442433966118452622">ਚਿੱਤਰ ਸਰੋਤ</translation>
 <translation id="1446954767133808402">ਨੀਲਮ</translation>
 <translation id="1449035143498573192">Google Search ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">ਪ੍ਰਤਿਲਿਪੀ ਲੁਕਾਓ</translation>
 <translation id="160633243685262989">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1611649489706141841">ਅੱਗੇ ਭੇਜੋ</translation>
-<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ਤੋਂ ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="1618566998877964907">ਕੋਈ ਥੀਮ ਵਰਤੋ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1622402072367425417">ਚਮਕਦੇ ਬੁਲਬੁਲੇ</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">ਵਧੀਆ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">ਤੁਸੀਂ ਹੁਣ ਸਿਰਫ਼ ਕਲਾਸ ਟੂਲ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="1762483337755424125">ਪ੍ਰਤੀਲਿਪੀ</translation>
 <translation id="1765169783255151332">ਕੁੰਜੀਆਂ ਵਿਚਕਾਰ ਤੁਰੰਤ ਸਵਿੱਚ ਕਰੋ</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">ਗਰਮ ਪਾਣੀ ਦਾ ਝਰਨਾ</translation>
 <translation id="2203642483788377106">ਟਿੱਲਾ</translation>
 <translation id="2208388655216963643">ਪ੍ਰਭਾਵਵਾਦੀ</translation>
-<translation id="2209788852729124853">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2212733584906323460">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="2215920961700443347">ਇੰਟਰਨੈੱਟ ਨਹੀਂ ਹੈ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2217935453350629363">ਮੌਜੂਦਾ ਗਤੀ</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">mahi ਵਿਸ਼ੇਸ਼ਤਾ ਸੰਬੰਧੀ ਵਿਚਾਰ</translation>
 <translation id="3488065109653206955">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਕਿਰਿਆ ਕੀਤਾ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ਟੋਨਾਂ ਨਾਲ ਇੱਕ <ph name="OFFICE_STYLE" /> ਦਫ਼ਤਰ</translation>
-<translation id="3493187369049186498">ਡਾਟਾ ਤੁਹਾਡੀ Chromebook ਵੱਲੋਂ ਮਾਪਿਆ ਜਾਂਦਾ ਹੈ। ਇਹ ਮਾਪ ਪ੍ਰਦਾਨਕ ਡਾਟੇ ਤੋਂ ਵੱਖ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3502426834823382181">ਸਾਰੀਆਂ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ਕਾਰਗੁਜ਼ਾਰੀ ਟ੍ਰੇਸ ਡਾਟਾ<ph name="END_LINK1" /> ਭੇਜੋ</translation>
 <translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">ਕੀ-ਬੋਰਡ 'ਤੇ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਓ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="3852931845120288955">ਸਿਰਲੇਖ (A-Z)</translation>
-<translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3862598938296403232">ਵਰਣਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="386280020966669610">ਮੈਨੂੰ ਪ੍ਰੇਰਿਤ ਕਰੋ</translation>
 <translation id="3864554910039562428">ਮੂੰਗਾ ਚਟਾਨ</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">ਵਿਲੱਖਣ ਅਵਾਜ਼ਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਉਂਦੀ ਹੈ ਅਤੇ ਹਰੇਕ ਸਪੀਕਰ ਨੂੰ ਸਪੀਕਰ 1 ਅਤੇ ਸਪੀਕਰ 2 ਵਰਗੇ ਆਮ ਲੇਬਲ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="38811596981744338">ਕਨੂੰਨੀ ਸਮੱਸਿਆ</translation>
 <translation id="3885327323343477505">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬਦਲੋ</translation>
-<translation id="3889914174935857450">ਤਾਰੀਖ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="3889954687526985291">ਕਾਲੇ ਕਾਗਜ਼ ਤੋਂ ਬਣੀ ਇੱਕ ਭਵਿੱਖਮੁਖੀ ਮੋਟਰਸਾਈਕਲ, ਜਿਸਦੀ ਨਿਓਨ ਲਾਈਟਾਂ ਵਾਲੀ ਗੂੜ੍ਹੀ ਬੈਕਗ੍ਰਾਊਂਡ ਹੈ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3902271751020176019">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਭਾਸ਼ਾ</translation>
 <translation id="390890062090528082">ਤਾਰਿਆਂ ਨਾਲ ਭਰਿਆ ਅਸਮਾਨ</translation>
 <translation id="391412459402535266">ਡੀਵਾਈਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਜਾਂਚ ਕਰਨ ਲਈ ਲੈਪਟਾਪ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰੋ।</translation>
 <translation id="3916998944874125962">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
-<translation id="3923184630988645767">ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="392943705803418306">ਤੁਹਾਡੇ ਲਈ ਕਲਾਸ ਟੂਲ ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="3934185438132762746">ਜ਼ਿੰਮੇ ਲਗਾਉਣ ਤੋਂ ਹਟਾਇਆ ਗਿਆ <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">ਵੌਲਿਊਮ ਘਟਾਓ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ਲਈ 'ਸੰਪਾਦਨ ਕਰੋ' ਬਟਨ।</translation>
-<translation id="5736820754189340309">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5757187557809630523">ਅਗਲਾ ਟਰੈਕ</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094"><ph name="MANAGER" /> ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ <ph name="DEVICE_TYPE" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਾ ਸਮਾਂ ਸੈੱਟ ਕੀਤਾ ਹੈ</translation>
 <translation id="594552776027197022">ਬੇਤਰਤੀਬ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਸਿਰਜੋ</translation>
 <translation id="5946538341867151940">ਤੁਸੀਂ ਹਾਲੇ ਕਨੈਕਟ ਨਹੀਂ ਹੋ। ਜੇ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਕੈਰੀਅਰ ਵਿਉਂਤਬੱਧ APN ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ, ਤਾਂ "+ ਨਵਾਂ APN" ਨੂੰ ਚੁਣ ਕੇ APN ਜਾਣਕਾਰੀ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="5947266287934282605">ਜੇ ਮਹੀਨੇ ਦਾ ਆਖਰੀ ਦਿਨ ਇਸ ਦਿਨ ਤੋਂ ਪਹਿਲਾਂ ਹੈ, ਤਾਂ ਡਾਟੇ ਨੂੰ ਮਹੀਨੇ ਦੇ ਆਖਰੀ ਦਿਨ ਰੀਸੈੱਟ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5948460390109837040">ਕੁੱਤੇ</translation>
 <translation id="594989847980441553">AI ਨਾਲ ਚਿੱਤਰ ਬਣਾਉਣ ਲਈ "ਬਣਾਓ" ਚੁਣੋ।
         ਸਾਰੇ ਬਣਾਏ ਗਏ ਚਿੱਤਰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇੱਥੇ ਦਿਸਣਗੇ।</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="5975130252842127517">ਕੋਰਲ</translation>
 <translation id="5982621672636444458">ਵਿਕਲਪ ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">ਸਿਰਜੇ ਗਏ ਸਿਰਲੇਖ:</translation>
 <translation id="6017514345406065928">ਹਰਾ</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
-<translation id="6034694447310538551">ਹਰ ਮਹੀਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6037291330010597344">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਖਾਲੀ ਹੈ। ਦਸਤਾਵੇਜ਼ ਸ਼ਾਮਲ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6040852767465482106">ਅਨਾਮ ਪਛਾਣ</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">ਚੁਣੀ ਹੋਈ ਕੁੰਜੀ <ph name="KEYS" /> ਹੈ। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ਸੱਜਾ ਤੀਰ</translation>
 <translation id="6278428485366576908">ਥੀਮ</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">"<ph name="QUERY" />" ਦੀ ਪਰਿਭਾਸ਼ਾ ਦਿਓ</translation>
 <translation id="6283581480003247988">ਨੀਲਾ ਅਤੇ ਜਾਮਨੀ</translation>
 <translation id="6284632978374966585">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7118522231018231199">ਸਿਰਫ਼ ਤੁਹਾਡੇ ਮੋਬਾਈਲ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਏ ਗਏ APN ਨੂੰ ਚੁਣਨਾ ਪੱਕਾ ਕਰੋ। ਕਿਸੇ APN ਨੂੰ ਚੁਣਨ ਨਾਲ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦਾ ਵਿਉਂਤਬੱਧ APN ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਅਵੈਧ APN ਤੁਹਾਡੇ ਮੋਬਾਈਲ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਵਿਘਨ ਪਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7119389851461848805">ਪਾਵਰ</translation>
-<translation id="7129287270910503851">ਤੁਹਾਡੀ ਡਾਟਾ ਵਰਤੋਂ ਹਰ ਮਹੀਨੇ ਇਸ ਦਿਨ ਰੀਸੈੱਟ ਕੀਤੀ ਜਾਵੇਗੀ</translation>
 <translation id="7130438335435247835">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ਨਾਮ ਸਰਵਰ}one{ਨਾਮ ਸਰਵਰ}other{ਨਾਮ ਸਰਵਰ}}</translation>
 <translation id="7135814714616751706">ਸ਼ਾਰਟਕੱਟ ਖੋਜੋ</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">ਨਿਰਪੱਖ</translation>
 <translation id="7620771111601174153">ਮਦਦ ਕੇਂਦਰ ਵਿੱਚ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">ਪਿਛਲੀ ਵਾਰ ਰੀਸੈੱਟ ਕਰਨ ਦਾ ਸਮਾਂ</translation>
 <translation id="7633068090678117093">ਬੈਕਗ੍ਰਾਊਂਡ ਚਿੱਤਰ</translation>
 <translation id="763873111564339966">ਇੰਡੀਗੋ</translation>
 <translation id="7648838807254605802">ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">ਕੁੰਜੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
-<translation id="7811024689617730980">1 ਤੋਂ 31 ਤਾਰੀਖ ਦੀ ਰੇਂਜ ਵਿੱਚ ਕੋਈ ਸਵੈ ਰੀਸੈੱਟ ਕਰਨ ਵਾਲਾ ਦਿਨ ਚੁਣੋ, ਜਿਸ ਵਿੱਚ ਇਹ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="7813073042185856802">ਪਹਾੜ</translation>
 <translation id="7819857487979277519">PSK (WPA ਜਾਂ RSN)</translation>
 <translation id="7824219488248240180">ਪੋਸਟ-ਪ੍ਰਭਾਵਵਾਦੀ</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
-<translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="8135609423982943441">ਤੁਹਾਡੀ Chromebook ਨੂੰ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਨ੍ਹਾਂ ਤਬਦੀਲੀਆਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">ਖੁਦ ਲਈ ਬਣਾਓ</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP ਪਤਾ</translation>
 <translation id="8491311378305535241">Android ਐਪਾਂ ਤੋਂ ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTP ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8495070016475833911">ਫ਼ੈਲਟ</translation>
-<translation id="8498220429738806196">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
 <translation id="8505011850330200833">Gemini ਮਾਡਲ ਨੂੰ ਪ੍ਰਤੀਲਿਪੀਆਂ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਅਤੇ ਸਾਰਾਂਸ਼ ਬਣਾਉਣ ਲਈ 2GB ਸਟੋਰੇਜ ਲੋੜੀਂਦੀ ਹੁੰਦੀ ਹੈ</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">ਬਰਫ਼ ਨਾਲ ਢੱਕਿਆ ਹੋਇਆ</translation>
 <translation id="8508640263392900755">APN ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
 <translation id="8522687886059337719">ਤੁਹਾਡੇ ਕੋਲ ਹੁਣ ਨਵੇਂ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ਵਾਲਪੇਪਰਾਂ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ਅਤੇ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ਸਕ੍ਰੀਨ ਸੇਵਰ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ਤੱਕ ਪਹੁੰਚ ਹੈ</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ਟੀ ਹਾਊਸ</translation>
 <translation id="8531692079895415839">ਧੁੰਦਲਾ</translation>
 <translation id="8538236298648811558">Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">ਕੀ-ਬੋਰਡ 'ਤੇ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਓ</translation>
 <translation id="8863170912498892583">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8864415976656252616">ਕੋਈ ਸੁਝਾਈ ਗਈ ਸਮੱਗਰੀ ਨਹੀਂ। ਪ੍ਰਮੁੱਖ ਮਦਦ ਸਮੱਗਰੀ ਦੇਖੋ।</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ਡੀਵਾਈਸ ਇੱਕ ਟੈਬਲੈੱਟ ਹੈ।</translation>
 <translation id="8881098542468797602">ਟੈਸਟ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8882789155418924367">ਉੱਲੂ</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">ਇਸ ਵੀਡੀਓ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="9088306295921699330">ਮੌਜੂਦਾ ਵਰਤੋਂ</translation>
 <translation id="9088994563996376283">ਸਰਲ ਕਰੋ</translation>
-<translation id="909856219855259344">ਰੀਸੈੱਟ ਹੋਣ ਦੀ ਤਾਰੀਖ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="9100765901046053179">ਉੱਨਤ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ਦੀ ਟਿਕਟ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="9106415115617144481">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>

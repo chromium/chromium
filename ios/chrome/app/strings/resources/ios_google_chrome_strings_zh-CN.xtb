@@ -282,6 +282,7 @@
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7275945473750112644">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除</translation>
 <translation id="7284245284340063465">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="7287957555760192025">无论您是采纳还是忽略建议，Chrome 都会据此进行调整，以便日后为您提供更贴合需求的建议。</translation>
 <translation id="7296102444587051536">iOS 版 Chrome</translation>
 <translation id="7299681342915173313">现在，每当点按电子邮件、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7334364820047587268">您的 Google 密码管理工具中已有这些账号的密码。如果选择导入以下某个密码，则导入的密码会替换现有密码。</translation>
@@ -353,6 +354,7 @@
 <translation id="8544583291890527417">Chrome 检测到隐私或安全问题时会发出提醒。</translation>
 <translation id="855027533751209304">Chrome 提示：搜索所见内容</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
+<translation id="8589791109349384456">关闭建议功能不会影响 Chrome 处理网页标题和网址以提供其他功能。您可以在<ph name="BEGIN_LINK" />同步设置<ph name="END_LINK" />中管理对此类数据的访问权限。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8610372330814566250">在 Chrome 中使用您的 Safari 密码、历史记录、书签和信用卡</translation>
 <translation id="8630122478628016441">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>

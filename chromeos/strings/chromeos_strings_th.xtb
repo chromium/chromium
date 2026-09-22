@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">การเคลื่อนที่ของโลก</translation>
 <translation id="102432830749687801">โปรดใช้แอป Content Transfer โดย Google เพื่อย้ายข้อมูลบัญชีโรงเรียนไปยังบัญชีส่วนตัวก่อนที่คุณจะสูญเสียสิทธิ์เข้าถึง</translation>
 <translation id="1026212596705997935">มีการใช้แป้นพิมพ์ลัดนี้สำหรับ "<ph name="CONFLICT_ACCEL_NAME" />" แล้ว โปรดกดแป้นพิมพ์ลัดใหม่ หากต้องการเปลี่ยนแป้นพิมพ์ลัดที่มีอยู่ ให้กดแป้นพิมพ์ลัดนี้อีกครั้ง</translation>
-<translation id="1030856839388844477">รีเซ็ตปริมาณการใช้อินเทอร์เน็ต</translation>
 <translation id="1047095725494118091">ดาวน์โหลดไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> เทรด, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">กำลังอัปเดต (เสร็จสมบูรณ์ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> นาที</translation>
 <translation id="1310380015393971138">ไม่มีเครือข่าย<ph name="NETWORK_NAME" />ที่ใช้งานได้</translation>
-<translation id="131421566576084655">ไม่มีวันที่รีเซ็ตปริมาณการใช้อินเทอร์เน็ตครั้งล่าสุด</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">เครือข่ายในประเทศ ไม่ใช่โรมมิ่ง</translation>
 <translation id="1327977588028644528">เกตเวย์</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">แก้ไขชื่อแล้ว</translation>
 <translation id="1423591390236870726">ไม่ได้กดปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="1432110487435300883">สำหรับผลลัพธ์โดยประมาณ ให้นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตทุกเดือนโดยอัตโนมัติในวันที่เลือก</translation>
 <translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
 <translation id="1446954767133808402">แซฟไฟร์</translation>
 <translation id="1449035143498573192">เปิดใน Google Search</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">ซ่อนข้อความถอดเสียง</translation>
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
-<translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ใช้ธีม</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1622402072367425417">ลูกโป่งเรืองแสง</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">ดี (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">ตอนนี้คุณสามารถใช้เครื่องมือสำหรับชั้นเรียนได้เท่านั้น</translation>
 <translation id="1762483337755424125">ข้อความถอดเสียง</translation>
 <translation id="1765169783255151332">เปลี่ยนแป้นอย่างรวดเร็ว</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">น้ำพุร้อน</translation>
 <translation id="2203642483788377106">หน้าผา</translation>
 <translation id="2208388655216963643">อิมเพรสชันนิสม์</translation>
-<translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2212733584906323460">การจำแนกชื่อ</translation>
 <translation id="2215920961700443347">ไม่มีอินเทอร์เน็ต เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="2217935453350629363">ความเร็วในปัจจุบัน</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">ความคิดเห็นเกี่ยวกับฟีเจอร์ mahi</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3492882532495507361">สำนักงาน <ph name="OFFICE_STYLE" /> ที่มีโทนสี <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">ข้อมูลนี้วัดโดย Chromebook ของคุณ ซึ่งอาจแตกต่างกับข้อมูลจากผู้ให้บริการ</translation>
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">ปรับให้แป้นพิมพ์มืด</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3852931845120288955">ชื่อ (A ถึง Z)</translation>
-<translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3862598938296403232">ต้องป้อนคำอธิบาย</translation>
 <translation id="386280020966669610">ขอแรงบันดาลใจหน่อย</translation>
 <translation id="3864554910039562428">แนวปะการัง</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">ตรวจหาเสียงที่แตกต่างกันและติดป้ายกำกับทั่วไปให้ผู้พูดแต่ละคน เช่น ผู้พูด 1 และผู้พูด 2 โดยอัตโนมัติ</translation>
 <translation id="38811596981744338">ปัญหาทางกฎหมาย</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
-<translation id="3889914174935857450">วันที่รีเซ็ต</translation>
 <translation id="3889954687526985291">จักรยานยนต์ล้ำยุคที่ทำจากกระดาษสีดำโดยมีไฟนีออนบนพื้นหลังสีเข้ม</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3902271751020176019">ภาษาของการถอดเสียงเป็นคำ</translation>
 <translation id="390890062090528082">ท้องฟ้าเต็มไปด้วยดวงดาว</translation>
 <translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3916998944874125962">จับภาพหน้าจอ</translation>
-<translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
 <translation id="392943705803418306">เซสชันเครื่องมือสำหรับชั้นเรียนของคุณสิ้นสุดลงแล้ว</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3934185438132762746">ยกเลิกการกำหนด <ph name="CONTROL_TYPE" /> แล้ว</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">ลดระดับเสียง</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ปุ่มแก้ไขสำหรับ<ph name="SHORTCUT_DESCRIPTION" /></translation>
-<translation id="5736820754189340309">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตแล้ว</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5744175046705638478">แปล "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">แทร็กถัดไป</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
-<translation id="5947266287934282605">หากวันสุดท้ายของเดือนอยู่ก่อนวันนี้ ระบบจะรีเซ็ตข้อมูลในวันสุดท้ายของเดือน</translation>
 <translation id="5948460390109837040">สุนัข</translation>
 <translation id="594989847980441553">เลือก "สร้าง" เพื่อสร้างรูปภาพด้วย AI
         รูปภาพที่สร้างขึ้นทั้งหมดจะปรากฏที่นี่โดยอัตโนมัติ</translation>
-<translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5972801171078377748">ไม่ต้องแสดงข้อความนี้อีก</translation>
 <translation id="5975130252842127517">ส้มแดงคอรัล</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">ชื่อที่สร้าง:</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6019566113895157499">แป้นพิมพ์ลัด</translation>
-<translation id="6034694447310538551">เปิดใช้การรีเซ็ตทุกเดือนโดยอัตโนมัติ</translation>
 <translation id="6037291330010597344">ไม่มีเอกสารในตัวป้อนเอกสารของเครื่องสแกน ใส่เอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6040852767465482106">ข้อมูลประจำตัวที่ไม่ระบุตัวตน</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">คีย์ที่เลือกคือ <ph name="KEYS" /> <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ลูกศรขวา</translation>
 <translation id="6278428485366576908">ธีม</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">ดูคำจำกัดความของ "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">น้ำเงินและม่วง</translation>
 <translation id="6284632978374966585">เปิดธีมมืด</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="7118522231018231199">โปรดเลือก APN ที่มาจากผู้ให้บริการมือถือหรือผู้ดูแลระบบ การเลือก APN จะปิดใช้ APN ที่กําหนดเอง APN ที่ไม่ถูกต้องอาจทำให้การเชื่อมต่อมือถือของคุณหยุดชะงัก</translation>
 <translation id="7119389851461848805">เปิด/ปิด</translation>
-<translation id="7129287270910503851">ปริมาณการใช้อินเทอร์เน็ตจะรีเซ็ตในวันนี้ของทุกเดือน</translation>
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="7623327321610992184">พ็อด OnTask</translation>
-<translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7633068090678117093">ภาพพื้นหลัง</translation>
 <translation id="763873111564339966">คราม</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">ไม่มีคีย์ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ไม่เป็นไร</translation>
 <translation id="7805768142964895445">สถานะ</translation>
-<translation id="7811024689617730980">เลือกวันที่รีเซ็ตอัตโนมัติโดยเริ่มตั้งแต่ 1 ถึง 31 (รวม 2 ตัวเลขนี้ด้วย)</translation>
 <translation id="7813073042185856802">ภูเขา</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7824219488248240180">โพสต์อิมเพรสชันนิสม์</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
-<translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8135609423982943441">Chromebook รีเซ็ตเป็นค่าเริ่มต้นที่ปลอดภัยแล้ว คุณปรับเปลี่ยนสิ่งเหล่านี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">สร้างของคุณเอง</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
 <translation id="8491311378305535241">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP จากแอป Android</translation>
 <translation id="8495070016475833911">ผ้าสักหลาด</translation>
-<translation id="8498220429738806196">ตัวนับการรับส่งข้อมูล</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
 <translation id="8505011850330200833">โมเดล Gemini ต้องใช้พื้นที่เก็บข้อมูล 2 GB ในการประมวลผลข้อความถอดเสียงและสร้างข้อมูลสรุป</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">ปกคลุมด้วยหิมะ</translation>
 <translation id="8508640263392900755">รายละเอียด APN</translation>
 <translation id="8522687886059337719">ตอนนี้คุณเข้าถึง<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />วอลเปเปอร์<ph name="END_LINK_WALLPAPER_SUBPAGE" />และ<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ภาพพักหน้าจอ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ใหม่ได้แล้ว</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ร้านน้ำชา</translation>
 <translation id="8531692079895415839">มีหมอก</translation>
 <translation id="8538236298648811558">ทำงานด้วย AI ของ Google</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">แป้นพิมพ์มืดลง</translation>
 <translation id="8863170912498892583">เปิดใช้ธีมมืด</translation>
 <translation id="8864415976656252616">ไม่มีเนื้อหาที่แนะนำ ดูเนื้อหาช่วยเหลือยอดนิยม</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8882789155418924367">นกฮูก</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9088994563996376283">ย่อความ</translation>
-<translation id="909856219855259344">ข้อมูลเพิ่มเติมเกี่ยวกับวันที่รีเซ็ต</translation>
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>

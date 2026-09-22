@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Moviment de la Terra</translation>
 <translation id="102432830749687801">Assegura't d'utilitzar l'aplicació Transferència de contingut de Google per moure les dades del teu compte de centre educatiu al teu compte personal abans no perdis l'accés.</translation>
 <translation id="1026212596705997935">S'està utilitzant la drecera per a <ph name="CONFLICT_ACCEL_NAME" />. Prem una drecera nova. Per substituir la drecera existent, torna a prémer aquesta.</translation>
-<translation id="1030856839388844477">Restableix l'ús de dades</translation>
 <translation id="1047095725494118091">No es pot baixar. Torna-ho a provar o reinicia el <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">S'està actualitzant (<ph name="PERCENTAGE_VALUE" />% completat)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuts</translation>
 <translation id="1310380015393971138">No hi ha cap xarxa <ph name="NETWORK_NAME" /> disponible</translation>
-<translation id="131421566576084655">La data del darrer restabliment de dades no està disponible</translation>
 <translation id="1314565355471455267">VPN d'Android</translation>
 <translation id="131461803491198646">Xarxa domèstica, no itinerància</translation>
 <translation id="1327977588028644528">Passarel·la</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">El títol s'ha editat</translation>
 <translation id="1423591390236870726">No s'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Per obtenir un resultat aproximat, divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Restableix l'ús de dades automàticament cada mes en un dia seleccionat</translation>
 <translation id="1442433966118452622">Font de la imatge</translation>
 <translation id="1446954767133808402">safir</translation>
 <translation id="1449035143498573192">Obre a la Cerca de Google</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Amaga la transcripció</translation>
 <translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1611649489706141841">avança</translation>
-<translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Utilitza un tema</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1622402072367425417">bombolles brillants</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Bo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Ara només pots utilitzar Eines de classe</translation>
 <translation id="1762483337755424125">Transcripció</translation>
 <translation id="1765169783255151332">Canvia de tecles ràpidament</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">aigües termals</translation>
 <translation id="2203642483788377106">un penya-segat</translation>
 <translation id="2208388655216963643">impressionista</translation>
-<translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2212733584906323460">Resolució del nom</translation>
 <translation id="2215920961700443347">No hi ha connexió a Internet. Connecta-t'hi i torna-ho a provar.</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Comentaris sobre la funció Mahi</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3492882532495507361">Oficina <ph name="OFFICE_STYLE" /> amb tons <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">El Chromebook mesura les dades. És possible que no coincideixin amb les dades del proveïdor.</translation>
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">enfosquiment del teclat</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3852931845120288955">Títol (de la A a la Z)</translation>
-<translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">La descripció és obligatòria</translation>
 <translation id="386280020966669610">Inspira'm</translation>
 <translation id="3864554910039562428">escull de corall</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Detectar automàticament cadascuna de les veus i assignar a cada interlocutor una etiqueta genèrica, com ara Interlocutor 1 i Interlocutor 2</translation>
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
-<translation id="3889914174935857450">Data de restabliment</translation>
 <translation id="3889954687526985291">una moto futurista feta de paper negre amb llums de neó sobre un fons fosc</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3902271751020176019">Idioma de transcripció</translation>
 <translation id="390890062090528082">cel ple d'estrelles</translation>
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
-<translation id="3923184630988645767">Ús de dades</translation>
 <translation id="392943705803418306">La sessió d'Eines de classe ha finalitzat</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sense assignar</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">abaixa el volum</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botó d'edició per a <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">S'ha restablert l'ús de dades</translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5744175046705638478">Tradueix "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">pista següent</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">L'administrador de <ph name="MANAGER" /> ha definit quan es pot utilitzar aquest <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Genera un parell de claus aleatori</translation>
 <translation id="5946538341867151940">Encara no t'has connectat. Si el teu operador de telefonia mòbil et recomana un APN personalitzat, introdueix la informació de l'APN seleccionant l'opció + APN nou.</translation>
-<translation id="5947266287934282605">Si l'últim dia del mes és anterior a aquest dia, les dades es restabliran l'últim dia del mes en qüestió</translation>
 <translation id="5948460390109837040">gossos</translation>
 <translation id="594989847980441553">Per crear una imatge amb IA, selecciona Crea.
         Totes les imatges creades es mostraran automàticament aquí.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">No m'ho tornis a mostrar</translation>
 <translation id="5975130252842127517">corall</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Títols generats:</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019566113895157499">Tecles de drecera</translation>
-<translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
 <translation id="6037291330010597344">L'alimentador de documents de l'escàner està buit. Afegeix documents i torna-ho a provar.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040852767465482106">Identitat anònima</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">La tecla seleccionada és <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Fletxa dreta</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Defineix "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">blau i lila</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Torna-ho a provar més tard</translation>
 <translation id="7118522231018231199">Assegura't de seleccionar els APN que hagi proporcionat el teu administrador o proveïdor de serveis per a mòbils. Si selecciones un APN, es desactivaran tots els APN personalitzats. Els APN no vàlids poden interrompre la connexió mòbil.</translation>
 <translation id="7119389851461848805">engegada</translation>
-<translation id="7129287270910503851">L'ús de dades es restablirà aquest dia de cada mes</translation>
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
@@ -1496,7 +1480,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Hora del darrer restabliment</translation>
 <translation id="7633068090678117093">Imatge de fons</translation>
 <translation id="763873111564339966">anyil</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
@@ -1532,7 +1515,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7802764839223122985">Falta la tecla. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7805768142964895445">Estat</translation>
-<translation id="7811024689617730980">Selecciona un dia de restabliment automàtic entre l'1 i el 31, ambdós inclosos</translation>
 <translation id="7813073042185856802">una muntanya</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7824219488248240180">postimpressionista</translation>
@@ -1608,7 +1590,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="811820734797650957">(Android) Es pot fer ping a la passarel·la</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirma</translation>
-<translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8135609423982943441">El Chromebook s'ha restablert als valors predeterminats segurs. Pots ajustar aquests canvis en qualsevol moment a Configuració.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crea el teu</translation>
@@ -1691,7 +1672,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>
 <translation id="8495070016475833911">feltre</translation>
-<translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
 <translation id="8505011850330200833">El model de Gemini requereix 2 GB d'emmagatzematge per processar les transcripcions i crear resums</translation>
@@ -1699,7 +1679,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8506394543220680287">cobert de neu</translation>
 <translation id="8508640263392900755">Detalls de l'APN</translation>
 <translation id="8522687886059337719">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />estalvis de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">saló de te</translation>
 <translation id="8531692079895415839">boira</translation>
 <translation id="8538236298648811558">Amb la tecnologia de la IA de Google</translation>
@@ -1764,7 +1743,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="885704831271383379">teclat més fosc</translation>
 <translation id="8863170912498892583">Activa el tema fosc</translation>
 <translation id="8864415976656252616">No hi ha contingut suggerit. Consulta el contingut d'ajuda principal.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8882789155418924367">mussols</translation>
@@ -1824,7 +1802,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9082718469794970195">Utilitza aquest vídeo</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="9088994563996376283">Simplifica</translation>
-<translation id="909856219855259344">Més informació sobre l'opció Data de restabliment</translation>
 <translation id="9100765901046053179">Configuració avançada</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>

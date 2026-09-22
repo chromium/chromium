@@ -284,6 +284,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7272930098487145294">Til að vista myndir og láta Chrome bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
 <translation id="7275945473750112644">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chrome gögnunum þínum eytt úr þessu tæki</translation>
 <translation id="7284245284340063465">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Ef þú velur eða hunsar tillögu mun Chrome aðlagast því til að birta þér gagnlegri tillögur í framtíðinni.</translation>
 <translation id="7296102444587051536">Chrome fyrir iOS</translation>
 <translation id="7299681342915173313">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í tölvupóstum, skjölum og öðrum forritum.</translation>
 <translation id="7334364820047587268">Þú ert þegar með aðgangsorð fyrir þessa reikninga í Google-aðgangsorðastjórnun. Ef þú velur að flytja inn eitthvert aðgangsorðanna hér að neðan mun það koma í stað fyrirliggjandi aðgangsorðs.</translation>
@@ -357,6 +358,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8544583291890527417">Viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chrome greinir fyrir þig.</translation>
 <translation id="855027533751209304">Chrome-ábending: Leitaðu að því sem þú sérð</translation>
 <translation id="8558480467877843976">Núna geturðu notað Chrome hvenær sem þú skoðar eða ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
+<translation id="8589791109349384456">Þó slökkt sé á tillögum stjórnar það ekki úrvinnslu Chrome á síðutitlum og vefslóðum fyrir aðra eiginleika. Þú getur stjórnað aðgangi að þessum gögnum í <ph name="BEGIN_LINK" />stillingum samstillingar<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Notaðu aðgangsorðin þín, feril, bókamerki og kreditkort í Safar í Chrome</translation>
 <translation id="8630122478628016441">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chrome“.</translation>

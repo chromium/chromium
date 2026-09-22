@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">ចលនាផែនដី</translation>
 <translation id="102432830749687801">សូមប្រាកដថាត្រូវប្រើប្រាស់កម្មវិធីផ្ទេរខ្លឹមសាររបស់ Google ដើម្បីផ្លាស់ទីទិន្នន័យគណនីសាលារៀនរបស់អ្នកទៅគណនីផ្ទាល់ខ្លួនរបស់អ្នក មុនពេលអ្នកបាត់បង់សិទ្ធិចូលប្រើ។</translation>
 <translation id="1026212596705997935">ផ្លូវកាត់​កំពុង​ត្រូវបានប្រើ​សម្រាប់ "<ph name="CONFLICT_ACCEL_NAME" />"។ សូមចុច​ផ្លូវកាត់ថ្មី។ ដើម្បីជំនួស​ផ្លូវកាត់​ដែលមានស្រាប់ សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត។</translation>
-<translation id="1030856839388844477">កំណត់​ការប្រើទិន្នន័យឡើងវិញ</translation>
 <translation id="1047095725494118091">មិនអាច​ទាញយកបានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម <ph name="DEVICE_TYPE" /> របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (កម្រងសារ <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">មានមុខងារថ្មី សូមប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីស្វែងយល់បន្ថែម។</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">កំពុងដំឡើងកំណែ (បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />% ហើយ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> នាទី</translation>
 <translation id="1310380015393971138">មិនមានបណ្ដាញ <ph name="NETWORK_NAME" /> ដែលអាចប្រើបានទេ</translation>
-<translation id="131421566576084655">មិនមានកាលបរិច្ឆេទនៃការកំណត់ទិន្នន័យឡើងវិញលើកចុងក្រោយទេ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">បណ្តាញនៅផ្ទះ មិនមែនរ៉ូមីងទេ</translation>
 <translation id="1327977588028644528">ច្រក​ចេញ​ចូល</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">បានកែ​ចំណងជើង</translation>
 <translation id="1423591390236870726">មិនបាន​ចុច​គ្រាប់ចុច <ph name="KEY_NAME" /> ទេ</translation>
 <translation id="1432110487435300883">ដើម្បីទទួលបាន​លទ្ធផល​ប្រហាក់ប្រហែល សូមចែក​តម្លៃ<ph name="CATEGORY_TEXT" />នឹង <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">កំណត់ការប្រើទិន្នន័យឡើងវិញដោយស្វ័យប្រវត្តិរៀងរាល់ខែនៅថ្ងៃដែលបានជ្រើសរើស</translation>
 <translation id="1442433966118452622">ប្រភព​រូបភាព</translation>
 <translation id="1446954767133808402">ត្បូងកណ្ដៀង</translation>
 <translation id="1449035143498573192">បើកក្នុងម៉ាស៊ីនស្វែងរកនៅលើ Google</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">លាក់​ប្រតិចារឹក</translation>
 <translation id="160633243685262989">មើល​រូបភាពសាកល្បង</translation>
 <translation id="1611649489706141841">ទៅមុខ</translation>
-<translation id="1615335640928990664">ការប្រើទិន្នន័យចាប់តាំងពីថ្ងៃ<ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ប្រើ​ទម្រង់រចនា</translation>
 <translation id="1621067168122174824">ដំណើរការតេស្តសាកថ្ម</translation>
 <translation id="1622402072367425417">ពពុះដែល​បញ្ចេញពន្លឺ</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">ល្អ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">ឥឡូវនេះ អ្នកអាច​ត្រឹមតែ​ប្រើ​ឧបករណ៍ថ្នាក់​ប៉ុណ្ណោះ</translation>
 <translation id="1762483337755424125">ប្រតិចារឹក</translation>
 <translation id="1765169783255151332">ប្ដូរ​គ្រាប់ចុច​យ៉ាងរហ័ស</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">ទឹកក្ដៅ​ចេញពី​ក្រោមដី</translation>
 <translation id="2203642483788377106">ច្រាំង​ថ្ម​ចោត</translation>
 <translation id="2208388655216963643">សិល្បករចំណាប់អារម្មណ៍</translation>
-<translation id="2209788852729124853">កំណត់មុខងាររាប់ចំនួនចរាចរណ៍ឡើងវិញ</translation>
 <translation id="2212733584906323460">កម្រិតច្បាស់​នៃឈ្មោះ</translation>
 <translation id="2215920961700443347">គ្មាន​អ៊ីនធឺណិតទេ។ សូមភ្ជាប់​អ៊ីនធឺណិត រួច​ព្យាយាមម្ដងទៀត។</translation>
 <translation id="2217935453350629363">ល្បឿនបច្ចុប្បន្ន</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">មតិកែលម្អសម្រាប់មុខងារ mahi</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
 <translation id="3492882532495507361">ការិយាល័យ<ph name="OFFICE_STYLE" />ដែល​មានពណ៌<ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">ទិន្នន័យត្រូវបានវាស់ដោយ Chromebook របស់អ្នក។ ការវាស់នេះអាចខុសពីទិន្នន័យរបស់ក្រុមហ៊ុនផ្ដល់សេវាកម្ម។</translation>
 <translation id="3502426834823382181">មើល​កម្មវិធី​ទាំងអស់</translation>
 <translation id="3510890413042482857">ផ្ញើ<ph name="BEGIN_LINK1" />ទិន្នន័យដានប្រតិបត្តិការ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">កំណែថ្មី ChromeOS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">ក្ដារចុចងងឹតជាងមុន</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="3852931845120288955">ចំណងជើង (A ដល់ Z)</translation>
-<translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3862598938296403232">តម្រូវឱ្យ​មាន​ការពណ៌នា</translation>
 <translation id="386280020966669610">បំផុសគំនិតខ្ញុំ</translation>
 <translation id="3864554910039562428">ថ្មប៉ប្រះទឹក</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">ចាប់ដឹង​សំឡេង​ខុសៗគ្នា​ដោយស្វ័យប្រវត្តិ និង​ដាក់ស្លាក​ទូទៅ​សម្គាល់​អ្នកនិយាយ​ម្នាក់ៗ ដូចជា​អ្នកនិយាយទី 1 និង​អ្នកនិយាយទី 2 ជាដើម</translation>
 <translation id="38811596981744338">បញ្ហាផ្លូវច្បាប់</translation>
 <translation id="3885327323343477505">ប្ដូរធាតុរក្សាអេក្រង់</translation>
-<translation id="3889914174935857450">កាលបរិច្ឆេទកំណត់ឡើងវិញ</translation>
 <translation id="3889954687526985291">ម៉ូតូ​នាពេលអនាគត​ដែលផលិត​ឡើងពី​ក្រដាស​ពណ៌ខ្មៅ​ដែលមាន​ផ្ទៃខាងក្រោយ​ពណ៌ងងឹត និង​មានពន្លឺណេអុង</translation>
 <translation id="3897092660631435901">ម៉ឺនុយ</translation>
 <translation id="3902271751020176019">ភាសា​ប្រតិចារឹក</translation>
 <translation id="390890062090528082">មេឃ​ដែលពោរពេញ​ដោយផ្កាយ</translation>
 <translation id="391412459402535266">មិន​អាច​ធ្វើ​តេស្ត​ឧបករណ៍​បាន​ទេ។ សូម​ប្ដូរ​ទៅ​មុខងារ​កុំព្យូទ័រ​យួរ​ដៃ ដើម្បី​ធ្វើ​តេស្ត។</translation>
 <translation id="3916998944874125962">ថត​រូបអេក្រង់</translation>
-<translation id="3923184630988645767">ការប្រើទិន្នន័យ</translation>
 <translation id="392943705803418306">វគ្គ​ឧបករណ៍​ថ្នាក់​បានចប់​សម្រាប់​អ្នកហើយ</translation>
 <translation id="3932043219784172185">មិនបាន​ភ្ជាប់​ឧបករណ៍​ណាមួយទេ</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" />ដែល​មិនបាន​ចាត់តាំង</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">បន្ថយសម្លេង</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ប៊ូតុងកែសម្រាប់ <ph name="SHORTCUT_DESCRIPTION" />។</translation>
-<translation id="5736820754189340309">ការប្រើទិន្នន័យត្រូវបានកំណត់​ឡើងវិញ</translation>
 <translation id="574392208103952083">មធ្យម</translation>
 <translation id="5744175046705638478">បកប្រែ "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">ចម្រៀង​បន្ទាប់</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បាន​កំណត់​ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន</translation>
 <translation id="594552776027197022">បង្កើត​គូសោ​ចៃដន្យ</translation>
 <translation id="5946538341867151940">អ្នកមិនត្រូវបានភ្ជាប់នៅឡើយ​ទេ។ ប្រសិនបើ​ក្រុមហ៊ុន​សេវាទូរសព្ទចល័ត​​របស់​អ្នក​ណែនាំ​ APN ផ្ទាល់ខ្លួន សូម​បញ្ចូល​ព័ត៌មាន​ APN ដោយ​ជ្រើសរើស "+ APN ថ្មី"</translation>
-<translation id="5947266287934282605">ប្រសិនបើ​ថ្ងៃដាច់ខែ​គឺមុនថ្ងៃនេះ នោះ​ទិន្នន័យ​នឹងត្រូវបាន​កំណត់​ឡើងវិញ​នៅថ្ងៃ​ដាច់ខែ</translation>
 <translation id="5948460390109837040">ឆ្កែ</translation>
 <translation id="594989847980441553">ជ្រើសរើស "បង្កើត" ដើម្បីបង្កើតរូបភាពដោយប្រើ AI។
         រូបភាពដែលបានបង្កើតទាំងអស់នឹងបង្ហាញនៅត្រង់នេះដោយស្វ័យប្រវត្តិ។</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">កុំ​បង្ហាញ​ម្ដង​ទៀត</translation>
 <translation id="5975130252842127517">ទឹកក្រូច</translation>
 <translation id="5982621672636444458">រៀបជម្រើសតាមប្រភេទ</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">ចំណងជើង​ដែលបាន​បង្កើត៖</translation>
 <translation id="6017514345406065928">បៃតង</translation>
 <translation id="6019566113895157499">ផ្លូវកាត់​គ្រាប់ចុច</translation>
-<translation id="6034694447310538551">បើកការកំណត់ឡើងវិញប្រចាំខែដោយស្វ័យប្រវត្តិ</translation>
 <translation id="6037291330010597344">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​គឺទទេ។ សូមបញ្ចូល​ឯកសារ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6040852767465482106">អត្តសញ្ញាណអនាមិក</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">គ្រាប់ចុចដែលបានជ្រើសរើសគឺ <ph name="KEYS" />។ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ព្រួញទៅស្ដាំ</translation>
 <translation id="6278428485366576908">ធីម</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">កំណត់​អត្ថន័យ "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">ខៀវ និងស្វាយ</translation>
 <translation id="6284632978374966585">បើក​រចនាប័ទ្ម​ងងឹត</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">សូម​ព្យាយាម​ម្ដង​ទៀត​នៅ​ពេល​ក្រោយ</translation>
 <translation id="7118522231018231199">សូមប្រាកដថាជ្រើសរើស APN ដែលផ្ដល់ដោយក្រុមហ៊ុនផ្ដល់សេវាទូរសព្ទចល័ត ឬអ្នកគ្រប់គ្រងរបស់អ្នក។ ការជ្រើសរើស APN នឹងបិទ APN ផ្ទាល់ខ្លួនទាំងឡាយ។ APN មិនត្រឹមត្រូវអាចរំខានដល់ការ​តភ្ជាប់​បណ្ដាញ​ចល័តរបស់អ្នក។</translation>
 <translation id="7119389851461848805">ថាមពល</translation>
-<translation id="7129287270910503851">ការប្រើទិន្នន័យរបស់អ្នកនឹងត្រូវបានកំណត់ឡើងវិញជារៀងរាល់ខែនៅថ្ងៃមួយនេះ</translation>
 <translation id="7130438335435247835">ឈ្មោះ​ចំណុចចូលប្រើប្រាស់ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}other{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}}</translation>
 <translation id="7135814714616751706">ស្វែងរកផ្លូវកាត់</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">ស្រាល</translation>
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">ពេលវេលាកំណត់ឡើងវិញចុងក្រោយ</translation>
 <translation id="7633068090678117093">រូបភាព​ផ្ទៃ​ខាង​ក្រោយ</translation>
 <translation id="763873111564339966">ទឹកប៊ិក</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">បាត់​គ្រាប់ចុច។ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7805768142964895445">ស្ថានភាព</translation>
-<translation id="7811024689617730980">ជ្រើសរើស​ថ្ងៃ​សម្រាប់កំណត់​ឡើងវិញ​ដោយស្វ័យប្រវត្តិ ចាប់ពី 1 ដល់ 31 ដោយរាប់បញ្ចូល 1 និង 31</translation>
 <translation id="7813073042185856802">ភ្នំ</translation>
 <translation id="7819857487979277519">PSK (WPA ឬ RSN)</translation>
 <translation id="7824219488248240180">សិល្បករក្រោយសម័យសិល្បៈចំណាប់អារម្មណ៍</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">អះអាង</translation>
-<translation id="8132480444149501833">ស្នើសុំមុខងាររាប់ចំនួនចរាចរណ៍</translation>
 <translation id="8135609423982943441">Chromebook របស់អ្នកត្រូវបានកំណត់ឡើងវិញទៅជាលំនាំដើមដែលមានសុវត្ថិភាព។ អ្នកអាចកែតម្រូវការផ្លាស់ប្ដូរទាំងនេះនៅពេលណាក៏បានក្នុង "ការកំណត់"។</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">បង្កើត​ផ្ទាំងរូបភាព​របស់អ្នក​ផ្ទាល់</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">អាសយដ្ឋាន IP</translation>
 <translation id="8491311378305535241">មិនអាចភ្ជាប់ពីកម្មវិធី Android ទៅគេហទំព័រ HTTPS តាមរយៈជញ្ជាំងភ្លើងបានទេ</translation>
 <translation id="8495070016475833911">ហ្វេលត៍</translation>
-<translation id="8498220429738806196">មុខងាររាប់ចំនួនចរាចរណ៍</translation>
 <translation id="8503813439785031346">ឈ្មោះអ្នកប្រើ</translation>
 <translation id="8503836310948963452">នៅសល់តែពីរបីនាទីទៀតប៉ុណ្ណោះ...</translation>
 <translation id="8505011850330200833">គំរូ Gemini ត្រូវការទំហំផ្ទុក 2GB ដើម្បីដំណើរការប្រតិចារឹក និងបង្កើតសេចក្តីសង្ខេប</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">គ្របដណ្ដប់​ដោយ​ព្រិល</translation>
 <translation id="8508640263392900755">ព័ត៌មានលម្អិតអំពី​ APN</translation>
 <translation id="8522687886059337719">ឥឡូវនេះ អ្នកមាន​សិទ្ធិចូលប្រើ<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ផ្ទាំង​រូបភាព<ph name="END_LINK_WALLPAPER_SUBPAGE" /> និង<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ធាតុរក្សាអេក្រង់<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ថ្មីហើយ</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ហាង​តែ</translation>
 <translation id="8531692079895415839">មានចុះអ័ព្ទ</translation>
 <translation id="8538236298648811558">ដំណើរការដោយ Google AI</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">ក្ដារចុចកាន់តែងងឹត</translation>
 <translation id="8863170912498892583">បើក​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="8864415976656252616">គ្មាន​ខ្លឹមសារ​ដែលបានណែនាំ​ទេ។ សូម​មើល​ខ្លឹមសារ​ជំនួយ​ពេញនិយម។</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ឧបករណ៍គឺជាថេប្លេត។</translation>
 <translation id="8881098542468797602">ការធ្វើតេស្តបានជោគជ័យ</translation>
 <translation id="8882789155418924367">ទីទុយ</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">ប្រើវីដេអូនេះ</translation>
 <translation id="9088306295921699330">ការប្រើប្រាស់​បច្ចុប្បន្ន</translation>
 <translation id="9088994563996376283">សម្រួល</translation>
-<translation id="909856219855259344">ព័ត៌មានបន្ថែមអំពី "កំណត់កាលបរិច្ឆេទ​ឡើងវិញ"</translation>
 <translation id="9100765901046053179">ការកំណត់កម្រិតខ្ពស់</translation>
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">កំពុង​ស្កេន​ទំព័រ <ph name="PAGE_NUMBER" /></translation>

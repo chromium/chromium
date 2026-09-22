@@ -1069,7 +1069,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1822517323280215012">Pelēka</translation>
 <translation id="1822635184853104396">Rādīt pilnu lejupielāžu vēsturi jaunā cilnē</translation>
 <translation id="1823768272150895732">Fonts</translation>
-<translation id="1823781806707127806">Pievienot esošos pārlūkošanas datus pārvaldītajam profilam</translation>
 <translation id="1825073796163165618">Iespējot saites</translation>
 <translation id="1825565032302550710">Porta numuram jābūt starp 1024 un 65535</translation>
 <translation id="18260074040409954">Varat izmantot saglabātās paroles jebkurā ierīcē. Tās ir saglabātas sadaļā <ph name="GOOGLE_PASSWORD_MANAGER" /> kontā <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2062354623176996748">Pārlūkojiet tīmekli inkognito režīma logā, nesaglabājot pārlūkošanas vēsturi.</translation>
 <translation id="206308717637808771">Aizverot visus logus, dati tiek izdzēsti. Dati tiek apstrādāti tāpat kā vietne, ko skatāt.</translation>
 <translation id="2066700471214517561">Tiek izmantots virziendarbības mikrofons, lai Chromebook datora lietotājs būtu skaidri dzirdams.</translation>
+<translation id="2067778293100584091">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK1" />datu un konfidencialitātes preferences<ph name="END_LINK1" /> vai <ph name="BEGIN_LINK2" />maksājumu veidus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />kartes<ph name="END_LINK3" />, piemēram, lojalitātes kartes, identifikācijas dokumentus un piedāvājumus.</translation>
 <translation id="2068581968816126410">Grāmatzīmju izmantošana dažādās ierīcēs</translation>
 <translation id="2069020119963193894">&amp;Mainīt lielumu</translation>
 <translation id="2071393345806050157">Nav lokālā žurnālfaila.</translation>
@@ -2378,6 +2378,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2813094189969465044">Vecāku kontrole</translation>
 <translation id="2814489978934728345">Pārtraukt šīs lapas ielādi</translation>
 <translation id="2816319641769218778">Lai saglabātu paroles savā Google kontā, ieslēdziet sinhronizāciju.</translation>
+<translation id="281678554528702272">Piezīme. Šos vietnes piekļuves iestatījumus var ignorēt uzņēmuma politikas vai efektīvas saskarnes API.</translation>
 <translation id="2817435998497102771">Iestatīt fona tapeti un stilu</translation>
 <translation id="2817861546829549432">Iespējojot pieprasījumu Nesekot, tas tiks iekļauts jūsu pārlūkošanas datplūsmā. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbilstību pieprasījumam un kā pieprasījums tiks interpretēts. Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var jums rādīt tādas reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, lai, piemēram, uzlabotu drošību, nodrošinātu konkrētu saturu, pakalpojumus, reklāmas un ieteikumus savās vietnē un ģenerētu pārskatu statistiku.</translation>
 <translation id="2818476747334107629">Detalizēta informācija par printeri</translation>
@@ -5053,6 +5054,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="485088796993065002">Vietnēs var tikt atskaņota skaņa, lai nodrošinātu mūzikas, videoklipu un cita veida multivides satura atskaņošanu.</translation>
 <translation id="4850919322897956733">Dati ir izdzēsti.</translation>
+<translation id="4851973858921178330">Filtrēt vietnes</translation>
 <translation id="4852030988197799562">Tiek bloķēta piekļuve JavaScript optimizētājam jaunās apmeklētajās vietnēs.</translation>
 <translation id="4852383141291180386">Pārvaldīt lietotņu paziņojumus</translation>
 <translation id="4852916668365817106">Peles kursora krāsa</translation>
@@ -5148,7 +5150,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4913573660390710463">Piekļūstiet pakotnēs ietvertajām tīmekļa lietojumprogrammām ar uzlabotām iespējām. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4913695564084524048">Nevar atrast lietotnes datus</translation>
 <translation id="4915961947098019832">Drīkst rādīt attēlus</translation>
-<translation id="491779113051926205">ChromeOS datplūsmas skaitītāji</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vēlas sazināties ar paplašinājumu “<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
 <translation id="4918762404810341788">Kopēt un atvērt</translation>
@@ -7467,6 +7468,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6754359471209693699">Sākt jaunu meklēšanu</translation>
 <translation id="6755702685749429945">Pievienot vārdnīcu</translation>
 <translation id="6756643207511618722">Runas programmas</translation>
+<translation id="6756882635793733911">Uzdodiet jautājumus par jebkādu ekrānā redzamo saturu.</translation>
 <translation id="6757431299485455321">Varat palīdzēt citām ierīcēm atrast šo tīklāju.</translation>
 <translation id="6757615605516049275">Atbloķējiet ierīci <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Sniedziet atsauksmes par pakalpojuma darbību.</translation>
@@ -10753,6 +10755,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="96756691973639907"><ph name="MODULE_NAME" />: citas darbības</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>
 <translation id="96774243435178359">Pārvaldītie printeri</translation>
+<translation id="967745417352972504">Pārejiet uz lietotni Google maks, lai pievienotu vai pārvaldītu <ph name="BEGIN_LINK_PAYMENT_METHODS" />maksājumu veidus<ph name="END_LINK_PAYMENT_METHODS" /> un <ph name="BEGIN_LINK_PASSES" />kartes<ph name="END_LINK_PASSES" />, piemēram, lojalitātes kartes, identifikācijas dokumentus un piedāvājumus.</translation>
 <translation id="968000525894980488">Ieslēdziet Google Play pakalpojumus.</translation>
 <translation id="968037381421390582">Ielīmēt un meklēt “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Mainīt valodas</translation>

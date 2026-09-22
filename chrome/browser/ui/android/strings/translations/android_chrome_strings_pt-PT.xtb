@@ -1973,7 +1973,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="867914734596684889">Mostrar ou ocultar a barra de marcadores</translation>
 <translation id="8683039184091909753">imagem</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, separador selecionado</translation>
-<translation id="8694622119922491927">A app <ph name="APP_NAME" /> precisa de autorização de acesso a dispositivos de interface humana (HIDs) para este site. Pode alterar esta definição mais tarde em Definições &gt; Apps &gt; Acesso especial a apps.</translation>
+<translation id="8694622119922491927">A app <ph name="APP_NAME" /> precisa de autorização de acesso a dispositivos de interface humana (HIDs) para este site. Pode alterar esta definição mais tarde em Definições &gt; Apps &gt; Acesso especial para apps.</translation>
 <translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8700565880437506364">Apresentamos o Gemini no Chrome</translation>
@@ -2126,6 +2126,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="948276827484905248">Criar código QR</translation>
 <translation id="95817756606698420">O Chrome pode utilizar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para pesquisar na China. Pode alterar esta opção nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">A sua organização requer que inicie sessão para usar o Chrome</translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="963246339335003378">Abrir Gestor de tarefas</translation>
 <translation id="966337994629449077">Tem sessão iniciada como <ph name="FROM_EMAIL" />.\n\nPara continuar a partir do computador, mude para <ph name="TO_EMAIL" />. Tem acesso às palavras-passe, aos marcadores e a muito mais desta conta.</translation>

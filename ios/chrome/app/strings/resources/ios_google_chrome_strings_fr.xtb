@@ -284,6 +284,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7272930098487145294">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chrome puisse l'ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront effacées de cet appareil</translation>
 <translation id="7284245284340063465">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Si vous sélectionnez ou ignorez une suggestion, Chrome s'adaptera pour vous proposer des suggestions plus pertinentes à l'avenir.</translation>
 <translation id="7296102444587051536">Chrome pour iOS</translation>
 <translation id="7299681342915173313">Vous pouvez désormais utiliser Chrome chaque fois que vous appuyez sur des liens dans des e-mails, des documents et d'autres applis.</translation>
 <translation id="7334364820047587268">Vous disposez déjà de mots de passe pour ces comptes dans le Gestionnaire de mots de passe de Google. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera le mot de passe existant.</translation>
@@ -357,6 +358,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8544583291890527417">Alertes concernant les problèmes de confidentialité ou de sécurité que Chrome détecte pour vous.</translation>
 <translation id="855027533751209304">Astuce Chrome : recherchez ce que vous voyez</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous naviguez sur Internet ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
+<translation id="8589791109349384456">La désactivation des suggestions ne contrôle pas le traitement des titres des pages ni des URL par Chrome pour d'autres fonctionnalités. Vous pouvez gérer l'accès à ces données dans vos <ph name="BEGIN_LINK" />paramètres de synchronisation<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Utilisez vos mots de passe, votre historique, vos favoris et vos cartes de crédit Safari dans Chrome</translation>
 <translation id="8630122478628016441">Activez l'option "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome".</translation>

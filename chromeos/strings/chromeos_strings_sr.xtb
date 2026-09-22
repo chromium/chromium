@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Ток Земље</translation>
 <translation id="102432830749687801">Обавезно користите Google апликацију Пренос садржаја да бисте преместили податке школског налога на лични налог пре него што изгубите приступ.</translation>
 <translation id="1026212596705997935">Пречица се користи за „<ph name="CONFLICT_ACCEL_NAME" />“. Притисните нову пречицу. Да бисте заменили постојећу пречицу, поново притисните ову пречицу.</translation>
-<translation id="1030856839388844477">Ресетуј потрошњу података</translation>
 <translation id="1047095725494118091">Преузимање није успело. Пробајте поново или рестартујте <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нити, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Доступна је нова функција. Користите тастер са стрелицом нагоре да бисте сазнали више.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Ажурира се (завршено је <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минута</translation>
 <translation id="1310380015393971138">Ниједна <ph name="NETWORK_NAME" /> мрежа није доступна</translation>
-<translation id="131421566576084655">Датум последњег ресетовања је недоступан</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Матична мрежа, није у ромингу</translation>
 <translation id="1327977588028644528">Мрежни пролаз</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Наслов је измењен</translation>
 <translation id="1423591390236870726">Тастер <ph name="KEY_NAME" /> није притиснут</translation>
 <translation id="1432110487435300883">За приближни резултат вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Аутоматски ресетује потрошњу података сваког месеца на изабрани дан</translation>
 <translation id="1442433966118452622">Извор слике</translation>
 <translation id="1446954767133808402">сафира</translation>
 <translation id="1449035143498573192">Отвори у Google претрази</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Сакријте транскрипт</translation>
 <translation id="160633243685262989">Преглед слике</translation>
 <translation id="1611649489706141841">кретање напред</translation>
-<translation id="1615335640928990664">Потрошња података од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Користите тему</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
 <translation id="1622402072367425417">светлећим мехурићима</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Сада можете да користите само Алатке у разреду</translation>
 <translation id="1762483337755424125">Транскрипт</translation>
 <translation id="1765169783255151332">Брзо мењајте тастере</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">Термални извор</translation>
 <translation id="2203642483788377106">литица</translation>
 <translation id="2208388655216963643">импресионизам</translation>
-<translation id="2209788852729124853">Ресетуј бројаче саобраћаја</translation>
 <translation id="2212733584906323460">Разрешавање имена</translation>
 <translation id="2215920961700443347">Нема интернета. Повежите се на интернет и пробајте поново.</translation>
 <translation id="2217935453350629363">Тренутна брзина</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Повратне информације о функцији махи</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
 <translation id="3492882532495507361">Канцеларија <ph name="OFFICE_STYLE" /> са <ph name="OFFICE_COLOR" /> нијансама</translation>
-<translation id="3493187369049186498">Податке мери Chromebook. То може да се разликује од података добављача.</translation>
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">потамњивање тастатуре</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3852931845120288955">Наслов (A–Z)</translation>
-<translation id="3858860766373142691">Назив</translation>
 <translation id="3862598938296403232">Опис је обавезан</translation>
 <translation id="386280020966669610">Инспириши ме</translation>
 <translation id="3864554910039562428">Корални гребен</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Аутоматско откривање различитих гласова и давање генеричке ознаке сваком говорнику као што је 1. говорник и 2. говорник</translation>
 <translation id="38811596981744338">Правни проблем</translation>
 <translation id="3885327323343477505">Промените чувар екрана</translation>
-<translation id="3889914174935857450">Ресетуј датум</translation>
 <translation id="3889954687526985291">футуристички мотоцикл од црног папира на тамној позадини са неонским светлима</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3902271751020176019">Језик транскрипције</translation>
 <translation id="390890062090528082">небо пуно звезда</translation>
 <translation id="391412459402535266">Тестирање уређаја није успело. Пређите на режим лаптопа да бисте га тестирали.</translation>
 <translation id="3916998944874125962">снимите екран</translation>
-<translation id="3923184630988645767">Потрошња података</translation>
 <translation id="392943705803418306">Сесија Алатки у разреду је завршена за вас</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
 <translation id="3934185438132762746">Недодељено <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">утишај звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Дугме Измени за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Потрошња података је ресетована</translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5744175046705638478">Преведите „<ph name="QUERY" />“</translation>
 <translation id="5757187557809630523">следећа песма</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094"><ph name="MANAGER" /> администратор је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи</translation>
 <translation id="594552776027197022">Генеришите насумични пар кључева</translation>
 <translation id="5946538341867151940">Још увек нисте повезани. Ако мобилни оператер препоручује прилагођени назив приступне тачке, унесите га тако што ћете изабрати „+ Нови назив приступне тачке“</translation>
-<translation id="5947266287934282605">Ако је последњи дан у месецу пре овог дана, подаци ће се ресетовати последњег дана у месецу</translation>
 <translation id="5948460390109837040">пси</translation>
 <translation id="594989847980441553">Изаберите Направи да бисте направили слику помоћу вештачке интелигенције.
         Све направљене слике ће се аутоматски приказивати овде.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Не приказуј поново</translation>
 <translation id="5975130252842127517">корал</translation>
 <translation id="5982621672636444458">Опције сортирања</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Генерисани наслови:</translation>
 <translation id="6017514345406065928">Зелена</translation>
 <translation id="6019566113895157499">Тастерске пречице</translation>
-<translation id="6034694447310538551">Омогући аутоматско месечно ресетовање</translation>
 <translation id="6037291330010597344">Механизам за увлачење докумената на скенеру је празан. Додајте документе и пробајте поново.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6040852767465482106">Непознати идентитет</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Изабрани тастер је <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Стрелица надесно</translation>
 <translation id="6278428485366576908">Тема</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Дефинишите „<ph name="QUERY" />“</translation>
 <translation id="6283581480003247988">плаве и љубичасте</translation>
 <translation id="6284632978374966585">Укључите тамну тему</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Пробајте поново касније</translation>
 <translation id="7118522231018231199">Обавезно изаберите називе приступних тачака које пружа мобилни оператер или администратор. Ако изаберете назив приступне тачке, онемогућићете све прилагођене називе приступних тачака. Неважећи називи приступних тачака могу да прекину мобилну везу.</translation>
 <translation id="7119389851461848805">напајање</translation>
-<translation id="7129287270910503851">Потрошња података ће се ресетовати сваког месеца овог дана</translation>
 <translation id="7130438335435247835">Назив приступне тачке (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7135814714616751706">Претражите пречице</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
 <translation id="7623327321610992184">OnTask виџет</translation>
-<translation id="763165478673169849">Време последњег ресетовања</translation>
 <translation id="7633068090678117093">Слика у позадини</translation>
 <translation id="763873111564339966">тамноплаве</translation>
 <translation id="7648838807254605802">Велико HTTPS кашњење</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">Тастер недостаје. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805768142964895445">Статус</translation>
-<translation id="7811024689617730980">Изаберите дан аутоматског ресетовања у опсегу од 1 до 31, укључујући обе крајње вредности</translation>
 <translation id="7813073042185856802">планина</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионизам</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Потврди</translation>
-<translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
 <translation id="8135609423982943441">Chromebook је ресетован на безбедне подразумеване вредности. У сваком тренутку можете да прилагодите ове промене у Подешавањима.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Направите своју</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP адреса</translation>
 <translation id="8491311378305535241">Не можете да се повежете са HTTP веб-сајтовима из Android апликација кроз заштитни зид</translation>
 <translation id="8495070016475833911">филца</translation>
-<translation id="8498220429738806196">Бројачи саобраћаја</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Још само пар минута…</translation>
 <translation id="8505011850330200833">Gemini модел захтева 2 GB меморијског простора за обраду транскрипата и прављење резимеа</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">под снегом</translation>
 <translation id="8508640263392900755">Детаљи назива приступне тачке</translation>
 <translation id="8522687886059337719">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />чувару екрана<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџиница</translation>
 <translation id="8531692079895415839">магловито</translation>
 <translation id="8538236298648811558">Омогућава Google AI</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">тамнија тастатура</translation>
 <translation id="8863170912498892583">Омогућите тамну тему</translation>
 <translation id="8864415976656252616">Нема предложеног садржаја. Погледајте најпопуларнији садржај помоћи.</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Уређај је таблет.</translation>
 <translation id="8881098542468797602">Тест је успео</translation>
 <translation id="8882789155418924367">сове</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">Користи овај видео</translation>
 <translation id="9088306295921699330">Тренутна искоришћеност</translation>
 <translation id="9088994563996376283">Поједностави</translation>
-<translation id="909856219855259344">Више информација о датуму ресетовања</translation>
 <translation id="9100765901046053179">Напредна подешавања</translation>
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>

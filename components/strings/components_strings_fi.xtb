@@ -1306,6 +1306,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
 <translation id="3209034400446768650">Sivu voi veloittaa</translation>
 <translation id="3209071504641569648">Pyynnöt, sivujen otsikot ja URL-osoitteet lähetetään Googlelle, ja ne voidaan tarkastaa parannetun automaattisen täytön parantamiseksi</translation>
+<translation id="3211727636285361260">Avaa linkit (<ph name="PROTOCOL" />) täällä: <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Lataus aloitettu. Näet sen vetämällä yläreunasta ja koskettamalla takaisin-painiketta</translation>
 <translation id="3212581601480735796">Toimintaasi (<ph name="HOSTNAME" />) tarkkaillaan</translation>
 <translation id="3215092763954878852">WebAuthn:n käyttö ei onnistunut</translation>
@@ -2088,6 +2089,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4493480324863638523">Virheellinen URL-osoite URL-osoitteen on oltava vakiomallien mukainen, esimerkiksi "http://example.com" tai "https://example.com".</translation>
 <translation id="4497010149473852018">Kosketuksella täytettävät kanta-asiakaskortit. Näppäimistö piilotettu.</translation>
+<translation id="4497843134750481377">Ylläpidä tarjouksia</translation>
 <translation id="4500587658229086076">suojaamaton sisältö</translation>
 <translation id="4501939680615452918">Etsi vapaita pöytiä trendikkäistä ravintoloista</translation>
 <translation id="4503459574136856756">Kirjoita bioni uudelleen ammattimaisemmaksi</translation>
@@ -2214,6 +2216,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4732860731866514038">Ladataan kielipakettia (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> haluaa käyttää laitteesi sijaintia.</translation>
 <translation id="473414950835101501">Käyttää kameraasi</translation>
+<translation id="4736089601076994090">Vanhenee: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Käynnistä Chromium uudelleen.</translation>
 <translation id="4736934858538408121">Virtuaalinen kortti</translation>
 <translation id="473775607612524610">Päivitä</translation>
@@ -2572,6 +2575,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5314967030527622926">Vihko</translation>
 <translation id="5316812925700871227">Käännä vastapäivään</translation>
 <translation id="5317780077021120954">Tallenna</translation>
+<translation id="5318654747230250818">Koodi: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Oletushakukoneellasi voit tehdä hakuja verkosta ja hyödyntää Chromiumin ominaisuuksia<ph name="END_BOLD" />, esimerkiksi hakea osoitepalkista ja verkkosivuilla olevien kuvien avulla. Ominaisuus ei välttämättä ole käytettävissä, jos hakukone ei tue sitä.</translation>
 <translation id="5323043727018853753">Upotettu sisältö sallittu</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
@@ -2620,7 +2624,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5398461103557553443">Jos haluat täyttää IBAN-numeron automaattisesti seuraavalla kerralla, tallenna se Google Walletiin</translation>
 <translation id="5398772614898833570">Mainokset estetty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
-<translation id="5402715318763077894">Sallitaanko pääsy paikalliseen verkkoon?</translation>
 <translation id="540949333488055151">Muovi (värillinen)</translation>
 <translation id="540969355065856584">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, sillä sen suojausvarmenne ei tällä hetkellä ole kelvollinen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="5411462078004183575">Edullinen vaihtoehto</translation>
@@ -3751,6 +3754,7 @@ Lisätietoja:
 <translation id="7347640536700429009">Kortissa oleva nimi on virheellinen</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7353601530677266744">Komentorivi</translation>
+<translation id="7358055687760675498">Avaa linkit (<ph name="PROTOCOL" />) täällä: <ph name="HANDLER_HOSTNAME" /> (ei täällä: <ph name="REPLACED_HANDLER_TITLE" />)</translation>
 <translation id="7359588939039777303">Mainokset estetty</translation>
 <translation id="7362281996276843968">Tämä ryhmä on suljettu</translation>
 <translation id="7363096869660964304">Et ole kuitenkaan näkymätön. Incognito-tilan käyttäminen ei kätke selaamistasi työnantajaltasi, internetpalveluntarjoajaltasi tai avaamiltasi sivustoilta.</translation>

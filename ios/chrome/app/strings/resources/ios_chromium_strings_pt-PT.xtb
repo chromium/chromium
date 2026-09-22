@@ -53,6 +53,8 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="1965068424387304464">Dica do Chromium: guarde palavras-passe</translation>
 <translation id="1992653360331625459">Já tem palavras-passe para estas contas no Gestor de Palavras-passe. Se optar por importar uma das palavras-passe abaixo, esta irá substituir a palavra-passe existente.</translation>
 <translation id="2006345422933397527">O Chromium não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
+<translation id="2025935492422922097">O Chromium processa os títulos e os URLs das páginas num espaço privado na nuvem</translation>
+<translation id="2027881372245801507">A desativação das sugestões não controla o processamento de títulos de páginas e URLs do Chromium para outras funcionalidades. Pode gerir o acesso a estes dados nas suas <ph name="BEGIN_LINK" />definições de sincronização<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="2059365270911640413">Conclua a configuração do Chromium</translation>
@@ -351,6 +353,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="865600487977764604">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8685813584220679697">Inicie sessão neste site e no Chromium.</translation>
+<translation id="8697693743327341604">Se selecionar ou ignorar uma sugestão, o Chromium adapta-se para ajudar a mostrar-lhe sugestões mais relevantes no futuro.</translation>
 <translation id="869832267508702259">Predefina o Chromium para obter estatísticas do Gemini onde quer que navegue</translation>
 <translation id="8698780336333802489">Importar para Chromium</translation>
 <translation id="8730503818204408000">Abre a definição do Chromium para definir o Chromium como o navegador predefinido.</translation>

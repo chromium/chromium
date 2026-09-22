@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Сайтуудад таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг бүү зөвшөөр</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
 <translation id="1476700086976862423">Бор өнгөний загвар</translation>
+<translation id="1497214680865404175">Хэрэглэгчийн байршуулсан зураг</translation>
 <translation id="1500473259453106018">Табууд дээрх үнийн бууралтын картыг нуух</translation>
 <translation id="1508931164824684991">Сайтууд JavaScript ашиглах боломжтой</translation>
 <translation id="1510341833810331442">Сайтуудад таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>

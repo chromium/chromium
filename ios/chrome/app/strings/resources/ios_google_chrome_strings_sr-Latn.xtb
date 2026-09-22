@@ -284,6 +284,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7272930098487145294">Da biste sačuvali slike, dodirnite Podešavanja da biste omogućili Chrome-u da dodaje slike</translation>
 <translation id="7275945473750112644">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chrome podaci obrisati sa ovog uređaja</translation>
 <translation id="7284245284340063465">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Ako izaberete ili zanemarite predlog, Chrome će se prilagoditi tako da vam ubuduće prikazuje relevantnije predloge.</translation>
 <translation id="7296102444587051536">Chrome za iOS</translation>
 <translation id="7299681342915173313">Sada možete da koristite Chrome svaki put kada dodirnete linkove u imejlovima, dokumentima i drugim aplikacijama.</translation>
 <translation id="7334364820047587268">Već imate lozinke za ove naloge u Google menadžeru lozinki. Ako odlučite da uvezete neku od lozinki u nastavku, ona će zameniti postojeću.</translation>
@@ -357,6 +358,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="8544583291890527417">Obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chrome otkrije za vas.</translation>
 <translation id="855027533751209304">Savet za Chrome: Pretražujte ono što vidite</translation>
 <translation id="8558480467877843976">Sada možete da koristite Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="8589791109349384456">Isključivanje predloga ne utiče na to kako Chrome obrađuje naslove stranica i URL-ove za druge funkcije. Pristupom tim podacima možete da upravljate u <ph name="BEGIN_LINK" />podešavanjima sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google menadžer lozinki nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="8610372330814566250">Koristite Safari lozinke, istoriju, obeleživače i kreditne kartice u Chrome-u</translation>
 <translation id="8630122478628016441">Uključite Zaključaj kartice bez arhiviranja posle zatvaranja Chrome-a.</translation>

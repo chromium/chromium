@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">地球動態</translation>
 <translation id="102432830749687801">請務必在失去存取權前，使用 Google 的內容轉移工具應用程式將學校帳戶資料移到個人帳戶。</translation>
 <translation id="1026212596705997935">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用這組快速鍵。請按下新的快速鍵。如要取代現有快速鍵，請再次按下這組快速鍵。</translation>
-<translation id="1030856839388844477">重設數據用量</translation>
 <translation id="1047095725494118091">無法下載，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="1310380015393971138">無法連上<ph name="NETWORK_NAME" /></translation>
-<translation id="131421566576084655">無法取得上次重設數據用量的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
 <translation id="1327977588028644528">閘道</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">已編輯標題</translation>
 <translation id="1423591390236870726">未按下 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="1432110487435300883">求近似結果，<ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">系統會在每月指定日期自動重設數據用量</translation>
 <translation id="1442433966118452622">圖片來源</translation>
 <translation id="1446954767133808402">藍寶石</translation>
 <translation id="1449035143498573192">在 Google 搜尋中開啟</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">隱藏轉錄稿</translation>
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">往前</translation>
-<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1618566998877964907">使用主題</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1622402072367425417">發光的泡泡</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">良好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">現在只能使用課程工具組</translation>
 <translation id="1762483337755424125">轉錄稿</translation>
 <translation id="1765169783255151332">快速切換鍵</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">溫泉</translation>
 <translation id="2203642483788377106">懸崖</translation>
 <translation id="2208388655216963643">印象派</translation>
-<translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2215920961700443347">沒有網際網路連線。請連線到網際網路，然後再試一次。</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">對 Mahi 功能提供意見</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調的<ph name="OFFICE_STYLE" />辦公室</translation>
-<translation id="3493187369049186498">這裡的數據用量是由 Chromebook 估算，計算結果可能與供應商的資料不同。</translation>
 <translation id="3502426834823382181">查看所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">降低鍵盤亮度</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3852931845120288955">標題 (A 至 Z)</translation>
-<translation id="3858860766373142691">名稱</translation>
 <translation id="3862598938296403232">必須輸入說明</translation>
 <translation id="386280020966669610">給我靈感</translation>
 <translation id="3864554910039562428">珊瑚礁</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">自動偵測不同的語音，並為每個講者加上一般標籤，例如「講者 1」和「講者 2」</translation>
 <translation id="38811596981744338">法律問題</translation>
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
-<translation id="3889914174935857450">重設日期</translation>
 <translation id="3889954687526985291">黑色紙製的未來感摩托車，搭配有霓虹燈的深色背景</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3902271751020176019">語音轉錄語言</translation>
 <translation id="390890062090528082">滿天星斗</translation>
 <translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3916998944874125962">拍攝螢幕截圖</translation>
-<translation id="3923184630988645767">數據用量</translation>
 <translation id="392943705803418306">你的課程工具組上課時段已結束</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" />未指定</translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">「<ph name="SHORTCUT_DESCRIPTION" />」的編輯按鈕。</translation>
-<translation id="5736820754189340309">已重設數據用量</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744175046705638478">翻譯「<ph name="QUERY" />」</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094"><ph name="MANAGER" /> 系統管理員已設定這部 <ph name="DEVICE_TYPE" /> 的使用時間</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
 <translation id="5946538341867151940">你尚未連線。如果你的行動電信業者建議使用自訂 APN，請選取「+ 新增 APN」，輸入 APN 資訊</translation>
-<translation id="5947266287934282605">如果當月最後一天早於這一天，系統會在當月最後一天重設資料</translation>
 <translation id="5948460390109837040">狗</translation>
 <translation id="594989847980441553">選取「建立」即可運用 AI 建立圖片。
         所有已建立的圖片都會自動顯示在這裡。</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">不要再顯示</translation>
 <translation id="5975130252842127517">珊瑚紅</translation>
 <translation id="5982621672636444458">排序選項</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">生成的標題：</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
-<translation id="6034694447310538551">啟用每月自動重設功能</translation>
 <translation id="6037291330010597344">掃描器的文件送紙器是空的。請新增文件，然後再試一次。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6040852767465482106">匿名身分</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">所選按鍵為 <ph name="KEYS" />。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">向右鍵</translation>
 <translation id="6278428485366576908">主題</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">定義「<ph name="QUERY" />」</translation>
 <translation id="6283581480003247988">藍色和紫色</translation>
 <translation id="6284632978374966585">開啟深色主題</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">請稍後再試</translation>
 <translation id="7118522231018231199">請務必選取行動服務供應商或管理員提供的 APN。選取 APN 後，系統會停用所有自訂 APN。如果 APN 無效，行動連線可能會因此中斷。</translation>
 <translation id="7119389851461848805">電源鍵</translation>
-<translation id="7129287270910503851">數據用量會在每個月的這一天重設</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">上次重設時間</translation>
 <translation id="7633068090678117093">背景圖片</translation>
 <translation id="763873111564339966">靛藍色</translation>
 <translation id="7648838807254605802">高 HTTPS 延遲</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">缺少按鍵。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7805768142964895445">狀態</translation>
-<translation id="7811024689617730980">選取自動重設日期，範圍從 1 日至 31 日 (含)</translation>
 <translation id="7813073042185856802">山岳</translation>
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
 <translation id="7824219488248240180">後印象派</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8135609423982943441">Chromebook 設定已重設為安全的預設值，你隨時可以前往「設定」調整。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">自製桌布</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8491311378305535241">無法從 Android 應用程式透過防火牆連線到 HTTP 網站</translation>
 <translation id="8495070016475833911">毛氈</translation>
-<translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2 GB 的儲存空間來處理轉錄稿並建立摘要</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">積雪覆蓋</translation>
 <translation id="8508640263392900755">APN 詳細資料</translation>
 <translation id="8522687886059337719">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶室</translation>
 <translation id="8531692079895415839">霧茫茫</translation>
 <translation id="8538236298648811558">採用 Google AI 技術</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">調暗鍵盤</translation>
 <translation id="8863170912498892583">啟用深色主題</translation>
 <translation id="8864415976656252616">沒有任何建議內容，請查看熱門說明內容。</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型為平板電腦。</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8882789155418924367">貓頭鷹</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">使用這部影片</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9088994563996376283">精簡</translation>
-<translation id="909856219855259344">「重設日期」的詳細資訊</translation>
 <translation id="9100765901046053179">進階設定</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>

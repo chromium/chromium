@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Заборонити сайтам дізнаватися, коли ви активно використовуєте пристрій</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
 <translation id="1476700086976862423">Колір теми: сепія</translation>
+<translation id="1497214680865404175">Зображення, завантажене користувачем</translation>
 <translation id="1500473259453106018">Сховати картку "Зниження цін на вкладках"</translation>
 <translation id="1508931164824684991">Сайти можуть використовувати JavaScript</translation>
 <translation id="1510341833810331442">Сайтам заборонено зберігати дані на вашому пристрої</translation>

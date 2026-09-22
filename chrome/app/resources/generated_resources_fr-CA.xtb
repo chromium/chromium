@@ -1069,7 +1069,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1822517323280215012">Gris</translation>
 <translation id="1822635184853104396">L'historique complet des téléchargements s'affiche dans un nouvel onglet</translation>
 <translation id="1823768272150895732">Police</translation>
-<translation id="1823781806707127806">Ajouter des données de navigation existantes au profil géré</translation>
 <translation id="1825073796163165618">Activer les liens</translation>
 <translation id="1825565032302550710">Le numéro de port doit se trouver entre 1 024 et 65 535</translation>
 <translation id="18260074040409954">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2062354623176996748">Utilisez le Web sans enregistrer votre historique de navigation avec une fenêtre de navigation privée</translation>
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez</translation>
 <translation id="2066700471214517561">Micro à formation de faisceaux pour que la personne utilisant le Chromebook ait un son clair.</translation>
+<translation id="2067778293100584091">Accédez à Google Portefeuille pour contrôler les <ph name="BEGIN_LINK1" />données et les préférences de confidentialité<ph name="END_LINK1" /> ou gérer les <ph name="BEGIN_LINK2" />modes de paiement<ph name="END_LINK2" /> et les <ph name="BEGIN_LINK3" />cartes<ph name="END_LINK3" />, comme des cartes de fidélité, des pièces d'identité et des offres</translation>
 <translation id="2068581968816126410">Utilisez les favoris sur tous les appareils</translation>
 <translation id="2069020119963193894">&amp;Taille</translation>
 <translation id="2071393345806050157">Pas de journal local.</translation>
@@ -2378,6 +2378,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2813094189969465044">Contrôles parentaux</translation>
 <translation id="2814489978934728345">Arrêter le chargement de cette page</translation>
 <translation id="2816319641769218778">Pour enregistrer des mots de passe dans votre compte Google, activez la synchronisation.</translation>
+<translation id="281678554528702272">Remarque : Ces paramètres d'accès au site peuvent être remplacés par des politiques d'entreprise ou des API puissantes.</translation>
 <translation id="2817435998497102771">Définir votre fond d'écran et votre style</translation>
 <translation id="2817861546829549432">Si vous interdisez le suivi, une demande sera incluse dans les transferts liés à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
@@ -5056,6 +5057,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="485088796993065002">Les sites peuvent faire jouer du son pour diffuser de la musique, des vidéos et d'autres contenus multimédias</translation>
 <translation id="4850919322897956733">Données supprimées.</translation>
+<translation id="4851973858921178330">Filtrez les sites</translation>
 <translation id="4852030988197799562">Bloquer l'accès à l'optimiseur JavaScript sur les sites nouvellement visités</translation>
 <translation id="4852383141291180386">Gérer les notifications de l'application</translation>
 <translation id="4852916668365817106">Couleur du curseur de souris</translation>
@@ -5151,7 +5153,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4913573660390710463">Applications Web regroupées avec des fonctionnalités améliorées. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Impossible de trouver les données de l'appli</translation>
 <translation id="4915961947098019832">Autorisés à afficher des images</translation>
-<translation id="491779113051926205">Compteurs de trafic ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> souhaite communiquer avec l’extension « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918762404810341788">Copier et ouvrir</translation>
@@ -7471,6 +7472,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
 <translation id="6755702685749429945">Ajouter un dictionnaire</translation>
 <translation id="6756643207511618722">Moteurs de reconnaissance vocale</translation>
+<translation id="6756882635793733911">Posez des questions sur tout ce qui se trouve sur votre écran</translation>
 <translation id="6757431299485455321">Aider les autres appareils à détecter ce point d’accès.</translation>
 <translation id="6757615605516049275">Veuillez déverrouiller <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Donnez-nous votre avis sur nos services.</translation>
@@ -10755,6 +10757,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="96756691973639907">Autres actions pour <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="96774243435178359">Imprimantes gérées</translation>
+<translation id="967745417352972504">Accédez à Google Portefeuille pour ajouter ou gérer des <ph name="BEGIN_LINK_PAYMENT_METHODS" />modes de paiement<ph name="END_LINK_PAYMENT_METHODS" /> et des <ph name="BEGIN_LINK_PASSES" />cartes<ph name="END_LINK_PASSES" />, comme des cartes de fidélité, des pièces d'identité et des offres</translation>
 <translation id="968000525894980488">Activez les services Google Play.</translation>
 <translation id="968037381421390582">Coller et rechercher « <ph name="SEARCH_TERMS" /> »</translation>
 <translation id="969096075394517431">Changer de langue</translation>

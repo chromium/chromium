@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Адміністратор організації вимагає використовувати режим анонімного перегляду</translation>
 <translation id="1323735185997015385">Видалити</translation>
 <translation id="132683371494960526">Двічі торкніться, щоб змінити батьківську папку.</translation>
+<translation id="132969855425874290">Закрити функцію "Знайти й заповнити"</translation>
 <translation id="1333455942675373522">Клавіатура</translation>
 <translation id="1334485477792811969">Вебсервіси</translation>
 <translation id="1335767868357998043">Виберіть розташування адресного рядка</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Отримано посилання}one{Отримано {count} посилання}few{Отримано {count} посилання}many{Отримано {count} посилань}other{Отримано {count} посилання}}</translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
 <translation id="1943478190258551035">Меню → Налаштування</translation>
+<translation id="1944477975050820119">Отримуйте пропозиції в реальному часі, які допоможуть вам по-новому переглядати вебсторінки за допомогою ШІ. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Увійти в керований обліковий запис</translation>
 <translation id="1955773397805078763">Додати спосіб оплати</translation>
 <translation id="1956138802718275401">Як знаходити паролі на головному екрані</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Готуються паролі…</translation>
 <translation id="2323697864063408084">Отримуйте сповіщення на заблокованому екрані й у вигляді банерів, щоб не пропустити важливі новини</translation>
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
+<translation id="2326606747676847821">Відкрити в анонімному вікні</translation>
 <translation id="2327445548174191329">З пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2330607597130465898">Захист вимкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Відгуки інших користувачів</translation>
 <translation id="2394659309569789395">Усе одно відкрити сайт</translation>
 <translation id="2403129868389095715">Не вдалося доставити посилку</translation>
+<translation id="2408318953009664750">Дозволити цього разу</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
 <translation id="2422174748424038845">Якщо видалити групу вкладок "<ph name="GROUP_NAME" />", усі користувачі відразу втратять доступ до неї, і її буде видалено з усіх пристроїв.</translation>
 <translation id="2424805048070062787">Продовжити на цій вкладці</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Заблокувати діалогові вікна</translation>
 <translation id="2542268842667970959">Приховати розділ "Перевірка безпеки"</translation>
 <translation id="2551153019974022505">Помилка облікового запису</translation>
+<translation id="2559785333866467778">Пропозиції Gemini</translation>
 <translation id="2559843230610279254">Група вкладок "<ph name="GROUP_TITLE" />", кількість: <ph name="TABS_NUMBER" />.</translation>
 <translation id="257088987046510401">Теми</translation>
 <translation id="2573117291489209663">Готово</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Відразу переходьте за посиланнями</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2721190673959776287">Приклад вбудованої довідки для контекстної панелі, яка має з’являтися кілька разів на день.</translation>
+<translation id="273318428051150387">Ви не отримуватимете сповіщення про свій прогрес у програмі Level Up</translation>
 <translation id="2739887572830526131">Збережіть цю групу, щоб додавати вкладки пізніше, або видаліть, якщо вона вам більше не потрібна.</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
 <translation id="2750583038402718064">Сайт <ph name="WEBSITE_TITLE" /> переміщено на позицію <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Увійдіть в обліковий запис, щоб отримати доступ до закладок і інших даних на всіх пристроях</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3183362380688692618">Нова група вкладок…</translation>
+<translation id="3185000827934321633">Навігація</translation>
 <translation id="3185760469172949183">Завдання щодо пошуку за допомогою камери виконано.</translation>
 <translation id="3186796054637504691">Видалити історію і дані вебсайтів</translation>
 <translation id="3190558889382726167">Пароль збережено</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 спосіб оплати}one{# спосіб оплати}few{# способи оплати}many{# способів оплати}other{# способу оплати}}</translation>
 <translation id="3831560640878483188">Закрити попередження?</translation>
 <translation id="3832419617903252251">Пароль збережено лише на цьому пристрої</translation>
+<translation id="3835016165506903031">Дозволити під час відвідування</translation>
 <translation id="3835964409414434850">Перейти на наступну вкладку</translation>
 <translation id="3838691874161539578">Перевірте збережені паролі, щоб посилити захист і подбати про свою безпеку в Інтернеті</translation>
 <translation id="3838985624086228724">Зниження ціни на відстежуваний товар із <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="3853162385423733133">Продовжуйте використовувати й зберігати паролі в обліковому записі Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Імпортувати</translation>
+<translation id="3854052088499589035">Ви отримуватимете сповіщення про свій прогрес у програмі Level Up</translation>
 <translation id="3857113360369572832">Перейдіть у <ph name="BEGIN_BOLD" />налаштування Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="386224966259596343">Ви зможете зберегти цю інформацію в Гаманці наступного разу, коли заповнюватимете відповідну форму.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Користуйтеся збереженими паролями в інших додатках</translation>
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
 <translation id="4432122368769493392">Налаштування…</translation>
+<translation id="443295142249850475">Назви і URL-адреси сторінок на відкритих вкладках використовуються, щоб надавати вам доречні пропозиції.</translation>
 <translation id="4439968635693513370">Плануйте вихідні з</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{Доступний {count} результат.}one{Доступний {count} результат.}few{Доступні {count} результати.}many{Доступні {count} результатів.}other{Доступні {count} результату.}}</translation>
 <translation id="4445840280797509738">Інші опції для цього запису: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Щоб перейти назад або вперед, проведіть пальцем за край.</translation>
 <translation id="4460014764210899310">Розгрупувати</translation>
@@ -2224,6 +2235,7 @@
 <translation id="8102130909719902723">Н</translation>
 <translation id="8105368624971345109">Вимкнути</translation>
 <translation id="8106442513853561174">Ділитися даними про точне місцезнаходження</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 пароль заповнено автоматично}one{# пароль заповнено автоматично}few{# паролі заповнено автоматично}many{# паролів заповнено автоматично}other{# пароля заповнено автоматично}}</translation>
 <translation id="8114753159095730575">Доступне завантаження файлу. Параметри можна знайти внизу екрана.</translation>
 <translation id="8123502380991596210">Сховати опцію "Що нового"</translation>
 <translation id="8123953306357309250">Скасувати синхронізацію? Ви можете будь-коли ввімкнути синхронізацію в налаштуваннях.</translation>

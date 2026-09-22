@@ -1072,6 +1072,13 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       注意：這項設定會覆寫 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (如有設定的話)。</translation>
 <translation id="1723571018091915166">不允許透過智慧功能與 <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />整合服務共用分頁。</translation>
 <translation id="172374442286684480">允許所有網站設定本機資料</translation>
+<translation id="1726467454355516626">無論是否預設啟用 Chrome 應用程式，只要將這項政策設為 True，管理員安裝的 Chrome 應用程式就能繼續執行及安裝。
+
+如果不設定這項政策或設為 False，系統會依裝置上定義的預設行為運作。
+
+嘗試啟動已停用的 Chrome 應用程式時，系統會向使用者顯示訊息，說明為何無法啟動應用程式，並建議聯絡 IT 部門。
+
+ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。</translation>
 <translation id="1729169799290004131">你可以透過這項政策指定螢幕亮度百分比，並關閉自動調整亮度功能。初始螢幕亮度會依政策設定值調整，但使用者可進行變更。
 
       如果不設定這項政策，使用者螢幕控制項和自動調整亮度功能皆不會受到影響。
@@ -4511,6 +4518,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="3965339130942650562">逾時直到閒置使用者登出</translation>
 <translation id="396536755218079668">受監管的使用者</translation>
 <translation id="3968218878014278212">允許啟用 Eche。</translation>
+<translation id="396848310647682467">強制允許管理員安裝的 Chrome 應用程式</translation>
 <translation id="3971673686578912106">如果將這項政策設為啟用，只要其他設定允許，裝置就會啟用 <ph name="PLUGIN_VM_NAME" />。<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 必須設為 True，且必須設定 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />，<ph name="PLUGIN_VM_NAME" /> 才能順利執行。
 
       如果將這項政策設為停用或不設定，則裝置不會啟用 <ph name="PLUGIN_VM_NAME" />。</translation>
@@ -4534,9 +4542,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="3982624306233556415">瀏覽器的識別資訊提供者封鎖清單，清單中的提供者無法在瀏覽器中使用 Extensible Enterprise SSO</translation>
 <translation id="3983162212222338509">系統 DNS 解析可能會在網路服務內部或外部執行，也可能部分在內部執行，部分在外部執行，實際情況取決於系統設定和功能旗標。</translation>
 <translation id="3986700049001404598">允許使用者透過 Chrome 工作管理員結束程序</translation>
-<translation id="398884292557092447">如果將這項政策設為 True 或不設定，使用者將可控管 UI 中的信用卡自動填入建議。
-
-      如果將這項政策設為 False，自動填入功能一律不會建議或填入信用卡資訊，也不會在使用者瀏覽網頁時儲存其提交的其他信用卡資訊。</translation>
 <translation id="3989635538409502728">登出</translation>
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
 <translation id="3990391739475801018">裝置將停用省電模式。</translation>
@@ -4957,6 +4962,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
       如果不設定，網站可要求存取檔案和目錄，但使用者可以變更這項設定。</translation>
 <translation id="4275048399551500192">不要顯示由其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
+<translation id="4278195158478376952">使用預設行為。</translation>
 <translation id="4278656834593750050">啟用充電音效</translation>
 <translation id="4281322231545828290">啟用自動變更密碼功能</translation>
 <translation id="4282243913059705499">一律在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示</translation>
@@ -6186,9 +6192,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果將這項政策設為 False，系統就不會收集可用於辨識裝置的資訊。
 
 如果是 <ph name="PRODUCT_NAME" />，裝置必須使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊，這項政策才會生效。</translation>
-<translation id="5017369989680827157">如果將這項政策設為 True 或不設定，使用者即可控制 UI 中的地址自動填入功能。
-
-      如果將這項政策設為 False，自動填入功能一律不會建議或填入地址資訊，也不會在使用者瀏覽網頁時儲存其提交的其他地址資訊。</translation>
 <translation id="5017691827598069017">啟用快速配對功能 (快速藍牙配對)</translation>
 <translation id="5021550478471824215">你可以透過這項政策，指定預設網路共用檔案清單。每個清單項目都是一個物件，包含兩種屬性：<ph name="SHARE_URL_FIELD_NAME" /> 和 <ph name="MODE_FIELD_NAME" />。
 
@@ -8987,7 +8990,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果設為 True，在其他相關設定也允許這項操作的情況下，系統會為使用者啟用 <ph name="PLUGIN_VM_NAME" />。為了讓 <ph name="PLUGIN_VM_NAME" /> 順利執行，你必須將 <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 設為 True，並設定 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />。</translation>
 <translation id="6741318452269220158">如果將這項政策設為 True，Native Client 將繼續執行，無論 Native Client 是否停用預設行為。
 如果將這項政策設為 False 或不設定，系統將依預設行為運作。</translation>
-<translation id="6749641778238480311">允許直接呼叫 subApps API，不必透過舊使用者手勢或要求使用者確認。</translation>
 <translation id="6750902920405577210">要用於回報信號強度變更事件的遙測資料清單。
 
       除非控管政策未停用回報功能，否則系統將回報每一項指定的遙測資料。
@@ -9276,11 +9278,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="6938524853892166974">停用即時翻譯</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
-<translation id="6944302005022384441">為了安全起見，呼叫 <ph name="SHOW_SUBAPPS_APP_API_NAME" />、<ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> 和 <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> 網路 API 時，必須透過舊使用者手勢 (「短暫啟用」)，否則呼叫就會失敗。此外，系統會顯示確認對話方塊，要求使用者確認這項操作。設定這項政策後，管理員可以指定能在哪些來源直接呼叫這些 API，不必透過舊使用者手勢或要求使用者確認。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns/。* 不是這項政策許可的值。
-
-如果未設定這項政策，系統在任何來源都會透過舊使用者手勢呼叫這些 API，而且會向使用者顯示確認對話方塊。</translation>
 <translation id="694602410134474029">控制 <ph name="PRODUCT_NAME" /> 是否透過獨立的服務程序與印表機驅動程式互動。用於查詢可用印表機、取得印表機驅動程式設定、將待列印文件傳送至本機印表機的平台列印呼叫，是透過服務程序完成。如果將這類呼叫移出瀏覽器程序，將有助於提升穩定性，並減少列印預覽的使用者介面行為當機問題。
 
 如果將這項政策設為啟用或未設定，<ph name="PRODUCT_NAME" /> 將使用獨立的服務程序執行平台列印工作。
@@ -11855,6 +11852,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="859579553230883285">停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定。</translation>
 <translation id="8596784129804979039">使用網路服務沙箱的預設設定</translation>
 <translation id="8597758693275075382">在安裝期間要傳送到 VM 的 SMBIOS 原始設備製造商 (OEM) 字串 (預設為空白清單)。</translation>
+<translation id="8598252733604444967">允許執行管理員安裝的 Chrome 應用程式。</translation>
 <translation id="8598786284856179541">啟用版本資訊報告功能</translation>
 <translation id="859937827887158048">不允許自動點對點下載更新</translation>
 <translation id="8600280933078435582">Linux 應用程式</translation>

@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">نئی</translation>
 <translation id="1927930548546198515">‏‫Chrome لاگ کرتا ہے کہ آپ اس خصوصیت کو کیسے استعمال کرتے ہیں، جیسے کہ آپ کی درخواستیں اور رویہ جب آپ تجاویز کو قبول کرتے ہیں یا نظر انداز کرتے ہیں</translation>
 <translation id="1932098463447129402">اس سے پہلے نہیں</translation>
+<translation id="1932629105611536854">ڈیلیوری زپ کوڈ</translation>
 <translation id="1935353813610900265">‏‫AI کے ذریعے تقویت یافتہ سرگزشت کی تلاش کے لیے تاثرات بھیجیں</translation>
 <translation id="1935995810530254458">بہر حال کاپی کریں</translation>
 <translation id="1938580037092872316">محفوظ کردہ پتے میں نئی معلومات شامل کریں</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">ذاتی لفافہ</translation>
 <translation id="2048261947532620704">صفحہ کا ترجمہ کیا جا رہا ہے</translation>
 <translation id="2055016614992422886">گفتگو</translation>
+<translation id="2057654338925604102">کیریئر کا ڈومین</translation>
 <translation id="2058468041496756763">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا سرچ انجن تبدیل کر سکتے ہیں۔ اگر آپ کو اپنا ترجیحی سرچ انجن نظر نہیں آتا ہے تو آپ اس کی سائٹ سے تلاش کر سکتے ہیں۔ آپ اسے Chrome کی ترتیبات میں حال ہی میں ملاحظہ کردہ سرچ انجن کے طور پر درج دیکھیں گے اور آپ اسے اپنا ڈیفالٹ بنا سکتے ہیں۔</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2059202684901022309">‏‎22 x 34 انچ</translation>
@@ -1611,6 +1613,7 @@
 <translation id="3715597595485130451">‏Wi-Fi سے منسلک ہوں</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />پراکسی، فائروال اور DNS کنفیگریشن کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">IBAN</translation>
+<translation id="3724078054554953078">ترسیل کی تاریخ</translation>
 <translation id="372429172604983730">وہ ایپلیکیشنز جو اس خرابی کا سبب بن سکتی ہیں، ان میں اینٹی وائرس، فائروال اور ویب فلٹرنگ یا پراکسی سافٹ وئير شامل ہيں۔</translation>
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Slides میں تیزی سے ایک نئی Google پیشکش تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="3727309136762649052">namespace</translation>
@@ -2211,6 +2214,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> زبان کا پیک ڈاؤن لوڈ ہو رہا ہے... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> آپ کے آلے کا مقام استعمال کرنا چاہتا ہے</translation>
 <translation id="473414950835101501">اپنے کیمرے کا استعمال کریں</translation>
+<translation id="4736089601076994090">اختتامی تاریخ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">‏Chromium کو دوبارہ شروع کریں</translation>
 <translation id="4736934858538408121">ورچوئل کارڈ</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
@@ -2538,8 +2542,10 @@
 <translation id="5258473597674772367">‫"<ph name="GROUP_NAME" />" ٹیب گروپ اب دستیاب نہیں ہے</translation>
 <translation id="5260842098960755113">سلسلہ بند ہو گیا</translation>
 <translation id="5262342527470539728">آپ کی معلومات <ph name="ACCOUNT" /> کیلئے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کی گئی ہے</translation>
+<translation id="5263202631354741256">Id</translation>
 <translation id="5263867360296733198">اپ لوڈ کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5266128565379329178">اوپر باندھیں</translation>
+<translation id="5268746892698450173">کیریئر کا نام</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" کے لیے "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ایک تعاون یافتہ شرط نہیں ہے</translation>
 <translation id="527191520368130807">پولش</translation>
@@ -2567,6 +2573,7 @@
 <translation id="5314967030527622926">کتابچہ بنانے والا</translation>
 <translation id="5316812925700871227">گھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
+<translation id="5318654747230250818">کوڈ: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chromium کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="5323043727018853753">سرایت کردہ مواد کی اجازت ہے</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />، <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES" /></translation>
@@ -2615,7 +2622,6 @@
 <translation id="5398461103557553443">‏اگلی بار اس IBAN کو آٹو فل کرنے کے لیے، اسے Google والٹ میں محفوظ کریں</translation>
 <translation id="5398772614898833570">اشتہارات مسدود ہیں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
-<translation id="5402715318763077894">مقامی نیٹ ورک تک رسائی کی اجازت دیں؟</translation>
 <translation id="540949333488055151">پلاسٹک (رنگین)</translation>
 <translation id="540969355065856584">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ اس وقت درست نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="5411462078004183575">کم قیمت والا اختیار</translation>
@@ -2857,6 +2863,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
 <translation id="5794065675298686371">قیمت کی ٹریکنگ کرنے والی اطلاعات کو آن کریں</translation>
+<translation id="5794093550048860249">ٹریکنگ نمبر</translation>
 <translation id="5796050750059455142">‏"<ph name="BEGIN_LINK" />‫Google کے دیگر پروڈکٹس میں اسمارٹ خصوصیات<ph name="LINK_END" />" کو آن کریں</translation>
 <translation id="5797984091151707075">منتظم کی پالیسی کے ذریعے بلاک کردہ</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -4023,6 +4030,7 @@
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7766518757692125295">اسکرٹ</translation>
 <translation id="776749070095465053">فیبرک</translation>
+<translation id="7772659560036894129">پروڈکٹ کے نام</translation>
 <translation id="7773005668374414287">اسی ترتیب میں، صفحات کا رُخ اوپر کی جانب</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> کیلئے رسائی کو منسوخ کریں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
@@ -4214,6 +4222,7 @@
 <translation id="8118506371121007279">تاثرات دیں</translation>
 <translation id="812020627659652807">ابھی فائلز حذف کریں</translation>
 <translation id="8120720167840853945">یہ پالیسی کسی بھی دوسری پالیسیوں کے ڈیفالٹ برتاؤ کو کنٹرول نہیں کر رہی ہے۔</translation>
+<translation id="8120827570827570666">مرچنٹ ڈومین</translation>
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
 <translation id="8130113808541743942">اس میں منتقل کریں...</translation>
 <translation id="813024282736408069">آٹو فل کے لیے ورچوئل کارڈ آن کریں</translation>
@@ -4325,6 +4334,7 @@
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8310477433309274098">‏کوئی فیس نہیں، کم از کم ‎0% APR</translation>
 <translation id="8312841338723044391">لائیو</translation>
+<translation id="8314036873065514376">مرچنٹ کا نام</translation>
 <translation id="8316555157357957253">ابھی استعمال ہو رہی ہے</translation>
 <translation id="8319414634934645341">توسیعی کلید کا استعمال</translation>
 <translation id="831997045666694187">شام</translation>

@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">조직에서 시크릿 모드 사용을 요구함</translation>
 <translation id="1323735185997015385">삭제</translation>
 <translation id="132683371494960526">상위 폴더를 변경하려면 두 번 탭하세요.</translation>
+<translation id="132969855425874290">찾기 및 채우기 닫기</translation>
 <translation id="1333455942675373522">키보드</translation>
 <translation id="1334485477792811969">웹 서비스</translation>
 <translation id="1335767868357998043">주소 표시줄 위치 선택</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{링크 수신됨}other{링크 {count}개 수신됨}}</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1943478190258551035">메뉴 → 설정</translation>
+<translation id="1944477975050820119">AI로 새로운 탐색 방법을 찾을 수 있는 실시간 추천을 받습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">관리 계정으로 로그인</translation>
 <translation id="1955773397805078763">결제 수단 추가</translation>
 <translation id="1956138802718275401">홈 화면에서 비밀번호에 액세스</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2323697864063408084">중요한 알림을 놓치지 않도록 잠금 화면과 배너에 알림을 표시합니다.</translation>
 <translation id="2326302612031521902">단위 선택기</translation>
+<translation id="2326606747676847821">시크릿 탭 열기</translation>
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">보호되지 않음</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">사용자 의견 보기</translation>
 <translation id="2394659309569789395">사이트 열기</translation>
 <translation id="2403129868389095715">택배 배송 불가</translation>
+<translation id="2408318953009664750">한 번 허용</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="2422174748424038845">삭제하면 모든 사용자가 "<ph name="GROUP_NAME" />" 탭 그룹의 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="2424805048070062787">이 탭으로 계속</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">대화상자 숨기기</translation>
 <translation id="2542268842667970959">'안전 확인' 숨기기</translation>
 <translation id="2551153019974022505">계정 오류</translation>
+<translation id="2559785333866467778">Gemini 제안</translation>
 <translation id="2559843230610279254">탭 그룹, <ph name="GROUP_TITLE" />, 탭 <ph name="TABS_NUMBER" />개.</translation>
 <translation id="257088987046510401">테마</translation>
 <translation id="2573117291489209663">완료</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">링크를 여기에서 바로 실행</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2721190673959776287">제품 내에서 상황별 패널에 대해 상세한 도움말을 제공하는 풍선으로, 하루에 여러 번 표시됩니다.</translation>
+<translation id="273318428051150387">Level Up의 진행 상황에 대한 업데이트를 받지 않습니다</translation>
 <translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
 <translation id="2747003861858887689">이전 필드</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> 타일을 <ph name="POSITION" />(으)로 이동함</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">모든 기기에서 내 북마크 등을 사용하려면 로그인하세요</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3183362380688692618">새 탭 그룹...</translation>
+<translation id="3185000827934321633">경로 탐색 중:</translation>
 <translation id="3185760469172949183">카메라로 검색이 완료되었습니다.</translation>
 <translation id="3186796054637504691">방문 기록 및 웹사이트 데이터 지우기</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{결제 수단 1개}other{결제 수단 #개}}</translation>
 <translation id="3831560640878483188">경고를 닫으시겠습니까?</translation>
 <translation id="3832419617903252251">비밀번호가 이 기기에만 저장됨</translation>
+<translation id="3835016165506903031">방문하는 동안 허용</translation>
 <translation id="3835964409414434850">다음 탭으로 이동</translation>
 <translation id="3838691874161539578">저장된 비밀번호를 점검하여 보안을 강화하고 온라인에서 더 안전하게 보호하세요.</translation>
 <translation id="3838985624086228724">추적 중인 제품의 가격 인하(이전: <ph name="PREVIOUS_PRICE" /> 현재: <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> 외 <ph name="NUMBER_OF_ACCOUNTS" />개 계정의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="3853162385423733133">Google 계정(<ph name="EMAIL" />)의 비밀번호를 계속 사용하고 저장하세요.</translation>
 <translation id="3853873210696342070">가져오기</translation>
+<translation id="3854052088499589035">Level Up에서 진행 상황이 있을 때 업데이트를 받습니다</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari 설정<ph name="END_BOLD" />을 엽니다.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="386224966259596343">다음에 관련 양식을 작성할 때 이 정보를 월렛에 저장할 수 있습니다.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">다른 앱에서 저장된 비밀번호 가져오기</translation>
 <translation id="4431224949908513835">입력할 결제 수단을 선택하세요.</translation>
 <translation id="4432122368769493392">설정…</translation>
+<translation id="443295142249850475">열린 탭의 페이지 제목과 URL이 관련성 높은 추천을 제공하는 데 사용됩니다.</translation>
 <translation id="4439968635693513370">다음 도구로 주말 계획 세우기:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />설정<ph name="END_BOLD" />을 엽니다.</translation>
+<translation id="4444574452810111637">{count,plural, =1{{count}개 결과를 확인할 수 있습니다.}other{{count}개 결과를 확인할 수 있습니다.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> 옵션 더보기</translation>
 <translation id="4455710003856931944">가장자리를 스와이프하여 앞으로 또는 뒤로 이동할 수 있습니다.</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
@@ -2224,6 +2235,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8106442513853561174">정확한 위치 공유</translation>
+<translation id="8110894698020598040">{count,plural, =1{비밀번호 1개 자동 완성됨}other{비밀번호 #개 자동 완성됨}}</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="8123502380991596210">새로운 소식 숨기기</translation>
 <translation id="8123953306357309250">동기화를 취소하시겠습니까? 설정에서 언제든지 동기화를 사용 설정할 수 있습니다.</translation>

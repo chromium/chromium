@@ -1078,7 +1078,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1822517323280215012">Grå</translation>
 <translation id="1822635184853104396">Vis hele downloadhistorikken på en ny fane</translation>
 <translation id="1823768272150895732">Skrifttype</translation>
-<translation id="1823781806707127806">Føj eksisterende browserdata til en administreret profil</translation>
 <translation id="1825073796163165618">Aktivér links</translation>
 <translation id="1825565032302550710">Porten skal være mellem 1024 og 65535</translation>
 <translation id="18260074040409954">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i
@@ -1396,6 +1395,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2062354623176996748">Brug internettet uden at gemme din browserhistorik ved hjælp af et inkognitovindue</translation>
 <translation id="206308717637808771">Slet data, når du lukker alle vinduer. Data behandles på samme måde som det website, du besøger</translation>
 <translation id="2066700471214517561">Beamformingmikrofon, så den person, der bruger Chromebook-enheden, kan høres tydeligt.</translation>
+<translation id="2067778293100584091">Gå til Google Wallet for at styre <ph name="BEGIN_LINK1" />data- og privatlivsindstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmetoder<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort<ph name="END_LINK3" /> som f.eks. loyalitetskort, id'er og tilbud</translation>
 <translation id="2068581968816126410">Brug bogmærker på tværs af enheder</translation>
 <translation id="2069020119963193894">&amp;Størrelse</translation>
 <translation id="2071393345806050157">Ingen lokal logfil.</translation>
@@ -2392,6 +2392,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2813094189969465044">Børnesikring</translation>
 <translation id="2814489978934728345">Stop indlæsning af denne side</translation>
 <translation id="2816319641769218778">Du skal aktivere synkronisering for at gemme adgangskoder på din Google-konto.</translation>
+<translation id="281678554528702272">Bemærk! Disse indstillinger for websiteadgang kan tilsidesættes af virksomhedspolitikker eller API'er med flere adgangsrettigheder.</translation>
 <translation id="2817435998497102771">Konfigurer baggrund og stil</translation>
 <translation id="2817861546829549432">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Virkningen af dette afhænger af, om et website reagerer på din anmodning, og hvordan din anmodning tolkes. Visse websites reagerer f.eks. på din anmodning ved at vise annoncer, som ikke er at finde på andre websites, du har besøgt. Mange websites vil stadig indsamle og bruge dine browserdata til f.eks. at øge sikkerheden, levere indhold, tjenester, annoncer og anbefalinger på deres websites og til at generere rapporteringsstatistik.</translation>
 <translation id="2818476747334107629">Printeroplysninger</translation>
@@ -5069,6 +5070,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4850886885716139402">Se</translation>
 <translation id="485088796993065002">Websites kan afspille lyd for at levere lyd til musik, videoer og andre medier</translation>
 <translation id="4850919322897956733">Dataene er slettet.</translation>
+<translation id="4851973858921178330">Filtrér websites</translation>
 <translation id="4852030988197799562">Bloker adgang til JavaScript-optimeringen på nyligt besøgte websites</translation>
 <translation id="4852383141291180386">Administrer appnotifikationer</translation>
 <translation id="4852916668365817106">Musemarkørens farve</translation>
@@ -5164,7 +5166,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4913573660390710463">Tilgå grupperede webapps med forbedrede funktioner. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Appdataene blev ikke fundet</translation>
 <translation id="4915961947098019832">Har tilladelse til at vise billeder</translation>
-<translation id="491779113051926205">Trafiktællere for ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ønsker at kommunikere med udvidelsen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918762404810341788">Kopiér og åbn</translation>
@@ -6133,7 +6134,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5695184138696833495">Adb til Android-apps i Linux</translation>
 <translation id="5696143504434933566">Rapportér misbrug fra "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">Aktuel PPD-fil er i brug: <ph name="PPD_NAME" /></translation>
-<translation id="5697664819730124632">Tilføj et billede, og transformér det</translation>
+<translation id="5697664819730124632">Tilføj billede, og transformér det</translation>
 <translation id="5697832193891326782">Emojivælger</translation>
 <translation id="5698136107297470317">Du er ved at slette dine data fra <ph name="BRAND" /></translation>
 <translation id="5698815246352480266">Du kan fortsætte med at chatte med AI-tilstand uden at skifte faner. Verificer din identitet for at komme i gang. Du kan også se dine adgangskoder m.m. på alle dine enheder.</translation>
@@ -7485,6 +7486,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6754359471209693699">Start en ny søgning</translation>
 <translation id="6755702685749429945">Tilføj ordbog</translation>
 <translation id="6756643207511618722">Oplæsningsmaskiner</translation>
+<translation id="6756882635793733911">Stil spørgsmål om alt på din skærm</translation>
 <translation id="6757431299485455321">Hjælp andre enheder med at finde dette hotspot.</translation>
 <translation id="6757615605516049275">Lås <ph name="TOKEN_NAME" /> op.</translation>
 <translation id="6758056191028427665">Fortæl os, hvad du synes.</translation>
@@ -10772,6 +10774,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="96756691973639907">Flere handlinger for <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Lagrede data</translation>
 <translation id="96774243435178359">Administrerede printere</translation>
+<translation id="967745417352972504">Gå til Google Wallet for at tilføje eller administrere <ph name="BEGIN_LINK_PAYMENT_METHODS" />betalingsmetoder<ph name="END_LINK_PAYMENT_METHODS" /> og <ph name="BEGIN_LINK_PASSES" />kort<ph name="END_LINK_PASSES" /> som f.eks. loyalitetskort, id'er og tilbud</translation>
 <translation id="968000525894980488">Aktivér Google Play-tjenester.</translation>
 <translation id="968037381421390582">Ind&amp;sæt, og søg efter "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Skift sprog</translation>

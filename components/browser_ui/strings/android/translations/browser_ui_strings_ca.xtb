@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">No permetis que els llocs web sàpiguen quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> lloc web}other{<ph name="SITE_COUNT" /> llocs web}}</translation>
 <translation id="1476700086976862423">Color del tema sèpia</translation>
+<translation id="1497214680865404175">Imatge penjada per l'usuari</translation>
 <translation id="1500473259453106018">Amaga la targeta Baixades de preu en pestanyes</translation>
 <translation id="1508931164824684991">Els llocs web poden utilitzar JavaScript</translation>
 <translation id="1510341833810331442">Els llocs web no tenen permís per desar dades al dispositiu</translation>

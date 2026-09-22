@@ -1102,6 +1102,13 @@ Esta política es una solución temporal en caso de que las empresas experimente
       Nota: Esta opción anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (si está presente).</translation>
 <translation id="1723571018091915166">No permitir que se compartan pestañas de forma inteligente con integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Permitir que todos los sitios establezcan datos locales</translation>
+<translation id="1726467454355516626">Si se asigna el valor True a esta política, las aplicaciones de Chrome instaladas por el administrador podrán seguir ejecutándose e instalándose, independientemente de la habilitación predeterminada de las aplicaciones de Chrome.
+
+Si no se le asigna ningún valor a esta política o se le asigna el valor False, se usará el comportamiento predeterminado definido en el dispositivo.
+
+Si el usuario intenta iniciar una aplicación de Chrome inhabilitada, se le mostrará un mensaje en el que se explica por qué no se ha iniciado la aplicación y se le sugiere que se ponga en contacto con su departamento de TI.
+
+ChromeOS M184 será la última versión de ChromeOS que admitirá aplicaciones de Chrome.</translation>
 <translation id="1729169799290004131">Si se le asigna un valor a esta política, se especifica el porcentaje de brillo de la pantalla y se desactivan las funciones de brillo automático. El brillo inicial de la pantalla se ajusta al del valor de la política, pero los usuarios pueden cambiarlo.
 
       Si no se configura esta política, las funciones de brillo automático y los controles de pantalla del usuario no se ven afectados.
@@ -4630,6 +4637,7 @@ En las plataformas de escritorio, también se puede inhabilitar la descarga del 
 <translation id="3965339130942650562">Tiempo de espera para cerrar sesión cuando el usuario se encuentre inactivo</translation>
 <translation id="396536755218079668">Usuarios supervisados</translation>
 <translation id="3968218878014278212">Permitir que se habilite Eche.</translation>
+<translation id="396848310647682467">Forzar la habilitación de las aplicaciones de Chrome instaladas por el administrador</translation>
 <translation id="3971673686578912106">Si se habilita esta política, se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo siempre y cuando los demás ajustes también lo permitan. A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "True", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que se puede ejecutar <ph name="PLUGIN_VM_NAME" />.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
@@ -4653,9 +4661,6 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 <translation id="3982624306233556415">Lista de proveedores de identidades bloqueados que no pueden usar Extensible Enterprise SSO en el navegador</translation>
 <translation id="3983162212222338509">La resolución de DNS del sistema puede ejecutarse dentro o fuera del proceso de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
-<translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
-
-      Si se le asigna el valor "False", la función Autocompletar nunca sugerirá ni completará información de tarjetas de crédito, ni tampoco guardará la información adicional de tarjetas de crédito que puedan enviar los usuarios mientras navegan por la Web.</translation>
 <translation id="3989635538409502728">Cerrar sesión</translation>
 <translation id="3989829840000169163">Bloquea los puntos de extensión antiguos del navegador</translation>
 <translation id="3990391739475801018">El modo Ahorro de batería se inhabilitará.</translation>
@@ -5083,6 +5088,7 @@ Esta política se usaba para inhabilitar la actualización automática de conten
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="4275048399551500192">No mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
+<translation id="4278195158478376952">Usar el comportamiento predeterminado.</translation>
 <translation id="4278656834593750050">Habilitar sonidos de carga</translation>
 <translation id="4281322231545828290">Habilitar el cambio de contraseña automatizado</translation>
 <translation id="4282243913059705499">Mostrar siempre el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
@@ -6360,9 +6366,6 @@ Si no se establece esta política o se le asigna el valor True, se recogerá inf
 Si se le asigna el valor False, no se recogerá información que pueda usarse para identificar equipos.
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.</translation>
-<translation id="5017369989680827157">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se dará a los usuarios el control de la función de autocompletar direcciones en la UI.
-
-      Si se le asigna el valor "Falso", la función Autocompletar nunca sugerirá ni completará información de direcciones, ni tampoco guardará la información adicional de direcciones que envíen los usuarios mientras naveguen por la Web.</translation>
 <translation id="5017691827598069017">Habilitar Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth)</translation>
 <translation id="5021550478471824215">Si se establece esta política, se especificará una lista predefinida de sistemas de archivos compartidos en red. Cada elemento es un objeto con 2 propiedades: <ph name="SHARE_URL_FIELD_NAME" /> y <ph name="MODE_FIELD_NAME" />.
 
@@ -9249,7 +9252,6 @@ Si se inhabilita esta política, los usuarios no podrán usar la depuración rem
       Si se le asigna el valor "true", <ph name="PLUGIN_VM_NAME" /> estará habilitado para el usuario (si los demás ajustes lo permiten). A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "true", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que <ph name="PLUGIN_VM_NAME" /> pueda ejecutarse.</translation>
 <translation id="6741318452269220158">Si se asigna el valor True a esta política, Native Client podrá seguir ejecutándose aunque el comportamiento predeterminado sea que Native Client esté inhabilitado.
 Si se asigna el valor False a esta política o no se define, se usará el comportamiento predeterminado.</translation>
-<translation id="6749641778238480311">Permitir que se llame a las APIs subApps sin ningún gesto previo del usuario ni requerir la confirmación del usuario.</translation>
 <translation id="6750902920405577210">Lista de datos de telemetría que deben registrarse en los eventos de cambio de intensidad de la señal.
 
       Cada dato de telemetría especificado solo se registrará si no se ha inhabilitado mediante la política de control.
@@ -9549,13 +9551,6 @@ Si se define esta política, los usuarios no pueden cambiarla. Si no se define, 
 <translation id="6938524853892166974">Inhabilitar Traducción instantánea</translation>
 <translation id="6940243892299228102">No permitir que los usuarios usen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia en Mac/Linux:</translation>
-<translation id="6944302005022384441">Por motivos de seguridad, para llamar a las APIs web <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> y <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error. Además, se pedirá al usuario que confirme la operación mediante un cuadro de diálogo de confirmación.
-
-Si se define esta política, los administradores pueden especificar los orígenes desde los que se puede llamar a estas APIs sin ningún gesto previo del usuario ni solicitarle confirmación.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Esta política no acepta el valor *.
-
-Si no se define esta política, se requerirá un gesto previo del usuario para llamar a estas APIs desde todos los orígenes y se le mostrará un cuadro de diálogo de confirmación.</translation>
 <translation id="694602410134474029">Controla si <ph name="PRODUCT_NAME" /> interactúa con controladores de impresión desde un proceso de servicio independiente. Las solicitudes de impresión de plataforma para consultar impresoras disponibles, obtener configuración de controladores de impresión y enviar documentos para imprimirlos en impresoras locales se realizan mediante un proceso de servicio. Retirar estas solicitudes del proceso del navegador, ayuda a mejorar la estabilidad y reducir los bloqueos de la interfaz de usuario en la vista previa de impresión.
 
 Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> usará el proceso de un servicio independiente para las tareas de impresión de plataforma.
@@ -12212,6 +12207,7 @@ A partir de la versión 147 de <ph name="PRODUCT_NAME" />, esta política dejar�
 <translation id="859579553230883285">Inhabilitar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.</translation>
 <translation id="8596784129804979039">Usar la configuración predeterminada del entorno aislado del servicio de red</translation>
 <translation id="8597758693275075382">Cadenas OEM de SMBIOS que se transferirán a la VM durante la instalación. El valor predeterminado es una lista vacía.</translation>
+<translation id="8598252733604444967">Permitir que se ejecuten las aplicaciones de Chrome instaladas por el administrador.</translation>
 <translation id="8598786284856179541">Habilitar informes con datos sobre la versión</translation>
 <translation id="859937827887158048">No permitir las descargas de actualizaciones automáticas punto a punto</translation>
 <translation id="8600280933078435582">Aplicaciones Linux</translation>

@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Организацията ви изисква да сърфирате в режим „инкогнито“</translation>
 <translation id="1323735185997015385">Изтриване</translation>
 <translation id="132683371494960526">Докоснете двукратно, за да промените главната папка.</translation>
+<translation id="132969855425874290">Затваряне на „Намиране и попълване“</translation>
 <translation id="1333455942675373522">Клавиатура</translation>
 <translation id="1334485477792811969">Уеб услуги</translation>
 <translation id="1335767868357998043">Избиране на позиция на адресната лента</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Получена е връзка}other{Получени са {count} връзки}}</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
+<translation id="1944477975050820119">Получавайте предложения в реално време, които могат да ви помогнат да намерите нови начини за сърфиране с AI. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Влизане с управляван профил</translation>
 <translation id="1955773397805078763">Добавяне на начин на плащане</translation>
 <translation id="1956138802718275401">Достъп до паролите от началния екран</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
 <translation id="2323697864063408084">Получавайте известия на заключения екран и под формата на банери, за да не пропускате важните за вас неща</translation>
 <translation id="2326302612031521902">Инструмент за избор на мерна единица</translation>
+<translation id="2326606747676847821">„Инкогнито“</translation>
 <translation id="2327445548174191329">От <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Без защита</translation>
 <translation id="233375395665273385">Изтриване и излизане от профила</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Прочетете какво казват хората</translation>
 <translation id="2394659309569789395">Отваряне на сайта въпреки това</translation>
 <translation id="2403129868389095715">Пратката ви не може да бъде доставена</translation>
+<translation id="2408318953009664750">Разрешаване веднъж</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
 <translation id="2422174748424038845">Ако я изтриете, всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства.</translation>
 <translation id="2424805048070062787">Продължаване с този раздел</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Блокиране на диалоговите прозорци</translation>
 <translation id="2542268842667970959">Скриване на „Проверка на безопасността“</translation>
 <translation id="2551153019974022505">Грешка в профила</translation>
+<translation id="2559785333866467778">Предложения от Gemini</translation>
 <translation id="2559843230610279254">Група раздели <ph name="GROUP_TITLE" />, съдържа <ph name="TABS_NUMBER" /> раздела.</translation>
 <translation id="257088987046510401">Теми</translation>
 <translation id="2573117291489209663">Готово</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Отваряйте връзките директно тук</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2721190673959776287">Пример за подробната помощ в продукта за контекстния панел, която трябва да се показва няколко пъти на ден.</translation>
+<translation id="273318428051150387">Няма да получавате актуализации, когато напредвате в Level Up</translation>
 <translation id="2739887572830526131">Запазете тази група, за да добавяте раздели по-късно, или я изтрийте, ако вече не ви е нужна.</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
 <translation id="2750583038402718064">Преместихте <ph name="WEBSITE_TITLE" /> на позиция <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Влезте в профила си, за да имате достъп до своите отметки и др. на всичките си устройства</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
 <translation id="3183362380688692618">Нова група раздели...</translation>
+<translation id="3185000827934321633">Навигира се</translation>
 <translation id="3185760469172949183">Задачата за търсене с камерата е изпълнена!</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190558889382726167">Паролата бе запазена</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 начин на плащане}other{# начина на плащане}}</translation>
 <translation id="3831560640878483188">Отхвърляне на предупреждението</translation>
 <translation id="3832419617903252251">Паролата е запазена само на това устройство</translation>
+<translation id="3835016165506903031">Разрешаване при посещение</translation>
 <translation id="3835964409414434850">Към следващия раздел</translation>
 <translation id="3838691874161539578">Проверете запазените си пароли, за да подобрите сигурността си и да бъдете по-защитени онлайн</translation>
 <translation id="3838985624086228724">Цената на проследения от вас продукт <ph name="PRODUCT_NAME" /> е понижена от <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" /> в сайта <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="3853162385423733133">Продължете да използвате и запазвате паролите в профила си в Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Импортиране</translation>
+<translation id="3854052088499589035">Ще получавате актуализации, когато напредвате в Level Up</translation>
 <translation id="3857113360369572832">Отворете <ph name="BEGIN_BOLD" />настройките на Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="386224966259596343">Ще имате възможност да запазите тази информация в Wallet следващия път, когато попълвате съответен формуляр.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Получавайте запазени пароли в други приложения</translation>
 <translation id="4431224949908513835">Изберете начин на плащане, който да се попълни.</translation>
 <translation id="4432122368769493392">Настройки…</translation>
+<translation id="443295142249850475">Заглавията на страниците и URL адресите на отворените ви раздели се използват, за да ви се предоставят уместни предложения.</translation>
 <translation id="4439968635693513370">Планирайте уикенда си с</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />настройките<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{Налице е {count} резултат.}other{Налице са {count} резултата.}}</translation>
 <translation id="4445840280797509738">Още опции за <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Можете да прекарате пръст по края, за да се върнете назад или да преминете напред.</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>
@@ -2224,6 +2235,7 @@
 <translation id="8102130909719902723">Н</translation>
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="8106442513853561174">Споделяне на точното местоположение</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 парола бе попълнена автоматично}other{# пароли бяха попълнени автоматично}}</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="8123502380991596210">Скриване на „Новите неща“</translation>
 <translation id="8123953306357309250">Да се анулира ли синхронизирането? Можете да го включите по всяко време в настройките.</translation>

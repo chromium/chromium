@@ -284,6 +284,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7272930098487145294">Om du vill spara bilder trycker du på Inställningar och låter Chrome lägga till dina foton</translation>
 <translation id="7275945473750112644">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chrome från enheten</translation>
 <translation id="7284245284340063465">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Om du väljer eller ignorerar ett förslag anpassar Chrome sig för att visa mer relevanta förslag i framtiden.</translation>
 <translation id="7296102444587051536">Chrome för iOS</translation>
 <translation id="7299681342915173313">Nu kan du använda Chrome varje gång du trycker på länkar i e-postmeddelanden, dokument och andra appar</translation>
 <translation id="7334364820047587268">Du har redan lösenord för dessa konton i Google Lösenordshantering. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
@@ -357,6 +358,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8544583291890527417">Varningar om integritets- eller säkerhetsproblem som identifieras av Chrome.</translation>
 <translation id="855027533751209304">Tips för Chrome: Sök efter det du ser</translation>
 <translation id="8558480467877843976">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="8589791109349384456">Om du inaktiverar förslag styr det inte Chromes behandling av sidrubriker och webbadresser för andra funktioner. Du kan hantera åtkomsten till denna data i <ph name="BEGIN_LINK" />synkroniseringsinställningarna<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Använd lösenord, historik, bokmärken och kreditkort från Safari i Chrome</translation>
 <translation id="8630122478628016441">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>

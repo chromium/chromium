@@ -51,6 +51,8 @@
 <translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
 <translation id="1992653360331625459">密碼管理工具已有下列帳戶的密碼。如果選擇匯入，就會取代現有的密碼。</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請查看網際網路連線狀態。</translation>
+<translation id="2025935492422922097">Chromium 會在雲端私人空間處理網頁標題和網址</translation>
+<translation id="2027881372245801507">即使關閉建議，Chromium 仍可處理網頁標題和網址，並用於其他功能。如要管理這類資料的存取權，請前往<ph name="BEGIN_LINK" />同步設定<ph name="END_LINK" />。</translation>
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="2059365270911640413">完成 Chromium 設定</translation>
@@ -349,6 +351,7 @@
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新版本</translation>
 <translation id="8685813584220679697">登入這個網站和 Chromium。</translation>
+<translation id="8697693743327341604">無論你選取或忽略建議，Chromium 都會自動調整，以便日後提供更貼近需求的建議。</translation>
 <translation id="869832267508702259">將 Chromium 設為預設瀏覽器，隨時隨地取得 Gemini 洞察資訊</translation>
 <translation id="8698780336333802489">匯入 Chromium</translation>
 <translation id="8730503818204408000">開啟 Chromium 設定，將 Chromium 設為預設瀏覽器。</translation>

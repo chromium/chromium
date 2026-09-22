@@ -1069,7 +1069,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1822517323280215012">Gris</translation>
 <translation id="1822635184853104396">Mostrar o historial de descargar nunha nova pestana</translation>
 <translation id="1823768272150895732">Tipo de letra</translation>
-<translation id="1823781806707127806">Engadir datos de navegación existentes ao perfil xestionado</translation>
 <translation id="1825073796163165618">Activar as ligazóns</translation>
 <translation id="1825565032302550710">O porto debe estar comprendido entre o 1024 e o 65535</translation>
 <translation id="18260074040409954">Podes usar os contrasinais gardados en calquera dispositivo. Gárdanse no <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2062354623176996748">Utiliza a Web sen gardar o teu historial de navegación cunha ventá do modo de incógnito</translation>
 <translation id="206308717637808771">Eliminar os datos cando peches todas as ventás. Os datos trátanse igual ca no sitio web que estás vendo</translation>
 <translation id="2066700471214517561">Micrófono con conformación de feixes para que se escoite con claridade a persoa que use o Chromebook</translation>
+<translation id="2067778293100584091">Visita Google Wallet para controlar as <ph name="BEGIN_LINK1" />preferencias de datos e privacidade<ph name="END_LINK1" /> ou xestionar os <ph name="BEGIN_LINK2" />métodos de pago<ph name="END_LINK2" /> e os <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" /> (por exemplo, as tarxetas de fidelidade, os documentos de identidade e as ofertas)</translation>
 <translation id="2068581968816126410">Usa os marcadores en todos os dispositivos</translation>
 <translation id="2069020119963193894">&amp;Tamaño</translation>
 <translation id="2071393345806050157">Non hai ningún ficheiro de rexistro local.</translation>
@@ -2378,6 +2378,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2813094189969465044">Controis parentais</translation>
 <translation id="2814489978934728345">Deixa de cargar esta páxina</translation>
 <translation id="2816319641769218778">Activa a sincronización para gardar contrasinais na túa Conta de Google.</translation>
+<translation id="281678554528702272">Nota: É posible que as políticas de empresa ou as API potentes anulen estas opcións de configuración de acceso ao sitio.</translation>
 <translation id="2817435998497102771">Definir o teu estilo e fondo de pantalla</translation>
 <translation id="2817861546829549432">Ao activar "Non realizar seguimento" incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta. Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non están baseados noutros sitios web que visitaches. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, servizos, anuncios e recomendacións nos seus sitios web, e para crear estatísticas de informes.</translation>
 <translation id="2818476747334107629">Detalles da impresora</translation>
@@ -5153,7 +5154,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4913573660390710463">Accede a aplicacións web empaquetadas con funcionalidades melloradas. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Non se poden atopar datos da aplicación</translation>
 <translation id="4915961947098019832">Permiso concedido para mostrar imaxes</translation>
-<translation id="491779113051926205">Contadores de tráfico de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quere comunicarse coa extensión "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4918762404810341788">Copiar e abrir</translation>
@@ -10754,6 +10754,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="96756691973639907">Máis accións de <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras xestionadas</translation>
+<translation id="967745417352972504">Visita Google Wallet para engadir ou xestionar <ph name="BEGIN_LINK_PAYMENT_METHODS" />métodos de pago<ph name="END_LINK_PAYMENT_METHODS" /> e <ph name="BEGIN_LINK_PASSES" />pases<ph name="END_LINK_PASSES" /> (por exemplo, tarxetas de fidelidade, documentos de identidade e ofertas)</translation>
 <translation id="968000525894980488">Activa os servizos de Google Play.</translation>
 <translation id="968037381421390582">Pegar e bu&amp;scar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Cambiar idiomas</translation>

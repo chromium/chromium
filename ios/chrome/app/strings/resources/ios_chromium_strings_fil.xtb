@@ -53,6 +53,8 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="1965068424387304464">Tip sa Chromium: Mag-save ng Mga Password</translation>
 <translation id="1992653360331625459">Mayroon ka nang mga password para sa mga account na ito sa iyong Password Manager. Kung pipiliin mong i-import ang isa sa mga password sa ibaba, papalitan nito ang kasalukuyang password.</translation>
 <translation id="2006345422933397527">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
+<translation id="2025935492422922097">Pinoproseso ng Chromium ang mga pamagat ng page at URL sa pribadong space sa cloud</translation>
+<translation id="2027881372245801507">Hindi kinokontrol ng pag-off ng mga suhestyon ang pagpoproseso ng Chromium ng mga pamagat ng page at URL para sa iba pang feature. Puwede mong pamahalaan ang access sa data na ito sa iyong <ph name="BEGIN_LINK" />mga setting ng pag-sync<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Tingnan ang Iyong History sa Chromium</translation>
 <translation id="2052320862053429062">Pana-panahong sinusuri ng Chromium ang iyong mga password sa mga listahang na-publish online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
 <translation id="2059365270911640413">Tapusin ang pag-set up ng Chromium</translation>
@@ -351,6 +353,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8685813584220679697">Mag-sign in sa site na ito at sa Chromium.</translation>
+<translation id="8697693743327341604">Kung pipiliin o babalewalain mo ang isang suhestyon, aangkop ang Chromium para makatulong na magpakita sa iyo ng mga mas nauugnay na suhestyon sa hinaharap.</translation>
 <translation id="869832267508702259">Gawing default mo ang Chromium para makakuha ng mga insight ng Gemini saan ka man mag-browse</translation>
 <translation id="8698780336333802489">I-import sa Chromium</translation>
 <translation id="8730503818204408000">Mabubuksan ang Setting ng Chromium para itakda ang Chromium bilang Default na Browser.</translation>

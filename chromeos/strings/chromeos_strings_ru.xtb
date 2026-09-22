@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Движения земли</translation>
 <translation id="102432830749687801">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
 <translation id="1026212596705997935">Это сочетание клавиш используется для действия "<ph name="CONFLICT_ACCEL_NAME" />". Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
-<translation id="1030856839388844477">Сбросить данные</translation>
 <translation id="1047095725494118091">При скачивании произошла ошибка. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> мин.</translation>
 <translation id="1310380015393971138">Сеть <ph name="NETWORK_NAME" /> недоступна.</translation>
-<translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашняя сеть, без роуминга</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Название изменено.</translation>
 <translation id="1423591390236870726">Клавиша <ph name="KEY_NAME" /> не нажата</translation>
 <translation id="1432110487435300883">Чтобы получить приблизительный результат, разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Каждый месяц объем переданных данных автоматически обнуляется в указанный день</translation>
 <translation id="1442433966118452622">Источник изображения</translation>
 <translation id="1446954767133808402">сапфир</translation>
 <translation id="1449035143498573192">Открыть в Google Поиске</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Скрыть расшифровку</translation>
 <translation id="160633243685262989">Предварительный просмотр изображения</translation>
 <translation id="1611649489706141841">вперед</translation>
-<translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Выберите тему</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1622402072367425417">сияющие пузыри</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Хороший (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Теперь вам доступны только инструменты для уроков.</translation>
 <translation id="1762483337755424125">Зона показа расшифровки</translation>
 <translation id="1765169783255151332">Быстрое переключение клавиш</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">горячий источник</translation>
 <translation id="2203642483788377106">утес</translation>
 <translation id="2208388655216963643">импрессионизм</translation>
-<translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2215920961700443347">Нет доступа к интернету. Подключитесь и повторите попытку.</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Отзыв о функции mahi</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
-<translation id="3493187369049186498">Объем использованного трафика измеряется на устройстве. Значения могут отличаться от данных оператора связи.</translation>
 <translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">клавиатура уменьшение яркости</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3852931845120288955">По названию (от А до Я)</translation>
-<translation id="3858860766373142691">Название</translation>
 <translation id="3862598938296403232">Введите описание.</translation>
 <translation id="386280020966669610">Случайные обои</translation>
 <translation id="3864554910039562428">коралловый риф</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">автоматически определять отдельные голоса и присваивать каждому из них стандартные обозначения, например "Говорящий 1" и "Говорящий 2";</translation>
 <translation id="38811596981744338">Нарушение законодательства</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
-<translation id="3889914174935857450">Дата сброса данных</translation>
 <translation id="3889954687526985291">Футуристичный черный бумажный мотоцикл с неоновыми фарами. Фон темный.</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3902271751020176019">Язык расшифровки</translation>
 <translation id="390890062090528082">звездное небо</translation>
 <translation id="391412459402535266">Не удается протестировать устройство. Перейдите в режим ноутбука.</translation>
 <translation id="3916998944874125962">сделать скриншот</translation>
-<translation id="3923184630988645767">Передача данных</translation>
 <translation id="392943705803418306">Ваш сеанс Инструментов для уроков завершен.</translation>
 <translation id="3932043219784172185">Нет подключенных устройств</translation>
 <translation id="3934185438132762746">Не назначено: <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">уменьшить громкость</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка, позволяющая изменить сочетание клавиш для действия "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
-<translation id="5736820754189340309">Счетчик расхода трафика сброшен</translation>
 <translation id="574392208103952083">Средний</translation>
 <translation id="5744175046705638478">Перевести "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">следующий трек</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5946538341867151940">Подключение не установлено. Если ваш оператор мобильной связи рекомендует использовать определенную точку доступа, введите необходимую информацию, выбрав "Новая точка доступа".</translation>
-<translation id="5947266287934282605">Данные будут сброшены в последний день месяца, если этот день предшествует выбранному</translation>
 <translation id="5948460390109837040">собаки</translation>
 <translation id="594989847980441553">Нажмите "Создать", чтобы сгенерировать изображение с помощью ИИ.
         Готовые иллюстрации будут автоматически появляться здесь.</translation>
-<translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">Больше не показывать</translation>
 <translation id="5975130252842127517">коралловый</translation>
 <translation id="5982621672636444458">Сортировать</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Созданные названия:</translation>
 <translation id="6017514345406065928">Зеленый</translation>
 <translation id="6019566113895157499">Сочетания клавиш</translation>
-<translation id="6034694447310538551">Включить ежемесячный автоматический сброс показателя</translation>
 <translation id="6037291330010597344">Автоподатчик документов пуст. Положите документы и повторите попытку.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6040852767465482106">Анонимная идентификация</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Выбрана клавиша "<ph name="KEYS" />". <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Стрелка вправо</translation>
 <translation id="6278428485366576908">Тема</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Посмотреть определение "<ph name="QUERY" />"</translation>
 <translation id="6283581480003247988">синих и фиолетовых</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Повторите попытку позже.</translation>
 <translation id="7118522231018231199">Выберите один из вариантов, предложенных мобильным оператором или администратором. Персональные точки доступа будут отключены. Из-за недопустимой точки доступа подключение к мобильной сети может быть прервано.</translation>
 <translation id="7119389851461848805">питание</translation>
-<translation id="7129287270910503851">Сброс данных об использовании трафика будет происходить в этот день каждого месяца</translation>
 <translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="7623327321610992184">Виджет OnTask</translation>
-<translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7633068090678117093">Фоновое изображение</translation>
 <translation id="763873111564339966">индиго</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">Клавиша не выбрана. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7805768142964895445">Состояние</translation>
-<translation id="7811024689617730980">Укажите день автоматического сброса в диапазоне с 1 по 31 включительно</translation>
 <translation id="7813073042185856802">гора</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпрессионизм</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
-<translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8135609423982943441">На устройстве Chromebook были восстановлены безопасные параметры. Вы в любой момент можете изменить их в настройках.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Создайте свои обои</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>
 <translation id="8495070016475833911">фетр</translation>
-<translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
 <translation id="8505011850330200833">Чтобы обрабатывать расшифровки и создавать краткие пересказы, модели Gemini требуется 2 ГБ в хранилище.</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">снежный покров</translation>
 <translation id="8508640263392900755">Сведения о точке доступа</translation>
 <translation id="8522687886059337719">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заставка<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8531692079895415839">туман</translation>
 <translation id="8538236298648811558">На базе технологии ИИ от Google</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">уменьшить яркость клавиатуры</translation>
 <translation id="8863170912498892583">Использовать тёмную тему</translation>
 <translation id="8864415976656252616">Нет рекомендованных материалов. Посмотрите самый популярный справочный контент.</translation>
-<translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8876270629542503161">Это планшет.</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8882789155418924367">совы</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">Использовать это видео</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="9088994563996376283">Упростить</translation>
-<translation id="909856219855259344">Подробная информация о дате сброса данных</translation>
 <translation id="9100765901046053179">Дополнительные настройки</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>

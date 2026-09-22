@@ -264,7 +264,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 
           **Suggest questions:** Generate a bulleted list of 3–5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design or its placement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium needs local network permission for this site</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="388648406173476553">Customise and control Chromium. Something needs your attention – click for details.</translation>
 <translation id="3889543394854987837">Click your name to open Chromium and start browsing.</translation>
@@ -595,6 +594,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="7216228761061470870">When you use image search on desktop, the page title, URL and content, including PDFs, are sent to the server</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
+<translation id="7226331818892775989">Ask about content outside of Chromium, like other apps or files</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more on all your devices.</translation>
 <translation id="7252276985725323153">Begin browsing instantly: Chromium can now launch when Windows starts.</translation>
 <translation id="7274695763216404502">Pinned! Use image search again from the toolbar</translation>

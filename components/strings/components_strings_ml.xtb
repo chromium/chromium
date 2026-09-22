@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">പുതിയവ</translation>
 <translation id="1927930548546198515">നിങ്ങളുടെ അഭ്യർത്ഥനകളും നിർദ്ദേശങ്ങൾ സ്വീകരിക്കുമ്പോഴോ അവഗണിക്കുമ്പോഴോ ഉള്ള പ്രവർത്തനരീതിയും പോലുള്ള, നിങ്ങൾ ഫീച്ചർ ഉപയോഗിക്കുന്ന രീതി Chrome ലോഗ് ചെയ്യുന്നു</translation>
 <translation id="1932098463447129402">മുമ്പല്ല</translation>
+<translation id="1932629105611536854">ഡെലിവറി തപാൽ കോഡ്</translation>
 <translation id="1935353813610900265">AI ഉപയോഗിച്ചുള്ള ചരിത്രം തിരയൽ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="1935995810530254458">എന്തായാലും പകർത്തുക</translation>
 <translation id="1938580037092872316">സംരക്ഷിച്ച വിലാസത്തിലേക്ക് പുതിയ വിവരങ്ങൾ ചേർക്കുക</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2048261947532620704">പേജ് വിവർത്തനം ചെയ്യുന്നു</translation>
 <translation id="2055016614992422886">സംഭാഷണം</translation>
+<translation id="2057654338925604102">കാരിയർ ഡൊമെയ്ൻ</translation>
 <translation id="2058468041496756763">Chrome-ന്റെ ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും തിരയൽ എഞ്ചിൻ മാറ്റാം. നിങ്ങൾ മുൻഗണന നൽകുന്ന തിരയൽ എഞ്ചിൻ കാണുന്നില്ലെങ്കിൽ, അവരുടെ സൈറ്റിൽ നിങ്ങൾക്ക് തിരയാം. Chrome ക്രമീകരണത്തിൽ അടുത്തിടെ സന്ദർശിച്ച തിരയൽ എഞ്ചിനായി ഇത് ലിസ്റ്റ് ചെയ്തിരിക്കുന്നത് നിങ്ങൾക്ക് കാണാം, നിങ്ങൾക്ക് ഇത് ഡിഫോൾട്ടാക്കുകയും ചെയ്യാം.</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2059202684901022309">22 x 34 ഇഞ്ച്</translation>
@@ -1609,6 +1611,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="3715597595485130451">Wi-Fi-യിലേക്ക് കണക്റ്റുചെയ്യുക</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും DNS കോൺഫിഗറേഷനും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">ഷിപ്പ് ചെയ്ത തീയതി</translation>
 <translation id="372429172604983730">ആന്‍റിവൈറസ്, ഫയർവാൾ, വെബ് ഫിൽട്ടറിംഗ് അല്ലെങ്കിൽ പ്രോക്‌സി സോഫ്റ്റ്‌വെയർ എന്നിവ ഉൾപ്പെടെയുള്ള ആപ്പുകൾ ഈ പിശകിന് കാരണമാകുന്നു.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="3727309136762649052">നെയിംസ്പെയ്സ്</translation>
@@ -2209,6 +2212,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ഭാഷാ പായ്ക്ക് ഡൗൺലോഡ് ചെയ്യുന്നു..<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">നിങ്ങളുടെ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="473414950835101501">നിങ്ങളുടെ ക്യാമറകൾ ഉപയോഗിക്കുക</translation>
+<translation id="4736089601076994090">കാലഹരണപ്പെടുന്നത്: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -2536,8 +2540,10 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല</translation>
 <translation id="5260842098960755113">ത്രെഡ് അടച്ചു</translation>
 <translation id="5262342527470539728">നിങ്ങളുടെ വിവരങ്ങൾ <ph name="ACCOUNT" /> എന്നതിനായി <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
+<translation id="5263202631354741256">ഐഡി</translation>
 <translation id="5263867360296733198">അപ്‌ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് അവലോകനം ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
+<translation id="5268746892698450173">കാരിയറിന്റെ പേര്</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" എന്നത് "<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നതിനുള്ള പിന്തുണയ്ക്കുന്ന വ്യവസ്ഥയല്ല</translation>
 <translation id="527191520368130807">പോളിഷ് ചെയ്യുക</translation>
@@ -2565,6 +2571,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="5314967030527622926">ബുക്ക്‌ലെറ്റ് മേക്കർ</translation>
 <translation id="5316812925700871227">എതിർ ഘടികാരദിശയിൽ തിരിക്കുക</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
+<translation id="5318654747230250818">കോഡ്: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ വെബിൽ തിരയാൻ നിങ്ങളെ അനുവദിക്കുകയും Chromium ഫീച്ചറുകളെ പിന്തുണയ്ക്കുകയും ചെയ്യുന്നു<ph name="END_BOLD" /> ഉദാഹരണത്തിന്, വിലാസ ബാറിൽ നിന്നും വെബ് പേജുകളിലെ ചിത്രങ്ങളിൽ നിന്നും തിരയുന്നത് പോലുള്ളവ. നിങ്ങളുടെ തിരയൽ എഞ്ചിൻ ഒരു ഫീച്ചറിനെ പിന്തുണയ്ക്കുന്നില്ലെങ്കിൽ അത് ലഭ്യമായേക്കില്ല.</translation>
 <translation id="5323043727018853753">ഉൾച്ചേർത്ത ഉള്ളടക്കം അനുവദനീയമാണ്</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> / <ph name="NUM_MATCHES" /></translation>
@@ -2613,7 +2620,6 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="5398461103557553443">അടുത്ത തവണ ഈ IBAN സ്വയമേവ പൂരിപ്പിക്കാൻ, Google Wallet-ൽ ഇത് സംരക്ഷിക്കുക</translation>
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
-<translation id="5402715318763077894">ലോക്കൽ നെറ്റ്‌വർക്ക് ആക്‌സസ് അനുവദിക്കുക</translation>
 <translation id="540949333488055151">പ്ലാസ്റ്റിക് (നിറമുള്ളത്)</translation>
 <translation id="540969355065856584">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയുള്ളതല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="5411462078004183575">കുറഞ്ഞ നിരക്കുള്ള ഓപ്ഷൻ</translation>
@@ -2855,6 +2861,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ഈ ഉപകരണത്തിൽ നിന്ന് ഈ പേയ്‌മെന്റ് രീതി ഇല്ലാതാക്കും</translation>
 <translation id="5794065675298686371">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അറിയിപ്പുകൾ ഓണാക്കുക</translation>
+<translation id="5794093550048860249">ട്രാക്കിംഗ് നമ്പർ</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />മറ്റ് Google ഉൽപ്പന്നങ്ങളിലെ സ്‌മാർട്ട് ഫീച്ചറുകൾ<ph name="LINK_END" />” ഓണാക്കുക</translation>
 <translation id="5797984091151707075">അഡ്‌മിൻ നയം അനുസരിച്ച് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="5804241973901381774">അനുമതികൾ</translation>
@@ -4019,6 +4026,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7766518757692125295">സ്കേർട്ട്</translation>
 <translation id="776749070095465053">ഫാബ്രിക്</translation>
+<translation id="7772659560036894129">ഉൽപ്പന്നത്തിന്റെ പേരുകൾ</translation>
 <translation id="7773005668374414287">അതേ ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ആക്‌സസ് റദ്ദാക്കുക</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
@@ -4210,6 +4218,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="8118506371121007279">ഫീഡ്ബാക്ക് നൽകുക</translation>
 <translation id="812020627659652807">ഫയലുകൾ ഇപ്പോൾ ഇല്ലാതാക്കുക</translation>
 <translation id="8120720167840853945">ഈ നയം, മറ്റേതെങ്കിലും നയങ്ങളുടെ ഡിഫോൾട്ട് പ്രവർത്തനരീതി നിയന്ത്രിക്കുന്നില്ല.</translation>
+<translation id="8120827570827570666">വ്യാപാരിയുടെ ഡൊമെയ്ൻ</translation>
 <translation id="8127301229239896662">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ അല്ലെങ്കിൽ നെറ്റ്‍വര്‍ക്കിൽ "<ph name="SOFTWARE_NAME" />" ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ നിങ്ങളുടെ ഐടി അഡ്‌മിനോട് ആവശ്യപ്പെടുക.</translation>
 <translation id="8130113808541743942">ഇനിപ്പറയുന്നതിലേക്ക് നീക്കുക...</translation>
 <translation id="813024282736408069">സ്വയമേവ പൂരിപ്പിക്കലിനായി ഒരു വെർച്വൽ കാർഡ് ഓണാക്കുക</translation>
@@ -4321,6 +4330,7 @@ Chrome-ൽ നിന്ന് നിങ്ങൾക്ക് ഈ നിർദ്
 <translation id="830868413617744215">ബീറ്റ</translation>
 <translation id="8310477433309274098">ഫീസില്ല, 0% APR വരെ</translation>
 <translation id="8312841338723044391">തത്സമയം</translation>
+<translation id="8314036873065514376">വ്യാപാരിയുടെ പേര്</translation>
 <translation id="8316555157357957253">ഇപ്പോൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="8319414634934645341">വിപുലീകരിച്ച കീ ഉപയോഗം</translation>
 <translation id="831997045666694187">വൈകുന്നേരം</translation>

@@ -53,6 +53,8 @@
 <translation id="1965068424387304464">Chromium 提示：保存密码</translation>
 <translation id="1992653360331625459">密码管理工具中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
+<translation id="2025935492422922097">Chromium 会在云端的私密空间中处理网页标题和网址</translation>
+<translation id="2027881372245801507">关闭建议功能不会影响 Chromium 处理网页标题和网址以提供其他功能。您可以在<ph name="BEGIN_LINK" />同步设置<ph name="END_LINK" />中管理对此类数据的访问权限。</translation>
 <translation id="2042889939382983733">查看您的 Chromium 历史记录</translation>
 <translation id="2052320862053429062">Chromium 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="2059365270911640413">完成 Chromium 设置</translation>
@@ -351,6 +353,7 @@
 <translation id="865600487977764604">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8685813584220679697">登录此网站和 Chromium。</translation>
+<translation id="8697693743327341604">无论您是采纳还是忽略某条建议，Chromium 都会据此进行调整，以便日后为您提供更贴合需求的建议。</translation>
 <translation id="869832267508702259">将 Chromium 设为默认浏览器，即可在浏览任何内容时获取 Gemini 数据分析</translation>
 <translation id="8698780336333802489">导入到 Chromium</translation>
 <translation id="8730503818204408000">打开 Chromium 设置以将 Chromium 设为默认浏览器。</translation>

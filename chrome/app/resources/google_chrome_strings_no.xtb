@@ -70,6 +70,7 @@
             Bokmerker, loggen og lagrede passord vil ikke bli påvirket.</translation>
 <translation id="1619887657840448962">For å gjøre Chrome tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="1628000112320670027">Få hjelp med Chrome</translation>
+<translation id="1632241302126471515">Søk med Chrome Canary</translation>
 <translation id="1640672724030957280">Laster ned …</translation>
 <translation id="1651617469580841801">Når du bruker Google Lens, sendes sidens tittel, nettadresse og innhold, inkludert PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
@@ -204,7 +205,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chrome</translation>
 <translation id="2970681950995291301">For å fjerne Google-kontoen din fra Chrome, logg av Chrome på Innstillinger-siden</translation>
 <translation id="2976869732253036751">Få varsler om prissporing med Chrome på telefonen</translation>
-<translation id="2985091279808606502">Chrome trenger tillatelse til å bruke det lokale nettverket for dette nettstedet</translation>
 <translation id="2991167882679440829">Passordene dine og andre Chrome-data som du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chrome igjen, logg på igjen.</translation>
 <translation id="2994465299455873643">Leverer krypteringstjenester og en sikker måte å gjenopprette <ph name="BROWSER_NAME" /> på hvis den blir utdatert. Hvis denne tjenesten er deaktivert, kan <ph name="BROWSER_NAME" /> miste tilgangen til krypterte data, og <ph name="BROWSER_NAME" /> kan kanskje ikke gjenopprette seg selv.</translation>
 <translation id="3003694935412297923">Alle gjøremål</translation>
@@ -272,6 +272,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3597003331831379823">Kunne ikke kjøre konfigureringen med overordnede rettigheter. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Vis Gemini i Chrome i systemfeltet</translation>
+<translation id="3616622400661108683">Spør om innhold utenfor Chrome, for eksempel andre apper eller filer</translation>
 <translation id="3622716124581627104">Identifiser ting eller steder, og kopier eller oversett tekst. Når du bruker Google Lens, sendes et skjermbilde av siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også den lagrede informasjonen din med mer på alle enhetene dine.</translation>
@@ -542,6 +543,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6334815226785304306">Gjør Google Chrome til standardnettleser, og fest den til oppgavelinjen</translation>
 <translation id="63540178978900677">Chrome er ikke lenger standardnettleseren din. Vil du bruke Chrome som standardnettleseren?</translation>
+<translation id="6357670763064300993">Gemini Enterprise i Chrome</translation>
 <translation id="6360449101159168105">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chrome rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også leselisten med mer på alle enhetene dine.</translation>
 <translation id="6388799252195623474">hjelp meg med dette</translation>
@@ -750,7 +752,9 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="8162006532256575008">Bruk Chrome uten noen konto</translation>
 <translation id="8172231188687329735">Last ned Chrome-appen for å lagre passord, uansett hvor du er</translation>
 <translation id="8177472873527554730">Finner ikke innhold på siden</translation>
+<translation id="8196526165798579689">Søk med Chrome Dev</translation>
 <translation id="8221491193165283816">Du blokkerer vanligvis varsler. For å la dette nettstedet varsle deg, klikk her.</translation>
+<translation id="8227493674161801700">Søk med Chrome Beta</translation>
 <translation id="8253851811470049684">Åpne linker i Chrome fra hvilken som helst app, og fest nettleseren på oppgavelinjen for å ha den enkelt tilgjengelig</translation>
 <translation id="8255190535488645436">Google Chrome bruker kameraet og mikrofonen din.</translation>
 <translation id="8260086374035800939">Hvis Gemini i Chrome er åpent, forblir sidepanelet åpent når du åpner nye faner</translation>

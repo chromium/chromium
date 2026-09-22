@@ -1078,7 +1078,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1822517323280215012">Grå</translation>
 <translation id="1822635184853104396">Visa fullständig nedladdningshistorik på en ny flik</translation>
 <translation id="1823768272150895732">Font</translation>
-<translation id="1823781806707127806">Lägg till befintlig webbinformation i hanterad profil</translation>
 <translation id="1825073796163165618">Aktivera länkar</translation>
 <translation id="1825565032302550710">Portnummer måste vara mellan 1024 och 65535</translation>
 <translation id="18260074040409954">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
@@ -1395,6 +1394,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2062354623176996748">Surfa utan att någon webbhistorik sparas med ett inkognitofönster</translation>
 <translation id="206308717637808771">Radera data när du stänger alla fönster. Data behandlas på samma sätt som webbplatsen du visar</translation>
 <translation id="2066700471214517561">Strålformad mikrofon används så att personen som använder Chromebook hörs klart.</translation>
+<translation id="2067778293100584091">Besök Google Wallet för att styra <ph name="BEGIN_LINK1" />data- och integritetsinställningar<ph name="END_LINK1" /> eller hantera <ph name="BEGIN_LINK2" />betalningsmetoder<ph name="END_LINK2" /> och <ph name="BEGIN_LINK3" />värdekort<ph name="END_LINK3" /> som stamkundskort, id:n och erbjudanden</translation>
 <translation id="2068581968816126410">Använd bokmärken på olika enheter</translation>
 <translation id="2069020119963193894">&amp;Storlek</translation>
 <translation id="2071393345806050157">Det finns ingen lokal loggfil.</translation>
@@ -2391,6 +2391,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2813094189969465044">Föräldrakontroller</translation>
 <translation id="2814489978934728345">Sluta ladda den här sidan</translation>
 <translation id="2816319641769218778">Aktivera synkronisering om du vill spara lösenord i Google-kontot.</translation>
+<translation id="281678554528702272">Obs! Dessa inställningar för webbplatsåtkomst kan åsidosättas av företagsprinciper eller kraftfulla API:er.</translation>
 <translation id="2817435998497102771">Ställ in bakgrund och stil</translation>
 <translation id="2817861546829549432">Om du aktiverar Spåra inte betyder det att en begäran kommer att ingå i din webbtrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas. Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte bygger på andra webbplatser som du har besökt. Många webbplatser kommer ändå att samla in och använda din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, tjänster, annonser och rekommendationer på sina webbplatser samt generera rapportstatistik.</translation>
 <translation id="2818476747334107629">Skrivarinformation</translation>
@@ -5068,6 +5069,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="485088796993065002">Webbplatser med ljud brukar ha det så att du ska kunna lyssna på musik, ljudspåret i en video eller dylikt</translation>
 <translation id="4850919322897956733">Datan har raderats.</translation>
+<translation id="4851973858921178330">Filtrera webbplatser</translation>
 <translation id="4852030988197799562">Blockera åtkomst till JavaScript-optimeraren på nyligen besökta webbplatser</translation>
 <translation id="4852383141291180386">Hantera appaviseringar</translation>
 <translation id="4852916668365817106">Musfärg</translation>
@@ -5163,7 +5165,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4913573660390710463">Få tillgång till paketerade webbprogram med förbättrade funktioner. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Det gick inte att hitta appdata</translation>
 <translation id="4915961947098019832">Får visa bilder</translation>
-<translation id="491779113051926205">Trafikräknare för ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill kommunicera med tillägget <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4918762404810341788">Kopiera och öppna</translation>
@@ -7482,6 +7483,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6754359471209693699">Starta en ny sökning</translation>
 <translation id="6755702685749429945">Lägg till ordbok</translation>
 <translation id="6756643207511618722">Talmotorer</translation>
+<translation id="6756882635793733911">Fråga om vad som helst på skärmen</translation>
 <translation id="6757431299485455321">Hjälp andra enheter att hitta surfzonen.</translation>
 <translation id="6757615605516049275">Lås upp <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
@@ -10768,6 +10770,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="96756691973639907">Fler åtgärder för <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Sparad data</translation>
 <translation id="96774243435178359">Hanterade skrivare</translation>
+<translation id="967745417352972504">Besök Google Wallet för att lägga till eller hantera <ph name="BEGIN_LINK_PAYMENT_METHODS" />betalningsmetoder<ph name="END_LINK_PAYMENT_METHODS" /> och <ph name="BEGIN_LINK_PASSES" />värdekort<ph name="END_LINK_PASSES" /> som stamkundskort, id:n och erbjudanden</translation>
 <translation id="968000525894980488">Aktivera Google Play-tjänster.</translation>
 <translation id="968037381421390582">Kli&amp;stra in och sök efter <ph name="SEARCH_TERMS" /></translation>
 <translation id="969096075394517431">Ändra språk</translation>

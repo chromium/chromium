@@ -1069,7 +1069,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1822517323280215012">Gris</translation>
 <translation id="1822635184853104396">Mostrar el historial de descargas completo en una pestaña nueva</translation>
 <translation id="1823768272150895732">Fuente</translation>
-<translation id="1823781806707127806">Agregar datos de navegación existentes al perfil administrado</translation>
 <translation id="1825073796163165618">Habilitar vínculos</translation>
 <translation id="1825565032302550710">El número de puerto debe estar entre 1024 y 65535</translation>
 <translation id="18260074040409954">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
@@ -1385,6 +1384,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2062354623176996748">Con una ventana de incógnito, podrás usar la Web sin que se guarde tu historial de navegación</translation>
 <translation id="206308717637808771">Borrar los datos cuando cierras todas las ventanas; los parámetros de configuración del sitio que estás viendo se aplican a los datos</translation>
 <translation id="2066700471214517561">Micrófono con conformación de haces para que la persona que usa la Chromebook se escuche con claridad.</translation>
+<translation id="2067778293100584091">Visita la Billetera de Google para controlar las <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o administrar las <ph name="BEGIN_LINK2" />formas de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" />, como tarjetas de lealtad, documentos de identidad y ofertas</translation>
 <translation id="2068581968816126410">Usa favoritos en varios dispositivos</translation>
 <translation id="2069020119963193894">&amp;Tamaño</translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
@@ -2378,6 +2378,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2813094189969465044">Controles parentales</translation>
 <translation id="2814489978934728345">Interrumpir la carga de esta página</translation>
 <translation id="2816319641769218778">Para guardar contraseñas en tu Cuenta de Google, activa la sincronización.</translation>
+<translation id="281678554528702272">Nota: Es posible que las políticas empresariales o las APIs potentes anulen estos parámetros de configuración de acceso al sitio.</translation>
 <translation id="2817435998497102771">Establecer tu estilo y fondo de pantalla</translation>
 <translation id="2817861546829549432">Si se habilita la opción de "No realizar seguimiento", se incluirá una solicitud con tu tráfico de navegación. Los efectos dependerán de si hay algún sitio web que responda a la solicitud y de cómo se interprete. Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncios que no están basados en otros sitios web que hayas visitado. Muchos sitios web seguirán recopilando y utilizando tus datos de navegación, por ejemplo, para mejorar la seguridad, proporcionar contenido, servicios, anuncios y recomendaciones en sus sitios web, y generar estadísticas de informes.</translation>
 <translation id="2818476747334107629">Detalles de la impresora</translation>
@@ -5055,6 +5056,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Es posible que los sitios reproduzcan sonido para que la música, los videos y demás contenido multimedia tenga audio.</translation>
 <translation id="4850919322897956733">Se borraron los datos.</translation>
+<translation id="4851973858921178330">Filtrar sitios</translation>
 <translation id="4852030988197799562">Bloquea el acceso al optimizador de JavaScript en los sitios que se visitan por primera vez</translation>
 <translation id="4852383141291180386">Administra las notificaciones de la app</translation>
 <translation id="4852916668365817106">Color del mouse</translation>
@@ -5150,7 +5152,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4913573660390710463">Accede a aplicaciones web empaquetadas con capacidades mejoradas. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">No se pueden encontrar los datos de la app</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
-<translation id="491779113051926205">Contadores de tráfico de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quiere comunicarse con la extensión "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4918762404810341788">Copiar y abrir</translation>
@@ -7469,6 +7470,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6754359471209693699">Iniciar nueva búsqueda</translation>
 <translation id="6755702685749429945">Agregar diccionario</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
+<translation id="6756882635793733911">Haz preguntas sobre lo que aparece en la pantalla</translation>
 <translation id="6757431299485455321">Ayuda a que otros dispositivos encuentren este hotspot.</translation>
 <translation id="6757615605516049275">Desbloquea <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Danos tu opinión sobre nuestro trabajo.</translation>
@@ -10755,6 +10757,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="96756691973639907">Más acciones para <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras administradas</translation>
+<translation id="967745417352972504">Visita la Billetera de Google para agregar o administrar <ph name="BEGIN_LINK_PAYMENT_METHODS" />formas de pago<ph name="END_LINK_PAYMENT_METHODS" /> y <ph name="BEGIN_LINK_PASSES" />pases<ph name="END_LINK_PASSES" />, como tarjetas de lealtad, documentos de identidad y ofertas</translation>
 <translation id="968000525894980488">Activa los Servicios de Google Play.</translation>
 <translation id="968037381421390582">&amp;Pegar y buscar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Cambiar idiomas</translation>

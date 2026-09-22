@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Հողահոսք</translation>
 <translation id="102432830749687801">Օգտագործեք Google-ի «Բովանդակության տեղափոխում» հավելվածը՝ ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ տեղափոխելու համար, քանի դեռ չեք կորցրել հասանելիությունը։</translation>
 <translation id="1026212596705997935">Դյուրանցումն օգտագործվում է «<ph name="CONFLICT_ACCEL_NAME" />» գործողության համար։ Սեղմեք նոր դյուրանցում։ Առկա դյուրանցումը փոխարինելու համար նորից սեղմեք այս դյուրանցումը։</translation>
-<translation id="1030856839388844477">Զրոյացնել տվյալների օգտագործումը</translation>
 <translation id="1047095725494118091">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> րոպե</translation>
 <translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
-<translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
 <translation id="1327977588028644528">Անցուղի</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Անվանումը փոփոխվեց</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ստեղնը չի սեղմվել</translation>
 <translation id="1432110487435300883">Մոտավոր արդյունք ստանալու համար «<ph name="CATEGORY_TEXT" />» արժեքը բաժանեք <ph name="CONVERSION_RATE" />-ի</translation>
-<translation id="1435763214710588005">Ամեն ամիս, նշված օրը տվյալների օգտագործման մասին տեղեկություններն ավտոմատ զրոյացվում են</translation>
 <translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
 <translation id="1446954767133808402">շափյուղա</translation>
 <translation id="1449035143498573192">Բացել Google Որոնման մեջ</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Թաքցնել տեքստը</translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
-<translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1618566998877964907">Օգտագործեք թեմա</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
 <translation id="1622402072367425417">փայլուն ամպիկներ</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Լավ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Դուք այժմ կարող եք օգտագործել միայն դասարանային գործիքները</translation>
 <translation id="1762483337755424125">Տեքստային տարբերակ</translation>
 <translation id="1765169783255151332">Արագ անցեք մեկ ստեղնից մյուսը</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">հանքային տաք աղբյուր</translation>
 <translation id="2203642483788377106">քարափ</translation>
 <translation id="2208388655216963643">իմպրեսիոնիստական</translation>
-<translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
 <translation id="2212733584906323460">Անվանել լուծաչափը</translation>
 <translation id="2215920961700443347">Կապ չկա։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="2217935453350629363">Ընթացիկ արագությունը</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Կարծիք mahi գործառույթի մասին</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> գրասենյակ <ph name="OFFICE_COLOR" /> գուներանգներով</translation>
-<translation id="3493187369049186498">Chromebook-ը չափում է ձեր թրաֆիկի օգտագործումը։ Այդ ցուցանիշը կարող է տարբերվել մատակարարի տվյալներից։</translation>
 <translation id="3502426834823382181">դիտել բոլոր հավելվածները</translation>
 <translation id="3510890413042482857">Ուղարկել <ph name="BEGIN_LINK1" />արդյունավետության հետագծման տվյալները<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-ի թարմացում</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">նվազեցնել ստեղնաշարի լույսը</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3852931845120288955">Անվանում (A – Z)</translation>
-<translation id="3858860766373142691">Անուն</translation>
 <translation id="3862598938296403232">Նկարագրությունը պարտադիր է</translation>
 <translation id="386280020966669610">Ոգեշնչել</translation>
 <translation id="3864554910039562428">մարջանային խութ</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Ավտոմատ հայտնաբերել տարբեր ձայներ և յուրաքանչյուր խոսողին տալ ընդհանուր բնույթի պիտակ, օրինակ՝ Խոսող 1, Խոսող 2</translation>
 <translation id="38811596981744338">Իրավական խնդիր</translation>
 <translation id="3885327323343477505">Փոխել էկրանապահը</translation>
-<translation id="3889914174935857450">Զրոյացնել ամսաթիվը</translation>
 <translation id="3889954687526985291">սև թղթից պատրաստված նեոնային լույսերով ֆուտուրիստական մոտոցիկլ՝ մուգ ֆոնին</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3902271751020176019">Գրադարձման լեզուն</translation>
 <translation id="390890062090528082">աստղազարդ երկինք</translation>
 <translation id="391412459402535266">Հնարավոր չէ փորձարկել սարքը։ Փորձարկելու համար անցեք նոթբուքի ռեժիմին։</translation>
 <translation id="3916998944874125962">սքրինշոթ անել</translation>
-<translation id="3923184630988645767">Թրաֆիկի օգտագործում</translation>
 <translation id="392943705803418306">Class Tools-ի աշխատաշրջանն ավարտվել է ձեզ համար</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
 <translation id="3934185438132762746">Չնշանակված <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">իջեցնել ձայնը</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Փոփոխելու կոճակ <ph name="SHORTCUT_DESCRIPTION" /> հրամանի համար։</translation>
-<translation id="5736820754189340309">Թրաֆիկի օգտագործման տվյալները զրոյացվել են</translation>
 <translation id="574392208103952083">Միջին</translation>
 <translation id="5744175046705638478">Թարգմանել՝ «<ph name="QUERY" />»</translation>
 <translation id="5757187557809630523">հաջորդ կատարումը</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Ադմինիստրատորը (<ph name="MANAGER" />) սահմանել է, թե երբ կարող է <ph name="DEVICE_TYPE" /> սարքն օգտագործվել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
 <translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
-<translation id="5947266287934282605">Եթե ամսվա վերջին օրը նախորդում է նշված ամսաթվին, տվյալները կզրոյացվեն ամսվա վերջին օրը</translation>
 <translation id="5948460390109837040">շներ</translation>
 <translation id="594989847980441553">Ընտրեք «Ստեղծել»՝ ԱԲ-ի միջոցով պատկեր ստեղծելու համար։
         Բոլոր ստեղծված պատկերներն ավտոմատ կհայտնվեն այստեղ։</translation>
-<translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5972801171078377748">Այլևս ցույց չտալ</translation>
 <translation id="5975130252842127517">կորալ</translation>
 <translation id="5982621672636444458">Տեսակավորման ընտրանքներ</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Ստեղծված անվանումներ՝</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6019566113895157499">Ստեղնաշարային դյուրանցումներ</translation>
-<translation id="6034694447310538551">Միացնել տեղեկությունների ամենամսյա ավտոմատ զրոյացումը</translation>
 <translation id="6037291330010597344">Սկաների փաստաթղթերի մատակարարը դատարկ է։ Ավելացրեք փաստաթղթեր և նորից փորձեք։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6040852767465482106">Նույնականացման անանուն տվյալներ</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Ընտրված է <ph name="KEYS" /> ստեղնը։ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Աջ սլաք</translation>
 <translation id="6278428485366576908">Թեմա</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Սահմանել՝ «<ph name="QUERY" />»</translation>
 <translation id="6283581480003247988">կապույտ և մանուշակագույն</translation>
 <translation id="6284632978374966585">Միացնել մուգ թեման</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Փորձեք ավելի ուշ</translation>
 <translation id="7118522231018231199">Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։ APN ընտրելու արդյունքում բոլոր հատուկ APN-ները կանջատվեն։ Անվավեր APN-ները կարող են խաթարել ձեր բջջային կապը։</translation>
 <translation id="7119389851461848805">power</translation>
-<translation id="7129287270910503851">Յուրաքանչյուր ամիս այս օրը թրաֆիկի օգտագործման մասին տվյալները կզրոյացվեն</translation>
 <translation id="7130438335435247835">Մուտքի կետի անվանում (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7135814714616751706">Որոնեք դյուրանցումներ</translation>
@@ -1496,7 +1480,6 @@
 <translation id="7618774594543487847">Չեզոք</translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
-<translation id="763165478673169849">Վերջին զրոյացման ժամանակը</translation>
 <translation id="7633068090678117093">Ֆոնային պատկեր</translation>
 <translation id="763873111564339966">ինդիգո</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
@@ -1532,7 +1515,6 @@
 <translation id="7802764839223122985">Ստեղնը սահմանված չէ։ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
-<translation id="7811024689617730980">Ընտրեք որևէ օր ավտոմատ զրոյացման համար՝ 1-ից 31-ը ներառյալ</translation>
 <translation id="7813073042185856802">լեռ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
 <translation id="7824219488248240180">պոստիմպրեսիոնիստական</translation>
@@ -1608,7 +1590,6 @@
 <translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
-<translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
 <translation id="8135609423982943441">Ձեր Chromebook-ում վերականգնվեցին ապահով կանխադրված կարգավորումները։ Դուք ցանկացած ժամանակ կարգավորումներում կարող եք ճշգրտել այս փոփոխությունները։</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Ստեղծեք ձեր սեփականը</translation>
@@ -1691,7 +1672,6 @@
 <translation id="8483248364096924578">IP հասցե</translation>
 <translation id="8491311378305535241">Չհաջողվեց միանալ HTTP կայքերին Android-ի համար հավելվածներից հրապատի միջոցով։</translation>
 <translation id="8495070016475833911">ֆետր</translation>
-<translation id="8498220429738806196">Թրաֆիկի հաշվիչներ</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
 <translation id="8505011850330200833">Gemini-ի մոդելի համար անհրաժեշտ է 2 ԳԲ տարածք՝ գրադարձումները մշակելու և ամփոփագրեր ստեղծելու համար</translation>
@@ -1699,7 +1679,6 @@
 <translation id="8506394543220680287">ձնածածկ</translation>
 <translation id="8508640263392900755">APN-ի մանրամասներ</translation>
 <translation id="8522687886059337719">Այժմ ձեզ հասանելի են նոր <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />պաստառներ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> և <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />էկրանապահ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">CrosVm</translation>
 <translation id="852896705346853285">թեյատուն</translation>
 <translation id="8531692079895415839">մառախլապատ</translation>
 <translation id="8538236298648811558">Google AI տեխնոլոգիաներ</translation>
@@ -1764,7 +1743,6 @@
 <translation id="885704831271383379">ստեղնաշարի լուսավորության նվազեցում</translation>
 <translation id="8863170912498892583">Միացնել մուգ թեման</translation>
 <translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
-<translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8882789155418924367">բվեր</translation>
@@ -1824,7 +1802,6 @@
 <translation id="9082718469794970195">Օգտագործել այս տեսանյութը</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
 <translation id="9088994563996376283">Պարզեցնել</translation>
-<translation id="909856219855259344">Այլ տեղեկություններ տվյալների զրոյացման ամսաթվի մասին</translation>
 <translation id="9100765901046053179">Լրացուցիչ կարգավորումներ</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>

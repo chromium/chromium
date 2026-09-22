@@ -2126,6 +2126,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="948276827484905248">Kreiraj QR kôd</translation>
 <translation id="95817756606698420">Chrome može koristiti <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> za pretraživanje u Kini. To možete promijeniti u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Vaša organizacija zahtijeva da se prijavite da koristite Chrome</translation>
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>
 <translation id="963246339335003378">Otvaranje upravitelja zadataka</translation>
 <translation id="966337994629449077">Prijavljeni ste kao <ph name="FROM_EMAIL" />.\n\nDa nastavite na računaru, prebacite se na <ph name="TO_EMAIL" />. Dobijat ćete lozinke, oznake i drugo s ovog računa.</translation>

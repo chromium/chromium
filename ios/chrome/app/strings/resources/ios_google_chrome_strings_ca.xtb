@@ -284,6 +284,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7272930098487145294">Si vols desar imatges, toca Configuració per permetre que Chrome les afegeixi a les teves fotos</translation>
 <translation id="7275945473750112644">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu</translation>
 <translation id="7284245284340063465">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Si selecciones o ignores un suggeriment, Chrome s'adaptarà per mostrar-te suggeriments més rellevants en el futur.</translation>
 <translation id="7296102444587051536">Chrome per a iOS</translation>
 <translation id="7299681342915173313">Ara pots utilitzar Chrome cada vegada que toquis enllaços en correus electrònics, documents i altres aplicacions.</translation>
 <translation id="7334364820047587268">Ja tens contrasenyes per a aquests comptes al gestor de contrasenyes de Google. Si decideixes importar una de les contrasenyes següents, substituirà l'existent.</translation>
@@ -357,6 +358,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8544583291890527417">Alertes sobre qualsevol problema de privadesa o de seguretat que Chrome detecti.</translation>
 <translation id="855027533751209304">Consell de Chrome: cerca el que veus</translation>
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="8589791109349384456">Desactivar els suggeriments no afecta el processament que Chrome fa dels títols de pàgina i dels URL per a altres funcions. Pots gestionar l'accés a aquestes dades a la <ph name="BEGIN_LINK" />configuració de sincronització<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Utilitza les contrasenyes, l'historial, les adreces d'interès i les targetes de crèdit de Safari a Chrome</translation>
 <translation id="8630122478628016441">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>

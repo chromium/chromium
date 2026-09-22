@@ -53,6 +53,8 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="1965068424387304464">Mẹo khi dùng Chromium: Lưu mật khẩu</translation>
 <translation id="1992653360331625459">Bạn đã có mật khẩu cho các tài khoản này trong Trình quản lý mật khẩu. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="2006345422933397527">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
+<translation id="2025935492422922097">Chromium xử lý các tiêu đề trang và URL trong một không gian riêng tư trên đám mây</translation>
+<translation id="2027881372245801507">Việc tắt tính năng đề xuất sẽ không kiểm soát cách Chromium xử lý tiêu đề trang và URL cho các tính năng khác. Bạn có thể quản lý quyền truy cập vào dữ liệu này trong phần <ph name="BEGIN_LINK" />cài đặt đồng bộ hoá<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Xem nhật ký duyệt web trên Chromium</translation>
 <translation id="2052320862053429062">Chromium định kỳ kiểm tra mật khẩu của bạn so với các danh sách đăng trên Internet. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="2059365270911640413">Hoàn tất thiết lập Chromium</translation>
@@ -351,6 +353,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="865600487977764604">Giữ cho bạn an toàn trên Chromium và có thể dùng để cải thiện mức độ bảo mật trên các ứng dụng khác của Google khi bạn đăng nhập.</translation>
 <translation id="8663480472502753423">Giữ cho Chromium luôn cập nhật</translation>
 <translation id="8685813584220679697">Đăng nhập vào trang web này và Chromium.</translation>
+<translation id="8697693743327341604">Nếu bạn chọn hoặc bỏ qua một đề xuất, Chromium sẽ điều chỉnh để giúp hiển thị những đề xuất phù hợp hơn trong tương lai.</translation>
 <translation id="869832267508702259">Đặt Chromium làm trình duyệt mặc định để nhận thông tin chi tiết từ Gemini ở bất cứ nơi nào bạn duyệt web</translation>
 <translation id="8698780336333802489">Nhập vào Chromium</translation>
 <translation id="8730503818204408000">Mở phần cài đặt Chromium để đặt Chromium làm trình duyệt mặc định.</translation>

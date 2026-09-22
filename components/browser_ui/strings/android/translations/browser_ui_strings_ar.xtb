@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">عدم السماح للمواقع الإلكترونية بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
 <translation id="1476700086976862423">لون المظهر البني الداكن</translation>
+<translation id="1497214680865404175">صورة حمّلها المستخدم</translation>
 <translation id="1500473259453106018">إخفاء بطاقة "عرض الانخفاض في السعر ضِمن علامات التبويب"</translation>
 <translation id="1508931164824684991">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="1510341833810331442">المواقع الإلكترونية غير مسموح لها بحفظ البيانات على جهازك.</translation>

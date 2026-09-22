@@ -1102,6 +1102,13 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
 <translation id="1723571018091915166">Slim tabblad delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />-integraties niet toestaan.</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
+<translation id="1726467454355516626">Als je dit beleid instelt op Waar, kunnen door beheerders geïnstalleerde Chrome-apps blijven werken en worden geïnstalleerd, ongeacht of Chrome-apps standaard zijn aangezet.
+
+Als je dit beleid niet instelt of instelt op Onwaar, wordt het standaardgedrag gebruikt dat is gedefinieerd op het apparaat.
+
+Als een gebruiker probeert een uitgezette Chrome-app te starten, krijgt deze een bericht waarin wordt uitgelegd waarom de app niet is gestart en wordt voorgesteld contact op te nemen met de IT-afdeling.
+
+ChromeOS M184 is de laatste ChromeOS-milestone die Chrome-apps ondersteunt.</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
       Als je het beleid niet instelt, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
@@ -4614,6 +4621,7 @@ Op desktopplatforms kan het downloaden van modellen ook worden uitgezet door <ph
 <translation id="3965339130942650562">Time-out tot de inactieve gebruiker is uitgelogd</translation>
 <translation id="396536755218079668">Gebruikers onder toezicht</translation>
 <translation id="3968218878014278212">Toestaan dat Eche wordt aangezet.</translation>
+<translation id="396848310647682467">Door de beheerder geïnstalleerde Chrome-apps geforceerd toestaan</translation>
 <translation id="3971673686578912106">Als je het beleid toepast, wordt <ph name="PLUGIN_VM_NAME" /> voor het apparaat aangezet, zolang andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op Waar en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld zodat <ph name="PLUGIN_VM_NAME" /> kan worden uitgevoerd.
 
       Als je het beleid niet toepast of niet instelt, is <ph name="PLUGIN_VM_NAME" /> niet aangezet voor het apparaat.</translation>
@@ -4637,9 +4645,6 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3982624306233556415">Blokkeerlijst van identiteitsproviders die Extensible Enterprise SSO niet kunnen gebruiken voor de browser</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
-<translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
-
-      Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch invullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
 <translation id="3989635538409502728">Uitloggen</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
@@ -5066,6 +5071,7 @@ Dit beleid werd gebruikt om automatische upgrades van gemengde content uit te ze
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
+<translation id="4278195158478376952">Standaardgedrag gebruiken.</translation>
 <translation id="4278656834593750050">Oplaadgeluiden aanzetten</translation>
 <translation id="4281322231545828290">Geautomatiseerde wachtwoordwijziging aanzetten</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-icoon altijd tonen in de werkbalk</translation>
@@ -6305,9 +6311,6 @@ Als je dit beleid niet instelt of instelt op True, worden er gegevens verzameld 
 Als je dit beleid instelt op False, worden er geen gegevens verzameld die kunnen worden gebruikt om machines te identificeren.
 
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
-
-      Als je het beleid instelt op 'False', wordt er nooit adresinformatie voorgesteld of ingevuld door 'Automatisch invullen'. Ook wordt er geen aanvullende adresinformatie opgeslagen die gebruikers opgeven als ze internetten.</translation>
 <translation id="5017691827598069017">Snel koppelen (snelle bluetooth-koppeling) aanzetten</translation>
 <translation id="5021550478471824215">Als je het beleid instelt, wordt een lijst getoond met vooraf ingestelde netwerkfileshares. Elk item is een object met 2 property's: <ph name="SHARE_URL_FIELD_NAME" /> en <ph name="MODE_FIELD_NAME" />.
 
@@ -9160,7 +9163,6 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
       Als het beleid is ingesteld op True, staat <ph name="PLUGIN_VM_NAME" /> aan voor de gebruiker, op voorwaarde dat de andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op True en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld voordat <ph name="PLUGIN_VM_NAME" /> kan worden ingesteld.</translation>
 <translation id="6741318452269220158">Als je het beleid instelt op Waar, kan Native Client worden uitgevoerd, ook als het standaardgedrag is dat Native Client is uitgezet.
 Als je het beleid instelt op Onwaar of niet instelt, wordt het standaardgedrag gebruikt.</translation>
-<translation id="6749641778238480311">Toestaan dat subApps API's worden aangeroepen zonder eerder gebruikersgebaar of zonder gebruikersbevestiging te vereisen.</translation>
 <translation id="6750902920405577210">Lijst met telemetriegegevens die moeten worden gerapporteerd bij wijzigingen in signaalsterkte.
 
       Alle opgegeven telemetriegegevens worden alleen gerapporteerd als ze niet zijn uitgezet door het hierop van toepassing zijnde beleid.
@@ -9459,13 +9461,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit belei
 <translation id="6938524853892166974">Live vertalen uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
-<translation id="6944302005022384441">Om veiligheidsredenen moet voor de web-API's <ph name="SHOW_SUBAPPS_APP_API_NAME" />, <ph name="SHOW_SUBAPPS_REMOVE_API_NAME" /> en <ph name="SHOW_SUBAPPS_LIST_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukken deze. Daarnaast wordt de gebruiker gevraagd de bewerking te bevestigen via een bevestigingsdialoogvenster.
-
-Als dit beleid is ingesteld, kunnen beheerders oorsprongen aangeven waarvoor deze API's kunnen worden aangeroepen zonder eerder gebruikersgebaar of zonder de gebruiker om bevestiging te vragen.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige URL-patronen. * is geen geaccepteerde waarde voor dit beleid.
-
-Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersgebaar vereist om deze API's aan te roepen en wordt er een bevestigingsdialoogvenster aan de gebruiker getoond.</translation>
 <translation id="694602410134474029">Bepaalt of <ph name="PRODUCT_NAME" /> interactie heeft met printerstuurprogramma's vanuit een afzonderlijk serviceproces. Platformgebaseerde afdrukaanroepen om beschikbare printers op te vragen, instellingen voor printerstuurprogramma's op te halen en documenten in te dienen om af te drukken op lokale printers worden gedaan vanuit een serviceproces. Als je dit soort aanroepen uit het browserproces verplaatst, verbeter je de stabiliteit en verminder je het vastlopen van de UI in het afdrukvoorbeeld.
 
 Als je dit beleid toepast of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een afzonderlijk serviceproces voor platformgebaseerde afdruktaken.
@@ -12101,6 +12096,7 @@ Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders 
 <translation id="859579553230883285">Zet de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties voor je gebruikers uit.</translation>
 <translation id="8596784129804979039">De standaardconfiguratie gebruiken voor de sandbox voor netwerkservice</translation>
 <translation id="8597758693275075382">OEM-tekenreeksen voor SMBIOS om tijdens de installatie aan de VM door te geven. Standaard wordt de lege lijst ingesteld.</translation>
+<translation id="8598252733604444967">Toestaan dat door de beheerder geïnstalleerde Chrome-apps worden uitgevoerd.</translation>
 <translation id="8598786284856179541">Rapportage van versie-informatie aanzetten</translation>
 <translation id="859937827887158048">Downloads van automatische peer-to-peer-updates niet toestaan</translation>
 <translation id="8600280933078435582">Linux-apps</translation>

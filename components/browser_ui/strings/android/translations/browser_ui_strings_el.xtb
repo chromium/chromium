@@ -47,6 +47,7 @@
 <translation id="1464044141348608623">Να μην επιτρέπεται στους ιστότοπους να γνωρίζουν πότε χρησιμοποιείτε ενεργά τη συσκευή σας</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ιστότοπος}other{<ph name="SITE_COUNT" /> ιστότοποι}}</translation>
 <translation id="1476700086976862423">Χρώμα θέματος Σέπια</translation>
+<translation id="1497214680865404175">Εικόνα που ανέβασε χρήστης</translation>
 <translation id="1500473259453106018">Απόκρυψη κάρτας Πτώσεις τιμών σε καρτέλες</translation>
 <translation id="1508931164824684991">Οι ιστότοποι μπορούν να χρησιμοποιούν JavaScript</translation>
 <translation id="1510341833810331442">Οι ιστότοποι δεν επιτρέπεται να αποθηκεύουν δεδομένα στη συσκευή σας</translation>

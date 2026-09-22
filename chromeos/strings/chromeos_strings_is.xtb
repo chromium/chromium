@@ -10,7 +10,6 @@
 <translation id="1022628058306505708">Jarðarflæði</translation>
 <translation id="102432830749687801">Notaðu forritið fyrir flutning á námsefni frá Google til að flytja gögn skólareikningsins þíns yfir á einkareikninginn þinn áður en þú glatar aðgangi.</translation>
 <translation id="1026212596705997935">Flýtilykillinn er notaður fyrir „<ph name="CONFLICT_ACCEL_NAME" />“. Ýttu á nýjan flýtilykil. Ýttu aftur á þennan flýtilykil til að skipta núverandi flýtilykli út.</translation>
-<translation id="1030856839388844477">Endurstilla gagnanotkun</translation>
 <translation id="1047095725494118091">Ekki er hægt að sækja. Reyndu aftur eða endurræstu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nýr eiginleiki í boði, notaðu ör upp-lykilinn til að fá frekari upplýsingar.</translation>
@@ -81,7 +80,6 @@
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> mínútur</translation>
 <translation id="1310380015393971138">Ekkert <ph name="NETWORK_NAME" /> netkerfi er tiltækt</translation>
-<translation id="131421566576084655">Dagsetning síðustu gagnaendurstillingar er ekki tiltæk</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimanet, ekki í reiki</translation>
 <translation id="1327977588028644528">Gátt</translation>
@@ -113,7 +111,6 @@
 <translation id="1422912431241997307">Titli breytt</translation>
 <translation id="1423591390236870726">Ekki var ýtt á lykilinn <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Deildu gildinu <ph name="CATEGORY_TEXT" /> með <ph name="CONVERSION_RATE" /> til að fá námundaða niðurstöðu</translation>
-<translation id="1435763214710588005">Endurstillir gagnanotkun sjálfkrafa á völdum degi mánaðarlega</translation>
 <translation id="1442433966118452622">Uppruni myndar</translation>
 <translation id="1446954767133808402">safír</translation>
 <translation id="1449035143498573192">Opna í Google-leit</translation>
@@ -161,7 +158,6 @@
 <translation id="1604959087182679653">Fela textauppskrift</translation>
 <translation id="160633243685262989">Forskoða mynd</translation>
 <translation id="1611649489706141841">áfram</translation>
-<translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Nota þema</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1622402072367425417">glóandi kúlum</translation>
@@ -206,7 +202,6 @@
 <translation id="175763766237925754">Góður (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
-<translation id="1759842336958782510">Chrome</translation>
 <translation id="1762353673362288306">Nú geturðu eingöngu notað hjálpargögn bekkjar</translation>
 <translation id="1762483337755424125">Textauppskrift</translation>
 <translation id="1765169783255151332">Skiptu fljótt á milli lykla</translation>
@@ -312,7 +307,6 @@
 <translation id="2203272733515928691">náttúrulaug</translation>
 <translation id="2203642483788377106">kletti</translation>
 <translation id="2208388655216963643">impressjónískum stíl</translation>
-<translation id="2209788852729124853">Endurstilla talningu umferðar</translation>
 <translation id="2212733584906323460">Sundurgreining heita</translation>
 <translation id="2215920961700443347">Engin nettenging. Tengstu netinu og reyndu aftur.</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
@@ -559,7 +553,6 @@
 <translation id="3487866404496702283">Ábendingar um mahi-eiginleika</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> skrifstofa í <ph name="OFFICE_COLOR" /> litatónum</translation>
-<translation id="3493187369049186498">Chromebook-tækið mælir gögnin þín. Þau kunna að vera aðskilin gögnum þjónustuveitanda.</translation>
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
@@ -630,7 +623,6 @@
 <translation id="3848280697030027394">dekkja lyklaborð</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3852931845120288955">Titill (A til Ö)</translation>
-<translation id="3858860766373142691">Heiti</translation>
 <translation id="3862598938296403232">Lýsing er áskilin</translation>
 <translation id="386280020966669610">Veittu mér innblástur</translation>
 <translation id="3864554910039562428">kóralrifi</translation>
@@ -643,14 +635,12 @@
 <translation id="3880601782712134623">Greina sjálfkrafa ólíkar raddir og merkja hvern mælanda með sjálfgefnu merki, t.d. Mælandi 1 og Mælandi 2</translation>
 <translation id="38811596981744338">Lagalegt vandamál</translation>
 <translation id="3885327323343477505">Breyta skjávara</translation>
-<translation id="3889914174935857450">Endurstilla dagsetningu</translation>
 <translation id="3889954687526985291">framtíðarlegt mótorhjól úr svörtum pappír ásamt neonljósum og dimmum bakgrunni</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3902271751020176019">Umritunartungumál</translation>
 <translation id="390890062090528082">stjörnubjartur himinn</translation>
 <translation id="391412459402535266">Ekki hægt að prófa tæki. Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="3916998944874125962">taka skjámynd</translation>
-<translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="392943705803418306">Kennslustund með hjálpargögnum bekkjar er lokið</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934185438132762746">Ótiltekinn <ph name="CONTROL_TYPE" /></translation>
@@ -1063,7 +1053,6 @@
 <translation id="5703716265115423771">lækka hljóð</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Breyta hnappi fyrir <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5736820754189340309">Gagnanotkun hefur verið endurstillt</translation>
 <translation id="574392208103952083">Miðlungs</translation>
 <translation id="5744175046705638478">Þýða „<ph name="QUERY" />“</translation>
 <translation id="5757187557809630523">næsta lag</translation>
@@ -1112,11 +1101,9 @@
 <translation id="5942727615796467094">Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þessa <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
 <translation id="5946538341867151940">Tenging er ekki til staðar ennþá. Ef símafyrirtækið þitt mælir með sérsniðnum aðgangsstað skaltu slá inn upplýsingar um aðgangsstaðinn með því að velja „+ Nýr aðgangsstaður“</translation>
-<translation id="5947266287934282605">Ef síðasti dagur mánaðarins er fyrir þennan dag eru gögnin endurstillt á síðasta dag mánaðarins</translation>
 <translation id="5948460390109837040">hundar</translation>
 <translation id="594989847980441553">Veldu „Búa til“ til að búa til mynd með gervigreind.
         Hér birtast allar myndir sem búnar eru til sjálfkrafa.</translation>
-<translation id="5972388717451707488">Uppfæra vél</translation>
 <translation id="5972801171078377748">Ekki sýna þetta aftur</translation>
 <translation id="5975130252842127517">kóralrauð(ur)</translation>
 <translation id="5982621672636444458">Röðunarvalkostir</translation>
@@ -1125,7 +1112,6 @@
 <translation id="6016750809509395299">Titlar sem búnir voru til:</translation>
 <translation id="6017514345406065928">Grænn</translation>
 <translation id="6019566113895157499">Flýtilyklar</translation>
-<translation id="6034694447310538551">Kveikja á sjálfvirkri mánaðarlegri endurstillingu</translation>
 <translation id="6037291330010597344">Skjalamatarinn á skannanum er tómur. Bættu við skjölum og reyndu aftur.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6040852767465482106">Nafnlaust auðkenni</translation>
@@ -1183,7 +1169,6 @@
 <translation id="6265268291107409527">Lykillinn „<ph name="KEYS" />“ er valinn. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Ör til hægri</translation>
 <translation id="6278428485366576908">Þema</translation>
-<translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Skilgreina „<ph name="QUERY" />“</translation>
 <translation id="6283581480003247988">bláum og fjólubláum lit</translation>
 <translation id="6284632978374966585">Kveikja á dökku þema</translation>
@@ -1385,7 +1370,6 @@
 <translation id="7117228822971127758">Reyndu aftur síðar</translation>
 <translation id="7118522231018231199">Gakktu úr skugga um að velja aðgangsstaði sem símafyrirtækið eða stjórnandinn þinn veita. Slökkt verður á sérsniðnum aðgangsstöðum þegar þú velur aðgangsstað. Ógildir aðgangsstaðir kunna að valda truflunum á farsímatengingunni þinni.</translation>
 <translation id="7119389851461848805">aflrofi</translation>
-<translation id="7129287270910503851">Gagnanotkunin þín endurnýjast á þessari dagsetningu hvers mánaðar</translation>
 <translation id="7130438335435247835">Heiti aðgangsstaðar (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7135814714616751706">Leita að flýtileiðum</translation>
@@ -1496,7 +1480,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
 <translation id="7623327321610992184">OnTask-klefi</translation>
-<translation id="763165478673169849">Tími síðustu endurstillingar</translation>
 <translation id="7633068090678117093">Bakgrunnsmynd</translation>
 <translation id="763873111564339966">dimmfjólublár</translation>
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
@@ -1532,7 +1515,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7802764839223122985">Lykil vantar. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7805768142964895445">Staða</translation>
-<translation id="7811024689617730980">Velja sjálfvirka endurstillingardagsetningu frá 1. til 31., að báðum dögum meðtöldum</translation>
 <translation id="7813073042185856802">fjalli</translation>
 <translation id="7819857487979277519">PSK (WPA eða RSN)</translation>
 <translation id="7824219488248240180">síðimpressjónískum stíl</translation>
@@ -1608,7 +1590,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
-<translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8135609423982943441">Chromebook var endurstillt á öruggar, sjálfgefnar stillingar. Þú getur lagfært þessar breytingar hvenær sem er í Stillingum.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Búðu til þitt eigið</translation>
@@ -1691,7 +1672,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8483248364096924578">IP-tala</translation>
 <translation id="8491311378305535241">Ekki er hægt að tengjast HTTPS-vefsvæðum úr Android forritum í gegnum eldvegg</translation>
 <translation id="8495070016475833911">filti</translation>
-<translation id="8498220429738806196">Talning umferðar</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
 <translation id="8505011850330200833">Gemini-líkanið þarf að nota 2 GB af geymslurými til að geta unnið úr textauppskriftum og búið til samantektir</translation>
@@ -1699,7 +1679,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8506394543220680287">hulið snjó</translation>
 <translation id="8508640263392900755">Upplýsingar um aðgangsstað</translation>
 <translation id="8522687886059337719">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjávörum<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
-<translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehús</translation>
 <translation id="8531692079895415839">þoka</translation>
 <translation id="8538236298648811558">Knúið af gervigreind Google</translation>
@@ -1764,7 +1743,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="885704831271383379">dekkra lyklaborð</translation>
 <translation id="8863170912498892583">Virkja dökkt þema</translation>
 <translation id="8864415976656252616">Engar efnistillögur. Skoðaðu helsta hjálparefnið.</translation>
-<translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8876270629542503161">Tækið er spjaldtölva.</translation>
 <translation id="8881098542468797602">Próf tókst</translation>
 <translation id="8882789155418924367">uglur</translation>
@@ -1824,7 +1802,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9082718469794970195">Nota þetta myndskeið</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
 <translation id="9088994563996376283">Einfalda</translation>
-<translation id="909856219855259344">Nánari upplýsingar um dagsetningu endurstillingar</translation>
 <translation id="9100765901046053179">Ítarlegar stillingar</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>

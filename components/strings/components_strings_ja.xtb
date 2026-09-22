@@ -550,6 +550,7 @@
 <translation id="1924727005275031552">新</translation>
 <translation id="1927930548546198515">Chrome は、リクエストの内容や、候補を採用または無視したときの動作など、この機能の利用状況を記録します</translation>
 <translation id="1932098463447129402">開始時刻</translation>
+<translation id="1932629105611536854">配送先の郵便番号</translation>
 <translation id="1935353813610900265">AI を活用した履歴検索に関するフィードバックを送信</translation>
 <translation id="1935995810530254458">このままコピー</translation>
 <translation id="1938580037092872316">保存済みの住所に新しい情報を追加</translation>
@@ -615,6 +616,7 @@
 <translation id="2045871135676061132">6 3/4 封筒</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
 <translation id="2055016614992422886">会話</translation>
+<translation id="2057654338925604102">配送業者のドメイン</translation>
 <translation id="2058468041496756763">検索エンジンは Chrome の設定でいつでも変更できます。ご希望の検索エンジンが表示されない場合は、その検索エンジンのサイトで検索してください。Chrome の設定に最近使用した検索エンジンとして表示され、デフォルトに設定できます。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
@@ -1610,6 +1612,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3715597595485130451">Wi-Fi 接続</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">発送日</translation>
 <translation id="372429172604983730">このエラーの原因としては、ウィルス対策ソフトウェア、ファイアウォール ソフトウェア、ウェブ フィルタリング ソフトウェア、プロキシ ソフトウェアなどが考えられます。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="3727309136762649052">名前空間</translation>
@@ -2210,6 +2213,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの位置情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="473414950835101501">カメラの使用</translation>
+<translation id="4736089601076994090">有効期限: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2537,8 +2541,10 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5258473597674772367">「<ph name="GROUP_NAME" />」タブグループは使用できなくなりました</translation>
 <translation id="5260842098960755113">スレッドを閉じました</translation>
 <translation id="5262342527470539728">情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されます</translation>
+<translation id="5263202631354741256">ID</translation>
 <translation id="5263867360296733198">アップロードする前に確認が必要です</translation>
 <translation id="5266128565379329178">製本（上綴じ）</translation>
+<translation id="5268746892698450173">配送業者名</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」は「<ph name="DATA_CONTROLS_RESTRICTION" />」のサポートされている条件ではありません</translation>
 <translation id="527191520368130807">推敲</translation>
@@ -2566,6 +2572,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5314967030527622926">ブックレット メーカー</translation>
 <translation id="5316812925700871227">反時計回りに回転</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5318654747230250818">コード: <ph name="PROMO_CODE" /></translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />デフォルトの検索エンジンではウェブ検索ができるだけでなく、Chromium の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索エンジンでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="5323043727018853753">埋め込みコンテンツは許可されています</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />、<ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
@@ -2614,7 +2621,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5398461103557553443">Google ウォレットに保存すると、次回からこの IBAN を自動入力できます</translation>
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
-<translation id="5402715318763077894">ローカル ネットワークへのアクセスを許可しますか？</translation>
 <translation id="540949333488055151">プラスチック（カラー）</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="5411462078004183575">低価格のオプション</translation>
@@ -2856,6 +2862,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
 <translation id="5794065675298686371">価格トラッキングの通知をオンにする</translation>
+<translation id="5794093550048860249">追跡番号</translation>
 <translation id="5796050750059455142">[<ph name="BEGIN_LINK" />他の Google サービスのスマート機能<ph name="LINK_END" />] をオンにします</translation>
 <translation id="5797984091151707075">管理者ポリシーによりブロックされています</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -4022,6 +4029,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7765158879357617694">移動</translation>
 <translation id="7766518757692125295">スカート</translation>
 <translation id="776749070095465053">布</translation>
+<translation id="7772659560036894129">商品名</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="7781829728241885113">昨日</translation>
@@ -4213,6 +4221,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="8118506371121007279">フィードバックを送信</translation>
 <translation id="812020627659652807">ファイルを今すぐ削除</translation>
 <translation id="8120720167840853945">このポリシーは、他のポリシーのデフォルトの動作を制御しません。</translation>
+<translation id="8120827570827570666">販売者のドメイン</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」がパソコンまたはネットワークに正しくインストールされていません。管理者にこの問題を解決するよう依頼してください。</translation>
 <translation id="8130113808541743942">移動先...</translation>
 <translation id="813024282736408069">自動入力で仮想カードを有効にする</translation>
@@ -4324,6 +4333,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="830868413617744215">Beta</translation>
 <translation id="8310477433309274098">手数料なし、年利 0% の分割払い</translation>
 <translation id="8312841338723044391">ライブ</translation>
+<translation id="8314036873065514376">販売者名</translation>
 <translation id="8316555157357957253">現在使用中</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="831997045666694187">夕方</translation>

@@ -262,7 +262,6 @@
 
           **Predložite pitanja:** generirajte popis od tri do pet pitanja koja potiču na razmišljanje, a koja bi korisnik mogao postaviti kako bi bolje razumio snimku zaslona. Ta pitanja trebaju uključivati barem jedno koje se posebno odnosi na vizualni objekt, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="387514319934708384">Chromium treba dopuštenje za lokalnu mrežu za ovu web-lokaciju</translation>
 <translation id="3885770153807205175">Alat za odabir jezika</translation>
 <translation id="388648406173476553">Prilagodite Chromium i upravljajte njime. Trebate obratiti pozornost na nešto – kliknite za pojedinosti.</translation>
 <translation id="3889543394854987837">Kliknite svoje ime da biste otvorili Chromium i počeli s pregledavanjem.</translation>
@@ -593,6 +592,7 @@ Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sa
 <translation id="7213407614656404070">Upotrijebite Chromium svaki put kada kliknete veze u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="7216228761061470870">Kad upotrebljavate pretraživanje slika na računalu, naslov, URL i sadržaj stranice, uključujući PDF-ove, šalju se poslužitelju</translation>
 <translation id="7223968959479464213">Upravitelj zadataka – Chromium</translation>
+<translation id="7226331818892775989">Postavite pitanje o sadržaju izvan Chromiuma, kao što su druge aplikacije ili datoteke</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> već je prijavljen/a. Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete moći pristupati svojim spremljenim podacima i drugim podacima na svim svojim uređajima.</translation>
 <translation id="7252276985725323153">Odmah počnite pregledavati: Chromium se sada može pokrenuti kad se pokrene Windows.</translation>
 <translation id="7274695763216404502">Prikvačeno! Ponovo upotrijebite pretraživanje slika s alatne trake</translation>

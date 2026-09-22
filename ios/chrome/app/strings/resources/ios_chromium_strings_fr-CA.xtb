@@ -53,6 +53,8 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="1965068424387304464">Astuce Chromium : Enregistrer les mots de passe</translation>
 <translation id="1992653360331625459">Vous avez déjà des mots de passe pour ces comptes dans votre gestionnaire de mots de passe. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera l'ancien.</translation>
 <translation id="2006345422933397527">Chromium n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
+<translation id="2025935492422922097">Chromium traite les titres de pages et les URL dans un espace privé dans le nuage</translation>
+<translation id="2027881372245801507">La désactivation des suggestions ne contrôle pas le traitement par Chromium des titres de pages et des URL pour d'autres fonctionnalités. Vous pouvez gérer l'accès à ces données dans vos <ph name="BEGIN_LINK" />paramètres de synchronisation<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Afficher votre historique de Chromium</translation>
 <translation id="2052320862053429062">Chromium vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="2059365270911640413">Terminer la configuration de Chromium</translation>
@@ -351,6 +353,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="865600487977764604">Il vous protège dans Chromium, et peut être utilisé pour renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="8663480472502753423">Pour garder Chromium à jour</translation>
 <translation id="8685813584220679697">Connectez-vous à ce site et à Chromium.</translation>
+<translation id="8697693743327341604">Si vous sélectionnez ou ignorez une suggestion, Chromium s'adaptera pour vous montrer des suggestions plus pertinentes à l'avenir.</translation>
 <translation id="869832267508702259">Définissez Chromium comme navigateur par défaut pour obtenir des statistiques de Gemini partout où vous naviguez</translation>
 <translation id="8698780336333802489">Importer dans Chromium</translation>
 <translation id="8730503818204408000">Ouvre le paramètre de Chromium pour définir Chromium comme navigateur par défaut.</translation>

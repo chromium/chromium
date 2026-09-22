@@ -2126,6 +2126,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="948276827484905248">Luo QR-koodi</translation>
 <translation id="95817756606698420">Chrome voi käyttää <ph name="BEGIN_BOLD" />Sogouta<ph name="END_BOLD" /> hakujen tekemiseen Kiinassa. Voit muokata tätä <ph name="BEGIN_LINK" />Asetuksissa<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea</translation>
 <translation id="961856697154696964">Poista selausdata</translation>
 <translation id="963246339335003378">Avaa tehtävänhallinta</translation>
 <translation id="966337994629449077">Olet kirjautunut sisään tilillä <ph name="FROM_EMAIL" />.\n\nJos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="TO_EMAIL" />. Saat tämän tilin salasanat, kirjanmerkit ja muita tietoja.</translation>

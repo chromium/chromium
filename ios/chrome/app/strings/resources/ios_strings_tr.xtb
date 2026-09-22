@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Kuruluşunuz Gizli modu gerektiriyor</translation>
 <translation id="1323735185997015385">Sil</translation>
 <translation id="132683371494960526">Üst klasörü değiştirmek için iki kez dokunun.</translation>
+<translation id="132969855425874290">Bul ve doldur özelliğini kapat</translation>
 <translation id="1333455942675373522">Klavye</translation>
 <translation id="1334485477792811969">Web hizmetleri</translation>
 <translation id="1335767868357998043">Adres Çubuğu Konumunu Seçin</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Bağlantı alındı}other{{count} bağlantı alındı}}</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1943478190258551035">Menü → Ayarlar</translation>
+<translation id="1944477975050820119">Yapay zeka ile göz atmanın yeni yollarını bulmanıza yardımcı olabilecek anlık öneriler alın. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="1952728750904661634">Yönetilen hesapla oturum açın</translation>
 <translation id="1955773397805078763">Ödeme yöntemi ekle</translation>
 <translation id="1956138802718275401">Şifrelere ana ekrandan erişin</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Şifreler hazırlanıyor…</translation>
 <translation id="2323697864063408084">Önemli olan hiçbir şeyi kaçırmamak için Kilit Ekranınızda ve Banner'larla bildirim alın</translation>
 <translation id="2326302612031521902">Birim seçici</translation>
+<translation id="2326606747676847821">Gizli mod</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ile başlayan fiyatlarla</translation>
 <translation id="2330607597130465898">Koruma yok</translation>
 <translation id="233375395665273385">Sil ve oturumu kapat</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Kullanıcıların söylediklerini okuyun</translation>
 <translation id="2394659309569789395">Siteyi yine de aç</translation>
 <translation id="2403129868389095715">Paketiniz teslim edilemiyor</translation>
+<translation id="2408318953009664750">Bir kez izin ver</translation>
 <translation id="2410754283952462441">Bir hesap seçin</translation>
 <translation id="2422174748424038845">Grubu silerseniz herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimini anında kaybeder ve grup tüm cihazlardan silinir.</translation>
 <translation id="2424805048070062787">Bu sekmeyle devam edin</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">İletişim kutularını gizle</translation>
 <translation id="2542268842667970959">"Güvenlik Kontrolü"nü gizleyin</translation>
 <translation id="2551153019974022505">Hesap hatası</translation>
+<translation id="2559785333866467778">Gemini önerileri</translation>
 <translation id="2559843230610279254">Sekme grubu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> sekme.</translation>
 <translation id="257088987046510401">Temalar</translation>
 <translation id="2573117291489209663">Bitti</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Bağlantıları doğrudan burada açın</translation>
 <translation id="2718352093833049315">Kablosuz ağ varken</translation>
 <translation id="2721190673959776287">Bağlama dayalı panel için günde birden fazla kez görünen ürün içi zengin yardım örneği.</translation>
+<translation id="273318428051150387">Seviye Atla'da ilerlediğinizde güncelleme almayacaksınız</translation>
 <translation id="2739887572830526131">Daha sonra sekme eklemek için bu grubu tutun ya da artık ihtiyacınız yoksa silin.</translation>
 <translation id="2747003861858887689">Önceki alan</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" />, <ph name="POSITION" /> konumuna taşındı</translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın</translation>
 <translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
 <translation id="3183362380688692618">Yeni sekme grubu...</translation>
+<translation id="3185000827934321633">Sayfaya gidiliyor</translation>
 <translation id="3185760469172949183">Kamera ile arama tamamlandı.</translation>
 <translation id="3186796054637504691">Geçmişi ve web sitesi verilerini temizle</translation>
 <translation id="3190558889382726167">Şifre kaydedildi</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ödeme yöntemi}other{# ödeme yöntemi}}</translation>
 <translation id="3831560640878483188">Uyarı kapatılsın mı?</translation>
 <translation id="3832419617903252251">Şifre yalnızca bu cihaza kaydedildi</translation>
+<translation id="3835016165506903031">Ziyaret Ederken İzin Ver</translation>
 <translation id="3835964409414434850">Sonraki Sekmeye Git</translation>
 <translation id="3838691874161539578">Güvenliğinizi güçlendirmek ve internette daha güvende olmak için kayıtlı şifrelerinizi kontrol edin</translation>
 <translation id="3838985624086228724">Takip ettiğiniz <ph name="PRODUCT_NAME" /> ürününün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="PRICE" /> oldu (<ph name="DOMAIN" />)</translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ve <ph name="NUMBER_OF_ACCOUNTS" /> sitenin daha şifresi silinecek. Hesaplarınız silinmeyecek.</translation>
 <translation id="3853162385423733133">Şifreleri Google Hesabınızda (<ph name="EMAIL" />) kullanmaya ve kaydetmeye devam edin</translation>
 <translation id="3853873210696342070">İçe aktar</translation>
+<translation id="3854052088499589035">Seviye Atla'da ilerlediğinizde güncelleme alacaksınız</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari Ayarları<ph name="END_BOLD" />'nı açın</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="386224966259596343">Bir dahaki sefere ilgili bir formu doldururken bu bilgileri Cüzdan'a kaydedebileceksiniz.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Kayıtlı şifrelere diğer uygulamalardan erişin</translation>
 <translation id="4431224949908513835">Doldurulmasını istediğiniz bir ödeme yöntemi seçin.</translation>
 <translation id="4432122368769493392">Ayarlar…</translation>
+<translation id="443295142249850475">Açık sekmelerinizin sayfa başlıkları ve URL'leri size alakalı öneriler sunmak için kullanılır.</translation>
 <translation id="4439968635693513370">Hafta sonunuzu şununla planlayın:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarlar<ph name="END_BOLD" />'ı açın</translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} sonuç mevcut.}other{{count} sonuç mevcut.}}</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> için diğer seçenekler</translation>
 <translation id="4455710003856931944">Geri veya ileri gitmek için kenarı kaydırabilirsiniz.</translation>
 <translation id="4460014764210899310">Grubu çöz</translation>
@@ -2224,6 +2235,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8102130909719902723">Y</translation>
 <translation id="8105368624971345109">Kapat</translation>
 <translation id="8106442513853561174">Tam konum paylaşın</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 şifre otomatik olarak dolduruldu}other{# şifre otomatik olarak dolduruldu}}</translation>
 <translation id="8114753159095730575">Dosya indirme işlevi kullanılabilir. Seçenekler ekranın alt tarafındadır.</translation>
 <translation id="8123502380991596210">Yenilikler seçeneğini gizle</translation>
 <translation id="8123953306357309250">Senkronizasyon iptal edilsin mi? Senkronizasyonu istediğiniz zaman ayarlardan açabilirsiniz</translation>

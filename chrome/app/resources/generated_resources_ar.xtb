@@ -1071,7 +1071,6 @@
 <translation id="1822517323280215012">رمادي</translation>
 <translation id="1822635184853104396">عرض سجلّ التنزيل بالكامل في علامة تبويب جديدة</translation>
 <translation id="1823768272150895732">الخطّ</translation>
-<translation id="1823781806707127806">إضافة بيانات التصفُّح الحالية إلى الملف الشخصي المُدار</translation>
 <translation id="1825073796163165618">تفعيل الروابط</translation>
 <translation id="1825565032302550710">يجب أن يكون رقم المنفذ بين 1024 و65535.</translation>
 <translation id="18260074040409954">يمكنك استخدام كلمات المرور المحفوظة على أي جهاز، حيث تُحفظ كلمات المرور هذه في <ph name="GOOGLE_PASSWORD_MANAGER" /> لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
@@ -1388,6 +1387,7 @@
 <translation id="2062354623176996748">يمكنك تصفُّح المواقع الإلكترونية بدون حفظ سجلّ التصفُّح باستخدام نافذة تصفُّح متخفٍ.</translation>
 <translation id="206308717637808771">يتم حذف البيانات عند إغلاق جميع النوافذ، كما تتطابق طريقة معالجة البيانات مع طريقة معالجة الموقع الإلكتروني الذي تزوره.</translation>
 <translation id="2066700471214517561">‏ميكروفون متوافق مع تقنية تشكيل الحزم لتحسين جودة صوت الشخص المستخدِم لجهاز Chromebook</translation>
+<translation id="2067778293100584091">‏يمكنك الانتقال إلى "محفظة Google" للتحكّم في <ph name="BEGIN_LINK1" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK1" /> أو إدارة <ph name="BEGIN_LINK2" />طُرق الدفع<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />البطاقات<ph name="END_LINK3" />، مثل بطاقات الولاء ومستندات تعريف الهوية والعروض</translation>
 <translation id="2068581968816126410">يمكنك استخدام الإشارات المرجعية على جميع الأجهزة</translation>
 <translation id="2069020119963193894">ال&amp;حجم</translation>
 <translation id="2071393345806050157">ليس هناك ملف سجل محلي.</translation>
@@ -2381,6 +2381,7 @@
 <translation id="2813094189969465044">أدوات رقابة الأهل</translation>
 <translation id="2814489978934728345">وقف تحميل هذه الصفحة</translation>
 <translation id="2816319641769218778">‏لحفظ كلمات المرور في حسابك على Google، يُرجى تفعيل المزامنة.</translation>
+<translation id="281678554528702272">ملاحظة: قد يتم إلغاء إعدادات الوصول إلى الموقع الإلكتروني هذه من خلال سياسات المؤسسة أو واجهات برمجة التطبيقات الفعّالة.</translation>
 <translation id="2817435998497102771">ضبط الخلفية والتصميم</translation>
 <translation id="2817861546829549432">إن تفعيل "عدم التعقب" يعني تضمين الطلب مع زيارة التصفح. ويعتمد أي إجراء على استجابة الموقع الإلكتروني للطلب من عدمه، بالإضافة إلى كيفية تفسير الطلب. فعلى سبيل المثال، قد تتمثل استجابة بعض المواقع الإلكترونية لهذا الطلب بعرض إعلانات غير موجودة في المواقع الإلكترونية الأخرى التي زرتها. وستستمر بعض المواقع الإلكترونية في جمع معلومات التصفح واستخدامها، على سبيل المثال لتحسين الأمان، وتقديم المحتوى والخدمات والإعلانات والمقترحات على المواقع الإلكترونية، وإنشاء تقارير الإحصاءات.</translation>
 <translation id="2818476747334107629">تفاصيل الطابعة</translation>
@@ -5056,6 +5057,7 @@
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485088796993065002">قد تُشغِّل المواقع الإلكترونية الصوت لتوفير صوت للموسيقى والفيديوهات والوسائط الأخرى.</translation>
 <translation id="4850919322897956733">تم حذف البيانات.</translation>
+<translation id="4851973858921178330">فلترة المواقع الإلكترونية</translation>
 <translation id="4852030988197799562">‏يؤدي ذلك إلى حظر الوصول إلى أداة تحسين JavaScript على المواقع الإلكترونية التي تتم زيارتها حديثًا</translation>
 <translation id="4852383141291180386">إدارة إشعارات التطبيقات</translation>
 <translation id="4852916668365817106">لون مؤشر الماوس</translation>
@@ -5151,7 +5153,6 @@
 <translation id="4913573660390710463">يمكنك الوصول إلى حزمة تطبيقات ويب ذات إمكانات محسَّنة. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">يتعذّر العثور على بيانات التطبيق</translation>
 <translation id="4915961947098019832">المواقع الإلكترونية التي يُسمح لها بعرض الصور</translation>
-<translation id="491779113051926205">‏عدّادات زيارات نظام ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> يريد الاتصال مع الإضافة "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">قبول</translation>
 <translation id="4918762404810341788">النسخ والفتح</translation>
@@ -7478,6 +7479,7 @@
 <translation id="6754359471209693699">بدء عملية بحث جديدة</translation>
 <translation id="6755702685749429945">إضافة قاموس</translation>
 <translation id="6756643207511618722">محركات تحويل النص إلى كلام</translation>
+<translation id="6756882635793733911">يمكنك طرح أسئلة حول أي محتوى يظهر على شاشتك</translation>
 <translation id="6757431299485455321">مساعدة الأجهزة الأخرى في العثور على نقطة الاتصال هذه</translation>
 <translation id="6757615605516049275">يُرجى فتح قفل "<ph name="TOKEN_NAME" />".</translation>
 <translation id="6758056191028427665">يُرجى تقييم أدائنا.</translation>
@@ -10765,6 +10767,7 @@
 <translation id="96756691973639907">مزيد من الإجراءات لـ "<ph name="MODULE_NAME" />"</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
 <translation id="96774243435178359">الطابعات المُدارة</translation>
+<translation id="967745417352972504">‏يُرجى الانتقال إلى "محفظة Google" لإضافة أو إدارة <ph name="BEGIN_LINK_PAYMENT_METHODS" />طُرق الدفع<ph name="END_LINK_PAYMENT_METHODS" /> و<ph name="BEGIN_LINK_PASSES" />البطاقات<ph name="END_LINK_PASSES" />، مثل بطاقات الولاء ومستندات تعريف الهوية والعروض</translation>
 <translation id="968000525894980488">‏يُرجى تفعيل خدمات Google Play.</translation>
 <translation id="968037381421390582">ل&amp;صق وبحث عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">تغيير اللغات</translation>

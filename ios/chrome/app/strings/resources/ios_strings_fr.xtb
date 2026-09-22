@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
 <translation id="132683371494960526">Appuyez deux fois pour modifier le dossier parent.</translation>
+<translation id="132969855425874290">Fermer Rechercher et remplir</translation>
 <translation id="1333455942675373522">Clavier</translation>
 <translation id="1334485477792811969">Services Web</translation>
 <translation id="1335767868357998043">Choisissez la position de la barre d'adresse</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Lien reçu}one{{count} lien reçu}other{{count} liens reçus}}</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
+<translation id="1944477975050820119">Profitez de suggestions en temps réel pour découvrir de nouvelles façons de naviguer grâce à l'IA. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
 <translation id="1955773397805078763">Ajouter un mode de paiement</translation>
 <translation id="1956138802718275401">Accéder aux mots de passe depuis l'écran d'accueil</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Préparation des mots de passe…</translation>
 <translation id="2323697864063408084">Recevez des notifications sur votre écran de verrouillage et sous forme de bannières pour ne rien manquer d'important</translation>
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
+<translation id="2326606747676847821">Navigation privée</translation>
 <translation id="2327445548174191329">Source : <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Aucune protection</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Lire l'avis des internautes</translation>
 <translation id="2394659309569789395">Ouvrir le site quand même</translation>
 <translation id="2403129868389095715">Votre colis ne peut pas être livré</translation>
+<translation id="2408318953009664750">Une seule fois</translation>
 <translation id="2410754283952462441">Sélectionner un compte</translation>
 <translation id="2422174748424038845">Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous les appareils.</translation>
 <translation id="2424805048070062787">Continuer avec cet onglet</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Supprimer boîtes de dial.</translation>
 <translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
 <translation id="2551153019974022505">Erreur de compte</translation>
+<translation id="2559785333866467778">Suggestions de Gemini</translation>
 <translation id="2559843230610279254">Groupe d'onglets <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> onglets.</translation>
 <translation id="257088987046510401">Thèmes</translation>
 <translation id="2573117291489209663">OK</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Lancez les liens directement ici</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2721190673959776287">Exemple d'aide détaillée intégrée pour le panneau contextuel, qui devrait s'afficher plusieurs fois par jour.</translation>
+<translation id="273318428051150387">Vous ne recevrez pas de notifications lorsque vous progresserez dans Level Up</translation>
 <translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> déplacé en position <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
 <translation id="3183362380688692618">Nouveau groupe d'onglets...</translation>
+<translation id="3185000827934321633">Accès…</translation>
 <translation id="3185760469172949183">Recherche avec l'appareil photo terminée.</translation>
 <translation id="3186796054637504691">Effacer l'historique et les données de sites</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 mode de paiement}one{# mode de paiement}other{# modes de paiement}}</translation>
 <translation id="3831560640878483188">Fermer l'avertissement ?</translation>
 <translation id="3832419617903252251">Mot de passe enregistré uniquement sur cet appareil</translation>
+<translation id="3835016165506903031">Autoriser pendant la visite</translation>
 <translation id="3835964409414434850">Onglet suivant</translation>
 <translation id="3838691874161539578">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et naviguer en toute tranquillité</translation>
 <translation id="3838985624086228724">Baisse de prix du produit que vous suivez, de <ph name="PREVIOUS_PRICE" /> à <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="NUMBER_OF_ACCOUNTS" /> autres seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3853162385423733133">Continuez à utiliser et à enregistrer les mots de passe dans votre compte Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importer</translation>
+<translation id="3854052088499589035">Vous recevrez des notifications lorsque vous progresserez dans Level Up</translation>
 <translation id="3857113360369572832">Ouvrez les <ph name="BEGIN_BOLD" />réglages de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="386224966259596343">Vous aurez la possibilité d'enregistrer ces informations dans Wallet la prochaine fois que vous remplirez un formulaire concerné.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Accédez aux mots de passe enregistrés dans d'autres applis</translation>
 <translation id="4431224949908513835">Sélectionnez un mode de paiement à renseigner.</translation>
 <translation id="4432122368769493392">Paramètres…</translation>
+<translation id="443295142249850475">Les titres de page et les URL de vos onglets ouverts sont utilisés pour vous fournir des suggestions pertinentes.</translation>
 <translation id="4439968635693513370">Planifiez votre week-end avec</translation>
 <translation id="4442550905108052454">Accédez aux <ph name="BEGIN_BOLD" />Réglages<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{{count} résultat disponible.}one{{count} résultat disponible.}other{{count} résultats disponibles.}}</translation>
 <translation id="4445840280797509738">Plus d'options pour <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière ou avancer.</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
@@ -2224,6 +2235,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8106442513853561174">Partager la position exacte</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 mot de passe saisi automatiquement}one{# mot de passe saisi automatiquement}other{# mots de passe saisis automatiquement}}</translation>
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
 <translation id="8123502380991596210">Masquer "Nouveautés"</translation>
 <translation id="8123953306357309250">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les réglages.</translation>

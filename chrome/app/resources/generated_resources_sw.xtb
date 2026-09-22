@@ -1078,7 +1078,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1822517323280215012">Kijivu</translation>
 <translation id="1822635184853104396">Onyesha historia kamili ya upakuaji kwenye kichupo kipya</translation>
 <translation id="1823768272150895732">Fonti</translation>
-<translation id="1823781806707127806">Weka data ya kuvinjari iliyopo kwenye wasifu unaodhibitiwa</translation>
 <translation id="1825073796163165618">Ruhusu viungo</translation>
 <translation id="1825565032302550710">Lazima mlango uwe kati ya 1024 na 65535</translation>
 <translation id="18260074040409954">Unaweza kutumia manenosiri uliyohifadhi, kwenye kifaa chochote. Yamehifadhiwa kwenye <ph name="GOOGLE_PASSWORD_MANAGER" /> kwa ajili ya <ph name="EMAIL" />.</translation>
@@ -1394,6 +1393,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2062354623176996748">Tumia wavuti bila kuhifadhi historia yako ya kuvinjari kwa kutumia dirisha fiche</translation>
 <translation id="206308717637808771">Futa data unapofunga madirisha yote. Data inashughulikiwa kwa namna sawa na ile ya tovuti unayoangalia</translation>
 <translation id="2066700471214517561">Tumia maikrofoni ya usambazaji na upokezi wa mawimbi kutoka upande maalum ili mtu anayetumia Chromebook asikike vizuri.</translation>
+<translation id="2067778293100584091">Tembelea Pochi ya Google ili udhibiti <ph name="BEGIN_LINK1" />mapendeleo ya faragha na data<ph name="END_LINK1" /> au udhibiti <ph name="BEGIN_LINK2" />njia za kulipa<ph name="END_LINK2" /> na <ph name="BEGIN_LINK3" />pasi<ph name="END_LINK3" /> kama vile kadi za kutuza uaminifu, vitambulisho na ofa</translation>
 <translation id="2068581968816126410">Kutumia alamisho kwenye vifaa mbalimbali</translation>
 <translation id="2069020119963193894">&amp;Ukubwa</translation>
 <translation id="2071393345806050157">Hakuna faili ya kumbukumbu ya ndani</translation>
@@ -2390,6 +2390,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2813094189969465044">Vidhibiti vya wazazi</translation>
 <translation id="2814489978934728345">Simamisha upakiaji wa ukurasa huu</translation>
 <translation id="2816319641769218778">Ili uhifadhi manenosiri kwenye Akaunti ya Google, washa usawazishaji.</translation>
+<translation id="281678554528702272">Kumbuka: Mipangilio hii ya ufikiaji wa tovuti inaweza kubatilishwa na sera za shirika au API zenye uwezo mkubwa.</translation>
 <translation id="2817435998497102771">Weka mandhari na mtindo wako</translation>
 <translation id="2817861546829549432">Kuwasha 'Usifuatilie' kunamaanisha kwamba ombi litajumuishwa na rekodi yako ya shughuli za kuvinjari. Athari yoyote inategemea kama tovuti inajibu ombi, na jinsi ombi linavyofasiriwa. Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo yasiyolingana na tovuti nyingine ambazo umetembelea. Tovuti nyingi bado zitakusanya na kutumia data yako ya kuvinjari - kwa mfano kuboresha usalama, kutoa maudhui, huduma, matangazo na mapendekezo kwenye tovuti zao, na kuzalisha takwimu za kuripoti.</translation>
 <translation id="2818476747334107629">Maelezo ya printa</translation>
@@ -5065,6 +5066,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4850886885716139402">Mwonekano</translation>
 <translation id="485088796993065002">Huenda tovuti zikacheza sauti kwa ajili ya muziki, video na maudhui mengine</translation>
 <translation id="4850919322897956733">Data imefutwa.</translation>
+<translation id="4851973858921178330">Chuja tovuti</translation>
 <translation id="4852030988197799562">Zuia idhini ya kufikia kiboreshaji cha JavaScript kwenye tovuti mpya ulizotembelea</translation>
 <translation id="4852383141291180386">Dhibiti arifa za programu</translation>
 <translation id="4852916668365817106">Rangi ya kipanya</translation>
@@ -5160,7 +5162,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4913573660390710463">Fikia programu za wavuti zilizofungashwa zenye uwezo ulioboreshwa. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Imeshindwa kupata data ya programu</translation>
 <translation id="4915961947098019832">Zinazoruhusiwa kuonyesha picha</translation>
-<translation id="491779113051926205">Hesabu za Vifaa kwenye ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> inataka kuwasiliana na kiendelezi "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Kubali</translation>
 <translation id="4918762404810341788">Nakili na ufungue</translation>
@@ -7479,6 +7480,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6754359471209693699">Anzisha utafutaji mpya</translation>
 <translation id="6755702685749429945">Weka kamusi</translation>
 <translation id="6756643207511618722">Mitambo ya matamshi</translation>
+<translation id="6756882635793733911">Uliza kuhusu chochote kilicho kwenye skrini yako</translation>
 <translation id="6757431299485455321">Saidia vifaa vingine kupata mtandao pepe huu.</translation>
 <translation id="6757615605516049275">Tafadhali fungua <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Tueleze jinsi huduma inavyokuridhisha.</translation>
@@ -10765,6 +10767,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="96756691973639907">Vitendo zaidi vya <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>
 <translation id="96774243435178359">Printa zinazodhibitiwa</translation>
+<translation id="967745417352972504">Tembelea Pochi ya Google ili uweke au udhibiti <ph name="BEGIN_LINK_PAYMENT_METHODS" />njia za kulipa<ph name="END_LINK_PAYMENT_METHODS" /> na <ph name="BEGIN_LINK_PASSES" />pasi<ph name="END_LINK_PASSES" /> kama vile kadi za kutuza uaminifu, vitambulisho na ofa</translation>
 <translation id="968000525894980488">Washa huduma za Google Play.</translation>
 <translation id="968037381421390582">Ba&amp;ndika na Utafute “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Badilisha lugha</translation>

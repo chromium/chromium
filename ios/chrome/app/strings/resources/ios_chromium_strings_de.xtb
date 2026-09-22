@@ -52,6 +52,8 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="1965068424387304464">Chromium-Tipp: Passwörter speichern</translation>
 <translation id="1992653360331625459">Du hast bereits Passwörter für diese Konten im Passwortmanager. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
 <translation id="2006345422933397527">Chromium konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
+<translation id="2025935492422922097">Chromium verarbeitet Seitentitel und URLs in einem vertraulichen Profil in der Cloud</translation>
+<translation id="2027881372245801507">Wenn du Vorschläge deaktivierst, hat das keine Auswirkungen auf die Verarbeitung von Seitentiteln und URLs für andere Funktionen durch Chromium. Du kannst den Zugriff auf diese Daten in deinen <ph name="BEGIN_LINK" />Synchronisierungseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="2042889939382983733">Meinen Chromium-Verlauf ansehen</translation>
 <translation id="2052320862053429062">Chromium prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="2059365270911640413">Chromium fertig einrichten</translation>
@@ -350,6 +352,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8685813584220679697">Melde dich bei dieser Website und in Chromium an.</translation>
+<translation id="8697693743327341604">Wenn du einen Vorschlag auswählst oder ignorierst, passt sich Chromium an, damit du in Zukunft relevantere Vorschläge siehst.</translation>
 <translation id="869832267508702259">Lege Chromium als Standardbrowser fest, um überall, wo du surfst, Informationen von Gemini zu erhalten</translation>
 <translation id="8698780336333802489">In Chromium importieren</translation>
 <translation id="8730503818204408000">Öffnet die Chromium-Einstellung, mit der Chromium als Standardbrowser festgelegt wird.</translation>

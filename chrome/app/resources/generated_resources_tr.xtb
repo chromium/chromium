@@ -1069,7 +1069,6 @@
 <translation id="1822517323280215012">Gri</translation>
 <translation id="1822635184853104396">Tam indirme geçmişini yeni bir sekmede göster</translation>
 <translation id="1823768272150895732">Yazı tipi</translation>
-<translation id="1823781806707127806">Mevcut tarama verilerini yönetilen profile ekle</translation>
 <translation id="1825073796163165618">Bağlantıları etkinleştir</translation>
 <translation id="1825565032302550710">Bağlantı noktası 1024 ile 65535 arasında olmalıdır.</translation>
 <translation id="18260074040409954">Kayıtlı şifrelerinizi herhangi bir cihazda kullanabilirsiniz. <ph name="EMAIL" /> için <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilirler.</translation>
@@ -1385,6 +1384,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2062354623176996748">Gizli pencere sayesinde tarama geçmişinizi kaydetmeden web'i kullanın</translation>
 <translation id="206308717637808771">Tüm pencereleri kapattığınızda verileri silin. Veriler, görüntülediğiniz siteyle aynı şekilde işlenir</translation>
 <translation id="2066700471214517561">Chromebook'u kullanan kişinin sesinin net duyulmasını sağlayan beamforming mikrofonu.</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />Veri ve gizlilik tercihlerini<ph name="END_LINK1" /> kontrol etmek veya <ph name="BEGIN_LINK2" />ödeme yöntemlerini<ph name="END_LINK2" /> ve bağlılık kartları, kimlikler ve teklifler gibi <ph name="BEGIN_LINK3" />kartları<ph name="END_LINK3" /> yönetmek için Google Cüzdan'ı ziyaret edin.</translation>
 <translation id="2068581968816126410">Yer işaretlerini cihazlarınız arasında kullanın</translation>
 <translation id="2069020119963193894">&amp;Boyutunu değiştir</translation>
 <translation id="2071393345806050157">Yerel günlük dosyası yok.</translation>
@@ -1517,7 +1517,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2166369534954157698">Pijamalı hasta, yağız şoföre çabucak güvendi</translation>
 <translation id="2168036794078614559">Rapor gönderildi</translation>
 <translation id="2169062631698640254">Yine de oturum aç</translation>
-<translation id="217120844667431680">AI Modu ile daha fazlasını yapın</translation>
+<translation id="217120844667431680">AI Modu ile daha fazlası</translation>
 <translation id="2173302385160625112">İnternet bağlantınızı kontrol edin</translation>
 <translation id="2175384018164129879">Arama &amp;Motorlarını ve Site Aramalarını Yönet</translation>
 <translation id="2175526076681939329">Birincil tuşları kullan</translation>
@@ -2378,6 +2378,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2813094189969465044">Ebeveyn denetimleri</translation>
 <translation id="2814489978934728345">Bu sayfayı yüklemeyi durdur</translation>
 <translation id="2816319641769218778">Şifreleri Google Hesabınıza kaydetmek için senkronizasyonu açın.</translation>
+<translation id="281678554528702272">Not: Bu site erişim ayarları, kurumsal politikalar veya güçlü API'ler tarafından geçersiz kılınabilir.</translation>
 <translation id="2817435998497102771">Duvar kağıdı ve stilinizi ayarlayın</translation>
 <translation id="2817861546829549432">"Do Not Track" etkinleştirildiğinde, göz atma trafiğinize bir istek eklenir. Her türlü etki, bir web sitesinin isteğe cevap verip vermemesine ve isteğin nasıl yorumlandığına bağlıdır. Örneğin bazı web siteleri bu isteği size daha önce gezdiğiniz web sitelerine dayalı olmayan reklamları göstererek yanıtlayabilir. Web sitelerinin çoğu, (örneğin güvenliği iyileştirmek, içerik hizmetleri sağlamak, reklamlar, kendi web sayfaları için öneriler ve raporlama istatistikleri oluşturmak gibi amaçlarla) göz atma verilerinizi toplayıp kullanmayı yine de sürdürecektir.</translation>
 <translation id="2818476747334107629">Yazıcı ayrıntıları</translation>
@@ -5053,6 +5054,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="485088796993065002">Siteler müzik, video ve diğer medyalara işitsel içerik sağlamak için ses çalabilir</translation>
 <translation id="4850919322897956733">Veriler silindi.</translation>
+<translation id="4851973858921178330">Siteleri filtrele</translation>
 <translation id="4852030988197799562">Yeni ziyaret edilen sitelerde JavaScript optimize ediciye erişimi engelleyin</translation>
 <translation id="4852383141291180386">Uygulama bildirimlerini yönet</translation>
 <translation id="4852916668365817106">Fare rengi</translation>
@@ -5148,7 +5150,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4913573660390710463">Gelişmiş özelliklere sahip paket halindeki web uygulamalarına erişin. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi edinin<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4913695564084524048">Uygulama verileri bulunamadı</translation>
 <translation id="4915961947098019832">Resim göstermesine izin verilenler</translation>
-<translation id="491779113051926205">ChromeOS Trafik Sayaçları</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" uzantısıyla iletişim kurmak istiyor</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4918762404810341788">Kopyala ve aç</translation>
@@ -7467,6 +7468,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6754359471209693699">Yeni arama başlat</translation>
 <translation id="6755702685749429945">Sözlük ekle</translation>
 <translation id="6756643207511618722">Konuşma motorları</translation>
+<translation id="6756882635793733911">Ekranınızdaki herhangi bir şey hakkında soru sorun</translation>
 <translation id="6757431299485455321">Diğer cihazların bu hotspot'u bulmasına yardımcı olun.</translation>
 <translation id="6757615605516049275">Lütfen <ph name="TOKEN_NAME" /> kilidini açın.</translation>
 <translation id="6758056191028427665">Bizimle ilgili görüşünüzü bildirin.</translation>
@@ -10752,6 +10754,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 <translation id="96774243435178359">Yönetilen yazıcılar</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />Ödeme yöntemlerini<ph name="END_LINK_PAYMENT_METHODS" /> ve bağlılık kartları, kimlikler ve teklifler gibi <ph name="BEGIN_LINK_PASSES" />kartları<ph name="END_LINK_PASSES" /> eklemek veya yönetmek için Google Cüzdan'ı ziyaret edin</translation>
 <translation id="968000525894980488">Google Play hizmetlerini açın.</translation>
 <translation id="968037381421390582">Ya&amp;pıştır ve “<ph name="SEARCH_TERMS" />” Sorgusunu Ara</translation>
 <translation id="969096075394517431">Dilleri değiştir</translation>

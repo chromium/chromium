@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">राखाडी</translation>
 <translation id="1822635184853104396">नवीन टॅबमध्ये संपूर्ण डाउनलोड इतिहास दर्शवा</translation>
 <translation id="1823768272150895732">फॉंट</translation>
-<translation id="1823781806707127806">व्यवस्थापित प्रोफाइलमध्ये आधीपासून असलेला ब्राउझिंग डेटा जोडा</translation>
 <translation id="1825073796163165618">लिंक सुरू करा</translation>
 <translation id="1825565032302550710">पोर्ट १०२४ आणि ६५५३५ यांच्या मधले असणे आवश्यक आहे</translation>
 <translation id="18260074040409954">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" />साठी <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले आहेत.</translation>
@@ -1395,6 +1394,7 @@
 <translation id="2062354623176996748">गुप्त विंडोमधील तुमचा ब्राउझिंग इतिहास सेव्ह न करता वेब वापरा</translation>
 <translation id="206308717637808771">तुम्ही सर्व विंडो बंद करता, तेव्हा डेटा हटवा. डेटा हा तुम्ही पाहत असलेल्या साइटप्रमाणेच हाताळला जातो</translation>
 <translation id="2066700471214517561">बीमफॉर्मिंग माइक, जेणेकरून Chromebook वापरणाऱ्या व्यक्तीचा आवाज स्पष्ट ऐकू येईल.</translation>
+<translation id="2067778293100584091"><ph name="BEGIN_LINK1" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK1" /> नियंत्रित करण्यासाठी किंवा <ph name="BEGIN_LINK2" />पेमेंट पद्धती<ph name="END_LINK2" /> आणि लॉयल्टी कार्ड, आयडी व ऑफर यांसारख्या <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या</translation>
 <translation id="2068581968816126410">सर्व डिव्हाइसवर बुकमार्क वापरा</translation>
 <translation id="2069020119963193894">आणि आकार</translation>
 <translation id="2071393345806050157">स्थानिक लॉग फाइल नाही.</translation>
@@ -2391,6 +2391,7 @@
 <translation id="2813094189969465044">पालक नियंत्रणे</translation>
 <translation id="2814489978934728345">हे पेज लोड करणे थांबवा</translation>
 <translation id="2816319641769218778">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी सिंक सुरू करा.</translation>
+<translation id="281678554528702272">टीप: ही साइट अ‍ॅक्सेस सेटिंग्ज एंटरप्राइझ धोरणे किंवा शक्तिशाली APIs द्वारे ओव्हरराइड केली जाऊ शकतात.</translation>
 <translation id="2817435998497102771">तुमचा वॉलपेपर आणि स्टाइल सेट करा</translation>
 <translation id="2817861546829549432">'Do Not Track' सक्षम करणे याचा अर्थ आपल्‍या ब्राउझिंग रहदारीसह एक विनंती समाविष्‍ट केली जाईल हा आहे. वेबसाइट विनंतीस प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो कोणताही प्रभाव यावर अवलंबून असतो. उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती आपल्‍याला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ सुरक्षितता सुधारणे, आशय प्रदान करणे, त्‍यांच्‍या वेबसाइटवर जाहिराती आणि शिफारशी आणि अहवाल आकडेवारी व्‍युत्‍पन्न करणे.</translation>
 <translation id="2818476747334107629">प्रिंटर तपशील</translation>
@@ -5066,6 +5067,7 @@
 <translation id="4850886885716139402">पहा</translation>
 <translation id="485088796993065002">संगीत, व्हिडिओ आणि इतर मीडियासाठी ऑडिओ पुरवण्याकरिता साइट आवाज प्ले करू शकतात</translation>
 <translation id="4850919322897956733">डेटा हटवला आहे.</translation>
+<translation id="4851973858921178330">साइट फिल्टर करा</translation>
 <translation id="4852030988197799562">नव्याने भेट दिलेल्या साइटवर JavaScript ऑप्टिमायझरचा अ‍ॅक्सेस ब्लॉक करा</translation>
 <translation id="4852383141291180386">अ‍ॅप सूचना व्यवस्थापित करा</translation>
 <translation id="4852916668365817106">माउसचा रंग</translation>
@@ -5161,7 +5163,6 @@
 <translation id="4913573660390710463">वर्धित क्षमता असलेली पॅकेज स्वरूपातील वेब अ‍ॅप्लिकेशन अ‍ॅक्सेस करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">अ‍ॅप डेटा शोधता आला नाही</translation>
 <translation id="4915961947098019832">इमेज दाखवण्याची अनुमती आहे</translation>
-<translation id="491779113051926205">ChromeOS ट्रॅफिक काउंटर</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> एक्स्टेंशनशी कम्युनिकेट करू इच्छित आहे "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4918762404810341788">कॉपी करा आणि उघडा</translation>
@@ -7482,6 +7483,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6754359471209693699">नवीन शोध सुरू करा</translation>
 <translation id="6755702685749429945">शब्दकोश जोडा</translation>
 <translation id="6756643207511618722">स्पीच इंजीन</translation>
+<translation id="6756882635793733911">तुमच्या स्क्रीनवरील कोणत्याही गोष्टीबद्दल विचारा</translation>
 <translation id="6757431299485455321">इतर डिव्हाइसना हा हॉटस्पॉट शोधण्यात मदत करा.</translation>
 <translation id="6757615605516049275">कृपया <ph name="TOKEN_NAME" /> अनलॉक करा.</translation>
 <translation id="6758056191028427665">आम्ही आमचे काम कसे करत आहोत त्याबद्दल आम्हाला कळवा.</translation>
@@ -8730,7 +8732,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
 <translation id="770231223935918661">या इमेजविषयी विचारा</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> वर कास्ट करणे थांबवा</translation>
-<translation id="7704305437604973648">कार्य</translation>
+<translation id="7704305437604973648">टास्क</translation>
 <translation id="7705085181312584869">मला लिहिण्यात मदत कर</translation>
 <translation id="7705276765467986571">बुकमार्क मॉडेल लोड करणे शक्य नव्हते. </translation>
 <translation id="7705334495398865155">इतरांना हे डिव्हाइस ट्रॅक करण्यापासून रोखण्यासाठी तुमच्या हार्डवेअरचा आयडी (BSSID) रँडमाइझ करा.</translation>
@@ -10768,6 +10770,7 @@ I feel - विटांची इमारत</translation>
 <translation id="96756691973639907"><ph name="MODULE_NAME" /> साठी आणखी कृती</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 <translation id="96774243435178359">व्यवस्थापित केलेले प्रिंटर</translation>
+<translation id="967745417352972504"><ph name="BEGIN_LINK_PAYMENT_METHODS" />पेमेंट पद्धती<ph name="END_LINK_PAYMENT_METHODS" /> आणि लॉयल्‍टी कार्ड, आयडी व ऑफर यांसारखे <ph name="BEGIN_LINK_PASSES" />पास<ph name="END_LINK_PASSES" /> जोडण्यासाठी किंवा व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या</translation>
 <translation id="968000525894980488">Google Play सेवा सुरू करा.</translation>
 <translation id="968037381421390582">पेस्ट करा आणि “<ph name="SEARCH_TERMS" />” शोधा</translation>
 <translation id="969096075394517431">भाषा बदला</translation>

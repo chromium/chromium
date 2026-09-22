@@ -433,6 +433,7 @@
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
 <translation id="2323697864063408084">קבלת התראות במסך הנעילה ובבאנרים כדי לא להחמיץ את מה שחשוב לך</translation>
 <translation id="2326302612031521902">בורר היחידות</translation>
+<translation id="2326606747676847821">עבור למצב גלישה בסתר</translation>
 <translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">ללא הגנה</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
@@ -556,6 +557,7 @@
 <translation id="2715440913764382254">שקישורים ייפתחו ישירות כאן?</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2721190673959776287">דוגמה לבועת מידע עשיר לגבי המוצר בחלונית ההקשר. הבועה אמורה להופיע כמה פעמים ביום.</translation>
+<translation id="273318428051150387">‏לא יישלחו אליך עדכונים על התקדמות ב-Level Up</translation>
 <translation id="2739887572830526131">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2750583038402718064">הפריט <ph name="WEBSITE_TITLE" /> הועבר למיקום <ph name="POSITION" /></translation>
@@ -869,6 +871,7 @@
 <translation id="3851938967634752633">הסיסמאות של <ph name="WEBSITE" />, של <ph name="SECOND_WEBSITE" /> ושל <ph name="NUMBER_OF_ACCOUNTS" /> אתרים נוספים יימחקו. החשבונות שלך לא יימחקו.</translation>
 <translation id="3853162385423733133">‏המשך השימוש בסיסמאות ושמירה שלהן בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">ייבוא</translation>
+<translation id="3854052088499589035">‏יישלחו אליך עדכונים על התקדמות ב-Level Up</translation>
 <translation id="3857113360369572832">‏פותחים את <ph name="BEGIN_BOLD" />הגדרות Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="386224966259596343">‏יש אפשרות לשמור את הפרטים האלה ב-Wallet בפעם הבאה שממלאים טופס רלוונטי.</translation>
@@ -2224,6 +2227,7 @@
 <translation id="8102130909719902723">ח</translation>
 <translation id="8105368624971345109">כיבוי</translation>
 <translation id="8106442513853561174">שיתוף מיקום מדויק</translation>
+<translation id="8110894698020598040">{count,plural, =1{סיסמה אחת מולאה אוטומטית}one{‫# סיסמאות מולאו אוטומטית}two{‫# סיסמאות מולאו אוטומטית}other{‫# סיסמאות מולאו אוטומטית}}</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8123502380991596210">הסתרת האפשרות 'מה חדש'</translation>
 <translation id="8123953306357309250">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות.</translation>

@@ -70,6 +70,7 @@
             Marcajele, istoricul și parolele salvate nu vor fi afectate.</translation>
 <translation id="1619887657840448962">Pentru mai multă siguranță în Chrome, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="1628000112320670027">Obține ajutor privind Chrome</translation>
+<translation id="1632241302126471515">Caută cu Chrome Canary</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
 <translation id="1651617469580841801">Când folosești Google Lens, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, sunt trimise la Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Despre sistemul de operare Chrome Flex</translation>
@@ -204,7 +205,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="2970681950995291301">Pentru a elimina Contul Google din Chrome, deconectează-te de la Chrome din pagina Setări</translation>
 <translation id="2976869732253036751">Primește alerte de urmărire a prețurilor cu Chrome pe telefon</translation>
-<translation id="2985091279808606502">Chrome are nevoie de permisiune pentru rețeaua locală pentru acest site</translation>
 <translation id="2991167882679440829">Parolele și alte date Chrome pe care le-ai salvat în Contul Google se vor elimina de pe acest dispozitiv. Pentru a le folosi din nou în Chrome, conectează-te din nou.</translation>
 <translation id="2994465299455873643">Oferă servicii de criptare și o modalitate sigură de a recupera <ph name="BROWSER_NAME" /> dacă devine învechit. Dacă acest serviciu este dezactivat, <ph name="BROWSER_NAME" /> poate să piardă accesul la datele criptate și este posibil ca <ph name="BROWSER_NAME" /> să nu se poată recupera.</translation>
 <translation id="3003694935412297923">Toate activitățile</translation>
@@ -272,6 +272,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Afișează Gemini în Chrome în bara de sistem</translation>
+<translation id="3616622400661108683">Întreabă despre conținut din afara browserului Chrome, cum ar fi alte aplicații sau fișiere</translation>
 <translation id="3622716124581627104">Identifică lucruri sau locuri și copiază sau traduce text. Când folosești Google Lens, se trimite la Google o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele.</translation>
@@ -750,7 +751,9 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8162006532256575008">Folosește Chrome fără cont</translation>
 <translation id="8172231188687329735">Descarcă aplicația Chrome pentru a salva parole din mers</translation>
 <translation id="8177472873527554730">Nu se găsește conținut în pagină</translation>
+<translation id="8196526165798579689">Caută cu Chrome Dev</translation>
 <translation id="8221491193165283816">De obicei blochezi notificările. Ca să-i permiți acestui site să îți trimită notificări, dă clic aici.</translation>
+<translation id="8227493674161801700">Caută cu Chrome Beta</translation>
 <translation id="8253851811470049684">Deschide linkuri în Chrome din orice aplicație și menține browserul accesibil în bara de activități</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8260086374035800939">Dacă Gemini în Chrome este deschis, panoul lateral rămâne deschis când creezi file noi</translation>

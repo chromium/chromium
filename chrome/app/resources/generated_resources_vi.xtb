@@ -1078,7 +1078,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1822517323280215012">Màu xám</translation>
 <translation id="1822635184853104396">Mở toàn bộ nhật ký tải xuống trong một thẻ mới</translation>
 <translation id="1823768272150895732">Phông chữ</translation>
-<translation id="1823781806707127806">Thêm dữ liệu duyệt web hiện có vào hồ sơ được quản lý</translation>
 <translation id="1825073796163165618">Kích hoạt đường liên kết</translation>
 <translation id="1825565032302550710">Cổng phải nằm trong khoảng 1024 và 65535</translation>
 <translation id="18260074040409954">Bạn có thể dùng các mật khẩu đã lưu trên mọi thiết bị. Các mật khẩu đó được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> cho <ph name="EMAIL" />.</translation>
@@ -1395,6 +1394,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2062354623176996748">Duyệt web mà không lưu nhật ký duyệt web qua một cửa sổ Ẩn danh</translation>
 <translation id="206308717637808771">Xoá dữ liệu khi bạn đóng tất cả cửa sổ. Dữ liệu được xử lý theo cách tương tự như trang web bạn đang xem</translation>
 <translation id="2066700471214517561">Micrô tạo chùm tia giúp nghe rõ người dùng Chromebook.</translation>
+<translation id="2067778293100584091">Truy cập vào Google Wallet để kiểm soát <ph name="BEGIN_LINK1" />các lựa chọn ưu tiên về dữ liệu và quyền riêng tư<ph name="END_LINK1" /> hoặc quản lý <ph name="BEGIN_LINK2" />phương thức thanh toán<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />thẻ/vé<ph name="END_LINK3" /> như thẻ khách hàng thân thiết, giấy tờ tuỳ thân và ưu đãi</translation>
 <translation id="2068581968816126410">Sử dụng dấu trang trên nhiều thiết bị</translation>
 <translation id="2069020119963193894">&amp;Kích thước</translation>
 <translation id="2071393345806050157">Không có tệp nhật ký cục bộ.</translation>
@@ -2391,6 +2391,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2813094189969465044">Chế độ kiểm soát của cha mẹ</translation>
 <translation id="2814489978934728345">Dừng tải trang này</translation>
 <translation id="2816319641769218778">Để lưu mật khẩu vào Tài khoản Google của bạn, hãy bật tính năng đồng bộ hóa.</translation>
+<translation id="281678554528702272">Lưu ý: Các chế độ cài đặt về quyền truy cập trang web này có thể bị các chính sách doanh nghiệp hoặc API mạnh ghi đè.</translation>
 <translation id="2817435998497102771">Đặt hình nền và phong cách</translation>
 <translation id="2817861546829549432">Bật tính năng ‘Không theo dõi’ nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc liệu trang web có phản hồi yêu cầu không và cách thức yêu cầu được diễn giải. Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cách hiển thị cho bạn các quảng cáo không dựa trên các trang web khác mà bạn đã truy cập. Nhiều trang web sẽ vẫn thu thập và sử dụng dữ liệu duyệt web của bạn - ví dụ: để cải thiện bảo mật, cung cấp nội dung, dịch vụ, quảng cáo và các đề xuất về trang web của chúng và tạo số liệu thống kê báo cáo.</translation>
 <translation id="2818476747334107629">Chi tiết về máy in</translation>
@@ -5068,6 +5069,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4850886885716139402">Xem</translation>
 <translation id="485088796993065002">Các trang web có thể phát âm thanh cho nhạc, video và nội dung nghe nhìn khác</translation>
 <translation id="4850919322897956733">Đã xoá dữ liệu.</translation>
+<translation id="4851973858921178330">Lọc các trang web</translation>
 <translation id="4852030988197799562">Chặn quyền truy cập vào trình tối ưu hoá JavaScript trên các trang web mới truy cập</translation>
 <translation id="4852383141291180386">Quản lý thông báo của ứng dụng</translation>
 <translation id="4852916668365817106">Màu chuột</translation>
@@ -5163,7 +5165,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4913573660390710463">Truy cập các ứng dụng web được đóng gói có các chức năng nâng cao. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Không tìm thấy dữ liệu ứng dụng</translation>
 <translation id="4915961947098019832">Được phép hiển thị hình ảnh</translation>
-<translation id="491779113051926205">Bộ đếm lưu lượng truy cập ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> muốn giao tiếp với tiện ích "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4918762404810341788">Sao chép và mở</translation>
@@ -7482,6 +7483,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6754359471209693699">Bắt đầu lượt tìm kiếm mới</translation>
 <translation id="6755702685749429945">Thêm từ điển</translation>
 <translation id="6756643207511618722">Công cụ chuyển văn bản sang lời nói</translation>
+<translation id="6756882635793733911">Hỏi về nội dung bất kỳ trên màn hình</translation>
 <translation id="6757431299485455321">Giúp các thiết bị khác tìm thấy điểm phát sóng này.</translation>
 <translation id="6757615605516049275">Vui lòng mở khoá <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Hãy chia sẻ ý kiến của bạn về dịch vụ của chúng tôi.</translation>
@@ -8732,7 +8734,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7701869757853594372">Xử lý NGƯỜI DÙNG</translation>
 <translation id="770231223935918661">Hỏi về hình ảnh này</translation>
 <translation id="7702463352133825032">Dừng truyền tới <ph name="DEVICE_NAME" /></translation>
-<translation id="7704305437604973648">Tác vụ</translation>
+<translation id="7704305437604973648">Nhiệm vụ</translation>
 <translation id="7705085181312584869">Giúp tôi viết</translation>
 <translation id="7705276765467986571">Không thể tải mô hình dấu trang.</translation>
 <translation id="7705334495398865155">Chọn ngẫu nhiên mã nhận dạng phần cứng (BSSID) để ngăn người khác theo dõi thiết bị này.</translation>
@@ -10770,6 +10772,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="96756691973639907">Thao tác khác cho <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>
 <translation id="96774243435178359">Máy in được quản lý</translation>
+<translation id="967745417352972504">Truy cập vào Google Wallet để thêm hoặc quản lý <ph name="BEGIN_LINK_PAYMENT_METHODS" />phương thức thanh toán<ph name="END_LINK_PAYMENT_METHODS" /> và <ph name="BEGIN_LINK_PASSES" />thẻ/vé<ph name="END_LINK_PASSES" /> như thẻ khách hàng thân thiết, giấy tờ tuỳ thân và ưu đãi</translation>
 <translation id="968000525894980488">Bật Dịch vụ Google Play.</translation>
 <translation id="968037381421390582">Dá&amp;n và tìm kiếm “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Thay đổi ngôn ngữ</translation>

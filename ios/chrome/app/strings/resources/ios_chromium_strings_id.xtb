@@ -53,6 +53,8 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="1965068424387304464">Tips Chromium: Simpan Sandi</translation>
 <translation id="1992653360331625459">Anda sudah memiliki sandi untuk akun ini di Pengelola Sandi Anda. Jika Anda memilih untuk mengimpor salah satu sandi di bawah ini, sandi tersebut akan menggantikan sandi yang sudah ada.</translation>
 <translation id="2006345422933397527">Chromium tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
+<translation id="2025935492422922097">Chromium memproses judul halaman dan URL di ruang privasi di cloud</translation>
+<translation id="2027881372245801507">Menonaktifkan saran tidak memengaruhi cara Chromium memproses judul halaman dan URL untuk fitur lainnya. Anda dapat mengelola akses ke data ini di <ph name="BEGIN_LINK" />setelan sinkronisasi<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Lihat Histori Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="2059365270911640413">Selesaikan penyiapan Chromium</translation>
@@ -351,6 +353,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="865600487977764604">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login.</translation>
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8685813584220679697">Login ke situs ini dan Chromium.</translation>
+<translation id="8697693743327341604">Jika Anda memilih atau mengabaikan saran, Chromium akan menyesuaikan untuk membantu menampilkan saran yang lebih relevan kepada Anda pada masa mendatang.</translation>
 <translation id="869832267508702259">Jadikan Chromium sebagai browser default untuk mendapatkan insight Gemini di mana pun Anda menjelajah</translation>
 <translation id="8698780336333802489">Impor ke Chromium</translation>
 <translation id="8730503818204408000">Membuka Setelan Chromium untuk menyetel Chromium sebagai Browser Default.</translation>

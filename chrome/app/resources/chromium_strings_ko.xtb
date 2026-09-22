@@ -263,7 +263,6 @@
 
           **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="387514319934708384">Chromium에 사이트에 대한 로컬 네트워크 권한이 필요합니다.</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
@@ -594,6 +593,7 @@
 <translation id="7213407614656404070">언제든지 메시지, 문서 및 다른 앱에서 링크를 클릭하여 Chromium을 사용하세요</translation>
 <translation id="7216228761061470870">데스크톱에서 이미지 검색을 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 전송됩니다.</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
+<translation id="7226331818892775989">다른 앱이나 파일과 같은 Chromium 외부의 콘텐츠에 관해 질문하세요.</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="7252276985725323153">즉시 탐색 시작: 이제 Windows 시작 시 Chromium을 실행할 수 있습니다.</translation>
 <translation id="7274695763216404502">고정되었습니다. 툴바에서 이미지 검색을 다시 사용해 보세요.</translation>

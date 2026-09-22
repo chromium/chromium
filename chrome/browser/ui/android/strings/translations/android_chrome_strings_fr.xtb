@@ -604,7 +604,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3430670036890315772">Si vous désactivez le verrouillage du profil, vos informations enregistrées seront supprimées</translation>
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis importez les mots de passe à nouveau dans le Gestionnaire de mots de passe de Google. <ph name="BEGIN_LINK" />Voir les instructions détaillées<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sécurité</translation>
-<translation id="3435914367318771664">Ajouter onglet à nouv. groupe</translation>
+<translation id="3435914367318771664">Ajout onglet à nouv. groupe</translation>
 <translation id="3436118221454753036">Demander au Mode IA</translation>
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
@@ -2126,6 +2126,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="948276827484905248">Créer un QR code</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">Votre organisation exige que vous vous connectiez pour utiliser Chrome</translation>
 <translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966337994629449077">Vous êtes connecté en tant que <ph name="FROM_EMAIL" />.\n\nPour continuer depuis votre ordinateur, connectez-vous à <ph name="TO_EMAIL" />. Vous pourrez accéder aux mots de passe et aux favoris de ce compte, et plus encore.</translation>

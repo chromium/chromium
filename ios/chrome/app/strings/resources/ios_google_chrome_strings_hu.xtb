@@ -284,6 +284,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7272930098487145294">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chrome hozzáadhassa őket a fotóihoz.</translation>
 <translation id="7275945473750112644">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chrome-adatai törölve lesznek erről az eszközről</translation>
 <translation id="7284245284340063465">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Ha kiválaszt egy javaslatot, vagy ha figyelmen kívül hagyja azt, a Chrome igazodik hozzá, hogy a jövőben relevánsabb javaslatokat jelenítsen meg Önnek.</translation>
 <translation id="7296102444587051536">Chrome iOS rendszerhez</translation>
 <translation id="7299681342915173313">Mostantól bármikor használhatja a Chrome-ot, amikor e-mailekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7334364820047587268">Ezekhez a fiókokhoz már vannak jelszavai a Google Jelszókezelőben. Ha az alábbi jelszavak egyikének importálása mellett dönt, azzal lecseréli a meglévőt.</translation>
@@ -357,6 +358,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="8544583291890527417">Értesítéseket kap a Chrome által észlelt adatvédelmi és biztonsági problémákról.</translation>
 <translation id="855027533751209304">Chrome-tipp: Rákereshet arra, amit lát</translation>
 <translation id="8558480467877843976">Mostantól mindig a Chrome-ot használhatja, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint (illetve böngészik köztük).</translation>
+<translation id="8589791109349384456">A javaslatok kikapcsolása nem befolyásolja azt, hogy a Chrome hogyan dolgozza fel az oldalcímeket és az URL-eket más funkciókhoz. Az ezekhez az adatokhoz való hozzáférést a <ph name="BEGIN_LINK" />szinkronizálási beállításokban<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="8603022514504485810">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Használhatja a Safari jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chrome-ban</translation>
 <translation id="8630122478628016441">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>

@@ -53,6 +53,8 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="1965068424387304464">Consell de Chromium: desa les contrasenyes</translation>
 <translation id="1992653360331625459">Ja tens contrasenyes per a aquests comptes al gestor de contrasenyes. Si decideixes importar una de les contrasenyes següents, substituirà l'existent.</translation>
 <translation id="2006345422933397527">Chromium no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
+<translation id="2025935492422922097">Chromium processa els títols de pàgina i els URL en un espai privat al núvol</translation>
+<translation id="2027881372245801507">Desactivar els suggeriments no afecta el processament que Chromium fa dels títols de pàgina i dels URL per a altres funcions. Pots gestionar l'accés a aquestes dades a la <ph name="BEGIN_LINK" />configuració de sincronització<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Consulta l'historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comprova periòdicament si les teves contrasenyes es troben en llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="2059365270911640413">Acaba de configurar Chromium</translation>
@@ -351,6 +353,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8685813584220679697">Inicia la sessió en aquest lloc web i a Chromium.</translation>
+<translation id="8697693743327341604">Si selecciones o ignores un suggeriment, Chromium s'adaptarà per mostrar-te suggeriments més rellevants en el futur.</translation>
 <translation id="869832267508702259">Estableix Chromium com a predeterminat per obtenir estadístiques de Gemini en qualsevol lloc on naveguis</translation>
 <translation id="8698780336333802489">Importa a Chromium</translation>
 <translation id="8730503818204408000">Obre la configuració de Chromium per establir Chromium com a navegador predeterminat.</translation>

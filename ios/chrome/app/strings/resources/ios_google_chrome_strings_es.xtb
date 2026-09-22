@@ -284,6 +284,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7272930098487145294">Para guardar imágenes, toca Ajustes y permite que Chrome añada fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chrome en este dispositivo</translation>
 <translation id="7284245284340063465">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Si seleccionas o ignoras una sugerencia, Chrome se adaptará para mostrarte sugerencias más relevantes en el futuro.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Ahora puedes usar Chrome cada vez que hagas clic en enlaces de correos, documentos y otras aplicaciones.</translation>
 <translation id="7334364820047587268">Ya tienes contraseñas para estas cuentas en tu Gestor de contraseñas de Google. Si decides importar una de las contraseñas que se indican a continuación, se sustituirá la contraseña actual.</translation>
@@ -357,6 +358,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8544583291890527417">Alertas sobre los problemas de privacidad o seguridad detectados por Chrome.</translation>
 <translation id="855027533751209304">Consejo de Chrome: busca lo que ves</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
+<translation id="8589791109349384456">Desactivar las sugerencias no afecta a cómo procesa Chrome los títulos de las páginas y las URL para otras funciones. Puedes gestionar el acceso a estos datos en tu <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Usa tus contraseñas, historial, marcadores y tarjetas de crédito de Safari en Chrome</translation>
 <translation id="8630122478628016441">Activa Bloquear pestañas de Incógnito al cerrar Chrome.</translation>

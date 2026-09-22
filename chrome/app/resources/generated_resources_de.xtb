@@ -1069,7 +1069,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1822517323280215012">Grau</translation>
 <translation id="1822635184853104396">Vollständigen Downloadverlauf in einem neuen Tab anzeigen</translation>
 <translation id="1823768272150895732">Schriftart</translation>
-<translation id="1823781806707127806">Bestehende Browserdaten zum verwalteten Profil hinzufügen</translation>
 <translation id="1825073796163165618">Verknüpfungen aktivieren</translation>
 <translation id="1825565032302550710">Port muss zwischen 1024 und 65535 liegen</translation>
 <translation id="18260074040409954">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im <ph name="GOOGLE_PASSWORD_MANAGER" /> für <ph name="EMAIL" /> gespeichert.</translation>
@@ -1385,6 +1384,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2062354623176996748">In einem Inkognitofenster kannst du surfen, ohne dass dein Browserverlauf gespeichert wird</translation>
 <translation id="206308717637808771">Daten werden gelöscht, wenn alle Fenster geschlossen werden. Die Daten werden genauso behandelt wie die Website, die du gerade besuchst.</translation>
 <translation id="2066700471214517561">Beamforming-Mikrofon verwenden, damit der Chromebook-Nutzer deutlich zu verstehen ist.</translation>
+<translation id="2067778293100584091">In Google Wallet kannst du <ph name="BEGIN_LINK1" />Daten- und Datenschutzeinstellungen<ph name="END_LINK1" /> anpassen oder <ph name="BEGIN_LINK2" />Zahlungsmethoden<ph name="END_LINK2" /> sowie <ph name="BEGIN_LINK3" />Pässe<ph name="END_LINK3" /> wie Kundenkarten, Ausweise und Angebote verwalten</translation>
 <translation id="2068581968816126410">Lesezeichen auf allen Geräten verwenden</translation>
 <translation id="2069020119963193894">&amp;Größe</translation>
 <translation id="2071393345806050157">Keine lokale Protokolldatei vorhanden</translation>
@@ -2378,6 +2378,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2813094189969465044">Jugendschutzeinstellungen</translation>
 <translation id="2814489978934728345">Seite nicht weiter laden</translation>
 <translation id="2816319641769218778">Aktiviere die Synchronisierung, um Passwörter in deinem Google-Konto zu speichern.</translation>
+<translation id="281678554528702272">Hinweis: Diese Einstellungen für den Websitezugriff können durch Unternehmensrichtlinien oder leistungsstarke APIs überschrieben werden.</translation>
 <translation id="2817435998497102771">Hintergrund und Stil festlegen</translation>
 <translation id="2817861546829549432">Wenn Sie "Do Not Track" aktivieren, wird mit Ihren Browserzugriffen eine Anfrage gesendet. Die Wirkung hängt davon ab, ob eine Website auf die Anfrage reagiert und wie die Anfrage interpretiert wird. Beispielsweise reagieren einige Websites auf diese Anfragen, indem Anzeigen für Sie geschaltet werden, die nicht auf bereits besuchten Websites beruhen. Viele Websites werden Ihre Internetdaten weiter erfassen und nutzen – beispielsweise zur Verbesserung der Sicherheit, zur Bereitstellung von Inhalten und Diensten, für Anzeigen und Empfehlungen auf ihren Websites und zum Erstellen von Berichtstatistiken.</translation>
 <translation id="2818476747334107629">Druckerdetails</translation>
@@ -4086,7 +4087,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4089235344645910861">Einstellungen gespeichert. Synchronisation gestartet.</translation>
 <translation id="4089817585533500276">Umschalttaste + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Bestätigten Zugriff aktivieren</translation>
-<translation id="4092709865241032354">Nutzername für diese Website hinzufügen, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
+<translation id="4092709865241032354">Füge deinen Nutzernamen für diese Website hinzu, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4093173301198419723">Muss Groß- und Kleinbuchstaben, Ziffern und Symbole enthalten</translation>
 <translation id="4093955363990068916">Lokale Datei:</translation>
 <translation id="4094647278880271855">Du verwendest eine nicht unterstützte Umgebungsvariable: <ph name="BAD_VAR" />. Dadurch werden Stabilität und Sicherheit beeinträchtigt.</translation>
@@ -5052,6 +5053,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="485088796993065002">Websites geben möglicherweise Audio für Musik, Videos und weitere Medien wieder</translation>
 <translation id="4850919322897956733">Daten gelöscht.</translation>
+<translation id="4851973858921178330">Websites filtern</translation>
 <translation id="4852030988197799562">Blockiert den Zugriff auf den JavaScript-Optimierer auf Websites, die du zum ersten Mal aufrufst</translation>
 <translation id="4852383141291180386">App-Benachrichtigungen verwalten</translation>
 <translation id="4852916668365817106">Cursorfarbe</translation>
@@ -5147,7 +5149,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4913573660390710463">Du hast Zugriff auf gepackte Web-Apps mit erweiterten Funktionen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">App-Daten nicht gefunden</translation>
 <translation id="4915961947098019832">Dürfen Bilder anzeigen</translation>
-<translation id="491779113051926205">ChromeOS-Traffic-Zähler</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> möchte mit der Erweiterung "<ph name="EXTENSION_NAME" />" kommunizieren.</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4918762404810341788">Kopieren und öffnen</translation>
@@ -7462,6 +7463,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6754359471209693699">Neue Suche starten</translation>
 <translation id="6755702685749429945">Wörterbuch hinzufügen</translation>
 <translation id="6756643207511618722">Sprach-Engines</translation>
+<translation id="6756882635793733911">Du kannst Fragen zu Bildschirminhalten stellen</translation>
 <translation id="6757431299485455321">Hilf anderen Geräten, diesen Hotspot zu finden.</translation>
 <translation id="6757615605516049275">Bitte entsperre <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Teile uns mit, wie zufrieden du mit uns bist.</translation>
@@ -10748,6 +10750,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="96756691973639907">Weitere Aktionen für „<ph name="MODULE_NAME" />“</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
 <translation id="96774243435178359">Verwaltete Drucker</translation>
+<translation id="967745417352972504">In Google Wallet kannst du <ph name="BEGIN_LINK_PAYMENT_METHODS" />Zahlungsmethoden<ph name="END_LINK_PAYMENT_METHODS" /> und <ph name="BEGIN_LINK_PASSES" />Pässe<ph name="END_LINK_PASSES" /> wie Kundenkarten, Ausweise und Angebote hinzufügen oder verwalten</translation>
 <translation id="968000525894980488">Aktiviere die Google Play-Dienste.</translation>
 <translation id="968037381421390582">Ei&amp;nfügen und nach "<ph name="SEARCH_TERMS" />" suchen</translation>
 <translation id="969096075394517431">Sprachen ändern</translation>

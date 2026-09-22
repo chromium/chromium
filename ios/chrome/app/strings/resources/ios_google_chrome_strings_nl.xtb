@@ -270,6 +270,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7061455974939528301">Houd je vinger op het Chrome-icoon en klik op Startscherm bewerken</translation>
 <translation id="7095110968493193530">In Google Wachtwoordmanager voor <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
+<translation id="7135936755418321901">Als je je locatie wilt delen met websites, tik je op Instellingen om Chrome je locatie te laten gebruiken.</translation>
 <translation id="7145599899567697473">Wachtwoorden opslaan en automatisch invullen in Chrome</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>
@@ -284,6 +285,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7272930098487145294">Als je afbeeldingen wilt opslaan, tik je op Instellingen om deze door Chrome aan je foto's te laten toevoegen</translation>
 <translation id="7275945473750112644">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chrome-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="7284245284340063465">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Als je een suggestie selecteert of negeert, past Chrome zich aan om je in de toekomst relevantere suggesties te tonen.</translation>
 <translation id="7296102444587051536">Chrome voor iOS</translation>
 <translation id="7299681342915173313">Je kunt Chrome nu gebruiken als je op links in e-mails, documenten en andere apps tikt.</translation>
 <translation id="7334364820047587268">Je hebt al wachtwoorden voor deze accounts in je Google Wachtwoordmanager. Als je ervoor kiest een van de wachtwoorden hieronder te importeren, vervangt dit het bestaande wachtwoord.</translation>
@@ -357,6 +359,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8544583291890527417">Meldingen over privacy- of beveiligingsproblemen die Chrome voor je opspoort.</translation>
 <translation id="855027533751209304">Chrome-tip: zoek naar wat je ziet</translation>
 <translation id="8558480467877843976">Je kunt Chrome nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
+<translation id="8589791109349384456">Als je suggesties uitzet, heeft dit geen invloed op de verwerking door Chrome van paginatitels en URL's voor andere functies. Je kunt de toegang tot deze gegevens beheren in je <ph name="BEGIN_LINK" />synchronisatie-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Gebruik je Safari-wachtwoorden, geschiedenis, bookmarks en creditcards in Chrome</translation>
 <translation id="8630122478628016441">Zet Incognitotabbladen vergrendelen als je Chrome sluit aan.</translation>

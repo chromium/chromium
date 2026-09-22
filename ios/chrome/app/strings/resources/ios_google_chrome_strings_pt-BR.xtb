@@ -282,6 +282,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7272930098487145294">Para salvar imagens, toque em "Configurações" e permita que o Chrome as adicione às suas fotos</translation>
 <translation id="7275945473750112644">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo</translation>
 <translation id="7284245284340063465">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Se você selecionar ou ignorar uma sugestão, o Chrome vai se adaptar para mostrar sugestões mais relevantes no futuro.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Agora você pode usar o Chrome sempre que toca em links em e-mails, documentos e outros apps</translation>
 <translation id="7334364820047587268">Você já tem senhas destas contas no Gerenciador de Senhas do Google. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
@@ -355,6 +356,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8544583291890527417">Receba alertas sobre problemas de privacidade ou segurança detectados pelo Chrome.</translation>
 <translation id="855027533751209304">Dica do Chrome: pesquise o que você vê</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="8589791109349384456">Desativar as sugestões não controla o processamento de títulos de páginas e URLs do Chrome para outros recursos. Você pode gerenciar o acesso a esses dados nas <ph name="BEGIN_LINK" />configurações de sincronização<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Use as senhas, o histórico, os favoritos e os cartões de crédito do Safari no Chrome</translation>
 <translation id="8630122478628016441">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>

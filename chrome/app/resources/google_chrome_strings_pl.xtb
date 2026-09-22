@@ -70,6 +70,7 @@
             Zakładki, historia i zapisane hasła pozostaną bez zmian.</translation>
 <translation id="1619887657840448962">Aby poprawić bezpieczeństwo Chrome, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="1628000112320670027">Pomoc do Chrome</translation>
+<translation id="1632241302126471515">Wyszukaj w Chrome Canary</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
 <translation id="1651617469580841801">Gdy używasz Obiektywu Google, tytuł, adres URL i zawartość strony, w tym pliki PDF, są wysyłane do Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informacje o ChromeOS Flex</translation>
@@ -204,7 +205,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="2970681950995291301">Aby usunąć swoje konto Google z Chrome, wyloguj się z Chrome na stronie Ustawienia</translation>
 <translation id="2976869732253036751">Otrzymuj alerty o śledzeniu cen w Chrome na telefonie</translation>
-<translation id="2985091279808606502">Ta strona musi mieć w Chrome dostęp do sieci lokalnej</translation>
 <translation id="2991167882679440829">Hasła i inne dane z Chrome zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chrome, zaloguj się ponownie.</translation>
 <translation id="2994465299455873643">Zapewnia usługi szyfrowania i bezpieczny sposób przywracania <ph name="BROWSER_NAME" /> w razie utraty ważności. Jeśli ta usługa zostanie wyłączona, <ph name="BROWSER_NAME" /> może utracić dostęp do zaszyfrowanych danych i nie być w stanie przeprowadzić samoczynnego przywracania.<ph name="BROWSER_NAME" /></translation>
 <translation id="3003694935412297923">Wszystkie zadania</translation>
@@ -272,6 +272,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację}=1{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. Okno incognito nie otworzy się ponownie.}few{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzą się ponownie.}many{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okien incognito nie otworzy się ponownie.}other{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="3597003331831379823">Nie udało się uruchomić konfiguracji z podwyższonymi uprawnieniami. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Pokaż Gemini w Chrome w obszarze powiadomień</translation>
+<translation id="3616622400661108683">Zadawaj pytania dotyczące treści spoza Chrome, np. innych aplikacji lub plików</translation>
 <translation id="3622716124581627104">Rozpoznawaj obiekty lub miejsca i kopiuj lub tłumacz tekst. Gdy używasz Obiektywu Google, do Google jest wysyłany zrzut ekranu ze strony. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Korzystanie z Chrome na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
 <translation id="3628103251823745322">Zalogowano się już na konto <ph name="EXISTING_USER" />. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do zapisanych informacji oraz innych danych na wszystkich swoich urządzeniach.</translation>
@@ -541,6 +542,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6326175484149238433">Usuń z Chrome</translation>
 <translation id="6334815226785304306">Ustaw Google Chrome jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
 <translation id="63540178978900677">Chrome nie jest już przeglądarką domyślną. Czy ma nią być?</translation>
+<translation id="6357670763064300993">Gemini Enterprise w Chrome</translation>
 <translation id="6360449101159168105">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chrome działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
 <translation id="6362984640667950211">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do listy Do przeczytania oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="6388799252195623474">pomóż mi w tym</translation>
@@ -749,7 +751,9 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8162006532256575008">Używaj Chrome bez konta</translation>
 <translation id="8172231188687329735">Pobierz aplikację Chrome, aby zapisywać hasła, gdziekolwiek jesteś</translation>
 <translation id="8177472873527554730">Nie można znaleźć treści na stronie</translation>
+<translation id="8196526165798579689">Wyszukaj w wersji deweloperskiej Chrome</translation>
 <translation id="8221491193165283816">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na ich wysyłanie, kliknij tutaj.</translation>
+<translation id="8227493674161801700">Wyszukaj w Chrome Beta</translation>
 <translation id="8253851811470049684">Otwieraj linki w Chrome z dowolnej aplikacji i dodaj przeglądarkę do paska zadań, żeby mieć do niej łatwy dostęp</translation>
 <translation id="8255190535488645436">Google Chrome używa Twojej kamery i mikrofonu.</translation>
 <translation id="8260086374035800939">Jeśli Gemini w Chrome jest otwarty, panel boczny pozostaje otwarty podczas tworzenia nowych kart</translation>

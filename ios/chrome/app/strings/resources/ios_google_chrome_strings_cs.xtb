@@ -284,6 +284,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7272930098487145294">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte Chromu přidávat obrázky do vašich fotek</translation>
 <translation id="7275945473750112644">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chrome z tohoto zařízení vymazána</translation>
 <translation id="7284245284340063465">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Pokud některý návrh vyberete nebo ignorujete, Chrome se přizpůsobí, aby se vám v budoucnu zobrazovaly relevantnější návrhy.</translation>
 <translation id="7296102444587051536">Chrome pro iOS</translation>
 <translation id="7299681342915173313">Teď můžete Chrome použít pokaždé, když klepnete na odkazy v e‑mailech, dokumentech a jiných aplikacích.</translation>
 <translation id="7334364820047587268">Hesla pro tyto účty už ve Správci hesel Google máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
@@ -357,6 +358,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8544583291890527417">Upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chrome zjistí.</translation>
 <translation id="855027533751209304">Tip pro Chrome: Hledejte, co vidíte</translation>
 <translation id="8558480467877843976">Nyní můžete Chrome použít při každém procházení a pokaždé, když klepnete na odkazy ve zprávách, dokumentech a jiných aplikacích.</translation>
+<translation id="8589791109349384456">Vypnutí návrhů nemá vliv na zpracování názvů stránek a adres URL v Chromu pro jiné funkce. Přístup k těmto datům můžete spravovat v <ph name="BEGIN_LINK" />nastavení synchronizace<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Používejte hesla, historii, záložky a kreditní karty z prohlížeče Safari v Chromu</translation>
 <translation id="8630122478628016441">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>

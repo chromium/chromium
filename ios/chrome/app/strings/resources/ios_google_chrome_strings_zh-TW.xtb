@@ -282,6 +282,7 @@
 <translation id="7272930098487145294">如要儲存圖片，請輕觸 [設定] 並允許 Chrome 新增相片</translation>
 <translation id="7275945473750112644">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="7284245284340063465">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="7287957555760192025">無論你選取或忽略建議，Chrome 都會自動調整，以便日後提供更貼近需求的建議。</translation>
 <translation id="7296102444587051536">Chrome iOS 版</translation>
 <translation id="7299681342915173313">現在隨時可以使用 Chrome 開啟電子郵件、文件和其他應用程式中的連結。</translation>
 <translation id="7334364820047587268">Google 密碼管理工具已有下列帳戶的密碼。如果選擇匯入，就會取代現有的密碼。</translation>
@@ -356,6 +357,7 @@
 <translation id="8544583291890527417">如果 Chrome 偵測到隱私權或安全性問題，就會發出警示。</translation>
 <translation id="855027533751209304">Chrome 提示：搜尋畫面內容</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
+<translation id="8589791109349384456">即使關閉建議，Chrome 仍可處理網頁標題和網址，並用於其他功能。如要管理這類資料的存取權，請前往<ph name="BEGIN_LINK" />同步設定<ph name="END_LINK" />。</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8610372330814566250">在 Chrome 中使用你的 Safari 密碼、歷史記錄、書籤和信用卡</translation>
 <translation id="8630122478628016441">開啟「關閉 Chrome 時鎖定無痕分頁」。</translation>

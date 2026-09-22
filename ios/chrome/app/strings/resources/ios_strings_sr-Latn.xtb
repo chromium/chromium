@@ -110,6 +110,7 @@
 <translation id="1322735045095424339">Organizacija zahteva režim bez arhiviranja</translation>
 <translation id="1323735185997015385">Izbriši</translation>
 <translation id="132683371494960526">Dodirnite dvaput da biste promenili nadređeni folder.</translation>
+<translation id="132969855425874290">Zatvori funkciju Pronađi i popuni</translation>
 <translation id="1333455942675373522">Tastatura</translation>
 <translation id="1334485477792811969">Veb usluge</translation>
 <translation id="1335767868357998043">Odaberite položaj trake za adresu</translation>
@@ -313,6 +314,7 @@
 <translation id="1938871630297275912">{count,plural, =1{Link je primljen}one{{count} link je primljen}few{{count} linka su primljena}other{{count} linkova je primljeno}}</translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Meni → Podešavanja</translation>
+<translation id="1944477975050820119">Dobijajte predloge u realnom vremenu koji mogu da vam pomognu da otkrijete nove načine za pregledanje pomoću veštačke inteligencije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Prijavite se pomoću naloga kojim se upravlja</translation>
 <translation id="1955773397805078763">Dodajte način plaćanja</translation>
 <translation id="1956138802718275401">Pristupajte lozinkama sa početnog ekrana</translation>
@@ -433,6 +435,7 @@
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
 <translation id="2323697864063408084">Dobijajte obaveštenja na zaključanom ekranu i kao banere da ne biste propustili ono što vam je važno</translation>
 <translation id="2326302612031521902">Birač jedinica</translation>
+<translation id="2326606747676847821">Pređi u režim bez arhiviranja</translation>
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Bez zaštite</translation>
 <translation id="233375395665273385">Izbriši i odjavi me</translation>
@@ -458,6 +461,7 @@
 <translation id="2393230427496852974">Pročitajte šta ljudi govore</translation>
 <translation id="2394659309569789395">Ipak otvori sajt</translation>
 <translation id="2403129868389095715">Nije moguće isporučiti paket</translation>
+<translation id="2408318953009664750">Dozvoli jednom</translation>
 <translation id="2410754283952462441">Izaberite nalog</translation>
 <translation id="2422174748424038845">Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja.</translation>
 <translation id="2424805048070062787">Nastavite sa ovom karticom</translation>
@@ -502,6 +506,7 @@
 <translation id="2540111494300686866">Spreči dijaloge</translation>
 <translation id="2542268842667970959">Sakrij opciju Provera bezbednosti</translation>
 <translation id="2551153019974022505">Greška sa nalogom</translation>
+<translation id="2559785333866467778">Gemini predlozi</translation>
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
 <translation id="257088987046510401">Teme</translation>
 <translation id="2573117291489209663">Gotovo</translation>
@@ -556,6 +561,7 @@
 <translation id="2715440913764382254">Otvarajte linkove direktno ovde</translation>
 <translation id="2718352093833049315">Samo na WiFi-ju</translation>
 <translation id="2721190673959776287">Primer detaljne pomoći u proizvodu za kontekstualno okno koje treba da se prikazuje više puta dnevno.</translation>
+<translation id="273318428051150387">Nećete dobijati novosti kad napredujete u programu Level Up</translation>
 <translation id="2739887572830526131">Zadržite ovu grupu da biste dodali kartice kasnije ili je izbrišite ako vam više ne treba.</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
 <translation id="2750583038402718064">Veb-sajt <ph name="WEBSITE_TITLE" /> je premešten na poziciju <ph name="POSITION" /></translation>
@@ -684,6 +690,7 @@
 <translation id="3177338796769255211">Prijavite se da biste pristupali obeleživačima i drugom sadržaju na svim uređajima</translation>
 <translation id="3181954750937456830">Bezbedno pregledanje (štiti vas i uređaj od opasnih sajtova)</translation>
 <translation id="3183362380688692618">Nova grupa kartica...</translation>
+<translation id="3185000827934321633">Kretanje</translation>
 <translation id="3185760469172949183">Pretraga pomoću kamere je završena.</translation>
 <translation id="3186796054637504691">Clear History and Website Data (Obriši istoriju i podatke veb-sajtova)</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
@@ -862,6 +869,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 način plaćanja}one{# način plaćanja}few{# načina plaćanja}other{# načina plaćanja}}</translation>
 <translation id="3831560640878483188">Želite da odbacite upozorenje?</translation>
 <translation id="3832419617903252251">Lozinka je sačuvana samo na ovom uređaju</translation>
+<translation id="3835016165506903031">Dozvoli tokom posete</translation>
 <translation id="3835964409414434850">Idi na sledeću karticu</translation>
 <translation id="3838691874161539578">Proverite sačuvane lozinke da biste ojačali bezbednost i bili bezbedniji onlajn</translation>
 <translation id="3838985624086228724">Pad cene proizvoda koji pratite, sa <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -869,6 +877,7 @@
 <translation id="3851938967634752633">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> će biti izbrisane. Vaši nalozi neće biti izbrisani.</translation>
 <translation id="3853162385423733133">Nastavite da koristite i čuvate lozinke na Google nalogu <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Uvezite</translation>
+<translation id="3854052088499589035">Dobijaćete novosti kad napredujete u programu Level Up</translation>
 <translation id="3857113360369572832">Otvorite <ph name="BEGIN_BOLD" />Safari Settings<ph name="END_BOLD" /> (Podešavanja Safari-ja)</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="386224966259596343">Moći ćete da sačuvate ove informacije u Novčaniku sledeći put kada popunite odgovarajući obrazac.</translation>
@@ -1047,8 +1056,10 @@
 <translation id="4430505936695785931">Dobijte sačuvane lozinke u drugim aplikacijama</translation>
 <translation id="4431224949908513835">Izaberite način plaćanja koji će biti unet.</translation>
 <translation id="4432122368769493392">Podešavanja…</translation>
+<translation id="443295142249850475">Naslovi stranica i URL-ovi otvorenih kartica koriste se za pružanje relevantnih predloga.</translation>
 <translation id="4439968635693513370">Isplanirajte vikend pomoću</translation>
 <translation id="4442550905108052454">Otvorite <ph name="BEGIN_BOLD" />Podešavanja<ph name="END_BOLD" /></translation>
+<translation id="4444574452810111637">{count,plural, =1{Dostupan je {count} rezultat.}one{Dostupan je {count} rezultat.}few{Dostupna su {count} rezultata.}other{Dostupno je {count} rezultata.}}</translation>
 <translation id="4445840280797509738">Još opcija za: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Možete da prevučete ivicu da biste išli nazad ili napred.</translation>
 <translation id="4460014764210899310">Razdvoji</translation>
@@ -2224,6 +2235,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Isključi</translation>
 <translation id="8106442513853561174">Deli preciznu lokaciju</translation>
+<translation id="8110894698020598040">{count,plural, =1{1 lozinka je automatski popunjena}one{# lozinka je automatski popunjena}few{# lozinke su automatski popunjene}other{# lozinki je automatski popunjeno}}</translation>
 <translation id="8114753159095730575">Preuzimanje datoteke nije dostupno. Opcije su navedene u dnu ekrana.</translation>
 <translation id="8123502380991596210">Sakrij opciju Šta je novo</translation>
 <translation id="8123953306357309250">Želite da otkažete sinhronizaciju? Možete da uključite sinhronizaciju u podešavanjima u bilo kom trenutku.</translation>

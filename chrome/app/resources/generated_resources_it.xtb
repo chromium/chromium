@@ -1069,7 +1069,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1822517323280215012">Grigio</translation>
 <translation id="1822635184853104396">Mostra la cronologia dei download completa in una nuova scheda</translation>
 <translation id="1823768272150895732">Carattere</translation>
-<translation id="1823781806707127806">Aggiungi dati di navigazione esistenti al profilo gestito</translation>
 <translation id="1825073796163165618">Attiva link</translation>
 <translation id="1825565032302550710">La porta deve avere un valore compreso tra 1024 e 65535</translation>
 <translation id="18260074040409954">Puoi usare le password salvate su qualsiasi dispositivo. Le password vengono salvate in <ph name="GOOGLE_PASSWORD_MANAGER" /> per l'account <ph name="EMAIL" />.</translation>
@@ -1384,6 +1383,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2062354623176996748">Apri una finestra Incognito per esplorare il web senza salvare la tua cronologia di navigazione</translation>
 <translation id="206308717637808771">Elimina i dati alla chiusura di tutte le finestre. I dati vengono trattati allo stesso modo del sito che stai visualizzando</translation>
 <translation id="2066700471214517561">Microfono beamforming per un audio nitido della persona che utilizza Chromebook.</translation>
+<translation id="2067778293100584091">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze relative a dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /> come carte fedeltà, documenti di identità e offerte</translation>
 <translation id="2068581968816126410">Usa i preferiti su più dispositivi</translation>
 <translation id="2069020119963193894">&amp;Ridimensiona</translation>
 <translation id="2071393345806050157">Nessun file di log locale.</translation>
@@ -2377,6 +2377,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2813094189969465044">Controllo genitori</translation>
 <translation id="2814489978934728345">Interrompi il caricamento della pagina</translation>
 <translation id="2816319641769218778">Attiva la sincronizzazione per salvare le password nel tuo Account Google.</translation>
+<translation id="281678554528702272">Nota: queste impostazioni di accesso ai siti potrebbero essere sostituite da policy aziendali o da API avanzate.</translation>
 <translation id="2817435998497102771">Imposta sfondo e stile</translation>
 <translation id="2817861546829549432">Se attivi l'opzione "Non tenere traccia", verrà inclusa una richiesta nel tuo traffico di navigazione. Gli effetti dipendono dall'eventuale risposta di un sito web alla richiesta e dall'interpretazione di quest'ultima. Ad esempio, alcuni siti web potrebbero rispondere alla richiesta visualizzando annunci non basati su altri siti web che hai visitato. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i tuoi dati di navigazione, ad esempio per migliorare la sicurezza, fornire contenuti, servizi, annunci e suggerimenti sui propri siti web nonché per generare statistiche sui rapporti.</translation>
 <translation id="2818476747334107629">Dettagli stampante</translation>
@@ -5053,6 +5054,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485088796993065002">I siti potrebbero riprodurre suoni per fornire audio per musica, video e altri contenuti multimediali</translation>
 <translation id="4850919322897956733">Dati eliminati.</translation>
+<translation id="4851973858921178330">Filtra i siti</translation>
 <translation id="4852030988197799562">Blocca l'accesso allo strumento di ottimizzazione JavaScript sui nuovi siti visitati</translation>
 <translation id="4852383141291180386">Gestisci le notifiche delle app</translation>
 <translation id="4852916668365817106">Colore del puntatore del mouse</translation>
@@ -5148,7 +5150,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4913573660390710463">Accedi ad applicazioni web in pacchetto con funzionalità avanzate. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Impossibile trovare i dati dell'app</translation>
 <translation id="4915961947098019832">Possono mostrare immagini</translation>
-<translation id="491779113051926205">Contatori di traffico ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vuole comunicare con l'estensione "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4918762404810341788">Copia e apri</translation>
@@ -7464,6 +7465,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6754359471209693699">Inizia una nuova ricerca</translation>
 <translation id="6755702685749429945">Aggiungi dizionario</translation>
 <translation id="6756643207511618722">Motori di riconoscimento vocale</translation>
+<translation id="6756882635793733911">Chiedi informazioni su tutto ciò che vedi sullo schermo</translation>
 <translation id="6757431299485455321">Aiuta altri dispositivi a trovare questo hotspot.</translation>
 <translation id="6757615605516049275">Sblocca <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Comunicaci la tua opinione sul nostro lavoro.</translation>
@@ -10750,6 +10752,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="96756691973639907">Altre azioni per <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 <translation id="96774243435178359">Stampanti gestite</translation>
+<translation id="967745417352972504">Visita Google Wallet per aggiungere o gestire <ph name="BEGIN_LINK_PAYMENT_METHODS" />metodi di pagamento<ph name="END_LINK_PAYMENT_METHODS" /> e <ph name="BEGIN_LINK_PASSES" />tessere<ph name="END_LINK_PASSES" /> come carte fedeltà, documenti di identità e offerte</translation>
 <translation id="968000525894980488">Attiva Google Play Services.</translation>
 <translation id="968037381421390582">I&amp;ncolla e cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Cambia le lingue</translation>

@@ -270,6 +270,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7061455974939528301">Naciśnij i przytrzymaj ikonę Chrome i kliknij „Edytuj ekran główny”</translation>
 <translation id="7095110968493193530">W Menedżerze haseł Google w przypadku konta <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Zawsze używaj aktualnej wersji Chrome</translation>
+<translation id="7135936755418321901">Aby udostępniać swoją lokalizację witrynom, kliknij Ustawienia i pozwól Chrome na używanie Twojej lokalizacji.</translation>
 <translation id="7145599899567697473">Zapisuj i automatycznie uzupełniaj hasła w Chrome</translation>
 <translation id="7161390184744336561">Masz nieaktualną wersję Google Chrome</translation>
 <translation id="7165736900384873061">Skaner QR w Google Chrome</translation>
@@ -284,6 +285,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7272930098487145294">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chrome na dodanie ich do Twoich zdjęć</translation>
 <translation id="7275945473750112644">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chrome zostaną usunięte z tego urządzenia</translation>
 <translation id="7284245284340063465">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Jeśli wybierzesz lub zignorujesz sugestię, Chrome dostosuje się tak, aby w przyszłości wyświetlać trafniejsze sugestie.</translation>
 <translation id="7296102444587051536">Chrome na iOS</translation>
 <translation id="7299681342915173313">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w e-mailach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7334364820047587268">Menedżer haseł Google przechowuje już hasła do tych kont. Jeśli zechcesz zaimportować jedno z poniższych haseł, zastąpi ono dotychczasowe.</translation>
@@ -357,6 +359,7 @@ Dane zostały zaszyfrowane za pomocą hasła wielowyrazowego <ph name="TIME" />.
 <translation id="8544583291890527417">Alerty dotyczące wszelkich problemów z prywatnością i bezpieczeństwem, które wykrywa Chrome.</translation>
 <translation id="855027533751209304">Wskazówka dotycząca Chrome: wyszukaj to, co widzisz</translation>
 <translation id="8558480467877843976">Teraz możesz używać Chrome za każdym razem, gdy przeglądasz lub klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>
+<translation id="8589791109349384456">Wyłączenie sugestii nie ma wpływu na przetwarzanie przez Chrome tytułów stron i adresów URL na potrzeby innych funkcji. Możesz zarządzać dostępem do tych danych w <ph name="BEGIN_LINK" />ustawieniach synchronizacji<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Korzystaj w Chrome z haseł, historii, zakładek i kart kredytowych z Safari</translation>
 <translation id="8630122478628016441">Włącz opcję „Po zamknięciu Chrome blokuj karty incognito”.</translation>

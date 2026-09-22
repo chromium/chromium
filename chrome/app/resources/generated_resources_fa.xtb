@@ -1078,7 +1078,6 @@
 <translation id="1822517323280215012">خاکستری</translation>
 <translation id="1822635184853104396">نمایش سابقه کامل بارگیری‌ها در زبانه جدید</translation>
 <translation id="1823768272150895732">قلم</translation>
-<translation id="1823781806707127806">افزودن داده‌های مرور موجود به نمایه تحت‌مدیریت</translation>
 <translation id="1825073796163165618">فعال کردن پیوندها</translation>
 <translation id="1825565032302550710">درگاه باید از ۱۰۲۴ تا ۶۵۵۳۵ نویسه داشته باشد</translation>
 <translation id="18260074040409954">می‌توانید از گذرواژه‌های ذخیره‌شده در هر دستگاهی استفاده کنید. این گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> نشانی ایمیل <ph name="EMAIL" /> ذخیره شده است.</translation>
@@ -1394,6 +1393,7 @@
 <translation id="2062354623176996748">با «پنجره ناشناس»، بدون ذخیره کردن سابقه مرور از وب استفاده کنید</translation>
 <translation id="206308717637808771">با بسته شدن همه پنجره‌ها، داده‌ها حذف می‌شود. با داده‌ها و سایتی که درحال مشاهده هستید یکسان رفتار می‌شود</translation>
 <translation id="2066700471214517561">‏میکروفون با قابلیت شکل‌دهی پرتو برای اینکه صدای فردی که از Chromebook استفاده می‌کند واضح باشد.</translation>
+<translation id="2067778293100584091">‏برای کنترل <ph name="BEGIN_LINK1" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK1" /> یا مدیریت <ph name="BEGIN_LINK2" />روش‌های پرداخت<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />مجوزها<ph name="END_LINK3" /> مثل کارت‌های وفاداری، مدارک شناسایی، و پیشنهادها، از «کیف پول Google» بازدید کنید</translation>
 <translation id="2068581968816126410">استفاده از نشانک‌ها در همه دستگاه‌ها</translation>
 <translation id="2069020119963193894">&amp;اندازه</translation>
 <translation id="2071393345806050157">فایل گزارش محلی وجود ندارد.</translation>
@@ -2390,6 +2390,7 @@
 <translation id="2813094189969465044">کنترل‌های والدین</translation>
 <translation id="2814489978934728345">توقف بارگیری این صفحه</translation>
 <translation id="2816319641769218778">‏برای ذخیره گذرواژه‌ها در «حساب Google»، همگام‌سازی را روشن کنید.</translation>
+<translation id="281678554528702272">توجه: این تنظیمات دست یافتن به سایت ممکن است توسط خط‌مشی‌های سازمانی یا میاناهای برنامه‌سازی کاربردی قدرتمند لغو شود.</translation>
 <translation id="2817435998497102771">تنظیم کاغذدیواری و سبک</translation>
 <translation id="2817861546829549432">فعال کردن «ردیابی نشدن» به این معنی است که یک درخواست در ترافیک مرورتان گنجانده می‌شود. تأثیر درخواست به این بستگی دارد که آیا یک وب‌سایت به درخواست پاسخ بدهد یا نه و اینکه چگونه درخواست تفسیر بشود. برای مثال ممکن است بعضی‌از وب‌سایت‌ها با نشان دادن آگهی‌هایی که براساس وب‌سایت‌های دیگری که دیدید نیستند، به این درخواست پاسخ دهند. بسیاری از وب‌سایت‌ها همچنان داده‌های مرورتان را جمع‌آوری می‌کنند و به‌عنوان مثال برای بهبود امنیت، ارائه محتوا، خدمات، آگهی‌ها و توصیه‌ها در وب‌سایت‌هایشان و برای ایجاد آمار گزارش استفاده می‌کنند.</translation>
 <translation id="2818476747334107629">جزئیات چاپگر</translation>
@@ -5067,6 +5068,7 @@
 <translation id="4850886885716139402">نما</translation>
 <translation id="485088796993065002">سایت‌ها شاید برای ارائه صدای موسیقی، ویدیوها، و دیگر رسانه‌ها صدا پخش کنند</translation>
 <translation id="4850919322897956733">داده‌ها حذف شد.</translation>
+<translation id="4851973858921178330">فیلتر کردن سایت‌ها</translation>
 <translation id="4852030988197799562">دسترسی به بهینه‌ساز جاوا اسکریپت در سایت‌هایی که اخیراً از آن‌ها بازدید شده است مسدود می‌شود</translation>
 <translation id="4852383141291180386">مدیریت اعلان‌های برنامه</translation>
 <translation id="4852916668365817106">رنگ موشواره</translation>
@@ -5162,7 +5164,6 @@
 <translation id="4913573660390710463">به برنامه‌های وب بسته‌بندی‌شده با قابلیت‌های بهبود‌یافته دسترسی پیدا کنید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">داده‌های برنامه پیدا نشد</translation>
 <translation id="4915961947098019832">اجازه دارد تصاویر را نشان دهد</translation>
-<translation id="491779113051926205">‏شمارش‌گرهای ترافیک ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> می‌خواهد با افزونه «<ph name="EXTENSION_NAME" />» ارتباط برقرار کند</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4918762404810341788">کپی و باز کردن</translation>
@@ -7483,6 +7484,7 @@
 <translation id="6754359471209693699">شروع جستجوی جدید</translation>
 <translation id="6755702685749429945">افزودن واژه‌نامه</translation>
 <translation id="6756643207511618722">موتورهای گفتار</translation>
+<translation id="6756882635793733911">درباره هر چیزی که روی صفحه‌نمایش می‌بینید، سوال کنید</translation>
 <translation id="6757431299485455321">کمک می‌کند دستگاه‌های دیگر این نقطه اتصال را پیدا کنند.</translation>
 <translation id="6757615605516049275">لطفاً قفل <ph name="TOKEN_NAME" /> را باز کنید.</translation>
 <translation id="6758056191028427665">عملکردمان را به ما نشان دهید.</translation>
@@ -10769,6 +10771,7 @@
 <translation id="96756691973639907">کنش‌های بیشتر برای <ph name="MODULE_NAME" /></translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 <translation id="96774243435178359">چاپگرهای مدیریت‌شده</translation>
+<translation id="967745417352972504">‏برای افزودن یا مدیریت <ph name="BEGIN_LINK_PAYMENT_METHODS" />روش‌های پرداخت<ph name="END_LINK_PAYMENT_METHODS" /> و <ph name="BEGIN_LINK_PASSES" />مجوزهایی<ph name="END_LINK_PASSES" /> مثل کارت‌های وفاداری، مدارک شناسایی، و پیشنهادها، از «کیف پول Google» بازدید کنید</translation>
 <translation id="968000525894980488">‏«خدمات Google Play» را روشن کنید.</translation>
 <translation id="968037381421390582">جای‌گذاری و جستجوی «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="969096075394517431">تغییر زبان‌ها</translation>

@@ -53,6 +53,8 @@
 <translation id="1965068424387304464">Chromium-tipp: Jelszavak mentése</translation>
 <translation id="1992653360331625459">Ezekhez a fiókokhoz már vannak jelszavai a Jelszókezelőben. Ha az alábbi jelszavak egyikének importálása mellett dönt, azzal lecseréli a meglévőt.</translation>
 <translation id="2006345422933397527">A Chromium nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
+<translation id="2025935492422922097">A Chromium a felhőben lévő privát területen dolgozza fel az oldalcímeket és az URL-eket</translation>
+<translation id="2027881372245801507">A javaslatok kikapcsolása nem befolyásolja azt, hogy a Chromium hogyan dolgozza fel az oldalcímeket és az URL-eket más funkciókhoz. Az ezekhez az adatokhoz való hozzáférést a <ph name="BEGIN_LINK" />szinkronizálási beállításokban<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="2042889939382983733">A Chromium-előzmények megtekintése</translation>
 <translation id="2052320862053429062">A Chromium rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
 <translation id="2059365270911640413">Fejezze be a Chromium beállítását</translation>
@@ -351,6 +353,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="865600487977764604">Gondoskodik a biztonságáról a Chromiumban, és használható a biztonság növelésére más Google-alkalmazásokban, amikor Ön be van jelentkezve.</translation>
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8685813584220679697">Jelentkezzen be erre a webhelyre és a Chromiumba.</translation>
+<translation id="8697693743327341604">Ha kiválaszt egy javaslatot, vagy ha figyelmen kívül hagyja azt, a Chromium igazodik hozzá, hogy a jövőben relevánsabb javaslatokat jeleníthessen meg Önnek.</translation>
 <translation id="869832267508702259">Állítsa be a Chromiumot alapértelmezettként, hogy hozzáférhessen a Gemini statisztikáihoz, bárhol is böngésszen</translation>
 <translation id="8698780336333802489">Importálás a Chromiumba</translation>
 <translation id="8730503818204408000">Megnyitja a Chromium beállításait a Chromium alapértelmezett böngészőként való beállításához.</translation>
