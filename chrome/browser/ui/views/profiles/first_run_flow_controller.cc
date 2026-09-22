@@ -991,16 +991,6 @@ ProfilePickerToolbar::Builder FirstRunFlowController::CreateToolbarBuilder() {
       ProfileManagementFlowController::CreateToolbarBuilder();
   const bool is_in_search_engine_choice_region =
       IsProfileInSearchEngineChoiceRegion(profile_);
-  if (switches::IsFirstRunDesktopRefreshEnabled(
-          is_in_search_engine_choice_region) &&
-      switches::kFirstRunDesktopSignInPromoVariation.Get() ==
-          switches::FirstRunDesktopSignInPromoVariation::
-              kDontSignInOnGaiaPage) {
-    builder.WithDontSignInButton(
-        base::BindRepeating(&FirstRunFlowController::CancelSigninFlow,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
-
   if (switches::IsFirstRunDesktopRevampEnabled(
           is_in_search_engine_choice_region)) {
     builder.WithEffectsControlButton(

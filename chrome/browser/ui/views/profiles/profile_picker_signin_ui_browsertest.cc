@@ -77,41 +77,6 @@ std::vector<ProfilePickerSignInTestParam> GetTestParams() {
                                {switches::kFirstRunDesktopRevampSound, {}}},
       },
       {
-          .pixel_test_param =
-              {.test_suffix = "RegularFirstRunDontSignInOnGaiaPageEnabled"},
-          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
-          .enabled_features =
-              {{switches::kFirstRunDesktopRevamp, {}},
-               {switches::kFirstRunDesktopRevampSound, {}},
-               {switches::kFirstRunDesktopRefresh,
-                {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                  "dont-sign-in-on-gaia-page"}}}},
-      },
-      {
-          .pixel_test_param =
-              {.test_suffix = "DarkThemeFirstRunDontSignInOnGaiaPageEnabled",
-               .use_dark_theme = true},
-          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
-          .enabled_features =
-              {{switches::kFirstRunDesktopRevamp, {}},
-               {switches::kFirstRunDesktopRevampSound, {}},
-               {switches::kFirstRunDesktopRefresh,
-                {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                  "dont-sign-in-on-gaia-page"}}}},
-      },
-      {
-          .pixel_test_param = {.test_suffix =
-                                   "RTLFirstRunDontSignInOnGaiaPageEnabled",
-                               .use_right_to_left_language = true},
-          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
-          .enabled_features =
-              {{switches::kFirstRunDesktopRevamp, {}},
-               {switches::kFirstRunDesktopRevampSound, {}},
-               {switches::kFirstRunDesktopRefresh,
-                {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                  "dont-sign-in-on-gaia-page"}}}},
-      },
-      {
           .pixel_test_param = {.test_suffix =
                                    "RegularAddNewProfileRevampEnabled"},
           .entry_point = ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
@@ -145,18 +110,6 @@ std::vector<ProfilePickerSignInTestParam> GetTestParams() {
                   {switches::kFirstRunDesktopRefresh, {}},
                   {switches::kFirstRunDesktopRevamp, {}},
               },
-          .disabled_features = {switches::kFirstRunDesktopRevampSound},
-      },
-      {
-          .pixel_test_param =
-              {.test_suffix =
-                   "RegularFirstRunDontSignInOnGaiaPageEnabledSoundDisabled"},
-          .entry_point = ProfilePicker::EntryPoint::kFirstRun,
-          .enabled_features =
-              {{switches::kFirstRunDesktopRevamp, {}},
-               {switches::kFirstRunDesktopRefresh,
-                {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                  "dont-sign-in-on-gaia-page"}}}},
           .disabled_features = {switches::kFirstRunDesktopRevampSound},
       },
   };

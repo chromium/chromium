@@ -13,8 +13,6 @@
 #include "ui/views/view.h"
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
-    kProfilePickerToolbarDontSignInButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kProfilePickerToolbarEffectsControlButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kProfilePickerToolbarStartBrowsingButtonElementId);
@@ -46,10 +44,6 @@ class ProfilePickerToolbar : public views::View {
     Builder(Builder&&);
     Builder& operator=(Builder&&);
 
-    // Adds the "Don't sign in" button to the toolbar.
-    Builder& WithDontSignInButton(
-        base::RepeatingClosure on_dont_sign_in_callback);
-
     // Adds the "Start browsing" button to the toolbar.
     Builder& WithStartBrowsingButton(
         base::RepeatingClosure on_start_browsing_callback);
@@ -63,11 +57,12 @@ class ProfilePickerToolbar : public views::View {
     //
     // All buttons are hidden by default, and their visibility is controlled by
     // the caller.
-    std::unique_ptr<ProfilePickerToolbar> Build();
+    //
+    // This builder is no longer usable after this method is called.
+    std::unique_ptr<ProfilePickerToolbar> Build() &&;
 
    private:
     base::RepeatingClosure on_back_callback_;
-    base::RepeatingClosure on_dont_sign_in_callback_;
     base::RepeatingClosure on_start_browsing_callback_;
     bool effects_control_button_visible_by_default_ = false;
     base::RepeatingCallback<void(bool)> on_effects_control_callback_;
@@ -78,16 +73,11 @@ class ProfilePickerToolbar : public views::View {
   ProfilePickerToolbar& operator=(const ProfilePickerToolbar&) = delete;
 
   // Changes the visibility of the sign-in buttons (buttons that are related to
-  // the sign-in flow), i.e. back and "Don't sign in" (if created).
+  // the sign-in flow), i.e. back button.
   void SetSigninButtonsVisible(bool visible);
 
-  // Returns whether any of the sign-in buttons (back or "Don't sign in") is
-  // visible.
+  // Returns whether any of the sign-in buttons (back button) is visible.
   bool AreSigninButtonsVisibleForTesting() const;
-
-  // Changes the visibility of the "Don't sign in" button. It's no-op if the
-  // button is not created.
-  void SetDontSignInButtonVisible(bool visible);
 
   // Changes the visibility of the "Start browsing" button. It's no-op if the
   // button is not created.
@@ -103,13 +93,8 @@ class ProfilePickerToolbar : public views::View {
  private:
   ProfilePickerToolbar();
 
-  // Changes the visibility of the back button.
-  void SetBackButtonVisible(bool visible);
-
   void AddSpacer();
   void AddBackButton(base::RepeatingClosure on_back_callback);
-  void AddDontSignInButton(base::RepeatingClosure on_dont_sign_in_callback,
-                           bool paint_border);
   void AddStartBrowsingButton(
       base::RepeatingClosure on_start_browsing_callback);
   void AddSeparator();
@@ -119,7 +104,6 @@ class ProfilePickerToolbar : public views::View {
       bool visible_by_default);
 
   raw_ptr<views::View> sign_in_back_button_ = nullptr;
-  raw_ptr<views::View> dont_sign_in_button_ = nullptr;
   raw_ptr<views::View> start_browsing_button_ = nullptr;
   raw_ptr<views::View> separator_ = nullptr;
   raw_ptr<views::View> effects_control_button_ = nullptr;

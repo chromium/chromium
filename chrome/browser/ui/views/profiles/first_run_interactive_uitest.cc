@@ -185,14 +185,9 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 struct FirstRunVersion {
   struct Legacy {};
 
-  struct Refreshed {
-    switches::FirstRunDesktopSignInPromoVariation variant =
-        switches::FirstRunDesktopSignInPromoVariation::kDefault;
-  };
+  struct Refreshed {};
 
   struct Revamped {
-    switches::FirstRunDesktopSignInPromoVariation variant =
-        switches::FirstRunDesktopSignInPromoVariation::kDefault;
     bool sound_enabled = true;
   };
 
@@ -250,34 +245,12 @@ std::string VersionSuffix(const FirstRunVersion::Value& version) {
   return std::visit(
       absl::Overload{
           [](FirstRunVersion::Legacy) -> std::string { return "LegacyView"; },
-          [](FirstRunVersion::Refreshed refreshed) -> std::string {
-            switch (refreshed.variant) {
-              case switches::FirstRunDesktopSignInPromoVariation::kDefault:
-                return "RefreshedViewDefault";
-              case switches::FirstRunDesktopSignInPromoVariation::
-                  kDontSignInInTheTopCorner:
-                return "RefreshedViewDontSignInTopCorner";
-              case switches::FirstRunDesktopSignInPromoVariation::
-                  kDontSignInOnGaiaPage:
-                return "RefreshedViewDontSignInGaiaPage";
-            }
+          [](FirstRunVersion::Refreshed) -> std::string {
+            return "RefreshedView";
           },
-          [](FirstRunVersion::Revamped revamped) {
-            std::string base_suffix;
-            switch (revamped.variant) {
-              case switches::FirstRunDesktopSignInPromoVariation::kDefault:
-                base_suffix = "RevampedViewDefault";
-                break;
-              case switches::FirstRunDesktopSignInPromoVariation::
-                  kDontSignInInTheTopCorner:
-                base_suffix = "RevampedViewDontSignInTopCorner";
-                break;
-              case switches::FirstRunDesktopSignInPromoVariation::
-                  kDontSignInOnGaiaPage:
-                base_suffix = "RevampedViewDontSignInGaiaPage";
-                break;
-            }
-            return base_suffix + (revamped.sound_enabled ? "" : "NoSound");
+          [](FirstRunVersion::Revamped revamped) -> std::string {
+            return revamped.sound_enabled ? "RevampedView"
+                                          : "RevampedViewNoSound";
           },
           [](FirstRunVersion::PreFirstRunRefreshed) -> std::string {
             return "PreFirstRunRefreshedView";
@@ -322,13 +295,11 @@ const std::vector<TestParam>& GetTestParams() {
       test_params.push_back(test_param);
 
       TestParam test_param_refreshed = test_param;
-      test_param_refreshed.flow_version = FirstRunVersion::Refreshed{
-          .variant = switches::FirstRunDesktopSignInPromoVariation::kDefault};
+      test_param_refreshed.flow_version = FirstRunVersion::Refreshed{};
       test_params.push_back(std::move(test_param_refreshed));
 
       TestParam test_param_revamped = test_param;
-      test_param_revamped.flow_version = FirstRunVersion::Revamped{
-          .variant = switches::FirstRunDesktopSignInPromoVariation::kDefault};
+      test_param_revamped.flow_version = FirstRunVersion::Revamped{};
       test_params.push_back(std::move(test_param_revamped));
 
       TestParam test_param_pre_first_run_refreshed = test_param;
@@ -369,12 +340,9 @@ class FirstRunInteractiveUiBaseTest
               disabled_features.push_back(switches::kFirstRunDesktopRevamp);
               disabled_features.push_back(switches::kPreFirstRunDesktopRefresh);
             },
-            [&](FirstRunVersion::Refreshed refreshed) {
+            [&](FirstRunVersion::Refreshed) {
               enabled_features.push_back(
-                  {switches::kFirstRunDesktopRefresh,
-                   {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                     switches::kFirstRunDesktopSignInPromoVariation.GetName(
-                         refreshed.variant)}}});
+                  {switches::kFirstRunDesktopRefresh, {}});
               enabled_features.push_back(
                   {switches::kFirstRunDesktopChoiceScreenRefresh, {}});
 
@@ -383,10 +351,7 @@ class FirstRunInteractiveUiBaseTest
             },
             [&](FirstRunVersion::Revamped revamped) {
               enabled_features.push_back(
-                  {switches::kFirstRunDesktopRefresh,
-                   {{switches::kFirstRunDesktopSignInPromoVariation.name,
-                     switches::kFirstRunDesktopSignInPromoVariation.GetName(
-                         revamped.variant)}}});
+                  {switches::kFirstRunDesktopRefresh, {}});
               enabled_features.push_back(
                   {switches::kFirstRunDesktopChoiceScreenRefresh, {}});
               enabled_features.push_back(
@@ -2735,63 +2700,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const TestParamInfo<HatsTestParams>& info) {
       return std::string(info.param.test_suffix);
     });
-
-class FirstRunDontSignInOnGaiaPageInteractiveUiTest
-    : public FirstRunInteractiveUiBaseTest {
- public:
-  FirstRunDontSignInOnGaiaPageInteractiveUiTest()
-      : FirstRunInteractiveUiBaseTest(TestParam{
-            .flow_version = FirstRunVersion::Refreshed{
-                .variant = switches::FirstRunDesktopSignInPromoVariation::
-                    kDontSignInOnGaiaPage}}) {}
-};
-
-// TODO(crbug.com/366119368): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DeclineSignInFromNativeToolbar \
-  DISABLED_DeclineSignInFromNativeToolbar
-#else
-#define MAYBE_DeclineSignInFromNativeToolbar DeclineSignInFromNativeToolbar
-#endif
-IN_PROC_BROWSER_TEST_F(FirstRunDontSignInOnGaiaPageInteractiveUiTest,
-                       MAYBE_DeclineSignInFromNativeToolbar) {
-  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-
-  base::test::TestFuture<bool> proceed_future;
-  OpenFirstRun(proceed_future.GetCallback());
-  RunTestSequenceInContext(
-      views::ElementTrackerViews::GetContextForView(view()),
-      WaitForShow(kProfilePickerViewId),
-      InstrumentNonTabWebView(kWebContentsId, web_view()),
-      CompleteIntroStep(/*sign_in=*/true),
-      WaitForWebContentsNavigation(kWebContentsId,
-                                   GetSigninChromeSyncDiceUrl()),
-      WaitForShow(kProfilePickerToolbarDontSignInButtonElementId),
-      PressButton(kProfilePickerToolbarDontSignInButtonElementId));
-
-  WaitForPickerClosed();
-  EXPECT_TRUE(proceed_future.Get());
-
-  histogram_tester().ExpectUniqueSample(
-      /*name=*/"Signin.SignIn.Offered",
-      /*sample=*/signin_metrics::AccessPoint::kForYouFre,
-      /*expected_bucket_count=*/1);
-  histogram_tester().ExpectUniqueSample(
-      /*name=*/"Signin.SignIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kForYouFre,
-      /*expected_bucket_count=*/1);
-  histogram_tester().ExpectUniqueSample(
-      /*name=*/"ProfilePicker.FirstRun.ExitStatus",
-      /*sample=*/ProfilePicker::FirstRunExitStatus::kCompleted,
-      /*expected_bucket_count=*/1);
-
-  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
-  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
-  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
-  // Sign-in was never completed - step hasn't been attempted.
-  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/false,
-                       /*with_exit=*/false, /*count=*/0);
-}
 
 class FirstRunInSearchChoiceRegionInteractiveUiTest
     : public base::test::WithFeatureOverride,

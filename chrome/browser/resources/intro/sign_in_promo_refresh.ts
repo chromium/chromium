@@ -21,14 +21,6 @@ import {SignInPromoBrowserProxyImpl} from './sign_in_promo_browser_proxy.js';
 import {getCss} from './sign_in_promo_refresh.css.js';
 import {getHtml} from './sign_in_promo_refresh.html.js';
 
-// LINT.IfChange(Variation)
-export enum Variation {
-  DEFAULT = 0,
-  DONT_SIGN_IN_IN_TOP_RIGHT_CORNER = 1,
-  DONT_SIGN_IN_ON_GAIA = 2,
-}
-// LINT.ThenChange(//components/signin/public/base/signin_switches.h:FirstRunDesktopSignInPromoVariation)
-
 export interface SignInPromoRefreshElement {
   $: {
     leftAnimation: CrLottieElement,
@@ -74,7 +66,6 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
       isDeviceManaged_: {type: Boolean},
       anyButtonClicked_: {type: Boolean},
       shouldDisableAnimations_: {type: Boolean},
-      isFirstRunDesktopRevampEnabled_: {type: Boolean},
       // Exposed to CSS as 'is-pre-first-run-desktop-refresh-enabled_'.
       isPreFirstRunDesktopRefreshEnabled_: {type: Boolean, reflect: true},
       isDarkMode_: {type: Boolean},
@@ -85,8 +76,6 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected accessor managedDeviceDisclaimer_: string = '';
   protected accessor isDeviceManaged_: boolean =
       loadTimeData.getBoolean('isDeviceManaged');
-  protected accessor isFirstRunDesktopRevampEnabled_: boolean =
-      loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
   protected accessor isPreFirstRunDesktopRefreshEnabled_: boolean =
       loadTimeData.getBoolean('isPreFirstRunDesktopRefreshEnabled');
   // Animations are disabled if the feature is disabled (there is no mechanism
@@ -100,8 +89,6 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
       IntroMojoBrowserProxyImpl.getInstance();
   private browserProxy_: SignInPromoBrowserProxy =
       SignInPromoBrowserProxyImpl.getInstance();
-  private variation_: Variation =
-      loadTimeData.getInteger('signInPromoVariation') as Variation;
   private darkModeListener_: (e: MediaQueryListEvent) => void;
   private matchMedia_: MediaQueryList;
   private signInPromoListenerIds_: number[] = [];
@@ -203,14 +190,6 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected getDisclaimerVisibilityClass_(): string {
     return this.managedDeviceDisclaimer_.length === 0 ? 'temporarily-hidden' :
                                                         'fast-fade-in';
-  }
-
-  protected isDefaultVariation_(): boolean {
-    return this.variation_ === Variation.DEFAULT;
-  }
-
-  protected isTopRightCornerVariation_(): boolean {
-    return this.variation_ === Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER;
   }
 
   protected getAnimationUrl_(position: 'left'|'right'|'bottom'): string {

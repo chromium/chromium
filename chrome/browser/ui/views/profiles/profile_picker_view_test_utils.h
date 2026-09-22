@@ -144,7 +144,6 @@ class MockProfilePickerWebContentsHost : public ProfilePickerWebContentsHost {
   MOCK_METHOD(bool, AreEffectsEnabled, (), (const));
   MOCK_METHOD(content::WebContents*, GetPickerContents, (), (const));
   MOCK_METHOD(void, SetNativeToolbarSigninButtonsVisible, (bool visible));
-  MOCK_METHOD(void, SetNativeToolbarDontSignInButtonVisible, (bool visible));
   MOCK_METHOD(void, SetNativeToolbarStartBrowsingButtonVisible, (bool visible));
   MOCK_METHOD(void,
               SetNativeToolbarEffectsControlButtonVisible,

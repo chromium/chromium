@@ -32,7 +32,6 @@
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kProfilePickerToolbarDontSignInButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kProfilePickerToolbarEffectsControlButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
@@ -93,45 +92,6 @@ class ProfilePickerToolbarButton : public ToolbarButton {
 BEGIN_METADATA(ProfilePickerToolbarButton)
 END_METADATA
 
-// Base class for text based toolbar buttons.
-class ProfilePickerTextToolbarButton : public ProfilePickerToolbarButton {
-  METADATA_HEADER(ProfilePickerTextToolbarButton, ProfilePickerToolbarButton)
-
- public:
-  explicit ProfilePickerTextToolbarButton(PressedCallback callback,
-                                          const std::u16string& text)
-      : ProfilePickerToolbarButton(std::move(callback)) {
-    SetHighlight(text, SK_ColorTRANSPARENT);
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  }
-
-  ProfilePickerTextToolbarButton(const ProfilePickerTextToolbarButton&) =
-      delete;
-  ProfilePickerTextToolbarButton& operator=(
-      const ProfilePickerTextToolbarButton&) = delete;
-
-  ~ProfilePickerTextToolbarButton() override = default;
-
-  std::optional<SkColor> GetHighlightTextColor() const override {
-    const auto* const color_provider = GetColorProvider();
-    CHECK(color_provider);
-    return color_provider->GetColor(ui::kColorSysPrimary);
-  }
-
-  bool ShouldBlendHighlightColor() const override { return false; }
-
-  void UpdateColorsAndInsets() override {
-    ToolbarButton::UpdateColorsAndInsets();
-    // ToolbarButton adds spacing to one side of the label to separate it from
-    // the (missing) icon. Remove this to center the text properly.
-    // Also add some padding on both sides.
-    label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
-  }
-};
-
-BEGIN_METADATA(ProfilePickerTextToolbarButton)
-END_METADATA
-
 class SignInBackButton : public ProfilePickerToolbarButton {
   METADATA_HEADER(SignInBackButton, ProfilePickerToolbarButton)
 
@@ -156,50 +116,16 @@ class SignInBackButton : public ProfilePickerToolbarButton {
 BEGIN_METADATA(SignInBackButton)
 END_METADATA
 
-class DontSignInButton : public ProfilePickerTextToolbarButton {
-  METADATA_HEADER(DontSignInButton, ProfilePickerTextToolbarButton)
-
- public:
-  explicit DontSignInButton(PressedCallback callback, bool paint_border)
-      : ProfilePickerTextToolbarButton(
-            std::move(callback),
-            l10n_util::GetStringUTF16(
-                IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL)),
-        paint_border_(paint_border) {
-    SetProperty(views::kElementIdentifierKey,
-                kProfilePickerToolbarDontSignInButtonElementId);
-  }
-
-  DontSignInButton(const DontSignInButton&) = delete;
-  DontSignInButton& operator=(const DontSignInButton&) = delete;
-
-  ~DontSignInButton() override = default;
-
-  std::optional<SkColor> GetHighlightBorderColor() const override {
-    if (!paint_border_) {
-      return std::nullopt;
-    }
-    const auto* const color_provider = GetColorProvider();
-    CHECK(color_provider);
-    return color_provider->GetColor(ui::kColorSysPrimary);
-  }
-
- private:
-  const bool paint_border_;
-};
-
-BEGIN_METADATA(DontSignInButton)
-END_METADATA
-
-class StartBrowsingButton : public ProfilePickerTextToolbarButton {
-  METADATA_HEADER(StartBrowsingButton, ProfilePickerTextToolbarButton)
+class StartBrowsingButton : public ProfilePickerToolbarButton {
+  METADATA_HEADER(StartBrowsingButton, ProfilePickerToolbarButton)
 
  public:
   explicit StartBrowsingButton(PressedCallback callback)
-      : ProfilePickerTextToolbarButton(
-            std::move(callback),
-            l10n_util::GetStringUTF16(
-                IDS_FRE_NATIVE_TOOLBAR_START_BROWSING_BUTTON_LABEL)) {
+      : ProfilePickerToolbarButton(std::move(callback)) {
+    SetHighlight(l10n_util::GetStringUTF16(
+                     IDS_FRE_NATIVE_TOOLBAR_START_BROWSING_BUTTON_LABEL),
+                 SK_ColorTRANSPARENT);
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetProperty(views::kElementIdentifierKey,
                 kProfilePickerToolbarStartBrowsingButtonElementId);
   }
@@ -208,6 +134,22 @@ class StartBrowsingButton : public ProfilePickerTextToolbarButton {
   StartBrowsingButton& operator=(const StartBrowsingButton&) = delete;
 
   ~StartBrowsingButton() override = default;
+
+  std::optional<SkColor> GetHighlightTextColor() const override {
+    const auto* const color_provider = GetColorProvider();
+    CHECK(color_provider);
+    return color_provider->GetColor(ui::kColorSysPrimary);
+  }
+
+  bool ShouldBlendHighlightColor() const override { return false; }
+
+  void UpdateColorsAndInsets() override {
+    ToolbarButton::UpdateColorsAndInsets();
+    // ToolbarButton adds spacing to one side of the label to separate it from
+    // the (missing) icon. Remove this to center the text properly.
+    // Also add some padding on both sides.
+    label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
+  }
 };
 
 BEGIN_METADATA(StartBrowsingButton)
@@ -300,13 +242,6 @@ ProfilePickerToolbar::Builder& ProfilePickerToolbar::Builder::operator=(
     Builder&&) = default;
 
 ProfilePickerToolbar::Builder&
-ProfilePickerToolbar::Builder::WithDontSignInButton(
-    base::RepeatingClosure on_dont_sign_in_callback) {
-  on_dont_sign_in_callback_ = std::move(on_dont_sign_in_callback);
-  return *this;
-}
-
-ProfilePickerToolbar::Builder&
 ProfilePickerToolbar::Builder::WithStartBrowsingButton(
     base::RepeatingClosure on_start_browsing_callback) {
   on_start_browsing_callback_ = std::move(on_start_browsing_callback);
@@ -322,28 +257,21 @@ ProfilePickerToolbar::Builder::WithEffectsControlButton(
   return *this;
 }
 
-std::unique_ptr<ProfilePickerToolbar> ProfilePickerToolbar::Builder::Build() {
+std::unique_ptr<ProfilePickerToolbar>
+ProfilePickerToolbar::Builder::Build() && {
   auto toolbar = base::WrapUnique(new ProfilePickerToolbar());
-  toolbar->AddBackButton(on_back_callback_);
+  toolbar->AddBackButton(std::move(on_back_callback_));
   // Add a spacer to push the subsequent button(s) to the other side.
   toolbar->AddSpacer();
-  bool add_separator = false;
-  if (!on_dont_sign_in_callback_.is_null()) {
-    toolbar->AddDontSignInButton(
-        on_dont_sign_in_callback_,
-        /*paint_border=*/on_effects_control_callback_.is_null());
-    add_separator = true;
-  }
   if (!on_start_browsing_callback_.is_null()) {
-    toolbar->AddStartBrowsingButton(on_start_browsing_callback_);
-    add_separator = true;
+    toolbar->AddStartBrowsingButton(std::move(on_start_browsing_callback_));
   }
   if (!on_effects_control_callback_.is_null()) {
-    if (add_separator) {
+    if (toolbar->start_browsing_button_) {
       toolbar->AddSeparator();
     }
     toolbar->AddEffectsControlButton(
-        on_effects_control_callback_,
+        std::move(on_effects_control_callback_),
         effects_control_button_visible_by_default_);
   }
   return toolbar;
@@ -392,16 +320,6 @@ void ProfilePickerToolbar::AddBackButton(
   sign_in_back_button_->SetVisible(false);
 }
 
-void ProfilePickerToolbar::AddDontSignInButton(
-    base::RepeatingClosure on_dont_sign_in_callback,
-    bool paint_border) {
-  CHECK(dont_sign_in_button_ == nullptr);
-  CHECK(!on_dont_sign_in_callback.is_null());
-  dont_sign_in_button_ = AddChildView(std::make_unique<DontSignInButton>(
-      std::move(on_dont_sign_in_callback), paint_border));
-  dont_sign_in_button_->SetVisible(false);
-}
-
 void ProfilePickerToolbar::AddStartBrowsingButton(
     base::RepeatingClosure on_start_browsing_callback) {
   CHECK(start_browsing_button_ == nullptr);
@@ -443,8 +361,7 @@ void ProfilePickerToolbar::AddEffectsControlButton(
 }
 
 void ProfilePickerToolbar::SetSigninButtonsVisible(bool visible) {
-  SetBackButtonVisible(visible);
-  SetDontSignInButtonVisible(visible);
+  CHECK_DEREF(sign_in_back_button_).SetVisible(visible);
 }
 
 bool ProfilePickerToolbar::AreSigninButtonsVisibleForTesting() const {
@@ -452,15 +369,7 @@ bool ProfilePickerToolbar::AreSigninButtonsVisibleForTesting() const {
     // If the toolbar itself is not visible, then no buttons are visible.
     return false;
   }
-  return CHECK_DEREF(sign_in_back_button_).GetVisible() ||
-         (dont_sign_in_button_ && dont_sign_in_button_->GetVisible());
-}
-
-void ProfilePickerToolbar::SetDontSignInButtonVisible(bool visible) {
-  if (dont_sign_in_button_) {
-    dont_sign_in_button_->SetVisible(visible);
-  }
-  MaybeUpdateSeparatorVisibility();
+  return CHECK_DEREF(sign_in_back_button_).GetVisible();
 }
 
 void ProfilePickerToolbar::SetStartBrowsingButtonVisible(bool visible) {
@@ -482,8 +391,7 @@ void ProfilePickerToolbar::MaybeUpdateSeparatorVisibility() {
     return;
   }
   const bool has_visible_button_before =
-      (dont_sign_in_button_ && dont_sign_in_button_->GetVisible()) ||
-      (start_browsing_button_ && start_browsing_button_->GetVisible());
+      start_browsing_button_ && start_browsing_button_->GetVisible();
   const bool has_visible_button_after =
       effects_control_button_ && effects_control_button_->GetVisible();
 
@@ -496,12 +404,6 @@ bool ProfilePickerToolbar::AreEffectsEnabled() const {
   }
   return static_cast<EffectsControlButton*>(effects_control_button_)
       ->effects_enabled();
-}
-
-void ProfilePickerToolbar::SetBackButtonVisible(bool visible) {
-  // The back button should always be created.
-  CHECK(sign_in_back_button_);
-  sign_in_back_button_->SetVisible(visible);
 }
 
 BEGIN_METADATA(ProfilePickerToolbar)

@@ -1241,9 +1241,6 @@
         Sign In
       </message>
     </if>
-    <message name="IDS_FRE_CREATE_ACCOUNT_DESCRIPTION" desc="Text displayed on the sign-in screen (close to the sign-in button) in the first run experience (very first time Chrome is launched), informing users they can either sign in with an existing Google account or create a new one in the next step(s).">
-      Use your Google account or create a new one
-    </message>
     <message name="IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE" desc="Title for the sign in celebration screen (FRE).">
       Welcome, <ph name="USER_NAME">$1<ex>John</ex></ph>!
     </message>
@@ -1253,14 +1250,8 @@
     <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
       Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
     </message>
-    <message name="IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL" desc="A label for a button on the native toolbar to decline a prompt to sign in. Once clicked, the sign-in flow will be cancelled.">
-      Don't sign in
-    </message>
     <message name="IDS_FRE_NATIVE_TOOLBAR_START_BROWSING_BUTTON_LABEL" desc="A label for a button on the native toolbar of the first run feature showcase screen to start browsing directly. Once clicked, the first run flow will close and open the New Tab Page.">
       Start browsing
-    </message>
-    <message name="IDS_FRE_NEXT_BUTTON_TITLE" desc="A title for a button that advances a user to the next step (sign in screen) in the first run experience flow.">
-      Next
     </message>
     <message name="IDS_FRE_FINISH_OR_CONTINUE_TITLE" desc="A title for the final onboarding screen (Finish or Continue) in the first run experience flow.  It indicates that the setup process is complete. CHAR LIMIT = 25">
       You're all set!

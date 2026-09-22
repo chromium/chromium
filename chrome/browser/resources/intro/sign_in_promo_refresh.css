@@ -362,50 +362,6 @@ h2 {
   transform: scaleX(1);
 }
 
-#top-right-corner-container {
-  inset-inline-end: 1.5rem;
-  position: absolute;
-  top: 1.5rem;
-}
-
-#top-right-corner-container.has-effects-control-button {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  /* Native: 16px toolbar padding + 28px button width + 6px separator margin
-   * = 50px. */
-  inset-inline-end: 50px;
-  /* Align vertically with the native toolbar (8px padding). */
-  top: 8px;
-}
-
-#declineSignInButton.no-border {
-  --cr-button-background-color: transparent;
-  --cr-button-border: none;
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  min-width: 0;
-   /* Native: 6px toolbar padding + 8px label margin = 14px horizontal. */
-  padding: 6px 14px;
-}
-
-#separator {
-  background-color: var(--color-sys-divider, var(--cr-fallback-color-divider));
-  height: 16px;
-  margin-inline-end: 6px;
-  margin-inline-start: 2px;
-  /* Fine-tune vertical alignment to perfectly match native. */
-  transform: translateY(-1px);
-  width: 2px;
-}
-
-#create-account-disclaimer {
-  color: var(--cr-secondary-text-color);
-  font-size: var(--card-description-font-size);
-  margin-bottom: 1rem;
-}
-
 :host-context([webui-rounded-icons]) {
   #devices {
     --cr-icon-image: url(images/devices.svg);
