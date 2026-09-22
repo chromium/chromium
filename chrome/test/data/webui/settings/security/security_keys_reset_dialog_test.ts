@@ -6,6 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {SecurityKeysResetBrowserProxy, SettingsSecurityKeysResetDialogElement} from 'chrome://settings/lazy_load.js';
 import {ResetDialogPage, SecurityKeysResetBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSecurityKeysBrowserProxy} from '../test_security_keys_browser_proxy.js';
 
@@ -60,6 +61,7 @@ suite('SecurityKeysResetDialog', function() {
   test('Initialization', async function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('reset');
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'initial');
     assertNotComplete();
   });
@@ -67,6 +69,7 @@ suite('SecurityKeysResetDialog', function() {
   test('Cancel', async function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('reset');
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'initial');
     assertNotComplete();
     dialog.$.button.click();
@@ -81,6 +84,7 @@ suite('SecurityKeysResetDialog', function() {
 
     await browserProxy.whenCalled('reset');
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'noReset');
   });
@@ -92,6 +96,7 @@ suite('SecurityKeysResetDialog', function() {
 
     await browserProxy.whenCalled('reset');
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'resetFailed');
     assertTrue(
@@ -106,10 +111,12 @@ suite('SecurityKeysResetDialog', function() {
 
     await browserProxy.whenCalled('reset');
     await browserProxy.whenCalled('completeReset');
+    await microtasksFinished();
     assertNotComplete();
     assertShown(allDivs, dialog, 'resetConfirm');
     promiseResolver.resolve(0 /* success */);
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'resetSuccess');
   });
@@ -123,6 +130,7 @@ suite('SecurityKeysResetDialog', function() {
     await browserProxy.whenCalled('reset');
     await browserProxy.whenCalled('completeReset');
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'resetFailed');
     assertTrue(
@@ -138,6 +146,7 @@ suite('SecurityKeysResetDialog', function() {
     await browserProxy.whenCalled('reset');
     await browserProxy.whenCalled('completeReset');
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'resetNotAllowed');
   });

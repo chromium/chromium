@@ -9,15 +9,16 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../settings_shared.css.js';
 import '../../i18n_setup.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './security_keys_pin_field.html.js';
+import {getCss} from './security_keys_pin_field.css.js';
+import {getHtml} from './security_keys_pin_field.html.js';
 
 /**
  * A function that submits a PIN to a security key. It returns a Promise which
@@ -32,7 +33,7 @@ export interface SettingsSecurityKeysPinFieldElement {
   };
 }
 
-const SettingsSecurityKeysPinFieldElementBase = I18nMixin(PolymerElement);
+const SettingsSecurityKeysPinFieldElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsSecurityKeysPinFieldElement extends
     SettingsSecurityKeysPinFieldElementBase {
@@ -40,35 +41,37 @@ export class SettingsSecurityKeysPinFieldElement extends
     return 'settings-security-keys-pin-field';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      minPinLength: {
-        value: 4,
-        type: Number,
-      },
-
-      error_: {
-        type: String,
-        observer: 'errorChanged_',
-      },
-
-      value_: String,
-
-      inputVisible_: {
-        type: Boolean,
-        value: false,
-      },
+      minPinLength: {type: Number},
+      error_: {type: String},
+      value_: {type: String},
+      inputVisible_: {type: Boolean},
     };
   }
 
-  declare minPinLength: number;
-  declare private error_: string;
-  declare private value_: string;
-  declare private inputVisible_: boolean;
+  accessor minPinLength: number = 4;
+  protected accessor error_: string = '';
+  protected accessor value_: string = '';
+  protected accessor inputVisible_: boolean = false;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('error_')) {
+      this.errorChanged_();
+    }
+  }
 
   /** Focuses the PIN input field. */
   override focus() {
@@ -126,38 +129,42 @@ export class SettingsSecurityKeysPinFieldElement extends
     this.error_ = error;
   }
 
-  private onPinInput_() {
+  protected onPinValueChanged_(e: CustomEvent<{value: string}>) {
+    this.value_ = e.detail.value;
+  }
+
+  protected onPinInput_() {
     // Typing in the PIN box after an error makes the error message
     // disappear.
     this.error_ = '';
   }
 
   /**
-   * Polymer helper function to detect when an error string is empty.
+   * Helper function to detect when an error string is empty.
    * @return True iff |s| is non-empty.
    */
-  private isNonEmpty_(s: string): boolean {
-    return s !== '';
+  protected isNonEmpty_(): boolean {
+    return this.error_ !== '';
   }
 
   /**
    * @return The PIN-input element type.
    */
-  private inputType_(): string {
+  protected inputType_(): string {
     return this.inputVisible_ ? 'text' : 'password';
   }
 
   /**
    * @return The class (and thus icon) to be displayed.
    */
-  private showButtonClass_(): string {
+  protected showButtonClass_(): string {
     return 'icon-visibility' + (this.inputVisible_ ? '-off' : '');
   }
 
   /**
    * @return The tooltip for the icon.
    */
-  private showButtonTitle_(): string {
+  protected showButtonTitle_(): string {
     return this.i18n(
         this.inputVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
   }
@@ -165,7 +172,7 @@ export class SettingsSecurityKeysPinFieldElement extends
   /**
    * onClick handler for the show/hide icon.
    */
-  private showButtonClick_() {
+  protected onShowButtonClick_() {
     this.inputVisible_ = !this.inputVisible_;
   }
 
@@ -212,6 +219,14 @@ export class SettingsSecurityKeysPinFieldElement extends
     getAnnouncerInstance().announce(this.error_);
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-pin-field': SettingsSecurityKeysPinFieldElement;
+  }
+}
+
+export type SecurityKeysPinFieldElement = SettingsSecurityKeysPinFieldElement;
 
 customElements.define(
     SettingsSecurityKeysPinFieldElement.is,
