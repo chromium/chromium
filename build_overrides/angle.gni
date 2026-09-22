@@ -1,6 +1,7 @@
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//ui/gl/features.gni")
 
 # Override for angle_root
@@ -12,6 +13,9 @@ angle_has_build = true
 # Whether ANGLE is being linked statically.
 angle_use_static_angle = use_static_angle
 
+# Whether ANGLE uses PartitionAlloc.
+angle_use_partition_alloc = use_partition_alloc
+
 # Whether ANGLE is using the shared Vulkan loader on Mac.
 angle_shared_libvulkan_on_mac = true
 
@@ -21,6 +25,7 @@ angle_googletest_dir = "//third_party/googletest/src"
 angle_jsoncpp_dir = "//third_party/jsoncpp"
 angle_libjpeg_turbo_dir = "//third_party/libjpeg_turbo"
 angle_libpng_dir = "//third_party/libpng"
+angle_partition_alloc_dir = "//base/allocator/partition_allocator"
 angle_perfetto_cpp_dir = "//third_party/perfetto"
 angle_spirv_headers_dir = "//third_party/spirv-headers/src"
 angle_spirv_tools_dir = "//third_party/spirv-tools/src"
