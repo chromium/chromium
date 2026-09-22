@@ -9,8 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,7 +35,8 @@ class MessageBoxView;
 //
 // Users can allow or block the launch and optionally remember this decision
 // for the specific protocol and initiating origin.
-class ExternalProtocolDialog : public views::DialogDelegateView {
+class ExternalProtocolDialog : public views::DialogDelegateView,
+                               public views::WidgetObserver {
   METADATA_HEADER(ExternalProtocolDialog, views::DialogDelegateView)
 
  public:
@@ -49,6 +53,10 @@ class ExternalProtocolDialog : public views::DialogDelegateView {
   // views::DialogDelegateView:
   bool ShouldShowCloseButton() const override;
   std::u16string GetWindowTitle() const override;
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   friend class test::ExternalProtocolDialogTestApi;
@@ -82,6 +90,11 @@ class ExternalProtocolDialog : public views::DialogDelegateView {
   // windows, to ensure input protection and ignore spurious interactions.
   class PictureInPictureWatcher;
   std::unique_ptr<PictureInPictureWatcher> picture_in_picture_watcher_;
+
+  // Observes the dialog's widget for activation changes to re-arm input
+  // protection on z-order/activation reveals.
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
