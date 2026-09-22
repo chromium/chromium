@@ -3776,6 +3776,8 @@ shown properly on the user-facing crash UI.
   <int value="12" label="Rejected by onHeadersReceived for HTTP 401"/>
   <int value="13" label="Rejected by onAuthRequired()"/>
   <int value="14" label="The request is completed"/>
+  <int value="15"
+      label="Rejected because the client sent an invalid FollowRedirect"/>
 </enum>
 
 <enum name="ExtensionInstallationFailureReason">

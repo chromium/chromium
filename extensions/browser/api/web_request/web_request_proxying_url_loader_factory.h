@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -168,7 +169,9 @@ class WebRequestProxyingURLLoaderFactory
       kRejectedByOnHeadersReceivedForAuth,
       kRejectedByOnAuthRequired,
       kCompleted,
-      kMaxValue = kCompleted,
+      // The client's FollowRedirect() violated the URLLoader contract.
+      kRejectedByUnexpectedFollowRedirect,
+      kMaxValue = kRejectedByUnexpectedFollowRedirect,
     };
     // These two methods combined form the implementation of Restart().
     void UpdateRequestInfo();
@@ -202,6 +205,14 @@ class WebRequestProxyingURLLoaderFactory
         net::CompletionOnceCallback continuation);
     void OnRequestError(const network::URLLoaderCompletionStatus& status,
                         State state);
+
+    // Terminates a request whose client violated the URLLoader contract for
+    // FollowRedirect(), and reports `reason` as a bad message if the client is
+    // a renderer process. Deletes `this`.
+    void RejectFollowRedirect(
+        std::string_view reason,
+        net::Error error_code = net::ERR_INVALID_ARGUMENT);
+
     void OnNetworkError(const network::URLLoaderCompletionStatus& status);
     void OnClientDisconnected();
     void OnLoaderDisconnected(uint32_t custom_reason,
@@ -252,7 +263,16 @@ class WebRequestProxyingURLLoaderFactory
     mojo::ScopedDataPipeConsumerHandle current_body_;
     std::optional<mojo_base::BigBuffer> current_cached_metadata_;
     scoped_refptr<net::HttpResponseHeaders> override_headers_;
+
+    // A redirect *requested by an extension*, which this class then
+    // synthesizes. Empty if no extension asked to redirect the current hop.
+    // Not to be confused with `deferred_redirect_url_` below.
     GURL redirect_url_;
+
+    // The target of a redirect already forwarded to the `target_client_` via
+    // OnReceiveRedirect(), but not yet followed. Must be set for a legitimate
+    // call to `FollowRedirect()`.
+    std::optional<GURL> deferred_redirect_url_;
 
     // Holds any provided auth credentials through the extent of the request's
     // lifetime.
