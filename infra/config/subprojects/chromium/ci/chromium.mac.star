@@ -78,6 +78,7 @@ def ios_builder(*, name, **kwargs):
 ci.builder(
     name = "Mac Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Compiles Mac x64 release builds for triggered testers.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -138,6 +139,7 @@ ci.builder(
 ci.builder(
     name = "Mac Builder (dbg)",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Compiles Mac x64 debug builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -179,6 +181,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-arm64-on-arm64-rel",
+    description_html = "Builds Mac ARM64 release builds natively on ARM64 machines.",
 
     # TODO(crbug.com/40172659): Expand to more branches when all M1 bots are
     # rosettaless.
@@ -265,6 +268,7 @@ ci.builder(
 ci.builder(
     name = "mac-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Compiles Mac ARM64 release builds for triggered testers.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -322,6 +326,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-intel-on-arm64-rel",
+    description_html = "Builds Mac x64 release binaries on ARM64 machines.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -362,6 +367,7 @@ ci.builder(
 ci.thin_tester(
     name = "mac13-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs macOS 13 tests on ARM64 machines.",
     parent = "ci/mac-arm64-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -696,6 +702,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac13 Tests",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs macOS 13 tests on Intel x64 machines.",
     parent = "ci/Mac Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

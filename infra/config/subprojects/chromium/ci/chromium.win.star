@@ -63,6 +63,7 @@ consoles.console_view(
 
 ci.builder(
     name = "WebKit Win10",
+    description_html = "Runs Blink web tests against Windows x86 release builds on Windows 10.",
     parent = "Win Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -97,6 +98,7 @@ ci.builder(
 ci.builder(
     name = "Win Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Compiles Windows x86 release builds for triggered testers.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -141,6 +143,7 @@ ci.builder(
 
 ci.builder(
     name = "Win x64 Builder (dbg)",
+    description_html = "Compiles Windows x64 debug builds for triggered testers.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -184,6 +187,7 @@ ci.builder(
 
 ci.builder(
     name = "Win10 Tests x64 (dbg)",
+    description_html = "Runs standard Chromium test suites against Windows x64 debug builds on Windows 10.",
     parent = "Win x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -281,6 +285,7 @@ ci.builder(
 ci.builder(
     name = "Win Builder (dbg)",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Compiles Windows x86 debug builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -324,6 +329,7 @@ ci.builder(
 ci.builder(
     name = "Win x64 Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Compiles Windows x64 release builds for triggered testers.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -380,6 +386,7 @@ ci.builder(
 ci.builder(
     name = "Win10 Tests x64",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Runs standard Chromium test suites against Windows x64 release builds on Windows 10.",
     parent = "ci/Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -590,6 +597,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win11 Tests x64",
+    description_html = "Runs standard Chromium test suites against Windows x64 release builds on Windows 11.",
     parent = "ci/Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -959,6 +967,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "Windows deterministic",
+    description_html = "Verifies that Windows x86 release builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [

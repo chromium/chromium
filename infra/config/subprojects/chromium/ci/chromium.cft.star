@@ -64,6 +64,7 @@ consoles.console_view(
 
 ci.builder(
     name = "mac-rel-cft",
+    description_html = "Builds and tests Chrome for Testing release builds on Mac ARM64.",
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.MAC,
@@ -184,6 +185,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-rel-cft",
+    description_html = "Builds and tests Chrome for Testing release builds on Linux x64.",
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.LINUX,
@@ -271,6 +273,7 @@ ci.builder(
 
 ci.builder(
     name = "win-rel-cft",
+    description_html = "Builds and tests Chrome for Testing release builds on Windows x64.",
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.WIN,

@@ -24,6 +24,7 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-presubmit",
+    description_html = "Runs presubmit checks on Linux machines.",
     executable = "recipe:presubmit",
     builderless = True,
     cores = 32,
@@ -50,6 +51,7 @@ ci.builder(
 
 ci.builder(
     name = "win-presubmit",
+    description_html = "Runs presubmit checks on Windows machines.",
     executable = "recipe:presubmit",
     builderless = True,
     cores = "16|32",

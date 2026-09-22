@@ -499,6 +499,7 @@ def libfuzzer_linux_asan_builder(
 
 browser_asan_builder(
     name = "ASAN Debug",
+    description_html = "Produces a Linux x64 debug Chromium build with AddressSanitizer and LeakSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.DEBUG,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
@@ -512,6 +513,7 @@ browser_asan_builder(
 
 browser_asan_builder(
     name = "ASAN Release",
+    description_html = "Produces a Linux x64 release Chromium build with AddressSanitizer and LeakSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
@@ -529,6 +531,7 @@ browser_asan_builder(
 
 browser_asan_builder(
     name = "ASan Release (32-bit x86 with V8-ARM)",
+    description_html = "Produces a Linux x86 32-bit release Chromium build with V8 ARM simulator and AddressSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 32,
     target_platform = builder_config.target_platform.LINUX,
@@ -544,6 +547,7 @@ browser_asan_builder(
 
 browser_asan_builder(
     name = "ASAN Release Media",
+    description_html = "Produces a Linux x64 release Chromium build with ChromeOS media codecs and AddressSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
@@ -694,6 +698,7 @@ def centipede_linux_asan_builder(
 centipede_linux_asan_builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Builds Centipede fuzz targets with AddressSanitizer on Linux x64 and uploads them to ClusterFuzz.",
     free_space = builders.free_space.high,
     clusterfuzz_archive_path = "linux-release-asan/centipede-linux-release",
     execution_timeout = 6 * time.hour,
@@ -711,6 +716,7 @@ centipede_linux_asan_builder(
 
 browser_asan_builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
+    description_html = "Produces a Linux x86 32-bit release Chromium build with V8 ARM simulator, ChromeOS media codecs, and AddressSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 32,
     target_platform = builder_config.target_platform.LINUX,
@@ -727,6 +733,7 @@ browser_asan_builder(
 
 browser_asan_builder(
     name = "ChromiumOS ASAN Release",
+    description_html = "Produces a ChromeOS x64 release Chromium build with AddressSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.CHROMEOS,
@@ -762,6 +769,7 @@ def browser_msan_builder(**kwargs):
 
 browser_msan_builder(
     name = "MSAN Release (chained origins)",
+    description_html = "Produces a Linux x64 release Chromium build with MemorySanitizer (chained origins) for ClusterFuzz.",
     clusterfuzz_archive_path = "linux-release/msan-chained-origins-linux-release",
     console_short_name = "chained",
     gn_extra_configs = [
@@ -771,6 +779,7 @@ browser_msan_builder(
 
 browser_msan_builder(
     name = "MSAN Release (no origins)",
+    description_html = "Produces a Linux x64 release Chromium build with MemorySanitizer (no origin tracking) for ClusterFuzz.",
     clusterfuzz_archive_path = "linux-release/msan-no-origins-linux-release",
     console_short_name = "no-origins",
     gn_extra_configs = [
@@ -797,6 +806,7 @@ def browser_asan_mac_builder(
 
 browser_asan_mac_builder(
     name = "Mac ASAN Release",
+    description_html = "Produces a Mac x64 release Chromium build with AddressSanitizer for ClusterFuzz.",
     builderless = True,
     cpu = cpu.ARM64,
     clusterfuzz_archive_path = "mac-release/asan-mac-release",
@@ -810,6 +820,7 @@ browser_asan_mac_builder(
 
 browser_asan_mac_builder(
     name = "Mac ASAN Release Media",
+    description_html = "Produces a Mac x64 release Chromium build with media codecs and AddressSanitizer for ClusterFuzz.",
     builderless = False,
     cores = 12,
     # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
@@ -868,12 +879,14 @@ def browser_tsan_builder(**kwargs):
 
 browser_tsan_builder(
     name = "TSAN Debug",
+    description_html = "Produces a Linux x64 debug Chromium build with ThreadSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux-debug/tsan-linux-debug",
 )
 
 browser_tsan_builder(
     name = "TSAN Release",
+    description_html = "Produces a Linux x64 release Chromium build with ThreadSanitizer for ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux-release/tsan-linux-release",
     max_concurrent_invocations = 3,
@@ -893,6 +906,7 @@ def browser_ubsan_builder(**kwargs):
 
 browser_ubsan_builder(
     name = "UBSan Release",
+    description_html = "Produces a Linux x64 release Chromium build with UndefinedBehaviorSanitizer for ClusterFuzz.",
     chromium_config_name = "chromium_linux_ubsan",
     clusterfuzz_archive_path = "linux-release/ubsan-linux-release",
     gn_extra_configs = [
@@ -902,6 +916,7 @@ browser_ubsan_builder(
 
 browser_ubsan_builder(
     name = "UBSan vptr Release",
+    description_html = "Produces a Linux x64 release Chromium build with UndefinedBehaviorSanitizer vptr checks for ClusterFuzz.",
     chromium_config_name = "chromium_linux_ubsan_vptr",
     clusterfuzz_archive_path = "linux-release-vptr/ubsan-vptr-linux-release",
     console_short_name = "vptr",
@@ -935,12 +950,14 @@ def browser_asan_win_builder(
 
 browser_asan_win_builder(
     name = "Win ASan Release",
+    description_html = "Produces a Windows x64 release Chromium build with AddressSanitizer for ClusterFuzz.",
     clusterfuzz_archive_path = "win32-release_x64/asan-win32-release_x64",
     max_concurrent_invocations = 7,
 )
 
 browser_asan_win_builder(
     name = "Win ASan Release Media",
+    description_html = "Produces a Windows x64 release Chromium build with media codecs and AddressSanitizer for ClusterFuzz.",
     clusterfuzz_archive_path = "win32-release_x64-media/asan-win32-release_x64",
     console_short_name = "media",
     gn_extra_configs = [
@@ -965,6 +982,7 @@ browser_asan_win_builder(
 
 libfuzzer_linux_builder(
     name = "Libfuzzer Upload Chrome OS ASan",
+    description_html = "Builds libFuzzer targets with AddressSanitizer on ChromeOS x64 and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.CHROMEOS,
@@ -986,6 +1004,7 @@ libfuzzer_linux_builder(
 
 libfuzzer_builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
+    description_html = "Builds libFuzzer targets in debug mode for iOS Catalyst x64 and uploads them to ClusterFuzz.",
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -1014,6 +1033,7 @@ libfuzzer_builder(
 libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Builds libFuzzer targets with AddressSanitizer on Linux x64 release and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     clusterfuzz_archive_path = "linux-release-asan/libfuzzer-linux-release",
@@ -1036,6 +1056,7 @@ libfuzzer_linux_asan_builder(
 
 libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux ASan Debug",
+    description_html = "Builds libFuzzer targets with AddressSanitizer on Linux x64 debug and uploads them to ClusterFuzz.",
     ssd = True,
     free_space = builders.free_space.high,
     build_config = builder_config.build_config.DEBUG,
@@ -1087,6 +1108,7 @@ libfuzzer_linux_asan_builder(
 
 libfuzzer_linux_builder(
     name = "Libfuzzer Upload Linux MSan",
+    description_html = "Builds libFuzzer targets with MemorySanitizer on Linux x64 and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     chromium_extra_apply_configs = ["msan"],
@@ -1105,6 +1127,7 @@ libfuzzer_linux_builder(
 
 libfuzzer_linux_builder(
     name = "Libfuzzer Upload Linux UBSan",
+    description_html = "Builds libFuzzer targets with UndefinedBehaviorSanitizer on Linux x64 and uploads them to ClusterFuzz.",
     # Do not use builderless for this (crbug.com/980080).
     builderless = False,
     build_config = builder_config.build_config.RELEASE,
@@ -1141,6 +1164,7 @@ def libfuzzer_linux_v8_arm64_builder(**kwargs):
 
 libfuzzer_linux_v8_arm64_builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan",
+    description_html = "Builds libFuzzer targets with V8 ARM64 simulator and AddressSanitizer on Linux x64 release and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux-release-asan-arm64-sim/libfuzzer-v8-arm64-linux-release",
     console_short_name = "v8-arm64",
@@ -1154,6 +1178,7 @@ libfuzzer_linux_v8_arm64_builder(
 
 libfuzzer_linux_v8_arm64_builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan Debug",
+    description_html = "Builds libFuzzer targets with V8 ARM64 simulator and AddressSanitizer on Linux x64 debug and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux-debug-asan-arm64-sim/libfuzzer-v8-arm64-linux-debug",
     console_short_name = "v8-arm64-dbg",
@@ -1167,6 +1192,7 @@ libfuzzer_linux_v8_arm64_builder(
 
 libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux32 ASan",
+    description_html = "Builds libFuzzer targets with AddressSanitizer on Linux x86 32-bit release and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 32,
     clusterfuzz_archive_path = "linux32-release-asan/libfuzzer-linux32-release",
@@ -1199,6 +1225,7 @@ def libfuzzer_linux32_v8_arm_builder(**kwargs):
 
 libfuzzer_linux32_v8_arm_builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan",
+    description_html = "Builds libFuzzer targets with V8 ARM simulator and AddressSanitizer on Linux x86 32-bit release and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.RELEASE,
     clusterfuzz_archive_path = "linux32-release-asan-arm-sim/libfuzzer-v8-arm-linux32-release",
     console_short_name = "x86-v8-arm",
@@ -1213,6 +1240,7 @@ libfuzzer_linux32_v8_arm_builder(
 
 libfuzzer_linux32_v8_arm_builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
+    description_html = "Builds libFuzzer targets with V8 ARM simulator and AddressSanitizer on Linux x86 32-bit debug and uploads them to ClusterFuzz.",
     build_config = builder_config.build_config.DEBUG,
     clusterfuzz_archive_path = "linux32-debug-asan-arm-sim/libfuzzer-v8-arm-linux32-debug",
     console_short_name = "x86-v8-arm-dbg",
@@ -1288,6 +1316,7 @@ def libfuzzer_mac_asan_builder(**kwargs):
 
 libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
+    description_html = "Builds libFuzzer targets with AddressSanitizer on Mac x64 and uploads them to ClusterFuzz.",
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -1334,6 +1363,7 @@ libfuzzer_mac_asan_builder(
 libfuzzer_builder(
     name = "Libfuzzer Upload Windows ASan",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Builds libFuzzer targets with AddressSanitizer on Windows x64 and uploads them to ClusterFuzz.",
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     build_config = builder_config.build_config.RELEASE,

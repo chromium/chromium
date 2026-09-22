@@ -43,6 +43,7 @@ targets.builder_defaults.set(
 
 ci.builder(
     name = "fuchsia-x64-accessibility-rel",
+    description_html = "Runs Fuchsia accessibility browser tests on x64 release builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -99,6 +100,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-blink-web-tests-force-accessibility-rel",
+    description_html = "Runs Blink web tests and accessibility gtests on Linux with --force-renderer-accessibility enabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

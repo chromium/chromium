@@ -182,6 +182,7 @@ ci.builder(
 
 ci.builder(
     name = "android-11-x86-fyi-rel",
+    description_html = "Run Chromium tests on Android 11 x86 emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -603,6 +604,7 @@ ci.builder(
 # TODO(crbug.com/40216047): Move to non-FYI once the tester works fine.
 ci.thin_tester(
     name = "android-webview-12-x64-dbg-tests",
+    description_html = "Run WebView tests on Android 12 x64 debug emulators.",
     parent = "Android x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -647,6 +649,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-webview-13-x64-dbg-tests",
+    description_html = "Run WebView CTS tests on Android 13 x64 debug emulators.",
     parent = "Android x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -694,6 +697,7 @@ ci.thin_tester(
 # TODO(crbug.com/40216047): Move to non-FYI once the tester works fine.
 ci.thin_tester(
     name = "android-12-x64-dbg-tests",
+    description_html = "Run Chromium tests on Android 12 x64 debug emulators.",
     parent = "Android x64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -738,6 +742,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "android-cronet-asan-x86-rel",
+    description_html = "Build and test Cronet on Android x86 release with AddressSanitizer.",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
         gclient_config = builder_config.gclient_config(

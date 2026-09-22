@@ -77,6 +77,7 @@ branches.console_view_entry(
 ci.builder(
     name = "Android arm Builder (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compiles an Android ARM debug build.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -135,6 +136,7 @@ ci.builder(
 ci.builder(
     name = "Android arm64 Builder (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compiles an Android ARM64 debug build for trybot mirroring.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -196,6 +198,7 @@ ci.builder(
 ci.builder(
     name = "Android arm64 Builder All Targets (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compiles all targets for Android ARM64 debug build to verify full build coverage on CI.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -252,6 +255,7 @@ ci.builder(
 # branches, "Android x64 Builder All Targets (dbg)" is already building all.
 ci.builder(
     name = "Android x64 Builder (dbg)",
+    description_html = "Compiles an Android x64 debug build for triggered testers and trybot mirroring.",
     builder_spec = builder_config.copy_from("ci/Android x64 Builder All Targets (dbg)"),
     gn_args = gn_args.config(
         configs = [
@@ -285,6 +289,7 @@ ci.builder(
 ci.builder(
     name = "Android x64 Builder All Targets (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compiles all targets for Android x64 debug build to verify full build coverage on CI.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -334,6 +339,7 @@ ci.builder(
 ci.builder(
     name = "Android x86 Builder (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compiles an Android x86 debug build.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -381,6 +387,7 @@ ci.builder(
 
 ci.builder(
     name = "android-x86-rel",
+    description_html = "Compiles an Android x86 release build.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -424,6 +431,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "android-webview-10-x86-rel-tests",
+    description_html = "Runs WebView CTS tests on Android 10 x86 release emulators.",
     parent = "ci/android-x86-rel",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -695,6 +703,7 @@ ci.builder(
 
 ci.builder(
     name = "Deterministic Android",
+    description_html = "Verifies that Android ARM release builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -723,6 +732,7 @@ ci.builder(
 
 ci.builder(
     name = "Deterministic Android (dbg)",
+    description_html = "Verifies that Android ARM debug builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -1031,6 +1041,7 @@ ci.builder(
 
 ci.builder(
     name = "android-arm64-proguard-rel",
+    description_html = "Builds and tests Android ARM64 release builds with ProGuard optimization enabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1196,6 +1207,7 @@ ci.builder(
 
 ci.builder(
     name = "android-binary-size-generator",
+    description_html = "Generates Android binary size reference data for ARM and ARM64 trunk builds.",
     executable = "recipe:binary_size_generator_tot",
     gn_args = gn_args.config(
         configs = [
@@ -1226,6 +1238,7 @@ ci.builder(
 ci.builder(
     name = "android-cronet-arm-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Builds and tests Cronet on Android ARM debug.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1277,6 +1290,7 @@ ci.builder(
 ci.builder(
     name = "android-cronet-arm-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Builds and tests Cronet on Android ARM release.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1330,6 +1344,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-arm64-dbg",
+    description_html = "Builds and tests Cronet on Android ARM64 debug.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1378,6 +1393,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-arm64-rel",
+    description_html = "Builds and tests Cronet on Android ARM64 release.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1521,6 +1537,7 @@ ci.builder(
 ci.builder(
     name = "android-cronet-x86-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Builds Cronet on Android x86 debug.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1581,6 +1598,7 @@ ci.builder(
 ci.builder(
     name = "android-cronet-x64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Builds Cronet on Android x64 debug.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1640,6 +1658,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "android-cronet-x64-dbg-12-tests",
+    description_html = "Runs Cronet tests on Android 12 x64 debug emulators.",
     parent = "ci/android-cronet-x64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1687,6 +1706,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-cronet-x64-dbg-13-tests",
+    description_html = "Runs Cronet tests on Android 13 x64 debug emulators.",
     parent = "ci/android-cronet-x64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1881,6 +1901,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-cronet-x86-dbg-nougat-tests",
+    description_html = "Runs Cronet tests on Android Nougat x86 debug emulators.",
     parent = "ci/android-cronet-x86-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1928,6 +1949,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-cronet-x86-dbg-oreo-tests",
+    description_html = "Runs Cronet tests on Android Oreo x86 debug emulators.",
     parent = "ci/android-cronet-x86-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1982,6 +2004,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-cronet-x86-dbg-pie-tests",
+    description_html = "Runs Cronet tests on Android Pie x86 debug emulators.",
     parent = "ci/android-cronet-x86-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -2038,6 +2061,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "android-cronet-x86-dbg-10-tests",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Runs Cronet tests on Android 10 x86 debug emulators.",
     parent = "ci/android-cronet-x86-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -2092,6 +2116,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "android-cronet-x86-dbg-11-tests",
+    description_html = "Runs Cronet tests on Android 11 x86 debug emulators.",
     parent = "ci/android-cronet-x86-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -2139,6 +2164,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "android-cronet-x86-rel",
+    description_html = "Builds and tests Cronet on Android x86 release.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2189,6 +2215,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-x64-rel",
+    description_html = "Builds and tests Cronet on Android x64 release.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2670,6 +2697,7 @@ ci.builder(
 # TODO(crbug.com/40152686): Update the console view config once on CQ
 ci.builder(
     name = "android-11-x86-rel",
+    description_html = "Builds and runs Chromium tests on Android 11 x86 release emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

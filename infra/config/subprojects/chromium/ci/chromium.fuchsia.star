@@ -60,6 +60,7 @@ targets.settings_defaults.set(
 
 ci.builder(
     name = "Deterministic Fuchsia (dbg)",
+    description_html = "Verifies that Fuchsia x64 debug builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -91,6 +92,7 @@ ci.builder(
 ci.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    description_html = "ARM64 release build of Fuchsia components with Cast Receiver.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -273,6 +275,7 @@ ci.builder(
 ci.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    description_html = "x64 release build of Fuchsia components with Cast Receiver.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

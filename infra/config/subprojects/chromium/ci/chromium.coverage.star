@@ -91,6 +91,7 @@ def coverage_webview_builder(**kwargs):
 
 coverage_builder(
     name = "android-code-coverage",
+    description_html = "Builder for creating Android ARM64 Java code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -427,6 +428,7 @@ coverage_builder(
 
 coverage_builder(
     name = "android-code-coverage-native",
+    description_html = "Builder for creating Android ARM64 Clang native code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -765,6 +767,7 @@ coverage_builder(
 # fuschia runs outside of chromium, so we do not enable zoss for it.
 coverage_builder(
     name = "fuchsia-code-coverage",
+    description_html = "Builder for creating Fuchsia x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -921,6 +924,7 @@ coverage_builder(
 
 coverage_builder(
     name = "ios-simulator-code-coverage",
+    description_html = "Builder for creating iOS ARM64 simulator Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -983,6 +987,7 @@ coverage_builder(
 
 coverage_builder(
     name = "linux-chromeos-code-coverage",
+    description_html = "Builder for creating Ash Chrome (linux-chromeos) x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1060,6 +1065,7 @@ coverage_builder(
 
 coverage_builder(
     name = "linux-js-code-coverage",
+    description_html = "Builder for creating Linux x64 JavaScript code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1110,6 +1116,7 @@ coverage_builder(
 
 coverage_builder(
     name = "chromeos-js-code-coverage",
+    description_html = "Builder for creating Ash Chrome (linux-chromeos) x64 JavaScript code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1162,6 +1169,7 @@ coverage_builder(
 # Experimental builder. Does not export_coverage_to_zoss.
 coverage_builder(
     name = "linux-fuzz-coverage",
+    description_html = "Experimental builder for creating Linux x64 libFuzzer Clang code coverage builds.",
     executable = "recipe:chromium/fuzz",
     triggered_by = ["chromium-gitiles-trigger"],
     triggering_policy = scheduler.greedy_batching(
@@ -1332,6 +1340,7 @@ coverage_builder(
 
 coverage_builder(
     name = "linux-code-coverage",
+    description_html = "Builder for creating Linux x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1484,6 +1493,7 @@ coverage_builder(
 
 coverage_builder(
     name = "mac-code-coverage",
+    description_html = "Builder for creating Mac ARM64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1619,6 +1629,7 @@ coverage_builder(
 
 coverage_builder(
     name = "win10-code-coverage",
+    description_html = "Builder for creating Windows 10 x64 Clang code coverage builds.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

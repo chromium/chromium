@@ -45,6 +45,7 @@ targets.settings_defaults.set(
 
 ci.builder(
     name = "fuchsia-fyi-arm64-dbg",
+    description_html = "Builds and runs Fuchsia ARM64 debug tests.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -163,6 +164,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-fyi-x64-asan",
+    description_html = "Builds and runs Fuchsia x64 release tests with AddressSanitizer.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -267,6 +269,7 @@ ci.builder(
 
 ci.builder(
     name = "fuchsia-fyi-x64-dbg-persistent-emulator",
+    description_html = "Builds and runs Fuchsia x64 debug tests using persistent emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
