@@ -75,8 +75,8 @@ constexpr int kAutocompleteGhostTextContainerWeight = kSearchBoxPreferredWidth;
 constexpr int kAutocompleteGhostTextWeight = 1;
 constexpr int kAutocompleteGhostTextCategoryWeight = kSearchBoxPreferredWidth;
 
-// The space between the sunfish button and the assistant button at the edge of
-// the search field.
+// The space between buttons in the end button container at the edge of the
+// search field.
 constexpr int kEdgeButtonSpacing = 5;
 
 constexpr SkColor kSearchTextColor = SkColorSetRGB(0x33, 0x33, 0x33);
@@ -416,7 +416,7 @@ SearchBoxViewBase::SearchBoxViewBase()
                                         kAutocompleteGhostTextCategoryWeight,
                                         /*use_min_size=*/true);
 
-  // |search_box_button_container_| which will show either the assistant button,
+  // |search_box_button_container_| which will show either the end buttons,
   // the close button, or nothing on the right side of the search box view.
   search_box_button_container_ =
       content_container_->AddChildView(std::make_unique<views::View>());
@@ -463,8 +463,8 @@ views::ImageButton* SearchBoxViewBase::CreateCloseButton(
 void SearchBoxViewBase::CreateEndButtonContainer() {
   CHECK(!end_button_container_);
 
-  // `end_button_container_` is used to align the assistant button to the
-  // end of the `search_box_button_container_`.
+  // `end_button_container_` is used to align the end buttons to the end of
+  // the `search_box_button_container_`.
   end_button_container_ = search_box_button_container_->AddChildView(
       std::make_unique<views::BoxLayoutView>());
   end_button_container_->SetMainAxisAlignment(
@@ -483,16 +483,6 @@ views::ImageButton* SearchBoxViewBase::CreateSunfishButton(
   sunfish_button_ = end_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
   return sunfish_button_;
-}
-
-views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
-    const base::RepeatingClosure& button_callback) {
-  CHECK(end_button_container_);
-  CHECK(!assistant_button_);
-
-  assistant_button_ = end_button_container_->AddChildView(
-      std::make_unique<SearchBoxImageButton>(button_callback));
-  return assistant_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::CreateGeminiButton(
@@ -527,10 +517,6 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
   gfx::Rect view_bounds = rect;
   view_bounds.Inset(-GetInsets());
   return view_bounds;
-}
-
-views::ImageButton* SearchBoxViewBase::assistant_button() {
-  return assistant_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::gemini_button() {
@@ -647,8 +633,6 @@ void SearchBoxViewBase::OnEnabledChanged() {
   search_box_->SetEnabled(enabled);
   if (close_button_)
     close_button_->SetEnabled(enabled);
-  if (assistant_button_)
-    assistant_button_->SetEnabled(enabled);
   if (sunfish_button_) {
     sunfish_button_->SetEnabled(enabled);
   }
@@ -737,7 +721,7 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
 
   if (end_button_container_ && !end_button_container_->children().empty()) {
     const bool any_edge_button_shown =
-        show_assistant_button_ || show_gemini_button_ || show_sunfish_button_;
+        show_gemini_button_ || show_sunfish_button_;
     const bool should_show_edge_buttons =
         any_edge_button_shown && !should_show_close_button;
 
@@ -865,8 +849,6 @@ void SearchBoxViewBase::UpdateSearchBoxBackground(int corner_radius,
   }
   if (close_button_)
     close_button_->UpdateInkDropColorAndOpacity(color);
-  if (assistant_button_)
-    assistant_button_->UpdateInkDropColorAndOpacity(color);
   if (filter_button_) {
     filter_button_->UpdateInkDropColorAndOpacity(color);
   }

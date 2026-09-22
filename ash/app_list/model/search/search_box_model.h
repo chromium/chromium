@@ -41,9 +41,6 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   SearchBoxModel& operator=(const SearchBoxModel&) = delete;
   ~SearchBoxModel();
 
-  // TODO: crbug.com/388361414 - Delete.
-  bool show_assistant_button() const { return false; }
-
   // Show gemini button with display name and icon specified in
   // `search_box_icon_button`. Passing `std::nullopt` hides the button.
   void SetGeminiButtonVisibility(
