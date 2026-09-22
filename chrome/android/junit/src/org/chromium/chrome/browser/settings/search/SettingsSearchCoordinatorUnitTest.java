@@ -854,6 +854,73 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
+    public void testExitSearchIfOpen_whenBrowsingResults_leavesSearch() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        TestDetailFragment initialDetailFragment = new TestDetailFragment();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.preferences_detail, initialDetailFragment)
+                .commitNow();
+
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        // Enter search, display results, and open a result page (FS_RESULTS) plus a subpage on
+        // top of it.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        searchBox.performClick();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        var entry =
+                new SettingsIndexData.Entry.Builder(
+                                "theme_id", "theme_key", "Theme", "MainSettings")
+                        .build();
+        var results = new SettingsIndexData.SearchResults();
+        results.addItem(entry, 100);
+        mCoordinator.displayResultsFragment(results);
+        fragmentManager.executePendingTransactions();
+
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new Fragment())
+                .addToBackStack(SettingsSearchCoordinator.RESULT_BACKSTACK)
+                .setReorderingAllowed(true)
+                .commit();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new Fragment())
+                .addToBackStack(null)
+                .setReorderingAllowed(true)
+                .commit();
+        fragmentManager.executePendingTransactions();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        assertTrue(mCoordinator.isSearchOpen());
+
+        mCoordinator.exitSearchIfOpen();
+        fragmentManager.executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        // Search stands down and puts its own UI back, the same as it does from FS_SEARCH.
+        //
+        // Unwinding the pages opened from the results is deliberately not asserted here: it
+        // belongs to the caller that is taking the screen away. The only caller,
+        // SettingsPageFragmentDelegateImpl#updateForUrl, goes on to show the new page with
+        // addToBackStack = false, and MultiColumnSettings#showDetailFragment pops the whole back
+        // stack from entry 0 inclusive before replacing the container.
+        assertFalse(mCoordinator.isSearchOpen());
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        assertEquals(View.GONE, queryContainer.getVisibility());
+    }
+
+    @Test
     public void testExitSearchIfOpen_whenSearchIsNotOpen_doesNothing() {
         setUpMultiColumnSettings();
         mUseMultiColumn = true;
