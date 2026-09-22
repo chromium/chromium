@@ -49,12 +49,15 @@ source_set("impl") {
       "find_bar_platform_helper.h",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps += [ "//ui/gfx/range" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//ui/gfx/range",
+    ]
   }
 
   if (is_mac) {
     sources += [ "find_bar_platform_helper_mac.mm" ]
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 

@@ -1274,13 +1274,12 @@ FindBarController* BrowserWindowFeatures::GetFindBarController() {
   if (!find_bar_controller_.get()) {
     CHECK(browser_);
     find_bar_controller_ = std::make_unique<FindBarController>(
-        BrowserWindow::FromBrowser(browser_)->CreateFindBar(),
-        browser_command_controller_.get());
-    find_bar_controller_->find_bar()->SetFindBarController(
-        find_bar_controller_.get());
-    find_bar_controller_->ChangeWebContents(
-        tab_strip_model_->GetActiveWebContents());
-    find_bar_controller_->find_bar()->MoveWindowIfNecessary();
+        *browser_, browser_command_controller_.get());
+    // Callers of this getter have always received a controller whose FindBar
+    // is already built, so force it here rather than changing that contract.
+    // Deferring it is the point of the follow-up that constructs the
+    // controller deterministically.
+    find_bar_controller_->find_bar();
   }
   return find_bar_controller_.get();
 }

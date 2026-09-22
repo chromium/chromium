@@ -9,12 +9,14 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class BrowserWindowInterface;
 class FindBar;
 class FindBarPlatformHelper;
 
@@ -38,8 +40,10 @@ enum class ResultAction;
 class FindBarController : public content::WebContentsObserver,
                           public find_in_page::FindResultObserver {
  public:
+  // `browser` is used to create the FindBar the first time it is needed; see
+  // GetOrCreateFindBar().
   FindBarController(
-      std::unique_ptr<FindBar> find_bar,
+      BrowserWindowInterface& browser,
       chrome::BrowserCommandController* browser_command_controller);
 
   FindBarController(const FindBarController&) = delete;
@@ -85,7 +89,10 @@ class FindBarController : public content::WebContentsObserver,
   // Will be called only from `Browser`.
   void HandleActiveTabChanged(content::WebContents* new_contents);
 
-  FindBar* find_bar() const { return find_bar_.get(); }
+  // Returns the FindBar, creating it on first use. Creating the FindBar builds
+  // a widget, so this is deliberately deferred until something actually needs
+  // it rather than done at construction.
+  FindBar* find_bar();
 
   // Updates the page action, which the find bar appears anchored to.
   void UpdatePageAction();
@@ -94,6 +101,10 @@ class FindBarController : public content::WebContentsObserver,
   void OnFindBarVisibilityChanged();
 
  private:
+  // Creates the FindBar and performs its one-time setup on first call, then
+  // returns it. Subsequent calls just return the existing bar.
+  FindBar* GetOrCreateFindBar();
+
   // Sends an update to the find bar with the tab contents' current result. The
   // `web_contents()` must be non-NULL before this call. This handles
   // de-flickering in addition to just calling the update function.
@@ -108,6 +119,8 @@ class FindBarController : public content::WebContentsObserver,
 
   // Gets the text that is selected in the current tab, or an empty string.
   std::u16string GetSelectedText();
+
+  const raw_ref<BrowserWindowInterface> browser_;
 
   std::unique_ptr<FindBar> find_bar_;
 
