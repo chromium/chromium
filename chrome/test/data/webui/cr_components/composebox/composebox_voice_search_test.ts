@@ -770,6 +770,20 @@ suite('ComposeboxVoiceSearch', () => {
             'Submit button should be hidden when flag is disabled');
       });
 
+  test('stop button has accessible label and tabindex', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const voiceSearchElement = await openVoiceSearchUI();
+    const stopButton = voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+        '#stopButton')!;
+    assertTrue(!!stopButton);
+    assertEquals('0', stopButton.getAttribute('tabindex'));
+    assertTrue(stopButton.hasAttribute('aria-label'));
+  });
+
   test(
       'Submits the voice transcript directly on submit click while recording',
       async () => {

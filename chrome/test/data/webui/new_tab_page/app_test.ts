@@ -21,6 +21,7 @@ import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_comma
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -3812,6 +3813,55 @@ suite('NewTabPageAppTest', () => {
               !!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
           assertFalse(!!app.shadowRoot.querySelector('#voiceSearchDialog'));
         });
+
+    test(
+        'focuses dialog container so initial tab focuses stop button ' +
+            'first in voice search dialog',
+        async () => {
+          loadTimeData.overrideValues({
+            googleBaseUrl: 'chrome://new-tab-page/',
+            voiceSearchCoherenceAnySearchboxExperimentEnabled: true,
+            voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled: true,
+            voiceSearchCoherenceRealboxAutoEndpointEnabled: false,
+          });
+          await recreateApp();
+
+          const realbox = $$(app, '#searchbox')!;
+          realbox.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          const dialog = app.shadowRoot.querySelector<HTMLDialogElement>(
+              '#voiceSearchDialog');
+          assertTrue(!!dialog);
+          assertTrue(dialog.open);
+
+          // The dialog container itself is focused rather than any inner
+          // button, so pressing Tab starts sequential navigation at the first
+          // child (#stopButton).
+          assertEquals(dialog, getDeepActiveElement());
+
+          const voiceSearch =
+              app.shadowRoot.querySelector('cr-composebox-voice-search')!;
+          assertTrue(!!voiceSearch);
+          await voiceSearch.updateComplete;
+
+          const stopButton =
+              voiceSearch.shadowRoot.querySelector<HTMLElement>('#stopButton')!;
+          assertTrue(!!stopButton);
+          assertEquals(0, stopButton.tabIndex);
+          assertEquals(stopButton.title, stopButton.getAttribute('aria-label'));
+
+          const submitButton =
+              voiceSearch.shadowRoot.querySelector<HTMLElement>(
+                  '#submitButton')!;
+          assertTrue(!!submitButton);
+
+          // Verify stop button precedes submit button in DOM tab order.
+          assertTrue(Boolean(
+              stopButton.compareDocumentPosition(submitButton) &
+              Node.DOCUMENT_POSITION_FOLLOWING));
+        });
+
 
     test(
         'dialog handles cancel, error, and final result when NTP searchbox ' +

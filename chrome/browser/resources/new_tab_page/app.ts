@@ -879,6 +879,7 @@ export class AppElement extends AppElementBase {
             '#voiceSearchDialog');
         assert(dialog);
         dialog.showModal();
+        dialog.focus();
 
         const voiceSearch =
             this.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
