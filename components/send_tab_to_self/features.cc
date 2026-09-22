@@ -31,7 +31,7 @@ BASE_FEATURE(kSendTabToSelfPropagateScrollPosition,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfImprovedLastActiveLabels,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfPropagateNavigationHistory,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -45,9 +45,9 @@ BASE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid,
 
 BASE_FEATURE(kSendTabToSelfEnhancedDesktopUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfPostSendToast, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSendTabToSelfPostSendToast, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfExtraEntryPoints, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSendTabToSelfExtraEntryPoints, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2,
              "SendTabToSelfEnhancedDesktopUIv2",
@@ -69,7 +69,7 @@ BASE_FEATURE(kSendTabToSelfSwitchToParentOnBack,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSendTabToSelfEnhancedBottomsheet,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)

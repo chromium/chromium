@@ -11285,29 +11285,6 @@
             ]
         }
     ],
-    "InstantHandoffPhase1": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SendTabToSelfEnhancedBottomsheet",
-                        "SendTabToSelfExtraEntryPoints",
-                        "SendTabToSelfImprovedLastActiveLabels",
-                        "SendTabToSelfPostSendToast"
-                    ]
-                }
-            ]
-        }
-    ],
     "InstantHandoffPhase1FastFollows": [
         {
             "platforms": [
