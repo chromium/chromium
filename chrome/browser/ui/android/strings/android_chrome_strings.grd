@@ -7945,7 +7945,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Gemini wants to use your microphone
       </message>
       <message name="IDS_GLIC_MIC_PERMISSION_DIALOG_MESSAGE" desc="Explanation for why Gemini needs microphone permission, with a link to Settings.">
-        To talk to Gemini, give it permission to use your microphone. You can also manage this in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>
+        To talk to Gemini, give it permission to use your microphone. You can also manage this in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings.<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_GLIC_MIC_PERMISSION_DIALOG_ALLOW" desc="Positive button text to allow microphone permission for Gemini.">
         Allow
