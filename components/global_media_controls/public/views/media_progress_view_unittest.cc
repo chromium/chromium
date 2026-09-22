@@ -691,4 +691,32 @@ TEST_F(MediaProgressViewTest, SquigglyWavePhaseAdvancesSmoothly) {
   EXPECT_LT(phase_after_first_tick, 1.0f);
 }
 
+TEST_F(MediaProgressViewTest,
+       UpdateProgressCallbackAtZeroAndSubSecondPositions) {
+  // Initial update at 0s should invoke `OnProgressUpdated`.
+  media_session::MediaPosition zero_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(0), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(1);
+  view()->UpdateProgress(zero_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Sub-second update within the same whole second should not invoke
+  // `OnProgressUpdated` again.
+  media_session::MediaPosition sub_second_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Milliseconds(500), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(0);
+  view()->UpdateProgress(sub_second_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Advancing to the next whole second should invoke `OnProgressUpdated`.
+  media_session::MediaPosition one_second_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(1), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_)).Times(1);
+  view()->UpdateProgress(one_second_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+}
+
 }  // namespace global_media_controls

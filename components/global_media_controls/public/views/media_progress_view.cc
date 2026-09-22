@@ -132,7 +132,7 @@ MediaProgressView::MediaProgressView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
-  GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
+  GetViewAccessibility().SetValue(GetFormattedDuration(base::TimeDelta()));
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
@@ -189,6 +189,7 @@ bool MediaProgressView::HandleAccessibleAction(
 void MediaProgressView::VisibilityChanged(View* starting_from,
                                           bool is_visible) {
   if (!is_visible || !IsDrawn()) {
+    last_announced_position_ = base::TimeDelta::Min();
     return;
   }
 
@@ -205,13 +206,11 @@ void MediaProgressView::VisibilityChanged(View* starting_from,
     return;
   }
 
-  on_update_progress_callback_.Run(current_position_);
-
-  MaybeNotifyAccessibilityValueChanged();
+  MaybeNotifyProgressPositionChanged();
 }
 
 void MediaProgressView::AddedToWidget() {
-  MaybeNotifyAccessibilityValueChanged();
+  VisibilityChanged(this, GetVisible());
 }
 
 void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
@@ -497,13 +496,11 @@ void MediaProgressView::UpdateProgress(
   // compositor work. We use IsDrawn() instead of local visibility to correctly
   // handle cases where a parent (e.g., the PiP overlay) is hidden.
   if (!IsDrawn()) {
+    last_announced_position_ = base::TimeDelta::Min();
     return;
   }
 
-  if (current_position_.InSeconds() != last_announced_position_.InSeconds()) {
-    on_update_progress_callback_.Run(current_position_);
-  }
-  MaybeNotifyAccessibilityValueChanged();
+  MaybeNotifyProgressPositionChanged();
 
   if (progress_changed) {
     OnPropertyChanged(&current_value_, views::PropertyEffects::kPaint);
@@ -524,12 +521,12 @@ base::TimeDelta MediaProgressView::GetUpdateInterval() const {
                                            : kDefaultProgressUpdateInterval;
 }
 
-void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {
-  if (!IsDrawn() || !GetWidget() || !GetWidget()->IsVisible() ||
-      current_position_.InSeconds() == last_announced_position_.InSeconds()) {
+void MediaProgressView::MaybeNotifyProgressPositionChanged() {
+  if (current_position_.InSeconds() == last_announced_position_.InSeconds()) {
     return;
   }
   last_announced_position_ = current_position_;
+  on_update_progress_callback_.Run(current_position_);
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
 }
 

@@ -115,8 +115,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   gfx::SlideAnimation& thickness_animation_for_testing();
 
  private:
-  // Fires an accessibility event if the progress has changed.
-  void MaybeNotifyAccessibilityValueChanged();
+  // Runs the progress update callback and updates the accessible value if the
+  // media position in seconds has changed.
+  void MaybeNotifyProgressPositionChanged();
 
   // Handles the event when user drags the progress line using a mouse or
   // gesture on a tablet. If the user only intends to click, these functions are
@@ -157,7 +158,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   double current_value_ = 0.0;
 
   // Current media position and media duration.
-  base::TimeDelta current_position_;
+  base::TimeDelta current_position_ = base::TimeDelta::Min();
   base::TimeDelta media_duration_ = base::TimeDelta::Max();
 
   // Fraction of the progress amplitude used for progress path to transition
@@ -165,7 +166,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   float progress_amp_fraction_ = 0.0f;
 
   // The media position last announced for accessibility.
-  base::TimeDelta last_announced_position_;
+  base::TimeDelta last_announced_position_ = base::TimeDelta::Min();
 
   // The progress phase offset changing as time passes for the progress wave to
   // move.
