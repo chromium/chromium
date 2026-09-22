@@ -581,5 +581,104 @@ TEST_F(PopularSitesTest, DoesNotFetchExplorationSites) {
   EXPECT_THAT(sections, Not(Contains(Pair(SectionType::NEWS, _))));
 }
 
+TEST_F(PopularSitesTest, IgnoresEntriesWithNonWebUrls) {
+  const TestPopularSite kChromeSettings{
+      {kTitle, "Chrome Settings"},
+      {kUrl, "chrome://settings"},
+  };
+  const TestPopularSite kLocalFile{
+      {kTitle, "Local File"},
+      {kUrl, "file:///sdcard/Download/leaked_note.txt"},
+  };
+  const TestPopularSite kJavascript{
+      {kTitle, "JavaScript"},
+      {kUrl, "javascript:alert(1)"},
+  };
+  const TestPopularSite kIntent{
+      {kTitle, "Intent"},
+      {kUrl, "intent://example.com/#Intent;scheme=https;end"},
+  };
+  const TestPopularSite kInvalidUrl{
+      {kTitle, "Invalid URL"},
+      {kUrl, "not a valid url"},
+  };
+  const TestPopularSite kDataUrl{
+      {kTitle, "Data URL"},
+      {kUrl, "data:text/html,<html></html>"},
+  };
+  const TestPopularSite kAboutBlank{
+      {kTitle, "About Blank"},
+      {kUrl, "about:blank"},
+  };
+
+  SetCountryAndVersion("ZZ", "7");
+  RespondWithV5JSON(
+      "https://www.gstatic.com/chrome/ntp/suggested_sites_ZZ_7.json",
+      {kChromeSettings, kLocalFile, kWikipedia, kJavascript, kIntent,
+       kInvalidUrl, kDataUrl, kAboutBlank, kYouTube});
+
+  PopularSites::SitesVector sites;
+  EXPECT_THAT(FetchPopularSites(/*force_download=*/true, &sites),
+              Eq(std::optional<bool>(true)));
+
+  ASSERT_THAT(sites.size(), Eq(2u));
+  EXPECT_THAT(sites[0].url, URLEq("https://zz.m.wikipedia.org/"));
+  EXPECT_THAT(sites[1].url, URLEq("https://m.youtube.com/"));
+}
+
+TEST_F(PopularSitesTest, IgnoresNonWebIconUrls) {
+  const TestPopularSite kSiteWithNonWebIcons{
+      {kTitle, "Site With Non-Web Icons"},
+      {kUrl, "https://example.com/"},
+      {kFaviconUrl, "chrome://favicon2/https://example.com"},
+      {kLargeIconUrl, "javascript:alert(1)"},
+  };
+  const TestPopularSite kSiteWithFileAndDataIcons{
+      {kTitle, "Site With File And Data Icons"},
+      {kUrl, "https://example.org/"},
+      {kFaviconUrl, "file:///sdcard/favicon.ico"},
+      {kLargeIconUrl, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=="},
+  };
+  const TestPopularSite kSiteWithInvalidIcons{
+      {kTitle, "Site With Invalid Icons"},
+      {kUrl, "https://example.net/"},
+      {kFaviconUrl, "not_a_valid_url"},
+      {kLargeIconUrl, "also not valid"},
+  };
+  const TestPopularSite kSiteWithWebIcons{
+      {kTitle, "Site With Web Icons"},
+      {kUrl, "https://example.info/"},
+      {kFaviconUrl, "https://example.info/favicon.ico"},
+      {kLargeIconUrl, "http://example.info/icon.png"},
+  };
+
+  SetCountryAndVersion("ZZ", "7");
+  RespondWithV5JSON(
+      "https://www.gstatic.com/chrome/ntp/suggested_sites_ZZ_7.json",
+      {kSiteWithNonWebIcons, kSiteWithFileAndDataIcons, kSiteWithInvalidIcons,
+       kSiteWithWebIcons});
+
+  PopularSites::SitesVector sites;
+  EXPECT_THAT(FetchPopularSites(/*force_download=*/true, &sites),
+              Eq(std::optional<bool>(true)));
+
+  ASSERT_THAT(sites.size(), Eq(4u));
+  EXPECT_THAT(sites[0].url, URLEq("https://example.com/"));
+  EXPECT_THAT(sites[0].favicon_url, URLEq(""));
+  EXPECT_THAT(sites[0].large_icon_url, URLEq(""));
+
+  EXPECT_THAT(sites[1].url, URLEq("https://example.org/"));
+  EXPECT_THAT(sites[1].favicon_url, URLEq(""));
+  EXPECT_THAT(sites[1].large_icon_url, URLEq(""));
+
+  EXPECT_THAT(sites[2].url, URLEq("https://example.net/"));
+  EXPECT_THAT(sites[2].favicon_url, URLEq(""));
+  EXPECT_THAT(sites[2].large_icon_url, URLEq(""));
+
+  EXPECT_THAT(sites[3].url, URLEq("https://example.info/"));
+  EXPECT_THAT(sites[3].favicon_url, URLEq("https://example.info/favicon.ico"));
+  EXPECT_THAT(sites[3].large_icon_url, URLEq("http://example.info/icon.png"));
+}
+
 }  // namespace
 }  // namespace ntp_tiles

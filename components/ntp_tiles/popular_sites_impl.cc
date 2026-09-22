@@ -41,6 +41,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "components/grit/components_resources.h"
@@ -153,19 +154,26 @@ PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
     } else {
       continue;
     }
-    std::string url;
+    GURL url;
     if (const std::string* ptr = item.FindString("url")) {
-      url = *ptr;
-    } else {
+      url = GURL(*ptr);
+    }
+    if (!url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    std::string favicon_url;
+    GURL favicon_url;
     if (const std::string* ptr = item.FindString("favicon_url")) {
-      favicon_url = *ptr;
+      favicon_url = GURL(*ptr);
+      if (!favicon_url.SchemeIsHTTPOrHTTPS()) {
+        favicon_url = GURL();
+      }
     }
-    std::string large_icon_url;
+    GURL large_icon_url;
     if (const std::string* ptr = item.FindString("large_icon_url")) {
-      large_icon_url = *ptr;
+      large_icon_url = GURL(*ptr);
+      if (!large_icon_url.SchemeIsHTTPOrHTTPS()) {
+        large_icon_url = GURL();
+      }
     }
 
     TileTitleSource title_source = TileTitleSource::UNKNOWN;
@@ -178,8 +186,8 @@ PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
       title_source = static_cast<TileTitleSource>(*title_source_int);
     }
 
-    sites.emplace_back(title, GURL(url), GURL(favicon_url),
-                       GURL(large_icon_url), title_source);
+    sites.emplace_back(title, std::move(url), std::move(favicon_url),
+                       std::move(large_icon_url), title_source);
     std::optional<int> default_icon_resource =
         item.FindInt("default_icon_resource");
     if (default_icon_resource) {

@@ -31,12 +31,12 @@
     },
     {
         "large_icon_url": "https://cdn2.iconfinder.com/data/icons/minimalism/512/Chromium.png",
-        "title": "Chrome Flags",
-        "url": "chrome://flags"
+        "title": "Chromium Issues",
+        "url": "https://issues.chromium.org/"
     },
     {
         "large_icon_url": "https://cdn2.iconfinder.com/data/icons/minimalism/512/Chromium.png",
-        "title": "Chrome Version",
-        "url": "chrome://version/"
+        "title": "Chromium Source",
+        "url": "https://source.chromium.org/"
     }
 ]
