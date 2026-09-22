@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
@@ -170,6 +171,10 @@ class AccountConsistencyService::AccountConsistencyHandler
                                const std::string& email,
                                BOOL has_cookie_changed);
 
+  // Verifies that the request initiator is a Google or YouTube domain before
+  // opening an incognito window with `continue_url`.
+  void CheckInitiatorAndMaybeGoIncognito(const GURL& continue_url);
+
   // The consistency web sign-in needs to be shown once the page is loaded.
   // It is required to avoid having the keyboard showing up on top of the web
   // sign-in dialog.
@@ -275,7 +280,10 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       << "Invalid continuation URL: \"" << continue_url << "\"";
   switch (params.service_type) {
     case signin::GAIA_SERVICE_TYPE_INCOGNITO: {
-      if (delegate_) {
+      if (base::FeatureList::IsEnabled(
+              switches::kVerifyRequestInitiatorForMirrorHeaders)) {
+        CheckInitiatorAndMaybeGoIncognito(continue_url);
+      } else if (delegate_) {
         delegate_->OnGoIncognito(continue_url, web_state_);
       }
       break;
@@ -339,6 +347,32 @@ void AccountConsistencyService::AccountConsistencyHandler::
   }
   LogIOSGaiaCookiesState(
       GaiaCookieStateOnSignedInNavigation::kGaiaCookieRestoredOnShowInfobar);
+}
+
+void AccountConsistencyService::AccountConsistencyHandler::
+    CheckInitiatorAndMaybeGoIncognito(const GURL& continue_url) {
+  // Do not allow non-Google origins to open incognito windows.
+  const GURL initiator_url =
+      web_state_ ? web_state_->GetLastCommittedURL() : GURL();
+  bool is_request_initiated_by_google_domain =
+      google_util::IsGoogleDomainUrl(initiator_url,
+                                     google_util::ALLOW_SUBDOMAIN,
+                                     google_util::ALLOW_NON_STANDARD_PORTS) ||
+      google_util::IsYoutubeDomainUrl(initiator_url,
+                                      google_util::ALLOW_SUBDOMAIN,
+                                      google_util::ALLOW_NON_STANDARD_PORTS);
+  base::UmaHistogramBoolean(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito",
+      is_request_initiated_by_google_domain);
+  if (!is_request_initiated_by_google_domain) {
+    VLOG(1) << "Mirror header with GAIA_SERVICE_TYPE_INCOGNITO from "
+            << "unexpected domain (" << initiator_url << "), ignoring";
+    return;
+  }
+
+  if (delegate_) {
+    delegate_->OnGoIncognito(continue_url, web_state_);
+  }
 }
 
 void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(

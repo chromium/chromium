@@ -857,3 +857,148 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsIgnoredInSubframe) {
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_EQ(0, delegate_.total_call_count());
 }
+
+// Test that a navigation to Gaia with action=INCOGNITO initiated by a Google
+// domain is processed.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsIncognitoFromGoogleInitiator) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kVerifyRequestInitiatorForMirrorHeaders);
+  base::HistogramTester histogram_tester;
+  web_state_.SetCurrentURL(GURL("https://google.com/"));
+
+  NSDictionary* headers = @{
+    @"X-Chrome-Manage-Accounts" :
+        @"action=INCOGNITO,continue_url=\"https://www.google.com/\""
+  };
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:204
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_INCOGNITO));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+
+  EXPECT_EQ(1, delegate_.total_call_count());
+  EXPECT_EQ(1, delegate_.go_incognito_call_count_);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", true, 1);
+}
+
+// Test that a navigation to Gaia with action=INCOGNITO initiated by a YouTube
+// domain is processed.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsIncognitoFromYoutubeInitiator) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kVerifyRequestInitiatorForMirrorHeaders);
+  base::HistogramTester histogram_tester;
+  web_state_.SetCurrentURL(GURL("https://youtube.com/"));
+
+  NSDictionary* headers = @{
+    @"X-Chrome-Manage-Accounts" :
+        @"action=INCOGNITO,continue_url=\"https://www.youtube.com/\""
+  };
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:204
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_INCOGNITO));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+
+  EXPECT_EQ(1, delegate_.total_call_count());
+  EXPECT_EQ(1, delegate_.go_incognito_call_count_);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", true, 1);
+}
+
+// Test that a navigation to Gaia with action=INCOGNITO initiated by a
+// non-Google domain is ignored.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsIncognitoFromNonGoogleInitiator) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kVerifyRequestInitiatorForMirrorHeaders);
+  base::HistogramTester histogram_tester;
+  web_state_.SetCurrentURL(GURL("https://example.com/"));
+
+  NSDictionary* headers = @{
+    @"X-Chrome-Manage-Accounts" :
+        @"action=INCOGNITO,continue_url=\"https://www.google.com/\""
+  };
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:204
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_INCOGNITO));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+
+  EXPECT_EQ(0, delegate_.total_call_count());
+  EXPECT_EQ(0, delegate_.go_incognito_call_count_);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
+}
+
+// Test that a navigation to Gaia with action=INCOGNITO initiated with an empty
+// initiator URL is ignored.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsIncognitoFromEmptyInitiator) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kVerifyRequestInitiatorForMirrorHeaders);
+  base::HistogramTester histogram_tester;
+  web_state_.SetCurrentURL(GURL());
+
+  NSDictionary* headers = @{
+    @"X-Chrome-Manage-Accounts" :
+        @"action=INCOGNITO,continue_url=\"https://www.google.com/\""
+  };
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:204
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_INCOGNITO));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+
+  EXPECT_EQ(0, delegate_.total_call_count());
+  EXPECT_EQ(0, delegate_.go_incognito_call_count_);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
+}
+
+// Test that a navigation to Gaia with action=INCOGNITO initiated by a
+// Google-associated domain (not google or youtube) is ignored.
+TEST_F(AccountConsistencyServiceTest,
+       ChromeManageAccountsIncognitoFromGoogleAssociatedInitiator) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kVerifyRequestInitiatorForMirrorHeaders);
+  base::HistogramTester histogram_tester;
+  web_state_.SetCurrentURL(GURL("https://storage.googleapis.com/"));
+
+  NSDictionary* headers = @{
+    @"X-Chrome-Manage-Accounts" :
+        @"action=INCOGNITO,continue_url=\"https://www.google.com/\""
+  };
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:204
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_INCOGNITO));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+
+  EXPECT_EQ(0, delegate_.total_call_count());
+  EXPECT_EQ(0, delegate_.go_incognito_call_count_);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
+}

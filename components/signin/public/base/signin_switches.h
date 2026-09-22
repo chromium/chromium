@@ -955,6 +955,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUserPolicyFetchRequiresAcceptance);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+// Killswitch for verifying the request initiator when handling Mirror headers.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
+#endif  // BUILDFLAG(IS_IOS)
+
 // keep-sorted end
 
 }  // namespace switches

@@ -990,6 +990,11 @@ BASE_FEATURE(kUserPolicyFetchRequiresAcceptance,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 // keep-sorted end
 
 }  // namespace switches
