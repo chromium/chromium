@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
@@ -101,7 +102,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   void ParsePowerRoutineResult(mojom::RoutineType routine_type,
                                mojom::StandardRoutineResult result,
-                               mojo::ScopedHandle output_handle);
+                               mojo::PlatformHandle output_handle);
 
   void OnPowerRoutineResultFetched(mojom::RoutineType routine_type,
                                    const std::string& file_contents);

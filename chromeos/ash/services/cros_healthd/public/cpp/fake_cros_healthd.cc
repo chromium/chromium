@@ -22,26 +22,12 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "mojo/public/cpp/system/handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash::cros_healthd {
 
 namespace {
-
-// Will destroy `handle` if it's not a valid platform handle.
-mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
-  DCHECK(handle);
-  if (!handle->is_valid()) {
-    return mojo::ScopedHandle();
-  }
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(*handle));
-  DCHECK(platform_handle.is_valid());
-  *handle = mojo::WrapPlatformHandle(platform_handle.Clone());
-  return mojo::WrapPlatformHandle(std::move(platform_handle));
-}
 
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeCrosHealthd* g_instance = nullptr;
@@ -285,7 +271,9 @@ void FakeCrosHealthd::GetRoutineUpdate(
           std::move(callback),
           mojom::RoutineUpdate::New(
               routine_update_response_->progress_percent,
-              CloneScopedHandle(&routine_update_response_->output),
+              routine_update_response_->output.is_valid()
+                  ? routine_update_response_->output.Clone()
+                  : mojo::PlatformHandle(),
               routine_update_response_->routine_update_union.Clone())),
       callback_delay_);
 }

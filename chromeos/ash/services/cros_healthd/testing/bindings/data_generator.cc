@@ -6,16 +6,15 @@
 
 #include <fcntl.h>
 
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "base/files/scoped_file.h"
 
 namespace ash::cros_healthd::connectivity {
 
 constexpr char kDevNull[] = "/dev/null";
 
-::mojo::ScopedHandle HandleDataGenerator::Generate() {
+::mojo::PlatformHandle HandleDataGenerator::Generate() {
   has_next_ = false;
-  return mojo::WrapPlatformFile(
-      base::ScopedPlatformFile(open(kDevNull, O_RDONLY)));
+  return ::mojo::PlatformHandle(base::ScopedFD(open(kDevNull, O_RDONLY)));
 }
 
 }  // namespace ash::cros_healthd::connectivity

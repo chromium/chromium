@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -271,7 +272,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
 
   auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
-      /*output=*/mojo::ScopedHandle(), update_union.Clone());
+      /*output=*/mojo::PlatformHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   std::unique_ptr<RemoteCommandJob> job =
@@ -305,7 +306,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
 
   auto response = ash::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
-      /*output=*/mojo::ScopedHandle(), update_union.Clone());
+      /*output=*/mojo::PlatformHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   std::unique_ptr<RemoteCommandJob> job =

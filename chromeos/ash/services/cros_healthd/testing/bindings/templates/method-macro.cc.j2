@@ -44,7 +44,7 @@
 {%-     call _cpp_nullable_generator_type(kind) -%}
 {{kind | get_name_for_kind}}DataGenerator
 {%-     endcall -%}
-{%-   elif kind is GenericHandleKind -%}
+{%-   elif kind is PlatformHandleKind -%}
 {%-     call _cpp_nullable_generator_type(kind) -%}
 ::ash::cros_healthd::connectivity::HandleDataGenerator
 {%-     endcall -%}

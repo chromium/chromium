@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace ash::converters::diagnostics {
 
@@ -25,12 +25,12 @@ class MojoUtils final {
   MojoUtils& operator=(const MojoUtils& mojo_utils) = delete;
 
   // Allows to get access to the buffer in read only shared memory. It converts
-  // mojo::Handle to base::ReadOnlySharedMemoryMapping and returns a string.
-  // Returns an empty string if error.
+  // mojo::PlatformHandle to base::ReadOnlySharedMemoryMapping and returns a
+  // string. Returns an empty string if error.
   //
-  // |handle| must be a valid mojo handle of the non-empty buffer in the shared
-  // memory.
-  static std::string GetStringFromMojoHandle(mojo::ScopedHandle handle);
+  // |handle| must be a valid mojo platform handle of the non-empty buffer in
+  // the shared memory.
+  static std::string GetStringFromMojoHandle(mojo::PlatformHandle handle);
 };
 
 }  // namespace ash::converters::diagnostics

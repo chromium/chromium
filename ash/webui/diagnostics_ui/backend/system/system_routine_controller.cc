@@ -106,7 +106,7 @@ bool IsPowerRoutine(mojom::RoutineType routine_type) {
 }
 
 std::string ReadMojoHandleToJsonString(mojo::PlatformHandle handle) {
-  base::File file(handle.ReleaseFD());
+  base::File file(handle.TakeFD());
   std::vector<uint8_t> contents;
   contents.resize(file.GetLength());
   if (!file.ReadAndCheck(0, contents)) {
@@ -581,17 +581,8 @@ void SystemRoutineController::ScheduleCheckRoutineStatus(
 void SystemRoutineController::ParsePowerRoutineResult(
     mojom::RoutineType routine_type,
     mojom::StandardRoutineResult result,
-    mojo::ScopedHandle output_handle) {
+    mojo::PlatformHandle output_handle) {
   if (!output_handle.is_valid()) {
-    OnPowerRoutineResult(routine_type,
-                         mojom::StandardRoutineResult::kExecutionError,
-                         /*percent_change=*/0, /*seconds_elapsed=*/0);
-    return;
-  }
-
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(output_handle));
-  if (!platform_handle.is_valid()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
@@ -600,7 +591,7 @@ void SystemRoutineController::ParsePowerRoutineResult(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ReadMojoHandleToJsonString, std::move(platform_handle)),
+      base::BindOnce(&ReadMojoHandleToJsonString, std::move(output_handle)),
       base::BindOnce(&SystemRoutineController::OnPowerRoutineResultFetched,
                      weak_factory_.GetWeakPtr(), routine_type));
 }

@@ -13,7 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/context.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace ash::cros_healthd::connectivity {
 
@@ -212,7 +212,7 @@ class MapGenerator : public DataGeneratorInterface<
 
 // Generator for handle types.
 class HandleDataGenerator
-    : public DataGeneratorInterface<::mojo::ScopedHandle> {
+    : public DataGeneratorInterface<::mojo::PlatformHandle> {
  public:
   HandleDataGenerator(const HandleDataGenerator&) = delete;
   HandleDataGenerator& operator=(const HandleDataGenerator&) = delete;
@@ -224,7 +224,7 @@ class HandleDataGenerator
 
  public:
   // DataGeneratorInterface overrides.
-  ::mojo::ScopedHandle Generate() override;
+  ::mojo::PlatformHandle Generate() override;
 
   bool HasNext() override { return has_next_; }
 

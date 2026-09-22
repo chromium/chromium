@@ -200,7 +200,7 @@ struct RoutineUpdate {
   // Any accumulated output, like logs, from the routine. This field is only
   // valid when GetRoutineUpdate (see cros_healthd.mojom) is called with
   // include_output = true.
-  handle? output@1;
+  handle<platform>? output@1;
 
   // Information specific to the type of response - interactive or
   // noninteractive.
