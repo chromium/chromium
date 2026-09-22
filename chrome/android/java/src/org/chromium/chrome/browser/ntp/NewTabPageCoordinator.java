@@ -855,7 +855,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             initializeComposeplate();
         }
 
-        maybeUpdateAiModeButton();
+        if (mCanShowComposeplateButton == TriState.TRUE) {
+            maybeUpdateAiModeButton();
+        }
 
         if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
             // When the AI mode button's visibility is changed, the height of search box might be
