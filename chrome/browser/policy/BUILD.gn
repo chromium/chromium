@@ -870,6 +870,10 @@ source_set("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "gemini_enterprise_settings_policy_handler_unittest.cc" ]
+  }
+
   if (!is_android) {
     sources += [ "policy_path_parser_unittest.cc" ]
     deps += [ ":path_parser" ]
@@ -1088,6 +1092,10 @@ source_set("policy") {
       "//chrome/browser/ui/android/tab_model",
       "//components/enterprise/browser/promotion",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    public += [ "gemini_enterprise_settings_policy_handler.h" ]
   }
 
   if (!is_android) {
@@ -1385,6 +1393,10 @@ source_set("impl") {
       "//components/enterprise/device_trust",
       "//components/performance_manager",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "gemini_enterprise_settings_policy_handler.cc" ]
   }
 
   if (!is_android) {

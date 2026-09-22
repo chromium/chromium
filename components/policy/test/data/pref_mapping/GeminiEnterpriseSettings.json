@@ -17,6 +17,66 @@
         }
       },
       {
+        "note": "Valid policy settings (url)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "url": "https://business.gemini.google/"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "value": {
+              "url": "https://business.gemini.google/"
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Valid policy settings (url with port)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "url": "https://localhost.corp.google.com:10443/side-panel"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "value": {
+              "url": "https://localhost.corp.google.com:10443/side-panel"
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy settings (malformed url)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "url": "not-a-valid-url"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy settings (non-https url)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "url": "http://business.gemini.google/"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
         "note": "Valid policy settings (standard)",
         "policies": {
           "GeminiEnterpriseSettings": {
