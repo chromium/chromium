@@ -48,20 +48,21 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/test_support_jni_headers/FakeServerHelper_jni.h"
 
-using base::android::JavaRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace {
 
-void DeserializeEntity(
-    JNIEnv* env,
-    const base::android::JavaRef<jbyteArray>& serialized_entity,
-    sync_pb::SyncEntity* entity) {
+void DeserializeEntity(JNIEnv* env,
+                       const JavaRef<jbyteArray>& serialized_entity,
+                       sync_pb::SyncEntity* entity) {
   std::string string;
   base::android::JavaByteArrayToString(env, serialized_entity, &string);
 
@@ -82,16 +83,13 @@ void DeserializeEntitySpecifics(
 }
 
 std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
-    JNIEnv* env,
     std::string title,
-    const base::android::JavaRef<jobject>& url,
+    const GURL& url,
     std::optional<std::string> guid,
     std::string parent_id,
     std::string parent_guid) {
-  GURL gurl = url::GURLAndroid::ToNativeGURL(env, url);
-  DCHECK(gurl.is_valid()) << "The given string ("
-                          << gurl.possibly_invalid_spec()
-                          << ") is not a valid URL.";
+  DCHECK(url.is_valid()) << "The given string (" << url.possibly_invalid_spec()
+                         << ") is not a valid URL.";
 
   fake_server::EntityBuilderFactory entity_builder_factory;
   base::Uuid converted_guid = base::Uuid::GenerateRandomV4();
@@ -102,7 +100,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
       entity_builder_factory.NewBookmarkEntityBuilder(title, converted_guid);
   bookmark_builder.SetParentId(parent_id);
   bookmark_builder.SetParentGuid(base::Uuid::ParseLowercase(parent_guid));
-  return bookmark_builder.BuildBookmark(gurl);
+  return bookmark_builder.BuildBookmark(url);
 }
 
 // Creates a saved tab belonging to `group_guid` group.
@@ -151,7 +149,7 @@ void AddSavedTabGroupDataToFakeServer(
 
 }  // namespace
 
-static int64_t JNI_FakeServerHelper_CreateFakeServer(JNIEnv* env) {
+static int64_t JNI_FakeServerHelper_CreateFakeServer() {
   auto* fake_server = new fake_server::FakeServer();
   GetSyncServiceImpl()->OverrideNetworkForTest(
       fake_server::CreateFakeServerHttpPostProviderFactory(
@@ -159,15 +157,13 @@ static int64_t JNI_FakeServerHelper_CreateFakeServer(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(fake_server);
 }
 
-static void JNI_FakeServerHelper_DeleteFakeServer(JNIEnv* env,
-                                                  int64_t fake_server) {
+static void JNI_FakeServerHelper_DeleteFakeServer(int64_t fake_server) {
   GetSyncServiceImpl()->OverrideNetworkForTest(
       syncer::CreateHttpPostProviderFactory());
   delete reinterpret_cast<fake_server::FakeServer*>(fake_server);
 }
 
 static bool JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
-    JNIEnv* env,
     int64_t fake_server,
     int32_t count,
     int32_t data_type,
@@ -187,13 +183,9 @@ static bool JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
 }
 
 static bool JNI_FakeServerHelper_VerifySessions(
-    JNIEnv* env,
     int64_t fake_server,
-    const JavaRef<JArray<jstring>>& url_array) {
-  std::multiset<std::string> tab_urls;
-  for (auto j_string : url_array.CreateView(env)) {
-    tab_urls.insert(base::android::ConvertJavaStringToUTF8(env, j_string));
-  }
+    const std::vector<std::string>& url_array) {
+  std::multiset<std::string> tab_urls(url_array.begin(), url_array.end());
   fake_server::SessionsHierarchy expected_sessions;
   expected_sessions.AddWindow(tab_urls);
 
@@ -210,7 +202,7 @@ static bool JNI_FakeServerHelper_VerifySessions(
   return result;
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static ScopedJavaLocalRef<jobjectArray>
 JNI_FakeServerHelper_GetSyncEntitiesByDataType(JNIEnv* env,
                                                int64_t fake_server,
                                                int32_t data_type) {
@@ -283,7 +275,6 @@ static void JNI_FakeServerHelper_ModifyEntitySpecifics(
 }
 
 static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& cache_guid,
     const std::string& client_name,
@@ -325,20 +316,18 @@ static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& title,
-    const JavaRef<jobject>& url,
+    const GURL& url,
     const std::string& parent_id,
     const std::string& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->InjectEntity(CreateBookmarkEntity(
-      env, title, url, /*guid=*/std::nullopt, parent_id, parent_guid));
+      title, url, /*guid=*/std::nullopt, parent_id, parent_guid));
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& title,
     const std::string& parent_id,
@@ -356,18 +345,17 @@ static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(
 }
 
 static void JNI_FakeServerHelper_ModifyBookmarkEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& entity_id,
     const std::string& guid,
     const std::string& title,
-    const JavaRef<jobject>& url,
+    const GURL& url,
     const std::string& parent_id,
     const std::string& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
-      CreateBookmarkEntity(env, title, url, guid, parent_id, parent_guid);
+      CreateBookmarkEntity(title, url, guid, parent_id, parent_guid);
   sync_pb::SyncEntity proto;
   bookmark->SerializeAsProto(&proto);
   fake_server_ptr->ModifyBookmarkEntity(entity_id, parent_id,
@@ -375,7 +363,6 @@ static void JNI_FakeServerHelper_ModifyBookmarkEntity(
 }
 
 static void JNI_FakeServerHelper_ModifyBookmarkFolderEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& entity_id,
     const std::string& guid,
@@ -399,7 +386,6 @@ static void JNI_FakeServerHelper_ModifyBookmarkFolderEntity(
 }
 
 static std::string JNI_FakeServerHelper_GetBookmarkBarFolderId(
-    JNIEnv* env,
     int64_t fake_server) {
   // Rather hard code this here then incur the cost of yet another method.
   // It is very unlikely that this will ever change.
@@ -407,7 +393,6 @@ static std::string JNI_FakeServerHelper_GetBookmarkBarFolderId(
 }
 
 static void JNI_FakeServerHelper_DeleteEntity(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& id,
     const std::string& client_tag_hash) {
@@ -419,7 +404,6 @@ static void JNI_FakeServerHelper_DeleteEntity(
 }
 
 static void JNI_FakeServerHelper_SetCustomPassphraseNigori(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& passphrase) {
   SetNigoriInFakeServer(
@@ -429,26 +413,20 @@ static void JNI_FakeServerHelper_SetCustomPassphraseNigori(
 }
 
 static void JNI_FakeServerHelper_SetTrustedVaultNigori(
-    JNIEnv* env,
     int64_t fake_server,
-    const JavaRef<jbyteArray>& trusted_vault_key) {
-  std::vector<uint8_t> native_trusted_vault_key;
-  base::android::JavaByteArrayToByteVector(env, trusted_vault_key,
-                                           &native_trusted_vault_key);
+    const std::vector<uint8_t>& trusted_vault_key) {
   SetNigoriInFakeServer(
-      syncer::BuildTrustedVaultNigoriSpecifics({native_trusted_vault_key}),
+      syncer::BuildTrustedVaultNigoriSpecifics({trusted_vault_key}),
       reinterpret_cast<fake_server::FakeServer*>(fake_server));
 }
 
-static void JNI_FakeServerHelper_ClearServerData(JNIEnv* env,
-                                                 int64_t fake_server) {
+static void JNI_FakeServerHelper_ClearServerData(int64_t fake_server) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server_ptr->ClearServerData();
 }
 
 static void JNI_FakeServerHelper_AddCollaboration(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& collaboration_id) {
   fake_server::FakeServer* fake_server_ptr =
@@ -457,7 +435,6 @@ static void JNI_FakeServerHelper_AddCollaboration(
 }
 
 static void JNI_FakeServerHelper_RemoveCollaboration(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& collaboration_id) {
   fake_server::FakeServer* fake_server_ptr =
@@ -467,7 +444,6 @@ static void JNI_FakeServerHelper_RemoveCollaboration(
 }
 
 static void JNI_FakeServerHelper_AddCollaborationGroupToFakeServer(
-    JNIEnv* env,
     int64_t fake_server,
     const std::string& collaboration_id) {
   const data_sharing::GroupId group_id =
@@ -496,13 +472,11 @@ static void JNI_FakeServerHelper_AddCollaborationGroupToFakeServer(
 }
 
 static void JNI_FakeServerHelper_AddSavedTabGroupToFakeServer(
-    JNIEnv* env,
     int64_t fake_server,
-    const JavaRef<jstring>& sync_group_id,
+    const std::string& sync_group_id,
     const std::string& group_title,
-    int number_of_tabs) {
-  base::Uuid group_guid = base::Uuid::ParseLowercase(
-      base::android::ConvertJavaStringToUTF8(env, sync_group_id));
+    int32_t number_of_tabs) {
+  base::Uuid group_guid = base::Uuid::ParseLowercase(sync_group_id);
   std::vector<tab_groups::SavedTabGroupTab> tabs;
   for (int i = 0; i < number_of_tabs; i++) {
     tabs.push_back(CreateSavedTab(group_guid, i));
@@ -518,7 +492,6 @@ static void JNI_FakeServerHelper_AddSavedTabGroupToFakeServer(
 }
 
 static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(
-    JNIEnv* env,
     int64_t fake_server,
     int32_t data_type) {
   fake_server::FakeServer* fake_server_ptr =
@@ -527,7 +500,7 @@ static void JNI_FakeServerHelper_DeleteAllEntitiesForDataType(
       static_cast<syncer::DataType>(data_type));
 }
 
-static std::string JNI_FakeServerHelper_GetLocalCacheGuid(JNIEnv* env) {
+static std::string JNI_FakeServerHelper_GetLocalCacheGuid() {
   syncer::SyncTransportDataPrefs prefs(
       ProfileManager::GetLastUsedProfile()->GetPrefs(),
       signin::GaiaIdHash::FromGaiaId(

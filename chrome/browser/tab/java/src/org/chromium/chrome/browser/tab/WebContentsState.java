@@ -438,9 +438,8 @@ public class WebContentsState implements Destroyable {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        @Nullable
         @JniType("content::WebContents*")
-        WebContents restoreContentsFromByteBuffer(
+        @Nullable WebContents restoreContentsFromByteBuffer(
                 @JniType("Profile*") Profile profile,
                 ByteBuffer buffer,
                 int savedStateVersion,
@@ -455,9 +454,9 @@ public class WebContentsState implements Destroyable {
 
         @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
                 @JniType("Profile*") Profile profile,
-                @JniType("std::optional<std::u16string>") @Nullable String title,
+                @JniType("std::u16string") @Nullable String title,
                 @JniType("std::string") String url,
-                @JniType("std::optional<std::string>") @Nullable String referrerUrl,
+                @JniType("std::string") @Nullable String referrerUrl,
                 int referrerPolicy,
                 @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin);
 
@@ -466,9 +465,9 @@ public class WebContentsState implements Destroyable {
                 ByteBuffer buffer,
                 int savedStateVersion,
                 boolean clobberCurrentEntry,
-                @JniType("std::optional<std::u16string>") @Nullable String title,
+                @JniType("std::u16string") @Nullable String title,
                 @JniType("std::string") String url,
-                @JniType("std::optional<std::string>") @Nullable String referrerUrl,
+                @JniType("std::string") @Nullable String referrerUrl,
                 int referrerPolicy,
                 @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin);
 

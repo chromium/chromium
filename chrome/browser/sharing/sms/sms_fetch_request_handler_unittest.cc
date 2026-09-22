@@ -7,9 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,8 +94,9 @@ SharingMessage CreateRequestWithMultipleOrigins(
     const std::vector<std::string>& origins) {
   SharingMessage message;
   message.set_sender_device_name(kDefaultDeviceName);
-  for (const auto& origin : origins)
+  for (const auto& origin : origins) {
     message.mutable_sms_fetch_request()->add_origins(origin);
+  }
   return message;
 }
 
@@ -117,7 +115,6 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
   SharingMessage message = CreateRequest(origin);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
@@ -140,14 +137,13 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
   subscriber->OnReceive(
       content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
       SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_origin, nullptr);
+  handler.OnConfirm(formatted_origin, u"");
   loop.Run();
 }
 
 TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
   StrictMock<MockSmsFetcher> fetcher;
   MockSmsFetchRequestHandler handler(&fetcher);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::string origin1 = "https://a.com";
   SharingMessage message1 = CreateRequest(origin1);
   const std::u16string formatted_origin1 =
@@ -192,13 +188,13 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
   request2->OnReceive(
       content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin2))}, "2",
       SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_origin2, nullptr);
+  handler.OnConfirm(formatted_origin2, u"");
   loop2.Run();
 
   request1->OnReceive(
       content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin1))}, "1",
       SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_origin1, nullptr);
+  handler.OnConfirm(formatted_origin1, u"");
   loop1.Run();
 }
 
@@ -247,7 +243,6 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
   SharingMessage message = CreateRequest(origin);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
@@ -270,7 +265,7 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
   subscriber->OnReceive(
       content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
       SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_origin, nullptr);
+  handler.OnConfirm(formatted_origin, u"");
   loop.Run();
 }
 
@@ -279,7 +274,6 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
   MockSmsFetchRequestHandler handler(&fetcher);
   const std::string origin = "https://a.com";
   SharingMessage message = CreateRequest(origin);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
@@ -304,7 +298,7 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
   subscriber->OnReceive(
       content::SmsFetcher::OriginList{url::Origin::Create(GURL(origin))}, "123",
       SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, formatted_origin, nullptr);
+  handler.OnDismiss(formatted_origin, u"");
   loop.Run();
 }
 
@@ -315,7 +309,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
   const std::string embedded_origin = "https://embedded.com";
   std::vector<std::string> origins{embedded_origin, top_origin};
   SharingMessage message = CreateRequestWithMultipleOrigins(origins);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::u16string formatted_top_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(top_origin)),
@@ -325,8 +318,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(embedded_origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_embedded_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_embedded_origin);
 
   base::RunLoop loop;
 
@@ -350,7 +341,7 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_top_origin, j_embedded_origin);
+  handler.OnConfirm(formatted_top_origin, formatted_embedded_origin);
   loop.Run();
 }
 
@@ -361,7 +352,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
   const std::string embedded_origin = "https://embedded.com";
   std::vector<std::string> origins{embedded_origin, top_origin};
   SharingMessage message = CreateRequestWithMultipleOrigins(origins);
-  JNIEnv* env = base::android::AttachCurrentThread();
   const std::u16string formatted_top_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(top_origin)),
@@ -371,8 +361,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(embedded_origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_embedded_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_embedded_origin);
 
   base::RunLoop loop;
 
@@ -395,6 +383,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, formatted_top_origin, j_embedded_origin);
+  handler.OnDismiss(formatted_top_origin, formatted_embedded_origin);
   loop.Run();
 }

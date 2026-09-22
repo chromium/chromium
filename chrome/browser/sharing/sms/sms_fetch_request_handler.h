@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
@@ -43,14 +42,10 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   virtual void AskUserPermission(const content::SmsFetcher::OriginList&,
                                  const std::string& one_time_code,
                                  const std::string& client_name);
-  virtual void OnConfirm(
-      JNIEnv*,
-      std::u16string top_origin,
-      const base::android::JavaRef<jstring>& embedded_origin);
-  virtual void OnDismiss(
-      JNIEnv*,
-      std::u16string top_origin,
-      const base::android::JavaRef<jstring>& embedded_origin);
+  virtual void OnConfirm(std::u16string top_origin,
+                         std::u16string embedded_origin);
+  virtual void OnDismiss(std::u16string top_origin,
+                         std::u16string embedded_origin);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, Basic);

@@ -24,8 +24,9 @@ public class ShareHistoryBridge {
     }
 
     @NativeMethods
-    public interface Natives {
-        void addShareEntry(@JniType("Profile*") Profile profile, String string);
+    interface Natives {
+        void addShareEntry(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String string);
 
         void clear(@JniType("Profile*") Profile profile);
     }

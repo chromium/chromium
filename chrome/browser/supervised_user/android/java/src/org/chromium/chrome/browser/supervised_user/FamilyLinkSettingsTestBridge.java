@@ -40,7 +40,9 @@ class FamilyLinkSettingsTestBridge {
         void setFilteringBehavior(@JniType("Profile*") Profile profile, int setting);
 
         void setManualFilterForHost(
-                @JniType("Profile*") Profile profile, String host, boolean allowlist);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String host,
+                boolean allowlist);
 
         void setKidsManagementResponseForTesting(
                 @JniType("Profile*") Profile profile, boolean siteIsAllowed); // IN-TEST

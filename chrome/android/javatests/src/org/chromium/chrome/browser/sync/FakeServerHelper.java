@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import androidx.annotation.Nullable;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.jni_zero.JniType;
@@ -13,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.url.GURL;
@@ -411,7 +410,8 @@ public class FakeServerHelper {
         boolean verifyEntityCountByTypeAndName(
                 long fakeServer, int count, int dataType, @JniType("std::string") String name);
 
-        boolean verifySessions(long fakeServer, String[] urlArray);
+        boolean verifySessions(
+                long fakeServer, @JniType("std::vector<std::string>") String[] urlArray);
 
         byte[][] getSyncEntitiesByDataType(long fakeServer, int dataType);
 
@@ -438,7 +438,7 @@ public class FakeServerHelper {
         void injectBookmarkEntity(
                 long fakeServer,
                 @JniType("std::string") String title,
-                GURL url,
+                @JniType("GURL") GURL url,
                 @JniType("std::string") String parentId,
                 @JniType("std::string") String parentGuid);
 
@@ -453,7 +453,7 @@ public class FakeServerHelper {
                 @JniType("std::string") String bookmarkId,
                 @JniType("std::string") String bookmarkGuid,
                 @JniType("std::string") String title,
-                GURL url,
+                @JniType("GURL") GURL url,
                 @JniType("std::string") String parentId,
                 @JniType("std::string") String parentGuid);
 
@@ -475,7 +475,8 @@ public class FakeServerHelper {
 
         void setCustomPassphraseNigori(long fakeServer, @JniType("std::string") String passphrase);
 
-        void setTrustedVaultNigori(long fakeServer, byte[] trustedVaultKey);
+        void setTrustedVaultNigori(
+                long fakeServer, @JniType("std::vector<uint8_t>") byte[] trustedVaultKey);
 
         void clearServerData(long fakeServer);
 
@@ -488,7 +489,7 @@ public class FakeServerHelper {
 
         void addSavedTabGroupToFakeServer(
                 long fakeServer,
-                @Nullable String syncGroupId,
+                @JniType("std::string") @Nullable String syncGroupId,
                 @JniType("std::string") String groupTitle,
                 int numberOfTabs);
 

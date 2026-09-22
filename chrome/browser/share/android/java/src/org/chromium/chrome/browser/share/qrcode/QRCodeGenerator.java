@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.graphics.Bitmap;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -20,7 +21,7 @@ public class QRCodeGenerator {
 
     @NativeMethods
     interface Natives {
-
-        @Nullable Bitmap generateBitmap(String data);
+        @JniType("SkBitmap")
+        @Nullable Bitmap generateBitmap(@JniType("std::string") String data);
     }
 }

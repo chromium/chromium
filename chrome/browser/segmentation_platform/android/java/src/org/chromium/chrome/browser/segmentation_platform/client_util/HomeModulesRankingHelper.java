@@ -89,8 +89,10 @@ public final class HomeModulesRankingHelper {
                 InputContext inputContext,
                 Callback<ClassificationResult> callback);
 
-        void notifyCardShown(@JniType("Profile*") Profile profile, String cardLabel);
+        void notifyCardShown(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String cardLabel);
 
-        void notifyCardInteracted(@JniType("Profile*") Profile profile, String cardLabel);
+        void notifyCardInteracted(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String cardLabel);
     }
 }

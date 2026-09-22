@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share;
 
 import android.graphics.Bitmap;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +20,7 @@ public class BitmapDownloadRequest {
 
     @NativeMethods
     interface Natives {
-        void downloadBitmap(String fileName, Bitmap bitmap);
+        void downloadBitmap(
+                @JniType("std::u16string") String fileName, @JniType("SkBitmap") Bitmap bitmap);
     }
 }

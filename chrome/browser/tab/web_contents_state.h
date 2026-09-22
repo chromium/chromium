@@ -131,11 +131,11 @@ class WebContentsState {
   CreateSingleNavigationStateAsByteBuffer(
       JNIEnv* env,
       content::BrowserContext* browser_context,
-      const std::optional<std::u16string>& title,
-      const std::string& url,
-      const std::optional<std::string>& referrer_url,
+      std::u16string&& title,
+      GURL&& url,
+      GURL&& referrer_url,
       int referrer_policy,
-      const std::optional<url::Origin>& initiator_origin);
+      std::optional<url::Origin>&& initiator_origin);
 
   // Creates a single navigation entry in a serialized form.
   static base::Pickle CreateSingleNavigationStateAsPickle(
@@ -153,11 +153,11 @@ class WebContentsState {
       base::span<const uint8_t> buffer,
       int saved_state_version,
       bool clobber_current_entry,
-      const std::optional<std::u16string>& title,
-      const std::string& url,
-      const std::optional<std::string>& referrer_url,
+      std::u16string&& title,
+      GURL&& url,
+      GURL&& referrer_url,
       int referrer_policy,
-      const std::optional<url::Origin>& initiator_origin);
+      std::optional<url::Origin>&& initiator_origin);
 };
 
 #endif  // CHROME_BROWSER_TAB_WEB_CONTENTS_STATE_H_

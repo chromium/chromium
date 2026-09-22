@@ -4,6 +4,8 @@
 
 #include "chrome/browser/share/share_history.h"
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -19,12 +21,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
-#include "chrome/browser/profiles/profile.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"
-
-using base::android::JavaRef;
 #endif
 
 namespace sharing {
@@ -246,18 +245,19 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 }  // namespace sharing
 
 #if BUILDFLAG(IS_ANDROID)
-static void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
-                                                 Profile* profile,
-                                                 const JavaRef<jstring>& name) {
+static void JNI_ShareHistoryBridge_AddShareEntry(Profile* profile,
+                                                 const std::string& name) {
   auto* instance = sharing::ShareHistory::Get(profile);
-  if (instance)
-    instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
+  if (instance) {
+    instance->AddShareEntry(name);
+  }
 }
 
-static void JNI_ShareHistoryBridge_Clear(JNIEnv* env, Profile* profile) {
+static void JNI_ShareHistoryBridge_Clear(Profile* profile) {
   auto* instance = sharing::ShareHistory::Get(profile);
-  if (instance)
+  if (instance) {
     instance->Clear();
+  }
 }
 #endif
 

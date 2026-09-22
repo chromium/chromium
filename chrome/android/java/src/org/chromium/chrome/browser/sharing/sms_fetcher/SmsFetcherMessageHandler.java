@@ -180,7 +180,7 @@ public class SmsFetcherMessageHandler {
     private static void showNotification(
             @JniType("std::string") String oneTimeCode,
             @JniType("std::u16string") String topOrigin,
-            @Nullable String embeddedOrigin,
+            @JniType("std::optional<std::u16string>") @Nullable String embeddedOrigin,
             @JniType("std::string") String clientName,
             long smsFetcherMessageHandlerAndroid) {
         sTopOrigin = topOrigin;
@@ -239,11 +239,11 @@ public class SmsFetcherMessageHandler {
         void onConfirm(
                 long nativeSmsFetchRequestHandler,
                 @JniType("std::u16string") @Nullable String topOrigin,
-                @Nullable String embeddedOrigin);
+                @JniType("std::u16string") @Nullable String embeddedOrigin);
 
         void onDismiss(
                 long nativeSmsFetchRequestHandler,
                 @JniType("std::u16string") @Nullable String topOrigin,
-                @Nullable String embeddedOrigin);
+                @JniType("std::u16string") @Nullable String embeddedOrigin);
     }
 }

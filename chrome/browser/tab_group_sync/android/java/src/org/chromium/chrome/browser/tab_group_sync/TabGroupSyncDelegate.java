@@ -82,7 +82,7 @@ public class TabGroupSyncDelegate implements TabWindowManager.Observer {
     }
 
     @CalledByNative
-    private String getTabTitle(int tabId) {
+    private @JniType("std::u16string") String getTabTitle(int tabId) {
         for (TabModelSelector tabModelSelector : mTabWindowManager.getAllTabModelSelectors()) {
             TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);
             Tab tab = tabModel.getTabById(tabId);

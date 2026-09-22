@@ -28,10 +28,11 @@
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/test/sync_integration_test_support_jni_headers/SyncTestSigninUtils_jni.h"
 #include "chrome/test/sync_integration_test_support_jni_headers/SyncTestTabGroupHelpers_jni.h"
 
@@ -139,20 +140,13 @@ void ShutdownLiveAuthForTesting() {
 tab_groups::LocalTabGroupID CreateGroupFromTab(TabAndroid* tab) {
   CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_group_id = Java_SyncTestTabGroupHelpers_createGroupFromTab(
-      env, tab->GetJavaObject());
-  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
+  return Java_SyncTestTabGroupHelpers_createGroupFromTab(env, tab);
 }
 
 std::optional<tab_groups::LocalTabGroupID> GetGroupIdForTab(TabAndroid* tab) {
   CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_group_id =
-      Java_SyncTestTabGroupHelpers_getGroupIdForTab(env, tab->GetJavaObject());
-  if (j_group_id.is_null()) {
-    return std::nullopt;
-  }
-  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
+  return Java_SyncTestTabGroupHelpers_getGroupIdForTab(env, tab);
 }
 
 void UpdateTabGroupVisualData(TabAndroid* tab,
@@ -160,14 +154,12 @@ void UpdateTabGroupVisualData(TabAndroid* tab,
                               tab_groups::TabGroupColorId color) {
   CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_title = base::android::ConvertUTF8ToJavaString(env, title);
   int32_t j_color = static_cast<int32_t>(color);
-  Java_SyncTestTabGroupHelpers_updateGroupVisualData(env, tab->GetJavaObject(),
-                                                     j_title, j_color);
+  Java_SyncTestTabGroupHelpers_updateGroupVisualData(
+      env, tab, std::string(title), j_color);
 }
 
-static void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
-                                                       int64_t callbackPtr) {
+static void JNI_SyncTestSigninUtils_OnShutdownComplete(int64_t callbackPtr) {
   std::unique_ptr<base::OnceClosure> heap_callback(
       reinterpret_cast<base::OnceClosure*>(callbackPtr));
   std::move(*heap_callback).Run();

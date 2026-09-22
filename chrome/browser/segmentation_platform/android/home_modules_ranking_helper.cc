@@ -4,6 +4,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -18,18 +20,15 @@
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/segmentation_platform/client_util_jni_headers/HomeModulesRankingHelper_jni.h"
 
 using ::base::android::AttachCurrentThread;
-using ::base::android::ConvertJavaStringToUTF8;
-using ::base::android::JavaRef;
-using ::base::android::ScopedJavaGlobalRef;
 
 namespace {
 
 void RunGetClassificationResultCallback(
-    const JavaRef<jobject>& j_callback,
+    const jni_zero::JavaRef<jobject>& j_callback,
     const segmentation_platform::ClassificationResult& result) {
   JNIEnv* env = AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
@@ -61,31 +60,27 @@ static void JNI_HomeModulesRankingHelper_GetClassificationResult(
   registry->get_rank_fetcher_helper()->GetHomeModulesRank(
       service, native_prediction_options, native_input_context,
       base::BindOnce(&RunGetClassificationResultCallback,
-                     ScopedJavaGlobalRef<jobject>(callback)));
+                     jni_zero::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
 static void JNI_HomeModulesRankingHelper_NotifyCardShown(
-    JNIEnv* env,
     Profile* profile,
-    const JavaRef<jstring>& card_label) {
+    const std::string& card_label) {
   DCHECK(profile);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeModulesCardRegistry(profile);
-  std::string native_card_label = ConvertJavaStringToUTF8(env, card_label);
-  registry->NotifyCardShown(native_card_label.c_str());
+  registry->NotifyCardShown(card_label.c_str());
 }
 
 static void JNI_HomeModulesRankingHelper_NotifyCardInteracted(
-    JNIEnv* env,
     Profile* profile,
-    const JavaRef<jstring>& card_label) {
+    const std::string& card_label) {
   DCHECK(profile);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeModulesCardRegistry(profile);
-  std::string native_card_label = ConvertJavaStringToUTF8(env, card_label);
-  registry->NotifyCardInteracted(native_card_label.c_str());
+  registry->NotifyCardInteracted(card_label.c_str());
 }
 
 DEFINE_JNI(HomeModulesRankingHelper)
