@@ -264,8 +264,8 @@ class DataTypeWorker : public UpdateHandler,
   // Returns whether the `data_type_state_` key name changed.
   bool UpdateTypeEncryptionKeyName();
 
-  // Iterates through all elements in `entries_pending_decryption_` and tries to
-  // decrypt anything that has encrypted data.
+  // Iterates through all elements in `updates_pending_decryption_by_server_id_`
+  // and tries to decrypt anything that has encrypted data.
   // Should only be called during a GetUpdates cycle.
   void DecryptStoredEntities();
 
@@ -303,7 +303,8 @@ class DataTypeWorker : public UpdateHandler,
   bool ShouldIgnoreUpdatesEncryptedWith(const std::string& key_name);
 
   // If `key_name` should be ignored (cf. ShouldIgnoreUpdatesEncryptedWith()),
-  // drops elements of `entries_pending_decryption_` encrypted with it.
+  // drops elements of `updates_pending_decryption_by_server_id_` encrypted with
+  // it.
   void MaybeDropPendingUpdatesEncryptedWith(const std::string& key_name);
 
   // Removes elements of `unknown_encryption_keys_by_name_` that no longer fit
@@ -377,11 +378,12 @@ class DataTypeWorker : public UpdateHandler,
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
   // the latest).
-  // TODO(crbug.com/40141634): Use a name mentioning "updates" and "server id".
-  std::map<std::string, sync_pb::SyncEntity> entries_pending_decryption_;
+  std::map<std::string, sync_pb::SyncEntity>
+      updates_pending_decryption_by_server_id_;
 
   // A key is said to be unknown if one of these is true:
-  // a) It encrypts some updates(s) in `entries_pending_decryption_`.
+  // a) It encrypts some updates(s) in
+  // `updates_pending_decryption_by_server_id_`.
   // b) (a) happened for so long that the worker dropped those updates in an
   // attempt to unblock itself (cf. ShouldIgnoreUpdatesEncryptedWith()).
   // The key is added here when the worker receives the first update entity
