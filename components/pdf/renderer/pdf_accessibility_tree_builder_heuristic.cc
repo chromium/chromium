@@ -117,6 +117,11 @@ constexpr float kSmallTextFontSizeRatio = 0.85f;
 // floating point imprecision compare as equal.
 constexpr float kFontSizeEpsilon = 0.01f;
 
+// As defined in ISO 32000-1:2008, section 9.6.4: "Font Subsets".
+// For a font subset, the PostScript name shall begin with 6 uppercase letters
+// followed by a '+' tag applied by the subsetting application.
+constexpr size_t kFontSubsetTagLength = 6;
+
 enum class HeaderFooterRole {
   kNone,
   kHeader,
@@ -757,11 +762,26 @@ const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
   return (index + 1 < text_runs.size()) ? &text_runs[index + 1] : nullptr;
 }
 
+std::string_view GetFontWithoutSubset(std::string_view font_name) {
+  // As defined in ISO 32000-1:2008, section 9.6.4: "Font Subsets".
+  // For a font subset, the PostScript name shall begin with 6 uppercase letters
+  // followed by a '+' tag applied by the subsetting application.
+  const bool has_plus_tag = font_name.size() > kFontSubsetTagLength + 1 &&
+                            font_name[kFontSubsetTagLength] == '+';
+  if (has_plus_tag &&
+      std::ranges::all_of(font_name.substr(0, kFontSubsetTagLength),
+                          &base::IsAsciiUpper<char>)) {
+    return font_name.substr(kFontSubsetTagLength + 1);
+  }
+  return font_name;
+}
+
 bool AreStylesAndFontsEquivalent(
     const chrome_pdf::AccessibilityTextStyleInfo& style1,
     const chrome_pdf::AccessibilityTextStyleInfo& style2) {
   return PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2) &&
-         style1.font_name == style2.font_name &&
+         GetFontWithoutSubset(style1.font_name) ==
+             GetFontWithoutSubset(style2.font_name) &&
          style1.fill_color == style2.fill_color;
 }
 

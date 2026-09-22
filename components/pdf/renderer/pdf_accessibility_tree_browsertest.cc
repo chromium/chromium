@@ -1965,6 +1965,87 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnFontNameMismatch) {
   EXPECT_NE(block1, block2);
 }
 
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicHeadingDoesNotBreakOnFontSubsetPrefixDifference) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font1 = CreateBoldStyle();
+  bold_style_font1.font_name = "ABCDEF+Arial";
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font2 = CreateBoldStyle();
+  bold_style_font2.font_name = "XYZUVW+Arial";
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  normal_style.font_name = "Arial";
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{15.0f, 15.0f, 10.0f, 10.0f, 10.0f},
+      {bold_style_font1, bold_style_font2, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"HeadingOne", "HeadingTwo", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // Two bold runs with the same base font but different subset prefixes are
+  // treated as equivalent and merged into a single heading block.
+  ASSERT_EQ(4u, page->GetChildCount());
+
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+  ASSERT_EQ(1u, block1->GetChildCount());
+  const ui::AXNode* child = block1->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, child->GetRole());
+  EXPECT_EQ("HeadingOne     HeadingTwo     ",
+            child->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicHeadingBreakOnFontSubsetPrefixWithDifferentFont) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font1 = CreateBoldStyle();
+  bold_style_font1.font_name = "ABCDEF+Arial";
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font2 = CreateBoldStyle();
+  bold_style_font2.font_name = "XYZUVW+TimesNewRoman";
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  normal_style.font_name = "Arial";
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{15.0f, 15.0f, 10.0f, 10.0f, 10.0f},
+      {bold_style_font1, bold_style_font2, normal_style, normal_style,
+       normal_style},
+      MakeCharVector({"HeadingOne", "HeadingTwo", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  // Different base fonts break into separate heading blocks even with subset
+  // prefixes.
+  ASSERT_EQ(5u, page->GetChildCount());
+
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+
+  const ui::AXNode* block2 = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, block2);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block2->GetRole());
+  EXPECT_NE(block1, block2);
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicBodyTextFontNameChangeDoesNotBreak) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
