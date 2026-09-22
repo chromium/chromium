@@ -4165,6 +4165,10 @@ bool NavigationRequest::HasSameSiteAdAncestor() {
   return false;
 }
 
+void NavigationRequest::ComputeDownloadPolicyForTesting() {
+  ComputeDownloadPolicy();
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   // Check whether an origin-keyed agent cluster is explicitly requested, either
   // opting in or out, before attempting to isolate it. If an explicit request
@@ -6342,6 +6346,15 @@ void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
       commit_params().navigation_timing->redirect_end, completion_time,
       original_url_, common_params().url, std::move(response_head),
       allow_response_details, std::move(resource_lengths));
+}
+
+bool NavigationRequest::HasUnfilteredUserGesture() {
+  // StartedWithTransientActivation() is unfiltered, but always returns false
+  // for browser-initiated navigations. Fortunately browser-initiated
+  // navigations are never filtered so can call HasUserGesture() directly.
+  return commit_params_->is_browser_initiated
+             ? HasUserGesture()
+             : StartedWithTransientActivation();
 }
 
 void NavigationRequest::OnRedirectChecksComplete(
@@ -12448,11 +12461,15 @@ void NavigationRequest::ComputeDownloadPolicy() {
         blink::NavigationDownloadType::kOpenerCrossOrigin);
   }
 
+  // [NoGesture]
+  if (!HasUnfilteredUserGesture()) {
+    download_policy().SetAllowed(blink::NavigationDownloadType::kNoGesture);
+  }
+
   // TODO(arthursonzogni): Check if the following fields from the
   // NavigationDownloadPolicy could be computed here from the browser process
   // instead:
   //
-  // [NoGesture]
   // [AdFrameNoGesture]
   // [AdFrame]
 }

@@ -101,6 +101,10 @@
 #include "content/browser/android/navigation_handle_proxy.h"
 #endif
 
+namespace blink {
+struct NavigationDownloadPolicy;
+}  // namespace blink
+
 namespace network {
 struct IntegrityPolicy;
 class ResourceRequestBody;
@@ -1936,11 +1940,17 @@ class CONTENT_EXPORT NavigationRequest
   // origin is same-site to that ancestor ad frame.
   bool HasSameSiteAdAncestor();
 
+  // Allows tests to regenerate the download policy, which normally is computed
+  // in the constructor.
+  void ComputeDownloadPolicyForTesting();
+
+  // Allows tests to read and modify the download policy.
+  blink::NavigationDownloadPolicy& download_policy_for_testing() {
+    return download_policy();
+  }
+
  private:
   friend class NavigationRequestTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      NavigationRequestDownloadBrowserTest,
-      OpenerCrossOrigin_BrowserOverridesCompromisedRenderer);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
                            SanitizeRedirectsForCommitRelativeLocation);
@@ -2792,6 +2802,11 @@ class CONTENT_EXPORT NavigationRequest
   void AddResourceTimingEntryForFailedSubframeNavigation(
       base::TimeTicks completion_time,
       blink::mojom::SubframeResourceLengthsPtr resource_lengths);
+
+  // Equivalent to HasUserGesture(), but not filtered out by
+  // NavigateFromFrameProxy(). This should not be exposed to the committed
+  // document: use HasUserGesture() for that.
+  bool HasUnfilteredUserGesture();
 
   // Returns the impl version of the |initiator_navigation_state_| stored
   // in this NavigationRequest.

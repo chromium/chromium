@@ -358,15 +358,18 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Whether the navigation was initiated by a user gesture.
   //
   // Differences from `StartedWithTransientActivation()`:
-  // 1. This returns `true` for browser-initiated navigations.
-  // 2. For renderer-initiated navigations, this is filtered out during proxy
-  //    navigations, to prevent it from being exposed to the committed document.
+  // 1. This can return `true` for browser-initiated navigations. (Note that
+  //    some browser-initiated navigations won't have a user gesture, such as
+  //    from session restore or extensions.)
+  // 2. For renderer-initiated navigations, this is filtered out if the
+  //    navigation went through NavigateFromFrameProxy(), to prevent it from
+  //    being exposed to the committed document.
   virtual bool HasUserGesture() = 0;
 
   // Whether the navigation started with a transient user activation.
   //
   // Differences from `HasUserGesture()`:
-  // 1. This returns `false` for browser-initiated navigations.
+  // 1. This always returns `false` for browser-initiated navigations.
   // 2. For renderer-initiated navigations, this provides the raw, unfiltered
   //    initiator state.
   virtual bool StartedWithTransientActivation() = 0;

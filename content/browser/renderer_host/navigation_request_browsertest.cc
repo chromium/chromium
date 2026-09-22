@@ -5,6 +5,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -22,6 +24,7 @@
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/process_selection_deferring_condition_runner.h"
@@ -70,17 +73,21 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/network/public/cpp/loading_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -3880,12 +3887,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
 
   // Simulate a compromised renderer that stripped the kOpenerCrossOrigin flag
   // from IPC.
-  request->common_params_->download_policy.observed_types.reset();
-  request->common_params_->download_policy.disallowed_types.reset();
+  request->download_policy_for_testing().observed_types.reset();
+  request->download_policy_for_testing().disallowed_types.reset();
 
-  EXPECT_FALSE(request->common_params_->download_policy.IsType(
+  EXPECT_FALSE(request->download_policy_for_testing().IsType(
       blink::NavigationDownloadType::kOpenerCrossOrigin));
-  EXPECT_TRUE(request->common_params_->download_policy.IsDownloadAllowed());
+  EXPECT_TRUE(request->download_policy_for_testing().IsDownloadAllowed());
 
   // Close the initiator popup to destroy the initiator RenderFrameHost. This
   // verifies that browser-side enforcement relies on cached state recorded at
@@ -3895,13 +3902,170 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
   popup->Close();
 
   // Run browser recomputation:
-  request->ComputeDownloadPolicy();
+  request->ComputeDownloadPolicyForTesting();
 
   // Verify browser recomputation enforced kOpenerCrossOrigin even after
   // initiator RFH destruction:
-  EXPECT_TRUE(request->common_params_->download_policy.IsType(
+  EXPECT_TRUE(request->download_policy_for_testing().IsType(
       blink::NavigationDownloadType::kOpenerCrossOrigin));
-  EXPECT_FALSE(request->common_params_->download_policy.IsDownloadAllowed());
+  EXPECT_FALSE(request->download_policy_for_testing().IsDownloadAllowed());
+}
+
+class NavigationRequestDownloadPolicyNoGestureBrowserTest
+    : public NavigationRequestDownloadBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationRequestDownloadBrowserTest::SetUpCommandLine(command_line);
+    // Make sure child frames used in the FromFrameProxy tests are isolated.
+    IsolateAllSitesForTesting(command_line);
+  }
+
+  void TearDownOnMainThread() override {
+    if (navigation_manager_) {
+      ASSERT_TRUE(navigation_manager_->WaitForNavigationFinished());
+    }
+    NavigationRequestDownloadBrowserTest::TearDownOnMainThread();
+  }
+
+  // Navigates the main frame to `relative_url`, and sets up
+  // `navigation_manager_` and `download_url_` to watch for a navigation in that
+  // frame.
+  bool SetUpNavigationManager(std::string_view relative_url) {
+    if (!NavigateToURL(shell(),
+                       embedded_test_server()->GetURL("a.com", relative_url))) {
+      return false;
+    }
+    download_url_ =
+        embedded_test_server()->GetURL("a.com", "/download-test1.lib");
+    navigation_manager_.emplace(shell()->web_contents(), download_url_);
+    return true;
+  }
+
+  NavigationRequest* WaitForMainFrameNavigationRequest() {
+    if (!navigation_manager_) {
+      ADD_FAILURE() << "SetUpNavigationManager wasn't called.";
+      return nullptr;
+    }
+    if (!navigation_manager_->WaitForRequestStart()) {
+      ADD_FAILURE() << "Main frame navigation failed to start.";
+      return nullptr;
+    }
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryMainFrame()
+        ->frame_tree_node()
+        ->navigation_request();
+  }
+
+  bool with_user_gesture() const { return GetParam(); }
+
+  // Returns a URL that will trigger a download. Will return an empty URL until
+  // SetUpNavigationManager() is called.
+  GURL download_url() const { return download_url_; }
+
+ private:
+  GURL download_url_;
+  std::optional<TestNavigationManager> navigation_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WithUserGesture,
+                         NavigationRequestDownloadPolicyNoGestureBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(NavigationRequestDownloadPolicyNoGestureBrowserTest,
+                       RendererInitiated) {
+  ASSERT_TRUE(SetUpNavigationManager("/title1.html"));
+
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location.href = $1;", download_url()),
+                     with_user_gesture() ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                         : EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  NavigationRequest* request = WaitForMainFrameNavigationRequest();
+  ASSERT_TRUE(request);
+  EXPECT_EQ(request->HasUserGesture(), with_user_gesture());
+  EXPECT_EQ(request->StartedWithTransientActivation(), with_user_gesture());
+
+  // The initial computation includes policy from both browser and renderer.
+  EXPECT_NE(request->common_params().download_policy.IsType(
+                blink::NavigationDownloadType::kNoGesture),
+            with_user_gesture());
+
+  // Simulate a compromised renderer that didn't set the download policy.
+  request->download_policy_for_testing().observed_types.reset();
+  request->download_policy_for_testing().disallowed_types.reset();
+  EXPECT_FALSE(request->common_params().download_policy.IsType(
+      blink::NavigationDownloadType::kNoGesture));
+
+  // Recompute the download policy from browser information only.
+  request->ComputeDownloadPolicyForTesting();
+  EXPECT_NE(request->common_params().download_policy.IsType(
+                blink::NavigationDownloadType::kNoGesture),
+            with_user_gesture());
+}
+
+// Navigation from a remote iframe should set kNoGesture correctly, even though
+// HasUserGesture() is filtered during proxy navigations.
+IN_PROC_BROWSER_TEST_P(NavigationRequestDownloadPolicyNoGestureBrowserTest,
+                       FromFrameProxy) {
+  ASSERT_TRUE(SetUpNavigationManager("/cross_site_iframe_factory.html?a(b)"));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameTreeNode* child = root->child_at(0);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
+  EXPECT_TRUE(ExecJs(child,
+                     JsReplace("parent.location.href = $1;", download_url()),
+                     with_user_gesture() ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                         : EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  NavigationRequest* request = WaitForMainFrameNavigationRequest();
+  ASSERT_TRUE(request);
+  EXPECT_FALSE(request->HasUserGesture())
+      << "HasUserGesture() should be filtered.";
+  EXPECT_EQ(request->StartedWithTransientActivation(), with_user_gesture());
+
+  // The initial computation includes policy from both browser and renderer.
+  EXPECT_NE(request->common_params().download_policy.IsType(
+                blink::NavigationDownloadType::kNoGesture),
+            with_user_gesture());
+
+  // Simulate a compromised renderer that didn't set the download policy.
+  request->download_policy_for_testing().observed_types.reset();
+  request->download_policy_for_testing().disallowed_types.reset();
+  EXPECT_FALSE(request->common_params().download_policy.IsType(
+      blink::NavigationDownloadType::kNoGesture));
+
+  // Recompute the download policy from browser information only.
+  request->ComputeDownloadPolicyForTesting();
+  EXPECT_NE(request->common_params().download_policy.IsType(
+                blink::NavigationDownloadType::kNoGesture),
+            with_user_gesture());
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationRequestDownloadPolicyNoGestureBrowserTest,
+                       BrowserInitiated) {
+  ASSERT_TRUE(SetUpNavigationManager("/title1.html"));
+
+  NavigationController::LoadURLParams params(download_url());
+  // Same as Shell::LoadURL.
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.has_user_gesture = with_user_gesture();
+  shell()->web_contents()->GetController().LoadURLWithParams(params);
+
+  NavigationRequest* request = WaitForMainFrameNavigationRequest();
+  ASSERT_TRUE(request);
+  EXPECT_EQ(request->HasUserGesture(), with_user_gesture());
+  EXPECT_FALSE(request->StartedWithTransientActivation())
+      << "StartedWithTransientActivation() should be false for "
+         "browser-initiated navigations.";
+
+  // The initial computation sets the policy from the browser only.
+  EXPECT_NE(request->common_params().download_policy.IsType(
+                blink::NavigationDownloadType::kNoGesture),
+            with_user_gesture());
 }
 
 class NavigationRequestBackForwardBrowserTest
