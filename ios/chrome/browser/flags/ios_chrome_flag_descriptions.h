@@ -1902,12 +1902,6 @@ inline constexpr char kUpdatedFRESequenceDescription[] =
     "Updates the sequence of the FRE screens to show the DB promo first, "
     "remove the Sin-In & Sync screens, or both.";
 
-inline constexpr char kUseDefaultAppsDestinationForPromosName[] =
-    "Use Default Apps page for promos";
-inline constexpr char kUseDefaultAppsDestinationForPromosDescription[] =
-    "When enabled, all Default Browser promos redirecting to the iOS settings "
-    "will use the new Default Apps page, if the current device supports it.";
-
 inline constexpr char kUseFeedEligibilityServiceName[] =
     "[iOS] Use the new feed eligibility service";
 inline constexpr char kUseFeedEligibilityServiceDescription[] =

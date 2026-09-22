@@ -9890,11 +9890,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "use-default-apps-page-for-promos",
-    "owners": [ "gujen@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name" : "use-default-deadline-when-animating-bounds",
     "owners": [ "dfried@google.com", "estalin@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone" : 160
