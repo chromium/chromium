@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
@@ -171,6 +172,9 @@
   data_controls::DataControlsTabHelper::FromWebState(webState)
       ->SetSnackbarHandler(
           static_cast<id<SnackbarCommands>>(_commandDispatcher));
+  data_controls::DataControlsTabHelper::FromWebState(webState)
+      ->SetBrowserHandler(
+          HandlerForProtocol(_commandDispatcher, BrowserCommands));
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerTabHelperDelegate);

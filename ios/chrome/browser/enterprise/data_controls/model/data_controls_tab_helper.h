@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/timer/timer.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
@@ -18,10 +19,12 @@
 #import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
 @protocol SnackbarCommands;
+@protocol BrowserCommands;
 
 namespace enterprise_connectors {
 struct RequestHandlerResult;
@@ -32,6 +35,8 @@ namespace web {
 class WebState;
 }
 
+class OverlayResponse;
+
 namespace data_controls {
 
 class DataControlsPasteboardManager;
@@ -41,11 +46,16 @@ class DataControlsPasteboardManager;
 // (copying, pasting), are permitted. Such restrictions only apply to managed
 // profiles; for all other profiles, these actions are unrestricted.
 class DataControlsTabHelper
-    : public web::WebStateUserData<DataControlsTabHelper>,
+    : public web::WebStateObserver,
+      public web::WebStateUserData<DataControlsTabHelper>,
       public DataControlsPasteboardManagerObserver {
  public:
   // Max number for simultaneous non-blocking scan requests.
   static constexpr size_t kMaxAuditPasteEvents = 100;
+
+  // Delay before showing the spinning overlay for paste analysis.
+  static constexpr base::TimeDelta kSpinnerOverlayDelay =
+      base::Milliseconds(500);
 
   DataControlsTabHelper(const DataControlsTabHelper&) = delete;
   DataControlsTabHelper& operator=(const DataControlsTabHelper&) = delete;
@@ -86,12 +96,25 @@ class DataControlsTabHelper
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
+  // Sets the browser handler.
+  void SetBrowserHandler(id<BrowserCommands> browser_handler);
+
   // Called after the clipboard has been read from.
   void DidFinishClipboardRead();
 
   // DataControlsPasteboardManagerObserver override: Called when the pasteboard
   // content is changed.
   void OnPasteboardContentChanged() override;
+
+  // Mark the current blocking paste as invalid and change the
+  // `paste_event_state_` accordingly.
+  void InvalidateCurrentPaste();
+
+  // web::WebStateObserver:
+  void WasHidden(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
 
  private:
   friend class web::WebStateUserData<DataControlsTabHelper>;
@@ -106,6 +129,9 @@ class DataControlsTabHelper
     kDisplayingWarningDialog,
     // Waiting for scan result from WebProtect.
     kWaitingScanDecision,
+    // Displaying the spinner, this means that we are still waiting for scan
+    // decision.
+    kDisplayingSpinner,
     // User initiated a new copy action while waiting for the scan result for
     // the paste, making the paste event stale.
     kPasteEventStale,
@@ -198,6 +224,19 @@ class DataControlsTabHelper
                          std::string_view org_domain,
                          base::OnceCallback<void(bool)> on_bypassed_callback);
 
+  // Shows the loading spinner overlay for Pasteboard Content Analysis. This
+  // should only be called if `wait_until_verdict` is true in `AnalysisSetting`.
+  void ShowPasteSpinner(const GURL& destination_url);
+
+  // Dismisses the spinner overlay for Pasteboard Content Analysis if
+  // presented, and stops the delay timer.
+  void DismissPasteSpinnerIfPresented();
+
+  // Called after the paste spinner is dismissed. The spinner can be dismissed
+  // from this tab helper or other places that want to cancel the current
+  // overlay and show their own overlay.
+  void OnPasteSpinnerDismissed(OverlayResponse* response);
+
   // Shows a snackbar message to inform the user that an action was blocked by
   // policy or content analysis.
   void ShowRestrictSnackbar(NSString* title);
@@ -221,9 +260,15 @@ class DataControlsTabHelper
   // The snackbar command handler.
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
 
+  // The browser command handler.
+  __weak id<BrowserCommands> browser_handler_ = nil;
+
   // The handler for pasteboard content analysis.
   std::unique_ptr<enterprise_connectors::PasteboardContentHandlerIOS>
       pasteboard_content_handler_;
+
+  // Timer used to show a spinner if content analysis takes too long.
+  base::OneShotTimer paste_spinner_timer_;
 
   // The index we used as the key of the `audit_paste_events_`, increments by
   // one as each new request comes in.
