@@ -114,6 +114,7 @@ export class PrintPreviewDestinationSettingsElement extends
   protected accessor pdfPrinterDisabled_: boolean = false;
   protected accessor loaded_: boolean = false;
 
+  private shouldFocusDropdown_: boolean = false;
   private tracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -380,12 +381,18 @@ export class PrintPreviewDestinationSettingsElement extends
    *     selected.
    */
   protected onSelectedOptionChange_(e: CustomEvent<string>) {
+    this.shouldFocusDropdown_ = true;
     this.destinationStore_!.selectDestinationByKey(e.detail);
   }
 
   protected onSeeMoreClick_() {
     this.destinationStore_!.startLoadAllDestinations();
     this.$.destinationDialog.get().show();
+  }
+
+  protected onDialogClose_() {
+    this.shouldFocusDropdown_ = false;
+    this.$.seeMore.focus();
   }
 
   private async updateDestinationSelect_() {
@@ -401,7 +408,8 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationState !== DestinationState.SET && !this.firstLoad;
 
     this.$.destinationSelect.updateDestination();
-    if (shouldFocus) {
+    if (shouldFocus && this.shouldFocusDropdown_) {
+      this.shouldFocusDropdown_ = false;
       await this.$.destinationSelect.updateComplete;
       this.$.destinationSelect.focus();
     }

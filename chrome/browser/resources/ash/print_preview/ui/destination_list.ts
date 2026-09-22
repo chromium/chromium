@@ -164,6 +164,7 @@ export class PrintPreviewDestinationListElement extends
     if (e.key === 'Enter') {
       this.onDestinationSelected_(e);
       e.stopPropagation();
+      e.preventDefault();
     }
   }
 

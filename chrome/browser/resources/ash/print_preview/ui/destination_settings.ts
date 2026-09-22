@@ -149,6 +149,7 @@ export class PrintPreviewDestinationSettingsElement extends
   declare private loaded_: boolean;
 
   private lastUser_: string = '';
+  private shouldFocusDropdown_: boolean = false;
   private tracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -411,12 +412,18 @@ export class PrintPreviewDestinationSettingsElement extends
    *     selected.
    */
   private onSelectedDestinationOptionChange_(e: CustomEvent<string>) {
+    this.shouldFocusDropdown_ = true;
     this.destinationStore_!.selectDestinationByKey(e.detail);
   }
 
   private onSeeMoreClick_() {
     this.destinationStore_!.startLoadAllDestinations();
     this.$.destinationDialog.get().show();
+  }
+
+  private onDialogClose_() {
+    this.shouldFocusDropdown_ = false;
+    this.$.seeMore.focus();
   }
 
   private updateDestinationSelect_() {
@@ -432,7 +439,8 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationState !== DestinationState.SET && !this.firstLoad;
     beforeNextRender(this.$.destinationSelect, () => {
       this.$.destinationSelect.updateDestination();
-      if (shouldFocus) {
+      if (shouldFocus && this.shouldFocusDropdown_) {
+        this.shouldFocusDropdown_ = false;
         this.$.destinationSelect.focus();
       }
     });

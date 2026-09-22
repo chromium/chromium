@@ -4,16 +4,16 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {LocalDestinationInfo, PrintPreviewDestinationSettingsElement, RecentDestination} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, DestinationStoreEventType, makeRecentDestination, NativeLayerImpl, State} from 'chrome://print/print_preview.js';
+import type {LocalDestinationInfo, PrintPreviewDestinationDialogCrosElement, PrintPreviewDestinationListItemElement, PrintPreviewDestinationSettingsElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DestinationStoreEventType, makeRecentDestination, NativeLayerImpl, PDF_DESTINATION_KEY, State} from 'chrome://print/print_preview.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
-import {setupTestListenerElement} from './print_preview_test_utils.js';
+import {getCddTemplate, setupTestListenerElement} from './print_preview_test_utils.js';
 
 suite('DestinationSettingsInteractiveTest', function() {
   let destinationSettings: PrintPreviewDestinationSettingsElement;
@@ -45,13 +45,7 @@ suite('DestinationSettingsInteractiveTest', function() {
     document.body.appendChild(destinationSettings);
   });
 
-  test('RestoreFocusAfterDestinationChange', async () => {
-    const destinations = [
-      new Destination('FooDevice', DestinationOrigin.CROS, 'FooName'),
-      new Destination('BarDevice', DestinationOrigin.CROS, 'BarName'),
-    ];
-    const recentDestinations: RecentDestination[] =
-        destinations.map(d => makeRecentDestination(d));
+  async function initSettings(recentDestinations: RecentDestination[]) {
     destinationSettings.setSetting('recentDestinations', recentDestinations);
 
     const whenCapabilitiesSet = eventToPromise(
@@ -63,6 +57,46 @@ suite('DestinationSettingsInteractiveTest', function() {
         '' /* serializedDefaultDestinationSelectionRulesStr */);
     await whenCapabilitiesSet;
     await waitBeforeNextRender(destinationSettings);
+  }
+
+  async function openDialog() {
+    await initSettings([]);
+    destinationSettings.$.seeMore.click();
+    await nativeLayer.whenCalled('getPrinters');
+    await waitBeforeNextRender(destinationSettings);
+
+    const dialog = destinationSettings.$.destinationDialog.getIfExists();
+    assertTrue(!!dialog);
+    assertTrue(dialog.isOpen());
+    return dialog;
+  }
+
+  function getDestination(key: string): Destination {
+    const destination =
+        destinationSettings.getDestinationStoreForTest().getDestinationByKey(
+            key);
+    assertTrue(!!destination);
+    return destination;
+  }
+
+  async function selectDestinationFromDialog(
+      dialog: PrintPreviewDestinationDialogCrosElement,
+      destination: Destination): Promise<void> {
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.printList.dispatchEvent(new CustomEvent('destination-selected', {
+      detail: {destination} as unknown as
+          PrintPreviewDestinationListItemElement,
+    }));
+    await whenClosed;
+    await waitBeforeNextRender(destinationSettings);
+  }
+
+  test('RestoreFocusAfterDestinationChange', async () => {
+    const destinations = [
+      new Destination('FooDevice', DestinationOrigin.CROS, 'FooName'),
+      new Destination('BarDevice', DestinationOrigin.CROS, 'BarName'),
+    ];
+    await initSettings(destinations.map(d => makeRecentDestination(d)));
 
     const dropdown = destinationSettings.$.destinationSelect;
     const select = dropdown.$.dropdown.$.destinationDropdown;
@@ -84,5 +118,40 @@ suite('DestinationSettingsInteractiveTest', function() {
 
     // Focus is restored to select after capabilities load.
     assertEquals(select, getDeepActiveElement());
+  });
+
+  test('RestoreFocusAfterDestinationDialogDismiss', async () => {
+    const dialog = await openDialog();
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.dialog.cancel();
+    await whenClosed;
+    await waitBeforeNextRender(destinationSettings);
+
+    assertEquals(destinationSettings.$.seeMore, getDeepActiveElement());
+  });
+
+  test('RestoreFocusAfterDestinationDialogSelectCached', async () => {
+    const dialog = await openDialog();
+    const destination = getDestination(`BarDevice/${DestinationOrigin.CROS}/`);
+    destination.capabilities =
+        getCddTemplate('BarDevice', 'BarName').capabilities;
+
+    await selectDestinationFromDialog(dialog, destination);
+
+    assertEquals(destinationSettings.$.seeMore, getDeepActiveElement());
+  });
+
+  test('RestoreFocusAfterDestinationDialogSelectUncached', async () => {
+    const dialog = await openDialog();
+    const whenCapabilitiesReady = eventToPromise(
+        DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
+        destinationSettings.getDestinationStoreForTest());
+
+    await selectDestinationFromDialog(
+        dialog, getDestination(PDF_DESTINATION_KEY));
+    await whenCapabilitiesReady;
+    await waitBeforeNextRender(destinationSettings);
+
+    assertEquals(destinationSettings.$.seeMore, getDeepActiveElement());
   });
 });

@@ -127,6 +127,7 @@ export class PrintPreviewDestinationListElement extends CrLitElement {
     if (e.key === 'Enter') {
       this.onDestinationClick_(e);
       e.stopPropagation();
+      e.preventDefault();
     }
   }
 

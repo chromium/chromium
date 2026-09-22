@@ -39,6 +39,7 @@ import {NativeLayerImpl} from '../native_layer.js';
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './destination_dialog_cros.html.js';
+import type {PrintPreviewDestinationListElement} from './destination_list.js';
 import type {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
@@ -60,6 +61,7 @@ enum UiState {
 export interface PrintPreviewDestinationDialogCrosElement {
   $: {
     dialog: CrDialogElement,
+    printList: PrintPreviewDestinationListElement,
     provisionalResolver: PrintPreviewProvisionalDestinationResolverElement,
     searchBox: PrintPreviewSearchBoxElement,
   };

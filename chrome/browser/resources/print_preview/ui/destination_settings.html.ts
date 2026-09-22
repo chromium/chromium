@@ -25,7 +25,8 @@ export function getHtml(this: DestinationSettingsElement) {
 <cr-lazy-render-lit id="destinationDialog"
     .template="${() => html`
       <print-preview-destination-dialog
-          .destinationStore="${this.destinationStore_}">
+          .destinationStore="${this.destinationStore_}"
+          @close="${this.onDialogClose_}">
       </print-preview-destination-dialog>
     `}">
 </cr-lazy-render-lit>
