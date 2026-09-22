@@ -695,4 +695,58 @@ suite('AppReceivesToolbarChanges', () => {
         visualBrowserProxy.getLineSpacingValue(2), containerLineSpacing());
     assertFontsEqual(containerFont(), 'Serif');
   });
+
+  test('on links toggle updates toolbar settingsPrefs', async () => {
+    visualBrowserProxy.linksEnabled = false;
+    emitEvent(app, ToolbarEvent.LINKS);
+    await microtasksFinished();
+    assertFalse(app.$.toolbar.settingsPrefs.linksEnabled);
+
+    visualBrowserProxy.linksEnabled = true;
+    emitEvent(app, ToolbarEvent.LINKS);
+    await microtasksFinished();
+    assertTrue(app.$.toolbar.settingsPrefs.linksEnabled);
+  });
+
+  test('on images toggle updates toolbar settingsPrefs', async () => {
+    visualBrowserProxy.imagesEnabled = false;
+    emitEvent(app, ToolbarEvent.IMAGES);
+    await microtasksFinished();
+    assertFalse(app.$.toolbar.settingsPrefs.imagesEnabled);
+
+    visualBrowserProxy.imagesEnabled = true;
+    emitEvent(app, ToolbarEvent.IMAGES);
+    await microtasksFinished();
+    assertTrue(app.$.toolbar.settingsPrefs.imagesEnabled);
+  });
+
+  test('on speech rate change updates toolbar settingsPrefs', async () => {
+    audioBrowserProxy.speechRate = 1.5;
+    emitEvent(app, ToolbarEvent.RATE);
+    await microtasksFinished();
+    assertEquals(1.5, app.$.toolbar.settingsPrefs.speechRate);
+
+    audioBrowserProxy.speechRate = 0.8;
+    emitEvent(app, ToolbarEvent.RATE);
+    await microtasksFinished();
+    assertEquals(0.8, app.$.toolbar.settingsPrefs.speechRate);
+  });
+
+  test('on highlight change updates toolbar settingsPrefs', async () => {
+    emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+      detail: {data: audioBrowserProxy.noHighlighting},
+    });
+    await microtasksFinished();
+    assertEquals(
+        audioBrowserProxy.noHighlighting,
+        app.$.toolbar.settingsPrefs.highlightGranularity);
+
+    emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+      detail: {data: audioBrowserProxy.wordHighlighting},
+    });
+    await microtasksFinished();
+    assertEquals(
+        audioBrowserProxy.wordHighlighting,
+        app.$.toolbar.settingsPrefs.highlightGranularity);
+  });
 });
