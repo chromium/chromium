@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -130,6 +131,21 @@ class InputStateModel {
     return browser_identity_matches_aim_identity_;
   }
 
+  struct LensCrop {
+    std::string data_id;
+    std::string data_uri;
+    bool operator==(const LensCrop&) const = default;
+  };
+
+  // Lens region crop storage.
+  // There is only ever one region crop; setting a crop clears any existing
+  // crop.
+  void SetLensCrop(const std::string& data_id, const std::string& data_uri);
+  std::optional<std::string> GetLensCrop(const std::string& data_id) const;
+  void RemoveLensCrop(const std::string& data_id);
+  void ClearLensCrop();
+  void ClearLensCrops() { ClearLensCrop(); }
+  const std::optional<LensCrop>& lens_crop() const { return lens_crop_; }
 
   // Gets the `PrefService`.
   void SetPrefService(PrefService* pref_service);
@@ -219,6 +235,9 @@ class InputStateModel {
   // param is added a few URL changes AFTER the thread URL is changed (to change
   // threads).
   bool user_modified_tool_in_thread_ = false;
+
+  // Stores the active region crop preview, if any.
+  std::optional<LensCrop> lens_crop_;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };
