@@ -6,12 +6,10 @@
     "isolated_scripts": [
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -59,12 +57,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -112,12 +108,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -165,12 +159,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -218,12 +210,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -271,12 +261,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -324,12 +312,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -377,12 +363,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -430,12 +414,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -483,12 +465,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -536,12 +516,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -589,12 +567,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -642,12 +618,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -695,12 +669,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -748,12 +720,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -801,12 +771,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -854,12 +822,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -907,12 +873,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -960,12 +924,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1013,12 +975,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1066,12 +1026,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1119,12 +1077,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1172,12 +1128,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1225,13 +1179,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1280,13 +1232,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1337,13 +1287,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1394,13 +1342,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1451,13 +1397,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1508,13 +1452,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1563,13 +1505,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1618,13 +1558,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1673,13 +1611,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1727,13 +1663,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1783,13 +1717,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1840,13 +1772,11 @@
         "args": [
           "--clones",
           "2",
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1895,12 +1825,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1948,12 +1876,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2001,12 +1927,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2054,13 +1978,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2109,13 +2031,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2164,12 +2084,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2217,12 +2135,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2270,12 +2186,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2323,12 +2237,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2376,12 +2288,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2429,12 +2339,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2483,12 +2391,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2537,12 +2443,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2590,12 +2494,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2643,12 +2545,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2696,12 +2596,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2749,12 +2647,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2802,13 +2698,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2856,13 +2750,11 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
           "--xcodebuild-sim-runner",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2910,12 +2802,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -2963,12 +2853,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3016,12 +2904,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3069,12 +2955,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3122,12 +3006,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3175,12 +3057,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3228,12 +3108,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3281,12 +3159,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3334,12 +3210,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3387,12 +3261,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3440,12 +3312,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3493,12 +3363,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3547,12 +3415,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3601,12 +3467,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3654,12 +3518,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3707,12 +3569,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3760,12 +3620,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3813,12 +3671,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3866,12 +3722,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3919,12 +3773,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3972,12 +3824,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -4025,12 +3875,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -4078,12 +3926,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -4131,12 +3977,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPad (A16)",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -4184,12 +4028,10 @@
       },
       {
         "args": [
-          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
           "27.2",
-          "--use-simulator-cache",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
