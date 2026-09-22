@@ -47,8 +47,6 @@ class InstallableIconFetcher {
   InstallableIconFetcher(const InstallableIconFetcher&) = delete;
   InstallableIconFetcher& operator=(const InstallableIconFetcher&) = delete;
 
-  friend class InstallableIconFetcherTest;
-
  private:
   void TryFetchingNextIcon();
   void OnManifestIconFetched(
@@ -58,11 +56,6 @@ class InstallableIconFetcher {
 
   void FetchFavicon();
   void OnFaviconFetched(const favicon_base::LargeIconResult& result);
-  void OnFaviconProcessingFailed(InstallableStatusCode code);
-
-  void FetchFaviconFromCandidates();
-  void OnFaviconCandidateDownloaded(const GURL& icon_url,
-                                    const SkBitmap& bitmap);
 
   void OnIconFetched(const GURL& icon_url,
                      const blink::mojom::ManifestImageResource_Purpose purpose,
