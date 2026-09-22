@@ -320,7 +320,7 @@ def fuzz_target_builder(
         target_arch = None,
         swarming_mixins = None,
         builderless = True,
-        use_ssd_for_test_builder = False,
+        use_ssd_for_test_builder = args.COMPUTE,
         free_space_for_test_builder = None,
         fuzzing_engine = None,
         sanitizer = None,
@@ -436,8 +436,10 @@ def fuzz_target_builder(
         description += " Mirrors the build configuration of \"" + name + "\"."
     kwargs["description_html"] = description
 
-    if "ssd" in kwargs:
+    if use_ssd_for_test_builder != args.COMPUTE:
         kwargs["ssd"] = use_ssd_for_test_builder
+    elif "ssd" in kwargs:
+        kwargs["ssd"] = False
 
     if free_space_for_test_builder != None:
         kwargs["free_space"] = free_space_for_test_builder
@@ -953,6 +955,7 @@ browser_asan_win_builder(
     name = "Win ASan Release Schema v1",
     description_html = "ASan build of Chrome for Windows in archive schema v1",
     builderless = True,
+    ssd = None,
     gardener_rotations = args.ignore_default(None),
     clusterfuzz_archive_path = "win32-release_x64-schemav1/asan-win32-release_x64",
     clusterfuzz_archive_schema_version = 1,
@@ -1356,6 +1359,7 @@ libfuzzer_builder(
     swarming_mixins = ["win10-any"],
     test_builder_name = "win-x64-libfuzzer-asan-rel-tests",
     use_component_build = False,
+    use_ssd_for_test_builder = None,
 )
 
 # TODO(516753903): Deprecate this builder once we confirm builds are green and
