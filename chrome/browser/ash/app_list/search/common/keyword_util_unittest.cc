@@ -60,7 +60,6 @@ TEST(KeywordUtilTest, MultipleExactKeywords) {
 
   KeywordExtractedInfoList expected_2 = {
       {u"google", /*relevance_score*/ 1.0, {ProviderType::kOmnibox}},
-      {u"gaming", /*relevance_score*/ 1.0, {ProviderType::kGames}},
       {u"assistant", /*relevance_score*/ 1.0, {ProviderType::kAssistantText}}};
 
   EXPECT_EQ(expected_2, ExtractKeywords(u"google gaming assistant"));
@@ -147,10 +146,10 @@ TEST(KeywordUtilTest, StripMultipleKeywords) {
       u"strip keyboard random word in between files from query";
   EXPECT_EQ(StripQuery(query1), u"strip random word in between from query");
 
-  std::u16string query2 = u"google gaming minecraft";
+  std::u16string query2 = u"google app minecraft";
   EXPECT_EQ(StripQuery(query2), u"minecraft");
 
-  std::u16string query3 = u"file cat drive boba gaming tetris";
+  std::u16string query3 = u"file cat drive boba tetris";
   EXPECT_EQ(StripQuery(query3), u"cat boba tetris");
 }
 

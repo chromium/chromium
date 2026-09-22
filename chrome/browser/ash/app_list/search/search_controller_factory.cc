@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 #include "chrome/browser/ash/app_list/search/files/zero_state_file_provider.h"
-#include "chrome/browser/ash/app_list/search/games/game_provider.h"
 #include "chrome/browser/ash/app_list/search/help_app_provider.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
@@ -103,9 +102,6 @@ std::unique_ptr<SearchController> CreateSearchController(
 
   controller->AddProvider(
       std::make_unique<DesksAdminTemplateProvider>(profile, list_controller));
-
-  controller->AddProvider(
-      std::make_unique<GameProvider>(profile, list_controller));
 
   if (ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
     controller->AddProvider(std::make_unique<PersonalizationProvider>(profile));

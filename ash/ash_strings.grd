@@ -6884,9 +6884,6 @@ New install
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         settings
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
-        games
-      </message>
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         images
       </message>

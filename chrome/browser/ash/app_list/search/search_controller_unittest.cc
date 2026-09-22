@@ -874,9 +874,9 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
       {ash::features::kFeatureManagementLocalImageSearch}, {});
 
   const std::array result_categories = {
-      Result::kAnswerCard, Result::kDriveSearch,    Result::kAppShortcutV2,
-      Result::kFileSearch, Result::kArcAppShortcut, Result::kImageSearch,
-      Result::kGames,      Result::kAssistantText,  Result::kArcAppShortcut,
+      Result::kAnswerCard,    Result::kDriveSearch,    Result::kAppShortcutV2,
+      Result::kFileSearch,    Result::kImageSearch,    Result::kHelpApp,
+      Result::kAssistantText, Result::kArcAppShortcut,
   };
 
   const std::array search_categories = {
@@ -884,7 +884,6 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
       SearchCategory::kApps,
       SearchCategory::kAppShortcuts,
       SearchCategory::kFiles,
-      SearchCategory::kGames,
       SearchCategory::kHelp,
       SearchCategory::kImages,
       SearchCategory::kPlayStore,
@@ -892,7 +891,7 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   };
 
   std::vector<TestSearchProvider*> provider_ptrs;
-  for (int i = 0; i < 9; ++i) {
+  for (int i = 0; i < 8; ++i) {
     // The result type needs to be unique.
     auto provider = std::make_unique<TestSearchProvider>(
         result_categories[i], base::Milliseconds(20), search_categories[i]);
@@ -900,7 +899,7 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
     search_controller_->AddProvider(std::move(provider));
   }
 
-  ASSERT_EQ(provider_ptrs.size(), 9u);
+  ASSERT_EQ(provider_ptrs.size(), 8u);
 
   ScopedDictPrefUpdate pref_update(
       profile_.GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);

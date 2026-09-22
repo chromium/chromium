@@ -53,8 +53,6 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Keyboard shortcut";
     case ash::AppListSearchResultType::kOpenTab:
       return "Open tab";
-    case ash::AppListSearchResultType::kGames:
-      return "Games";
     case ash::AppListSearchResultType::kPersonalization:
       return "Personalization";
     case ash::AppListSearchResultType::kImageSearch:
@@ -218,8 +216,6 @@ ash::AppListSearchControlCategory MapSearchCategoryToControlCategory(
       return ash::AppListSearchControlCategory::kAppShortcuts;
     case SearchCategory::kFiles:
       return ash::AppListSearchControlCategory::kFiles;
-    case SearchCategory::kGames:
-      return ash::AppListSearchControlCategory::kGames;
     case SearchCategory::kHelp:
       return ash::AppListSearchControlCategory::kHelp;
     case SearchCategory::kImages:

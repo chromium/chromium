@@ -199,7 +199,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/common:unit_tests",
     "//chrome/browser/ash/app_list/search/essential_search:unit_tests",
     "//chrome/browser/ash/app_list/search/files:unit_tests",
-    "//chrome/browser/ash/app_list/search/games:unit_tests",
     "//chrome/browser/ash/app_list/search/local_image_search:unit_tests",
     "//chrome/browser/ash/app_list/search/omnibox:unit_tests",
     "//chrome/browser/ash/app_list/search/ranking:unit_tests",

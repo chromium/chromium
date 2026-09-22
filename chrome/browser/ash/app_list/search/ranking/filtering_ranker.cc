@@ -147,7 +147,6 @@ void FilteringRanker::UpdateResultRanks(ResultsMap& results,
   }
   FilterOmniboxResults(results, last_query_);
   DeduplicateDriveFilesAndTabs(results);
-  DeduplicateResults(results, ResultType::kGames, ResultType::kOmnibox);
   DeduplicateResults(results, ResultType::kImageSearch,
                      ResultType::kFileSearch);
 }

@@ -47,8 +47,6 @@ KeywordToProvidersMap MakeMap() {
          ProviderType::kPlayStoreApp}},
        {u"android",
         {ProviderType::kArcAppShortcut, ProviderType::kPlayStoreApp}},
-       {u"game", {ProviderType::kGames}},
-       {u"gaming", {ProviderType::kGames}},
        {u"google", {ProviderType::kOmnibox}},
        {u"web", {ProviderType::kOmnibox}},
        {u"search", {ProviderType::kOmnibox}}});

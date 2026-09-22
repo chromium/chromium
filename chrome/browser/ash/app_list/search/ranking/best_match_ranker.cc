@@ -40,7 +40,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
       return true;
     case ProviderType::kArcAppShortcut:
     case ProviderType::kDriveSearch:
-    case ProviderType::kGames:
     case ProviderType::kZeroStateHelpApp:
     case ProviderType::kFileSearch:
     case ProviderType::kInstalledApp:

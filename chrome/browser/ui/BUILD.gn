@@ -2472,7 +2472,6 @@ static_library("ui") {
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/reorder",
       "//chrome/browser/ash/app_list/search",
-      "//chrome/browser/ash/app_list/search/games",
       "//chrome/browser/ash/app_list/search/local_image_search",
       "//chrome/browser/ash/app_list/search/system_info",
       "//chrome/browser/ash/app_restore",

@@ -412,7 +412,6 @@ enum class AppListSearchResultType {
   kDriveSearch,            // Drive file search results.
   kKeyboardShortcut,       // Keyboard shortcut search results.
   kOpenTab,                // Open tab search results.
-  kGames,                  // Game sarch results.
   kPersonalization,        // Personalization search results.
   kZeroStateHelpApp,       // Help App (aka Explore) results for zero-state.
   kZeroStateApp,           // App recommendations for zero-state / recent apps.
