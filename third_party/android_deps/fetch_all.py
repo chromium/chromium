@@ -24,7 +24,6 @@ import os
 import pathlib
 import re
 import shutil
-import socket
 import subprocess
 import sys
 import tempfile
@@ -137,54 +136,25 @@ def RaiseCommandException(args, returncode, output, error):
     raise Exception(message)
 
 
-_PROBE_HOST = ('dl.google.com', 443)
-_prefer_ipv6 = None
-
-
-def _ShouldPreferIPv6():
-    """Returns whether JVMs should try IPv6 addresses before IPv4 ones.
-
-  The JVM tries IPv4 first by default and never falls back to IPv6. On
-  IPv6-only bots (e.g. android-androidx-packager), whose IPv4 routes lead
-  nowhere, the gradle wrapper and dependency downloads hang until they time
-  out. Probe once and prefer IPv6 only when IPv4 does not work but IPv6 does,
-  so that IPv4-only dev machines keep the JVM default.
-  """
-    global _prefer_ipv6
-    if _prefer_ipv6 is None:
-        _prefer_ipv6 = (not _CanConnect(socket.AF_INET)
-                        and _CanConnect(socket.AF_INET6))
-        logging.info('Prefer IPv6 for JVMs: %s', _prefer_ipv6)
-    return _prefer_ipv6
-
-
-def _CanConnect(family):
-    """Returns whether a TCP connection to _PROBE_HOST works over |family|."""
-    try:
-        sockaddr = socket.getaddrinfo(*_PROBE_HOST, family,
-                                      socket.SOCK_STREAM)[0][4]
-        with socket.socket(family, socket.SOCK_STREAM) as sock:
-            sock.settimeout(3)
-            sock.connect(sockaddr)
-        return True
-    except OSError:  # socket.gaierror is a subclass of OSError.
-        return False
-
-
 def _SubprocessEnv():
     """Returns the environment to use for subprocesses (gradle, gn, ...)."""
     env = os.environ.copy()
     # Explicitly set JAVA_HOME since some bots do not have this already set.
     env['JAVA_HOME'] = _JAVA_HOME
-    # JAVA_TOOL_OPTIONS is picked up by every JVM that gradle launches (wrapper,
-    # client and daemon), unlike GRADLE_OPTS, and the daemon is the one that
-    # downloads the dependencies.
+    # The JVM tries IPv4 addresses first by default and never falls back to
+    # IPv6, so on IPv6-only bots (e.g. android-androidx-packager) the gradle
+    # wrapper and dependency downloads hang until they time out. "system" makes
+    # the JVM use the address order returned by the OS resolver instead, which
+    # already accounts for which of IPv4 / IPv6 is actually routable (unlike
+    # "true", which hangs the same way on IPv4-only dev machines). All maven
+    # repositories we use have AAAA records. JAVA_TOOL_OPTIONS is picked up by
+    # every JVM that gradle launches (wrapper, client and daemon), unlike
+    # GRADLE_OPTS.
     java_tool_options = env.get('JAVA_TOOL_OPTIONS', '')
-    if ('java.net.preferIPv6Addresses' not in java_tool_options
-            and _ShouldPreferIPv6()):
+    if 'java.net.preferIPv6Addresses' not in java_tool_options:
         env['JAVA_TOOL_OPTIONS'] = (
             java_tool_options +
-            ' -Djava.net.preferIPv6Addresses=true').strip()
+            ' -Djava.net.preferIPv6Addresses=system').strip()
     return env
 
 
