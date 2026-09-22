@@ -65,6 +65,9 @@ let mojo{{primary.name}}Profile = Profile(
 {%- for array in arrays %}
         (Mojo{{array|format_unique_name}}Generator, 1),
 {%- endfor %}
+{%- for m in maps %}
+        (Mojo{{m|format_unique_name}}Generator, 1),
+{%- endfor %}
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

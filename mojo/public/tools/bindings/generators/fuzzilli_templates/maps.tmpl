@@ -27,7 +27,7 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
     "Mojo{{m|format_unique_name}}Generator",
     inputs: .one,
     produces: [.{{m|format_il_type}}]
-) { b, _, _ in
+) { b, _ in
     let key = b.findOrGenerateType(.{{m.key_kind|format_il_type(primitive_with_suffix=True)}})
     let val = b.findOrGenerateType(.{{m.value_kind|format_il_type(primitive_with_suffix=True)}})
     var keys: [Variable] = [key]

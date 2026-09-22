@@ -167,7 +167,7 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     "MojoString_GoldenEntryMapGenerator",
     inputs: .one,
     produces: [.jsStringElement_GoldenEntryMap]
-) { b, _, _ in
+) { b, _ in
     let key = b.findOrGenerateType(.jsStringElement)
     let val = b.findOrGenerateType(.jsGoldenEntry)
     var keys: [Variable] = [key]
@@ -184,7 +184,7 @@ private let MojoInt32_String_GoldenEntryMapMapGenerator = CodeGenerator(
     "MojoInt32_String_GoldenEntryMapMapGenerator",
     inputs: .one,
     produces: [.jsInt32Element_String_GoldenEntryMapMap]
-) { b, _, _ in
+) { b, _ in
     let key = b.findOrGenerateType(.jsInt32Element)
     let val = b.findOrGenerateType(.jsStringElement_GoldenEntryMap)
     var keys: [Variable] = [key]
@@ -201,7 +201,7 @@ private let MojoFloat_BoolMapGenerator = CodeGenerator(
     "MojoFloat_BoolMapGenerator",
     inputs: .one,
     produces: [.jsFloatElement_BoolElementMap]
-) { b, _, _ in
+) { b, _ in
     let key = b.findOrGenerateType(.jsFloatElement)
     let val = b.findOrGenerateType(.jsBoolElement)
     var keys: [Variable] = [key]
@@ -318,6 +318,9 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
+        (MojoString_GoldenEntryMapGenerator, 1),
+        (MojoInt32_String_GoldenEntryMapMapGenerator, 1),
+        (MojoFloat_BoolMapGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

@@ -334,7 +334,7 @@ private let MojoString_Uint64MapGenerator = CodeGenerator(
     "MojoString_Uint64MapGenerator",
     inputs: .one,
     produces: [.jsStringElement_Uint64ElementMap]
-) { b, _, _ in
+) { b, _ in
     let key = b.findOrGenerateType(.jsStringElement)
     let val = b.findOrGenerateType(.jsUint64Element)
     var keys: [Variable] = [key]
@@ -497,6 +497,7 @@ let mojoPrimaryProfile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenObserverRouterListenerGenerator, 5000),
         (MojoFloatArrayGenerator, 1),
+        (MojoString_Uint64MapGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
