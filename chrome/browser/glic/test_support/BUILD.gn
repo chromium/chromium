@@ -13,6 +13,8 @@ source_set("test_support") {
     "glic_api_test.cc",
     "glic_api_test.h",
     "glic_browser_test.h",
+    "glic_drag_and_drop_test_base.cc",
+    "glic_drag_and_drop_test_base.h",
     "glic_histogram_tester.h",
     "glic_test_environment.cc",
     "glic_test_environment.h",

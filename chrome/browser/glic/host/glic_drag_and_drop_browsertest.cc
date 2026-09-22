@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -68,39 +69,18 @@
 namespace glic {
 namespace {
 
-class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
+class GlicDragAndDropPolicyTest : public GlicDragAndDropTestBase {
  public:
-  using InProcessBrowserTest::browser;
-
   GlicDragAndDropPolicyTest()
-      : GlicApiBrowserTest(
-            GlicTestJsPath("./glic_drag_and_drop_browsertest.js")) {
-    feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
-                                    features::kGlicWebDragAndDropFileUpload},
-                                   {
-    // TODO(b/559775860): Fails with GlicNoWebview enabled on these platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-                                       features::kGlicNoWebview
-#endif
-                                   });
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    GlicApiBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kGlicDev);
-    // Skips FRE experience.
-    command_line->AppendSwitch(::switches::kGlicAutomation);
-  }
+      : GlicDragAndDropTestBase(
+            GlicTestJsPath("./glic_drag_and_drop_browsertest.js")) {}
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("a.com", "127.0.0.1");
-    host_resolver()->AddRule("b.com", "127.0.0.1");
-
-    GlicApiBrowserTest::SetUpOnMainThread();
+    GlicDragAndDropTestBase::SetUpOnMainThread();
 
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
-            browser()->GetProfile(),
+            GetProfile(),
             base::BindRepeating(
                 &enterprise_connectors::test::MockRealtimeReportingClient::
                     CreateMockRealtimeReportingClient));
@@ -120,8 +100,7 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
         policy::DMToken::CreateValidToken("fake-dm-token"));
 
     enterprise_connectors::test::SetAnalysisConnector(
-        browser()->GetProfile()->GetPrefs(),
-        enterprise_connectors::FILE_ATTACHED,
+        GetProfile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
         R"(
         {
           "service_provider": "google",
@@ -134,166 +113,16 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
           "block_until_verdict": 1,
           "minimum_data_size": 1
         })");
-
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    signin::MakePrimaryAccountAvailable(identity_manager, "foo@google.com",
-                                        signin::ConsentLevel::kSignin);
-    signin::SetRefreshTokenForPrimaryAccount(identity_manager);
   }
 
   void TearDownOnMainThread() override {
     enterprise_connectors::test::SetOnSecurityEventReporting(
-        browser()->GetProfile()->GetPrefs(), false);
+        GetProfile()->GetPrefs(), false);
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        browser()->GetProfile())
+        GetProfile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
-    GlicApiBrowserTest::TearDownOnMainThread();
+    GlicDragAndDropTestBase::TearDownOnMainThread();
   }
-
- protected:
-  void PrepareGuestForDrag(Host& glic_host) {
-    content::WebContents* guest_contents = nullptr;
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      guest_contents = glic_host.web_client_contents();
-      return guest_contents != nullptr;
-    }));
-    EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
-    ExecuteJsTest();
-
-    content::RenderWidgetHost* rwh =
-        glic_host.GetGuestMainFrame()->GetRenderWidgetHost();
-    ASSERT_TRUE(rwh);
-
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return !rwh->GetView()->GetViewBounds().IsEmpty() &&
-             !glic_host.webui_contents()
-                  ->GetRenderWidgetHostView()
-                  ->GetViewBounds()
-                  .IsEmpty();
-    }));
-    // Ensure hit test data is ready for the guest.
-    content::WaitForHitTestData(glic_host.GetGuestMainFrame());
-  }
-
-  gfx::Point GetGuestCenterInHost(Host& glic_host) {
-    auto* guest_view =
-        glic_host.GetGuestMainFrame()->GetRenderWidgetHost()->GetView();
-    auto* host_view = glic_host.webui_contents()->GetRenderWidgetHostView();
-
-    gfx::Rect guest_bounds = guest_view->GetViewBounds();
-
-    gfx::Point center(guest_bounds.width() / 2, guest_bounds.height() / 2);
-
-    aura::Window::ConvertPointToTarget(guest_view->GetNativeView(),
-                                       host_view->GetNativeView(), &center);
-    return center;
-  }
-
-  base::FilePath CreateTestFile(base::ScopedTempDir& temp_dir,
-                                const std::string& name,
-                                const std::string& contents) {
-    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath test_file = temp_dir.GetPath().AppendASCII(name);
-    base::WriteFile(test_file, base::as_byte_span(contents));
-    return test_file;
-  }
-
-  content::WebContents* SetupSourceTabWithDraggableImage() {
-    if (!ui_test_utils::NavigateToURL(
-            browser(), embedded_test_server()->GetURL(
-                           "a.com", "/drag_and_drop/image_source.html"))) {
-      ADD_FAILURE() << "NavigateToURL failed";
-      return nullptr;
-    }
-    content::WebContents* source_wc =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    if (!source_wc) {
-      ADD_FAILURE() << "No active web contents";
-      return nullptr;
-    }
-    source_wc->Focus();
-
-    // Fix the image src so it's draggable.
-    GURL img_url = embedded_test_server()->GetURL(
-        "a.com", "/drag_and_drop/cors-allowed.jpg");
-    if (!content::ExecJs(
-            source_wc,
-            content::JsReplace("document.querySelector('img').src = $1",
-                               img_url.spec()))) {
-      ADD_FAILURE() << "ExecJs to set image src failed";
-      return nullptr;
-    }
-
-    // Wait for the image to load and lay out before querying its bounds.
-    auto result = content::EvalJs(
-        source_wc,
-        "const img = document.querySelector('img');"
-        "new Promise(resolve => {"
-        "  if (img.complete && img.naturalWidth > 0) { resolve(true); }"
-        "  else { img.onload = () => resolve(true); img.onerror = () => "
-        "resolve(false); }"
-        "})");
-    if (!result.is_ok() || !result.ExtractBool()) {
-      ADD_FAILURE() << "Image did not load successfully";
-      return nullptr;
-    }
-    return source_wc;
-  }
-
-  [[nodiscard]] bool SimulateMouseDownAndWait(content::WebContents* source_wc,
-                                              const gfx::Point& point) {
-    if (!content::ExecJs(
-            source_wc,
-            "window.__mouseDownReceived = false;"
-            "window.addEventListener('mousedown', () => "
-            "{ window.__mouseDownReceived = true; }, {once: true});")) {
-      return false;
-    }
-
-    content::SimulateMouseEvent(source_wc,
-                                blink::WebInputEvent::Type::kMouseDown,
-                                blink::WebMouseEvent::Button::kLeft, point);
-
-    return base::test::RunUntil([&]() {
-      return content::EvalJs(source_wc, "window.__mouseDownReceived")
-          .ExtractBool();
-    });
-  }
-
-  void SimulateMouseDragFromImage(content::WebContents* source_wc) {
-    // We use Javascript to find the image center and then click+drag it.
-    double img_x = content::EvalJs(source_wc,
-                                   "const img = document.querySelector('img');"
-                                   "const rect = img.getBoundingClientRect();"
-                                   "rect.left + rect.width / 2")
-                       .ExtractDouble();
-    double img_y = content::EvalJs(source_wc,
-                                   "const img = document.querySelector('img');"
-                                   "const rect = img.getBoundingClientRect();"
-                                   "rect.top + rect.height / 2")
-                       .ExtractDouble();
-
-    gfx::Point drag_start_point(img_x, img_y);
-    gfx::Point drag_end_point = drag_start_point + gfx::Vector2d(100, 100);
-
-    ASSERT_TRUE(SimulateMouseDownAndWait(source_wc, drag_start_point));
-
-    content::SimulateMouseEvent(source_wc,
-                                blink::WebInputEvent::Type::kMouseMove,
-                                blink::WebMouseEvent::Button::kLeft,
-                                drag_start_point + gfx::Vector2d(20, 20));
-    content::SimulateMouseEvent(source_wc,
-                                blink::WebInputEvent::Type::kMouseMove,
-                                blink::WebMouseEvent::Button::kLeft,
-                                drag_start_point + gfx::Vector2d(40, 40));
-    content::SimulateMouseEvent(
-        source_wc, blink::WebInputEvent::Type::kMouseMove,
-        blink::WebMouseEvent::Button::kLeft, drag_end_point);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
@@ -566,8 +395,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                        MAYBE_testWebToGlicDragDlpBlocked) {
   base::HistogramTester histogram_tester;
   enterprise_connectors::test::SetAnalysisConnector(
-      browser()->GetProfile()->GetPrefs(),
-      enterprise_connectors::BULK_DATA_ENTRY,
+      GetProfile()->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
       R"(
       {
         "service_provider": "google",
