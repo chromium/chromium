@@ -14,14 +14,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/chromeos/drivefs",
   "+chrome/browser/download",
   "+chrome/browser/net",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_paths.h",
@@ -30,6 +28,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "drive_integration_service\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+
   "drive_integration_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/signin/identity_manager_factory.h",

@@ -33,13 +33,14 @@ static_library("drive") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/download",
     "//chrome/browser/net",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/common:constants",
@@ -60,6 +61,7 @@ static_library("drive") {
     "//storage/browser",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/message_center",
   ]
 }
 

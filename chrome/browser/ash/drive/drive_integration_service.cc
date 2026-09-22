@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check_deref.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -31,13 +33,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
@@ -70,6 +69,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/message_center/message_center.h"
 
 namespace drive {
 namespace {
@@ -920,14 +920,26 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
           << "Displaying system notification and disabling bulk-pinning";
 
       // Show system notification.
-      file_manager::SystemNotificationManager snm(profile_);
-      const std::unique_ptr<const message_center::Notification> notification =
-          snm.CreateNotification("drive_data_dir_missing",
-                                 IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING_TITLE,
-                                 IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING);
-      DCHECK(notification);
-      snm.GetNotificationDisplayService()->Display(
-          NotificationHandler::Type::TRANSIENT, *notification, nullptr);
+      const user_manager::User& user =
+          CHECK_DEREF(ash::ProfileHelper::Get()->GetUserByProfile(profile_));
+      message_center::NotifierId notifier_id;
+      notifier_id.profile_id = user.GetAccountId().GetUserEmail();
+      message_center::RichNotificationData rich_data;
+      rich_data.remove_on_click = true;
+      message_center::MessageCenter::Get()->AddNotification(
+          ash::CreateSystemNotificationPtr(
+              message_center::NOTIFICATION_TYPE_SIMPLE,
+              ash::CreateUserScopedNotificationId("drive_data_dir_missing",
+                                                  user.username_hash()),
+              l10n_util::GetStringUTF16(
+                  IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING_TITLE),
+              l10n_util::GetStringUTF16(
+                  IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING),
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
+              notifier_id, rich_data,
+              /*delegate=*/nullptr, ash::kFolderIcon,
+              message_center::SystemNotificationWarningLevel::NORMAL));
 
       // Disable bulk-pinning.
       base::UmaHistogramBoolean(
