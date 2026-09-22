@@ -41,6 +41,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/sinc_resampler.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -85,24 +86,6 @@ scoped_refptr<AudioBus> AudioBus::TryCreate(unsigned number_of_channels,
   return bus;
 }
 
-scoped_refptr<AudioBus> AudioBus::CreateFromMediaAudioBus(
-    std::unique_ptr<media::AudioBus> media_bus,
-    float sample_rate) {
-  if (!media_bus || media_bus->is_bitstream_format()) {
-    return nullptr;
-  }
-  if (!base::IsValueInRangeForNumericType<uint32_t>(media_bus->frames()) ||
-      !base::IsValueInRangeForNumericType<unsigned>(media_bus->channels()) ||
-      media_bus->channels() > static_cast<int>(kMaxBusChannels)) {
-    return nullptr;
-  }
-
-  scoped_refptr<AudioBus> bus =
-      base::AdoptRef(new AudioBus(std::move(media_bus)));
-  bus->SetSampleRate(sample_rate);
-  return bus;
-}
-
 AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
     : length_(length) {
   channels_.ReserveInitialCapacity(number_of_channels);
@@ -114,21 +97,6 @@ AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
       channels_.emplace_back();
     }
   }
-}
-
-AudioBus::AudioBus(std::unique_ptr<media::AudioBus> media_bus)
-    : underlying_media_bus_(std::move(media_bus)),
-      length_(static_cast<uint32_t>(underlying_media_bus_->frames())) {
-  channels_.ReserveInitialCapacity(
-      static_cast<unsigned>(underlying_media_bus_->channels()));
-  for (base::span<float> channel : underlying_media_bus_->AllChannels()) {
-    channels_.emplace_back();
-    channels_.back().Set(channel);
-  }
-}
-
-AudioBus::~AudioBus() {
-  channels_.clear();
 }
 
 void AudioBus::SetChannelMemory(unsigned channel_index,
@@ -804,13 +772,12 @@ void AudioBus::ClearSilentFlag() {
 }
 
 scoped_refptr<AudioBus> DecodeAudioFileData(base::span<const char> data) {
-  std::unique_ptr<Platform::DecodedAudioFile> decoded =
+  std::unique_ptr<WebAudioBus> out =
       Platform::Current()->DecodeAudioFileData(data);
-  if (!decoded || !decoded->bus) {
-    return nullptr;
+  if (out) {
+    return out->Release();
   }
-  return AudioBus::CreateFromMediaAudioBus(
-      std::move(decoded->bus), static_cast<float>(decoded->sample_rate));
+  return nullptr;
 }
 
 scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
