@@ -65,6 +65,7 @@ suite('SearchPageIndex', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       searchSettingsUpdate: false,
+      omniboxEverywhereSettingsEnabled: false,
     });
     resetRouterForTesting();
 
@@ -128,6 +129,7 @@ suite('SearchPageIndexWithSearchSettingsUpdate', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       searchSettingsUpdate: true,
+      omniboxEverywhereSettingsEnabled: false,
     });
     resetRouterForTesting();
 

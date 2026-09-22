@@ -12808,6 +12808,23 @@
             ]
         }
     ],
+    "OmniboxEverywhere": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_OmniboxEverywhereLensPromo",
+                        "OmniboxEverywhere"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxFuseboxAsyncInflation": [
         {
             "platforms": [
