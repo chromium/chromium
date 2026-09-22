@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/metrics/histogram_functions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -106,6 +107,76 @@ TEST_F(MetricsMediatorTest, WidgetHistogramMetricsRecorded) {
   EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket0]);
   EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket1]);
   EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket2]);
+}
+
+namespace {
+
+enum class TestEnum {
+  kZero = 0,
+  kOne = 1,
+  kTwo = 2,
+  kMaxValue = kTwo,
+};
+
+}  // namespace
+
+// Tests that histograms recorded via RecordWidgetUsage have bucket parameters
+// consistent with base::UmaHistogramEnumeration without a bucket count mismatch
+// DCHECK.
+TEST_F(MetricsMediatorTest, WidgetHistogramMatchesEnumerationBuckets) {
+  base::HistogramTester tester;
+
+  // Pre-log using UmaHistogramEnumeration to create the histogram with
+  // `kMaxValue + 1` buckets.
+  base::UmaHistogramEnumeration("Test.EnumerationHistogram", TestEnum::kZero);
+
+  NSString* histogram = @"Test.EnumerationHistogram";
+  NSString* keyBucket2 = app_group::HistogramCountKey(histogram, 2);
+
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setInteger:1 forKey:keyBucket2];
+
+  // This will DCHECK if RecordWidgetUsage passes an exclusive max different
+  // from UmaHistogramEnumeration (which uses kMaxValue + 1).
+  metrics_mediator::RecordWidgetUsage(
+      {{histogram, static_cast<int>(TestEnum::kMaxValue) + 1}});
+
+  // Verify that the events were emitted.
+  tester.ExpectBucketCount("Test.EnumerationHistogram", 0, 1);
+  tester.ExpectBucketCount("Test.EnumerationHistogram", 2, 1);
+  tester.ExpectTotalCount("Test.EnumerationHistogram", 2);
+  EXPECT_EQ([sharedDefaults integerForKey:keyBucket2], 0);
+
+  [sharedDefaults removeObjectForKey:keyBucket2];
+}
+
+// Tests that browser logging via base::UmaHistogramEnumeration works when the
+// histogram was created first by RecordWidgetUsage (e.g. on cold start).
+TEST_F(MetricsMediatorTest, WidgetHistogramMatchesEnumerationBucketsColdStart) {
+  base::HistogramTester tester;
+  NSString* histogram = @"Test.ColdStartEnumerationHistogram";
+  NSString* keyBucket2 = app_group::HistogramCountKey(histogram, 2);
+
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setInteger:1 forKey:keyBucket2];
+
+  // RecordWidgetUsage creates the histogram before any browser code logs to it.
+  metrics_mediator::RecordWidgetUsage(
+      {{histogram, static_cast<int>(TestEnum::kMaxValue) + 1}});
+
+  // Verify that the events were emitted.
+  tester.ExpectBucketCount("Test.ColdStartEnumerationHistogram", 2, 1);
+  tester.ExpectTotalCount("Test.ColdStartEnumerationHistogram", 1);
+  EXPECT_EQ([sharedDefaults integerForKey:keyBucket2], 0);
+
+  // Verify that browser logging works when the histogram was created first by
+  // RecordWidgetUsage.
+  base::UmaHistogramEnumeration("Test.ColdStartEnumerationHistogram",
+                                TestEnum::kOne);
+  tester.ExpectBucketCount("Test.ColdStartEnumerationHistogram", 1, 1);
+  tester.ExpectTotalCount("Test.ColdStartEnumerationHistogram", 2);
+
+  [sharedDefaults removeObjectForKey:keyBucket2];
 }
 
 #pragma mark - logLaunchMetrics tests.

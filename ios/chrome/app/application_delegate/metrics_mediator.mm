@@ -272,16 +272,16 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
   }
 
   for (const HistogramNameCountPair& pair : histograms) {
-    int maxSamples = pair.buckets;
+    int bucket_count = pair.bucket_count;
     // Check each possible bucket to see if it has any events to emit.
-    for (int bucket = 0; bucket < maxSamples; ++bucket) {
+    for (int bucket = 0; bucket < bucket_count; ++bucket) {
       NSString* key = app_group::HistogramCountKey(pair.name, bucket);
       int count = [shared_defaults integerForKey:key];
       if (count != 0) {
         [shared_defaults setInteger:0 forKey:key];
         std::string histogramName = SysNSStringToUTF8(pair.name);
         for (int emitCount = 0; emitCount < count; ++emitCount) {
-          base::UmaHistogramExactLinear(histogramName, bucket, maxSamples + 1);
+          base::UmaHistogramExactLinear(histogramName, bucket, bucket_count);
         }
       }
     }

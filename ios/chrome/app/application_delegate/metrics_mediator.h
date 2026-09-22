@@ -29,7 +29,7 @@ extern NSString* const kAppDidFinishLaunchingConsecutiveCallsKey;
 // histograms fired in extensions.
 struct HistogramNameCountPair {
   NSString* name;
-  int buckets;
+  int bucket_count = 0;
 };
 
 // Send histograms reporting the usage of widget metrics. Uses the provided list
