@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/html/install_result_event.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -72,14 +73,6 @@ HTMLInstallElement::HTMLInstallElement(Document& document)
   UseCounter::CountWebDXFeature(document, WebDXFeature::kDRAFT_InstallElement);
 }
 
-const String& HTMLInstallElement::ManifestId() const {
-  return FastGetAttribute(html_names::kManifestidAttr).GetString();
-}
-
-const String& HTMLInstallElement::Manifest() const {
-  return FastGetAttribute(html_names::kManifestAttr).GetString();
-}
-
 void HTMLInstallElement::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   HTMLCapabilityElementBase::Trace(visitor);
@@ -91,8 +84,10 @@ void HTMLInstallElement::UpdateAppearance() {
     return;
   }
 
-  // If no attributes provided, check if current document is already installed.
-  if (ManifestId().empty() && Manifest().empty()) {
+  // If no attributes were provided, check if the current document is already
+  // installed.
+  if (!FastHasAttribute(html_names::kManifestidAttr) &&
+      !FastHasAttribute(html_names::kManifestAttr)) {
     // TODO(crbug.com/485281836): For now, always return false while we discuss
     // the appropriate long-term mitigation for width-based side channel
     // attacks. ("Launch" is slightly wider than "Install").
@@ -233,9 +228,10 @@ void HTMLInstallElement::OnActivated() {
     return;
   }
 
-  // If no supported install target attributes are provided, install the
-  // current document.
-  if (ManifestId().empty() && Manifest().empty()) {
+  // Only absent target attributes select the current-document flow. A present
+  // but empty manifest should instead reach attribute validation and fail.
+  if (!FastHasAttribute(html_names::kManifestidAttr) &&
+      !FastHasAttribute(html_names::kManifestAttr)) {
     WebInstallService()->ElementInstallFromManifest(
         /*options=*/nullptr,
         BindOnce(&HTMLInstallElement::OnManifestInstallResult,
@@ -243,9 +239,9 @@ void HTMLInstallElement::OnActivated() {
     return;
   }
 
-  // A manifest attribute was set. Initiate the browser's manifest install
-  // flow, which directly fetches the manifest file.
-  if (!Manifest().empty()) {
+  // A manifest attribute was set (but may still be invalid). Initiate the
+  // browser's manifest install flow, which directly fetches the manifest file.
+  if (FastHasAttribute(html_names::kManifestAttr)) {
     mojom::blink::ManifestInstallOptionsPtr options =
         GetCheckedManifestInstallOptions();
     if (!options) {
@@ -267,6 +263,8 @@ void HTMLInstallElement::OnActivated() {
 
 mojom::blink::ManifestInstallOptionsPtr
 HTMLInstallElement::GetCheckedManifestInstallOptions() {
+  // Read the raw attribute, strip surrounding whitespace, and resolve the URL
+  // if possible.
   KURL manifest_url = GetNonEmptyURLAttribute(html_names::kManifestAttr);
   if (!manifest_url.IsValid()) {
     return nullptr;
@@ -275,8 +273,14 @@ HTMLInstallElement::GetCheckedManifestInstallOptions() {
   auto options = mojom::blink::ManifestInstallOptions::New();
   options->manifest_url = manifest_url;
 
-  if (!ManifestId().empty()) {
-    KURL manifest_id_url = KURL(ManifestId());
+  // manifest ID is optional, but must be non-empty and valid when present.
+  if (FastHasAttribute(html_names::kManifestidAttr)) {
+    StringView manifest_id = StripLeadingAndTrailingHtmlSpaces(
+        FastGetAttribute(html_names::kManifestidAttr));
+    if (manifest_id.empty()) {
+      return nullptr;
+    }
+    KURL manifest_id_url = KURL(GetDocument().BaseURL(), manifest_id);
     if (!manifest_id_url.IsValid()) {
       return nullptr;
     }

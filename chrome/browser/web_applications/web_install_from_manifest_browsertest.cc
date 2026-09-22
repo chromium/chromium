@@ -511,6 +511,51 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
 
+// Id attribute is resolved against the base URL, not the document URL.
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       ManifestAndRelativeId_Succeeds) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "const base = document.createElement('base');"
+                              "base.href = '/';"
+                              "document.head.appendChild(base);"));
+  // Ensure the document URL and base URL resolve the id differently, so the
+  // test would detect use of the wrong base.
+  EXPECT_EQ(content::EvalJs(web_contents(),
+                            "new URL('some_id', document.URL).pathname"),
+            "/banners/some_id");
+  EXPECT_EQ(content::EvalJs(web_contents(),
+                            "new URL('some_id', document.baseURI).pathname"),
+            "/some_id");
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "navigator.install({manifest: $1, manifestId: $2})"
+          ".then(result => { webInstallResult = result; })"
+          ".catch(error => { webInstallError = error; });",
+          embedded_https_test_server().GetURL(kValidManifestWithId).spec(),
+          "some_id")));
+  observer.Wait();
+
+  EXPECT_TRUE(observer.request_shown());
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
 // When the user denies the Web Install permission prompt, the install is
 // rejected with AbortError.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,

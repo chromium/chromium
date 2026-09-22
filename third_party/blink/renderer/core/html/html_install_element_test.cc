@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_install_result.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -232,16 +233,6 @@ TEST_F(HTMLInstallElementTestBase, Type) {
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
   EXPECT_EQ(AtomicString("install"), element->GetType());
-}
-
-TEST_F(HTMLInstallElementTestBase, ManifestId) {
-  HTMLInstallElement* element =
-      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
-  EXPECT_TRUE(element->ManifestId().empty());
-
-  constexpr char kManifestId[] = "https://site.example/manifest.json";
-  element->setAttribute(html_names::kManifestidAttr, AtomicString(kManifestId));
-  EXPECT_EQ(kManifestId, element->ManifestId());
 }
 
 TEST_F(HTMLInstallElementTestBase, RenderedText) {
@@ -540,15 +531,6 @@ TEST_F(HTMLInstallElementFiringSimTest, OnInstallResultContentAttributeFires) {
   EXPECT_TRUE(ConsoleMessages()[0].contains("installresult: success"));
 }
 
-TEST_F(HTMLInstallElementTestBase, ManifestAttribute) {
-  HTMLInstallElement* element =
-      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
-  EXPECT_TRUE(element->Manifest().empty());
-
-  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
-  EXPECT_EQ(kExampleSite, element->Manifest());
-}
-
 TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAttribute) {
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
@@ -615,6 +597,62 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithRelativeManifest) {
             KURL("https://app.example/resources/manifest.json"));
   EXPECT_FALSE(
       web_install_service_.manifest_options()->manifest_id.has_value());
+
+  web_install_service_.RespondManifestWithSuccess();
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultSuccess, event->result().AsString());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithManifestAndRelativeManifestId) {
+  GetDocument().SetURL(KURL("https://app.example/page/index.html"));
+  GetDocument().SetBaseURLOverride(KURL("https://app.example/catalog/"));
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("https://app.example/manifests/app.json"));
+  element->setAttribute(html_names::kManifestidAttr,
+                        AtomicString(" \t\n app-id \r\f "));
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  web_install_service_.WaitForCall();
+
+  ASSERT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_url,
+            KURL("https://app.example/manifests/app.json"));
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_id,
+            KURL("https://app.example/catalog/app-id"));
+
+  web_install_service_.RespondManifestWithSuccess();
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultSuccess, event->result().AsString());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithManifestIdUsesUtf8OnLegacyEncodedDocument) {
+  DocumentEncodingData encoding_data;
+  encoding_data.SetEncoding(TextEncoding("windows-1252"));
+  GetDocument().SetEncodingData(encoding_data);
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("https://app.example/manifest.json"));
+  element->setAttribute(
+      html_names::kManifestidAttr,
+      AtomicString(String(u"https://app.example/?id=\u00E9")));
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  web_install_service_.WaitForCall();
+
+  ASSERT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_id,
+            KURL("https://app.example/?id=%C3%A9"));
 
   web_install_service_.RespondManifestWithSuccess();
   InstallResultEvent* event = WaitForInstallResultEvent(element);
@@ -712,23 +750,6 @@ TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlReturnsInvalidData) {
   EXPECT_FALSE(web_install_service_.WasCalled());
 }
 
-// TODO(crbug.com/557288876): Define whitespace-only manifest attribute
-// behavior.
-TEST_F(HTMLInstallElementTestBase,
-       ActivationWithWhitespaceOnlyManifestReturnsInvalidData) {
-  HTMLInstallElement* element =
-      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
-  element->setAttribute(html_names::kManifestAttr, AtomicString(" \t\n "));
-  WaitForElementRegistration(element);
-
-  element->DispatchSimulatedClick(nullptr);
-
-  InstallResultEvent* event = WaitForInstallResultEvent(element);
-  ASSERT_TRUE(event);
-  EXPECT_EQ(kResultInvalidData, event->result().AsString());
-  EXPECT_FALSE(web_install_service_.WasCalled());
-}
-
 TEST_F(HTMLInstallElementTestBase, PrefixedElementRegistration) {
   auto* element = To<HTMLInstallElement>(GetDocument().createElementNS(
       html_names::xhtmlNamespaceURI, AtomicString("x:install"),
@@ -752,6 +773,69 @@ TEST_F(HTMLInstallElementTestBase, PrefixedElementActivationSuccess) {
   if (event) {
     EXPECT_EQ(kResultSuccess, event->result().AsString());
   }
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithEmptyManifestReturnsInvalidData) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, g_empty_atom);
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithWhitespaceOnlyManifestReturnsInvalidData) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(" \t\n "));
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithEmptyManifestIdReturnsInvalidData) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  element->setAttribute(html_names::kManifestidAttr, g_empty_atom);
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithWhitespaceOnlyManifestIdReturnsInvalidData) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
+  element->setAttribute(html_names::kManifestidAttr,
+                        AtomicString(" \t\n \r\f "));
+  WaitForElementRegistration(element);
+
+  element->DispatchSimulatedClick(nullptr);
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
 }
 
 }  // namespace blink

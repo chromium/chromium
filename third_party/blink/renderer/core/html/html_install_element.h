@@ -14,7 +14,6 @@ namespace blink {
 
 class Attribute;
 class Document;
-class String;
 
 // Represents the <install> HTML element, which provides a mechanism to
 // install web applications. It has two optional attributes:
@@ -42,9 +41,6 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 
   // HTMLElement:
   bool IsHTMLInstallElement() const final { return true; }
-
-  const String& ManifestId() const;
-  const String& Manifest() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(installresult, kInstallresult)
 

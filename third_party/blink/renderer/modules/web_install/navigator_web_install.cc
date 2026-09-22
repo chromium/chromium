@@ -147,7 +147,12 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallFromParamsImpl(
 
   // Treat null `manifestId` as if it wasn't provided.
   if (params->hasManifestId() && !params->manifestId().IsNull()) {
-    KURL manifest_id = KURL(params->manifestId());
+    StringView manifest_id_value =
+        StripLeadingAndTrailingHtmlSpaces(params->manifestId());
+    KURL manifest_id;
+    if (!manifest_id_value.empty()) {
+      manifest_id = KURL(window->document()->BaseURL(), manifest_id_value);
+    }
     // Reject invalid ids, including empty strings.
     if (!manifest_id.IsValid()) {
       resolver->Reject(V8ThrowException::CreateTypeError(
