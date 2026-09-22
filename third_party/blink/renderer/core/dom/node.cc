@@ -3381,9 +3381,14 @@ void Node::DefaultEventHandler(Event& event) {
   } else if (event_type == event_type_names::kClick) {
     auto* ui_event = DynamicTo<UIEvent>(event);
     int detail = ui_event ? ui_event->detail() : 0;
+    // Canceling DOMActivate marks the click event as default-handled, which
+    // suppresses the rest of the click event's default handling, including
+    // `RunActivationBehavior()`.
+    // TODO(crbug.com/563000231): Consider dropping this cancellation behavior.
     if (DispatchDOMActivateEvent(detail, event) !=
-        DispatchEventResult::kNotCanceled)
+        DispatchEventResult::kNotCanceled) {
       event.SetDefaultHandled();
+    }
   } else if (event_type == event_type_names::kContextmenu &&
              IsA<MouseEvent>(event)) {
     if (Page* page = GetDocument().GetPage()) {

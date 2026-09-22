@@ -402,16 +402,17 @@ inline void EventDispatcher::DispatchEventPostProcess(
       cache->HandleClicked(event_->RawTarget()->ToNode());
 
     // Pass the data from `Node::LegacyPreActivationBehavior()` to
-    // `Node::RunActivationBehavior().
+    // `Node::RunActivationBehaviorBeforeDOMActivate()`, which runs the part of
+    // the activation behavior that happens before the DOMActivate event is
+    // dispatched. The rest runs after the click event's default handlers have
+    // dispatched DOMActivate, below.
     //
     // This may dispatch an event, and `node_` and `event_` might be altered.
     //
-    // Note that this runs only a subset of the behavior that the DOM & HTML
-    // Standards refer to as "activation behavior". See the documentation above
-    // `Node::RunActivationBehavior()` for more information on how activation
-    // behavior is implemented in Blink.
+    // See the documentation above `Node::RunActivationBehavior()` for more
+    // information on how activation behavior is implemented in Blink.
     if (activation_target) {
-      activation_target->RunActivationBehavior(
+      activation_target->RunActivationBehaviorBeforeDOMActivate(
           *event_, pre_dispatch_event_handler_result);
     }
     // TODO(tkent): Is it safe to kick DefaultEventHandler() with such altered
@@ -443,17 +444,42 @@ inline void EventDispatcher::DispatchEventPostProcess(
     // Non-bubbling events call only one default event handler, the one for the
     // target.
     node_->DefaultEventHandler(*event_);
+
+    // When node_ is a pseudo-element, CalculatePath() replaces it at path
+    // index 0 with its UltimateOriginatingElement() (pseudos are not exposed
+    // in the event path), and EventTargetRespectingTargetRules() makes that
+    // originating element the event's target unless the pseudo itself has
+    // activation behavior. Since `Node::DefaultEventHandler()` returns early
+    // for anything that is not the event's target, the call above did nothing,
+    // and it is the originating element (e.g. <summary> for ::marker) whose
+    // default event handler dispatches DOMActivate. Run it before
+    // `RunActivationBehavior()` below, so that canceling DOMActivate still
+    // suppresses the activation behavior.
+    if (node_->IsPseudoElement() && event_->bubbles() &&
+        !event_->DefaultHandled() && !event_->defaultPrevented() &&
+        !event_->GetEventPath().IsEmpty()) {
+      event_->GetEventPath()[0].GetNode().DefaultEventHandler(*event_);
+    }
+
+    // `Node::DefaultEventHandler()` dispatches the legacy DOMActivate event for
+    // click events, and activation behavior used to run as that event's default
+    // handler. It therefore runs here, and is skipped if the click event was
+    // canceled or default-handled in the meantime, which is the case when a
+    // DOMActivate listener called `preventDefault()`.
+    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+        is_click && activation_target && !event_->defaultPrevented() &&
+        !event_->DefaultHandled()) {
+      activation_target->RunActivationBehavior(
+          *event_, pre_dispatch_event_handler_result);
+    }
+
     // For bubbling events, call default event handlers on the same targets in
-    // the same order as the bubbling phase.
+    // the same order as the bubbling phase. Path index 0 is the target, whose
+    // default event handler already ran above.
     if (!event_->DefaultHandled() && !event_->defaultPrevented() &&
         event_->bubbles()) {
       wtf_size_t size = event_->GetEventPath().size();
-      // When node_ is a pseudo-element, CalculatePath() replaces it at path
-      // index 0 with its UltimateOriginatingElement() (pseudos are not exposed
-      // in the event path). Start at i=0 so the originating element's
-      // DefaultEventHandler is also invoked (e.g., <summary> for ::marker).
-      const wtf_size_t start = node_->IsPseudoElement() ? 0 : 1;
-      for (wtf_size_t i = start; i < size; ++i) {
+      for (wtf_size_t i = 1; i < size; ++i) {
         event_->GetEventPath()[i].GetNode().DefaultEventHandler(*event_);
         if (event_->DefaultHandled() || event_->defaultPrevented()) {
           break;

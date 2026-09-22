@@ -235,8 +235,9 @@ class CORE_EXPORT HTMLElement : public Element {
   LabelsNodeList* labels();
   bool HasActiveLabel() const;
 
-  // https://html.spec.whatwg.org/C/#interactive-content
   virtual bool IsInteractiveContent() const;
+  bool HasActivationBehavior() const override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
 
   // Returns the axes on which this element has native arrow key behavior.

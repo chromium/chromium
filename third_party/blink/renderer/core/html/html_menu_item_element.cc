@@ -553,7 +553,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
   // This implements the special "mouse down, drag to menu item, mouse up"
   // behavior, which is mouse-only and does not apply to touchscreens. The
   // remainder of normal mouse/touch behavior is handled by the normal
-  // DOMActivate event system.
+  // activation behavior.
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (!mouse_event || mouse_event->FromTouch() ||
       mouse_event->button() !=
@@ -610,24 +610,55 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
 }
 
 // static
-bool HTMLMenuItemElement::IsActivationFromKeyboard(UIEvent* activate_event) {
-  const Event* underlying_key_event =
-      activate_event->UnderlyingEvent()->UnderlyingEvent();
-  return underlying_key_event && underlying_key_event->IsKeyboardEvent();
+bool HTMLMenuItemElement::IsActivationFromKeyboard(
+    const Event* activate_event) {
+  // The activation event is either the click event, or (in the legacy code
+  // path) the DOMActivate event whose underlying event is that click event. In
+  // both cases, keyboard activation shows up as a keyboard event somewhere
+  // further down the chain of underlying events.
+  for (const Event* event = activate_event; event;
+       event = event->UnderlyingEvent()) {
+    if (event->IsKeyboardEvent()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+HTMLMenuItemElement::ActivationKeyboardEventType
+HTMLMenuItemElement::GetActivationKeyboardEventType(
+    const Event& activation_event) {
+  if (!IsActivationFromKeyboard(&activation_event)) {
+    return ActivationKeyboardEventType::kNotKeyboard;
+  }
+  return activation_event.IsFullyTrusted()
+             ? ActivationKeyboardEventType::kTrustedKeyboard
+             : ActivationKeyboardEventType::kUntrustedKeyboard;
+}
+
+bool HTMLMenuItemElement::HasActivationBehavior() const {
+  return RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled();
+}
+
+void HTMLMenuItemElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.defaultPrevented() || event.DefaultHandled()) {
+      return;
+    }
+    ActivateMenuItem(GetActivationKeyboardEventType(event));
+  }
+  HTMLElement::RunActivationBehavior(event, handling_state);
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      event.type() == event_type_names::kDOMActivate) {
     // HTMLElement::DefaultEventHandler() will take care of command invokers,
     // so we can't early-return here.
-    ActivationKeyboardEventType activation_type =
-        ActivationKeyboardEventType::kNotKeyboard;
-    if (IsActivationFromKeyboard(To<UIEvent>(&event))) {
-      activation_type = event.IsFullyTrusted()
-                            ? ActivationKeyboardEventType::kTrustedKeyboard
-                            : ActivationKeyboardEventType::kUntrustedKeyboard;
-    }
-    ActivateMenuItem(activation_type);
+    ActivateMenuItem(GetActivationKeyboardEventType(event));
   }
   if (HandleKeyboardActivation(event)) {
     return;

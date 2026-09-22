@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://w3c.github.io/uievents/#event-type-DOMActivate">
+<link rel="help" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior">
+<link rel="help" href="https://github.com/whatwg/html/issues/12101">
+<link rel="help" href="https://crbug.com/563000231">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<!--
+  DOMActivate is a deprecated event defined by UI Events. Its interaction with
+  the HTML Standard's activation behavior is not specified (whatwg/html#12101
+  tracks moving the event's definition into HTML), so these tests describe
+  Chromium's current behavior rather than required behavior, and live in
+  wpt_internal. Other engines are not expected to pass them, and the
+  expectations here may change if the behavior is ever specified, or if
+  crbug.com/563000231 is resolved.
+
+  They pin down the two parts of Chromium's behavior that are easy to break
+  while refactoring activation behavior:
+    1. Which clicks dispatch DOMActivate (clicks whose default handling was
+       already consumed, e.g. checkbox/radio state commits and live link
+       navigation, do not).
+    2. Canceling DOMActivate suppresses the activation behavior that Chromium
+       runs as DOMActivate's own default handler: form submission, popover
+       triggering, command invocation, and <details> toggling.
+-->
+
+<form id="form1"><button id="submitButton" type="submit">submit</button></form>
+<form id="form2">
+  <button id="nestedSubmit" type="submit"><span id="nestedSpan">span</span></button>
+</form>
+<button id="plainButton">plain</button>
+<button id="popoverButton" popovertarget="popover1">popover</button>
+<div id="popover1" popover>popover</div>
+<button id="commandButton" commandfor="popover2" command="show-popover">command</button>
+<div id="popover2" popover>popover</div>
+<details id="details1"><summary id="summary1">summary</summary>body</details>
+<input id="checkbox1" type="checkbox">
+<input id="radio1" type="radio" name="group">
+<a id="liveLink" href="#activated">live link</a>
+<a id="deadLink">link without href</a>
+<label id="label1" for="checkbox2">label</label>
+<input id="checkbox2" type="checkbox">
+
+<!--
+  The pseudo-elements below are positioned outside their originating element's
+  border box, so that a click at their location can only be a hit on the
+  pseudo-element itself, and never on the originating element.
+-->
+<style>
+  .pseudo-host {
+    position: relative;
+    width: 100px;
+  }
+  .pseudo-host::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    background: teal;
+  }
+  /* Distinct slots, so that the two absolutely positioned pseudo-elements
+     cannot overlap each other. */
+  #summary2::before { left: 300px; }
+  #popoverButton2::before { left: 400px; }
+</style>
+<details id="details2"><summary id="summary2" class="pseudo-host">summary</summary>body</details>
+<button id="popoverButton2" class="pseudo-host" popovertarget="popover3">popover</button>
+<div id="popover3" popover>popover</div>
+
+
+<script>
+// Clicks `element` and returns the list of DOMActivate targets seen by a
+// listener on `listenOn`. If `cancel` is true, the listener cancels each
+// DOMActivate event it sees.
+function clickAndRecordDOMActivate(element, {cancel = false,
+                                             listenOn = element} = {}) {
+  const targets = [];
+  const handler = e => {
+    targets.push(e.target);
+    if (cancel) {
+      e.preventDefault();
+    }
+  };
+  listenOn.addEventListener('DOMActivate', handler);
+  try {
+    element.click();
+  } finally {
+    listenOn.removeEventListener('DOMActivate', handler);
+  }
+  return targets;
+}
+
+test(t => {
+  let event = null;
+  plainButton.addEventListener('DOMActivate', e => { event = e; },
+                               {once: true});
+  plainButton.click();
+  assert_not_equals(event, null, 'DOMActivate was dispatched');
+  assert_equals(event.target, plainButton, 'target');
+  assert_true(event.bubbles, 'bubbles');
+  assert_true(event.cancelable, 'cancelable');
+}, 'A click dispatches a bubbling, cancelable DOMActivate at the click target');
+
+test(t => {
+  let submitCount = 0;
+  form1.addEventListener('submit', e => {
+    e.preventDefault();
+    submitCount++;
+  });
+
+  assert_array_equals(clickAndRecordDOMActivate(submitButton, {cancel: true}),
+                      [submitButton], 'DOMActivate was dispatched');
+  assert_equals(submitCount, 0, 'canceled DOMActivate blocks submission');
+
+  clickAndRecordDOMActivate(submitButton);
+  assert_equals(submitCount, 1, 'uncanceled DOMActivate allows submission');
+}, 'Canceling DOMActivate suppresses form submission');
+
+test(t => {
+  let submitCount = 0;
+  form2.addEventListener('submit', e => {
+    e.preventDefault();
+    submitCount++;
+  });
+
+  // The click target is the <span>, but the element with activation behavior
+  // is its ancestor <button>. DOMActivate is dispatched at the click target
+  // and bubbles, and canceling it still suppresses the button's activation
+  // behavior.
+  assert_array_equals(
+      clickAndRecordDOMActivate(nestedSpan, {listenOn: form2}), [nestedSpan],
+      'DOMActivate is dispatched at the click target, not the button');
+  assert_equals(submitCount, 1, 'uncanceled DOMActivate allows submission');
+
+  clickAndRecordDOMActivate(nestedSpan, {listenOn: form2, cancel: true});
+  assert_equals(submitCount, 1, 'canceled DOMActivate blocks submission');
+}, 'DOMActivate targets the click target, and canceling it suppresses an ' +
+   'ancestor\'s activation behavior');
+
+test(t => {
+  t.add_cleanup(() => popover1.hidePopover());
+
+  clickAndRecordDOMActivate(popoverButton, {cancel: true});
+  assert_false(popover1.matches(':popover-open'),
+               'canceled DOMActivate blocks the popover from showing');
+
+  clickAndRecordDOMActivate(popoverButton);
+  assert_true(popover1.matches(':popover-open'),
+              'uncanceled DOMActivate shows the popover');
+}, 'Canceling DOMActivate suppresses popover triggering');
+
+test(t => {
+  t.add_cleanup(() => popover2.hidePopover());
+  let commandCount = 0;
+  popover2.addEventListener('command', () => commandCount++);
+
+  clickAndRecordDOMActivate(commandButton, {cancel: true});
+  assert_equals(commandCount, 0, 'canceled DOMActivate blocks the command');
+
+  clickAndRecordDOMActivate(commandButton);
+  assert_equals(commandCount, 1, 'uncanceled DOMActivate invokes the command');
+}, 'Canceling DOMActivate suppresses command invocation');
+
+test(t => {
+  t.add_cleanup(() => { details1.open = false; });
+
+  clickAndRecordDOMActivate(summary1, {cancel: true});
+  assert_false(details1.open, 'canceled DOMActivate blocks the toggle');
+
+  clickAndRecordDOMActivate(summary1);
+  assert_true(details1.open, 'uncanceled DOMActivate toggles the details');
+}, 'Canceling DOMActivate suppresses <details> toggling');
+
+test(t => {
+  // Committing the checked state marks the click as default-handled, so
+  // DOMActivate never fires for checkboxes or radio buttons.
+  assert_array_equals(clickAndRecordDOMActivate(checkbox1), [],
+                      'no DOMActivate for a checkbox');
+  assert_true(checkbox1.checked, 'the checkbox was checked');
+
+  assert_array_equals(clickAndRecordDOMActivate(radio1), [],
+                      'no DOMActivate for a radio button');
+  assert_true(radio1.checked, 'the radio button was checked');
+}, 'Checkbox and radio clicks do not dispatch DOMActivate');
+
+test(t => {
+  t.add_cleanup(
+      () => history.replaceState(null, '', location.pathname + location.search));
+
+  // Navigating a live link marks the click as default-handled before
+  // DOMActivate would be dispatched.
+  assert_array_equals(clickAndRecordDOMActivate(liveLink), [],
+                      'no DOMActivate for a link with an href');
+  assert_equals(location.hash, '#activated', 'the link was followed');
+
+  assert_array_equals(clickAndRecordDOMActivate(deadLink), [deadLink],
+                      'DOMActivate for a link without an href');
+}, 'A link with an href does not dispatch DOMActivate, but one without does');
+
+test(t => {
+  const log = [];
+  checkbox2.addEventListener('change', () => log.push('change@checkbox'));
+  checkbox2.addEventListener('DOMActivate',
+                             () => log.push('DOMActivate@checkbox'));
+  label1.addEventListener('DOMActivate', () => log.push('DOMActivate@label'));
+
+  label1.click();
+  assert_true(checkbox2.checked, 'the labeled control was activated');
+  assert_array_equals(log, ['change@checkbox', 'DOMActivate@label'],
+                      'the forwarded click runs before the label\'s ' +
+                      'DOMActivate, and the control gets no DOMActivate');
+}, 'A label forwards its click before dispatching its own DOMActivate');
+
+// Clicks the ::before pseudo-element of `element`, which .pseudo-host places
+// outside of `element`'s own border box.
+async function clickPseudoElement(element) {
+  const rect = element.getBoundingClientRect();
+  const left = parseFloat(getComputedStyle(element, '::before').left);
+  const x = Math.round(rect.left + left + 25);
+  const y = Math.round(rect.top + 25);
+  // The point is outside `element`'s own box, so hit testing can only land
+  // there by hitting the pseudo-element, which resolves to `element`.
+  assert_equals(document.elementFromPoint(x, y), element,
+                'the click point hits the ::before pseudo-element');
+  await new test_driver.Actions()
+      .pointerMove(x, y)
+      .pointerDown()
+      .pointerUp()
+      .send();
+}
+
+promise_test(async t => {
+  t.add_cleanup(() => { details2.open = false; });
+  const targets = [];
+  const cancel = e => {
+    targets.push(e.target);
+    e.preventDefault();
+  };
+
+  summary2.addEventListener('DOMActivate', cancel);
+  await clickPseudoElement(summary2);
+  summary2.removeEventListener('DOMActivate', cancel);
+  assert_array_equals(targets, [summary2],
+                      'DOMActivate is dispatched at the originating element');
+  assert_false(details2.open, 'canceled DOMActivate blocks the toggle');
+
+  await clickPseudoElement(summary2);
+  assert_true(details2.open, 'uncanceled DOMActivate toggles the details');
+}, 'Clicking a <summary>\'s ::before dispatches DOMActivate at the <summary>, ' +
+   'and canceling it suppresses toggling');
+
+promise_test(async t => {
+  t.add_cleanup(() => popover3.hidePopover());
+  const targets = [];
+  const cancel = e => {
+    targets.push(e.target);
+    e.preventDefault();
+  };
+
+  popoverButton2.addEventListener('DOMActivate', cancel);
+  await clickPseudoElement(popoverButton2);
+  popoverButton2.removeEventListener('DOMActivate', cancel);
+  assert_array_equals(targets, [popoverButton2],
+                      'DOMActivate is dispatched at the originating element');
+  assert_false(popover3.matches(':popover-open'),
+               'canceled DOMActivate blocks the popover from showing');
+
+  await clickPseudoElement(popoverButton2);
+  assert_true(popover3.matches(':popover-open'),
+              'uncanceled DOMActivate shows the popover');
+}, 'Clicking a <button popovertarget>\'s ::before dispatches DOMActivate ' +
+   'before the popover is shown');
+</script>

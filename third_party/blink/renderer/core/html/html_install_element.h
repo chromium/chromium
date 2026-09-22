@@ -69,6 +69,7 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   void UpdateIcon(mojom::blink::PermissionName permission) override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
 
   void OnIsInstalledResult(bool is_installed);

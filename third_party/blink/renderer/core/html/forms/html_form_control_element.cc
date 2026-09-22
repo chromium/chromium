@@ -435,13 +435,10 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
-void HTMLFormControlElement::DefaultEventHandler(Event& event) {
-  HTMLElement::DefaultEventHandler(event);
+void HTMLFormControlElement::HandlePopoverTriggering(Event& event) {
   // Buttons that aren't form participants might be Invoker buttons or Popover
   // buttons.
-  if (event.DefaultHandled() ||
-      event.type() != event_type_names::kDOMActivate ||
-      !IsValidPopoverTrigger()) {
+  if (!IsValidPopoverTrigger()) {
     return;
   }
   auto popover = popoverTargetElement();
@@ -488,6 +485,26 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       popover.popover->HandleCommandInternal(*this, action,
                                              To<UIEvent>(&event));
     }
+  }
+}
+
+void HTMLFormControlElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (!event.defaultPrevented() && !event.DefaultHandled()) {
+      HandlePopoverTriggering(event);
+    }
+  }
+  HTMLElement::RunActivationBehavior(event, handling_state);
+}
+
+void HTMLFormControlElement::DefaultEventHandler(Event& event) {
+  HTMLElement::DefaultEventHandler(event);
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      !event.DefaultHandled() &&
+      event.type() == event_type_names::kDOMActivate) {
+    HandlePopoverTriggering(event);
   }
 }
 

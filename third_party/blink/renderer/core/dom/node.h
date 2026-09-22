@@ -1035,7 +1035,8 @@ class CORE_EXPORT Node : public EventTarget {
   // NOTE: This method is considered a legacy hold-over. Do not add new
   // overrides of it.
   //
-  // This method's return value is passed to `RunActivationBehavior()`.
+  // This method's return value is passed to
+  // `RunActivationBehaviorBeforeDOMActivate()`.
   //
   // [1]:
   // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
@@ -1044,50 +1045,54 @@ class CORE_EXPORT Node : public EventTarget {
   virtual EventDispatchHandlingState* LegacyPreActivationBehavior(Event&) {
     return nullptr;
   }
-  // This is the Blink equivalent of a small subset of the many per-element
-  // implementations of the "activation behavior" hook [1]. Concrete
-  // implementations of this method only represent a subset of the spec's
-  // activation behavior hooks, due to the quirky, all-too disjointed way that
-  // Blink implements activation behavior.
+
+  // Blink splits what the DOM Standard calls "activation behavior" [1] in two,
+  // around the dispatch of the legacy DOMActivate event.
+  //
+  // DOMActivate is a deprecated event, defined by UI Events [2]. Blink
+  // dispatches it from `Node::DefaultEventHandler()` when handling a "click"
+  // event, and web content can observe and cancel it. How it interleaves with
+  // activation behavior is not specified anywhere (see [3]), so the two halves
+  // below exist to preserve Blink's historical ordering: everything Blink has
+  // always run before DOMActivate goes in this method, and everything that used
+  // to run as DOMActivate's own default handler goes in
+  // `RunActivationBehavior()`.
+  //
+  // This method runs before the click event's default handlers, which means
+  // before DOMActivate is dispatched. An implementation that marks the click
+  // event as default-handled therefore suppresses both the DOMActivate event
+  // and `RunActivationBehavior()`. Only `<input>` (committing the checked state
+  // of checkboxes and radio buttons) and `<a>` (navigating) do this.
+  //
+  // This method consumes the `EventDispatchHandlingState` that the
+  // `LegacyPreActivationBehavior()` steps return.
+  //
+  // TODO(crbug.com/563000231): If Blink can stop honoring `preventDefault()`
+  // on DOMActivate, this method and `RunActivationBehavior()` can be collapsed
+  // back into a single spec-shaped hook that runs here.
+  //
+  // [1]: https://dom.spec.whatwg.org/#eventtarget-activation-behavior
+  // [2]: https://w3c.github.io/uievents/#event-type-DOMActivate
+  // [3]: https://github.com/whatwg/html/issues/12101
+  virtual void RunActivationBehaviorBeforeDOMActivate(
+      Event&,
+      EventDispatchHandlingState*) {}
+
+  // This is the Blink implementation of the "activation behavior" hook [1].
   //
   // Specifically, the HTML Standard reduces many kinds of user interactions to
   // a synthetic click event [2] that gets dispatched on the activated element.
-  // This is because "click" MouseEvents (also called "activation events") are
-  // the only kind of event that, when dispatched, also run an element's
-  // activation behavior hook.
+  // "click" MouseEvents (also called "activation events") are the only kind of
+  // event that, when dispatched, run an element's activation behavior hook.
   //
-  // Blink, on the other hand, kind of inverts this model. Blink responds to
-  // user interactions and their associated (non-click) events *directly*,
-  // without first firing a synthetic click at the activation target. During
-  // this, for all trusted events (not limited to "click" events), Blink runs
-  // the event target's `DefaultEventHandler()` implementation, and leaves it to
-  // subclasses to filter which events / interaction types it is interested in;
-  // these are the same events/interactions that the HTML Standard reduces to
-  // synthetic click events to trigger activation behavior. This means, much of
-  // what the spec refers to as "activation behavior", actually lives in the
-  // `DefaultEventHandler()` implementation.
+  // This method is called during post-dispatch of activation events on the
+  // element with activation behavior (or its ancestor, if the event bubbles),
+  // after the DOMActivate event has been dispatched. It is skipped if the click
+  // event was canceled or default-handled, which includes the case where a
+  // DOMActivate listener called `preventDefault()`.
   //
-  // After Node subclasses handle these events, they ultimately delegate to
-  // the base class implementation of `Node::DefaultEventHandler()`. That
-  // implementation converts (only) click events into synthetic DOMActivate
-  // events, and fires *those* at the target. This is where more of what the
-  // spec calls "activation behavior" lives in Blink—inside subclass
-  // implementations of `DefaultEventHandler()` that specifically respond to
-  // DOMActivate events.
-  //
-  // The remaining portion of what the spec calls "activation behavior" lives
-  // exactly where it should, in this method below, which is only called for
-  // "activation events", which are "click" MouseEvents (and "textinput" events,
-  // for internal non-standard reasons).
-  //
-  // This method's consumes the `EventDispatchHandlingState` that the
-  // `LegacyPreActivationBehavior()` steps return.
-  //
-  // [1]:
-  // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
+  // [1]: https://dom.spec.whatwg.org/#eventtarget-activation-behavior
   // [2]: https://html.spec.whatwg.org/C#activation:fire-a-click-event
-  // [3]:
-  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior
   virtual void RunActivationBehavior(Event&, EventDispatchHandlingState*) {}
 
   void DispatchScopedEvent(Event&);

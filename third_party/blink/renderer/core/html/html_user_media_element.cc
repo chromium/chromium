@@ -148,6 +148,16 @@ void HTMLUserMediaElement::OnEmbeddedPermissionsDecided(
   HTMLMediaCaptureElementBase::OnEmbeddedPermissionsDecided(result);
 }
 
+void HTMLUserMediaElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (IsLegacyMode()) {
+    HTMLCapabilityElementBase::RunActivationBehavior(event, handling_state);
+    return;
+  }
+  HTMLMediaCaptureElementBase::RunActivationBehavior(event, handling_state);
+}
+
 void HTMLUserMediaElement::DefaultEventHandler(Event& event) {
   if (IsLegacyMode()) {
     HTMLCapabilityElementBase::DefaultEventHandler(event);

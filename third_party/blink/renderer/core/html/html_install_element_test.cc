@@ -406,7 +406,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationSuccess) {
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   // The manifest install method should be called.
   web_install_service_.WaitForCall();
@@ -426,7 +426,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationAborted) {
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   // The manifest install method should be called.
   web_install_service_.WaitForCall();
@@ -452,7 +452,7 @@ TEST_F(HTMLInstallElementTestBase, InstallurlWithManifestReturnsInvalidData) {
                         AtomicString(kExampleSite));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
@@ -531,7 +531,7 @@ TEST_F(HTMLInstallElementFiringSimTest, OnInstallResultContentAttributeFires) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   WaitForPermissionElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
   web_install_service_.WaitForCall();
   web_install_service_.RespondManifestWithSuccess();
 
@@ -555,7 +555,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAttribute) {
   element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -581,7 +581,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAndManifestId) {
   element->setAttribute(html_names::kManifestidAttr, AtomicString(kManifestId));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -606,7 +606,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithRelativeManifest) {
                         AtomicString("manifest.json"));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -630,7 +630,7 @@ TEST_F(HTMLInstallElementTestBase,
   element->setAttribute(html_names::kManifestAttr, AtomicString(manifest));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -650,7 +650,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAbortError) {
   element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -667,7 +667,7 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestDataError) {
   element->setAttribute(html_names::kManifestAttr, AtomicString(kExampleSite));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   web_install_service_.WaitForCall();
 
@@ -688,7 +688,7 @@ TEST_F(HTMLInstallElementTestBase, ManifestIdOnlyReturnsInvalidData) {
                         AtomicString("https://site.example/manifest.json"));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
@@ -704,7 +704,7 @@ TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlReturnsInvalidData) {
   element->setAttribute(html_names::kManifestAttr, AtomicString("https://["));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
@@ -721,7 +721,7 @@ TEST_F(HTMLInstallElementTestBase,
   element->setAttribute(html_names::kManifestAttr, AtomicString(" \t\n "));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
 
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
@@ -743,7 +743,7 @@ TEST_F(HTMLInstallElementTestBase, PrefixedElementActivationSuccess) {
       ASSERT_NO_EXCEPTION));
   WaitForElementRegistration(element);
 
-  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  element->DispatchSimulatedClick(nullptr);
   web_install_service_.WaitForCall();
   web_install_service_.RespondManifestWithSuccess();
 

@@ -1572,23 +1572,44 @@ EventDispatchHandlingState* HTMLInputElement::LegacyPreActivationBehavior(
   return input_type_view_->LegacyPreActivationBehavior();
 }
 
-void HTMLInputElement::RunActivationBehavior(
+void HTMLInputElement::RunActivationBehaviorBeforeDOMActivate(
     Event& event,
     EventDispatchHandlingState* state) {
   if (!state) {
     return;
   }
-
   // https://html.spec.whatwg.org/C#the-input-element:activation-behaviour.
   //
-  // The activation behavior for input elements element, given event, are these
-  // steps:
+  // The activation behavior for input elements element, given event, are
+  // these steps:
   //
   //   [...]
   //   2. Run element's input activation behavior, if any, and do nothing
   //      otherwise.
+  //
+  // For checkboxes and radio buttons this commits (or reverts) the checked
+  // state and marks the click event as default-handled, which suppresses the
+  // DOMActivate event and `RunActivationBehavior()` below.
   input_type_view_->RunInputActivationBehavior(
       event, *static_cast<ClickHandlingState*>(state));
+}
+
+void HTMLInputElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* state) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    return;
+  }
+  if (event.defaultPrevented() || event.DefaultHandled()) {
+    return;
+  }
+
+  input_type_view_->HandleDOMActivateEvent(event);
+  if (event.DefaultHandled()) {
+    return;
+  }
+
+  TextControlElement::RunActivationBehavior(event, state);
 }
 
 void HTMLInputElement::DefaultEventHandler(Event& evt) {
@@ -1603,6 +1624,20 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
     input_type_view_->HandleClickEvent(To<MouseEvent>(evt));
     if (evt.DefaultHandled())
       return;
+  }
+
+  // DOMActivate events cause the input to be "activated" - in the case of image
+  // and submit inputs, this means actually submitting the form. For reset
+  // inputs, the form is reset. These events are sent when the user clicks on
+  // the element, or presses enter while it is the active element. JavaScript
+  // code wishing to activate the element must dispatch a DOMActivate event - a
+  // click event will not do the job.
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      evt.type() == event_type_names::kDOMActivate) {
+    input_type_view_->HandleDOMActivateEvent(evt);
+    if (evt.DefaultHandled()) {
+      return;
+    }
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(evt);
@@ -1620,18 +1655,6 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
                         evt.type() == event_type_names::kKeypress);
   if (call_base_class_early) {
     TextControlElement::DefaultEventHandler(evt);
-    if (evt.DefaultHandled())
-      return;
-  }
-
-  // DOMActivate events cause the input to be "activated" - in the case of image
-  // and submit inputs, this means actually submitting the form. For reset
-  // inputs, the form is reset. These events are sent when the user clicks on
-  // the element, or presses enter while it is the active element. JavaScript
-  // code wishing to activate the element must dispatch a DOMActivate event - a
-  // click event will not do the job.
-  if (evt.type() == event_type_names::kDOMActivate) {
-    input_type_view_->HandleDOMActivateEvent(evt);
     if (evt.DefaultHandled())
       return;
   }
@@ -1710,6 +1733,10 @@ ShadowRoot* HTMLInputElement::EnsureShadowSubtree() {
 }
 
 bool HTMLInputElement::HasActivationBehavior() const {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      ShadowPseudoId() == shadow_element_names::kPseudoFileUploadButton) {
+    return false;
+  }
   return true;
 }
 

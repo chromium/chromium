@@ -86,6 +86,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
 
@@ -119,6 +120,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   static AtomicString GetCommand(const AtomicString& action,
                                  ExecutionContext* execution_context);
   bool IsFormAssociatedSubmitButton() const;
+  bool HandleButtonActivation(Event& event);
 
   static std::optional<Type> TypeFromString(const AtomicString&);
 

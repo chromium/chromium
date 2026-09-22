@@ -317,15 +317,13 @@ TEST_F(HTMLGeolocationElementTest, GeolocationGrantedClickBehavior) {
   auto* geolocation_element_watch = CreateGeolocationElement();
   geolocation_element_watch->setAttribute(html_names::kWatchAttr,
                                           AtomicString(""));
-  auto* event_watch = Event::Create(event_type_names::kDOMActivate);
-  geolocation_element_watch->DefaultEventHandler(*event_watch);
+  geolocation_element_watch->DispatchSimulatedClick(nullptr);
   CheckAppearance(geolocation_element_watch, kGeolocationString,
                   /*is_in_progress*/ true);
 
   // Test without kWatchAttr
   auto* geolocation_element_get_position = CreateGeolocationElement();
-  auto* event_get_position = Event::Create(event_type_names::kDOMActivate);
-  geolocation_element_get_position->DefaultEventHandler(*event_get_position);
+  geolocation_element_get_position->DispatchSimulatedClick(nullptr);
   CheckAppearance(geolocation_element_get_position, kGeolocationString,
                   /*is_in_progress*/ true);
 }
@@ -397,15 +395,14 @@ TEST_F(HTMLGeolocationElementTest, GeolocationRequestInProgress) {
                                  MojoPermissionStatus::GRANTED}});
 
   auto* geolocation_element = CreateGeolocationElement();
-  auto* event = Event::Create(event_type_names::kDOMActivate);
 
-  geolocation_element->DefaultEventHandler(*event);
+  geolocation_element->DispatchSimulatedClick(nullptr);
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_in_progress*/ true);
   auto first_request_time =
       geolocation_element->InProgressApearanceStartedTimeForTesting();
 
-  geolocation_element->DefaultEventHandler(*event);
+  geolocation_element->DispatchSimulatedClick(nullptr);
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_in_progress*/ true);
   auto second_request_time =
@@ -450,8 +447,7 @@ TEST_F(HTMLGeolocationElementTest,
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   // Simulate a click. This should trigger a permission prompt.
-  auto* event = Event::Create(event_type_names::kDOMActivate);
-  geolocation_element->DefaultEventHandler(*event);
+  geolocation_element->DispatchSimulatedClick(nullptr);
 
   // Grant permission.
   permission_service()->NotifyPermissionStatusChange(

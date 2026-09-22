@@ -82,11 +82,15 @@ bool ImageInputType::SupportsValidation() const {
 }
 
 static gfx::Point ExtractClickLocation(const Event& event) {
-  const auto* mouse_event = DynamicTo<MouseEvent>(event.UnderlyingEvent());
-  if (!event.UnderlyingEvent() || !mouse_event)
+  const MouseEvent* mouse_event = DynamicTo<MouseEvent>(event);
+  if ((!mouse_event ||
+       !RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) &&
+      event.UnderlyingEvent()) {
+    mouse_event = DynamicTo<MouseEvent>(event.UnderlyingEvent());
+  }
+  if (!mouse_event || !mouse_event->HasPosition()) {
     return gfx::Point();
-  if (!mouse_event->HasPosition())
-    return gfx::Point();
+  }
   return gfx::Point(mouse_event->offsetX(), mouse_event->offsetY());
 }
 

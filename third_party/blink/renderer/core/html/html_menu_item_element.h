@@ -64,8 +64,10 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
       UpdateBehavior update_behavior =
           UpdateBehavior::kStyleAndLayout) const override;
 
+  bool HasActivationBehavior() const override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
-  static bool IsActivationFromKeyboard(UIEvent* activate_event);
+  static bool IsActivationFromKeyboard(const Event* activate_event);
 
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
@@ -96,6 +98,10 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
     kUntrustedKeyboard,
     kTrustedKeyboard,
   };
+  // Returns the type of keyboard activation, if any, that led to
+  // `activation_event`, which is either a click event or a DOMActivate event.
+  static ActivationKeyboardEventType GetActivationKeyboardEventType(
+      const Event& activation_event);
   void ActivateMenuItem(ActivationKeyboardEventType);
   void HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);

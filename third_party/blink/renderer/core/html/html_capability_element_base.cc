@@ -1035,13 +1035,42 @@ String HTMLCapabilityElementBase::GetActivationErrorMessage() const {
   return error_message;
 }
 
+bool HTMLCapabilityElementBase::HasActivationBehavior() const {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    return false;
+  }
+  return !fallback_mode_;
+}
+
+void HTMLCapabilityElementBase::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    HTMLElement::RunActivationBehavior(event, handling_state);
+    return;
+  }
+  if (event.defaultPrevented() || event.DefaultHandled()) {
+    return;
+  }
+  if (fallback_mode_) {
+    HTMLElement::RunActivationBehavior(event, handling_state);
+    return;
+  }
+
+  HandleActivation(
+      event,
+      blink::BindOnce(&HTMLCapabilityElementBase::RequestPageEmbededPermissions,
+                      WrapWeakPersistent(this)));
+}
+
 void HTMLCapabilityElementBase::DefaultEventHandler(Event& event) {
   if (fallback_mode_) {
     HTMLElement::DefaultEventHandler(event);
     return;
   }
 
-  if (event.type() == event_type_names::kDOMActivate) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      event.type() == event_type_names::kDOMActivate) {
     HandleActivation(
         event, blink::BindOnce(
                    &HTMLCapabilityElementBase::RequestPageEmbededPermissions,

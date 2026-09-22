@@ -106,6 +106,9 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
   void DefaultEventHandler(Event&) final;
   bool HasActivationBehavior() const override;
+  void RunActivationBehaviorBeforeDOMActivate(
+      Event&,
+      EventDispatchHandlingState*) override;
   void SetActive(bool active) final;
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;

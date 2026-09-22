@@ -45,6 +45,7 @@ class HTMLSummaryElement final : public HTMLElement {
   void RemovedFrom(ContainerNode&) final;
 
  private:
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
   HTMLDetailsElement* DetailsElement() const;

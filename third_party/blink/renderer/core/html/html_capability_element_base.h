@@ -96,6 +96,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
 
   // HTMLElement overrides.
   bool IsHTMLCapabilityElementBase() const final { return true; }
+  bool HasActivationBehavior() const override;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
 
  protected:
   // blink::HTMLElement:

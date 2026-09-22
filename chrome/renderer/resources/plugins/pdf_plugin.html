@@ -39,9 +39,42 @@
         background-image: none;
       }
 
-      button,
-      [dir='rtl'] button {
-        float: none;
+      #open-button {
+        background: var(--primary-button-fill-color);
+        border: 0;
+        border-radius: 20px;
+        box-sizing: border-box;
+        color: var(--primary-button-text-color);
+        cursor: pointer;
+        display: inline-block;
+        font-size: .875em;
+        margin: 0;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+      }
+
+      #open-button:active {
+        background: var(--primary-button-fill-color-active);
+        outline: 0;
+      }
+
+      @media (max-width: 420px) {
+        #open-button {
+          font-size: .825em;
+          font-weight: 500;
+          padding: 16px 24px;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 420px) and (orientation: portrait),
+             (max-height: 560px) {
+        #open-button {
+          font-size: .933em;
+          margin: 6px 0;
+        }
       }
     </style>
   </head>
@@ -57,9 +90,15 @@
         <div id="main-message">
           <h1>$i18n{fileName}</h1>
         </div>
-        <a href="$i18n{pdfUrl}" target="_blank">
-          <button id="open-button" tabindex="1">$i18n{open}</button>
-        </a>
+        <!-- This control used to be a <button> nested inside an <a>, so it was
+             exposed to assistive technology as a button. It is an anchor now,
+             and since this element navigates to the PDF (except in the
+             WebViewPlugin case, where script cancels the navigation and calls
+             openPDF() instead), the implicit `link` role would arguably
+             describe it better. `role="button"` is kept only to preserve the
+             old behavior. -->
+        <a id="open-button" role="button" href="$i18n{pdfUrl}" target="_blank"
+           tabindex="1">$i18n{open}</a>
       </div>
     </div>
   </body>

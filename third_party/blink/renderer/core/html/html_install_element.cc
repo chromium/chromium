@@ -171,13 +171,29 @@ void HTMLInstallElement::DidChangeIsInCanvasSubtree() {
   UpdateAppearance();
 }
 
-void HTMLInstallElement::DefaultEventHandler(Event& event) {
-  // We'll handle activation here, and punt everything else through
-  // `HTMLCapabilityElementBase`.
-  if (event.type() == event_type_names::kDOMActivate) {
-    HandleActivation(event, blink::BindOnce(&HTMLInstallElement::OnActivated,
-                                            WrapWeakPersistent(this)));
+void HTMLInstallElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    HTMLCapabilityElementBase::RunActivationBehavior(event, handling_state);
     return;
+  }
+  if (event.defaultPrevented() || event.DefaultHandled()) {
+    return;
+  }
+  HandleActivation(event, blink::BindOnce(&HTMLInstallElement::OnActivated,
+                                          WrapWeakPersistent(this)));
+}
+
+void HTMLInstallElement::DefaultEventHandler(Event& event) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    // We'll handle activation here, and punt everything else through
+    // `HTMLCapabilityElementBase`.
+    if (event.type() == event_type_names::kDOMActivate) {
+      HandleActivation(event, blink::BindOnce(&HTMLInstallElement::OnActivated,
+                                              WrapWeakPersistent(this)));
+      return;
+    }
   }
   HTMLCapabilityElementBase::DefaultEventHandler(event);
 }

@@ -185,16 +185,37 @@ int HTMLSummaryElement::DefaultTabIndex() const {
   return IsMainSummary() ? 0 : -1;
 }
 
+void HTMLSummaryElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.defaultPrevented() || event.DefaultHandled()) {
+      return;
+    }
+    if (IsMainSummary()) {
+      if (!IsClickableControl(event.RawTarget()->ToNode())) {
+        if (HTMLDetailsElement* details = DetailsElement()) {
+          details->ToggleOpen();
+        }
+        event.SetDefaultHandled();
+        return;
+      }
+    }
+  }
+  HTMLElement::RunActivationBehavior(event, handling_state);
+}
+
 void HTMLSummaryElement::DefaultEventHandler(Event& event) {
   if (IsMainSummary()) {
-    if (event.type() == event_type_names::kDOMActivate &&
+    if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+        event.type() == event_type_names::kDOMActivate &&
         !IsClickableControl(event.RawTarget()->ToNode())) {
-      if (HTMLDetailsElement* details = DetailsElement())
+      if (HTMLDetailsElement* details = DetailsElement()) {
         details->ToggleOpen();
+      }
       event.SetDefaultHandled();
       return;
     }
-
     if (HandleKeyboardActivation(event)) {
       return;
     }

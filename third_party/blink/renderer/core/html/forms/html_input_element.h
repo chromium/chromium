@@ -502,6 +502,9 @@ class CORE_EXPORT HTMLInputElement
   void ResetImpl() final;
 
   EventDispatchHandlingState* LegacyPreActivationBehavior(Event&) final;
+  void RunActivationBehaviorBeforeDOMActivate(
+      Event&,
+      EventDispatchHandlingState*) final;
   void RunActivationBehavior(Event&, EventDispatchHandlingState*) final;
 
   bool IsURLAttribute(const Attribute&) const final;

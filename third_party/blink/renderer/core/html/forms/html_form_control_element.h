@@ -112,6 +112,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return PopoverTriggerSupport::kNone;
   }
 
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) override;
   void DefaultEventHandler(Event&) override;
 
   bool willValidate() const override;
@@ -186,8 +187,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   bool IsValidElement() override;
 
-  void HandlePopoverTriggering(HTMLElement* popover,
-                               PopoverTriggerAction action);
+  void HandlePopoverTriggering(Event& event);
   // Checks if the element exists, is a valid Popover element, and supports
   // popover triggering.
   bool IsValidPopoverTrigger();

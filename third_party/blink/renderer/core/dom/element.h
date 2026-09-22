@@ -1737,8 +1737,8 @@ class CORE_EXPORT Element : public ContainerNode {
   bool CanContainRangeEndPoint() const override { return true; }
 
   // Used for disabled form elements; if true, prevents mouse events from being
-  // dispatched to event listeners, and prevents DOMActivate events from being
-  // sent at all.
+  // dispatched to event listeners, and prevents activation behavior from
+  // running.
   virtual bool IsDisabledFormControl() const { return false; }
 
   void SetCustomElementDefinition(CustomElementDefinition*);

@@ -93,39 +93,61 @@ void HTMLMediaCaptureElementBase::OnEmbeddedPermissionsDecided(
   }
 }
 
-void HTMLMediaCaptureElementBase::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate) {
-    if ((!GetExecutionContext() || !GetExecutionContext()->IsSecureContext()) &&
-        !RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
-      AuditsIssue::ReportPermissionElementIssue(
-          GetExecutionContext(), GetDomNodeId(),
-          protocol::Audits::PermissionElementIssueTypeEnum::NonSecureContext,
-          GetType(), /*is_warning=*/false);
-      event.SetDefaultHandled();
-      return;
-    }
-    if (!GetDocument().GetFrame() ||
-        (!LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()) &&
-         !RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled())) {
-      AuditsIssue::ReportPermissionElementIssue(
-          GetExecutionContext(), GetDomNodeId(),
-          protocol::Audits::PermissionElementIssueTypeEnum::
-              MissingTransientUserActivation,
-          GetType(), /*is_warning=*/false);
-      OnActivationFailed(
-          "The permission element activation must be triggered by a user "
-          "gesture.");
-      event.SetDefaultHandled();
-      return;
-    }
+bool HTMLMediaCaptureElementBase::HandleMediaCaptureActivation(Event& event) {
+  if ((!GetExecutionContext() || !GetExecutionContext()->IsSecureContext()) &&
+      !RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+    AuditsIssue::ReportPermissionElementIssue(
+        GetExecutionContext(), GetDomNodeId(),
+        protocol::Audits::PermissionElementIssueTypeEnum::NonSecureContext,
+        GetType(), /*is_warning=*/false);
+    event.SetDefaultHandled();
+    return true;
+  }
+  if (!GetDocument().GetFrame() ||
+      (!LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()) &&
+       !RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled())) {
+    AuditsIssue::ReportPermissionElementIssue(
+        GetExecutionContext(), GetDomNodeId(),
+        protocol::Audits::PermissionElementIssueTypeEnum::
+            MissingTransientUserActivation,
+        GetType(), /*is_warning=*/false);
+    OnActivationFailed(
+        "The permission element activation must be triggered by a user "
+        "gesture.");
+    event.SetDefaultHandled();
+    return true;
   }
 
-  if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
+  if (PermissionsGranted()) {
     HTMLCapabilityElementBase::HandleActivation(
         event,
         blink::BindOnce(&HTMLMediaCaptureElementBase::StartMediaStreamRequest,
                         WrapWeakPersistent(this)));
-    return;
+    return true;
+  }
+  return false;
+}
+
+void HTMLMediaCaptureElementBase::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.defaultPrevented() || event.DefaultHandled()) {
+      return;
+    }
+    if (HandleMediaCaptureActivation(event)) {
+      return;
+    }
+  }
+  HTMLCapabilityElementBase::RunActivationBehavior(event, handling_state);
+}
+
+void HTMLMediaCaptureElementBase::DefaultEventHandler(Event& event) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      event.type() == event_type_names::kDOMActivate) {
+    if (HandleMediaCaptureActivation(event)) {
+      return;
+    }
   }
   HTMLCapabilityElementBase::DefaultEventHandler(event);
 }

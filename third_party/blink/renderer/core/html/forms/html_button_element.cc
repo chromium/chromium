@@ -217,52 +217,75 @@ bool HTMLButtonElement::IsFormAssociatedSubmitButton() const {
   return Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit;
 }
 
-void HTMLButtonElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate) {
-    if (auto* form = Form();
-          form && !IsDisabledFormControl()) {
-      bool has_command_attr = FastHasAttribute(html_names::kCommandforAttr) ||
-                              FastHasAttribute(html_names::kCommandAttr);
-      if (has_command_attr && type_ == kButton &&
-          !EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
-                                  keywords::kButton)) {
-        AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
-                          mojom::blink::ConsoleMessageLevel::kWarning,
-                          "Buttons associated with forms that include "
-                          "command or commandfor attributes are "
-                          "ambiguous, and require a type=button attribute. "
-                          "No action will be taken.");
-        return;
+bool HTMLButtonElement::HandleButtonActivation(Event& event) {
+  if (auto* form = Form(); form && !IsDisabledFormControl()) {
+    bool has_command_attr = FastHasAttribute(html_names::kCommandforAttr) ||
+                            FastHasAttribute(html_names::kCommandAttr);
+    if (has_command_attr && type_ == kButton &&
+        !EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
+                                keywords::kButton)) {
+      AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                        mojom::blink::ConsoleMessageLevel::kWarning,
+                        "Buttons associated with forms that include "
+                        "command or commandfor attributes are "
+                        "ambiguous, and require a type=button attribute. "
+                        "No action will be taken.");
+      return true;
+    }
+    if (type_ == kSubmit) {
+      if (has_command_attr &&
+          EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
+                                 keywords::kSubmit)) {
+        AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Buttons with an explicit type=submit will always submit a "
+            "form, so command or commandfor attributes will be ignored.");
       }
-      if (type_ == kSubmit) {
-        if (has_command_attr &&
-            EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
-                                   keywords::kSubmit)) {
-          AddConsoleMessage(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "Buttons with an explicit type=submit will always submit a "
-              "form, so command or commandfor attributes will be ignored.");
-        }
-        form->PrepareForSubmission(&event, this);
-        event.SetDefaultHandled();
-        return;
+      form->PrepareForSubmission(&event, this);
+      event.SetDefaultHandled();
+      return true;
+    }
+    if (type_ == kReset) {
+      form->reset();
+      event.SetDefaultHandled();
+      if (has_command_attr) {
+        AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Buttons with an explicit type=reset will always reset a form, "
+            "so command or commandfor attributes will be ignored.");
       }
-      if (type_ == kReset) {
-        form->reset();
-        event.SetDefaultHandled();
-        if (has_command_attr) {
-          AddConsoleMessage(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "Buttons with an explicit type=reset will always reset a form, "
-              "so command or commandfor attributes will be ignored.");
-        }
-        return;
-      }
+      return true;
+    }
+  }
+
+  if (HandleCommandForActivation(To<UIEvent>(&event))) {
+    return true;
+  }
+
+  return false;
+}
+
+void HTMLButtonElement::RunActivationBehavior(
+    Event& event,
+    EventDispatchHandlingState* handling_state) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.defaultPrevented() || event.DefaultHandled()) {
+      return;
     }
 
-    if (HandleCommandForActivation(To<UIEvent>(&event))) {
+    if (HandleButtonActivation(event)) {
+      return;
+    }
+  }
+  HTMLFormControlElement::RunActivationBehavior(event, handling_state);
+}
+
+void HTMLButtonElement::DefaultEventHandler(Event& event) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      event.type() == event_type_names::kDOMActivate) {
+    if (HandleButtonActivation(event)) {
       return;
     }
   }

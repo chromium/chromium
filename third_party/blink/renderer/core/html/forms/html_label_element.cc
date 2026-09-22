@@ -281,7 +281,10 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
 }
 
 bool HTMLLabelElement::HasActivationBehavior() const {
-  return true;
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    return true;
+  }
+  return Control();
 }
 
 bool HTMLLabelElement::WillRespondToMouseClickEvents() {

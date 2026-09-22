@@ -9233,7 +9233,9 @@ bool Element::IsClickableControl(Node* node) {
     return true;
   }
   while (node && this != node) {
-    if (node->HasActivationBehavior()) {
+    if (node->HasActivationBehavior() ||
+        node->HasTagName(html_names::kEmbedTag) ||
+        node->HasTagName(html_names::kLabelTag)) {
       return true;
     }
     node = node->ParentOrShadowHostNode();
