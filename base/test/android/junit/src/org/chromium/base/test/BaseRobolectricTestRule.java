@@ -55,6 +55,8 @@ public class BaseRobolectricTestRule implements TestRule {
     private static final TimeZone ORIG_TIMEZONE = TimeZone.getDefault();
     private static final String TAG = "BaseRobolectric";
     static @Nullable PausedExecutorService sPausedExecutor;
+    private static @Nullable Method sSetDefaultNightModeMethod;
+    private static boolean sSetDefaultNightModeLookupDone;
 
     // Removes the API Level suffix. E.g. "testSomething[28]" -> "testSomething".
     private static String stripBrackets(String methodName) {
@@ -165,6 +167,7 @@ public class BaseRobolectricTestRule implements TestRule {
             Locale.setDefault(ORIG_LOCALE);
             TimeZone.setDefault(ORIG_TIMEZONE);
             ResettersForTesting.afterHooksDidExecute();
+            resetDefaultNightMode();
             ShadowLog.stream = null;
             // Run assertions only when the test has not already failed so as to not mask
             // failures. https://crbug.com/1466313
@@ -172,6 +175,30 @@ public class BaseRobolectricTestRule implements TestRule {
                 LifetimeAssert.resetForTesting();
             } else {
                 LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            }
+        }
+    }
+
+    // Use reflection because //base does not depend on androidx.appcompat, and adding
+    // appcompat_java to base_junit_test_support would pull it into non-Chrome suites (e.g. Cronet).
+    private static void resetDefaultNightMode() {
+        if (!sSetDefaultNightModeLookupDone) {
+            sSetDefaultNightModeLookupDone = true;
+            try {
+                Class<?> appCompatDelegateClass =
+                        Class.forName("androidx.appcompat.app.AppCompatDelegate");
+                sSetDefaultNightModeMethod =
+                        appCompatDelegateClass.getMethod("setDefaultNightMode", int.class);
+            } catch (ReflectiveOperationException ignored) {
+                // AppCompatDelegate is not on the classpath for this test suite.
+            }
+        }
+        if (sSetDefaultNightModeMethod != null) {
+            try {
+                // AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM = -1
+                sSetDefaultNightModeMethod.invoke(null, -1);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
             }
         }
     }
