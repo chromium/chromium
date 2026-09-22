@@ -133,7 +133,7 @@ public final class BackgroundTabRestorationHelper {
         }
 
         try {
-            BackgroundPoolTab backgroundTab = pool.loadTab(placeholderTabId);
+            BackgroundPoolTab backgroundTab = pool.loadTabByPlaceholderId(placeholderTabId);
             if (backgroundTab == null) return null;
 
             TabModel model = selector.getModel(/* incognito= */ false);
