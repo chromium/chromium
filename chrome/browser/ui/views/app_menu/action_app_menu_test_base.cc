@@ -72,6 +72,8 @@ void ActionAppMenuTestBase::SetUp() {
                            base::Unretained(&mock_action_invoked_), action_id))
                        .SetActionId(action_id)
                        .SetText(text)
+                       .SetTooltipText(text)
+                       .SetAccessibleName(text)
                        .SetEnabled(true)
                        .SetVisible(action_id != kActionUpgradeDialog &&
                                    action_id != kActionSetBrowserAsDefault)

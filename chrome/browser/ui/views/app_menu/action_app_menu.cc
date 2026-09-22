@@ -188,7 +188,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   has_notification_header_ = false;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
-  header_count_ = 0;
+  section_header_count_ = 0;
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
@@ -347,13 +347,13 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                       actions::BaseAction* child_base,
                                       bool round_top_corners,
                                       bool round_bottom_corners) {
+  actions::ActionItem* const action_item = child_base->GetActionItem();
+  CHECK(action_item);
+
   if (std::u16string* text_override =
           child_base->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
     menu_item->SetTitle(*text_override);
   }
-
-  actions::ActionItem* const action_item = child_base->GetActionItem();
-  CHECK(action_item);
 
   const ui::ElementIdentifier element_id =
       action_item->GetProperty(views::kElementIdentifierKey);
@@ -482,7 +482,7 @@ void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
     header_menu_item->SetBorder(
         views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
             INSETS_ACTION_APP_MENU_HEADER)));
-    if (header_count_++ > 0) {
+    if (section_header_count_++ > 0) {
       header_menu_item->set_top_margin(default_margin * 2);
     }
   }

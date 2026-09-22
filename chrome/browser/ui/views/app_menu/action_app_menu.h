@@ -112,7 +112,7 @@ class ActionAppMenu : public views::MenuDelegate {
 
   bool has_notification_header_ = false;
 
-  size_t header_count_ = 0;
+  size_t section_header_count_ = 0;
 
   // The action to execute when the menu is closed.
   std::optional<actions::ActionId> action_to_execute_on_close_;

@@ -110,6 +110,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model_load_waiter.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -145,6 +146,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -2412,6 +2414,15 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_->UpdateCommandEnabled(IDC_FULLSCREEN, fullscreen_enabled);
   command_updater_->UpdateCommandEnabled(IDC_TOGGLE_FULLSCREEN_TOOLBAR,
                                          fullscreen_enabled);
+
+  if (auto* const fullscreen_action = FindAction(kActionFullscreen, browser_)) {
+    const int string_id =
+        is_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN
+                      : (fullscreen_enabled ? IDS_ACCNAME_FULLSCREEN
+                                            : IDS_ACCNAME_FULLSCREEN_DISABLED);
+    fullscreen_action->SetTooltipText(l10n_util::GetStringUTF16(string_id));
+    fullscreen_action->SetAccessibleName(l10n_util::GetStringUTF16(string_id));
+  }
 
   UpdateCommandsForBookmarkBar();
   UpdateCommandsForIncognitoAvailability();

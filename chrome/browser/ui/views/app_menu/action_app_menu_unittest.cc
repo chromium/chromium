@@ -68,6 +68,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
@@ -1224,6 +1225,40 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
   menu.CloseMenu();
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* const root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  auto* const fullscreen_button =
+      views::AsViewClass<views::ImageButton>(zoom_view->children().back());
+  ASSERT_NE(fullscreen_button, nullptr);
+  EXPECT_EQ(fullscreen_button->GetViewAccessibility().GetCachedName(),
+            u"Fullscreen");
+
+  // Updating the action's tooltip should propagate to the button's accessible
+  // name.
+  actions::ActionItem* fullscreen_action =
+      actions::ActionManager::Get().FindAction(kActionFullscreen);
+  ASSERT_TRUE(fullscreen_action);
+  fullscreen_action->SetTooltipText(u"Exit full screen");
+  EXPECT_EQ(fullscreen_button->GetViewAccessibility().GetCachedName(),
+            u"Exit full screen");
+
+  menu.CloseMenu();
+}
 
 TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;

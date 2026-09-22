@@ -2784,6 +2784,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionFullscreen)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN))
+          .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kFullscreenIcon
                                                 : kFullscreenRefreshOldIcon))
