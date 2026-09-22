@@ -79,12 +79,14 @@ constexpr SkColor kTabGroupPinkTextDarkMode = SkColorSetRGB(0xFD, 0xCF, 0xE8);
 constexpr SkColor kTabGroupYellowDarkMode = SkColorSetRGB(0xFF, 0xDD, 0x7A);
 constexpr SkColor kTabGroupYellowLightMode = SkColorSetRGB(0xFF, 0xD0, 0x36);
 constexpr SkColor kTabGroupYellowChipLightMode =
-    SkColorSetA(kTabGroupYellowDarkMode, 0x40);
+    SkColorSetA(kTabGroupYellowDarkMode, 0x66);
 constexpr SkColor kTabGroupYellowChipDarkMode =
     SkColorSetA(kTabGroupYellowLightMode, 0x40);
 constexpr SkColor kTabGroupYellowTextLightMode =
     SkColorSetRGB(0x66, 0x50, 0x00);
 constexpr SkColor kTabGroupYellowTextDarkMode = SkColorSetRGB(0xFF, 0xEF, 0xC3);
+constexpr SkColor kTabGroupYellowOutlineLightMode =
+    SkColorSetRGB(0xEA, 0xAB, 0x00);
 
 }  // namespace gfx
 
