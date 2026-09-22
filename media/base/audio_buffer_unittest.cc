@@ -1129,6 +1129,42 @@ TEST(AudioBufferTest, PlanarChannelSpansDoNotIncludePadding) {
   }
 }
 
+template <typename SampleType>
+void TestPlanarChannelCast(SampleFormat format) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  constexpr int kFrames = 128;
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      format, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  // Write distinct values to each channel via the mutable span accessor.
+  for (size_t ch = 0; ch < kChannels; ++ch) {
+    base::span<SampleType> channel =
+        buffer->planar_channel_cast<SampleType>(ch);
+    EXPECT_EQ(static_cast<size_t>(kFrames), channel.size());
+    std::ranges::fill(channel, static_cast<SampleType>(ch + 1));
+  }
+
+  // Verify each channel contains the expected values via the const span
+  // accessor.
+  for (size_t ch = 0; ch < kChannels; ++ch) {
+    base::span<const SampleType> const_channel =
+        buffer->planar_channel_cast<const SampleType>(ch);
+    EXPECT_EQ(static_cast<size_t>(kFrames), const_channel.size());
+    for (SampleType sample : const_channel) {
+      EXPECT_EQ(static_cast<SampleType>(ch + 1), sample);
+    }
+  }
+}
+
+TEST(AudioBufferTest, PlanarChannelCast) {
+  TestPlanarChannelCast<uint8_t>(kSampleFormatPlanarU8);
+  TestPlanarChannelCast<int16_t>(kSampleFormatPlanarS16);
+  TestPlanarChannelCast<int32_t>(kSampleFormatPlanarS32);
+  TestPlanarChannelCast<float>(kSampleFormatPlanarF32);
+}
+
 TEST(AudioBufferTest, TrimUpdatesPlanarChannelSpans) {
   constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
   constexpr size_t kChannels = 2;
@@ -1193,6 +1229,41 @@ TEST(AudioBufferTest, InterleavedAccessors) {
   EXPECT_EQ(buffer->channels()[0].data(), interleaved.data());
 }
 
+template <typename SampleType>
+void TestInterleavedDataCast(SampleFormat format) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  constexpr int kFrames = 100;
+  constexpr size_t kTotalSamples = kChannels * kFrames;
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      format, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  // Write values through the mutable span accessor.
+  base::span<SampleType> interleaved =
+      buffer->interleaved_data_cast<SampleType>();
+  EXPECT_EQ(kTotalSamples, interleaved.size());
+  for (size_t i = 0; i < interleaved.size(); ++i) {
+    interleaved[i] = static_cast<SampleType>(i);
+  }
+
+  // Verify the values through the const span accessor.
+  base::span<const SampleType> const_interleaved =
+      buffer->interleaved_data_cast<const SampleType>();
+  EXPECT_EQ(kTotalSamples, const_interleaved.size());
+  for (size_t i = 0; i < const_interleaved.size(); ++i) {
+    EXPECT_EQ(static_cast<SampleType>(i), const_interleaved[i]);
+  }
+}
+
+TEST(AudioBufferTest, InterleavedDataCast) {
+  TestInterleavedDataCast<uint8_t>(kSampleFormatU8);
+  TestInterleavedDataCast<int16_t>(kSampleFormatS16);
+  TestInterleavedDataCast<int32_t>(kSampleFormatS32);
+  TestInterleavedDataCast<int32_t>(kSampleFormatS24);
+  TestInterleavedDataCast<float>(kSampleFormatF32);
+}
+
 TEST(AudioBufferTest, BitstreamAccessors) {
   constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
   constexpr int kChannels = 2;
@@ -1209,6 +1280,41 @@ TEST(AudioBufferTest, BitstreamAccessors) {
   EXPECT_EQ(bitstream, base::span(kData));
 }
 
+TEST(AudioBufferTest, FormatTypeCompatibility) {
+  for (int i = 0; i <= SampleFormat::kMaxValue; ++i) {
+    const auto format = static_cast<SampleFormat>(i);
+    const bool is_u8 =
+        format == kSampleFormatU8 || format == kSampleFormatPlanarU8;
+    const bool is_s16 =
+        format == kSampleFormatS16 || format == kSampleFormatPlanarS16;
+    const bool is_s32 = format == kSampleFormatS32 ||
+                        format == kSampleFormatPlanarS32 ||
+                        format == kSampleFormatS24;
+    const bool is_f32 =
+        format == kSampleFormatF32 || format == kSampleFormatPlanarF32;
+
+    EXPECT_EQ(is_u8, AudioBuffer::IsCompatibleSampleFormat<uint8_t>(format));
+    EXPECT_EQ(is_u8,
+              AudioBuffer::IsCompatibleSampleFormat<const uint8_t>(format));
+
+    EXPECT_EQ(is_s16, AudioBuffer::IsCompatibleSampleFormat<int16_t>(format));
+    EXPECT_EQ(is_s16,
+              AudioBuffer::IsCompatibleSampleFormat<const int16_t>(format));
+
+    EXPECT_EQ(is_s32, AudioBuffer::IsCompatibleSampleFormat<int32_t>(format));
+    EXPECT_EQ(is_s32,
+              AudioBuffer::IsCompatibleSampleFormat<const int32_t>(format));
+
+    EXPECT_EQ(is_f32, AudioBuffer::IsCompatibleSampleFormat<float>(format));
+    EXPECT_EQ(is_f32,
+              AudioBuffer::IsCompatibleSampleFormat<const float>(format));
+
+    // Unsupported types should always return false.
+    EXPECT_FALSE(AudioBuffer::IsCompatibleSampleFormat<double>(format));
+    EXPECT_FALSE(AudioBuffer::IsCompatibleSampleFormat<int64_t>(format));
+  }
+}
+
 #if GTEST_HAS_DEATH_TEST
 TEST(AudioBufferDeathTest, IncompatibleAccessors) {
   constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
@@ -1223,6 +1329,10 @@ TEST(AudioBufferDeathTest, IncompatibleAccessors) {
   EXPECT_CHECK_DEATH(planar->interleaved_data());
   EXPECT_CHECK_DEATH(planar->bitstream_data());
   EXPECT_CHECK_DEATH(planar->planar_channel(kChannels));
+  EXPECT_CHECK_DEATH(planar->planar_channel_cast<int16_t>(0));
+  // Type mismatch even though sizes match (sizeof(int32_t) == sizeof(float)).
+  EXPECT_CHECK_DEATH(planar->planar_channel_cast<int32_t>(0));
+  EXPECT_CHECK_DEATH(planar->interleaved_data_cast<float>());
 
   // Interleaved buffer should disallow planar and bitstream accessors.
   scoped_refptr<AudioBuffer> interleaved = AudioBuffer::CreateBuffer(
@@ -1230,6 +1340,10 @@ TEST(AudioBufferDeathTest, IncompatibleAccessors) {
   EXPECT_CHECK_DEATH(interleaved->planar_data());
   EXPECT_CHECK_DEATH(interleaved->planar_channel(0));
   EXPECT_CHECK_DEATH(interleaved->bitstream_data());
+  EXPECT_CHECK_DEATH(interleaved->interleaved_data_cast<int16_t>());
+  // Type mismatch even though sizes match (sizeof(int32_t) == sizeof(float)).
+  EXPECT_CHECK_DEATH(interleaved->interleaved_data_cast<int32_t>());
+  EXPECT_CHECK_DEATH(interleaved->planar_channel_cast<float>(0));
 
   // Bitstream buffer should disallow planar and interleaved accessors.
   scoped_refptr<AudioBuffer> bitstream = AudioBuffer::CopyBitstreamFrom(

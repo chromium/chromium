@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <list>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -313,6 +314,32 @@ class MEDIA_EXPORT AudioBuffer
     return channel_spans_[0];
   }
 
+  // Returns true if `SampleType` is the matching C++ type for `format`.
+  template <typename SampleType>
+  static constexpr bool IsCompatibleSampleFormat(SampleFormat format) {
+    using RawType = std::remove_cv_t<SampleType>;
+    if constexpr (std::is_same_v<RawType, float>) {
+      return format == kSampleFormatF32 || format == kSampleFormatPlanarF32;
+    } else if constexpr (std::is_same_v<RawType, int16_t>) {
+      return format == kSampleFormatS16 || format == kSampleFormatPlanarS16;
+    } else if constexpr (std::is_same_v<RawType, int32_t>) {
+      return format == kSampleFormatS32 || format == kSampleFormatPlanarS32 ||
+             format == kSampleFormatS24;
+    } else if constexpr (std::is_same_v<RawType, uint8_t>) {
+      return format == kSampleFormatU8 || format == kSampleFormatPlanarU8;
+    } else {
+      return false;
+    }
+  }
+
+  // Provides strongly-typed spanified access to interleaved audio data.
+  // Disallowed on planar, bitstream, empty, or end-of-stream buffers.
+  template <typename SampleType>
+  base::span<SampleType> interleaved_data_cast() const LIFETIME_BOUND {
+    CHECK(IsCompatibleSampleFormat<SampleType>(sample_format_));
+    return base::subtle::reinterpret_span<SampleType>(interleaved_data());
+  }
+
   // Provides spanified access to planar audio channels. Each element in the
   // returned span corresponds to one channel.
   // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
@@ -328,6 +355,15 @@ class MEDIA_EXPORT AudioBuffer
   // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
   base::span<uint8_t> planar_channel(size_t channel) const LIFETIME_BOUND {
     return planar_data()[channel];
+  }
+
+  // Provides strongly-typed spanified access to a single planar audio channel.
+  // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
+  template <typename SampleType>
+  base::span<SampleType> planar_channel_cast(size_t channel) const
+      LIFETIME_BOUND {
+    CHECK(IsCompatibleSampleFormat<SampleType>(sample_format_));
+    return base::subtle::reinterpret_span<SampleType>(planar_channel(channel));
   }
 
   // The size of allocated data memory block. For planar formats channels go
