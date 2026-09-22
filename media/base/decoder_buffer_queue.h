@@ -38,6 +38,12 @@ class MEDIA_EXPORT DecoderBufferQueue {
   // It is invalid to push an end-of-stream |buffer|.
   void Push(scoped_refptr<DecoderBuffer> buffer);
 
+  // Returns the buffer at the front of the queue, which may be modified in
+  // place by the caller.
+  //
+  // It is invalid to call Front() on an empty queue.
+  DecoderBuffer& Front();
+
   // Pops a DecoderBuffer from the front of the queue.
   //
   // It is invalid to call Pop() on an empty queue.

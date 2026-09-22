@@ -623,6 +623,13 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   SatisfyPendingRead();
 }
 
+void FFmpegDemuxerStream::OnMetadataAvailable() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // Buffers that were waiting on metadata might now be ready to be emitted.
+  SatisfyPendingRead();
+}
+
 void FFmpegDemuxerStream::SetEndOfStream() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   end_of_stream_ = true;
@@ -649,6 +656,10 @@ void FFmpegDemuxerStream::FlushBuffers(bool preserve_packet_position) {
   last_packet_timestamp_ = kNoTimestamp;
   last_packet_duration_ = kNoTimestamp;
   aborted_ = false;
+
+  // The demuxer's timed metadata is deliberately not reset. Seeking does not
+  // re-demux the metadata samples that were skipped over, so the only metadata
+  // available after seeking backwards is what was cached before.
 }
 
 void FFmpegDemuxerStream::Abort() {
@@ -821,14 +832,12 @@ Ranges<base::TimeDelta> FFmpegDemuxerStream::GetBufferedRanges() const {
 void FFmpegDemuxerStream::SatisfyPendingRead() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (read_cb_) {
-    if (!buffer_queue_.IsEmpty()) {
-      DemuxerStream::DecoderBufferVector output_buffers;
-
-      for (size_t i = 0;
-           i < std::min(requested_buffer_count_, buffer_queue_.queue_size());
-           ++i) {
-        output_buffers.emplace_back(buffer_queue_.Pop());
-      }
+    DemuxerStream::DecoderBufferVector output_buffers;
+    while (output_buffers.size() < requested_buffer_count_ &&
+           PrepareFrontBufferForRead()) {
+      output_buffers.emplace_back(buffer_queue_.Pop());
+    }
+    if (!output_buffers.empty()) {
       DVLOG(3) << __func__ << " Status:kOk, return output_buffers.size = "
                << output_buffers.size();
       std::move(read_cb_).Run(DemuxerStream::kOk, std::move(output_buffers));
@@ -841,6 +850,30 @@ void FFmpegDemuxerStream::SatisfyPendingRead() {
   if (HasAvailableCapacity() && !end_of_stream_) {
     demuxer_->NotifyCapacityAvailable();
   }
+}
+
+bool FFmpegDemuxerStream::PrepareFrontBufferForRead() {
+  if (buffer_queue_.IsEmpty()) {
+    return false;
+  }
+  // This may re-attach the same metadata multiple times (which is okay).
+  if (demuxer_->TryAttachMetadata(buffer_queue_.Front(), stream_->index)) {
+    return true;
+  }
+  // Metadata that applies to this buffer has not been demuxed yet. Keep the
+  // buffer queued until it has been, unless there is no capacity to buffer
+  // more, or the stream has ended and there will be no more metadata.
+  if (!end_of_stream_ && HasAvailableCapacity()) {
+    return false;
+  }
+  // The buffer is emitted with incomplete metadata, and so may be rendered
+  // incorrectly.
+  LIMITED_MEDIA_LOG(WARNING, media_log_, num_missing_metadata_warnings_, 5)
+      << "Timed metadata for the buffer at "
+      << buffer_queue_.Front().timestamp() << " "
+      << (end_of_stream_ ? "was never demuxed" : "has not been demuxed yet")
+      << "; emitting the buffer without it.";
+  return true;
 }
 
 bool FFmpegDemuxerStream::HasAvailableCapacity() {
@@ -1107,12 +1140,16 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
   DCHECK(demux_stream);
   const AVStream* seeking_stream = demux_stream->av_stream();
   DCHECK(seeking_stream);
+  const int64_t seek_timestamp =
+      ConvertToTimeBase(demux_stream->stream_time_base(), seek_time);
 
+  // TODO(https://crbug.com/480162031): Seeking to `seek_timestamp` in
+  // `seeking_stream` may skip over the corresponding metadata samples. Collect
+  // these samples and cache them before seeking.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &AVSeekFrame, glue_->format_context(), seeking_stream->index,
-          ConvertToTimeBase(demux_stream->stream_time_base(), seek_time)),
+      base::BindOnce(&AVSeekFrame, glue_->format_context(),
+                     seeking_stream->index, seek_timestamp),
       std::move(seek_cb));
 }
 
@@ -1258,6 +1295,45 @@ void FFmpegDemuxer::OnOpenContextDone(bool result) {
                      weak_factory_.GetWeakPtr()));
 }
 
+// static
+FFmpegDemuxer::MetadataTrackMap FFmpegDemuxer::BuildMetadataTracks(
+    const AVFormatContext* format_context) {
+  MetadataTrackMap result;
+  if (!base::FeatureList::IsEnabled(kFFmpegDemuxerIT35MetadataTrack)) {
+    return result;
+  }
+
+  for (const AVStreamGroup* stream_group :
+       AVFormatContextStreamGroupsToSpan(format_context)) {
+    if (stream_group->type != AV_STREAM_GROUP_PARAMS_TREF) {
+      continue;
+    }
+    auto streams = AVStreamGroupToSpan(stream_group);
+    const AVStream* metadata_stream =
+        streams[stream_group->params.tref->metadata_index];
+    // Map only IT35 metadata tracks.
+    if (metadata_stream->codecpar->codec_id != AV_CODEC_ID_ITUT_T35) {
+      continue;
+    }
+    // Only AGTM metadata tracks are supported.
+    if (!MatchesAgtmT35(
+            AVCodecParametersExtraDataToSpan(metadata_stream->codecpar))) {
+      continue;
+    }
+    MetadataTrackEntry& entry = result[metadata_stream->index];
+    entry.track = std::make_unique<MetadataTrack>(
+        MetadataTrack::IT35PrefixType::kSmpteSt2094App5);
+    for (const AVStream* stream : streams) {
+      if (stream == metadata_stream ||
+          stream->codecpar->codec_type != AVMEDIA_TYPE_VIDEO) {
+        continue;
+      }
+      entry.render_stream_indices.insert(stream->index);
+    }
+  }
+  return result;
+}
+
 void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (stopped_ || !data_source_) {
@@ -1315,6 +1391,9 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
         << ": no tracks are enabled, track enabled flag will be ignored";
   }
 
+  // Create MetadataTrackEntrys for each metadata track that we support.
+  metadata_tracks_ = BuildMetadataTracks(format_context);
+
   // Create an FFmpegDemuxerStreams for each enabled audio/video stream.
   base::TimeDelta max_duration;
   int supported_audio_track_count = 0;
@@ -1368,6 +1447,11 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
 #endif
     } else if (codec_type == AVMEDIA_TYPE_SUBTITLE) {
       stream->discard = AVDISCARD_ALL;
+      continue;
+    } else if (codec_id == AV_CODEC_ID_ITUT_T35) {
+      if (!metadata_tracks_.contains(stream->index)) {
+        stream->discard = AVDISCARD_ALL;
+      }
       continue;
     } else {
       stream->discard = AVDISCARD_ALL;
@@ -1780,6 +1864,59 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
                      weak_factory_.GetWeakPtr(), std::move(packet)));
 }
 
+bool FFmpegDemuxer::TryAttachMetadata(DecoderBuffer& buffer,
+                                      int render_stream_index) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  bool all_attached = true;
+  for (const auto& [metadata_stream_index, entry] : metadata_tracks_) {
+    if (entry.render_stream_indices.contains(render_stream_index)) {
+      // This may re-attach the same metadata multiple times (which is okay).
+      all_attached &= entry.track->TryAttachMetadata(buffer);
+    }
+  }
+  return all_attached;
+}
+
+bool FFmpegDemuxer::CacheMetadataPacket(const AVPacket& packet) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  const auto metadata_tracks_it = metadata_tracks_.find(packet.stream_index);
+  if (metadata_tracks_it == metadata_tracks_.end()) {
+    return false;
+  }
+
+  // Create a DecoderBuffer for the packet.
+  const AVStream* packet_stream =
+      AVFormatContextToSpan(glue_->format_context())[packet.stream_index];
+  auto buffer = DecoderBuffer::CopyFrom(AVPacketData(packet));
+  buffer->set_timestamp(
+      ConvertStreamTimestamp(packet_stream->time_base, packet.pts));
+  buffer->set_duration(
+      ConvertStreamTimestamp(packet_stream->time_base, packet.duration));
+
+  // Cache the metadata buffer.
+  metadata_tracks_it->second.track->InsertMetadataBuffer(*buffer);
+  return true;
+}
+
+void FFmpegDemuxer::NotifyMetadataAvailable(int metadata_stream_index) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  const auto metadata_tracks_it = metadata_tracks_.find(metadata_stream_index);
+  CHECK(metadata_tracks_it != metadata_tracks_.end());
+
+  // Notify referenced streams that the metadata is ready, so they can submit
+  // any now-read buffers. Only enabled streams can have a pending read.
+  for (int render_stream_index :
+       metadata_tracks_it->second.render_stream_indices) {
+    auto& render_stream = streams_[render_stream_index];
+    if (render_stream && render_stream->IsEnabled()) {
+      render_stream->OnMetadataAvailable();
+    }
+  }
+}
+
 void FFmpegDemuxer::OnReadFrameDone(ScopedAVPacket packet, int result) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(pending_read_);
@@ -1844,6 +1981,8 @@ void FFmpegDemuxer::OnReadFrameDone(ScopedAVPacket packet, int result) {
           host_->SetDuration(duration_);
         }
       }
+    } else if (CacheMetadataPacket(*packet)) {
+      NotifyMetadataAvailable(packet->stream_index);
     }
   }
 

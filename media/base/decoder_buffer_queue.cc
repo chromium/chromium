@@ -45,6 +45,11 @@ void DecoderBufferQueue::Push(scoped_refptr<DecoderBuffer> buffer) {
   in_order_queue_.emplace_back(std::move(buffer));
 }
 
+DecoderBuffer& DecoderBufferQueue::Front() {
+  DCHECK(!queue_.empty());
+  return *queue_.front();
+}
+
 scoped_refptr<DecoderBuffer> DecoderBufferQueue::Pop() {
   scoped_refptr<DecoderBuffer> buffer = std::move(queue_.front());
   queue_.pop_front();

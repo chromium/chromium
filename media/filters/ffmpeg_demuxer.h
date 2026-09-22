@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,6 +41,7 @@
 #include "media/base/decoder_buffer_queue.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_log.h"
+#include "media/base/metadata_track.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_decoder_config.h"
@@ -79,6 +81,10 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Enqueues the given AVPacket. It is invalid to queue a |packet| after
   // SetEndOfStream() has been called.
   void EnqueuePacket(ScopedAVPacket packet);
+
+  // Called when new metadata has been added to one of the timed metadata
+  // tracks feeding this stream. Emits any buffers that were waiting for it.
+  void OnMetadataAvailable();
 
   // Enters the end of stream state. After delivering remaining queued buffers
   // only end of stream buffers will be delivered.
@@ -147,6 +153,11 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // NotifyCapacityAvailable() if capacity is still available.
   void SatisfyPendingRead();
 
+  // Returns true if the buffer at the front of `buffer_queue_` may be emitted.
+  // (either has all timed metadata attached, or the stream is out of space or
+  // has ended).
+  bool PrepareFrontBufferForRead();
+
   // Resets any currently active bitstream converter.
   void ResetBitstreamConverter();
 
@@ -184,6 +195,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   bool fixup_chained_ogg_ = false;
 
   int num_discarded_packet_warnings_ = 0;
+  int num_missing_metadata_warnings_ = 0;
   int64_t last_packet_pos_;
   int64_t last_packet_dts_;
   // Requested buffer count. The actual returned buffer count could be less
@@ -232,6 +244,11 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void NotifyCapacityAvailable();
   void NotifyBufferingChanged();
 
+  // Attaches to `buffer` the metadata that applies to it from every timed
+  // metadata track that references it. Returns false if any of that metadata
+  // has not been demuxed yet.
+  bool TryAttachMetadata(DecoderBuffer& buffer, int render_stream_index);
+
   // Allow FFmpegDemxuerStream to notify us about an error.
   void NotifyDemuxerError(PipelineStatus error);
 
@@ -257,6 +274,19 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
  private:
   // To allow tests access to privates.
   friend class FFmpegDemuxerTest;
+
+  // A timed metadata track, and the indices of the render streams that its
+  // metadata is to be attached to.
+  struct MetadataTrackEntry {
+    std::unique_ptr<MetadataTrack> track;
+    base::flat_set<int> render_stream_indices;
+  };
+  using MetadataTrackMap = base::flat_map<int, MetadataTrackEntry>;
+
+  // Returns the timed metadata tracks declared by `format_context`. Returns an
+  // empty map if timed metadata tracks are not enabled.
+  static MetadataTrackMap BuildMetadataTracks(
+      const AVFormatContext* format_context);
 
   // FFmpeg callbacks during initialization.
   void OnOpenContextDone(bool result);
@@ -304,6 +334,15 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   void SeekInternal(base::TimeDelta time,
                     base::OnceCallback<void(int)> seek_cb);
+
+  // If `packet` is for a timed metadata track, cache it in `metadata_tracks_`
+  // and return true. Otherwise return false.
+  bool CacheMetadataPacket(const AVPacket& packet);
+
+  // Tells the streams that reference the timed metadata track carried by the
+  // AVStream at `metadata_stream_index` that it has new metadata.
+  void NotifyMetadataAvailable(int metadata_stream_index);
+
   void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
                                  FFmpegDemuxerStream* needs_flush,
                                  int result);
@@ -336,6 +375,13 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Tracks if there's an outstanding av_seek_frame() operation. Used to discard
   // results of pre-seek av_read_frame() operations.
   PipelineStatusCallback pending_seek_cb_;
+
+  // The timed metadata tracks and the render streams that reference them.
+  //
+  // Nothing prunes the metadata that these accumulate, so they grow for the
+  // duration of playback, and are invisible to IsMaxMemoryUsageReached(),
+  // however adjacent samples are deduped.
+  MetadataTrackMap metadata_tracks_;
 
   // |streams_| mirrors the AVStream array in AVFormatContext. It contains
   // FFmpegDemuxerStreams encapsluating AVStream objects at the same index.

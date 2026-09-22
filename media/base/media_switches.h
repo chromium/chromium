@@ -195,6 +195,7 @@ MEDIA_EXPORT extern const base::FeatureParam<std::string>
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFailUrlProvisionFetcherForTesting);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFallbackAfterDecodeError);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFeatureManagementLiveTranslateCrOS);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kFFmpegDemuxerIT35MetadataTrack);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kForceSoftwareForRtcLowResolutions);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaConfersActivation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsAutoDismiss);

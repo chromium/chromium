@@ -1041,6 +1041,12 @@ Fragmented mp4 samples with SMPTE ST 2094-50 timed metadata track.
 #### agtm-metadata-track-frag.mp4
 Fragmented mp4 header with SMPTE ST 2094-50 timed metadata track.
 
+#### agtm-metadata-cdsc-track.mp4
+MP4 file with SMPTE ST 2094-50 timed metadata track using cdsc track reference.
+
+#### agtm-metadata-rndr-track.mp4
+MP4 file with SMPTE ST 2094-50 timed metadata track using rndr track reference.
+
 #### av1-I-frame-320x240-agtm
 Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
 

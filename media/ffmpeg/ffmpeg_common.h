@@ -101,6 +101,30 @@ inline base::span<AVStream*> AVFormatContextToSpan(
                  base::checked_cast<size_t>(codec_context->nb_streams)));
 }
 
+inline base::span<AVStreamGroup*> AVFormatContextStreamGroupsToSpan(
+    const AVFormatContext* format_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html#ac2a7709bc15daf6165f68a5a88648aaa
+  // ffmpeg documentation: `nb_stream_groups` is the number of elements in
+  // `AVFormatContext.stream_groups`.
+  return UNSAFE_BUFFERS(
+      base::span(format_context->stream_groups,
+                 base::checked_cast<size_t>(format_context->nb_stream_groups)));
+}
+
+// Returns the streams that make up `stream_group`, which are a subset of the
+// streams of the `AVFormatContext` that the group belongs to.
+inline base::span<AVStream*> AVStreamGroupToSpan(
+    const AVStreamGroup* stream_group) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVStreamGroup.html#a75c06164e99a41e514dcb5c222b2bdaa
+  // ffmpeg documentation: `nb_streams` is the number of elements in
+  // `AVStreamGroup.streams`.
+  return UNSAFE_BUFFERS(
+      base::span(stream_group->streams,
+                 base::checked_cast<size_t>(stream_group->nb_streams)));
+}
+
 inline base::span<uint8_t> AVCodecContextExtraDataToSpan(
     const AVCodecContext* codec_context) {
   // SAFETY:

@@ -288,7 +288,9 @@ size_t DecoderBuffer::GetMemoryUsage() const {
 
   memory_usage += size();
 
-  // Side data and decrypt config would not change after construction.
+  // Side data may be added after construction (e.g, timed metadata attached by
+  // FFmpegDemuxer), so only fields that do not change are counted here. Callers
+  // that cache this value rely on it.
   if (side_data()) {
     memory_usage += sizeof(decltype(side_data_->spatial_layers)::value_type) *
                     side_data_->spatial_layers.capacity();
