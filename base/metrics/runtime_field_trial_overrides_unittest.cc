@@ -28,9 +28,8 @@ namespace base {
 
 namespace {
 
-std::optional<RuntimeFieldTrialOverrides::RuntimeOverrideInfo> FindOverride(
-    const flat_map<std::string,
-                   RuntimeFieldTrialOverrides::RuntimeOverrideInfo>& overrides,
+std::optional<RuntimeFieldTrialInfo> FindOverride(
+    const flat_map<std::string, RuntimeFieldTrialInfo>& overrides,
     std::string_view trial_name) {
   auto it = overrides.find(trial_name);
   return it == overrides.end() ? std::nullopt : std::make_optional(it->second);
@@ -43,7 +42,7 @@ class RuntimeFieldTrialOverridesTest : public ::testing::Test {
   class MockObserver : public RuntimeFieldTrialOverrides::Observer {
    public:
     void OnRuntimeFieldTrialOverride(
-        const RuntimeFieldTrialOverrides::RuntimeOverrideInfo& override_info,
+        const RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) override {
       last_trial_name = override_info.trial_name;
       last_group_name = override_info.group_name;

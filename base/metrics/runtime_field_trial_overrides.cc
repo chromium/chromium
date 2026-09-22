@@ -40,7 +40,7 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
     overrides_.erase(previous_override);
   }
 
-  RuntimeOverrideInfo override_info{
+  RuntimeFieldTrialInfo override_info{
       .trial_name = std::string(trial_name),
       .group_name = std::string(group_name),
       .overridden_trial = overridden_trial,
@@ -72,13 +72,13 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
   return true;
 }
 
-const flat_map<std::string, RuntimeFieldTrialOverrides::RuntimeOverrideInfo>&
+const flat_map<std::string, RuntimeFieldTrialInfo>&
 RuntimeFieldTrialOverrides::GetRuntimeOverrides() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return overrides_;
 }
 
-std::optional<RuntimeFieldTrialOverrides::RuntimeOverrideInfo>
+std::optional<RuntimeFieldTrialInfo>
 RuntimeFieldTrialOverrides::GetRuntimeOverride(
     std::string_view trial_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

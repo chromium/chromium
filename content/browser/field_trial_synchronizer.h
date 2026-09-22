@@ -85,8 +85,7 @@ class CONTENT_EXPORT FieldTrialSynchronizer
 
   // RuntimeFieldTrialOverrides::Observer methods:
   void OnRuntimeFieldTrialOverride(
-      const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo&
-          override_info,
+      const base::RuntimeFieldTrialInfo& override_info,
       std::string_view previous_override_trial_name) override;
 
   // Sends the current variations header to |host|'s renderer.

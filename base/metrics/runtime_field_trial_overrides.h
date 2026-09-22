@@ -25,23 +25,24 @@ class VariationsService;
 
 namespace base {
 
+// Information about a FieldTrial runtime override.
+struct BASE_EXPORT RuntimeFieldTrialInfo {
+  // The trial name of the override.
+  std::string trial_name;
+  // The group name of the override.
+  std::string group_name;
+  // The FieldTrial that is being overridden. This may be null if no
+  // specific trial is being overridden (e.g. a killswitch for an
+  // ENABLED_BY_DEFAULT feature). Weak pointer (owned by the FieldTrialList
+  // singleton).
+  raw_ptr<const FieldTrial> overridden_trial;
+};
+
 // Manages (applying and retrieving) runtime FieldTrial overrides for features
 // that have been declared as runtime mutable (BASE_RUNTIME_MUTABLE_FEATURE).
 // This class is not thread-safe and should only be used on the main sequence.
 class BASE_EXPORT RuntimeFieldTrialOverrides {
  public:
-  // Information about a FieldTrial runtime override.
-  struct RuntimeOverrideInfo {
-    // The trial name of the override.
-    std::string trial_name;
-    // The group name of the override.
-    std::string group_name;
-    // The FieldTrial that is being overridden. This may be null if no
-    // specific trial is being overridden (e.g. a killswitch for an
-    // ENABLED_BY_DEFAULT feature). Weak pointer (owned by the FieldTrialList
-    // singleton).
-    raw_ptr<const FieldTrial> overridden_trial;
-  };
 
   // Observer interface for being notified when a runtime override is applied.
   class Observer : public CheckedObserver {
@@ -60,7 +61,7 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
     //
     // NOTE: Do not add/remove observers in this callback.
     virtual void OnRuntimeFieldTrialOverride(
-        const RuntimeOverrideInfo& override_info,
+        const RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) = 0;
   };
 
@@ -107,11 +108,12 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
 
   // Returns all applied runtime overrides. The returned map should not be
   // accessed other than on the main sequence.
-  const flat_map<std::string, RuntimeOverrideInfo>& GetRuntimeOverrides() const;
+  const flat_map<std::string, RuntimeFieldTrialInfo>& GetRuntimeOverrides()
+      const;
 
   // Returns the registered runtime trial override with name `trial_name`, if
   // any.
-  std::optional<RuntimeOverrideInfo> GetRuntimeOverride(
+  std::optional<RuntimeFieldTrialInfo> GetRuntimeOverride(
       std::string_view trial_name) const;
 
   // Returns true if the given `trial` is currently being overridden by a
@@ -137,7 +139,7 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
   // trial name. E.g., if the runtime override trial
   // "MyFeatureKillswitch" overrides the "MyFeature" trial, the key would be
   // "MyFeatureKillswitch".
-  flat_map<std::string, RuntimeOverrideInfo> overrides_
+  flat_map<std::string, RuntimeFieldTrialInfo> overrides_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // List of observers to notify when a runtime override is applied.

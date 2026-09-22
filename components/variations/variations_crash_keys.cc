@@ -112,8 +112,7 @@ class VariationsCrashKeys final
 
   // base::RuntimeFieldTrialOverrides::Observer:
   void OnRuntimeFieldTrialOverride(
-      const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo&
-          override_info,
+      const base::RuntimeFieldTrialInfo& override_info,
       std::string_view previous_override_trial_name) override;
 
   // Notifies the object that the list of synthetic field trial groups has
@@ -258,7 +257,7 @@ void VariationsCrashKeys::OnFieldTrialGroupFinalized(
 }
 
 void VariationsCrashKeys::OnRuntimeFieldTrialOverride(
-    const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo& override_info,
+    const base::RuntimeFieldTrialInfo& override_info,
     std::string_view previous_override_trial_name) {
   // TODO(crbug.com/482449878): Propagate runtime overrides to child processes
   // so that they also appear in crash reports from child processes.

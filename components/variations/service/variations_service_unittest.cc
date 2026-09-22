@@ -2958,8 +2958,7 @@ TEST_F(VariationsServiceTest,
   class TestObserver : public base::RuntimeFieldTrialOverrides::Observer {
    public:
     void OnRuntimeFieldTrialOverride(
-        const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo&
-            override_info,
+        const base::RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) override {
       applied_order.push_back(override_info.trial_name);
     }
@@ -3029,8 +3028,7 @@ TEST_F(VariationsServiceTest,
   class TestObserver : public base::RuntimeFieldTrialOverrides::Observer {
    public:
     void OnRuntimeFieldTrialOverride(
-        const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo&
-            override_info,
+        const base::RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) override {
       notified = true;
       feature_enabled = base::FeatureList::IsEnabled(kTestRuntimeFeatureA);

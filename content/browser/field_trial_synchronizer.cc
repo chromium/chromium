@@ -176,7 +176,7 @@ void FieldTrialSynchronizer::VariationIdsHeaderUpdated() {
 }
 
 void FieldTrialSynchronizer::OnRuntimeFieldTrialOverride(
-    const base::RuntimeFieldTrialOverrides::RuntimeOverrideInfo& override_info,
+    const base::RuntimeFieldTrialInfo& override_info,
     std::string_view previous_override_trial_name) {
   // Runtime FieldTrial Overrides only happen on the main/UI thread.
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
