@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION;
+
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.ANP_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.END_OF_TEST_ERROR;
@@ -432,7 +434,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @return boolean return value of performAction
      * @throws ExecutionException Error
      */
-    public boolean performActionOnUiThread(int viewId, int action, Bundle args)
+    public boolean performActionOnUiThread(int viewId, int action, @Nullable Bundle args)
             throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.performAction(viewId, action, args));
@@ -508,6 +510,18 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                                         endNodeId,
                                         endNodeOffset,
                                         endOffsetType));
+    }
+
+    /**
+     * Helper method to set extended selection with given arguments.
+     *
+     * @param viewId int virtualViewId of the node to which selection is assigned.
+     * @param args Bundle arguments for setting selection.
+     * @return boolean return value of setting selection.
+     */
+    public boolean setSelectionOnUiThread(int viewId, @Nullable Bundle args)
+            throws ExecutionException {
+        return performActionOnUiThread(viewId, ACTION_SET_EXTENDED_SELECTION.getId(), args);
     }
 
     /**

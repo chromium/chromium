@@ -61,6 +61,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRA_SELECTION_END_OFFSET_TYPE;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRA_SELECTION_START_OFFSET_TYPE;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.OFFSET_TYPE_TEXT;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
@@ -1764,7 +1765,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (delegate == null || !delegate.isActionSetExtendedSelectionSupported()) {
                 return false;
             }
-            // TODO(crbug.com/443078007): Add tests for this case and below.
             if (arguments == null) {
                 // Per API specification, clear selection if no argument is provided.
                 return WebContentsAccessibilityImplJni.get()
@@ -1789,14 +1789,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
 
             // Get the offset type for the start and end of the selection.
-            // (crbug.com/443078007): The default value for this argument in Android API is text
-            // offset type. If -1 is returned, it means that something is wrong in accessibility
-            // framework. Consider changing the default value to text offset type.
-            int startOffsetType = arguments.getInt(EXTRA_SELECTION_START_OFFSET_TYPE, -1);
-            int endOffsetType = arguments.getInt(EXTRA_SELECTION_END_OFFSET_TYPE, -1);
-            if (startOffsetType == -1 || endOffsetType == -1) {
-                return false;
-            }
+            int startOffsetType =
+                    arguments.getInt(EXTRA_SELECTION_START_OFFSET_TYPE, OFFSET_TYPE_TEXT);
+            int endOffsetType =
+                    arguments.getInt(EXTRA_SELECTION_END_OFFSET_TYPE, OFFSET_TYPE_TEXT);
 
             return WebContentsAccessibilityImplJni.get()
                     .setExtendedSelection(
