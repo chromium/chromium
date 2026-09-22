@@ -923,4 +923,72 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
             20);
 }
 
+TEST_F(MirroringActivityTest, ActionsBeforeHostCreatedDoNotCrash) {
+  MediaRoute route(kRouteId, MediaSource::ForTab(kTabId), kSinkId, kDescription,
+                   route_is_local_);
+  CastSinkExtraData cast_data;
+  cast_data.cast_channel_id = kChannelId;
+  cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
+                            cast_channel::CastDeviceCapability::kVideoOut};
+  auto activity = std::make_unique<MirroringActivity>(
+      route, kAppId, &message_handler_, &session_tracker_, logger_, debugger_,
+      kFrameTreeNodeId, cast_data, on_stop_.Get(), on_source_changed_.Get());
+
+  // Calling Play/Pause/OnSourceChanged before CreateMirroringServiceHost should
+  // safely no-op without crashing or racing.
+  activity->Play();
+  activity->Pause();
+  activity->OnSourceChanged();
+  RunUntilIdle();
+
+  activity.reset();
+  RunUntilIdle();
+}
+
+TEST_F(MirroringActivityTest, StartSessionBeforeHostCreationFinishes) {
+  auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
+  auto* mirroring_service_ptr = mirroring_service.get();
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId))
+      .WillOnce(testing::Return(testing::ByMove(std::move(mirroring_service))));
+
+  EXPECT_CALL(*mirroring_service_ptr, Start)
+      .WillOnce(WithArgs<0, 3>(
+          [this](mirroring::mojom::SessionParametersPtr session_params,
+                 mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
+                     inbound_channel) {
+            ASSERT_FALSE(channel_to_service_);
+            auto channel = std::make_unique<MockCastMessageChannel>();
+            channel_to_service_ = channel.get();
+            mojo::MakeSelfOwnedReceiver(std::move(channel),
+                                        std::move(inbound_channel));
+            session_params_ = std::move(session_params);
+          }));
+
+  ON_CALL(mock_debugger_, ShouldFetchMirroringStats)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+
+  CastSinkExtraData cast_data;
+  cast_data.cast_channel_id = kChannelId;
+  cast_data.capabilities = {cast_channel::CastDeviceCapability::kAudioOut,
+                            cast_channel::CastDeviceCapability::kVideoOut};
+  cast_data.discovery_type = CastDiscoveryType::kMdns;
+  MediaRoute route(kRouteId, MediaSource::ForTab(kTabId), kSinkId, kDescription,
+                   route_is_local_);
+  route.set_presentation_id(kPresentationId);
+  activity_ = std::make_unique<MirroringActivity>(
+      route, kAppId, &message_handler_, &session_tracker_, logger_, debugger_,
+      kFrameTreeNodeId, cast_data, on_stop_.Get(), on_source_changed_.Get());
+
+  activity_->BindChannelToServiceReceiver();
+  activity_->CreateMirroringServiceHost(&mirroring_service_host_factory_);
+
+  // Start session immediately BEFORE RunUntilIdle(), so host_ is not yet
+  // created.
+  activity_->SetOrUpdateSession(*session_, sink_, kHashToken);
+  RunUntilIdle();
+  EXPECT_TRUE(session_params_);
+}
+
 }  // namespace media_router

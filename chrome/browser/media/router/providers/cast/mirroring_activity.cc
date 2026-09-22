@@ -353,6 +353,25 @@ std::string GetScrubbedLogMessage(const base::DictValue& message) {
   return base::WriteJson(scrubbed_message).value_or("");
 }
 
+MirroringActivity::PendingStartParams::PendingStartParams(
+    mirroring::mojom::SessionParametersPtr session_params,
+    mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
+    mojo::PendingRemote<mirroring::mojom::CastMessageChannel> outbound_channel,
+    mojo::PendingReceiver<mirroring::mojom::CastMessageChannel> inbound_channel,
+    std::string sink_name)
+    : session_params(std::move(session_params)),
+      observer(std::move(observer)),
+      outbound_channel(std::move(outbound_channel)),
+      inbound_channel(std::move(inbound_channel)),
+      sink_name(std::move(sink_name)) {}
+
+MirroringActivity::PendingStartParams::~PendingStartParams() = default;
+MirroringActivity::PendingStartParams::PendingStartParams(
+    PendingStartParams&&) = default;
+MirroringActivity::PendingStartParams&
+MirroringActivity::PendingStartParams::operator=(PendingStartParams&&) =
+    default;
+
 MirroringActivity::MirroringActivity(
     const MediaRoute& route,
     const std::string& app_id,
@@ -375,13 +394,11 @@ MirroringActivity::MirroringActivity(
       frame_tree_node_id_(frame_tree_node_id),
       cast_data_(cast_data),
       on_stop_(std::move(callback)),
-      source_changed_callback_(std::move(source_changed_callback)) {
-  DETACH_FROM_SEQUENCE(ui_sequence_checker_);
-}
+      source_changed_callback_(std::move(source_changed_callback)) {}
 
 MirroringActivity::~MirroringActivity() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
+  // host_ will be automatically destroyed on the UI thread by SequenceBound.
 
   if (!did_start_mirroring_timestamp_) {
     return;
@@ -472,10 +489,34 @@ void MirroringActivity::CreateMirroringServiceHost(
       break;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, std::move(host_creation_task)
-                     .Then(base::BindOnce(&MirroringActivity::set_host,
-                                          weak_ptr_factory_.GetWeakPtr())));
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(host_creation_task),
+      base::BindOnce(&MirroringActivity::OnHostCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MirroringActivity::OnHostCreated(
+    std::unique_ptr<mirroring::MirroringServiceHost> host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  if (!host) {
+    return;
+  }
+  host_.emplace(content::GetUIThreadTaskRunner({}), std::move(host));
+  if (pending_start_params_) {
+    host_.AsyncCall(&mirroring::MirroringServiceHost::Start)
+        .WithArgs(std::move(pending_start_params_->session_params),
+                  std::move(pending_start_params_->observer),
+                  std::move(pending_start_params_->outbound_channel),
+                  std::move(pending_start_params_->inbound_channel),
+                  std::move(pending_start_params_->sink_name));
+    pending_start_params_.reset();
+  }
+}
+
+void MirroringActivity::SetMirroringServiceHostForTest(
+    std::unique_ptr<mirroring::MirroringServiceHost> host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  OnHostCreated(std::move(host));
 }
 
 void MirroringActivity::OnError(SessionError error) {
@@ -540,19 +581,9 @@ void MirroringActivity::OnSourceChanged() {
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<mirroring::MirroringServiceHost> host,
-             base::OnceCallback<void(std::optional<content::FrameTreeNodeId>)>
-                 callback) {
-            std::move(callback).Run(host ? host->GetTabSourceId()
-                                         : std::nullopt);
-          },
-          host_->GetWeakPtr(),
-          base::BindPostTaskToCurrentDefault(
-              base::BindOnce(&MirroringActivity::DidGetTabSourceId,
-                             weak_ptr_factory_.GetWeakPtr()))));
+  host_.AsyncCall(&mirroring::MirroringServiceHost::GetTabSourceId)
+      .Then(base::BindOnce(&MirroringActivity::DidGetTabSourceId,
+                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MirroringActivity::DidGetTabSourceId(
@@ -818,37 +849,24 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   // If this fails, it's probably because CreateMojoBindings() hasn't been
   // called.
   CHECK(channel_to_service_receiver_);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
-          SessionParameters::New(
-              session_type, cast_data_.ip_endpoint.address(),
-              sink_.sink().name(), destination_id,
-              message_handler_->source_id(), target_playout_delay_,
-              route().media_source().IsRemotePlaybackSource(),
-              ShouldForceLetterboxing(cast_data_.model_name),
-              enable_rtcp_reporting),
-          std::move(observer_remote), std::move(channel_remote),
-          std::move(channel_to_service_receiver_), route_.media_sink_name()));
-}
+  auto session_params = SessionParameters::New(
+      session_type, cast_data_.ip_endpoint.address(), sink_.sink().name(),
+      destination_id, message_handler_->source_id(), target_playout_delay_,
+      route().media_source().IsRemotePlaybackSource(),
+      ShouldForceLetterboxing(cast_data_.model_name), enable_rtcp_reporting);
 
-void MirroringActivity::StartOnUiThread(
-    mirroring::mojom::SessionParametersPtr session_params,
-    mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
-    mojo::PendingRemote<mirroring::mojom::CastMessageChannel> outbound_channel,
-    mojo::PendingReceiver<mirroring::mojom::CastMessageChannel> inbound_channel,
-    const std::string& sink_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!host_) {
-    return;
+  if (host_) {
+    host_.AsyncCall(&mirroring::MirroringServiceHost::Start)
+        .WithArgs(std::move(session_params), std::move(observer_remote),
+                  std::move(channel_remote),
+                  std::move(channel_to_service_receiver_),
+                  route_.media_sink_name());
+  } else {
+    pending_start_params_.emplace(
+        std::move(session_params), std::move(observer_remote),
+        std::move(channel_remote), std::move(channel_to_service_receiver_),
+        route_.media_sink_name());
   }
-
-  host_->Start(std::move(session_params), std::move(observer),
-               std::move(outbound_channel), std::move(inbound_channel),
-               sink_name);
 }
 
 void MirroringActivity::StopMirroring() {
@@ -879,13 +897,10 @@ void MirroringActivity::FetchMirroringStats() {
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&mirroring::MirroringServiceHost::GetMirroringStats,
-                     host_->GetWeakPtr(),
-                     base::BindPostTaskToCurrentDefault(
-                         base::BindOnce(&MirroringActivity::OnMirroringStats,
-                                        weak_ptr_factory_.GetWeakPtr()))));
+  host_.AsyncCall(&mirroring::MirroringServiceHost::GetMirroringStats)
+      .WithArgs(base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MirroringActivity::OnMirroringStats,
+                         weak_ptr_factory_.GetWeakPtr())));
 
   ScheduleFetchMirroringStats();
 }
@@ -911,24 +926,24 @@ void MirroringActivity::OnMirroringStats(base::Value json_stats) {
 void MirroringActivity::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (host_) {
-    base::OnceCallback<void()> cb = base::BindOnce(
-        &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
-        mojom::MediaStatus::PlayState::PLAYING);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Resume,
-                                  host_->GetWeakPtr(), std::move(cb)));
+    base::OnceCallback<void()> cb =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
+            mojom::MediaStatus::PlayState::PLAYING));
+    host_.AsyncCall(&mirroring::MirroringServiceHost::Resume)
+        .WithArgs(std::move(cb));
   }
 }
 
 void MirroringActivity::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (host_) {
-    base::OnceCallback<void()> cb = base::BindOnce(
-        &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
-        mojom::MediaStatus::PlayState::PAUSED);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Pause,
-                                  host_->GetWeakPtr(), std::move(cb)));
+    base::OnceCallback<void()> cb =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
+            mojom::MediaStatus::PlayState::PAUSED));
+    host_.AsyncCall(&mirroring::MirroringServiceHost::Pause)
+        .WithArgs(std::move(cb));
   }
 }
 
