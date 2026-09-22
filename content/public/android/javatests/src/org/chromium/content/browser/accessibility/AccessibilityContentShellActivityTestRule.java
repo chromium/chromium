@@ -320,6 +320,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         }
 
         AccessibilityContentShellTestData.resetData();
+        ThreadUtils.runOnUiThreadBlocking(AccessibilityStateTestHelper::uninitializeForTesting);
     }
 
     /**
