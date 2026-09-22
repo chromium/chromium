@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -65,8 +67,6 @@ const char kPostTransferActionURIValue[] =
 
 const char kChallengeBase64[] = "aQ==";
 
-const std::vector<uint8_t> kTestBytes = {0x00, 0x01, 0x02};
-const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
 constexpr base::TimeDelta kShortInterval = base::Milliseconds(20);
 
 const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
@@ -101,18 +101,18 @@ constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
 
 constexpr base::TimeDelta kResponseTimeout = base::Seconds(60);
 
-const char kDeviceNameKey[] = "deviceName";
+constexpr char kDeviceNameKey[] = "deviceName";
 // Device name values
-const char kChromebook[] = "Chromebook";
-const char kChromebox[] = "Chromebox";
-const char kChromebase[] = "Chromebase";
+constexpr char kChromebook[] = "Chromebook";
+constexpr char kChromebox[] = "Chromebox";
+constexpr char kChromebase[] = "Chromebase";
 
 struct DeviceNameTestCase {
   chromeos::DeviceType device_type;
-  std::string device_name;
+  std::string_view device_name;
 };
 
-const DeviceNameTestCase kDeviceNameTestCases[] = {
+constexpr DeviceNameTestCase kDeviceNameTestCases[] = {
     {chromeos::DeviceType::kChromebook, kChromebook},
     {chromeos::DeviceType::kChromebox, kChromebox},
     {chromeos::DeviceType::kChromebit, kChromebook},
@@ -230,7 +230,7 @@ class ConnectionTest : public testing::Test {
 
   void EmulateEmptyResponseReceived(QuickStartResponseType response_type) {
     base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
-    SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+    SendBytesAndReadResponse(std::vector<uint8_t>(test_bytes_),
                              future.GetCallback(), kResponseTimeout,
                              response_type);
     connection_->OnResponseReceived(future.GetCallback(), response_type,
@@ -378,6 +378,9 @@ class ConnectionTest : public testing::Test {
     histogram_tester_.ExpectTotalCount("QuickStart.HandshakeResult.Duration",
                                        1);
   }
+
+  const std::vector<uint8_t> test_bytes_ = {0x00, 0x01, 0x02};
+  const std::vector<uint8_t> expected_get_info_request_ = {0x04};
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -529,7 +532,7 @@ TEST_F(ConnectionTest, RequestAccountInfo) {
   std::string email = "fake_email_value";
   fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
       expected_instance_id, /*is_supervised_account=*/false, email);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   ASSERT_EQ(future.Get(), email);
 
@@ -562,10 +565,10 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::optional<std::vector<uint8_t>> get_info_command =
       base::Base64Decode(get_info_message);
   EXPECT_TRUE(get_info_command);
-  EXPECT_EQ(*get_info_command, kExpectedGetInfoRequest);
+  EXPECT_EQ(*get_info_command, expected_get_info_request_);
 
   // Emulate a GetInfo response.
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   TestMessageMetrics(
       /*should_succeed=*/true,
       /*message_type=*/QuickStartMetrics::MessageType::kGetInfo,
@@ -643,7 +646,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion_UnexpectedMessage) {
       kChallenge_, future.GetCallback());
 
   // Emulate a GetInfo response.
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   // Set an unexpected response.
   fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
@@ -665,7 +668,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion_UnexpectedMessage) {
           /*credential_id=*/expected_credential_id,
           /*auth_data=*/auth_data,
           /*signature=*/signature));
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   std::optional<FidoAssertionInfo> response = future.Get();
   EXPECT_TRUE(response.has_value());
@@ -679,7 +682,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
 
   authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
 
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
 
@@ -743,7 +746,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_UnexpectedMessage) {
 
   authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
 
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   EXPECT_FALSE(future.Get());
 }
 
@@ -766,7 +769,7 @@ TEST_F(ConnectionTest, SendBytesAndReadResponse_TimedOut) {
   ASSERT_FALSE(IsResponseTimeoutTimerRunning());
 
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
-  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+  SendBytesAndReadResponse(std::vector<uint8_t>(test_bytes_),
                            future.GetCallback(), kResponseTimeout);
 
   EXPECT_TRUE(IsResponseTimeoutTimerRunning());
@@ -781,14 +784,14 @@ TEST_F(ConnectionTest, SendBytesAndReadResponse_SucceedsBeforeTimeout) {
   ASSERT_FALSE(IsResponseTimeoutTimerRunning());
 
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
-  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+  SendBytesAndReadResponse(std::vector<uint8_t>(test_bytes_),
                            future.GetCallback(), kResponseTimeout);
 
   EXPECT_TRUE(IsResponseTimeoutTimerRunning());
   EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
 
   task_environment_.FastForwardBy(kResponseTimeout - kShortInterval);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
 
@@ -898,9 +901,9 @@ TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(mojom::UserVerificationResult::kUserVerified, future.Get()->result);
@@ -917,9 +920,9 @@ TEST_F(ConnectionTest,
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   ASSERT_FALSE(future.Get().has_value());
 }
@@ -933,8 +936,8 @@ TEST_F(ConnectionTest,
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   ASSERT_FALSE(future.Get().has_value());
 }
@@ -949,7 +952,7 @@ TEST_F(ConnectionTest, TestUserVerificationRequested_UnexpectedMessage) {
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   ASSERT_FALSE(future.Get().has_value());
 }
@@ -965,7 +968,7 @@ TEST_F(ConnectionTest,
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   EXPECT_FALSE(future.Get().has_value());
 }
@@ -981,7 +984,7 @@ TEST_F(
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   EXPECT_FALSE(future.Get().has_value());
 }
@@ -994,10 +997,10 @@ TEST_F(ConnectionTest,
 
   base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   fake_quick_start_decoder_->SetDecoderError(
       mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
 
   EXPECT_FALSE(future.Get().has_value());
 }
@@ -1106,7 +1109,7 @@ TEST_F(ConnectionTest, NoResponseAfterClose) {
   // callback is not invoked.
 
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
-  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+  SendBytesAndReadResponse(std::vector<uint8_t>(test_bytes_),
                            future.GetCallback(), kResponseTimeout);
   EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
   EXPECT_FALSE(future.IsReady());

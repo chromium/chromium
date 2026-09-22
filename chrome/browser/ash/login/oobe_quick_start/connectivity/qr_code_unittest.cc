@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ constexpr std::array<uint8_t, 6> kAdvertisingIdData = {0xeb, 0x31, 0x08,
                                                        0x90, 0x73, 0xef};
 
 // Expected final output for the QR code pixel data.
-const std::vector<uint8_t> kExpectedPixelData = {
+constexpr uint8_t kExpectedPixelData[] = {
     0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x1, 0x1,
     0x1, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x1, 0x1, 0x1, 0x0, 0x0,
     0x1, 0x1, 0x0, 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x0, 0x0,
@@ -176,7 +177,7 @@ TEST_F(QRCodeTest, GetQRCodeURLString) {
 }
 
 TEST_F(QRCodeTest, GetQRCodeData) {
-  EXPECT_EQ(kExpectedPixelData, qr_code_->GetPixelData());
+  EXPECT_EQ(base::ToVector(kExpectedPixelData), qr_code_->GetPixelData());
 }
 
 }  // namespace ash::quick_start

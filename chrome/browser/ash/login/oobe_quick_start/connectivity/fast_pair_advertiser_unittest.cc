@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
@@ -27,36 +29,30 @@ namespace ash::quick_start {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAreArray;
 using testing::NiceMock;
 using testing::Return;
 
 constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
-constexpr uint8_t kFastPairModelIdChromebook[] = {0x30, 0x68, 0x46};
-constexpr uint8_t kFastPairModelIdChromebase[] = {0xe9, 0x31, 0x6c};
-constexpr uint8_t kFastPairModelIdChromebox[] = {0xda, 0xde, 0x43};
+constexpr auto kFastPairModelIdChromebook =
+    std::to_array<uint8_t>({0x30, 0x68, 0x46});
+constexpr auto kFastPairModelIdChromebase =
+    std::to_array<uint8_t>({0xe9, 0x31, 0x6c});
+constexpr auto kFastPairModelIdChromebox =
+    std::to_array<uint8_t>({0xda, 0xde, 0x43});
 
 struct ModelIdTestCase {
   chromeos::DeviceType device_type;
-  std::vector<uint8_t> model_id;
+  std::array<uint8_t, 3> model_id;
 };
 
-const ModelIdTestCase kModelIdsTestCases[] = {
-    {chromeos::DeviceType::kChromebook,
-     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
-                          std::end(kFastPairModelIdChromebook))},
-    {chromeos::DeviceType::kChromebox,
-     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebox),
-                          std::end(kFastPairModelIdChromebox))},
-    {chromeos::DeviceType::kChromebit,
-     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
-                          std::end(kFastPairModelIdChromebook))},
-    {chromeos::DeviceType::kChromebase,
-     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebase),
-                          std::end(kFastPairModelIdChromebase))},
-    {chromeos::DeviceType::kUnknown,
-     std::vector<uint8_t>(std::begin(kFastPairModelIdChromebook),
-                          std::end(kFastPairModelIdChromebook))},
+constexpr ModelIdTestCase kModelIdsTestCases[] = {
+    {chromeos::DeviceType::kChromebook, kFastPairModelIdChromebook},
+    {chromeos::DeviceType::kChromebox, kFastPairModelIdChromebox},
+    {chromeos::DeviceType::kChromebit, kFastPairModelIdChromebook},
+    {chromeos::DeviceType::kChromebase, kFastPairModelIdChromebase},
+    {chromeos::DeviceType::kUnknown, kFastPairModelIdChromebook},
 };
 
 // Sets the simulated device form factor allowing us to verify that the correct
@@ -493,8 +489,8 @@ TEST_P(FastPairAdvertiserModelIdsTest, ModelIds) {
   StartAdvertising();
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
-  EXPECT_EQ(GetParam().model_id,
-            register_args_->service_data[kFastPairServiceUuid]);
+  EXPECT_THAT(register_args_->service_data[kFastPairServiceUuid],
+              ElementsAreArray(GetParam().model_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(FastPairAdvertiserModelIdsTest,
