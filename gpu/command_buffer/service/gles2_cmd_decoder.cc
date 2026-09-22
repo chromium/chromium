@@ -2288,7 +2288,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
   const SamplerState& GetSamplerStateForTextureUnit(GLenum target, GLuint unit);
 
   // Helper method to call glClear workaround.
-  void ClearFramebufferForWorkaround(GLbitfield mask);
+  // Clears the framebuffer via a blit on drivers where glClear is broken.
+  // Returns false if the blit failed, in which case the targeted attachments
+  // must not be recorded as cleared.
+  bool ClearFramebufferForWorkaround(GLbitfield mask);
 
   bool SupportsSeparateFramebufferBinds() const {
     return (feature_info_->feature_flags().chromium_framebuffer_multisample ||
@@ -7277,6 +7280,11 @@ bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
     return false;
   }
 
+  // Set when a clear issued below failed. A failed clear leaves the attachment
+  // holding whatever was previously in that GPU memory, so the "cleared"
+  // bookkeeping must not be committed for it.
+  bool clear_failed = false;
+
   bool cleared_int_renderbuffers = false;
   Framebuffer* draw_framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer->HasUnclearedIntRenderbufferAttachments()) {
@@ -7289,98 +7297,131 @@ bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
     state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
     ClearDeviceWindowRectangles();
 
-    // TODO(zmo): Assume DrawBuffers() does not affect ClearBuffer().
-    framebuffer->ClearUnclearedIntRenderbufferAttachments(
-        renderbuffer_manager());
+    // Drain pre-existing driver errors into the wrapper so they are still
+    // reported to the client, and so that any error observed by the clears
+    // below is attributable to those clears.
+    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("ClearUnclearedAttachments");
 
+    // TODO(zmo): Assume DrawBuffers() does not affect ClearBuffer().
+    GLenum int_clear_error =
+        framebuffer->ClearUnclearedIntRenderbufferAttachments(
+            renderbuffer_manager());
+    if (int_clear_error != GL_NO_ERROR) {
+      // Report the failure through the wrapper so that GL_OUT_OF_MEMORY runs
+      // OnOutOfMemoryError() and lose_context_when_out_of_memory_ applies.
+      LOCAL_SET_GL_ERROR(int_clear_error, "ClearUnclearedAttachments",
+                         "failed to clear integer renderbuffer attachment");
+      clear_failed = true;
+    }
+
+    // Set even when the clear failed: this tracks that the block above
+    // dirtied GL state (draw framebuffer binding, color mask, scissor test,
+    // window rectangles), not that the attachments ended up cleared. It is
+    // what drives the state restoration below, which must run on both the
+    // success and the failure path.
     cleared_int_renderbuffers = true;
   }
 
   GLbitfield clear_bits = 0;
   bool reset_draw_buffers = false;
   bool rebound_draw_for_clear = cleared_int_renderbuffers;
-  if (framebuffer->HasUnclearedColorAttachments()) {
-    // We should always use alpha == 0 here, because 1) some draw buffers may
-    // have alpha and some may not; 2) we won't have the same situation as the
-    // back buffer where alpha channel exists but is not requested.
-    api()->glClearColorFn(0.0f, 0.0f, 0.0f, 0.0f);
-    state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    clear_bits |= GL_COLOR_BUFFER_BIT;
+  if (!clear_failed) {
+    if (framebuffer->HasUnclearedColorAttachments()) {
+      // We should always use alpha == 0 here, because 1) some draw buffers may
+      // have alpha and some may not; 2) we won't have the same situation as the
+      // back buffer where alpha channel exists but is not requested.
+      api()->glClearColorFn(0.0f, 0.0f, 0.0f, 0.0f);
+      state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      clear_bits |= GL_COLOR_BUFFER_BIT;
 
-    if (SupportsDrawBuffers()) {
-      // Ensure |framebuffer| is bound as DRAW before preparing draw buffers.
-      // Otherwise glDrawBuffersARB mutates the wrong FBO's state, causing
-      // the glClear to skip clearing uncleared attachments.
+      if (SupportsDrawBuffers()) {
+        // Ensure |framebuffer| is bound as DRAW before preparing draw buffers.
+        // Otherwise glDrawBuffersARB mutates the wrong FBO's state, causing
+        // the glClear to skip clearing uncleared attachments.
+        if (!rebound_draw_for_clear && target == GL_READ_FRAMEBUFFER &&
+            draw_framebuffer != framebuffer) {
+          BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer->service_id());
+          rebound_draw_for_clear = true;
+        }
+        reset_draw_buffers =
+            framebuffer
+                ->PrepareDrawBuffersForClearingUninitializedAttachments();
+      }
+    }
+
+    const Framebuffer::Attachment* depth_attachment =
+        framebuffer->GetAttachment(GL_DEPTH_ATTACHMENT);
+    const Framebuffer::Attachment* stencil_attachment =
+        framebuffer->GetAttachment(GL_STENCIL_ATTACHMENT);
+    bool clear_depth = depth_attachment && !depth_attachment->cleared();
+    bool clear_stencil = stencil_attachment && !stencil_attachment->cleared();
+
+    // A packed depth-stencil image attached at only one of the depth/stencil
+    // points must be bound and cleared at both points so that both components
+    // are initialized before the image is marked as cleared.
+    GLenum filled_depth_stencil_point = 0;
+    if (clear_depth && !stencil_attachment &&
+        (GLES2Util::GetChannelsForFormat(depth_attachment->internal_format()) &
+         GLES2Util::kStencil) != 0) {
+      filled_depth_stencil_point = GL_STENCIL_ATTACHMENT;
+      Framebuffer::BindAttachmentToPoint(target, GL_STENCIL_ATTACHMENT,
+                                         depth_attachment);
+      clear_stencil = true;
+    } else if (clear_stencil && !depth_attachment &&
+               (GLES2Util::GetChannelsForFormat(
+                    stencil_attachment->internal_format()) &
+                GLES2Util::kDepth) != 0) {
+      filled_depth_stencil_point = GL_DEPTH_ATTACHMENT;
+      Framebuffer::BindAttachmentToPoint(target, GL_DEPTH_ATTACHMENT,
+                                         stencil_attachment);
+      clear_depth = true;
+    }
+
+    if (clear_stencil) {
+      api()->glClearStencilFn(0);
+      state_.SetDeviceStencilMaskSeparate(GL_FRONT, kDefaultStencilMask);
+      state_.SetDeviceStencilMaskSeparate(GL_BACK, kDefaultStencilMask);
+      clear_bits |= GL_STENCIL_BUFFER_BIT;
+    }
+
+    if (clear_depth) {
+      api()->glClearDepthFn(1.0f);
+      state_.SetDeviceDepthMask(GL_TRUE);
+      clear_bits |= GL_DEPTH_BUFFER_BIT;
+    }
+
+    if (clear_bits) {
       if (!rebound_draw_for_clear && target == GL_READ_FRAMEBUFFER &&
           draw_framebuffer != framebuffer) {
+        // TODO(zmo): There is no guarantee that an FBO that is complete on the
+        // READ attachment will be complete as a DRAW attachment.
         BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer->service_id());
-        rebound_draw_for_clear = true;
       }
-      reset_draw_buffers =
-          framebuffer->PrepareDrawBuffersForClearingUninitializedAttachments();
+      state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
+      ClearDeviceWindowRectangles();
+      if (workarounds().gl_clear_broken) {
+        clear_failed = !ClearFramebufferForWorkaround(clear_bits);
+      } else {
+        // Drain any pre-existing driver errors so the check below only reflects
+        // errors generated by this clear.
+        LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("ClearUnclearedAttachments");
+        api()->glClearFn(clear_bits);
+        // GL_OUT_OF_MEMORY can be raised by any command (ES 3.2 section 2.3.1),
+        // and leaves the results of that command undefined. A clear that failed
+        // this way leaves the attachment holding whatever was previously in
+        // that GPU memory - drivers that defer physical allocation until first
+        // use can fail here under VRAM pressure. Routing the error through
+        // PeekGLError also makes OnOutOfMemoryError() fire so
+        // lose_context_when_out_of_memory_ applies.
+        clear_failed =
+            LOCAL_PEEK_GL_ERROR("ClearUnclearedAttachments") != GL_NO_ERROR;
+      }
     }
-  }
 
-  const Framebuffer::Attachment* depth_attachment =
-      framebuffer->GetAttachment(GL_DEPTH_ATTACHMENT);
-  const Framebuffer::Attachment* stencil_attachment =
-      framebuffer->GetAttachment(GL_STENCIL_ATTACHMENT);
-  bool clear_depth = depth_attachment && !depth_attachment->cleared();
-  bool clear_stencil = stencil_attachment && !stencil_attachment->cleared();
-
-  // A packed depth-stencil image attached at only one of the depth/stencil
-  // points must be bound and cleared at both points so that both components
-  // are initialized before the image is marked as cleared.
-  GLenum filled_depth_stencil_point = 0;
-  if (clear_depth && !stencil_attachment &&
-      (GLES2Util::GetChannelsForFormat(depth_attachment->internal_format()) &
-       GLES2Util::kStencil) != 0) {
-    filled_depth_stencil_point = GL_STENCIL_ATTACHMENT;
-    Framebuffer::BindAttachmentToPoint(target, GL_STENCIL_ATTACHMENT,
-                                       depth_attachment);
-    clear_stencil = true;
-  } else if (clear_stencil && !depth_attachment &&
-             (GLES2Util::GetChannelsForFormat(
-                  stencil_attachment->internal_format()) &
-              GLES2Util::kDepth) != 0) {
-    filled_depth_stencil_point = GL_DEPTH_ATTACHMENT;
-    Framebuffer::BindAttachmentToPoint(target, GL_DEPTH_ATTACHMENT,
-                                       stencil_attachment);
-    clear_depth = true;
-  }
-
-  if (clear_stencil) {
-    api()->glClearStencilFn(0);
-    state_.SetDeviceStencilMaskSeparate(GL_FRONT, kDefaultStencilMask);
-    state_.SetDeviceStencilMaskSeparate(GL_BACK, kDefaultStencilMask);
-    clear_bits |= GL_STENCIL_BUFFER_BIT;
-  }
-
-  if (clear_depth) {
-    api()->glClearDepthFn(1.0f);
-    state_.SetDeviceDepthMask(GL_TRUE);
-    clear_bits |= GL_DEPTH_BUFFER_BIT;
-  }
-
-  if (clear_bits) {
-    if (!rebound_draw_for_clear && target == GL_READ_FRAMEBUFFER &&
-        draw_framebuffer != framebuffer) {
-      // TODO(zmo): There is no guarantee that an FBO that is complete on the
-      // READ attachment will be complete as a DRAW attachment.
-      BindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer->service_id());
+    if (filled_depth_stencil_point) {
+      Framebuffer::BindAttachmentToPoint(target, filled_depth_stencil_point,
+                                         nullptr);
     }
-    state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
-    ClearDeviceWindowRectangles();
-    if (workarounds().gl_clear_broken) {
-      ClearFramebufferForWorkaround(clear_bits);
-    } else {
-      api()->glClearFn(clear_bits);
-    }
-  }
-
-  if (filled_depth_stencil_point) {
-    Framebuffer::BindAttachmentToPoint(target, filled_depth_stencil_point,
-                                       nullptr);
   }
 
   if (cleared_int_renderbuffers || clear_bits) {
@@ -7394,12 +7435,20 @@ bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
     }
   }
 
-  framebuffer_manager()->MarkAttachmentsAsCleared(
-      framebuffer, renderbuffer_manager(), texture_manager());
-
   if (rasterizer_discard_enabled) {
     state_.SetDeviceCapabilityState(GL_RASTERIZER_DISCARD, true);
   }
+
+  // Only commit the cleared state once the clear is known to have landed.
+  // Marking attachments cleared after a failed clear would let a subsequent
+  // ReadPixels()/draw read uninitialized GPU memory and hand it to the client.
+  if (clear_failed) {
+    return false;
+  }
+
+  framebuffer_manager()->MarkAttachmentsAsCleared(
+      framebuffer, renderbuffer_manager(), texture_manager());
+
   return true;
 }
 
@@ -17263,7 +17312,7 @@ const SamplerState& GLES2DecoderImpl::GetSamplerStateForTextureUnit(
   return default_sampler_state_;
 }
 
-void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
+bool GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
   ScopedGLErrorSuppressor suppressor("GLES2DecoderImpl::ClearWorkaround",
                                      error_state_.get());
   clear_framebuffer_blit_->ClearFramebuffer(
@@ -17271,6 +17320,20 @@ void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
       gfx::Size(viewport_max_width_, viewport_max_height_), mask,
       state_.color_clear_red, state_.color_clear_green, state_.color_clear_blue,
       state_.color_clear_alpha, state_.depth_clear, state_.stencil_clear);
+  // |suppressor|'s destructor silently discards GL_OUT_OF_MEMORY and
+  // GL_CONTEXT_LOST_KHR, so peek here while the failure is still observable.
+  // Callers that commit "cleared" bookkeeping must be able to tell that the
+  // blit failed, otherwise an attachment that still holds uninitialized GPU
+  // memory would be recorded as cleared. Peeking also routes GL_OUT_OF_MEMORY
+  // through OnOutOfMemoryError() so lose_context_when_out_of_memory_ applies.
+  //
+  // The suppressor is deliberately kept: it is what keeps the blit's errors
+  // from being attributed to unrelated later commands for the callers that
+  // ignore the result. Surfacing the first error to those callers is bounded,
+  // because ClearRealGLErrors() NOTREACHED()s on anything other than
+  // GL_OUT_OF_MEMORY and GL_CONTEXT_LOST_KHR, i.e. the code already asserts
+  // that those are the only errors this blit can produce.
+  return LOCAL_PEEK_GL_ERROR("ClearFramebufferForWorkaround") == GL_NO_ERROR;
 }
 
 void GLES2DecoderImpl::RestoreAllExternalTextureBindingsIfNeeded() {
