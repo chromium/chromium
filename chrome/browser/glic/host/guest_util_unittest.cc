@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_browser_locale.h"
@@ -86,6 +87,43 @@ TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
 
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
   EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL());
+}
+
+// When features::kGeic is enabled, GetGuestURL loads the GEiC guest URL.
+TEST(GuestUtilTest, GeicEnabledLoadsGeicGuestURL) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{features::kGeicGuestURL.name,
+          "https://business.gemini.google/side-panel"}}}},
+      {});
+
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?hl=en"),
+            GetGuestURL());
+}
+
+// When GEiC is enabled without a guest URL configured, GetGuestURL errors
+// explicitly.
+TEST(GuestUtilTest, GeicEnabledWithoutGuestURLErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_TRUE(GetGuestURL().is_empty());
+}
+
+// Without GEiC enabled, a consumer guest URL override is respected.
+TEST(GuestUtilTest, GeicDisabledKeepsConsumerGuestURL) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicURLConfig,
+        {{features::kGlicGuestURL.name,
+          "https://gemini.google.com/custom-panel"}}}},
+      {});
+
+  EXPECT_EQ(GURL("https://gemini.google.com/custom-panel?hl=en"),
+            GetGuestURL());
 }
 
 TEST_F(GuestUtilMultiInstanceTest,

@@ -1,0 +1,8 @@
+specific_include_rules = {
+  # geic_enabling is a GLiC-internal helper, not a general purpose enablement
+  # check; see geic_enabling.h. Please loop in the GEiC owners before adding
+  # entries here.
+  "guest_util(_unittest)?\\.cc": [
+    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
+  ],
+}

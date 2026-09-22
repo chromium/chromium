@@ -237,6 +237,13 @@ BASE_FEATURE(kGlicGeminiEnterpriseSettingsEnabled,
 BASE_FEATURE(kGlicGeminiEnterpriseConsentEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGeic, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kGeicEnabledParam{&kGeic, "enabled", true};
+
+const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
+                                                    ""};
+
 BASE_FEATURE(kGlicHotkeyLocalScope,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

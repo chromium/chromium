@@ -511,6 +511,7 @@ source_set("impl") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/gemini_enterprise",
+    "//chrome/browser/glic/gemini_enterprise:geic_enabling",
     "//chrome/browser/glic/media",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/lifetime",

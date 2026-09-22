@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -339,12 +340,24 @@ GlicWebClientManager* GetWebClientManagerForWebContents(
 }
 
 GURL GetGuestURL() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
-  GURL url =
-      GURL(has_glic_guest_url
-               ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
-               : features::kGlicGuestURL.Get());
+  GURL url;
+  if (geic::IsGeicEnabled()) {
+    url = geic::GetGeicGuestUrl();
+    if (url.is_empty()) {
+      LOG(ERROR) << "GEiC is enabled but no guest URL was provided.";
+      return GURL();
+    }
+  }
+
+  if (url.is_empty()) {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    bool has_glic_guest_url =
+        command_line->HasSwitch(::switches::kGlicGuestURL);
+    url =
+        GURL(has_glic_guest_url
+                 ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
+                 : features::kGlicGuestURL.Get());
+  }
 
   // If a preset url is enabled, use it instead.
   url = MaybeApplyPresetGuestUrl(std::move(url));
