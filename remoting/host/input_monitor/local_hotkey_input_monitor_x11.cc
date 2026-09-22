@@ -86,20 +86,7 @@ void LocalHotkeyInputMonitorX11::Core::StopOnInputThread() {
 
 void LocalHotkeyInputMonitorX11::Core::UpdateXTestDeviceIds() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  xtest_device_ids_.clear();
-
-  auto reply =
-      connection_->xinput().XIQueryDevice({x11::Input::DeviceId::All}).Sync();
-  if (!reply) {
-    LOG(ERROR) << "XIQueryDevice failed.";
-    return;
-  }
-  for (const auto& info : reply->infos) {
-    if (info.name.ends_with("XTEST keyboard") ||
-        info.name.ends_with("XTEST pointer")) {
-      xtest_device_ids_.insert(info.deviceid);
-    }
-  }
+  xtest_device_ids_ = GetXTestDeviceIds(connection_);
 }
 
 bool LocalHotkeyInputMonitorX11::Core::IsXTestDevice(

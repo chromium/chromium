@@ -81,6 +81,8 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
     return;
   }
 
+  xtest_device_ids_ = GetXTestDeviceIds(connection_);
+
   auto mask = CommonXIEventMaskForRootWindow();
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
@@ -93,6 +95,12 @@ void LocalMouseInputMonitorX11::Core::StopOnInputThread() {
   connection_->RemoveEventObserver(this);
 }
 
+bool LocalMouseInputMonitorX11::Core::IsXTestDevice(
+    x11::Input::DeviceId device_id) const {
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  return xtest_device_ids_.contains(device_id);
+}
+
 void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
@@ -103,6 +111,11 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
     return;
   }
   if (raw->opcode != x11::Input::RawDeviceEvent::RawMotion) {
+    return;
+  }
+  // Ignore events injected via XTEST so remote input is not mistaken for local
+  // mouse activity.
+  if (IsXTestDevice(raw->sourceid)) {
     return;
   }
 

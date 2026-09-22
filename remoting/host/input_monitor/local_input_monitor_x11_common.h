@@ -5,7 +5,9 @@
 #ifndef REMOTING_HOST_INPUT_MONITOR_LOCAL_INPUT_MONITOR_X11_COMMON_H_
 #define REMOTING_HOST_INPUT_MONITOR_LOCAL_INPUT_MONITOR_X11_COMMON_H_
 
+#include "base/containers/flat_set.h"
 #include "ui/events/devices/x11/xinput_util.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace remoting {
@@ -14,6 +16,11 @@ namespace remoting {
 // Since the mask is set for the root window, each input monitor must use
 // the same mask.
 x11::Input::XIEventMask CommonXIEventMaskForRootWindow();
+
+// Queries XInput2 and returns the set of DeviceIds corresponding to synthetic
+// XTEST devices ("XTEST keyboard" and "XTEST pointer").
+base::flat_set<x11::Input::DeviceId> GetXTestDeviceIds(
+    x11::Connection* connection);
 
 }  // namespace remoting
 

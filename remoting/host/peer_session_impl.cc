@@ -95,6 +95,7 @@
 #include "remoting/protocol/webrtc_connection_to_client.h"
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
@@ -154,7 +155,15 @@ PeerSessionImpl::PeerSessionImpl(
   // LocalMouseInputMonitorMac filter out an echo of the injected input before
   // it reaches `remote_input_filter_`.
   input_pipeline_.remote_input_filter()->SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_LINUX)
+  // LocalMouseInputMonitorX11 filters out XTest-injected input before it
+  // reaches `remote_input_filter_`. On Wayland, PipewireLocalInputMonitor
+  // observes global cursor positions from PipeWire and still relies on echo
+  // filtering.
+  if (!webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+    input_pipeline_.remote_input_filter()->SetExpectLocalEcho(false);
+  }
+#endif
 }
 
 void PeerSessionImpl::Start(

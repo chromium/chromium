@@ -59,6 +59,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
 
@@ -520,11 +521,13 @@ TEST_F(PeerSessionImplTest, LocalInputTest) {
   connection_->input_stub()->InjectMouseEvent(MakeFractionalMouseMoveEvent(
       100, 101, kDisplay1Id, kDisplay1Width, kDisplay1Height));
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
-  // The OS echoes the injected event back.
-  peer_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                     ui::EventType::kMouseMoved);
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX)
+  if (webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+    // Under Wayland, PipewireLocalInputMonitor echoes the injected event back.
+    peer_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                       ui::EventType::kMouseMoved);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
   // This one should get through as well.
   connection_->input_stub()->InjectMouseEvent(MakeFractionalMouseMoveEvent(
@@ -621,8 +624,6 @@ TEST_F(PeerSessionImplTest, ClampMouseEvents) {
   EXPECT_THAT(mouse_events_[3],
               EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
 }
-
-
 
 TEST_F(PeerSessionImplTest, DataChannelCallbackIsCalled) {
   ConnectPeerSession();

@@ -50,6 +50,7 @@
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/input_event_tracker.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "ui/events/types/event_type.h"
@@ -678,7 +679,13 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
   // LocalInputMonitorWin filters out an echo of the injected input before it
   // reaches |remote_input_filter_|.
   remote_input_filter_->SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_LINUX)
+  // LocalMouseInputMonitorX11 filters out XTest-injected input before it
+  // reaches `remote_input_filter_`.
+  if (!webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+    remote_input_filter_->SetExpectLocalEcho(false);
+  }
+#endif
 
   // Start the input injector.
   std::unique_ptr<protocol::ClipboardStub> clipboard_stub(

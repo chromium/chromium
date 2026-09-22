@@ -1049,7 +1049,10 @@ source_set("unit_tests") {
   }
 
   if (remoting_use_x11) {
-    sources += [ "input_monitor/local_hotkey_input_monitor_x11_unittest.cc" ]
+    sources += [
+      "input_monitor/local_hotkey_input_monitor_x11_unittest.cc",
+      "input_monitor/local_mouse_input_monitor_x11_unittest.cc",
+    ]
     deps += [
       "//remoting/host/linux:platform_impls",
       "//ui/gfx/x",

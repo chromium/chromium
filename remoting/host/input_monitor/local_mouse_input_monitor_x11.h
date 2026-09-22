@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_INPUT_MONITOR_LOCAL_MOUSE_INPUT_MONITOR_X11_H_
 #define REMOTING_HOST_INPUT_MONITOR_LOCAL_MOUSE_INPUT_MONITOR_X11_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -50,8 +51,7 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
 
     void StartOnInputThread();
     void StopOnInputThread();
-    // Called when there are pending X events.
-    void OnConnectionData();
+    bool IsXTestDevice(x11::Input::DeviceId device_id) const;
 
     // x11::EventObserver:
     void OnEvent(const x11::Event& event) override;
@@ -64,6 +64,9 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
 
     // Used to send mouse event notifications.
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
+
+    // Cached XTEST device IDs to ignore synthetic events.
+    base::flat_set<x11::Input::DeviceId> xtest_device_ids_;
 
     raw_ptr<x11::Connection> connection_ = nullptr;
   };
