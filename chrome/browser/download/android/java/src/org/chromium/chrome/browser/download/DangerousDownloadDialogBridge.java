@@ -12,7 +12,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog;
+import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog.DangerousDownloadDialogEvent;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -69,10 +71,15 @@ public class DangerousDownloadDialogBridge {
                         totalBytes,
                         downloadDomain,
                         iconId,
-                        (accepted) -> {
-                            if (accepted) {
+                        (result) -> {
+                            if (result
+                                    == DangerousDownloadDialogEvent
+                                            .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM) {
                                 onAccepted(guid);
-                            } else {
+                            } else if (result
+                                            == DangerousDownloadDialogEvent
+                                                    .DANGEROUS_DOWNLOAD_DIALOG_CANCEL
+                                    || !ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()) {
                                 onCancel(guid, windowAndroid);
                             }
                         },

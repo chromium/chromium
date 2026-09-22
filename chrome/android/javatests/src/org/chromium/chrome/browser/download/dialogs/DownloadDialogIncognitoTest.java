@@ -184,7 +184,12 @@ public class DownloadDialogIncognitoTest {
                                     TOTAL_BYTES,
                                     DOWNLOAD_DOMAIN,
                                     ICON_ID,
-                                    mResultCallback,
+                                    (result) ->
+                                            mResultCallback.onResult(
+                                                    result
+                                                            == DangerousDownloadDialog
+                                                                    .DangerousDownloadDialogEvent
+                                                                    .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM),
                                     true);
                 });
     }
