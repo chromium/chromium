@@ -424,7 +424,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
   protected actorIconClass_(): string {
     // <if expr="_google_chrome">
-    return 'history-internal:arrow-selector-spark';
+    return 'history-internal:arrow-selector-spark-new';
     // </if>
     // <if expr="not _google_chrome">
     return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?

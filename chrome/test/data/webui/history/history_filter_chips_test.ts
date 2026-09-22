@@ -209,7 +209,7 @@ suite('HistoryFilterChipsTest', function() {
     assertEquals('cr:person', userIcon.icon);
 
     // <if expr="_google_chrome">
-    assertEquals('history-internal:arrow-selector-spark', actorIcon.icon);
+    assertEquals('history-internal:arrow-selector-spark-new', actorIcon.icon);
     // </if>
     // <if expr="not _google_chrome">
     assertEquals('', actorIcon.icon);

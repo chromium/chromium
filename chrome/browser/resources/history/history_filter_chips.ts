@@ -94,7 +94,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     }
     // <if expr="_google_chrome">
     return this.isCriticalActionsEnabled_() ?
-        'history-internal:arrow-selector-spark' :
+        'history-internal:arrow-selector-spark-new' :
         'history-internal:screensaver-auto';
     // </if>
     // <if expr="not _google_chrome">

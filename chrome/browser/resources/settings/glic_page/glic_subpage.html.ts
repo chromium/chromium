@@ -506,7 +506,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
 </if>
 <if expr="_google_chrome">
                 <cr-icon aria-hidden="true"
-                    icon="settings-internal:arrow-selector-spark">
+                    icon="settings-internal:arrow-selector-spark-new">
                 </cr-icon>
 </if>
                 <div class="secondary">
@@ -591,7 +591,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
 </if>
 <if expr="_google_chrome">
                   <cr-icon aria-hidden="true"
-                      icon="settings-internal:arrow-selector-spark">
+                      icon="settings-internal:arrow-selector-spark-new">
                   </cr-icon>
 </if>
                   <div class="secondary">
