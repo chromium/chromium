@@ -9140,3 +9140,6 @@ crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-positio
 
 # Gardener 2026-09-08
 crbug.com/558562090 http/tests/inspector-protocol/fenced-frame/device-emulation-commands-fenced-frame.https.js [ Failure Pass ]
+
+# Gardener 2026-09-15
+crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
