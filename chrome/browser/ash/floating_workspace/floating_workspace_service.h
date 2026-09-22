@@ -65,6 +65,9 @@ class FloatingWorkspaceService
 
   ~FloatingWorkspaceService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Used in constructor for initializations
   void Init(syncer::SyncService* sync_service,
             desks_storage::DeskSyncService* desk_sync_service);
@@ -124,6 +127,9 @@ class FloatingWorkspaceService
   // tests. It will also CHECK that the state of all scoped observations is
   // consistent witch each other.
   bool IsObservingForTesting() const;
+
+  // Whether the service is currently observing SessionController.
+  bool IsObservingSessionForTesting() const;
 
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
@@ -249,6 +255,9 @@ class FloatingWorkspaceService
   void SetCallbacksToLaunchOnFirstSync();
 
   void MaybeStartOrStopCaptureBasedOnTabSyncSetting();
+
+  // Returns true if `profile_` matches the currently active user profile.
+  bool IsActiveUserProfile() const;
 
   const raw_ptr<Profile> profile_;
 
