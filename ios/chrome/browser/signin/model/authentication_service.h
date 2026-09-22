@@ -134,6 +134,11 @@ class AuthenticationService : public KeyedService,
   virtual void SignOut(signin_metrics::ProfileSignout signout_source,
                        ProceduralBlock completion);
 
+  // Overload without completion callback. SignOut() always completes
+  // synchronously.
+  // Virtual for testing.
+  virtual void SignOut(signin_metrics::ProfileSignout signout_source);
+
   // Returns whether there is a cached associated MDM error for `identity`.
   bool HasCachedMDMErrorForIdentity(id<SystemIdentity> identity);
 

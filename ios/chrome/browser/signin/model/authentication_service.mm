@@ -452,6 +452,11 @@ void AuthenticationService::SignOut(
   }
 }
 
+void AuthenticationService::SignOut(
+    signin_metrics::ProfileSignout signout_source) {
+  SignOut(signout_source, nil);
+}
+
 AuthenticationService::ProfileInitializationOutcome
 AuthenticationService::PerformProfileInitializationIfNecessary() {
   ProfileManagerIOS* profile_manager =
