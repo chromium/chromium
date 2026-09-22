@@ -304,6 +304,7 @@ PaymentsDataManager::PaymentsDataManager(
 PaymentsDataManager::~PaymentsDataManager() {
   CancelPendingLocalQuery(&pending_creditcards_query_);
   CancelPendingLocalQuery(&pending_local_ibans_query_);
+  CancelPendingLocalQuery(&pending_offer_data_query_);
   CancelPendingServerQueries();
 }
 
@@ -1812,6 +1813,10 @@ void PaymentsDataManager::RecordUseOfIban(Iban& iban) {
   Refresh();
 }
 
+// TODO(crbug.com/546252995): Rename these (and the corresponding
+// `PaymentsDatabaseHelper` methods). "Local" is a misnomer now: the profile
+// database stores local data as well as server data that is persisted across
+// restarts, such as Wallet direct offers written by the `ValuableSyncBridge`.
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
   return database_helper_->GetLocalDatabase();
 }
@@ -1827,7 +1832,6 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
-  CancelPendingServerQuery(&pending_offer_data_query_);
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
   CancelPendingServerQuery(&pending_credit_card_benefit_query_);
   if (AreBankAccountsSupported()) {
@@ -1947,14 +1951,20 @@ void PaymentsDataManager::LoadPaymentInstruments() {
 }
 
 void PaymentsDataManager::LoadAutofillOffers() {
-  if (!database_helper_->GetServerDatabase()) {
+  // Offers are Wallet direct offers, which are synced through the
+  // `AUTOFILL_VALUABLE` data type. Its `ValuableSyncBridge` is attached to the
+  // profile (local) database in both full sync and transport mode, so the
+  // offers are read from there. Reading them from the server database would
+  // miss them entirely for users who didn't enable the sync feature, since in
+  // that case the server database is the ephemeral account storage.
+  if (!database_helper_->GetLocalDatabase()) {
     return;
   }
 
-  CancelPendingServerQuery(&pending_offer_data_query_);
+  CancelPendingLocalQuery(&pending_offer_data_query_);
 
   pending_offer_data_query_ =
-      database_helper_->GetServerDatabase()->GetAutofillOffers(
+      database_helper_->GetLocalDatabase()->GetAutofillOffers(
           base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }

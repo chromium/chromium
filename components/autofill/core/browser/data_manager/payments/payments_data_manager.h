@@ -588,7 +588,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Loads the payments customer data from the web database.
   void LoadPaymentsCustomerData();
 
-  // Loads the autofill offer data from the web database.
+  // Loads the autofill offer data from the profile web database, which is where
+  // the `ValuableSyncBridge` persists Wallet direct offers.
   void LoadAutofillOffers();
 
   // Loads the virtual card usage data from the web database.
