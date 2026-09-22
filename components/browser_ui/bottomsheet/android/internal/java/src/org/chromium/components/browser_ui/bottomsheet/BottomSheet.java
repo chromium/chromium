@@ -90,9 +90,6 @@ class BottomSheet extends BottomSheetView
     /** The visible rect for the screen taking the keyboard into account. */
     private final Rect mVisibleViewportRect = new Rect();
 
-    /** An out-array for use with getLocationInWindow to prevent constant allocations. */
-    private final int[] mCachedLocation = new int[2];
-
     /** The minimum distance between half and full states to allow the half state. */
     private final float mMinHalfFullDistance;
 
@@ -363,12 +360,9 @@ class BottomSheet extends BottomSheetView
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
-        assert mHandlebar != null;
-
-        mHandlebar.setOnClickListener(v -> toggleSheetState());
+        setHandlebarClickListener(v -> toggleSheetState());
         if (isLargeFormFactorUiEnabled()) {
-            mHandlebar.setPointerIcon(
-                    PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
+            setHandlebarPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
 
         mSnackbarContainer = findViewById(R.id.bottom_sheet_snackbar_container);
@@ -478,7 +472,7 @@ class BottomSheet extends BottomSheetView
                 });
 
         // Listen to height changes on the toolbar.
-        mToolbarHolder.addOnLayoutChangeListener(
+        addToolbarLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     // Make sure the size of the layout actually changed.
                     if (bottom - top == oldBottom - oldTop && right - left == oldRight - oldLeft) {
@@ -602,12 +596,7 @@ class BottomSheet extends BottomSheetView
 
     @Override
     public boolean isTouchEventInToolbar(MotionEvent event) {
-        mToolbarHolder.getLocationOnScreen(mCachedLocation);
-
-        // This check only tests for collision for the Y component since the sheet is the full width
-        // of the screen. We only care if the touch event is above the bottom of the toolbar since
-        // we won't receive an event if the touch is outside the sheet.
-        return mCachedLocation[1] + mToolbarHolder.getHeight() > event.getRawY();
+        return isEventInToolbar(event);
     }
 
     /**
@@ -810,8 +799,7 @@ class BottomSheet extends BottomSheetView
         boolean heightNeedsUpdate = false;
         if (isFullHeightResizeContent()) {
             @Px int newHeight = getResizingContentContainerHeight();
-            var params = mBottomSheetContentContainer.getLayoutParams();
-            if (params != null && params.height != newHeight) {
+            if (isContentContainerHeightDifferent(newHeight)) {
                 heightNeedsUpdate = true;
             }
         }
@@ -1330,22 +1318,17 @@ class BottomSheet extends BottomSheetView
                 MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = contentView.getMeasuredHeight();
-        if (content.showHandlebar() && mHandlebar != null) {
+        if (content.showHandlebar()) {
             mContentDesiredHeight += getHandlebarHeight();
         }
     }
 
     private int getHandlebarHeight() {
         BottomSheetContent content = getCurrentSheetContent();
-        if (mHandlebar == null || content == null || !content.showHandlebar()) {
+        if (content == null || !content.showHandlebar()) {
             return 0;
         }
-        if (mHandlebar.getMeasuredHeight() == 0) {
-            mHandlebar.measure(
-                    MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
-        }
-        return mHandlebar.getMeasuredHeight();
+        return getHandlebarMeasuredHeight(getMaxSheetWidth(), getMaxSheetHeight());
     }
 
     private float getRatioForState(int state) {
@@ -1466,14 +1449,13 @@ class BottomSheet extends BottomSheetView
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
         if (isLargeFormFactorUiEnabled) {
-            mHandlebar.setPointerIcon(
-                    PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
+            setHandlebarPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
         updateContentContainerHeight();
         updateBackgroundColor();
         setSheetLayoutMode(mode);
         mMediator.notifySheetContentChanged(content);
-        mToolbarHolder.setBackgroundColor(Color.TRANSPARENT);
+        setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
     private @SheetState int getTargetOrCurrentState() {
@@ -1494,11 +1476,12 @@ class BottomSheet extends BottomSheetView
         int topMargin = getHandlebarHeight();
         mMediator.setContentTopMargin(topMargin);
 
+        boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
         if (isFullHeightResizeContent()) {
             mMediator.setContainerHeight(getResizingContentContainerHeight());
         } else {
             int targetHeight;
-            if (isLargeFormFactorUiEnabled()) {
+            if (isLargeFormFactorUiEnabled) {
                 if (isFullHeightWrapContent()) {
                     targetHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
                 } else {
@@ -1510,30 +1493,19 @@ class BottomSheet extends BottomSheetView
             }
             mMediator.setContainerHeight(targetHeight);
 
-            @Px
-            int viewportBottomInset = isLargeFormFactorUiEnabled() ? 0 : getViewportBottomInset();
-            if (mBottomSheetContentContainer.getPaddingBottom() != viewportBottomInset) {
-                mBottomSheetContentContainer.setPadding(
-                        mBottomSheetContentContainer.getPaddingLeft(),
-                        mBottomSheetContentContainer.getPaddingTop(),
-                        mBottomSheetContentContainer.getPaddingRight(),
-                        viewportBottomInset);
-            }
+            @Px int viewportBottomInset = isLargeFormFactorUiEnabled ? 0 : getViewportBottomInset();
+            setContentContainerPaddingBottom(viewportBottomInset);
         }
 
         int targetBgHeight =
-                isLargeFormFactorUiEnabled()
+                isLargeFormFactorUiEnabled
                         ? (int) getSheetHeightForState(SheetState.FULL)
                         : ViewGroup.LayoutParams.MATCH_PARENT;
-        ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
-        if (bgParams != null && bgParams.height != targetBgHeight) {
-            bgParams.height = targetBgHeight;
-            mSheetBackground.setLayoutParams(bgParams);
-        }
+        updateBackgroundHeight(targetBgHeight);
 
         updateCurtainHeight();
 
-        if (isLargeFormFactorUiEnabled()) {
+        if (isLargeFormFactorUiEnabled) {
             applyLargeFormFactorBackgroundBounds();
         }
     }
