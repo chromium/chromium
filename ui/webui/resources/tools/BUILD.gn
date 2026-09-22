@@ -30,6 +30,7 @@ script_test("webui_resources_tools_python_unittests") {
     "//third_party/depot_tools/",
   ]
   data_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//tools/code_cache_generator",
     "//ui/webui/resources/tools/eslint:build_ts",
   ]

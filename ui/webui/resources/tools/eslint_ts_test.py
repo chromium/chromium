@@ -50,31 +50,30 @@ class EslintTsTest(unittest.TestCase):
       "eslint_ts.config_base.js",
     )
     orig_tsconfig_path = os.path.join(self._in_folder, "tsconfig.json")
-
-    with open(orig_tsconfig_path, "r") as f:
-      config = json.load(f)
-
-    if "compilerOptions" not in config:
-      config["compilerOptions"] = {}
     gen_lit_dir = os.path.join(
       os.path.abspath(_BUILD_DIR), "gen", "third_party", "lit", "v3_0"
     )
-    rel_lit_path = os.path.relpath(gen_lit_dir, self._in_folder).replace(
+    rel_lit_path = os.path.relpath(gen_lit_dir, self._out_dir).replace(
       os.sep, "/"
     )
-
-    config["compilerOptions"]["rootDir"] = os.path.normpath(self._in_folder)
-    config["extends"] = os.path.normpath(
-      os.path.join(self._in_folder, config["extends"])
-    )
-    config["files"] = [
-      os.path.join(self._in_folder, f) for f in config["files"]
-    ]
-    config["references"] = [{"path": rel_lit_path + "/tsconfig_build_ts.json"}]
-
     tsconfig = os.path.join(self._out_dir, "tsconfig.json")
     with open(tsconfig, "w") as f:
-      json.dump(config, f, indent=4)
+      json.dump(
+        {
+          "extends": os.path.relpath(orig_tsconfig_path, self._out_dir).replace(
+            os.sep, "/"
+          ),
+          "compilerOptions": {
+            "paths": {
+              "//resources/lit/v3_0/lit.rollup.js": [
+                rel_lit_path + "/lit.d.ts"
+              ],
+            },
+          },
+        },
+        f,
+        indent=4,
+      )
 
     custom_loader = os.path.join(_HERE_DIR, "eslint", "custom_loader.mjs")
 
@@ -86,9 +85,7 @@ class EslintTsTest(unittest.TestCase):
       "--config_base",
       os.path.relpath(config_base, self._out_dir).replace(os.sep, "/"),
       "--tsconfig",
-      os.path.relpath(
-        os.path.join(self._in_folder, 'tsconfig.json'), _HERE_DIR
-      ).replace(os.sep, "/"),
+      os.path.relpath(tsconfig, os.getcwd()).replace(os.sep, "/"),
       "--custom_loader_script",
       custom_loader,
       "--in_files",
@@ -106,13 +103,19 @@ class EslintTsTest(unittest.TestCase):
       os.path.join(self._out_dir, "eslint.config.mjs")
     )
     path_to_build_dir = os.path.relpath(_BUILD_DIR, self._out_dir).replace(
-      '\\', '/'
+      os.sep, "/"
     )
+    tsconfig = os.path.join(self._out_dir, "tsconfig.json")
+    rel_tsconfig = os.path.relpath(tsconfig, os.getcwd()).replace(os.sep, "/")
     expected_contents = self._read_file(
       os.path.join(self._in_folder, "eslint_expected.config.mjs")
-    ).replace('./../tsconfig.json', './tsconfig.json')
+    )
     self.assertMultiLineEqual(
-      expected_contents % {"path_to_build_dir": path_to_build_dir},
+      expected_contents
+      % {
+        "path_to_build_dir": path_to_build_dir,
+        "path_to_tsconfig": rel_tsconfig,
+      },
       actual_contents,
     )
 

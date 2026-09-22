@@ -6,7 +6,7 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        'project': ['tests/eslint_ts/tsconfig.json'],
+        'project': ['%(path_to_tsconfig)s'],
       },
     },
   },
