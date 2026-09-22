@@ -7,8 +7,6 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include <array>
-
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -21,33 +19,35 @@ TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
     NSString* output;
   };
 
-  const auto data = std::to_array<TestData>({
-      {@"", @""},
-      {@"nothing", @"nothing"},
-      {@"foo &bar", @"foo bar"},
-      {@"foo &&bar", @"foo &bar"},
-      {@"foo &&&bar", @"foo &bar"},
-      {@"&foo &&bar", @"foo &bar"},
-      {@"&foo &bar", @"foo bar"},
-      {@"foo bar.", @"foo bar."},
-      {@"foo bar..", @"foo bar.."},
-      {@"foo bar...", @"foo bar\u2026"},
-      {@"foo.bar", @"foo.bar"},
-      {@"foo..bar", @"foo..bar"},
-      {@"foo...bar", @"foo\u2026bar"},
-      {@"foo...bar...", @"foo\u2026bar\u2026"},
-      {@"foo(&b)", @"foo"},
-      {@"foo(&b)...", @"foo\u2026"},
-      {@"(&b)foo", @"foo"},
-  });
-  for (const auto& [input, output] : data) {
-    std::u16string input16(base::SysNSStringToUTF16(input));
+  TestData data[] = {
+    { @"", @"" },
+    { @"nothing", @"nothing" },
+    { @"foo &bar", @"foo bar" },
+    { @"foo &&bar", @"foo &bar" },
+    { @"foo &&&bar", @"foo &bar" },
+    { @"&foo &&bar", @"foo &bar" },
+    { @"&foo &bar", @"foo bar" },
+    { @"foo bar.", @"foo bar." },
+    { @"foo bar..", @"foo bar.." },
+    { @"foo bar...", @"foo bar\u2026" },
+    { @"foo.bar", @"foo.bar" },
+    { @"foo..bar", @"foo..bar" },
+    { @"foo...bar", @"foo\u2026bar" },
+    { @"foo...bar...", @"foo\u2026bar\u2026" },
+    { @"foo(&b)", @"foo" },
+    { @"foo(&b)...", @"foo\u2026" },
+    { @"(&b)foo", @"foo" },
+  };
+  for (size_t idx = 0; idx < std::size(data); ++idx) {
+    std::u16string input16(
+        base::SysNSStringToUTF16(UNSAFE_TODO(data[idx]).input));
 
     NSString* result = l10n_util::FixUpWindowsStyleLabel(input16);
-    EXPECT_TRUE(result != nil);
+    EXPECT_TRUE(result != nil) << "Fixup Failed, idx = " << idx;
 
-    EXPECT_TRUE([output isEqual:result])
-        << "Expected '" << base::SysNSStringToUTF8(output) << "', got '"
+    EXPECT_TRUE([UNSAFE_TODO(data[idx]).output isEqual:result])
+        << "For idx " << idx << ", expected '"
+        << base::SysNSStringToUTF8(UNSAFE_TODO(data[idx]).output) << "', got '"
         << base::SysNSStringToUTF8(result) << "'";
   }
 }

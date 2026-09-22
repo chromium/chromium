@@ -9,7 +9,6 @@
 #include <commctrl.h>
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <utility>
 #include <vector>
@@ -853,9 +852,10 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
   if (!inject_touch_input)
     return false;
 
-  std::array<POINTER_TOUCH_INFO, kTouchesLengthCap> pointer_touch_info = {};
+  POINTER_TOUCH_INFO pointer_touch_info[kTouchesLengthCap];
   for (int i = 0; i < num; i++) {
-    POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
+    POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
+    UNSAFE_TODO(memset(&contact, 0, sizeof(POINTER_TOUCH_INFO)));
     contact.pointerInfo.pointerType = PT_TOUCH;
     contact.pointerInfo.pointerId = i;
     contact.pointerInfo.ptPixelLocation.y = y;
@@ -877,35 +877,32 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
         POINTER_FLAG_DOWN | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
   }
   // Injecting the touch down on screen
-  if (!inject_touch_input(num, pointer_touch_info.data())) {
+  if (!inject_touch_input(num, pointer_touch_info))
     return false;
-  }
 
   // Injecting the touch move on screen
   if (action & kTouchMove) {
     for (int i = 0; i < num; i++) {
-      POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
+      POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
       contact.pointerInfo.ptPixelLocation.y = y + 10;
       contact.pointerInfo.ptPixelLocation.x = x + 10 * i + 30;
       contact.pointerInfo.pointerFlags =
           POINTER_FLAG_UPDATE | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
     }
-    if (!inject_touch_input(num, pointer_touch_info.data())) {
+    if (!inject_touch_input(num, pointer_touch_info))
       return false;
-    }
   }
 
   // Injecting the touch up on screen
   if (action & kTouchRelease) {
     for (int i = 0; i < num; i++) {
-      POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
+      POINTER_TOUCH_INFO& contact = UNSAFE_TODO(pointer_touch_info[i]);
       contact.pointerInfo.ptPixelLocation.y = y + 10;
       contact.pointerInfo.ptPixelLocation.x = x + 10 * i + 30;
       contact.pointerInfo.pointerFlags = POINTER_FLAG_UP | POINTER_FLAG_INRANGE;
     }
-    if (!inject_touch_input(num, pointer_touch_info.data())) {
+    if (!inject_touch_input(num, pointer_touch_info))
       return false;
-    }
   }
 
   return true;

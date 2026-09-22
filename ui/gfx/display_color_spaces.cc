@@ -6,7 +6,6 @@
 
 #include <array>
 #include <cmath>
-#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/trace_event/traced_value.h"
@@ -50,8 +49,11 @@ size_t GetIndex(ContentColorUsage color_usage, bool needs_alpha) {
 }  // namespace
 
 DisplayColorSpaces::DisplayColorSpaces() {
-  color_spaces_.fill(gfx::ColorSpace::CreateSRGB());
-  formats_.fill(DefaultFormat());
+  // TODO(crbug.com/40219387): Revert back to range-based for loops if possible
+  for (size_t i = 0; i < kConfigCount; i++) {
+    UNSAFE_TODO(color_spaces_[i]) = gfx::ColorSpace::CreateSRGB();
+    UNSAFE_TODO(formats_[i]) = DefaultFormat();
+  }
 }
 
 DisplayColorSpaces::DisplayColorSpaces(const gfx::DisplayColorSpaces&) =
@@ -84,8 +86,8 @@ void DisplayColorSpaces::SetOutputFormats(
   for (const auto& color_usage : kAllColorUsages) {
     size_t i_no_alpha = GetIndex(color_usage, false);
     size_t i_needs_alpha = GetIndex(color_usage, true);
-    formats_[i_no_alpha] = format_no_alpha;
-    formats_[i_needs_alpha] = format_with_alpha;
+    UNSAFE_TODO(formats_[i_no_alpha] = format_no_alpha);
+    UNSAFE_TODO(formats_[i_needs_alpha] = format_with_alpha);
   }
 }
 
@@ -95,20 +97,20 @@ void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
     const gfx::ColorSpace& color_space,
     viz::SharedImageFormat format) {
   size_t i = GetIndex(color_usage, needs_alpha);
-  color_spaces_[i] = color_space;
-  formats_[i] = format;
+  UNSAFE_TODO(color_spaces_[i] = color_space);
+  UNSAFE_TODO(formats_[i] = format);
 }
 
 ColorSpace DisplayColorSpaces::GetOutputColorSpace(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
-  return color_spaces_[GetIndex(color_usage, needs_alpha)];
+  return UNSAFE_TODO(color_spaces_[GetIndex(color_usage, needs_alpha)]);
 }
 
 viz::SharedImageFormat DisplayColorSpaces::GetOutputFormat(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
-  return formats_[GetIndex(color_usage, needs_alpha)];
+  return UNSAFE_TODO(formats_[GetIndex(color_usage, needs_alpha)]);
 }
 
 ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
@@ -171,16 +173,15 @@ void DisplayColorSpaces::ToStrings(
     std::vector<gfx::ColorSpace>* out_color_spaces,
     std::vector<viz::SharedImageFormat>* out_formats) const {
   // The names of the configurations.
-  constexpr std::array<std::string_view, kConfigCount> config_names = {
+  std::array<const char*, kConfigCount> config_names = {
       "sRGB/no-alpha", "sRGB/alpha",   "WCG/no-alpha",
       "WCG/alpha",     "HDR/no-alpha", "HDR/alpha",
   };
   // Names for special configuration subsets (e.g, all sRGB, all WCG, etc).
   constexpr size_t kSpecialConfigCount = 5;
-  constexpr std::array<std::string_view, kSpecialConfigCount>
-      special_config_names = {
-          "sRGB", "WCG", "SDR", "HDR", "all",
-      };
+  std::array<const char*, kSpecialConfigCount> special_config_names = {
+      "sRGB", "WCG", "SDR", "HDR", "all",
+  };
   const std::array<std::array<const size_t, 2>, kSpecialConfigCount>
       special_config_indices = {{
           {0, 2},
@@ -199,8 +200,9 @@ void DisplayColorSpaces::ToStrings(
   while (i != kConfigCount) {
     // Keep growing the interval [i, j) until entry j is different, or past the
     // end.
-    if (j != kConfigCount && color_spaces_[i] == color_spaces_[j] &&
-        formats_[i] == formats_[j]) {
+    if (UNSAFE_TODO(color_spaces_[i]) == UNSAFE_TODO(color_spaces_[j]) &&
+        UNSAFE_TODO(formats_[i]) == UNSAFE_TODO(formats_[j]) &&
+        j != kConfigCount) {
       j += 1;
       continue;
     }
@@ -217,7 +219,7 @@ void DisplayColorSpaces::ToStrings(
     // If that didn't work, just list the configs.
     if (name.empty()) {
       for (size_t k = i; k < j; ++k) {
-        name += config_names[k];
+        name += std::string(config_names[k]);
         if (k != j - 1)
           name += ",";
       }
@@ -225,8 +227,8 @@ void DisplayColorSpaces::ToStrings(
 
     // Add an entry, and continue with the interval [j, j).
     out_names->push_back(name);
-    out_formats->push_back(formats_[i]);
-    out_color_spaces->push_back(color_spaces_[i]);
+    out_formats->push_back(UNSAFE_TODO(formats_[i]));
+    out_color_spaces->push_back(UNSAFE_TODO(color_spaces_[i]));
     i = j;
   };
 }
@@ -252,6 +254,24 @@ void DisplayColorSpaces::AsValueInto(
   value->SetDouble("hdr_max_luminance_relative", hdr_max_luminance_relative_);
 }
 
+bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
+  for (size_t i = 0; i < kConfigCount; ++i) {
+    if (UNSAFE_TODO(color_spaces_[i]) != UNSAFE_TODO(other.color_spaces_[i])) {
+      return false;
+    }
+    if (UNSAFE_TODO(formats_[i]) != UNSAFE_TODO(other.formats_[i])) {
+      return false;
+    }
+  }
+  if (primaries_ != other.primaries_)
+    return false;
+  if (sdr_max_luminance_nits_ != other.sdr_max_luminance_nits_)
+    return false;
+  if (hdr_max_luminance_relative_ != other.hdr_max_luminance_relative_)
+    return false;
+
+  return true;
+}
 
 // static
 bool DisplayColorSpaces::EqualExceptForHdrHeadroom(

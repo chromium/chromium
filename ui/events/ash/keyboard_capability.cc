@@ -9,7 +9,6 @@
 #include <linux/input.h>
 
 #include <algorithm>
-#include <array>
 #include <cstring>
 #include <functional>
 #include <memory>
@@ -88,7 +87,7 @@ constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
 constexpr char kCustomTopRowLayoutProperty[] = "FUNCTION_ROW_PHYSMAP";
 
-constexpr std::array<KeyboardCode, 15> kFunctionKeys = {
+constexpr KeyboardCode kFunctionKeys[] = {
     VKEY_F1,  VKEY_F2,  VKEY_F3,  VKEY_F4,  VKEY_F5,
     VKEY_F6,  VKEY_F7,  VKEY_F8,  VKEY_F9,  VKEY_F10,
     VKEY_F11, VKEY_F12, VKEY_F13, VKEY_F14, VKEY_F15,
@@ -639,8 +638,8 @@ std::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
     return std::nullopt;
   }
 
-  return kFunctionKeys[std::distance(keyboard_info->top_row_action_keys.begin(),
-                                     iter)];
+  return UNSAFE_TODO(kFunctionKeys)[std::distance(
+      keyboard_info->top_row_action_keys.begin(), iter)];
 }
 
 std::optional<TopRowActionKey>

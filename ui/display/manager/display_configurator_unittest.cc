@@ -7,8 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
-
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -307,7 +305,7 @@ class DisplayConfiguratorTest : public testing::Test {
   // to |native_display_delegate_|. Must be followed by UpdateOutputs to effect
   // changes.
   void SetOutput(size_t index, std::unique_ptr<DisplaySnapshot> output) {
-    outputs_[index] = std::move(output);
+    UNSAFE_TODO(outputs_[index]) = std::move(output);
   }
 
   // Configures |native_display_delegate_| to return the first |num_outputs|
@@ -315,10 +313,10 @@ class DisplayConfiguratorTest : public testing::Test {
   // and output-change events to |configurator_| and triggers the configure
   // timeout if one was scheduled.
   void UpdateOutputs(size_t num_outputs, bool send_events) {
-    ASSERT_LE(num_outputs, outputs_.size());
+    ASSERT_LE(num_outputs, std::size(outputs_));
     std::vector<std::unique_ptr<DisplaySnapshot>> outputs;
     for (size_t i = 0; i < num_outputs; ++i) {
-      outputs.push_back(outputs_[i]->Clone());
+      outputs.push_back(UNSAFE_TODO(outputs_[i]->Clone()));
     }
     native_display_delegate_->SetOutputs(std::move(outputs));
 
@@ -412,7 +410,7 @@ class DisplayConfiguratorTest : public testing::Test {
   static constexpr size_t kNumOutputs = 3;
   // These snapshots are owned by the test. They are cloned whenever updates are
   // sent to |native_display_delegate_|.
-  std::array<std::unique_ptr<DisplaySnapshot>, kNumOutputs> outputs_ = {};
+  std::unique_ptr<DisplaySnapshot> outputs_[kNumOutputs];
 };
 
 }  // namespace

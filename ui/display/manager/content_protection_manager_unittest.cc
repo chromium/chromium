@@ -4,8 +4,6 @@
 
 #include "ui/display/manager/content_protection_manager.h"
 
-#include <array>
-
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +19,7 @@ namespace display::test {
 
 namespace {
 
-constexpr std::array<int64_t, 4> kDisplayIds = {123, 234, 345, 456};
+constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
 const DisplayMode kDisplayMode({1366, 768}, false, 60.0f);
 
 }  // namespace
@@ -65,15 +63,15 @@ class ContentProtectionManagerTest : public testing::Test {
   void SetUp() override {
     manager_.set_native_display_delegate(&native_display_delegate_);
 
-    constexpr std::array<DisplayConnectionType, 4> conn_types = {
+    DisplayConnectionType conn_types[] = {
         DISPLAY_CONNECTION_TYPE_INTERNAL, DISPLAY_CONNECTION_TYPE_HDMI,
         DISPLAY_CONNECTION_TYPE_VGA, DISPLAY_CONNECTION_TYPE_HDMI};
-    for (size_t i = 0; i < kDisplayIds.size(); ++i) {
-      displays_[i] = FakeDisplaySnapshot::Builder()
-                         .SetId(kDisplayIds[i])
-                         .SetType(conn_types[i])
-                         .SetCurrentMode(kDisplayMode.Clone())
-                         .Build();
+    for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
+      UNSAFE_TODO(displays_[i]) = FakeDisplaySnapshot::Builder()
+                                      .SetId(UNSAFE_TODO(kDisplayIds[i]))
+                                      .SetType(UNSAFE_TODO(conn_types[i]))
+                                      .SetCurrentMode(kDisplayMode.Clone())
+                                      .Build();
     }
 
     UpdateDisplays(2);
@@ -96,11 +94,11 @@ class ContentProtectionManagerTest : public testing::Test {
 
  protected:
   void UpdateDisplays(size_t count) {
-    ASSERT_LE(count, displays_.size());
+    ASSERT_LE(count, std::size(displays_));
 
     std::vector<std::unique_ptr<DisplaySnapshot>> displays;
     for (size_t i = 0; i < count; ++i)
-      displays.push_back(displays_[i]->Clone());
+      displays.push_back(UNSAFE_TODO(displays_[i]->Clone()));
 
     native_display_delegate_.SetOutputs(std::move(displays));
     layout_manager_.set_displays(native_display_delegate_.GetOutputs());
@@ -131,8 +129,7 @@ class ContentProtectionManagerTest : public testing::Test {
   uint32_t connection_mask_ = DISPLAY_CONNECTION_TYPE_NONE;
   uint32_t protection_mask_ = CONTENT_PROTECTION_METHOD_NONE;
 
-  std::array<std::unique_ptr<DisplaySnapshot>, kDisplayIds.size()> displays_ =
-      {};
+  std::unique_ptr<DisplaySnapshot> displays_[std::size(kDisplayIds)];
 };
 
 TEST_F(ContentProtectionManagerTest, Basic) {

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <array>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
@@ -221,24 +220,23 @@ constexpr const ModifierRemapping* kModifierRemappingIsoLevel5ShiftMod3 =
     GetModifierRemappingNeoMod3();
 static_assert(kModifierRemappingIsoLevel5ShiftMod3 != nullptr);
 
-constexpr std::array<EventRewriterAsh::MutableKeyState, 15>
-    kCustomTopRowLayoutFKeys = {{
-        {EF_NONE, DomCode::F1, DomKey::F1, VKEY_F1},
-        {EF_NONE, DomCode::F2, DomKey::F2, VKEY_F2},
-        {EF_NONE, DomCode::F3, DomKey::F3, VKEY_F3},
-        {EF_NONE, DomCode::F4, DomKey::F4, VKEY_F4},
-        {EF_NONE, DomCode::F5, DomKey::F5, VKEY_F5},
-        {EF_NONE, DomCode::F6, DomKey::F6, VKEY_F6},
-        {EF_NONE, DomCode::F7, DomKey::F7, VKEY_F7},
-        {EF_NONE, DomCode::F8, DomKey::F8, VKEY_F8},
-        {EF_NONE, DomCode::F9, DomKey::F9, VKEY_F9},
-        {EF_NONE, DomCode::F10, DomKey::F10, VKEY_F10},
-        {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11},
-        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12},
-        {EF_NONE, DomCode::F13, DomKey::F13, VKEY_F13},
-        {EF_NONE, DomCode::F14, DomKey::F14, VKEY_F14},
-        {EF_NONE, DomCode::F15, DomKey::F15, VKEY_F15},
-    }};
+const EventRewriterAsh::MutableKeyState kCustomTopRowLayoutFKeys[] = {
+    {EF_NONE, DomCode::F1, DomKey::F1, VKEY_F1},
+    {EF_NONE, DomCode::F2, DomKey::F2, VKEY_F2},
+    {EF_NONE, DomCode::F3, DomKey::F3, VKEY_F3},
+    {EF_NONE, DomCode::F4, DomKey::F4, VKEY_F4},
+    {EF_NONE, DomCode::F5, DomKey::F5, VKEY_F5},
+    {EF_NONE, DomCode::F6, DomKey::F6, VKEY_F6},
+    {EF_NONE, DomCode::F7, DomKey::F7, VKEY_F7},
+    {EF_NONE, DomCode::F8, DomKey::F8, VKEY_F8},
+    {EF_NONE, DomCode::F9, DomKey::F9, VKEY_F9},
+    {EF_NONE, DomCode::F10, DomKey::F10, VKEY_F10},
+    {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11},
+    {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12},
+    {EF_NONE, DomCode::F13, DomKey::F13, VKEY_F13},
+    {EF_NONE, DomCode::F14, DomKey::F14, VKEY_F14},
+    {EF_NONE, DomCode::F15, DomKey::F15, VKEY_F15},
+};
 constexpr KeyboardCode kMaxCustomTopRowLayoutFKeyCode = VKEY_F15;
 
 bool IsCustomLayoutFunctionKey(KeyboardCode key_code) {
@@ -2165,7 +2163,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
   const bool is_action_key = (key_iter != scan_code_vector.end());
   if (is_action_key) {
     if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
-      ApplyRemapping(kCustomTopRowLayoutFKeys[std::distance(
+      ApplyRemapping(UNSAFE_TODO(kCustomTopRowLayoutFKeys)[std::distance(
                          scan_code_vector.begin(), key_iter)],
                      state);
     }

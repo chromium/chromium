@@ -4,10 +4,9 @@
 
 #include "ui/display/manager/managed_display_info.h"
 
-#include <inttypes.h>
 #include <stdio.h>
+#include <inttypes.h>
 
-#include <array>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -199,13 +198,13 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
 
     DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
 
-    std::array<float, 4> radii = {};
+    float radii[4];
     int radius_in_int = 0;
     for (size_t idx = 0; idx < radii_part.size(); ++idx) {
       std::string_view radius = radii_part[idx];
       bool conversion_success = base::StringToInt(radius, &radius_in_int);
       DCHECK(conversion_success);
-      radii[idx] = static_cast<float>(radius_in_int);
+      UNSAFE_TODO(radii[idx]) = static_cast<float>(radius_in_int);
     }
 
     panel_corners_radii =
