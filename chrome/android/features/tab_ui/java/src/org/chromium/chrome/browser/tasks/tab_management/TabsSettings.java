@@ -290,6 +290,10 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                             getUniqueId(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
                     // LINT.ThenChange(:isShareTitlesAndUrlsEnabled)
 
+                    if (!ChromeFeatureList.sCctAlwaysOpenInBrowser.isEnabled()) {
+                        indexData.removeEntry(getUniqueId(PREF_CCT_ALWAYS_OPEN_IN_BROWSER));
+                    }
+
                     // LINT.IfChange(isChromeSuggestionsInOtherAppsEnabledIndex)
                     if (!isChromeSuggestionsInOtherAppsEnabled()) {
                         String pref = PREF_CHROME_SUGGESTIONS_IN_OTHER_APPS_SWITCH;
