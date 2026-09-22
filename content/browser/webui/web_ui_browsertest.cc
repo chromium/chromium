@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
@@ -76,6 +78,24 @@ const char kLoadDedicatedWorkerScript[] = R"(
       worker.onmessage = (event) => {
         resolve(event.data === 'pong');
       };
+      worker.postMessage('ping');
+    });
+  )";
+
+const char kLoadSharedWorkerScriptExpectingFailure[] = R"(
+    new Promise((resolve) => {
+      const sharedWorker = new SharedWorker($1);
+      sharedWorker.onerror = () => resolve('error');
+      sharedWorker.port.onmessage = () => resolve('loaded');
+      sharedWorker.port.postMessage('ping');
+    });
+  )";
+
+const char kLoadDedicatedWorkerScriptExpectingFailure[] = R"(
+    new Promise((resolve) => {
+      const worker = new Worker($1);
+      worker.onerror = () => resolve('error');
+      worker.onmessage = () => resolve('loaded');
       worker.postMessage('ping');
     });
   )";
@@ -1094,6 +1114,24 @@ class WebUIWorkerTest : public ContentBrowserTest {
       &factory_};
 };
 
+class WebUIWorkerCrossOriginTest : public WebUIWorkerTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  WebUIWorkerCrossOriginTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kNoSynchronousThrowForCrossOriginBlockedWorker,
+        FeatureEnabled());
+  }
+
+ protected:
+  bool FeatureEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, WebUIWorkerCrossOriginTest, ::testing::Bool());
+
 // Verify that we can create SharedWorker with scheme "chrome://" under
 // WebUI page.
 IN_PROC_BROWSER_TEST_F(WebUIWorkerTest, CanCreateWebUISharedWorkerForWebUI) {
@@ -1106,14 +1144,18 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest, CanCreateWebUISharedWorkerForWebUI) {
 
 // Verify that pages with scheme other than "chrome://" cannot create
 // SharedWorker with scheme "chrome://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateWebUISharedWorkerForNonWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       embedded_test_server()->GetURL("/title1.html?notrustedtypes=true"),
       GetWebUIURL("test-host/web_ui_shared_worker.js"),
-      kLoadSharedWorkerScript);
+      kLoadSharedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct 'SharedWorker'";
   EXPECT_THAT(result,
@@ -1181,14 +1223,18 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
 // Verify that chrome:// pages cannot create a SharedWorker with scheme
 // "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateUntrustedWebUISharedWorkerFromTrustedWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       GetWebUIURL("trusted/title2.html?notrustedtypes=true"),
       GetChromeUntrustedUIURL("untrusted/web_ui_shared_worker.js"),
-      kLoadSharedWorkerScript);
+      kLoadSharedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct "
       "'SharedWorker': "
@@ -1200,15 +1246,19 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
 // Verify that pages with scheme other than "chrome-untrusted://" cannot create
 // a SharedWorker with scheme "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateUntrustedWebUISharedWorkerForWebURL) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       embedded_test_server()->GetURL("localhost",
                                      "/title1.html?notrustedtypes=true"),
       GetChromeUntrustedUIURL("untrusted/web_ui_shared_worker.js"),
-      kLoadSharedWorkerScript);
+      kLoadSharedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct "
       "'SharedWorker': "
@@ -1220,14 +1270,19 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
 // Verify that pages with scheme "chrome-untrusted://" cannot create a
 // SharedWorker with scheme "chrome://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateWebUISharedWorkerForUntrustedPage) {
   SetUntrustedWorkerSrcToWebUIConfig(/*allow_embedded_frame=*/false);
 
   EvalJsResult result = RunWorkerTest(
       GetChromeUntrustedUIURL("untrusted/title2.html?notrustedtypes=true"),
-      GetWebUIURL("trusted/web_ui_shared_worker.js"), kLoadSharedWorkerScript);
+      GetWebUIURL("trusted/web_ui_shared_worker.js"),
+      kLoadSharedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct "
       "'SharedWorker': Script "
@@ -1250,14 +1305,18 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
 // Verify that pages with scheme other than "chrome://" cannot create a Worker
 // with scheme "chrome://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateWebUIDedicatedWorkerForNonWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       GURL(embedded_test_server()->GetURL("/title1.html?notrustedtypes=true")),
       GURL(GetWebUIURL("test-host/web_ui_dedicated_worker.js")),
-      kLoadDedicatedWorkerScript);
+      kLoadDedicatedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct 'Worker'";
   EXPECT_THAT(result,
@@ -1322,15 +1381,19 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verify that chrome:// pages cannot create a Worker with scheme
 // "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_F(
-    WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(
+    WebUIWorkerCrossOriginTest,
     CannotCreateUntrustedWebUIDedicatedWorkerFromTrustedWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       GetWebUIURL("trusted/title2.html?notrustedtypes=true"),
       GetChromeUntrustedUIURL("untrusted/web_ui_dedicated_worker.js"),
-      kLoadDedicatedWorkerScript);
+      kLoadDedicatedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
@@ -1341,15 +1404,19 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verify that pages with scheme other than "chrome-untrusted://" cannot create
 // a Worker with scheme "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateUntrustedWebUIDedicatedWorkerForWebURL) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
       embedded_test_server()->GetURL("localhost",
                                      "/title1.html?notrustedtypes=true"),
       GetChromeUntrustedUIURL("untrusted/web_ui_dedicated_worker.js"),
-      kLoadDedicatedWorkerScript);
+      kLoadDedicatedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
@@ -1360,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
 // Verify that pages with scheme "chrome-untrusted://" cannot create a Worker
 // with scheme "chrome://".
-IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
+IN_PROC_BROWSER_TEST_P(WebUIWorkerCrossOriginTest,
                        CannotCreateWebUIDedicatedWorkerForUntrustedPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetUntrustedWorkerSrcToWebUIConfig(/*allow_embedded_frame=*/false);
@@ -1368,8 +1435,12 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
   EvalJsResult result = RunWorkerTest(
       GetChromeUntrustedUIURL("untrusted/title2.html?notrustedtypes=true"),
       GetWebUIURL("trusted/web_ui_dedicated_worker.js"),
-      kLoadDedicatedWorkerScript);
+      kLoadDedicatedWorkerScriptExpectingFailure);
 
+  if (FeatureEnabled()) {
+    EXPECT_EQ("error", result);
+    return;
+  }
   std::string expected_failure =
       "a JavaScript error: \"SecurityError: Failed to construct 'Worker': "
       "Script "

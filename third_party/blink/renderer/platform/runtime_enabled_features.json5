@@ -4433,6 +4433,14 @@
       depends_on: ["NormalizeNbspForPasteAndDrop"],
     },
     {
+      // Dispatch an error event for the cross-origin violation for the worker
+      // script URL fetching, instead of throwing error synchronously on worker
+      // construction.
+      // See https://github.com/whatwg/html/issues/337
+      name: "NoSynchronousThrowForCrossOriginBlockedWorker",
+      status: "experimental",
+    },
+    {
       name: "NotificationConstructor",
       // Android won't be able to reliably support non-persistent notifications, the
       // intended behavior for which is in flux by itself.

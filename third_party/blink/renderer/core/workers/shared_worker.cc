@@ -156,7 +156,8 @@ SharedWorker* SharedWorker::CreateImpl(
   if (script_url.IsEmpty())
     return nullptr;
 
-  if (!worker->CheckAllowedByCSPForNoThrow(script_url)) {
+  if (!worker->CheckCanReadScriptURLForNoThrow(script_url) ||
+      !worker->CheckAllowedByCSPForNoThrow(script_url)) {
     // Return the unconnected worker. The port_ will be closed when remote_port
     // goes out of scope after returning from this function.
     return worker;

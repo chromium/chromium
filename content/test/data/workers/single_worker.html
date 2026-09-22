@@ -16,6 +16,7 @@ if (!workerUrl) {
 
 try {
   var worker = getWorker(workerUrl);
+  worker.onerror = onFailure;
   worker.postMessage("ping");
   worker.onmessage = function(evt) {
   if (evt.data == "pong")

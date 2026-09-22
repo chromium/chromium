@@ -283,7 +283,8 @@ void DedicatedWorker::Start() {
   TRACE_EVENT("blink.worker", "DedicatedWorker::Start");
   DCHECK(GetExecutionContext()->IsContextThread());
 
-  if (!CheckAllowedByCSPForNoThrow(script_request_url_)) {
+  if (!CheckCanReadScriptURLForNoThrow(script_request_url_) ||
+      !CheckAllowedByCSPForNoThrow(script_request_url_)) {
     // The same as in OnScriptLoadStartFailed, reset factory_client_ and return.
     // This leaves the worker in a state the same as if script loading failed.
     factory_client_.reset();

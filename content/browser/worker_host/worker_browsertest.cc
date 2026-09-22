@@ -45,6 +45,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -64,8 +65,11 @@
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -1622,5 +1626,96 @@ IN_PROC_BROWSER_TEST_F(SharedWorkerExtendedLifetimeBrowserOriginTrialTest,
   run_loop.Run();
 }
 
+class CrossOriginWorkerScriptTest : public WorkerTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  CrossOriginWorkerScriptTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kNoSynchronousThrowForCrossOriginBlockedWorker,
+        FeatureEnabled());
+  }
+
+ protected:
+  bool FeatureEnabled() { return GetParam(); }
+
+  EvalJsResult CreateWorker(const GURL& worker_url) {
+    return EvalJs(shell(), JsReplace(R"(
+      new Promise(resolve => {
+        let worker;
+        try {
+          worker = new Worker($1);
+        } catch (e) {
+          resolve('exception: ' + e.name);
+          return;
+        }
+        worker.onmessage = () => resolve('message');
+        worker.onerror = () => resolve('error');
+      })
+    )",
+                                     worker_url));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, CrossOriginWorkerScriptTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest,
+                       CrossOriginScriptIsBlockedBeforeFetching) {
+  const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url =
+      ssl_server()->GetURL("b.test", "/workers/post_ready.js");
+
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+
+  URLLoaderMonitor monitor;
+  EXPECT_EQ(FeatureEnabled() ? "error" : "exception: SecurityError",
+            CreateWorker(worker_url));
+
+  EXPECT_FALSE(monitor.GetRequestInfo(worker_url));
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest,
+                       CrossOriginRedirectFailsFetchWithSameOriginMode) {
+  const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL redirect_target =
+      ssl_server()->GetURL("b.test", "/workers/post_ready.js");
+  const GURL worker_url = ssl_server()->GetURL(
+      "a.test", "/server-redirect?" + redirect_target.spec());
+
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+
+  URLLoaderMonitor monitor;
+  EXPECT_EQ("error", CreateWorker(worker_url));
+
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(worker_url);
+  ASSERT_TRUE(request);
+  EXPECT_EQ(network::mojom::RequestMode::kSameOrigin, request->mode);
+
+  std::optional<network::URLLoaderCompletionStatus> status =
+      monitor.GetCompletionStatus(worker_url);
+  ASSERT_TRUE(status);
+  EXPECT_EQ(net::ERR_ABORTED, status->error_code);
+  EXPECT_FALSE(status->cors_error_status);
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest, SameOriginScriptStillRuns) {
+  const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
+  const GURL worker_url =
+      ssl_server()->GetURL("a.test", "/workers/post_ready.js");
+
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+
+  URLLoaderMonitor monitor;
+  EXPECT_EQ("message", CreateWorker(worker_url));
+
+  std::optional<network::URLLoaderCompletionStatus> status =
+      monitor.GetCompletionStatus(worker_url);
+  ASSERT_TRUE(status);
+  EXPECT_EQ(net::OK, status->error_code);
+  EXPECT_FALSE(status->cors_error_status);
+}
 
 }  // namespace content

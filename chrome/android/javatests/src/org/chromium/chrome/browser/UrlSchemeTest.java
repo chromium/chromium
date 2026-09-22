@@ -23,8 +23,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
@@ -203,7 +206,8 @@ public class UrlSchemeTest {
     @Test
     @MediumTest
     @Feature({"CORS"})
-    public void testContentUrlToLoadWorkerFromContent() throws Throwable {
+    @DisableFeatures(BlinkFeatures.NO_SYNCHRONOUS_THROW_FOR_CROSS_ORIGIN_BLOCKED_WORKER)
+    public void testContentUrlToLoadWorkerFromContentThrow() throws Throwable {
         final String resource = "content_url_load_content_worker.html";
 
         mActivityTestRule.loadUrl(createContentUrl(resource));
@@ -220,6 +224,29 @@ public class UrlSchemeTest {
 
         Assert.assertEquals(
                 "exception", ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    @EnableFeatures(BlinkFeatures.NO_SYNCHRONOUS_THROW_FOR_CROSS_ORIGIN_BLOCKED_WORKER)
+    public void testContentUrlToLoadWorkerFromContentNoThrow() throws Throwable {
+        final String resource = "content_url_load_content_worker.html";
+
+        mActivityTestRule.loadUrl(createContentUrl(resource));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()),
+                            Matchers.not("running"));
+                });
+
+        // Make sure that content provider was asked to provide the content.
+        ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
+
+        Assert.assertEquals(
+                "error", ChromeTabUtils.getTitleOnUiThread(mActivityTestRule.getActivityTab()));
     }
 
     /** Test that a content URL is *ALLOWED* to access an image provided by a content URL. */

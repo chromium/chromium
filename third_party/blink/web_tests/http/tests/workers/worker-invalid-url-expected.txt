@@ -1,5 +1,6 @@
+CONSOLE ERROR: Script at 'http://example.com/worker.js' cannot be accessed from origin 'http://127.0.0.1:8000'.
 Test worker invalid url exceptions. Should print two "PASS" statements.
 
-PASS: Got security error.
 PASS: Got syntax error.
+PASS: Got error event.
 

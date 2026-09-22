@@ -77,6 +77,16 @@ class CORE_EXPORT AbstractWorker
   // an error event to the worker and returns false.
   bool CheckAllowedByCSPForNoThrow(const KURL& script_url);
 
+  // Check whether the |script_url| is allowed by the same-origin check
+  // (SecurityOrigin::CanReadContent()).
+  // When NoSynchronousThrowForCrossOriginBlockedWorker is disabled, this
+  // method is a no-op and returns true. The check is done in ResolveURL()
+  // instead.
+  // When NoSynchronousThrowForCrossOriginBlockedWorker is enabled, if the
+  // URL is allowed, the function returns true. Otherwise, the function posts
+  // a task to dispatch an error event to the worker and returns false.
+  bool CheckCanReadScriptURLForNoThrow(const KURL& script_url);
+
   void DispatchErrorEvent();
 };
 

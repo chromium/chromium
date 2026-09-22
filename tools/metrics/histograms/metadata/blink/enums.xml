@@ -6760,6 +6760,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6022" label="AttributionReportingWindowOpen"/>
   <int value="6023" label="StickyVideoAdDetected"/>
   <int value="6024" label="CSSTimelineTreeScopeMismatch"/>
+  <int value="6025" label="WorkerScriptURLFetchBlockedByCrossOrigin"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

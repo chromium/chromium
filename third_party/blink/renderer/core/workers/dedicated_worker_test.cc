@@ -29,11 +29,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
@@ -42,6 +45,7 @@
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
@@ -1245,6 +1249,214 @@ TEST_F(DedicatedWorkerDisabledTest, DedicatedWorkerDisabledInFrame) {
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Code(),
             ToExceptionCode(DOMExceptionCode::kSecurityError));
+}
+
+namespace {
+
+// Counts how many times it has been invoked.
+class CountingEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { ++count_; }
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+}  // namespace
+
+class DedicatedWorkerConstructorTest
+    : public PageTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  DedicatedWorkerConstructorTest() : scoped_feature_(IsFeatureEnabled()) {}
+
+ protected:
+  bool IsFeatureEnabled() { return GetParam(); }
+
+  void SetUp() override {
+    PageTestBase::SetUp(gfx::Size());
+    Page::InsertOrdinaryPageForTesting(&GetPage());
+    NavigateTo(KURL("https://example.test/"));
+  }
+
+  DedicatedWorker* CreateWorker(const String& url,
+                                ExceptionState& exception_state) {
+    return DedicatedWorker::Create(
+        GetFrame().DomWindow(),
+        MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(url),
+        WorkerOptions::Create(), exception_state);
+  }
+
+  bool IsCrossOriginBlockedUseCounted() {
+    return GetDocument().IsUseCounted(
+        WebFeature::kWorkerScriptURLFetchBlockedByCrossOrigin);
+  }
+
+  bool IsCSPBlockedUseCounted() {
+    return GetDocument().IsUseCounted(WebFeature::kCSPBlockedWorkerCreation);
+  }
+
+ private:
+  ScopedNoSynchronousThrowForCrossOriginBlockedWorkerForTest scoped_feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, DedicatedWorkerConstructorTest, testing::Bool());
+
+TEST_P(DedicatedWorkerConstructorTest, CrossOriginScriptURL) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker =
+      CreateWorker("https://cross-origin.test/worker.js", exception_state);
+
+  EXPECT_TRUE(IsCrossOriginBlockedUseCounted());
+
+  if (!IsFeatureEnabled()) {
+    // With the feature disabled, the worker construction is blocked by a
+    // security exception from cross-origin violation.
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              exception_state.CodeAs<DOMExceptionCode>());
+    EXPECT_FALSE(worker);
+    return;
+  }
+
+  // With the feature enabled, the cross-origin violation does not throw
+  // a security exception. Instead, it dispatches an error event.
+  EXPECT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(worker);
+
+  auto* counter = MakeGarbageCollected<CountingEventListener>();
+  worker->addEventListener(event_type_names::kError, counter);
+
+  // Wait until the cross-origin violation event is dispatched.
+  auto* waiter =
+      MakeGarbageCollected<WaitForEvent>(worker, event_type_names::kError);
+  Event* cross_origin_violation_event = waiter->GetLastEvent();
+  ASSERT_TRUE(cross_origin_violation_event);
+  EXPECT_TRUE(cross_origin_violation_event->HasInterface(
+      event_interface_names::kEvent));
+
+  // Flush any remaining tasks to make sure no more error event is dispatched.
+  test::RunPendingTasks();
+  EXPECT_EQ(1, counter->count());
+}
+
+TEST_P(DedicatedWorkerConstructorTest, CountsCrossOriginBlockedOverCSP) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  // CSP blocks worker script fetching.
+  NavigateTo(KURL("https://example.test/"),
+             {{"Content-Security-Policy", "worker-src 'none'"}});
+
+  {
+    // Check a CSP violation dispatches an error event.
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker =
+        CreateWorker("https://example.test/worker.js", exception_state);
+
+    EXPECT_FALSE(IsCrossOriginBlockedUseCounted());
+    EXPECT_TRUE(IsCSPBlockedUseCounted());
+
+    // CSP violation does not throw exception during worker creation.
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+
+    auto* counter = MakeGarbageCollected<CountingEventListener>();
+    worker->addEventListener(event_type_names::kError, counter);
+
+    // Wait until the CSP violation event is dispatched.
+    auto* waiter =
+        MakeGarbageCollected<WaitForEvent>(worker, event_type_names::kError);
+    Event* csp_violation_event = waiter->GetLastEvent();
+    ASSERT_TRUE(csp_violation_event);
+    EXPECT_TRUE(
+        csp_violation_event->HasInterface(event_interface_names::kEvent));
+
+    // Flush any remaining tasks to make sure no more error event is dispatched.
+    test::RunPendingTasks();
+    EXPECT_EQ(1, counter->count());
+  }
+
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kWorkerScriptURLFetchBlockedByCrossOrigin);
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kCSPBlockedWorkerCreation);
+
+  {
+    // Check cross-origin violation takes precedence over CSP violation.
+    DummyExceptionStateForTesting exception_state;
+    DedicatedWorker* worker =
+        CreateWorker("https://cross-origin.test/worker.js", exception_state);
+
+    EXPECT_TRUE(IsCrossOriginBlockedUseCounted());
+    EXPECT_FALSE(IsCSPBlockedUseCounted());
+
+    if (!IsFeatureEnabled()) {
+      // With the feature disabled, the worker construction is blocked
+      // by a security exception from cross-origin violation.
+      EXPECT_TRUE(exception_state.HadException());
+      EXPECT_EQ(DOMExceptionCode::kSecurityError,
+                exception_state.CodeAs<DOMExceptionCode>());
+      EXPECT_FALSE(worker);
+      return;
+    }
+
+    // With the feature enabled, the cross-origin violation does not throw
+    // a security exception. Instead, it dispatches an error event.
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(worker);
+
+    auto* counter = MakeGarbageCollected<CountingEventListener>();
+    worker->addEventListener(event_type_names::kError, counter);
+
+    // Wait until the cross-origin violation event is dispatched.
+    auto* waiter =
+        MakeGarbageCollected<WaitForEvent>(worker, event_type_names::kError);
+    Event* cross_origin_violation_event = waiter->GetLastEvent();
+    ASSERT_TRUE(cross_origin_violation_event);
+    EXPECT_TRUE(cross_origin_violation_event->HasInterface(
+        event_interface_names::kEvent));
+
+    // Flush any remaining tasks to make sure no more error event is dispatched.
+    test::RunPendingTasks();
+    EXPECT_EQ(1, counter->count());
+  }
+}
+
+TEST_P(DedicatedWorkerConstructorTest, DataURLScriptURLDoesNotThrow) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker = CreateWorker(
+      "data:application/javascript,// Do nothing", exception_state);
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(worker);
+  EXPECT_FALSE(IsCrossOriginBlockedUseCounted());
+}
+
+TEST_P(DedicatedWorkerConstructorTest, UnparsableScriptURLThrowsSyntaxError) {
+  ScopedTestingPlatformSupport<
+      FakeWebDedicatedWorkerHostFactoryClientPlatformSupport>
+      platform;
+
+  DummyExceptionStateForTesting exception_state;
+  DedicatedWorker* worker =
+      CreateWorker("http://invalid:123$", exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
+            exception_state.CodeAs<DOMExceptionCode>());
+  EXPECT_FALSE(worker);
+  EXPECT_FALSE(IsCrossOriginBlockedUseCounted());
 }
 
 }  // namespace blink
