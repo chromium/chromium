@@ -95,17 +95,15 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
                              /*description=*/"");
 
   std::string remixed_skill_id = "";
-
-  // Add a first party skill to the service.
-  GetSkillsService()->AddOrUpdateSkillFromSync(
-      first_party_skill.id, /*source_skill_id=*/"", first_party_skill.name,
-      first_party_skill.icon, first_party_skill.prompt,
-      first_party_skill.description,
-      /*creation_time=*/base::Time::Now(),
-      /*last_update_time=*/base::Time::Now(), first_party_skill.source);
+  proto::Skill first_party_skill_proto =
+      GetFirstPartySkillProto(first_party_skill);
 
   RunTestSequence(
-      OpenGlicAndInstrument(), CreateSkill(first_party_skill),
+      Seed1PSkills({first_party_skill_proto}), OpenGlicAndInstrument(),
+      WaitFor1PSkills(),
+      // Simulates remixing the 1P skill, which opens the creation dialog
+      // pre-populated with the 1P skill's fields.
+      CreateSkill(first_party_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
                               SkillsDialogView::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(first_party_skill, edited_skill),
@@ -113,16 +111,14 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       WaitForSkillPreviewShown(edited_skill.name),
       Do([this, &first_party_skill, &edited_skill, &remixed_skill_id]() {
         // Verify skill was saved correctly as a derived skill in SkillsService.
-        const Skill* remixed_skill = nullptr;
-
-        for (const auto& skill : GetSkillsService()->GetSkills()) {
-          if (skill->source_skill_id == first_party_skill.id) {
-            remixed_skill = skill.get();
-            remixed_skill_id = skill->id;
-            break;
-          }
-        }
-        ASSERT_TRUE(remixed_skill);
+        // `GetSkills()` only returns user-owned skills (`skills_`), while the
+        // seeded 1P skill is stored separately in `Get1PSkills()`. Thus only
+        // the newly created derived (remixed) skill is expected here.
+        const std::vector<std::unique_ptr<Skill>>& user_skills =
+            GetSkillsService()->GetSkills();
+        ASSERT_EQ(user_skills.size(), 1u);
+        const Skill* remixed_skill = user_skills[0].get();
+        remixed_skill_id = remixed_skill->id;
         EXPECT_THAT(remixed_skill, VerifyRemixedFirstPartySkill(
                                        edited_skill, first_party_skill));
         ASSERT_FALSE(remixed_skill_id.empty());
@@ -187,6 +183,8 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
   first_party_skill.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   first_party_skill.name = "1P Skill No Creation Time";
   first_party_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+  proto::Skill first_party_skill_proto =
+      GetFirstPartySkillProto(first_party_skill);
 
   RunTestSequence(
       OpenGlicAndInstrument(), Do([this, user_skill, expected_creation_time]() {
@@ -200,16 +198,8 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       // Verify user skill displays the creation time matching the C++ time.
       WaitForSkillPreviewWithCreationTime(user_skill.name,
                                           expected_creation_time),
-      // Add a 1P skill with null creation_time.
-      Do([this, first_party_skill]() {
-        GetSkillsService()->AddOrUpdateSkillFromSync(
-            first_party_skill.id, /*source_skill_id=*/"",
-            first_party_skill.name, first_party_skill.icon,
-            first_party_skill.prompt, first_party_skill.description,
-            /*creation_time=*/base::Time(),
-            /*last_update_time=*/base::Time::Now(),
-            sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
-      }),
+      // Seed a 1P skill (which has no creation_time).
+      Seed1PSkills({first_party_skill_proto}), WaitFor1PSkills(),
       WaitForSkillPreviewShown(first_party_skill.name),
       // Verify 1P skill has no creation time displayed.
       WaitForJsResult(

@@ -419,6 +419,10 @@ SkillsInteractiveUiTestBase::Seed1PSkills(
     GURL api_url(features::kSkillsServiceApiUrl.Get());
     test_url_loader_factory_.AddResponse(api_url.spec(), response_data,
                                          net::HTTP_OK);
+    // Trigger a fetch immediately so `Seed1PSkills` also works when called
+    // after the Glic panel has already been opened (which otherwise only
+    // triggers `RefreshDiscoverySkills()` on panel open).
+    GetSkillsService()->FetchDiscoverySkills();
   });
 }
 

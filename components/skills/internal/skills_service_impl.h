@@ -129,12 +129,13 @@ class SkillsServiceImpl : public SkillsService {
   const Skill* AddSkillImpl(std::unique_ptr<Skill> skill,
                             UpdateSource update_source);
 
-  // Returns a mutable skill with the given ID or nullptr if not found.
-  Skill* GetMutableSkillById(std::string_view skill_id);
+  // Returns a mutable user skill with the given ID or nullptr if not found.
+  // First-party and provided skills are not mutable and will return nullptr.
+  Skill* GetMutableUserSkillById(std::string_view skill_id);
 
-  // Returns the position of the skill with the given ID or nullopt if not
+  // Returns the position of the user skill with the given ID or nullopt if not
   // found.
-  std::optional<size_t> GetSkillPosition(std::string_view skill_id) const;
+  std::optional<size_t> GetUserSkillPosition(std::string_view skill_id) const;
 
   // Updates an existing `skill` with the given data. `update_time` is used only
   // if the skill is actually updated with new data or if updated from sync.

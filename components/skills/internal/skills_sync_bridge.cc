@@ -172,6 +172,12 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
           continue;
         }
 
+        // First-party skills are never synced.
+        if (skill_specifics.skill_source() ==
+            sync_pb::SKILL_SOURCE_FIRST_PARTY) {
+          continue;
+        }
+
         const Skill* skill = skills_service_->AddOrUpdateSkillFromSync(
             skill_specifics.guid(), skill_specifics.source_skill_id(),
             skill_specifics.name(), skill_specifics.icon(),
@@ -322,6 +328,12 @@ bool SkillsSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (GetClientTag(entity_data).empty()) {
+    return false;
+  }
+
+  // First-party skills are never synced.
+  if (entity_data.specifics.skill().skill_source() ==
+      sync_pb::SKILL_SOURCE_FIRST_PARTY) {
     return false;
   }
 

@@ -140,7 +140,10 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     bool enabled) {
   CHECK_EQ(GetServiceStatus(), ServiceStatus::kReady);
 
-  if (Skill* skill = GetMutableSkillById(skill_id)) {
+  // First-party skills are never synced.
+  CHECK_NE(source, sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+
+  if (Skill* skill = GetMutableUserSkillById(skill_id)) {
     // Skill already exists, update its fields.
     UpdateSkillImpl(skill, name, icon, prompt, description, last_update_time,
                     UpdateSource::kSync, enabled);
@@ -168,7 +171,7 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
     return nullptr;
   }
 
-  Skill* skill = GetMutableSkillById(skill_id);
+  Skill* skill = GetMutableUserSkillById(skill_id);
   if (!skill) {
     // Skill does not exist, nothing to update.
     return nullptr;
@@ -197,7 +200,8 @@ const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
   // A skill can be a 1st party skill, a provided skill (e.g. enterprise
   // policy), or a user generated skill. First attempt to retrieve from 1P or
   // provided collections; otherwise fall back to searching skills_ (user
-  // skills).
+  // skills). Note that 1P and provided skills are preferred in case of ID
+  // collision.
   auto it = first_party_skill_objects_map_.find(skill_id);
   if (it != first_party_skill_objects_map_.end()) {
     return &it->second;
@@ -208,7 +212,7 @@ const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
     return provided_it->second.get();
   }
 
-  std::optional<size_t> skill_position = GetSkillPosition(skill_id);
+  std::optional<size_t> skill_position = GetUserSkillPosition(skill_id);
   if (!skill_position.has_value()) {
     return nullptr;
   }
@@ -238,6 +242,12 @@ SkillsServiceImpl::Get1PTopicsInfo() const {
 void SkillsServiceImpl::LoadInitialSkills(
     std::vector<std::unique_ptr<Skill>> initial_skills) {
   CHECK(!is_initialized_);
+  // `SkillsSyncBridge` already filters out invalid entries (including
+  // `SKILL_SOURCE_FIRST_PARTY`) via `IsEntityDataValid()` when reading from
+  // storage before calling `LoadInitialSkills()`.
+  for (const std::unique_ptr<Skill>& skill : initial_skills) {
+    CHECK_NE(skill->source, sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+  }
   skills_ = std::move(initial_skills);
   SortSkills();
 
@@ -302,8 +312,10 @@ void SkillsServiceImpl::SetServiceStatusForTesting(ServiceStatus status) {
 
 const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
                                              UpdateSource update_source) {
-  // Added skill must not exist in the service.
-  CHECK(!GetSkillById(skill->id));
+  // Added skill must not exist in user skills and must not be a first-party
+  // skill.
+  CHECK_NE(skill->source, sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+  CHECK(!GetMutableUserSkillById(skill->id));
 
   const Skill* skill_ptr = skill.get();
   skills_.push_back(std::move(skill));
@@ -382,11 +394,17 @@ void SkillsServiceImpl::Handle1pSkills(
   }
 }
 
-Skill* SkillsServiceImpl::GetMutableSkillById(std::string_view skill_id) {
-  return const_cast<Skill*>(GetSkillById(skill_id));
+Skill* SkillsServiceImpl::GetMutableUserSkillById(std::string_view skill_id) {
+  // Only user skills can be modified. First-party and provided skills are
+  // immutable.
+  std::optional<size_t> skill_position = GetUserSkillPosition(skill_id);
+  if (!skill_position.has_value()) {
+    return nullptr;
+  }
+  return skills_[*skill_position].get();
 }
 
-std::optional<size_t> SkillsServiceImpl::GetSkillPosition(
+std::optional<size_t> SkillsServiceImpl::GetUserSkillPosition(
     std::string_view skill_id) const {
   for (size_t i = 0; i < skills_.size(); ++i) {
     if (skills_[i]->id == skill_id) {
@@ -407,7 +425,7 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
   CHECK(skill);
 
   // Update the existing skill.
-  std::optional<size_t> old_position = GetSkillPosition(skill->id);
+  std::optional<size_t> old_position = GetUserSkillPosition(skill->id);
 
   bool is_changed = false;
   if (skill->name != name) {
@@ -444,7 +462,7 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
     SortSkills();
 
     const bool is_position_changed =
-        old_position != GetSkillPosition(skill->id);
+        old_position != GetUserSkillPosition(skill->id);
     NotifySkillChanged(skill->id, update_source, is_position_changed);
   }
 }

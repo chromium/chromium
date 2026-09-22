@@ -100,6 +100,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
     test_skills.push_back(std::move(skill));
   }
 
+  Skill first_party_skill = GetMockSkill();
+  first_party_skill.name = first_party_skill_name;
+  proto::Skill first_party_skill_proto =
+      GetFirstPartySkillProto(first_party_skill);
+
   RunTestSequence(
       OpenGlicAndInstrument(), Do([this, test_skills]() {
         for (const auto& skill : test_skills) {
@@ -123,19 +128,9 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
       // Skill 0 should now move to the top because it was just updated.
       WaitForSkillPreviewOrder(
           {updated_skill_name, test_skills[2].name, test_skills[1].name}),
-      // Add a 1P skill with a creation and last update time older than all
-      // other user created skills.
-      Do([this, first_party_skill_name]() {
-        auto older_time = base::Time::Now() - base::Minutes(10);
-
-        GetSkillsService()->AddOrUpdateSkillFromSync(
-            base::Uuid::GenerateRandomV4().AsLowercaseString(),
-            /*source_skill_id=*/"", first_party_skill_name, "icon", "prompt",
-            "description", /*creation_time=*/older_time,
-            /*last_update_time=*/older_time,
-            sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
-      }),
-      // Ensure the 1P skill is at the end of the list.
+      // Seed a 1P skill and ensure it is placed at the end of the list after
+      // all user skills.
+      Seed1PSkills({first_party_skill_proto}), WaitFor1PSkills(),
       WaitForSkillPreviewOrder({updated_skill_name, test_skills[2].name,
                                 test_skills[1].name, first_party_skill_name}));
 }

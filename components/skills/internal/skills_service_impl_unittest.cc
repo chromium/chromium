@@ -607,7 +607,7 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
 
   const Skill* skill = service().AddOrUpdateSkillFromSync(
       "id", "source_skill_id", "name", "icon", "prompt", "description",
-      creation_time, update_time, sync_pb::SKILL_SOURCE_FIRST_PARTY);
+      creation_time, update_time, sync_pb::SKILL_SOURCE_USER_CREATED);
   ASSERT_NE(nullptr, skill);
 
   EXPECT_THAT(
@@ -616,6 +616,71 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
           HasSkillWithSource("source_skill_id", "name", "icon", "prompt",
                              "description"),
           HasCreationTime(creation_time), HasLastUpdateTime(update_time)))));
+}
+
+TEST_F(SkillsServiceImplTest,
+       AddOrUpdateSkillFromSync_DoesNotOverwriteFirstPartySkillOnCollision) {
+  InitService();
+
+  // Populate a first-party skill.
+  skills::proto::Skill proto_skill;
+  proto_skill.set_id("1p_skill_id");
+  proto_skill.set_name("1P Name");
+  proto_skill.set_icon("1P Icon");
+  proto_skill.set_prompt("1P Prompt");
+  proto_skill.set_description("1P Description");
+
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
+  first_party_skill_data->skills_list.push_back(proto_skill);
+  service().Handle1pSkills(std::move(first_party_skill_data));
+
+  // Add from sync with a colliding 1P skill ID.
+  const Skill* sync_skill = service().AddOrUpdateSkillFromSync(
+      "1p_skill_id", /*source_skill_id=*/"", "User Name", "User Icon",
+      "User Prompt", "User Description", base::Time::Now(), base::Time::Now(),
+      sync_pb::SKILL_SOURCE_USER_CREATED);
+  ASSERT_NE(nullptr, sync_skill);
+  EXPECT_EQ("User Name", sync_skill->name);
+  EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED,
+            sync_skill->source);
+  EXPECT_THAT(
+      service().GetSkills(),
+      ElementsAre(Pointee(HasSkill("User Name", "User Icon", "User Prompt",
+                                   "User Description"))));
+
+  // The 1P skill must remain untouched and preferred by GetSkillById.
+  const Skill* skill = service().GetSkillById("1p_skill_id");
+  ASSERT_NE(nullptr, skill);
+  EXPECT_EQ("1P Name", skill->name);
+  EXPECT_EQ("1P Prompt", skill->prompt);
+  EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY, skill->source);
+}
+
+TEST_F(SkillsServiceImplTest, UpdateSkill_DoesNotMutateFirstPartySkill) {
+  InitService();
+
+  skills::proto::Skill proto_skill;
+  proto_skill.set_id("1p_skill_id");
+  proto_skill.set_name("1P Name");
+  proto_skill.set_icon("1P Icon");
+  proto_skill.set_prompt("1P Prompt");
+  proto_skill.set_description("1P Description");
+
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
+  first_party_skill_data->skills_list.push_back(proto_skill);
+  service().Handle1pSkills(std::move(first_party_skill_data));
+
+  EXPECT_CALL(mock_observer_, OnSkillUpdated).Times(0);
+
+  const Skill* updated_skill =
+      service().UpdateSkill("1p_skill_id", "New Name", "New Icon", "New Prompt");
+  EXPECT_EQ(nullptr, updated_skill);
+
+  const Skill* skill = service().GetSkillById("1p_skill_id");
+  ASSERT_NE(nullptr, skill);
+  EXPECT_EQ("1P Name", skill->name);
+  EXPECT_EQ("1P Prompt", skill->prompt);
+  EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY, skill->source);
 }
 
 TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
