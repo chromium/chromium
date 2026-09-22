@@ -58,7 +58,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
 
   bool ScheduleOverlayPlane(
       OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      gfx::GpuFenceHandle gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   void PreserveChildSurfaceControls() override;
 

@@ -14,6 +14,7 @@
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_export.h"
@@ -37,7 +38,6 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
-class GpuFence;
 struct OverlayPlaneData;
 }  // namespace gfx
 
@@ -101,7 +101,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   // data such as opacity, z_order, size, etc.
   virtual bool ScheduleOverlayPlane(
       OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      gfx::GpuFenceHandle gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data);
 
 #if BUILDFLAG(IS_APPLE)

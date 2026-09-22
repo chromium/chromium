@@ -264,7 +264,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
   if (!disable_primary_plane_) {
     CHECK(overlay_list.front().overlay_handled);
     presenter_->ScheduleOverlayPlane(
-        buffers_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        buffers_[back_buffer_]->image(), gfx::GpuFenceHandle(),
         gfx::OverlayPlaneData(
             0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
             unity_rect,
@@ -276,7 +276,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
     presenter_->ScheduleOverlayPlane(
-        overlay_buffer_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        overlay_buffer_[back_buffer_]->image(), gfx::GpuFenceHandle(),
         gfx::OverlayPlaneData(
             1, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(overlay_rect),
             unity_rect,

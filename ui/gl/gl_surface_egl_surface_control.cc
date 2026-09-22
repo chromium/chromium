@@ -328,7 +328,7 @@ gfx::Rect GLSurfaceEGLSurfaceControl::CalculateSourceCrop(
 
 bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     OverlayImage image,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::GpuFenceHandle gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   if (surface_lost_) {
     LOG(ERROR) << "ScheduleOverlayPlane failed because surface is lost";
@@ -389,14 +389,12 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   }
 
   if (uninitialized || surface_state.hardware_buffer != hardware_buffer ||
-      gpu_fence) {
+      !gpu_fence.is_null()) {
     surface_state.hardware_buffer = hardware_buffer;
 
     base::ScopedFD fence_fd;
-    if (gpu_fence && surface_state.hardware_buffer) {
-      auto fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
-      DCHECK(!fence_handle.is_null());
-      fence_fd = fence_handle.Release();
+    if (!gpu_fence.is_null() && surface_state.hardware_buffer) {
+      fence_fd = gpu_fence.Release();
     }
 
     if (is_primary_plane) {

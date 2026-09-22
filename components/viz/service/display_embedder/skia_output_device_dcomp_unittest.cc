@@ -43,7 +43,7 @@ class MockPresenter : public gl::Presenter {
 
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      gfx::GpuFenceHandle gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override {
     return true;
   }

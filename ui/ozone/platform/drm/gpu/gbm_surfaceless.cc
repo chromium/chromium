@@ -58,10 +58,11 @@ void GbmSurfaceless::QueueOverlayPlane(DrmOverlayPlane plane) {
 
 bool GbmSurfaceless::ScheduleOverlayPlane(
     gl::OverlayImage image,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::GpuFenceHandle gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   unsubmitted_frames_.back()->overlays.emplace_back(
-      std::move(image), std::move(gpu_fence), overlay_plane_data);
+      std::move(image), std::make_unique<gfx::GpuFence>(std::move(gpu_fence)),
+      overlay_plane_data);
   return true;
 }
 

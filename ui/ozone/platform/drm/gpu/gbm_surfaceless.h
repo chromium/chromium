@@ -22,10 +22,6 @@
 #include "ui/gl/scoped_binders.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 
-namespace gfx {
-class GpuFence;
-}  // namespace gfx
-
 namespace ui {
 
 class DrmWindowProxy;
@@ -50,7 +46,7 @@ class GbmSurfaceless : public gl::Presenter {
   // gl::Presenter:
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      gfx::GpuFenceHandle gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,

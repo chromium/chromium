@@ -233,7 +233,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
                             gl::OverlayImage image,
                             int z_order) {
     presenter->ScheduleOverlayPlane(
-        image, nullptr,
+        image, gfx::GpuFenceHandle(),
         gfx::OverlayPlaneData(
             z_order, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
             gfx::RectF(window_->GetBoundsInPixels()), {}, false,
@@ -1388,7 +1388,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
 
     // Prepare background.
     presenter->ScheduleOverlayPlane(
-        fake_overlay_image[0]->GetNativePixmap(), nullptr,
+        fake_overlay_image[0]->GetNativePixmap(), gfx::GpuFenceHandle(),
         gfx::OverlayPlaneData(
             INT32_MIN,
             gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,

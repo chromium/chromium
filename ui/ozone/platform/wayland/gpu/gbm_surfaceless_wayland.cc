@@ -131,7 +131,7 @@ void GbmSurfacelessWayland::QueueWaylandOverlayConfig(
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     gl::OverlayImage image,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::GpuFenceHandle gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   auto* frame = unsubmitted_frames_.back().get();
   // There are multiple scheduling submissions for the same frame. If the
@@ -149,7 +149,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
       frame->schedule_planes_succeeded = false;
       return false;
     }
-    DCHECK(!gpu_fence);
+    DCHECK(gpu_fence.is_null());
 
     BufferId buf_id = solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
         overlay_plane_data.color.value(), buffer_manager_);
@@ -163,9 +163,9 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
         {overlay_plane_data, nullptr, buf_id, surface_scale_factor()});
   } else {
     std::vector<gfx::GpuFence> acquire_fences;
-    if (gpu_fence &&
+    if (!gpu_fence.is_null() &&
         (buffer_manager_->supports_acquire_fence() || use_egl_fence_sync_)) {
-      acquire_fences.push_back(std::move(*gpu_fence));
+      acquire_fences.push_back(gfx::GpuFence(std::move(gpu_fence)));
     }
 
     frame->schedule_planes_succeeded = image->ScheduleOverlayPlane(
