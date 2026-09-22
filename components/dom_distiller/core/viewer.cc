@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -93,7 +94,7 @@ std::string GetPlatformSpecificCss() {
 }
 
 // Maps themes to JS themes.
-const std::string GetJsTheme(mojom::Theme theme) {
+std::string_view GetJsTheme(mojom::Theme theme) {
   if (theme == mojom::Theme::kDark)
     return kDarkJsTheme;
   if (theme == mojom::Theme::kSepia)
@@ -102,7 +103,7 @@ const std::string GetJsTheme(mojom::Theme theme) {
 }
 
 // Maps themes to CSS classes.
-const std::string GetThemeCssClass(mojom::Theme theme) {
+std::string_view GetThemeCssClass(mojom::Theme theme) {
   if (theme == mojom::Theme::kDark)
     return kDarkCssClass;
   if (theme == mojom::Theme::kSepia)
@@ -111,7 +112,7 @@ const std::string GetThemeCssClass(mojom::Theme theme) {
 }
 
 // Maps font families to JS font families.
-const std::string GetJsFontFamily(mojom::FontFamily font_family) {
+std::string_view GetJsFontFamily(mojom::FontFamily font_family) {
   switch (font_family) {
     case mojom::FontFamily::kSerif:
       return kSerifJsFontFamily;
@@ -126,7 +127,7 @@ const std::string GetJsFontFamily(mojom::FontFamily font_family) {
 }
 
 // Maps fontFamilies to CSS fontFamily classes.
-const std::string GetFontCssClass(mojom::FontFamily font_family) {
+std::string_view GetFontCssClass(mojom::FontFamily font_family) {
   switch (font_family) {
     case mojom::FontFamily::kSansSerif:
       return kSansSerifCssClass;
@@ -138,13 +139,6 @@ const std::string GetFontCssClass(mojom::FontFamily font_family) {
       return kLexendCssClass;
   }
   NOTREACHED();
-}
-
-const std::string EnsureNonEmptyContent(const std::string& content) {
-  if (content.empty()) {
-    return l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
-  }
-  return content;
 }
 
 std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
@@ -246,8 +240,8 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   }
   substitutions.push_back(csp.str());  // $1
   substitutions.push_back(css.str());  // $2
-  substitutions.push_back(GetThemeCssClass(theme) + " " +
-                          GetFontCssClass(font_family));  // $3
+  substitutions.push_back(base::StrCat(
+      {GetThemeCssClass(theme), " ", GetFontCssClass(font_family)}));  // $3
 
   substitutions.push_back(l10n_util::GetStringUTF8(
       IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $4
@@ -259,60 +253,58 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
 
 }  // namespace
 
-const std::string GetUnsafeIncrementalDistilledPageJs(
+std::string GetUnsafeIncrementalDistilledPageJs(
     const DistilledPageProto* page_proto,
     bool is_last_page) {
-  return GetAddToPageJs(page_proto->html()) +
-         GetToggleLoadingIndicatorJs(is_last_page);
+  return base::StrCat({GetAddToPageJs(page_proto->html()),
+                       GetToggleLoadingIndicatorJs(is_last_page)});
 }
 
-const std::string GetErrorPageJs() {
+std::string GetErrorPageJs() {
   std::string title(l10n_util::GetStringUTF8(
       IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_TITLE));
-  std::string page_update(GetSetTitleJs(title));
-
-  page_update += GetAddToPageJs(l10n_util::GetStringUTF8(
-      IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT));
-  page_update += GetSetTextDirectionJs(std::string("auto"));
-  page_update += GetToggleLoadingIndicatorJs(true);
-  return page_update;
+  return base::StrCat(
+      {GetSetTitleJs(title),
+       GetAddToPageJs(l10n_util::GetStringUTF8(
+           IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT)),
+       GetSetTextDirectionJs("auto"), GetToggleLoadingIndicatorJs(true)});
 }
 
-const std::string GetSetTitleJs(std::string title) {
+std::string GetSetTitleJs(std::string_view title) {
 #if BUILDFLAG(IS_IOS)
   base::Value suffix_value("");
 #else  // Desktop and Android.
   std::string suffix(
       l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX));
-  base::Value suffix_value(" - " + suffix);
+  base::Value suffix_value(base::StrCat({" - ", suffix}));
 #endif
   base::Value title_value(title);
   std::string suffix_js = base::WriteJson(suffix_value).value_or("");
   std::string title_js = base::WriteJson(title_value).value_or("");
-  return "setTitle(" + title_js + ", " + suffix_js + ");";
+  return base::StrCat({"setTitle(", title_js, ", ", suffix_js, ");"});
 }
 
-const std::string GetSetTextDirectionJs(const std::string& direction) {
+std::string GetSetTextDirectionJs(std::string_view direction) {
   base::Value value(direction);
   std::string output = base::WriteJson(value).value_or("");
-  return "setTextDirection(" + output + ");";
+  return base::StrCat({"setTextDirection(", output, ");"});
 }
 
-const std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
+std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
   if (is_last_page)
     return "showLoadingIndicator(true);";
   return "showLoadingIndicator(false);";
 }
 
-const std::string GetArticleTemplateHtml(mojom::Theme theme,
-                                         mojom::FontFamily font_family,
-                                         const std::string& csp_nonce,
-                                         bool use_offline_data) {
+std::string GetArticleTemplateHtml(mojom::Theme theme,
+                                   mojom::FontFamily font_family,
+                                   const std::string& csp_nonce,
+                                   bool use_offline_data) {
   return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce,
                                    use_offline_data);
 }
 
-const std::string GetUnsafeArticleContentJs(
+std::string GetUnsafeArticleContentJs(
     const DistilledArticleProto* article_proto) {
   DCHECK(article_proto);
   std::ostringstream unsafe_output_stream;
@@ -322,24 +314,30 @@ const std::string GetUnsafeArticleContentJs(
     }
   }
 
-  return GetAddToPageJs(unsafe_output_stream.str()) +
-         GetToggleLoadingIndicatorJs(true);
+  return base::StrCat({GetAddToPageJs(unsafe_output_stream.str()),
+                       GetToggleLoadingIndicatorJs(true)});
 }
 
-const std::string GetAddToPageJs(const std::string& unsafe_content) {
-  std::string output =
-      base::WriteJson(EnsureNonEmptyContent(unsafe_content)).value_or("");
-  return "addToPage(" + output + ");";
+std::string GetAddToPageJs(std::string_view unsafe_content) {
+  std::string no_content_msg;
+  if (unsafe_content.empty()) {
+    no_content_msg =
+        l10n_util::GetStringUTF8(IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT);
+  }
+  std::string_view content =
+      unsafe_content.empty() ? no_content_msg : unsafe_content;
+  std::string output = base::WriteJson(content).value_or("");
+  return base::StrCat({"addToPage(", output, ");"});
 }
 
-const std::string GetCss() {
+std::string GetCss() {
   return base::StrCat(
       {ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
            IDR_DISTILLER_COMMON_CSS),
        GetVersionedCss(), GetPlatformSpecificCss()});
 }
 
-const std::string GetLoadingImage() {
+std::string GetLoadingImage() {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       IDR_DISTILLER_LOADING_IMAGE);
 }
@@ -362,7 +360,7 @@ static std::string GetMaxPinchZoomScale() {
   return base::NumberToString(max_scale);
 }
 
-const std::string GetJavaScript() {
+std::string GetJavaScript() {
   std::string js =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DOM_DISTILLER_VIEWER_JS);
@@ -412,26 +410,26 @@ std::unique_ptr<ViewerHandle> CreateViewRequest(
   return nullptr;
 }
 
-const std::string GetDistilledPageThemeJs(mojom::Theme theme) {
-  return "useTheme('" + GetJsTheme(theme) + "');";
+std::string GetDistilledPageThemeJs(mojom::Theme theme) {
+  return base::StrCat({"useTheme('", GetJsTheme(theme), "');"});
 }
 
-const std::string GetDistilledPageLinksEnabledJs(bool enabled) {
-  return "setLinksEnabled(" + base::ToString(enabled) + ");";
+std::string GetDistilledPageLinksEnabledJs(bool enabled) {
+  return base::StrCat({"setLinksEnabled(", base::ToString(enabled), ");"});
 }
 
-const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font_family) {
-  return "useFontFamily('" + GetJsFontFamily(font_family) + "');";
+std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font_family) {
+  return base::StrCat({"useFontFamily('", GetJsFontFamily(font_family), "');"});
 }
 
-const std::string GetDistilledPageFontScalingJs(float scaling,
-                                                bool restore_center) {
-  return "useFontScaling(" + base::NumberToString(scaling) + ", " +
-         base::ToString(restore_center) + ");";
+std::string GetDistilledPageFontScalingJs(float scaling, bool restore_center) {
+  return base::StrCat({"useFontScaling(", base::NumberToString(scaling), ", ",
+                       base::ToString(restore_center), ");"});
 }
 
-const std::string SetDistilledPageBaseFontSize(float baseFontSize) {
-  return "useBaseFontSize(" + base::NumberToString(baseFontSize) + ");";
+std::string SetDistilledPageBaseFontSize(float baseFontSize) {
+  return base::StrCat(
+      {"useBaseFontSize(", base::NumberToString(baseFontSize), ");"});
 }
 
 }  // namespace viewer

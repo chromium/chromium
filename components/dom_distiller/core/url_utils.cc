@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -37,7 +38,8 @@ std::string SHA256InHex(std::string_view str) {
 
 const GURL GetDistillerViewUrlFromEntryId(const std::string& scheme,
                                           const std::string& entry_id) {
-  GURL url(scheme + "://" + base::Uuid::GenerateRandomV4().AsLowercaseString());
+  GURL url(base::StrCat(
+      {scheme, "://", base::Uuid::GenerateRandomV4().AsLowercaseString()}));
   return net::AppendOrReplaceQueryParameter(url, kEntryIdKey, entry_id);
 }
 
@@ -45,9 +47,9 @@ const GURL GetDistillerViewUrlFromUrl(const std::string& scheme,
                                       const GURL& url,
                                       const std::string& title,
                                       int64_t start_time_ms) {
-  GURL view_url(scheme + "://" +
-                base::Uuid::GenerateRandomV4().AsLowercaseString() +
-                kSeparator + SHA256InHex(url.spec()));
+  GURL view_url(base::StrCat(
+      {scheme, "://", base::Uuid::GenerateRandomV4().AsLowercaseString(),
+       kSeparator, SHA256InHex(url.spec())}));
   view_url = net::AppendOrReplaceQueryParameter(view_url, kTitleKey, title);
   if (start_time_ms > 0) {
     view_url = net::AppendOrReplaceQueryParameter(
@@ -119,7 +121,7 @@ std::string GetValueForKeyInUrlPathQuery(const std::string& path,
                                          const std::string& key) {
   // Tools for retrieving a value in a query only works with full GURLs, so
   // using a dummy scheme and host to create a fake URL which can be parsed.
-  GURL dummy_url(kDummyInternalUrlPrefix + path);
+  GURL dummy_url(base::StrCat({kDummyInternalUrlPrefix, path}));
   return GetValueForKeyInUrl(dummy_url, key);
 }
 
@@ -133,7 +135,7 @@ bool IsDistilledPage(const GURL& url) {
 }
 
 bool IsUrlDistilledFormat(const GURL& url) {
-  return url.is_valid() && url.GetScheme() == kDomDistillerScheme;
+  return url.is_valid() && url.SchemeIs(kDomDistillerScheme);
 }
 
 }  // namespace url_utils
