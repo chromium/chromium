@@ -955,7 +955,7 @@ void QuotaManagerImpl::UpdateOrCreateBucket(
     return;
   }
   if (!bucket_params.expiration.is_null() &&
-      (bucket_params.expiration <= QuotaDatabase::GetNow())) {
+      (bucket_params.expiration <= base::Time::Now())) {
     std::move(callback).Run(base::unexpected(QuotaError::kInvalidExpiration));
     return;
   }
@@ -2230,7 +2230,7 @@ void QuotaManagerImpl::DidEvictBucketData(
 
   if (entry.has_value()) {
     CHECK(entry.value());
-    base::Time now = QuotaDatabase::GetNow();
+    base::Time now = base::Time::Now();
     base::UmaHistogramCounts1M(
         QuotaManagerImpl::kEvictedBucketAccessedCountHistogram,
         entry.value()->use_count);
@@ -2450,7 +2450,7 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
 
   std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker()->GetCachedStorageKeysUsage();
-  base::Time now = QuotaDatabase::GetNow();
+  base::Time now = base::Time::Now();
   for (const auto& info : entries) {
     std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(info->storage_key);
@@ -2804,7 +2804,7 @@ void QuotaManagerImpl::DidGetBucketCheckExpiration(
     QuotaErrorOr<BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result.has_value() && !result->expiration.is_null() &&
-      result->expiration <= QuotaDatabase::GetNow()) {
+      result->expiration <= base::Time::Now()) {
     DeleteBucketDataInternal(
         result->ToBucketLocator(), AllQuotaClientTypes(),
         base::BindOnce(&QuotaManagerImpl::DidDeleteBucketForRecreation,
@@ -2885,7 +2885,7 @@ void QuotaManagerImpl::DidGetBucketsCheckExpiration(
   std::set<BucketInfo> buckets_to_delete;
   for (const BucketInfo& bucket : result.value()) {
     if (!bucket.expiration.is_null() &&
-        bucket.expiration <= QuotaDatabase::GetNow()) {
+        bucket.expiration <= base::Time::Now()) {
       buckets_to_delete.insert(bucket);
     } else {
       kept_buckets.insert(bucket);

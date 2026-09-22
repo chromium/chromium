@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
@@ -73,8 +72,6 @@ const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 const char kMediaLicenseDatabaseRemoved[] = "IsMediaLicenseDatabaseRemoved";
 
 const int kCommitIntervalMs = 30000;
-
-const base::Clock* g_clock_for_testing = nullptr;
 
 void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
   base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
@@ -238,7 +235,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
 
   // Don't bother updating anything if the bucket is expired.
   if (!bucket_result->expiration.is_null() &&
-      (bucket_result->expiration <= GetNow())) {
+      (bucket_result->expiration <= base::Time::Now())) {
     return bucket_result;
   }
 
@@ -755,7 +752,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
   // have already done so, or should not do so yet, then we just want to clear
   // expired buckets here and not do the full query.
   if (already_evicted_stale_storage_ ||
-      GetNow() < evict_stale_buckets_after_) {
+      base::Time::Now() < evict_stale_buckets_after_) {
     // clang-format off
     static constexpr char kSqlExpired[] =
         "SELECT " BUCKET_INFO_FIELDS_SELECTOR
@@ -764,7 +761,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
     // clang-format on
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpired));
-    statement.BindTime(0, GetNow());
+    statement.BindTime(0, base::Time::Now());
     return BucketInfosFromSqlStatement(statement);
   }
 
@@ -781,12 +778,13 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
   // clang-format on
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpiredAndStaleAndOrphan));
-  base::Time expiration_cutoff = GetNow();
+  base::Time expiration_cutoff = base::Time::Now();
   statement.BindTime(0, expiration_cutoff);
-  base::Time stale_cutoff = GetNow() - base::Days(kStaleBucketCutoffInDays);
+  base::Time stale_cutoff =
+      base::Time::Now() - base::Days(kStaleBucketCutoffInDays);
   statement.BindTime(1, stale_cutoff);
   statement.BindTime(2, stale_cutoff);
-  base::Time orphan_cutoff = GetNow() - base::Days(1);
+  base::Time orphan_cutoff = base::Time::Now() - base::Days(1);
   statement.BindTime(3, orphan_cutoff);
   statement.BindTime(4, orphan_cutoff);
 
@@ -910,16 +908,6 @@ QuotaError QuotaDatabase::CorruptForTesting(
 void QuotaDatabase::SetDisabledForTesting(bool disable) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_disabled_ = disable;
-}
-
-// static
-base::Time QuotaDatabase::GetNow() {
-  return g_clock_for_testing ? g_clock_for_testing->Now() : base::Time::Now();
-}
-
-// static
-void QuotaDatabase::SetClockForTesting(const base::Clock* clock) {
-  g_clock_for_testing = clock;
 }
 
 void QuotaDatabase::SetAlreadyEvictedStaleStorageForTesting(
@@ -1297,7 +1285,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
         " RETURNING " BUCKET_INFO_FIELDS_SELECTOR;
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  const base::Time now = GetNow();
+  const base::Time now = base::Time::Now();
   BindBucketInitParamsToInsertStatement(params,
                                         /*use_count=*/0,
                                         /*last_accessed=*/now,

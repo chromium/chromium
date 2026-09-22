@@ -23,7 +23,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -66,17 +65,10 @@ bool ContainsBucket(const std::set<BucketLocator>& buckets,
 // mode, if stale buckets should be evicted, and if orphan buckets should be
 // evicted.
 class QuotaDatabaseTest : public testing::TestWithParam<bool> {
- public:
-  QuotaDatabaseTest() {
-    clock_ = std::make_unique<base::SimpleTestClock>();
-    QuotaDatabase::SetClockForTesting(clock_.get());
-  }
-
  protected:
   using BucketTableEntry = mojom::BucketTableEntry;
 
   void SetUp() override {
-    clock_->SetNow(base::Time::Now());
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
   }
 
@@ -84,7 +76,9 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
 
   bool use_in_memory_db() const { return GetParam(); }
 
-  base::SimpleTestClock* clock() { return clock_.get(); }
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
 
   base::FilePath ProfilePath() { return temp_directory_.GetPath(); }
 
@@ -177,9 +171,9 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_directory_;
-  std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
 TEST_P(QuotaDatabaseTest, EnsureOpened) {
@@ -1117,7 +1111,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
 
   // If we wait a minute after initialization then it's returned as stale as
   // long as it's our first check.
-  clock()->SetNow(base::Time::Now() + base::Minutes(1));
+  task_environment().AdvanceClock(base::Minutes(1));
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(2U, stale_buckets.size());
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
@@ -1137,8 +1131,8 @@ TEST_P(QuotaDatabaseTest, Stale) {
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
-  // But if we wait a day then it is enough at 400.
-  clock()->SetNow(base::Time::Now() + base::Days(1));
+  // But if we wait more than a day then it is enough at 400.
+  task_environment().AdvanceClock(base::Days(1) + base::Seconds(1));
   db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(2U, stale_buckets.size());
@@ -1193,7 +1187,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
 TEST_P(QuotaDatabaseTest, Orphan) {
   // Setup database and check no orphaned buckets counted.
   QuotaDatabase db(ProfilePath());
-  clock()->SetNow(base::Time::Now() + base::Minutes(1));
+  task_environment().AdvanceClock(base::Minutes(1));
   {
     base::HistogramTester histograms;
     db.SetAlreadyEvictedStaleStorageForTesting(false);

@@ -28,7 +28,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -870,24 +869,20 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
 }
 
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
-  auto clock = std::make_unique<base::SimpleTestClock>();
-  QuotaDatabase::SetClockForTesting(clock.get());
-  clock->SetNow(base::Time::Now());
-
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
-  params.expiration = clock->Now() - base::Days(1);
+  params.expiration = base::Time::Now() - base::Days(1);
 
   ASSERT_FALSE(UpdateOrCreateBucket(params).has_value());
 
   // Create a new bucket.
-  params.expiration = clock->Now() + base::Days(1);
+  params.expiration = base::Time::Now() + base::Days(1);
   params.quota = 1000;
   ASSERT_OK_AND_ASSIGN(auto bucket, UpdateOrCreateBucket(params));
   EXPECT_EQ(bucket.expiration, params.expiration);
   EXPECT_EQ(bucket.quota, 1000);
 
   // Get/Update the same bucket. Verify expiration is updated, but quota is not.
-  params.expiration = clock->Now() + base::Days(5);
+  params.expiration = base::Time::Now() + base::Days(5);
   params.quota = 500;
   ASSERT_OK_AND_ASSIGN(bucket, UpdateOrCreateBucket(params));
   EXPECT_EQ(bucket.expiration, params.expiration);
@@ -895,13 +890,11 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
 
   // Verify that the bucket is clobbered due to being expired. In this case, the
   // new quota is respected.
-  clock->Advance(base::Days(20));
+  task_environment_.AdvanceClock(base::Days(20));
   params.expiration = base::Time();
   ASSERT_OK_AND_ASSIGN(bucket, UpdateOrCreateBucket(params));
   EXPECT_EQ(bucket.expiration, params.expiration);
   EXPECT_EQ(bucket.quota, 500);
-
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Overflow) {
@@ -925,23 +918,19 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Overflow) {
 
 // Make sure `EvictExpiredBuckets` deletes expired buckets.
 TEST_F(QuotaManagerImplTest, EvictExpiredBuckets) {
-  auto clock = std::make_unique<base::SimpleTestClock>();
-  QuotaDatabase::SetClockForTesting(clock.get());
-  clock->SetNow(base::Time::Now());
-
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
-  params.expiration = clock->Now() + base::Days(1);
+  params.expiration = base::Time::Now() + base::Days(1);
   ASSERT_OK_AND_ASSIGN(auto bucket, UpdateOrCreateBucket(params));
 
   BucketInitParams params_b(ToStorageKey("http://b.com/"), "bucket_b");
-  params_b.expiration = clock->Now() + base::Days(10);
+  params_b.expiration = base::Time::Now() + base::Days(10);
   ASSERT_OK_AND_ASSIGN(auto bucket_b, UpdateOrCreateBucket(params_b));
 
   // No specified expiration.
   BucketInitParams params_c(ToStorageKey("http://c.com/"), "bucket_c");
   ASSERT_OK_AND_ASSIGN(auto bucket_c, UpdateOrCreateBucket(params_c));
 
-  clock->Advance(base::Days(5));
+  task_environment_.AdvanceClock(base::Days(5));
 
   // Evict expired buckets.
   base::test::TestFuture<QuotaStatusCode> future;
@@ -951,8 +940,6 @@ TEST_F(QuotaManagerImplTest, EvictExpiredBuckets) {
   EXPECT_FALSE(GetBucketById(bucket.id).has_value());
   EXPECT_TRUE(GetBucketById(bucket_b.id).has_value());
   EXPECT_TRUE(GetBucketById(bucket_c.id).has_value());
-
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
@@ -1135,29 +1122,23 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
 TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey_Expiration) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
 
-  auto clock = std::make_unique<base::SimpleTestClock>();
-  QuotaDatabase::SetClockForTesting(clock.get());
-  clock->SetNow(base::Time::Now());
-
   BucketInitParams params(storage_key, "bucket_1");
   ASSERT_OK_AND_ASSIGN(BucketInfo bucket_1, UpdateOrCreateBucket(params));
 
   params.name = "bucket_2";
-  params.expiration = clock->Now() + base::Days(1);
+  params.expiration = base::Time::Now() + base::Days(1);
   ASSERT_OK_AND_ASSIGN(BucketInfo bucket_2, UpdateOrCreateBucket(params));
 
   params.name = "bucket_3";
   ASSERT_OK_AND_ASSIGN(BucketInfo bucket_3, UpdateOrCreateBucket(params));
 
-  clock->Advance(base::Days(2));
+  task_environment_.AdvanceClock(base::Days(2));
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketInfo> buckets,
       GetBucketsForStorageKey(storage_key, /*delete_expired=*/true));
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(*buckets.begin(), bucket_1);
-
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, EnforceQuota) {
@@ -2475,16 +2456,13 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
       {"http://a.com:1/", kDefaultBucketName, 0},
       {"http://c.com/", kDefaultBucketName, 0},
   };
-  QuotaDatabase::SetClockForTesting(task_environment_.GetMockClock());
   MockQuotaClient* fs_client =
       CreateAndRegisterClient(QuotaClientType::kFileSystem);
   RegisterClientBucketData(fs_client, kData);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"),
-                              task_environment_.GetMockClock()->Now());
-  NotifyDefaultBucketAccessed(ToStorageKey("http://c.com/"),
-                              task_environment_.GetMockClock()->Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"), base::Time::Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://c.com/"), base::Time::Now());
 
   std::optional<BucketLocator> eviction_bucket = GetEvictionBucket();
   EXPECT_EQ("http://a.com:1/",
@@ -2499,7 +2477,6 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   eviction_bucket = GetEvictionBucket();
   EXPECT_EQ("http://c.com/",
             eviction_bucket->storage_key.origin().GetURL().spec());
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForEviction) {
@@ -2508,21 +2485,17 @@ TEST_F(QuotaManagerImplTest, GetBucketsForEviction) {
       {"http://b.com/", kDefaultBucketName, 300},
       {"http://c.com/", kDefaultBucketName, 713},
   };
-  QuotaDatabase::SetClockForTesting(task_environment_.GetMockClock());
   MockQuotaClient* client =
       CreateAndRegisterClient(QuotaClientType::kFileSystem);
   RegisterClientBucketData(client, kData);
   GetGlobalUsage();
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"),
-                              task_environment_.GetMockClock()->Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"), base::Time::Now());
   task_environment_.FastForwardBy(base::Minutes(1));
-  NotifyDefaultBucketAccessed(ToStorageKey("http://b.com/"),
-                              task_environment_.GetMockClock()->Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://b.com/"), base::Time::Now());
   task_environment_.FastForwardBy(base::Minutes(1));
-  NotifyDefaultBucketAccessed(ToStorageKey("http://c.com/"),
-                              task_environment_.GetMockClock()->Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://c.com/"), base::Time::Now());
 
   auto buckets = GetEvictionBuckets(110);
   EXPECT_THAT(buckets, testing::UnorderedElementsAre(
@@ -2533,13 +2506,11 @@ TEST_F(QuotaManagerImplTest, GetBucketsForEviction) {
 
   // Notify that the `bucket_a` is accessed. Now b is the LRU (and also happens
   // to satisfy the desire to evict 110b of data).
-  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"),
-                              task_environment_.GetMockClock()->Now());
+  NotifyDefaultBucketAccessed(ToStorageKey("http://a.com/"), base::Time::Now());
   buckets = GetEvictionBuckets(110);
   EXPECT_THAT(buckets,
               testing::UnorderedElementsAre(testing::Field(
                   &BucketLocator::storage_key, ToStorageKey("http://b.com"))));
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
@@ -3030,10 +3001,6 @@ TEST_F(QuotaManagerImplTest, SimulateStoragePressure_Incognito) {
 
 TEST_F(QuotaManagerImplTest,
        QuotaManagerObserver_NotifiedOnAddedChangedAndDeleted) {
-  auto clock = std::make_unique<base::SimpleTestClock>();
-  QuotaDatabase::SetClockForTesting(clock.get());
-  clock->SetNow(base::Time::Now());
-
   SetupQuotaManagerObserver();
 
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
@@ -3049,7 +3016,7 @@ TEST_F(QuotaManagerImplTest,
   observer_notifications_.clear();
 
   params.persistent = true;
-  params.expiration = clock->Now() + base::Days(1);
+  params.expiration = base::Time::Now() + base::Days(1);
 
   // Update bucket.
   ASSERT_OK_AND_ASSIGN(auto updated_bucket, UpdateOrCreateBucket(params));
@@ -3073,19 +3040,13 @@ TEST_F(QuotaManagerImplTest,
   notification = observer_notifications_[0];
   ASSERT_EQ(notification.type, kDelete);
   EXPECT_EQ(notification.bucket_locator, updated_bucket.ToBucketLocator());
-
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, QuotaManagerObserver_NotifiedOnExpired) {
-  auto clock = std::make_unique<base::SimpleTestClock>();
-  QuotaDatabase::SetClockForTesting(clock.get());
-  clock->SetNow(base::Time::Now());
-
   SetupQuotaManagerObserver();
 
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
-  params.expiration = clock->Now() + base::Days(5);
+  params.expiration = base::Time::Now() + base::Days(5);
 
   ASSERT_OK_AND_ASSIGN(auto bucket, UpdateOrCreateBucket(params));
   RunUntilObserverNotifies();
@@ -3096,7 +3057,7 @@ TEST_F(QuotaManagerImplTest, QuotaManagerObserver_NotifiedOnExpired) {
   ASSERT_EQ(notification.bucket_info, bucket);
   observer_notifications_.clear();
 
-  clock->Advance(base::Days(20));
+  task_environment_.AdvanceClock(base::Days(20));
   base::test::TestFuture<QuotaStatusCode> future;
   quota_manager_impl_->EvictExpiredBuckets(future.GetCallback());
   EXPECT_EQ(QuotaStatusCode::kOk, future.Get());
@@ -3106,8 +3067,6 @@ TEST_F(QuotaManagerImplTest, QuotaManagerObserver_NotifiedOnExpired) {
   notification = observer_notifications_[0];
   ASSERT_EQ(notification.type, kDelete);
   EXPECT_EQ(notification.bucket_locator, bucket.ToBucketLocator());
-
-  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, StaticReportedQuota_NonBucket) {

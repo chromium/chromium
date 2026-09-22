@@ -33,10 +33,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
-namespace base {
-class Clock;
-}
-
 namespace sql {
 class Database;
 class MetaTable;
@@ -231,9 +227,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Manually disable database to test database error scenarios for testing.
   void SetDisabledForTesting(bool disable);
 
-  static base::Time GetNow();
-  static void SetClockForTesting(const base::Clock* clock);
-
   void SetAlreadyEvictedStaleStorageForTesting(
       bool already_evicted_stale_storage);
 
@@ -319,7 +312,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // We need to delay evicting stale buckets until after any session
   // restore has taken place, otherwise we might fail to record current usage.
   // See crbug.com/40281870 for more info.
-  base::Time evict_stale_buckets_after_{GetNow() + base::Minutes(1)};
+  base::Time evict_stale_buckets_after_{base::Time::Now() + base::Minutes(1)};
 
   // We only need to evict stale storage once per profile load. Unlike
   // expired storage, there is no contract with the site to evict storage
