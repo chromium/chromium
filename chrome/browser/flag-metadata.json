@@ -1938,14 +1938,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "client-side-detection-server-model-for-scam-detection-android",
-    "owners": [
-      "xinghuilu@chromium.org",
-      "chrome-counter-abuse-alerts@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "client-side-detection-server-model-for-scam-detection-desktop",
     "owners": [
       "tiffanysong@google.com",

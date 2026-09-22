@@ -151,11 +151,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionLocalResourceCheckFix);
 BASE_DECLARE_FEATURE(kClientSideDetectionNewObservers);
 extern const base::FeatureParam<double> kCsdClassificationDelay;
 
-#if BUILDFLAG(IS_ANDROID)
-// Instead of starting model download on startup, do it lazily during inference.
-BASE_DECLARE_FEATURE(kClientSideDetectionOnDeviceModelLazyDownloadAndroid);
-#endif
-
 // Deprecation of page load triggers for SSB users.
 BASE_DECLARE_FEATURE(kClientSideDetectionOnlyESBClassification);
 
@@ -167,13 +162,6 @@ extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
 
 // Controls whether the scam score is included in IntelligentScanInfo.
 BASE_DECLARE_FEATURE(kClientSideDetectionScamScore);
-#if BUILDFLAG(IS_ANDROID)
-// Inquire the server-side model instead of the on-device model for scam
-// detection.
-BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionAndroid);
-extern const base::FeatureParam<int>
-    kClientSideDetectionServerModelMaxScansPerDay;
-#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Inquire the server-side model instead of the on-device model for scam

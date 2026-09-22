@@ -9,16 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 
 class PrefService;
-
-namespace optimization_guide {
-class ModelBrokerClient;
-}  // namespace optimization_guide
 
 namespace safe_browsing {
 
@@ -30,8 +25,6 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
  public:
   ClientSideDetectionIntelligentScanDelegateAndroid(
       PrefService& pref,
-      std::unique_ptr<optimization_guide::ModelBrokerClient>
-          model_broker_client,
       optimization_guide::RemoteModelExecutor* remote_model_executor);
   ~ClientSideDetectionIntelligentScanDelegateAndroid() override;
 
@@ -56,18 +49,12 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   void Shutdown() override;
 
   int GetAliveInquiryCountForTesting() { return inquiries_.size(); }
-  void SetPauseInquiryForTesting(bool pause) {
-    pause_inquiry_for_testing_ = pause;
-  }
 
  private:
   class Inquiry;
   bool ResetAllInquiries();
 
   void OnPrefsUpdated();
-
-  // Starts on-device model download.
-  void StartModelDownload();
 
   // Functions related to intelligent scan quota:
   // Returns true if we have reached the quota limit. Also clears the expired
@@ -77,9 +64,6 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   void RemoveLastIntelligentScanQuota();
 
   const raw_ref<PrefService> pref_;
-  // This object is used to download the model and create sessions for on-device
-  // model execution. It may be null after shutdown.
-  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
   // This object is for server-side model execution. It may be null after
   // shutdown.
   raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
@@ -93,9 +77,6 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   PrefChangeRegistrar pref_change_registrar_;
 
   const bool is_feature_enabled_;
-  const bool is_server_model_enabled_;
-
-  bool pause_inquiry_for_testing_ = false;
 };
 
 }  // namespace safe_browsing

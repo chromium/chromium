@@ -62,7 +62,7 @@ ClientSideDetectionIntelligentScanDelegateFactory::
   }
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>(
-      *profile->GetPrefs(), opt_guide->CreateModelBrokerClient(), opt_guide);
+      *profile->GetPrefs(), opt_guide);
 #else
   return std::make_unique<ClientSideDetectionIntelligentScanDelegateDesktop>(
       *profile->GetPrefs(), opt_guide,

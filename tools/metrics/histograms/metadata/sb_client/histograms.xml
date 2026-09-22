@@ -962,16 +962,6 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
-<histogram name="SBClientPhishing.IsOnDeviceModelAvailableOnSessionCreation"
-    enum="BooleanSuccess" expires_after="2026-12-16">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the on device model is available at the time of session
-    creation.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
     enum="BooleanEnabled" expires_after="2027-03-21">
   <owner>nwokedi@chromium.org</owner>
@@ -1205,19 +1195,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SBClientPhishing.OnDeviceModelStartModelDownloadFunctionRunTime.Android"
-    units="ms" expires_after="2026-11-15">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the duration it took to run the StartModelDownload function in the
-    intelligent scan delegate. Note that this measures the function running
-    time, not the actual model download time (which is measured by
-    SBClientPhishing.OnDeviceModelFetchTime).
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive"
     enum="BooleanExists" expires_after="2027-03-07">
   <owner>nwokedi@chromium.org</owner>
@@ -1226,19 +1203,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the state of the client side detection host callback object when we
     respond after the on device model inquiry execution callback completed and
     the parsing was successful.
-  </summary>
-</histogram>
-
-<histogram
-    name="SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android"
-    enum="OptimizationGuideOnDeviceModelUnavailableReason"
-    expires_after="2026-08-30">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the reason why the on-device model is unavailable at the time of
-    inquiry on Android. This is logged when IsIntelligentScanAvailable is called
-    with log_failed_eligibility_reason=true and the model is not available.
   </summary>
 </histogram>
 
