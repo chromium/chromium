@@ -254,4 +254,23 @@ TEST_F(WebGpuSharedImageCacheTest, ReuseBeforeCleanUp) {
 }
 
 
+TEST_F(WebGpuSharedImageCacheTest,
+       DoesNotCacheReturnedResourceWhenContextLost) {
+  auto size = gfx::Size(10, 10);
+
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  ASSERT_NE(nullptr, lease_0);
+
+  // Lose the GPU context while the lease is held.
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
+
+  // Releasing the lease should drop the resource rather than pushing it back
+  // into the cache.
+  lease_0.reset();
+  EXPECT_EQ(0u, cache_->GetSize());
+  EXPECT_EQ(0u, cache_->CleanUpResourcesAndReturnSizeForTesting());
+}
+
 }  // namespace blink
