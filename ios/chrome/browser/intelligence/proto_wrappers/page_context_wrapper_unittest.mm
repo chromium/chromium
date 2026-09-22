@@ -87,6 +87,8 @@
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -116,6 +118,26 @@
                            localFrameToken:
                                (std::optional<autofill::LocalFrameToken>)
                                    localFrameToken;
+- (CGRect)visibleWebViewportRectForTesting;
+@end
+
+// Lightweight test doubles for CRWWebViewScrollViewProxy and CRWWebViewProxy to
+// verify viewport insetting logic without full WebState realization.
+@interface FakeCRWWebViewScrollViewProxy : CRWWebViewScrollViewProxy
+@property(nonatomic, assign) UIEdgeInsets testContentInset;
+@end
+
+@implementation FakeCRWWebViewScrollViewProxy
+- (UIEdgeInsets)adjustedContentInset {
+  return _testContentInset;
+}
+@end
+
+@interface FakeCRWWebViewProxy : NSObject
+@property(nonatomic, strong) CRWWebViewScrollViewProxy* scrollViewProxy;
+@end
+
+@implementation FakeCRWWebViewProxy
 @end
 
 namespace {
@@ -758,6 +780,61 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithSnapshotVerification) {
 
   // Check if the data starts with the PNG header.
   const std::string png_header = "\x89PNG\r\n\x1a\n";
+  EXPECT_TRUE(base::StartsWith(decoded_screenshot_data, png_header));
+
+  // Verify that the decoded image is valid.
+  NSData* image_data = [NSData dataWithBytes:decoded_screenshot_data.data()
+                                      length:decoded_screenshot_data.size()];
+  UIImage* screenshot_image = [UIImage imageWithData:image_data];
+  ASSERT_TRUE(screenshot_image != nil);
+  EXPECT_GT(screenshot_image.size.width, 0);
+  EXPECT_GT(screenshot_image.size.height, 0);
+}
+
+// Tests that the visible web viewport rect properly insets by
+// adjustedContentInset, falls back to view bounds when insets are excessive,
+// and handles nil or empty views gracefully.
+TEST_P(PageContextWrapperTest, VisibleWebViewportRect) {
+  PageContextWrapper* wrapper =
+      [[PageContextWrapper alloc] initWithWebState:fake_web_state()
+                                completionCallback:base::DoNothing()];
+
+  // 1. When WebState has no view, returns CGRectZero.
+  EXPECT_TRUE(CGRectEqualToRect([wrapper visibleWebViewportRectForTesting],
+                                CGRectZero));
+
+  // 2. When view has empty bounds, returns CGRectZero.
+  UIView* empty_view = [[UIView alloc] initWithFrame:CGRectZero];
+  fake_web_state()->SetView(empty_view);
+  EXPECT_TRUE(CGRectEqualToRect([wrapper visibleWebViewportRectForTesting],
+                                CGRectZero));
+
+  // 3. When view has standard bounds without a web view proxy, returns view
+  // bounds.
+  CGRect bounds = CGRectMake(0, 0, 390, 844);
+  UIView* view = [[UIView alloc] initWithFrame:bounds];
+  fake_web_state()->SetView(view);
+  fake_web_state()->SetWebViewProxy(nil);
+  EXPECT_TRUE(
+      CGRectEqualToRect([wrapper visibleWebViewportRectForTesting], bounds));
+
+  // 4. When web view proxy provides adjustedContentInset, returns inset rect.
+  FakeCRWWebViewProxy* fake_proxy = [[FakeCRWWebViewProxy alloc] init];
+  FakeCRWWebViewScrollViewProxy* fake_scroll_proxy =
+      [[FakeCRWWebViewScrollViewProxy alloc] init];
+  fake_scroll_proxy.testContentInset = UIEdgeInsetsMake(116, 0, 34, 0);
+  fake_proxy.scrollViewProxy = fake_scroll_proxy;
+  fake_web_state()->SetWebViewProxy((id<CRWWebViewProxy>)fake_proxy);
+
+  CGRect expected_inset_rect = CGRectMake(0, 116, 390, 694);
+  EXPECT_TRUE(CGRectEqualToRect([wrapper visibleWebViewportRectForTesting],
+                                expected_inset_rect));
+
+  // 5. When adjustedContentInset is excessive (resulting in height <= 0),
+  // falls back to view bounds.
+  fake_scroll_proxy.testContentInset = UIEdgeInsetsMake(500, 0, 500, 0);
+  EXPECT_TRUE(
+      CGRectEqualToRect([wrapper visibleWebViewportRectForTesting], bounds));
 }
 
 // Tests that the page context can take a snapshot of the page with specified
@@ -1075,16 +1152,14 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithAriaCustomFormControls) {
 TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
   base::HistogramTester histogram_tester;
 
-  auto page_structure = HtmlPage("", Paragraph("Hello"));
-  std::string main_html = page_helper_->Build(page_structure);
-  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
-                      test_server_.GetURL(kMainPagePath), web_state());
-
-  // Set the snapshot delegate to cause a failure.
-  snapshot_delegate_.canTakeSnapshot = NO;
+  // Use a fake web state configured to fail snapshotting.
+  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
+  fake_web_state()->SetContentsMimeType("text/html");
+  fake_web_state()->WasShown();
+  fake_web_state()->SetCanTakeSnapshot(false);
 
   PageContextWrapperCallbackResponse captured_response =
-      RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
+      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetSnapshot = YES;
       });
 

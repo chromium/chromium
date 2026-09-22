@@ -581,20 +581,6 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   [_pageContextMetrics executionStartedForTask:PageContextTask::kScreenshot];
 
   __weak PageContextWrapper* weakSelf = self;
-  auto callback = ^(UIImage* image) {
-    __strong __typeof(weakSelf) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    if ([strongSelf shouldUpdateSnapshotWithImage:image]) {
-      [strongSelf updateSnapshotWithBarrier:barrier];
-      return;
-    }
-
-    [strongSelf stashRawScreenshotImage:image];
-    barrier.Run();
-  };
 
   // If the WebState is currently visible, update the snapshot in case the
   // user was scrolling, otherwise retrieve the latest version in cache or on
@@ -604,7 +590,14 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
         base::BindOnce(^(std::optional<int> result_matches) {
           // TODO(crbug.com/401282824): Log the matches count to measure text
           // highlighting precision.
-          [weakSelf updateSnapshotWithCallback:callback];
+          [weakSelf updateSnapshotWithCallback:^(UIImage* image) {
+            __strong __typeof(weakSelf) strongSelf = weakSelf;
+            if (!strongSelf) {
+              return;
+            }
+            [strongSelf stashRawScreenshotImage:image];
+            barrier.Run();
+          }];
         });
 
     // If there is text to highlight, do it before capturing the screenshot.
@@ -624,8 +617,28 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
       std::move(updateSnapshotCallback).Run(std::nullopt);
     }
   } else {
-    SnapshotTabHelper::FromWebState(_webState.get())
-        ->RetrieveColorSnapshot(callback);
+    auto retrieveSnapshotCallback = ^(UIImage* image) {
+      __strong __typeof(weakSelf) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+
+      if ([strongSelf shouldUpdateSnapshotWithImage:image]) {
+        [strongSelf updateSnapshotWithBarrier:barrier];
+        return;
+      }
+
+      [strongSelf stashRawScreenshotImage:image];
+      barrier.Run();
+    };
+
+    SnapshotTabHelper* snapshotTabHelper =
+        SnapshotTabHelper::FromWebState(_webState.get());
+    if (snapshotTabHelper) {
+      snapshotTabHelper->RetrieveColorSnapshot(retrieveSnapshotCallback);
+    } else {
+      retrieveSnapshotCallback(nil);
+    }
   }
 }
 
@@ -960,30 +973,86 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   return !image && _shouldForceUpdateMissingSnapshots;
 }
 
+// Returns the visible web viewport rect in GetView() coordinates, insetting
+// by adjustedContentInset so DOM (0, 0) matches the snapshot origin.
+- (CGRect)visibleWebViewportRect {
+  if (!_webState || !_webState->GetView()) {
+    return CGRectZero;
+  }
+  CGRect bounds = _webState->GetView().bounds;
+  id<CRWWebViewProxy> webViewProxy = _webState->GetWebViewProxy();
+  if (webViewProxy && webViewProxy.scrollViewProxy) {
+    UIEdgeInsets insets = webViewProxy.scrollViewProxy.adjustedContentInset;
+    CGRect insetRect = UIEdgeInsetsInsetRect(bounds, insets);
+    if (!CGRectIsEmpty(insetRect) && insetRect.size.width > 0 &&
+        insetRect.size.height > 0) {
+      return insetRect;
+    }
+  }
+  return bounds;
+}
+
+// Generates a fallback snapshot directly from the WebState view using UIKit
+// rendering when WebKit's out-of-process snapshot returns an empty image (e.g.
+// before layout passes complete in headless test environments or rapid
+// navigations).
+- (UIImage*)fallbackSnapshotFromView {
+  if (!_webState || !_webState->GetView()) {
+    return nil;
+  }
+  UIView* view = _webState->GetView();
+  CGRect bounds = [self visibleWebViewportRect];
+  if (bounds.size.width <= 0 || bounds.size.height <= 0) {
+    bounds = view.bounds;
+  }
+  if (bounds.size.width <= 0 || bounds.size.height <= 0) {
+    return nil;
+  }
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size format:format];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    [view drawViewHierarchyInRect:CGRectMake(-bounds.origin.x, -bounds.origin.y,
+                                             view.bounds.size.width,
+                                             view.bounds.size.height)
+               afterScreenUpdates:NO];
+  }];
+}
+
 // Updates the snapshot for the given WebState, and executes the `barrier`
 // callback when finished.
 - (void)updateSnapshotWithBarrier:(base::RepeatingClosure)barrier {
-  if (!_webState) {
-    barrier.Run();
-    return;
-  }
   __weak PageContextWrapper* weakSelf = self;
-  SnapshotTabHelper::FromWebState(_webState.get())
-      ->UpdateSnapshotWithCallback(^(UIImage* image) {
-        __strong __typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf stashRawScreenshotImage:image];
-        barrier.Run();
-      });
+  [self updateSnapshotWithCallback:^(UIImage* image) {
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf stashRawScreenshotImage:image];
+    barrier.Run();
+  }];
 }
 
 // Updates the current WebState's snapshot with the given callback.
 - (void)updateSnapshotWithCallback:(void (^)(UIImage*))callback {
-  if (_webState) {
-    SnapshotTabHelper::FromWebState(_webState.get())
-        ->UpdateSnapshotWithCallback(callback);
+  if (!callback) {
+    return;
+  }
+  if (_webState && _webState->CanTakeSnapshot()) {
+    __weak PageContextWrapper* weakSelf = self;
+    _webState->TakeSnapshot(
+        [self visibleWebViewportRect], base::BindRepeating(^(UIImage* image) {
+          __strong __typeof(weakSelf) strongSelf = weakSelf;
+          if (!strongSelf) {
+            callback(nil);
+            return;
+          }
+          if (!image || image.size.width <= 0 || image.size.height <= 0) {
+            image = [strongSelf fallbackSnapshotFromView];
+          }
+          callback(image);
+        }));
   } else {
     callback(nil);
   }
@@ -1788,6 +1857,10 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 
 - (FrameGrafter&)grafterForTesting {
   return _grafter;
+}
+
+- (CGRect)visibleWebViewportRectForTesting {
+  return [self visibleWebViewportRect];
 }
 
 @end

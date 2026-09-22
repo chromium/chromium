@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
@@ -85,6 +86,31 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
+
+// Test web state that allows intercepting TakeSnapshot calls.
+class TestWebState : public web::FakeWebState {
+ public:
+  void SetTakeSnapshotCallback(
+      base::RepeatingCallback<void(const CGRect)> callback) {
+    take_snapshot_callback_ = std::move(callback);
+  }
+
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) override {
+    if (take_snapshot_callback_) {
+      take_snapshot_callback_.Run(rect);
+    }
+    UIGraphicsImageRenderer* renderer =
+        [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(1, 1)];
+    UIImage* dummy_image =
+        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
+        }];
+    std::move(callback).Run(dummy_image);
+  }
+
+ private:
+  base::RepeatingCallback<void(const CGRect)> take_snapshot_callback_;
+};
+
 }  // namespace
 
 namespace ios::provider {
@@ -152,8 +178,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
         startDispatchingToTarget:mock_location_bar_badge_handler_
                      forProtocol:@protocol(LocationBarBadgeCommands)];
 
-    std::unique_ptr<web::FakeWebState> web_state =
-        std::make_unique<web::FakeWebState>();
+    std::unique_ptr<TestWebState> web_state = std::make_unique<TestWebState>();
     web_state_ = web_state.get();
     web_state->SetBrowserState(profile_);
     web_state->SetCurrentURL(GURL("chrome://newtab/"));
@@ -438,23 +463,13 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   // Simulate FRE completion.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 
-  // Create a protocol mock to intercept the delegate call.
-  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
-
-  // Set the mock as the delegate.
-  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
-
-  // Expect the snapshot delegate to be notified. Use a flag to wait for the
-  // async call. Use shared_ptr to safely share state between ObjC block and C++
-  // lambda.
-  auto delegate_called = std::make_shared<bool>(false);
-  [[[mock_delegate expect] andDo:^(NSInvocation*) {
-    *delegate_called = true;
-  }] willUpdateSnapshotWithWebStateInfo:[OCMArg any]];
-
-  // Stub the canTakeSnapshot method to return YES.
-  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
-      .andReturn(YES);
+  // Expect the snapshot to be taken. Use a flag to wait for the async call. Use
+  // shared_ptr to safely share state between ObjC block and C++ lambda.
+  auto snapshot_called = std::make_shared<bool>(false);
+  static_cast<TestWebState*>(web_state_.get())
+      ->SetTakeSnapshotCallback(base::BindRepeating(^(const CGRect rect) {
+        *snapshot_called = true;
+      }));
 
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
@@ -465,11 +480,9 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
       base_view_controller, [[GeminiStartupState alloc]
                                 initWithEntryPoint:gemini::EntryPoint::Promo]);
 
-  // Wait for the delegate method to be called.
+  // Wait for the snapshot method to be called.
   ASSERT_TRUE(
-      base::test::RunUntil([delegate_called]() { return *delegate_called; }));
-
-  [mock_delegate verify];
+      base::test::RunUntil([snapshot_called]() { return *snapshot_called; }));
 
   histogram_tester.ExpectUniqueSample(
       kGeminiInvocationPageTypeHistogram,
@@ -569,32 +582,21 @@ TEST_F(GeminiBrowserAgentTest, TestRequestActivePageContextGeneration) {
       std::make_unique<base::Value>(std::move(result)).release(),
       "pageContextExtractor.extractPageContext");
 
-  // Create a protocol mock to intercept the delegate call.
-  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
-
-  // Set the mock as the delegate.
-  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
-
-  // Expect the snapshot delegate to be notified.
-  auto delegate_called = std::make_shared<bool>(false);
-  [[[mock_delegate expect] andDo:^(NSInvocation*) {
-    *delegate_called = true;
-  }] willUpdateSnapshotWithWebStateInfo:[OCMArg any]];
-
-  // Stub the canTakeSnapshot method to return YES.
-  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
-      .andReturn(YES);
+  // Expect the snapshot to be taken.
+  auto snapshot_called = std::make_shared<bool>(false);
+  static_cast<TestWebState*>(web_state_.get())
+      ->SetTakeSnapshotCallback(base::BindRepeating(^(const CGRect rect) {
+        *snapshot_called = true;
+      }));
 
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
   RequestActivePageContextGeneration();
 
-  // Wait for the delegate method to be called.
+  // Wait for the snapshot method to be called.
   ASSERT_TRUE(
-      base::test::RunUntil([delegate_called]() { return *delegate_called; }));
-
-  [mock_delegate verify];
+      base::test::RunUntil([snapshot_called]() { return *snapshot_called; }));
 }
 
 // Tests hiding the floaty.

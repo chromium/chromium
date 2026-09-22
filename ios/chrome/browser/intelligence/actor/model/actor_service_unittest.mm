@@ -37,9 +37,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -293,16 +290,6 @@ TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
   scoped_window.Get().rootViewController = root_view_controller;
 
   web_state->WasShown();
-
-  SnapshotTabHelper::CreateForWebState(web_state.get());
-  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
-
-  SnapshotTabHelper* snapshot_tab_helper =
-      SnapshotTabHelper::FromWebState(web_state.get());
-  FakeSnapshotGeneratorDelegate* snapshot_delegate =
-      [[FakeSnapshotGeneratorDelegate alloc] init];
-  snapshot_delegate.view = web_state->GetView();
-  snapshot_tab_helper->SetDelegate(snapshot_delegate);
 
   web::test::LoadHtml(@"<html><body>Most basic APC content</body></html>",
                       GURL("http://dummy.url"), web_state.get());
