@@ -39,6 +39,8 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/style_animated_sources.h"
+#include "third_party/blink/renderer/core/style/style_highlight_data.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
@@ -3700,6 +3702,82 @@ TEST_F(AnimatedSourceTest, RootElementBackdropFilterHasNoSource) {
   Animate(root, CSSPropertyID::kBackdropFilter, "invert(1)");
   EXPECT_FALSE(SourceFor(root, CSSPropertyID::kBackdropFilter)
                    .animated_source.IsValid());
+}
+
+TEST_F(AnimatedSourceTest, ColorInheritance) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=animator>
+      <div id=inherited></div>
+      <div id=currentcolor style="color: currentColor"></div>
+      <div id=declared style="color: green"></div>
+      <div id=initial style="color: initial"></div>
+    </div>
+  )HTML");
+  Element* animator = GetElementById("animator");
+  Animate(animator, CSSPropertyID::kColor, "red");
+
+  // currentColor is treated as inherit; any other value replaces the parent's.
+  EXPECT_TRUE(SourceFor(GetElementById("inherited"), CSSPropertyID::kColor)
+                  .animated_source.IsOwnedBy(*animator));
+  EXPECT_TRUE(SourceFor(GetElementById("currentcolor"), CSSPropertyID::kColor)
+                  .animated_source.IsOwnedBy(*animator));
+  EXPECT_FALSE(SourceFor(GetElementById("declared"), CSSPropertyID::kColor)
+                   .animated_source.IsValid());
+  EXPECT_FALSE(SourceFor(GetElementById("initial"), CSSPropertyID::kColor)
+                   .animated_source.IsValid());
+}
+
+// Highlight styles resolve currentColor against the originating element, so
+// the source is not tracked on them.
+TEST_F(AnimatedSourceTest, HighlightCurrentColorIsNotTracked) {
+  SetBodyInnerHTML(R"HTML(
+    <style>#animator::selection { color: currentColor; }</style>
+    <div id=animator></div>
+  )HTML");
+  Element* animator = GetElementById("animator");
+  Animate(animator, CSSPropertyID::kColor, "red");
+  EXPECT_FALSE(animator->GetComputedStyle()
+                   ->HighlightData()
+                   .Selection()
+                   ->GetAnimatedSource(CSSPropertyID::kColor)
+                   .IsValid());
+}
+
+// currentColor inside a color function is resolved against the parent's
+// color, so the value is derived from the source's but not a copy of it.
+TEST_F(AnimatedSourceTest, ColorMixHasUntrackedDependencies) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=animator>
+      <div id=child
+           style="color: color-mix(in srgb, currentColor, black)"></div>
+    </div>
+  )HTML");
+  Element* animator = GetElementById("animator");
+  Animate(animator, CSSPropertyID::kColor, "red");
+
+  AnimatedSource source =
+      SourceFor(GetElementById("child"), CSSPropertyID::kColor);
+  EXPECT_TRUE(source.animated_source.IsOwnedBy(*animator));
+  EXPECT_TRUE(source.has_untracked_dependencies);
+}
+
+// preserve-parent-color inherits the parent's used (forced) color rather than
+// its computed one.
+TEST_F(AnimatedSourceTest, PreserveParentColorHasUntrackedDependencies) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetInForcedColors(GetDocument(), true);
+  SetBodyInnerHTML(R"HTML(
+    <div id=animator>
+      <div id=child style="forced-color-adjust: preserve-parent-color"></div>
+    </div>
+  )HTML");
+  Element* animator = GetElementById("animator");
+  Animate(animator, CSSPropertyID::kColor, "red");
+
+  AnimatedSource source =
+      SourceFor(GetElementById("child"), CSSPropertyID::kColor);
+  EXPECT_TRUE(source.animated_source.IsOwnedBy(*animator));
+  EXPECT_TRUE(source.has_untracked_dependencies);
 }
 
 TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralKeyframe) {

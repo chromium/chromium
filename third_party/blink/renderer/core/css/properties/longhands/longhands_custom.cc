@@ -2405,6 +2405,7 @@ void Color::ApplyInitial(StyleResolverState& state) const {
   builder.SetColor(builder.InitialColorForColorScheme());
   builder.SetColorIsInherited(false);
   builder.SetColorIsCurrentColor(false);
+  builder.ClearAnimatedSource(CSSPropertyID::kColor);
 }
 
 void Color::ApplyInherit(StyleResolverState& state) const {
@@ -2412,8 +2413,14 @@ void Color::ApplyInherit(StyleResolverState& state) const {
   if (builder.ShouldPreserveParentColor()) {
     builder.SetColor(StyleColor(GetCSSPropertyColor().ColorIncludingFallback(
         /*visited_link=*/false, *state.ParentStyle())));
+    // The parent's used color may be a forced color rather than its computed
+    // color, so this is not an exact copy of the parent's value.
+    builder.CopyAnimatedSourceFrom(CSSPropertyID::kColor, state.ParentStyle(),
+                                   /*has_untracked_dependencies=*/true);
   } else {
     builder.SetColor(state.ParentStyle()->Color());
+    builder.CopyAnimatedSourceFrom(CSSPropertyID::kColor, state.ParentStyle(),
+                                   /*has_untracked_dependencies=*/false);
   }
   builder.SetColorIsInherited(true);
   builder.SetColorIsCurrentColor(state.ParentStyle()->ColorIsCurrentColor());
@@ -2426,6 +2433,7 @@ void Color::ApplyValue(StyleResolverState& state,
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetColor(builder.InitialColorForColorScheme());
+    builder.ClearAnimatedSource(CSSPropertyID::kColor);
   } else {
     StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
     if (color.IsUnresolvedColorFunction()) {
@@ -2440,14 +2448,23 @@ void Color::ApplyValue(StyleResolverState& state,
       // See crbug.com/1099874
       color = StyleColor(color.Resolve(state.ParentStyle()->Color().GetColor(),
                                        mojom::blink::ColorScheme::kLight));
+      // Derived from the parent's color, so not an exact copy of it.
+      builder.CopyAnimatedSourceFrom(CSSPropertyID::kColor, state.ParentStyle(),
+                                     /*has_untracked_dependencies=*/true);
     } else if (color.IsCurrentColor()) {
       // As per the spec, 'color: currentColor' is treated as 'color: inherit'
       ApplyInherit(state);
       builder.SetColorIsCurrentColor(true);
       if (state.IsForHighlight() && state.OriginatingElementStyle()) {
+        // For highlight styles, currentColor is resolved against the
+        // originating element's color (see HighlightStyleUtils), so the
+        // animated source does not need to be tracked here.
         builder.SetColor(state.OriginatingElementStyle()->Color());
+        builder.ClearAnimatedSource(CSSPropertyID::kColor);
       }
       return;
+    } else {
+      builder.ClearAnimatedSource(CSSPropertyID::kColor);
     }
     builder.SetColor(color);
   }

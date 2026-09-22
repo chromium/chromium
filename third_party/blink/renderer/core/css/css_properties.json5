@@ -1387,6 +1387,7 @@
       default_value: "StyleColor(Color::kBlack)",
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
+      tracks_animated_source: true,
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: 1,
       keywords: ["currentcolor"],
