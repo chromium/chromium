@@ -231,9 +231,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
                            MakesParentChildRelationship);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest, OnRotateFocus);
 
-  // Set visibility and fire OnNativeWidgetVisibilityChanged() if it changed.
-  void SetVisible(bool visible);
-
   // There are platform specific properties that Linux may want to add.
   virtual void AddAdditionalInitProperties(
       const Widget::InitParams& params,
@@ -256,12 +253,13 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;
+  ui::PlatformWindowState window_state_ = ui::PlatformWindowState::kUnknown;
 
   // Holds the platform window's paint-as-active hint. Null on platforms that
   // do not fire OnPaintAsActiveChanged.
   std::unique_ptr<Widget::PaintAsActiveLock> paint_as_active_lock_;
 
-  bool has_video_capture_ = false;
+  int video_capture_count_ = 0;
 
   std::u16string window_title_;
 

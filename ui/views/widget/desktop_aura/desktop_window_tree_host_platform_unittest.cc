@@ -21,6 +21,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_textured.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
@@ -238,6 +239,60 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized,
                                       ui::PlatformWindowState::kNormal);
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
+}
+
+// Tests that when video capture is active on a minimized window:
+// - The content window and widget are hidden (so page visibility is hidden).
+// - The compositor remains visible (so capture can continue).
+// - Releasing the capture lock while minimized hides the compositor.
+// - Re-acquiring the capture lock while minimized shows the compositor.
+// - Restoring the window shows the content window, widget, and compositor.
+TEST_F(DesktopWindowTreeHostPlatformTest, ToggleMinimizeWithVideoCaptureLock) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  TestWidgetObserver observer(widget->native_widget_private()->GetWidget());
+  EXPECT_FALSE(observer.visible());
+
+  widget->Show();
+  EXPECT_TRUE(observer.visible());
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(host_platform);
+
+  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(host_platform->compositor()->IsVisible());
+
+  std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> lock =
+      host_platform->CreateVideoCaptureLock();
+
+  // Pretend a PlatformWindow enters the minimized state.
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kUnknown,
+                                      ui::PlatformWindowState::kMinimized);
+
+  // Even with video capture active, content window and widget must be hidden.
+  EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
+  EXPECT_FALSE(observer.visible());
+
+  // But compositor must remain visible for video capture.
+  EXPECT_TRUE(host_platform->compositor()->IsVisible());
+
+  // Releasing the lock while still minimized should hide the compositor.
+  lock.reset();
+  EXPECT_FALSE(host_platform->compositor()->IsVisible());
+
+  // Re-acquiring the lock while minimized should make the compositor visible
+  // again, but content window and widget should stay hidden.
+  lock = host_platform->CreateVideoCaptureLock();
+  EXPECT_TRUE(host_platform->compositor()->IsVisible());
+  EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
+  EXPECT_FALSE(observer.visible());
+
+  // Restoring the window should make everything visible again.
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized,
+                                      ui::PlatformWindowState::kNormal);
+  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(observer.visible());
+  EXPECT_TRUE(host_platform->compositor()->IsVisible());
 }
 
 // Tests that the window shape is updated from the
