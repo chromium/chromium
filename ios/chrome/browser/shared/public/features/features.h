@@ -833,8 +833,14 @@ bool IsUpdateTabGroupColorsEnabled();
 // Enables the plus button in NTP fakebox.
 BASE_DECLARE_FEATURE(kPlusButtonInFakebox);
 
+// Enables the plus button contextual menu in NTP fakebox.
+BASE_DECLARE_FEATURE(kPlusButtonMenuInFakebox);
+
 // Returns true if the plus button in NTP fakebox is enabled
 bool IsPlusButtonInFakeboxEnabled();
+
+// Returns true if the plus button contextual menu in NTP fakebox is enabled
+bool IsPlusButtonMenuInFakeboxEnabled();
 
 // Enables the `AssistantAimMinimizedState` feature.
 BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);

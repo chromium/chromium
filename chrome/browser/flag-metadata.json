@@ -8268,6 +8268,11 @@
     "expiry_milestone": 153
   },
   {
+    "name": "plus-button-menu-in-fakebox",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "policy-registration-delay",
     "owners": ["ydago@chromium.org", "zmin@google.com"],
     "expiry_milestone": 148

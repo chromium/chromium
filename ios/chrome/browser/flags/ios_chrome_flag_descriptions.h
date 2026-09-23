@@ -1649,6 +1649,12 @@ inline constexpr char kPlusButtonInFakeboxDescription[] =
     "When enabled, the fakebox NTP can contain a plus button for multimodal "
     "actions";
 
+inline constexpr char kPlusButtonMenuInFakeboxName[] =
+    "Show the contextual menu directly in the fakebox plus button";
+inline constexpr char kPlusButtonMenuInFakeboxDescription[] =
+    "When enabled, the fakebox plus button will display the context menu"
+    "instead of opening the composebox first";
+
 inline constexpr char kPrepopulatedEnginesShadowVariantsName[] =
     "Prepopulated Engines Shadow Variants";
 inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
