@@ -261,6 +261,10 @@ class WebClient {
   // Returns the Universal Opt Out state for `browser_state`.
   virtual UniversalOptOutState GetUniversalOptOutState(
       BrowserState* browser_state) const;
+
+  // Returns true if the `url`'s universal should be blocked.
+  virtual bool ShouldBlockUniversalLinksForURL(BrowserState* browser_state,
+                                               const GURL& url) const;
 };
 
 }  // namespace web

@@ -36,6 +36,8 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/core/common/utils.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
@@ -81,6 +83,7 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -147,6 +150,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 #import "url/url_constants.h"
 
 namespace {
@@ -749,4 +753,40 @@ web::ExtensionController* ChromeWebClient::GetExtensionController(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   ExtensionService* service = ExtensionServiceFactory::GetForProfile(profile);
   return service ? service->GetExtensionController() : nullptr;
+}
+
+bool ChromeWebClient::ShouldBlockUniversalLinksForURL(
+    web::BrowserState* browser_state,
+    const GURL& url) const {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !browser_state) {
+    return false;
+  }
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
+  if (!template_url_service) {
+    return false;
+  }
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_provider) {
+    return false;
+  }
+  const SearchTermsData& search_terms_data =
+      template_url_service->search_terms_data();
+  if (default_provider->IsSearchURL(url, search_terms_data)) {
+    return true;
+  }
+
+  // Match the DSE homepage/root URL while excluding non-search paths on the
+  // same origin (e.g., `https://www.google.com/maps/...`) and other
+  // subdomains (e.g., `maps.google.com`, `drive.google.com`) so native
+  // Universal Links are not blocked for non-search ecosystem apps.
+  GURL dse_url = default_provider->GenerateSearchURL(search_terms_data);
+  if (url::Origin::Create(url) == url::Origin::Create(dse_url) &&
+      (url.path().empty() || url.path() == "/")) {
+    return true;
+  }
+
+  return false;
 }

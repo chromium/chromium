@@ -365,6 +365,12 @@ NSError* SanitizeNavigationError(
   BOOL forceBlockUniversalLinks = self.blockUniversalLinksOnNextDecidePolicy;
   self.blockUniversalLinksOnNextDecidePolicy = NO;
 
+  if (!forceBlockUniversalLinks && self.webStateImpl) {
+    forceBlockUniversalLinks =
+        web::GetWebClient()->ShouldBlockUniversalLinksForURL(
+            self.webStateImpl->GetBrowserState(), requestURL);
+  }
+
   _webProcessCrashed = NO;
   if (self.beingDestroyed) {
     decisionHandler(WKNavigationActionPolicyCancel);

@@ -173,4 +173,9 @@ UniversalOptOutState WebClient::GetUniversalOptOutState(
   return UniversalOptOutState::kNotEligible;
 }
 
+bool WebClient::ShouldBlockUniversalLinksForURL(BrowserState* browser_state,
+                                                const GURL& url) const {
+  return false;
+}
+
 }  // namespace web
