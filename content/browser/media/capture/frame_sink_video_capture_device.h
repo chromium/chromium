@@ -121,10 +121,6 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       uint32_t sub_capture_target_version);
   virtual void OnTargetPermanentlyLost();
 
-  // Set the rotation of the video frames. This is used when capturing a
-  // rotated screen.
-  void SetVideoRotation(media::VideoRotation video_rotation);
-
  protected:
   MouseCursorOverlayController* cursor_controller() const {
 #if !BUILDFLAG(IS_IOS)
@@ -265,8 +261,6 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   bool has_sent_on_started_to_client_ = false;
-
-  media::VideoRotation video_rotation_ = media::VIDEO_ROTATION_0;
 
   std::optional<viz::mojom::BufferFormatPreference> buffer_format_preference_;
 

@@ -633,18 +633,19 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   }
 }
 
-// Tests that the video rotation is properly sent through metadata.
-TEST_F(FrameSinkVideoCaptureDeviceTest, SetsVideoRotation) {
+// Frames captured from a frame sink are always delivered in the compositor's
+// own, unrotated orientation: when the display is rotated, viz applies the
+// display transform in a separate render pass that copy requests do not
+// observe (see SurfaceAggregator::AddDisplayTransformPass()). Tagging frames
+// with a rotation here would make consumers such as WebRTC rotate an image
+// that is already upright, so no transformation must be set.
+TEST_F(FrameSinkVideoCaptureDeviceTest, DoesNotSetVideoRotation) {
   auto receiver_ptr = std::make_unique<MockVideoFrameReceiver>();
   auto* const receiver = receiver_ptr.get();
   EXPECT_CALL(*receiver, OnStarted());
   EXPECT_CALL(*receiver, OnError(_)).Times(0);
 
   AllocateAndStartSynchronouslyWithExpectations(std::move(receiver_ptr));
-
-  // Set the rotation to 180 degrees.
-  POST_DEVICE_METHOD_CALL(SetVideoRotation, media::VIDEO_ROTATION_180);
-  WAIT_FOR_DEVICE_TASKS();
 
   int buffer_id = -1;
   MockFrameSinkVideoConsumerFrameCallbacks callbacks;
@@ -659,11 +660,10 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, SetsVideoRotation) {
   SimulateFrameCapture(0, &callbacks);
   WAIT_FOR_DEVICE_TASKS();
 
-  // Confirm the VideoFrameReceiver was provided the correct metadata.
+  // Confirm the VideoFrameReceiver was not handed a rotation.
   const auto info = receiver->TakeVideoFrameInfo(buffer_id);
   ASSERT_TRUE(info);
-  EXPECT_TRUE(info->metadata.transformation.has_value());
-  EXPECT_EQ(media::VIDEO_ROTATION_180, info->metadata.transformation->rotation);
+  EXPECT_FALSE(info->metadata.transformation.has_value());
 
   media::VideoCaptureFeedback fake_feedback = media::VideoCaptureFeedback(0.0);
   fake_feedback.frame_id = receiver->TakeFeedbackId(buffer_id);

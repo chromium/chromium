@@ -25,28 +25,8 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 
 namespace content {
-
-namespace {
-media::VideoRotation GetVideoRotationForDisplay(
-    const display::Display& display) {
-  switch (display.panel_rotation()) {
-    case display::Display::ROTATE_0:
-      return media::VIDEO_ROTATION_0;
-    case display::Display::ROTATE_90:
-      return media::VIDEO_ROTATION_90;
-    case display::Display::ROTATE_180:
-      return media::VIDEO_ROTATION_180;
-    case display::Display::ROTATE_270:
-      return media::VIDEO_ROTATION_270;
-  }
-  return media::VIDEO_ROTATION_0;
-}
-
-}  // namespace
 
 // Threading note: This is constructed on the device thread, while the
 // destructor and the rest of the class will run exclusively on the UI thread.
@@ -121,14 +101,10 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     force_visible_.emplace(target_window_);
 #endif
     target_window_->AddObserver(this);
-    display::Screen* const screen = display::Screen::Get();
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
                        target_, /*sub_capture_target_version=*/0));
-    if (screen) {
-      SendVideoRotation(screen->GetDisplayNearestWindow(target_window_));
-    }
 
     // Note: The MouseCursorOverlayController runs on the UI thread. It's also
     // important that SetTargetView() be called in the current stack while
@@ -138,17 +114,6 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     // NOTE: for Aura capture, the cursor controller's view should always be
     // the root compositor frame sink.
     cursor_controller_->SetTargetView(root_window);
-  }
-
-  void SendVideoRotation(const display::Display& display) {
-    if (!target_window_->IsRootWindow()) {
-      return;
-    }
-
-    device_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FrameSinkVideoCaptureDevice::SetVideoRotation, device_,
-                       GetVideoRotationForDisplay(display)));
   }
 
   // aura::WindowObserver override.
