@@ -7,6 +7,8 @@
 
 #include "url/gurl.h"
 
+class Profile;
+
 // Internal helper for resolving Gemini Enterprise in Chrome (GEiC)
 // configuration from Finch and the command line.
 //
@@ -39,8 +41,9 @@ bool IsGeicEnabled();
 //
 // Precedence:
 // 1. Command-line switch `--geic-guest-url`.
-// 2. Finch parameter `features::kGeicGuestURL`.
-GURL GetGeicGuestUrl();
+// 2. Enterprise policy (`glic.gemini_enterprise_settings.url`).
+// 3. Finch parameter `features::kGeicGuestURL`.
+GURL GetGeicGuestUrl(Profile* profile = nullptr);
 
 }  // namespace geic
 

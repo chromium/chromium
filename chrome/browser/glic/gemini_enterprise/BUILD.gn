@@ -16,7 +16,11 @@ source_set("geic_enabling") {
 
   deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+    "//net",
     "//url",
   ]
 }
@@ -56,10 +60,12 @@ source_set("unit_tests") {
     ":gemini_enterprise",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/public:features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/prefs",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
