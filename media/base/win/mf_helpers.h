@@ -224,13 +224,11 @@ MEDIA_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
     bool need_perform_copy);
 
-// Converts `frame` into an IMFSample, using an underlying D3D texture,
-// reading back from the GPU, or copying the frame contents as necessary.
+// Converts `frame` into an IMFSample, using an underlying D3D texture
+// or copying the frame contents as necessary.
 MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
     const media::VideoFrame* frame,
     DXGIDeviceManager* dxgi_device_manager,
-    bool use_dxgi_buffer,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
     DWORD buffer_alignment,
     IMFSample** sample_out);
 

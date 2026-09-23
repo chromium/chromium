@@ -153,6 +153,8 @@ class TestMediaFoundationVideoEncodeAccelerator
     : public MediaFoundationVideoEncodeAccelerator {
  public:
   using MediaFoundationVideoEncodeAccelerator::InitializeForTesting;
+  using MediaFoundationVideoEncodeAccelerator::
+      SetDxgiResourceMappingRequiredForTesting;
 
   TestMediaFoundationVideoEncodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
@@ -449,6 +451,90 @@ TEST_F(MediaFoundationVideoEncodeAcceleratorKeyedMutexTimeoutTest,
   // 6. Act: Attempt to encode.
   encoder_->Encode(frame, options);
   task_environment_.RunUntilIdle();
+}
+
+// Tests that when dxgi_resource_mapping_required_ is true, a frame whose
+// format is not NV12 is rejected rather than disclosing uninitialized memory.
+TEST_F(MediaFoundationVideoEncodeAcceleratorKeyedMutexTimeoutTest,
+       RejectFrameOnDxgiResourceMappingFrameFormatMismatch) {
+  encoder_->SetDxgiResourceMappingRequiredForTesting(true);
+
+  gfx::Size input_visible_size(1280, 720);
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  gfx::GpuMemoryBufferHandle gmb_handle{gfx::DXGIHandle::CreateFakeForTest()};
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image = test_sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kBGRA_8888, input_visible_size,
+       gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+       "MediaFoundationVideoEncodeAcceleratorTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+      std::move(gmb_handle));
+
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+      base::NullCallback(), gfx::Rect(input_visible_size), input_visible_size,
+      base::TimeDelta());
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
+
+  VideoEncoder::EncodeOptions options(false);
+  EXPECT_CALL(client_, NotifyErrorStatus(Property(
+                           &EncoderStatus::code,
+                           EncoderStatus::Codes::kEncoderFailedEncode)));
+
+  encoder_->Encode(frame, options);
+}
+
+// Tests that when dxgi_resource_mapping_required_ is true, a frame backed by a
+// texture whose DXGI format is not NV12 is rejected rather than disclosing
+// uninitialized memory.
+TEST_F(MediaFoundationVideoEncodeAcceleratorKeyedMutexTimeoutTest,
+       RejectFrameOnDxgiResourceMappingTextureFormatMismatch) {
+  encoder_->SetDxgiResourceMappingRequiredForTesting(true);
+
+  auto mock_texture =
+      Microsoft::WRL::Make<MockD3D11Texture2D>(mock_d3d11_device_);
+
+  D3D11_TEXTURE2D_DESC desc = {};
+  gfx::Size input_visible_size(1280, 720);
+  desc.Width = input_visible_size.width();
+  desc.Height = input_visible_size.height();
+  desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  EXPECT_CALL(*mock_texture.Get(), GetDesc(_))
+      .WillRepeatedly([desc](D3D11_TEXTURE2D_DESC* pDesc) { *pDesc = desc; });
+
+  EXPECT_CALL(*mock_d3d11_device_.Get(), OpenSharedResource1(_, _, _))
+      .WillOnce([&mock_texture](HANDLE, REFIID riid, void** ppv) {
+        return mock_texture.CopyTo(riid, ppv);
+      });
+
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  gfx::GpuMemoryBufferHandle gmb_handle{gfx::DXGIHandle::CreateFakeForTest()};
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image = test_sii->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, input_visible_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage),
+       "MediaFoundationVideoEncodeAcceleratorTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+      std::move(gmb_handle));
+
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+      base::NullCallback(), gfx::Rect(input_visible_size), input_visible_size,
+      base::TimeDelta());
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
+
+  VideoEncoder::EncodeOptions options(false);
+  EXPECT_CALL(client_, NotifyErrorStatus(Property(
+                           &EncoderStatus::code,
+                           EncoderStatus::Codes::kEncoderFailedEncode)));
+
+  encoder_->Encode(frame, options);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
