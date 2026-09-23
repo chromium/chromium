@@ -10,20 +10,18 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
 import '../../i18n_setup.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './iban_edit_dialog.html.js';
+import {getCss} from './iban_edit_dialog.css.js';
+import {getHtml} from './iban_edit_dialog.html.js';
 import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 
@@ -55,7 +53,7 @@ export interface SettingsIbanEditDialogElement {
   };
 }
 
-const SettingsIbanEditDialogElementBase = I18nMixin(PolymerElement);
+const SettingsIbanEditDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsIbanEditDialogElement extends
     SettingsIbanEditDialogElementBase {
@@ -63,27 +61,28 @@ export class SettingsIbanEditDialogElement extends
     return 'settings-iban-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The IBAN being added or edited. Null means add a new IBAN, otherwise,
        * edit the existing IBAN.
        */
-      iban: {
-        type: Object,
-        value: null,
-      },
+      iban: {type: Object},
 
       /**
        * The actual title that's used for this dialog. Will be context sensitive
        * based on which type of IBAN method is being viewed, and if it is being
        * created or edited.
        */
-      title_: String,
+      title_: {type: String},
 
       /**
        * Backing data for inputs in the dialog, each bound to the corresponding
@@ -92,32 +91,26 @@ export class SettingsIbanEditDialogElement extends
        * Note that value_ is unsanitized; code should instead use
        * `sanitizedIban_`.
        */
-      value_: String,
-      nickname_: String,
+      value_: {type: String},
+      nickname_: {type: String},
 
       /**
        * A sanitized version of `value_` with whitespace trimmed.
        */
-      sanitizedIban_: {
-        type: String,
-        computed: 'sanitizeIban_(value_)',
-        observer: 'onSanitizedIbanChanged_',
-      },
+      sanitizedIban_: {type: String},
 
       /** Whether the current iban field is invalid. */
-      ibanValidationState_: {
-        type: IbanValidationState,
-        value: false,
-      },
+      ibanValidationState_: {type: String},
     };
   }
 
-  declare iban: chrome.autofillPrivate.IbanEntry|null;
-  declare private title_: string;
-  declare private value_?: string;
-  declare private nickname_?: string;
-  declare private sanitizedIban_: string;
-  declare private ibanValidationState_: IbanValidationState;
+  accessor iban: chrome.autofillPrivate.IbanEntry|null = null;
+  protected accessor title_: string = '';
+  protected accessor value_: string = '';
+  protected accessor nickname_: string = '';
+  private accessor sanitizedIban_: string = '';
+  private accessor ibanValidationState_: IbanValidationState =
+      IbanValidationState.INVALID_NO_ERROR;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
 
@@ -127,15 +120,30 @@ export class SettingsIbanEditDialogElement extends
     if (this.iban) {
       // Save IBAN button is by default enabled in 'EDIT' mode as IBAN value is
       // pre-populated.
-      this.value_ = this.iban.value;
-      this.nickname_ = this.iban.nickname;
+      this.value_ = this.iban.value || '';
+      this.nickname_ = this.iban.nickname || '';
       this.title_ = this.i18n('editIbanTitle');
+      this.ibanValidationState_ = IbanValidationState.VALID;
     } else {
       this.title_ = this.i18n('addIbanTitle');
       // Save IBAN button is disabled in 'ADD' mode as IBAN value is empty.
-      this.$.saveButton.disabled = true;
+      this.ibanValidationState_ = IbanValidationState.INVALID_NO_ERROR;
     }
     this.$.dialog.showModal();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('value_')) {
+      this.sanitizedIban_ = this.sanitizeIban_(this.value_);
+    }
+
+    if (changedPrivateProperties.has('sanitizedIban_')) {
+      this.onSanitizedIbanChanged_();
+    }
   }
 
   /** Closes the dialog. */
@@ -143,49 +151,59 @@ export class SettingsIbanEditDialogElement extends
     this.$.dialog.close();
   }
 
+  protected onValueChanged_(e: CustomEvent<{value: string}>) {
+    this.value_ = e.detail.value;
+  }
+
+  protected onNicknameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.nickname_ = e.detail.value;
+  }
+
   /**
    * Handler for clicking the 'cancel' button. Should just dismiss the dialog.
    */
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for clicking the save button.
    */
-  private onIbanSaveButtonClick_() {
+  protected onIbanSaveButtonClick_() {
     const iban = {
       guid: this.iban?.guid,
       value: this.sanitizedIban_,
       nickname: this.nickname_ ? this.nickname_.trim() : '',
     };
-    this.dispatchEvent(new CustomEvent(
-        'save-iban', {bubbles: true, composed: true, detail: iban}));
+    this.fire('save-iban', iban);
     this.close();
   }
 
   private async onSanitizedIbanChanged_() {
     this.ibanValidationState_ =
         await this.computeIbanValidationState_(/*isBlur=*/ false);
-    this.$.saveButton.disabled =
-        this.ibanValidationState_ !== IbanValidationState.VALID;
   }
 
-  private async onIbanInputBlurred_(event: Event) {
+  protected async onIbanInputBlur_(event: Event) {
     assert(event.type === 'blur');
     this.ibanValidationState_ =
         await this.computeIbanValidationState_(/*isBlur=*/ true);
   }
 
-  private showErrorForIban_(ibanValidationState: IbanValidationState) {
-    return ibanValidationState === IbanValidationState.INVALID_WITH_ERROR;
+  protected isIbanValid_(): boolean {
+    return this.ibanValidationState_ === IbanValidationState.VALID;
+  }
+
+  protected showErrorForIban_(): boolean {
+    return this.ibanValidationState_ === IbanValidationState.INVALID_WITH_ERROR;
   }
 
   private sanitizeIban_(value: string): string {
     return value ? value.replace(/\s/g, '') : '';
   }
 
-  private async computeIbanValidationState_(isBlur: boolean) {
+  private async computeIbanValidationState_(isBlur: boolean):
+      Promise<IbanValidationState> {
     const isValid = await this.isValidIban();
 
     if (isValid) {
@@ -214,13 +232,14 @@ export class SettingsIbanEditDialogElement extends
   }
 
   /**
-   * @param  nickname of the IBAN, undefined when not set.
    * @return nickname character length.
    */
-  private computeNicknameCharCount_(): number {
+  protected computeNicknameCharCount_(): number {
     return (this.nickname_ || '').length;
   }
 }
+
+export type IbanEditDialogElement = SettingsIbanEditDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {

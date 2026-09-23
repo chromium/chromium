@@ -26,7 +26,7 @@ async function updateIbanTextboxValue(
     valueInput: CrInputElement, value: string): Promise<void> {
   valueInput.focus();
   valueInput.value = value;
-  await valueInput.updateComplete;
+  await microtasksFinished();
   valueInput.fire('input');
 }
 
@@ -161,7 +161,7 @@ suite('PaymentsPageIban', function() {
     await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
 
     const charCount =
-        ibanDialog.shadowRoot!.querySelector<HTMLElement>('#charCount');
+        ibanDialog.shadowRoot.querySelector<HTMLElement>('#charCount');
     assertTrue(!!charCount);
     assertTrue(charCount.hidden);
 
@@ -278,7 +278,7 @@ suite('PaymentsPageIban', function() {
 
     const valueInput = ibanDialog.$.valueInput;
     valueInput.value = 'FI1410093000123412';
-    flush();
+    await microtasksFinished();
 
     const cancelButton = ibanDialog.$.cancelButton;
     cancelButton.click();
@@ -287,8 +287,8 @@ suite('PaymentsPageIban', function() {
     ibanDialog = createIbanDialog(iban);
     await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
 
-    assertEquals(ibanDialog.get('nickname_'), iban.nickname);
-    assertEquals(ibanDialog.get('value_'), iban.value);
+    assertEquals(ibanDialog.$.nicknameInput.value, iban.nickname);
+    assertEquals(ibanDialog.$.valueInput.value, iban.value);
   });
 
   test('verifyLocalIbanMenu', async function() {

@@ -11,14 +11,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../../settings_shared.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './virtual_card_unenroll_dialog.html.js';
+import {getCss as getSettingsSharedCss} from '../../settings_shared_lit.css.js';
+
+import {getHtml} from './virtual_card_unenroll_dialog.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -33,41 +34,49 @@ export interface SettingsVirtualCardUnenrollDialogElement {
   };
 }
 
-export class SettingsVirtualCardUnenrollDialogElement extends PolymerElement {
+export class SettingsVirtualCardUnenrollDialogElement extends CrLitElement {
   static get is() {
     return 'settings-virtual-card-unenroll-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getCrSharedStyleCss(),
+      getSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The credit card being unenrolled from the virtual cards.
        */
-      creditCard: Object,
+      creditCard: {type: Object},
     };
   }
 
-  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
+  accessor creditCard: chrome.autofillPrivate.CreditCardEntry = {};
 
   close() {
     this.$.dialog.close();
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
-  private onConfirmButtonClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'unenroll-virtual-card',
-        {bubbles: true, composed: true, detail: this.creditCard.guid!}));
+  protected onConfirmButtonClick_() {
+    this.fire('unenroll-virtual-card', this.creditCard.guid);
     this.close();
   }
 }
+
+export type VirtualCardUnenrollDialogElement =
+    SettingsVirtualCardUnenrollDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {

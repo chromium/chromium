@@ -580,8 +580,8 @@ suite('PaymentsPageCardDialogs', function() {
     const creditCard = createCreditCardEntry();
     const dialog = createVirtualCardUnenrollDialog(creditCard);
 
-    const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
-    const body = dialog.shadowRoot!.querySelector('[slot=body]')!;
+    const title = dialog.shadowRoot.querySelector('[slot=title]')!;
+    const body = dialog.shadowRoot.querySelector('[slot=body]')!;
     assertNotEquals('', title.textContent);
     assertNotEquals('', body.textContent);
 
