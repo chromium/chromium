@@ -60,9 +60,7 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
 
   // If this is the first buffer seen, setup the timestamp helper.
   if (!initialized()) {
-    // Clamp the base timestamp to zero.
-    timestamp_helper_.SetBaseTimestamp(
-        std::max(base::TimeDelta(), time_info.timestamp));
+    timestamp_helper_.SetBaseTimestamp(time_info.timestamp);
   }
   DCHECK(initialized());
 
@@ -72,6 +70,13 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
     if (delayed_discard_) {
       delayed_discard_padding_ =
           time_info.discard_padding.value_or(DecoderBuffer::DiscardPadding());
+    }
+
+    // When we have a negative timestamp and a fully discarded buffer, we reset
+    // the timestamp helper to avoid incorrectly pinning future buffers. The
+    // first timestamp should be based on the first buffer with actual output.
+    if (timestamp_helper_.GetTimestamp() < base::TimeDelta()) {
+      timestamp_helper_.Reset();
     }
     return false;
   }
@@ -98,6 +103,12 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
     DVLOG(1) << "Initial discard of " << frames_to_discard << " out of "
              << decoded_frames << " frames.";
 
+    // In cases where our timestamp is negative, we need to adjust forwards for
+    // the frames we end up discarding.
+    if (timestamp_helper_.GetTimestamp() < base::TimeDelta()) {
+      timestamp_helper_.AddFrames(frames_to_discard);
+    }
+
     // If everything would be discarded, indicate a new buffer is required.
     if (frames_to_discard == decoded_frames) {
       // For simplicity, we just drop any discard padding if |discard_frames_|
@@ -111,6 +122,7 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
   // Process any delayed end discard from the previous buffer.
   if (delayed_end_discard_ > 0) {
     DCHECK_GT(decoder_delay_, 0u);
+    DCHECK_GE(timestamp_helper_.GetTimestamp(), base::TimeDelta());
 
     const size_t discard_index = decoder_delay_ - delayed_end_discard_;
     DCHECK_LT(discard_index, decoder_delay_);
@@ -174,6 +186,12 @@ bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
 
     DVLOG(1) << "Front discard of " << frames_to_discard << " out of "
              << decoded_frames << " frames starting at " << discard_start;
+
+    // In cases where our timestamp is negative, we need to adjust forwards for
+    // the frames we end up discarding.
+    if (timestamp_helper_.GetTimestamp() < base::TimeDelta()) {
+      timestamp_helper_.AddFrames(frames_to_discard);
+    }
 
     // If everything would be discarded, indicate a new buffer is required.
     if (frames_to_discard == decoded_frames) {

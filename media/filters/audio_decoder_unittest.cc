@@ -726,9 +726,9 @@ constexpr DataExpectations kSfxVorbisSymphoniaExpectations = {{
 }};
 
 constexpr DataExpectations kBearVorbisSymphoniaExpectations = {{
-    {0, 2902, nullptr},
-    {2902, 13061, nullptr},
-    {15963, 23219, nullptr},
+    {-2902, 2902, nullptr},
+    {0, 13061, nullptr},
+    {13061, 23219, nullptr},
 }};
 
 constexpr TestParams kFlacMonoParams = {

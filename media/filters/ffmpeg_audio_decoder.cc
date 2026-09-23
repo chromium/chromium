@@ -343,9 +343,17 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
   if (unread_frames > 0)
     output->TrimEnd(unread_frames);
 
+  // FFmpeg will silently discard opus preroll without providing an updated
+  // timestamp. To avoid double discard, we clamp to zero here.
+  auto time_info = AudioDiscardHelper::TimeInfo::FromBuffer(buffer);
+  if (config_.should_discard_decoder_delay() &&
+      config_.codec() == AudioCodec::kOpus &&
+      time_info.timestamp < base::TimeDelta()) {
+    time_info.timestamp = base::TimeDelta();
+  }
+
   *decoded_frame_this_loop = true;
-  if (discard_helper_->ProcessBuffers(
-          AudioDiscardHelper::TimeInfo::FromBuffer(buffer), output.get())) {
+  if (discard_helper_->ProcessBuffers(time_info, output.get())) {
     if (is_config_change &&
         output->sample_rate() != config_.samples_per_second()) {
       // At the boundary of the config change, FFmpeg's AAC decoder gives the

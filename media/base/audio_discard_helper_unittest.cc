@@ -94,7 +94,7 @@ TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
   ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, nullptr));
 }
 
-TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
+TEST(AudioDiscardHelperTest, NegativeTimestampPreserved) {
   AudioDiscardHelper discard_helper(kSampleRate, 0, false);
   ASSERT_FALSE(discard_helper.initialized());
 
@@ -109,7 +109,7 @@ TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
   // Verify the basic case where nothing is discarded.
   ASSERT_TRUE(discard_helper.ProcessBuffers(time_info, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
-  EXPECT_EQ(base::TimeDelta(), decoded_buffer->timestamp());
+  EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames, decoded_buffer->frame_count());
 }
@@ -531,6 +531,85 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithInitialDiscardDecoderDelay) {
   EXPECT_EQ(kTestFrames * 2 - kDecoderDelay, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kDecoderDelay * kDataStep,
                   ExtractDecodedData(*decoded_buffer, 0));
+}
+
+TEST(AudioDiscardHelperTest, NegativeTimestampEmptyInitialBufferResets) {
+  // Verifies that when an initial buffer with a negative timestamp yields no
+  // decoded output (e.g. preroll dropped by the decoder), the timestamp helper
+  // is reset so the dropped buffer does not anchor subsequent timestamps into
+  // the negative.
+  AudioDiscardHelper discard_helper(kSampleRate, 0, false);
+  ASSERT_FALSE(discard_helper.initialized());
+
+  const base::TimeDelta kNegativeTimestamp = -base::Milliseconds(10);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
+  const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
+
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kNegativeTimestamp, kDuration);
+
+  // Buffer 0 produces no decoded output (e.g. dropped preroll). Since it
+  // yielded no frames, ProcessBuffers resets the timestamp helper so this
+  // dropped buffer does not anchor subsequent timestamps.
+  ASSERT_FALSE(discard_helper.ProcessBuffers(time_info, nullptr));
+  ASSERT_FALSE(discard_helper.initialized());
+
+  // Buffer 1 carries the first decoded frames (starting at 0s). Output
+  // timestamp is established by this buffer.
+  time_info = CreateTimeInfo(base::TimeDelta(), kDuration);
+  scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
+  ASSERT_TRUE(discard_helper.ProcessBuffers(time_info, decoded_buffer.get()));
+  ASSERT_TRUE(discard_helper.initialized());
+  EXPECT_EQ(base::TimeDelta(), decoded_buffer->timestamp());
+  EXPECT_EQ(kDuration, decoded_buffer->duration());
+}
+
+TEST(AudioDiscardHelperTest, NegativeTimestampInitialDiscardAdjustsTimestamp) {
+  // Verifies that initial pre-skip discard on a negative starting timestamp
+  // advances the initial timestamp.
+  AudioDiscardHelper discard_helper(kSampleRate, 0, false);
+  ASSERT_FALSE(discard_helper.initialized());
+
+  const base::TimeDelta kNegativeTimestamp = -base::Milliseconds(5);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
+  const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
+  const int kDiscardFrames =
+      discard_helper.TimeDeltaToFrames(-kNegativeTimestamp);
+
+  discard_helper.Reset(kDiscardFrames);
+
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kNegativeTimestamp, kDuration);
+  scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
+
+  ASSERT_TRUE(discard_helper.ProcessBuffers(time_info, decoded_buffer.get()));
+  ASSERT_TRUE(discard_helper.initialized());
+  EXPECT_EQ(base::TimeDelta(), decoded_buffer->timestamp());
+  EXPECT_EQ(kDuration - (-kNegativeTimestamp), decoded_buffer->duration());
+  EXPECT_EQ(kTestFrames - kDiscardFrames, decoded_buffer->frame_count());
+}
+
+TEST(AudioDiscardHelperTest,
+     NegativeTimestampFrontDiscardPaddingAdjustsTimestamp) {
+  // Verifies that front discard padding on a negative starting timestamp
+  // advances the initial timestamp.
+  AudioDiscardHelper discard_helper(kSampleRate, 0, false);
+  ASSERT_FALSE(discard_helper.initialized());
+
+  const base::TimeDelta kNegativeTimestamp = -base::Milliseconds(5);
+  const base::TimeDelta kDuration = base::Milliseconds(10);
+  const int kTestFrames = discard_helper.TimeDeltaToFrames(kDuration);
+
+  AudioDiscardHelper::TimeInfo time_info =
+      CreateTimeInfo(kNegativeTimestamp, kDuration);
+  time_info.discard_padding =
+      std::make_pair(-kNegativeTimestamp, base::TimeDelta());
+  scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
+
+  ASSERT_TRUE(discard_helper.ProcessBuffers(time_info, decoded_buffer.get()));
+  ASSERT_TRUE(discard_helper.initialized());
+  EXPECT_EQ(base::TimeDelta(), decoded_buffer->timestamp());
+  EXPECT_EQ(kDuration - (-kNegativeTimestamp), decoded_buffer->duration());
 }
 
 }  // namespace media

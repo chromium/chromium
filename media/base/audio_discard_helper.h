@@ -84,9 +84,13 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // completely discarded, or a processing error occurs.
   //
   // If AudioDiscardHelper is not initialized() the timestamp of the first
-  // |time_info| will be used as the basis for all future timestamps set on
-  // |decoded_buffer|s.  If the first |time_info| has a negative timestamp it
-  // will be clamped to zero.
+  // |time_info| that yields decoded output will be used as the basis for all
+  // future timestamps set on |decoded_buffer|s. Negative timestamps are
+  // preserved; discarded frames (e.g. initial discard or front discard padding)
+  // will advance negative timestamps towards zero. If an initial buffer with a
+  // negative timestamp produces no decoded output (|decoded_buffer| is null),
+  // the timestamp helper is reset so that the dropped preroll buffer does not
+  // incorrectly anchor future timestamps.
   bool ProcessBuffers(const TimeInfo& time_info, AudioBuffer* decoded_buffer);
 
   // Whether any buffers have been processed.
