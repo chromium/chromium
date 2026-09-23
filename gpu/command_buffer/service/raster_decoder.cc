@@ -2972,13 +2972,10 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   // incorrect.
   if (needs_clear) {
     raster_canvas_->drawColor(sk_color_4f, SkBlendMode::kSrc);
-    if (graphite_shared_context()) {
-      should_clear_shared_image_ = true;
-    } else {
-      shared_image_->SetCleared();
-    }
+    // Remember that we can mark the shared image as cleared if the deferred
+    // GPU work is flushed successfully.
+    should_clear_shared_image_ = true;
   }
-  DCHECK(graphite_shared_context() || shared_image_->IsCleared());
 }
 
 scoped_refptr<Buffer> RasterDecoderImpl::GetShmBuffer(uint32_t shm_id) {

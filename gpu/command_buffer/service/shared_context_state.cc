@@ -880,8 +880,9 @@ bool SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
                                           : skgpu::graphite::SyncToCpu::kNo);
     return flush_succeeded;
   } else if (gr_context()) {
-    gr_context()->flush();
-    return gr_context()->submit(sync_to_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
+    return gr_context()
+        ->flushAndSubmit(sync_to_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo)
+        .fSuccess;
   }
   return true;
 }
@@ -907,7 +908,7 @@ bool SharedContextState::FlushWriteAccess(
       for (int plane_index = 0; plane_index < num_planes; plane_index++) {
         auto* surface = access->surface(plane_index);
         DCHECK(surface);
-        skgpu::ganesh::Flush(surface);
+        success &= skgpu::ganesh::Flush(surface).fSuccess;
       }
     }
   }
