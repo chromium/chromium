@@ -151,10 +151,11 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 12px;
 }
 
-:host([searchbox-chrome-refresh-theming])
-    cr-searchbox-input::part(searchbox-input)::selection {
+cr-searchbox-input::part(searchbox-input)::selection {
   background-color: var(--color-searchbox-selection-background);
-  color: var(--color-searchbox-selection-foreground);
+  color: var(
+      --color-searchbox-selection-foreground,
+      var(--color-searchbox-foreground));
 }
 
 :host(:not([is-fusebox-enabled])) cr-searchbox-input::part(icon) {
