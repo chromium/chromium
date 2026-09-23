@@ -51,13 +51,16 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabGroupMenuActionHandler}. */
@@ -81,11 +84,13 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
 
     private TabGroupMenuActionHandler mHandler;
-    @Nullable private TabGroupCreationCallback mTabGroupCreationCallback;
+    private TabGroupListBottomSheetCoordinatorFactory mFactory;
+    private Context mContext;
+    private @Nullable TabGroupCreationCallback mTabGroupCreationCallback;
 
     @Before
     public void setUp() {
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
@@ -96,8 +101,10 @@ public class TabGroupMenuActionHandlerUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         when(mTabModel.tabGroupExists(any())).thenReturn(true);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
 
-        TabGroupListBottomSheetCoordinatorFactory factory =
+        mFactory =
                 (a, b, callback, d, e, f, g, h, i, j) -> {
                     mTabGroupCreationCallback = callback;
                     return mTabGroupListBottomSheetCoordinator;
@@ -105,48 +112,81 @@ public class TabGroupMenuActionHandlerUnitTest {
 
         mHandler =
                 new TabGroupMenuActionHandler(
-                        context,
+                        mContext,
                         mTabModel,
                         mBottomSheetController,
                         mModalDialogManager,
                         mTabGroupUiActionHandler,
                         mTabGroupSyncService,
                         mProfile,
-                        factory);
-        when(mTab.getTabGroupId()).thenReturn(Token.createRandom());
+                        mFactory);
+        when(mTab.getTabGroupId()).thenReturn(null);
         when(mTabModel.getProfile()).thenReturn(mProfile);
     }
 
     @Test
     public void testHandleAddToGroupAction_noGroups() {
-        when(mTabModel.getTabGroupCount()).thenReturn(0);
-        mHandler.handleAddToGroupAction(mTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+        assertFalse(mHandler.handleAddToGroupAction(mTab));
         verify(mTabModel).createSingleTabGroup(mTab);
         verify(mTabGroupListBottomSheetCoordinator, never()).showBottomSheet(any());
     }
 
     @Test
     public void testHandleAddToGroupAction_withGroups() {
-        when(mTabModel.getTabGroupCount()).thenReturn(1);
-        mHandler.handleAddToGroupAction(mTab);
+        SavedTabGroup group = new SavedTabGroup();
+        group.syncId = "sync_id";
+        group.savedTabs = List.of(new SavedTabGroupTab());
+        group.localId = new LocalTabGroupId(Token.createRandom());
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
+        when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
+        assertTrue(mHandler.handleAddToGroupAction(mTab));
         verify(mTabModel, never()).createSingleTabGroup(mTab);
         verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(any());
     }
 
     @Test
+    public void testHandleAddToGroupAction_onlyInCurrentGroup() {
+        Token currentGroupId = Token.createRandom();
+        when(mTab.getTabGroupId()).thenReturn(currentGroupId);
+        SavedTabGroup group = new SavedTabGroup();
+        group.syncId = "sync_id";
+        group.savedTabs = List.of(new SavedTabGroupTab());
+        group.localId = new LocalTabGroupId(currentGroupId);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
+        when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
+
+        assertFalse(mHandler.handleAddToGroupAction(mTab));
+        verify(mTabModel).createSingleTabGroup(mTab);
+        verify(mTabGroupListBottomSheetCoordinator, never()).showBottomSheet(any());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS})
     public void testHandleAddToGroupAction_crossWindowGroups() {
-        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        Token otherGroupId = Token.createRandom();
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabModelSelector otherSelector = mock(TabModelSelector.class);
         TabModel otherModel = mock(TabModel.class);
         when(otherSelector.getModel(false)).thenReturn(otherModel);
-        when(otherModel.getTabGroupCount()).thenReturn(1);
+        when(otherModel.getAllTabGroupIds()).thenReturn(Collections.singleton(otherGroupId));
+        when(otherModel.tabGroupExists(otherGroupId)).thenReturn(true);
         when(tabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager));
 
-        mHandler.handleAddToGroupAction(mTab);
+        TabGroupMenuActionHandler localHandler =
+                new TabGroupMenuActionHandler(
+                        mContext,
+                        mTabModel,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mTabGroupUiActionHandler,
+                        /* syncService= */ null,
+                        mProfile,
+                        mFactory);
+
+        assertTrue(localHandler.handleAddToGroupAction(mTab));
 
         verify(mTabModel, never()).createSingleTabGroup(mTab);
         verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(any());
@@ -158,17 +198,22 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTabGroupCreation_withCoordinator() {
-        when(mTabModel.getTabGroupCount()).thenReturn(1);
+        SavedTabGroup group = new SavedTabGroup();
+        group.syncId = "sync_id";
+        group.savedTabs = List.of(new SavedTabGroupTab());
+        group.localId = new LocalTabGroupId(Token.createRandom());
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
+        when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
         mHandler.handleAddToGroupAction(mTab);
 
         assertNotNull(mTabGroupCreationCallback);
-        mTabGroupCreationCallback.onTabGroupCreated(mTab.getTabGroupId());
+        mTabGroupCreationCallback.onTabGroupCreated(Token.createRandom());
         verify(mTabModel, never()).createSingleTabGroup(mTab);
     }
 
     @Test
     public void testOnTabGroupCreation_noCoordinator() {
-        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         mHandler.handleAddToGroupAction(mTab);
 
         verify(mTabModel).createSingleTabGroup(mTab);

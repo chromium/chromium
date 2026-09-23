@@ -245,7 +245,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mActivity, mTabGroupSyncService, mTabModel);
-        boolean hasTabGroups = windowChecker.hasOtherGroups(/* currentGroupId= */ null);
+        boolean hasTabGroups = windowChecker.hasOtherGroups(tab.getTabGroupId());
         if (!hasTabGroups) {
             itemList.add(
                     new ListItemBuilder()

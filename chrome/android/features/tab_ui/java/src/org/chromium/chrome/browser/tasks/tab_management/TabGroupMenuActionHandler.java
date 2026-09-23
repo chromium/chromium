@@ -14,19 +14,15 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Collection;
 import java.util.List;
 
 /** Handles the actions for the tab group related menu items in the app menu. */
@@ -99,18 +95,19 @@ public class TabGroupMenuActionHandler {
      * or create a new one.
      *
      * @param tab The tab to be added to a group.
+     * @return Whether existing groups were present and a bottom sheet was shown (true), or false if
+     *     no other groups were present and a new group was created directly.
      */
-    public void handleAddToGroupAction(Tab tab) {
-        Collection<TabModelSelector> selectors =
-                TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
-                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
-                        : null;
-        if (!TabGroupUtils.hasTabGroups(mTabModel, selectors)) {
+    public boolean handleAddToGroupAction(Tab tab) {
+        GroupWindowChecker windowChecker =
+                new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
+        if (!windowChecker.hasOtherGroups(tab.getTabGroupId())) {
             mTabModel.createSingleTabGroup(tab);
             @Nullable Token groupId = tab.getTabGroupId();
             if (groupId != null) {
                 onTabGroupCreation(groupId);
             }
+            return false;
         } else {
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator =
                     mFactory.create(
@@ -126,6 +123,7 @@ public class TabGroupMenuActionHandler {
                             mTabGroupUiActionHandler);
             mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
             tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
+            return true;
         }
     }
 
