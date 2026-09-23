@@ -38,7 +38,7 @@ namespace {
 // URL for the AI disclosure footer link.
 constexpr char kAIDisclosureURL[] = "settings://ai_disclosure";
 
-// Vertical spacing between the notice section and search results.
+// Vertical spacing between the notice section and adjacent sections.
 constexpr CGFloat kNoticeSectionSpacing = 16.0;
 
 // Footer height for the Autofill search results section to provide spacing
@@ -297,6 +297,10 @@ enum class ItemIdentifier {
       sectionIdentifier ==
           SectionIdentifier::kPersonalContextSearchResultsSection) {
     return UITableViewAutomaticDimension;
+  }
+
+  if (sectionIdentifier == SectionIdentifier::kNoticeSection && section > 0) {
+    return kNoticeSectionSpacing;
   }
 
   return 0;
