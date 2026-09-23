@@ -793,6 +793,7 @@ if (!is_android) {
       ":contextual_tasks",
       ":test_support",
       ":ui",
+      "//chrome/browser/signin:identity_test_support",
       "//chrome/browser/ui/lens:interactive_ui_test_support",
       "//chrome/test:test_support_ui",
       "//components/contextual_tasks/public",
@@ -998,6 +999,7 @@ if (is_android) {
 source_set("test_support") {
   testonly = true
   sources = [
+    "contextual_tasks_test_user_variation.h",
     "mock_contextual_tasks_page.cc",
     "mock_contextual_tasks_page.h",
     "mock_contextual_tasks_panel_controller.cc",

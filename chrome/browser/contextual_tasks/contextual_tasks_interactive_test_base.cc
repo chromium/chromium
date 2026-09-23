@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
@@ -152,13 +153,26 @@ void ContextualTasksInteractiveTestBase::InitTabContextOverride() {
                   }));
 }
 
+UserVariation ContextualTasksInteractiveTestBase::GetUserVariation() const {
+  return UserVariation::kSignedIn;
+}
+
+void ContextualTasksInteractiveTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  LensOverlayInteractiveTestBase::SetUpCommandLine(command_line);
+  if (GetUserVariation() == UserVariation::kIncognito) {
+    command_line->AppendSwitch(::switches::kIncognito);
+  }
+}
+
 // static
 std::vector<base::test::FeatureRefAndParams>
 ContextualTasksInteractiveTestBase::GetDefaultEnabledFeatures() {
   return {
       {kContextualTasks, {}},
       {lens::features::kLensOverlay, {}},
-      {lens::features::kLensSidePanelUnification, {}},
+      {lens::features::kLensSidePanelUnification,
+       {{"allow-signed-out", "true"}}},
       {lens::features::kLensOverlayContextualSearchbox,
        {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}},
       {lens::features::kLensOverlayTranslateButton, {}},
@@ -186,6 +200,9 @@ void ContextualTasksInteractiveTestBase::SetUpBrowserContextKeyedServices(
     content::BrowserContext* context) {
   LensOverlayInteractiveTestBase::SetUpBrowserContextKeyedServices(context);
 
+  IdentityTestEnvironmentProfileAdaptor::
+      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+
   AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
       context,
       base::BindRepeating(
@@ -202,6 +219,17 @@ void ContextualTasksInteractiveTestBase::SetUpBrowserContextKeyedServices(
 void ContextualTasksInteractiveTestBase::SetUpOnMainThread() {
   TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
   LensOverlayInteractiveTestBase::SetUpOnMainThread();
+
+  if (GetUserVariation() == UserVariation::kSignedIn) {
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->GetProfile());
+    identity_test_env_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("user@example.com",
+                                      signin::ConsentLevel::kSignin);
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+  }
 
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       lens::prefs::kLensSharingPageScreenshotEnabled, true);
@@ -281,6 +309,7 @@ void ContextualTasksInteractiveTestBase::SetUpOnMainThread() {
 }
 
 void ContextualTasksInteractiveTestBase::TearDownOnMainThread() {
+  identity_test_env_adaptor_.reset();
   url_loader_interceptor_.reset();
   contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
   LensOverlayInteractiveTestBase::TearDownOnMainThread();
@@ -348,10 +377,11 @@ std::unique_ptr<KeyedService>
 ContextualTasksInteractiveTestBase::BuildMockContextualTasksUiServiceInstance(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
+  const bool is_signed_in = (GetUserVariation() == UserVariation::kSignedIn);
   return std::make_unique<TestContextualTasksUiService>(
       profile, ContextualTasksServiceFactory::GetForProfile(profile),
       AimEligibilityServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), /*is_signed_in=*/true);
+      IdentityManagerFactory::GetForProfile(profile), is_signed_in);
 }
 
 MockAimEligibilityService*
