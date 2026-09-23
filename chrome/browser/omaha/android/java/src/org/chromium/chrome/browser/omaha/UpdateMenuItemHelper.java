@@ -36,12 +36,12 @@ import org.chromium.components.user_prefs.UserPrefs;
  * Contains logic related to displaying app menu badge and a special menu item for information
  * related to updates.
  *
- * It supports displaying a badge and item for whether an update is available, and a different
+ * <p>It supports displaying a badge and item for whether an update is available, and a different
  * badge and menu item if the Android OS version Chrome is currently running on is unsupported.
  *
- * It also has logic for logging usage of the update menu item to UMA.
+ * <p>It also has logic for logging usage of the update menu item to UMA.
  *
- * For manually testing this functionality, see {@link UpdateConfigs}.
+ * <p>For manually testing this functionality, see {@link UpdateConfigs}.
  */
 @NullMarked
 public class UpdateMenuItemHelper {
@@ -100,7 +100,7 @@ public class UpdateMenuItemHelper {
     }
 
     /**
-     * Registers {@code observer} to be triggered whenever the menu state changes.  This will always
+     * Registers {@code observer} to be triggered whenever the menu state changes. This will always
      * be triggered at least once after registration.
      */
     public void registerObserver(Runnable observer) {
@@ -123,13 +123,14 @@ public class UpdateMenuItemHelper {
         mObservers.removeObserver(observer);
     }
 
-    /** @return {@link MenuUiState} representing the current update state for the menu. */
+    /** Returns {@link MenuUiState} representing the current update state for the menu. */
     public MenuUiState getUiState() {
         return mMenuUiState;
     }
 
     /**
      * Handles a click on the update menu item.
+     *
      * @param activity The current {@code Activity}.
      */
     public void onMenuItemClicked(Activity activity) {
@@ -147,7 +148,7 @@ public class UpdateMenuItemHelper {
                 }
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
-                // Intentional fall through.
+            // Intentional fall through.
             default:
                 return;
         }
@@ -251,7 +252,7 @@ public class UpdateMenuItemHelper {
                 mMenuUiState.itemState.enabled = false;
                 break;
             case UpdateState.NONE:
-                // Intentional fall through.
+            // Intentional fall through.
             default:
                 break;
         }

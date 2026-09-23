@@ -967,7 +967,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorInProductHelpController.java",
   "java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorMetricsDelegate.java",
   "java/src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTask.java",
-  "java/src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelper.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfo.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfoControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",

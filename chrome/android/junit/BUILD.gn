@@ -149,6 +149,7 @@ if (is_android) {
       "//chrome/browser/notifications:java",
       "//chrome/browser/ntp_customization:java",
       "//chrome/browser/omaha/android:java",
+      "//chrome/browser/omaha/android:ui_java",
       "//chrome/browser/omaha/android:update_proto_java",
       "//chrome/browser/open_in_app/android:java",
       "//chrome/browser/optimization_guide/android:java",
