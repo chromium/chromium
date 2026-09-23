@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "base/metrics/field_trial.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
@@ -12,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "content/public/test/browser_test.h"
 
 namespace safe_browsing {
@@ -22,7 +24,12 @@ const char kTestOhttpKey[] = "TestOhttpKey";
 
 class SafeBrowsingOhttpKeyServiceTest : public InProcessBrowserTest {
  public:
-  SafeBrowsingOhttpKeyServiceTest() = default;
+  SafeBrowsingOhttpKeyServiceTest() {
+    // TODO(https://crbug.com/564792943): Update tests so they work with the
+    // SeedFile.
+    base::FieldTrialList::CreateFieldTrial(variations::kSeedFileTrial,
+                                           variations::kControlGroup);
+  }
   SafeBrowsingOhttpKeyServiceTest(const SafeBrowsingOhttpKeyServiceTest&) =
       delete;
   SafeBrowsingOhttpKeyServiceTest& operator=(

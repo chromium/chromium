@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/field_trial.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -47,6 +48,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -305,6 +307,10 @@ class FirstRunMasterPrefsVariationsSeedTest
   FirstRunMasterPrefsVariationsSeedTest() : metrics_consent_(GetParam()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         variations::switches::kDisableFieldTrialTestingConfig);
+    // TODO(https://crbug.com/564792943): Update tests so they work with the
+    // SeedFile.
+    base::FieldTrialList::CreateFieldTrial(variations::kSeedFileTrial,
+                                           variations::kControlGroup);
   }
 
   FirstRunMasterPrefsVariationsSeedTest(

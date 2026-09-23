@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -56,6 +57,7 @@
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/user_manager/user_names.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -114,7 +116,12 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
  public:
   ChromePasswordProtectionServiceBrowserTest()
       : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
-            /*is_sync_for_unittests=*/true)) {}
+            /*is_sync_for_unittests=*/true)) {
+    // TODO(https://crbug.com/564792943): Update tests so they work with the
+    // SeedFile.
+    base::FieldTrialList::CreateFieldTrial(variations::kSeedFileTrial,
+                                           variations::kControlGroup);
+  }
 
   ChromePasswordProtectionServiceBrowserTest(
       const ChromePasswordProtectionServiceBrowserTest&) = delete;

@@ -6,12 +6,14 @@
 // should be kept in sync with those in ios/chrome/browser/variations/
 // variations_safe_mode_egtest.mm.
 
+#include "base/metrics/field_trial.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -21,7 +23,12 @@ namespace variations {
 
 class VariationsSafeModeBrowserTest : public InProcessBrowserTest {
  public:
-  VariationsSafeModeBrowserTest() { DisableTestingConfig(); }
+  VariationsSafeModeBrowserTest() {
+    DisableTestingConfig();
+    // TODO(https://crbug.com/564792943): Update tests so they work with the
+    // SeedFile.
+    base::FieldTrialList::CreateFieldTrial(kSeedFileTrial, kControlGroup);
+  }
   ~VariationsSafeModeBrowserTest() override = default;
 
  protected:

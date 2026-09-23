@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
+#include "base/metrics/field_trial.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
@@ -15,6 +16,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/sessions/core/session_id.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -26,7 +28,12 @@ constexpr std::string_view kRealtimeEndpoint = "/realtime_endpoint";
 
 class SafeBrowsingUrlLookupServiceTest : public InProcessBrowserTest {
  public:
-  SafeBrowsingUrlLookupServiceTest() = default;
+  SafeBrowsingUrlLookupServiceTest() {
+    // TODO(https://crbug.com/564792943): Update tests so they work with the
+    // SeedFile.
+    base::FieldTrialList::CreateFieldTrial(variations::kSeedFileTrial,
+                                           variations::kControlGroup);
+  }
   SafeBrowsingUrlLookupServiceTest(const SafeBrowsingUrlLookupServiceTest&) =
       delete;
   SafeBrowsingUrlLookupServiceTest& operator=(
