@@ -9600,6 +9600,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(clear_focused_element_timer_);
   visitor->Trace(node_iterators_);
   visitor->Trace(ranges_);
+  visitor->Trace(unobserved_child_list_mutation_target_);
   visitor->Trace(document_explicit_root_intersection_observer_data_);
   visitor->Trace(style_engine_);
   visitor->Trace(form_controller_);

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+<div id="observed"></div>
+<div id="parent" style="display:none"></div>
+<script>
+// Once any MutationObserver observes childList somewhere in the document,
+// every child list mutation in the document has to find out whether an
+// observer is interested. Measure appendChild/removeChild on nodes that
+// nobody observes while such an observer exists.
+var observer = new MutationObserver(function() {});
+observer.observe(document.getElementById("observed"), {childList: true, subtree: true});
+
+var childCount = 64;
+// Connected but display:none, so that style and layout stay out of the loop.
+var parent = document.getElementById("parent");
+var children = [];
+var tags = ["div", "span", "p", "a"];
+for (var i = 0; i < childCount; i++)
+    children.push(document.createElement(tags[i % tags.length]));
+
+PerfTestRunner.measureRunsPerSecond({
+    description: "appendChild/removeChild on a connected, unobserved node with an unrelated childList observer in the document.",
+    run: function() {
+        for (var i = 0; i < 20000; i++) {
+            var child = children[i % childCount];
+            parent.appendChild(child);
+            parent.removeChild(child);
+        }
+}});
+</script>
+</body>
+</html>

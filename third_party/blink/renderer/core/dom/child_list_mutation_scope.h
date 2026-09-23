@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -48,17 +49,18 @@ class MutationObserverInterestGroup;
 // ChildListMutationScope is destructed the accumulator enqueues a mutation
 // record for the recorded mutations and the accumulator can be garbage
 // collected.
-class ChildListMutationAccumulator final
+class CORE_EXPORT ChildListMutationAccumulator final
     : public GarbageCollected<ChildListMutationAccumulator> {
  public:
+  // Returns the accumulator shared by all active scopes for the node, creating
+  // one if needed, or nullptr if no MutationObserver is interested in child
+  // list mutations of the node.
   static ChildListMutationAccumulator* GetOrCreate(Node&);
 
   ChildListMutationAccumulator(Node*, MutationObserverInterestGroup*);
 
   void ChildAdded(Node&);
   void WillRemoveChild(Node&);
-
-  bool HasObservers() const { return observers_ != nullptr; }
 
   // Register and unregister mutation scopes that are using this mutation
   // accumulator.
@@ -85,16 +87,34 @@ class ChildListMutationAccumulator final
   unsigned mutation_scopes_;
 };
 
+// Put one of these on the stack around a compound child list change of
+// |target| (e.g. inserting a DocumentFragment) so that MutationObservers get
+// one record for it. Nested scopes for the same target join the outermost one.
 class ChildListMutationScope final {
   STACK_ALLOCATED();
 
  public:
-  explicit ChildListMutationScope(Node& target) {
-    if (target.GetDocument().MayHaveMutationObserversOfType(
-            kMutationTypeChildList)) {
-      accumulator_ = ChildListMutationAccumulator::GetOrCreate(target);
+  explicit ChildListMutationScope(Node& target) : target_(&target) {
+    Document& document = target.GetDocument();
+    if (!document.MayHaveMutationObserversOfType(kMutationTypeChildList) ||
+        document.UnobservedChildListMutationTarget() == &target) {
+      return;
+    }
+    accumulator_ = ChildListMutationAccumulator::GetOrCreate(target);
+    if (accumulator_) {
       // Register another user of the accumulator.
       accumulator_->EnterMutationScope();
+      return;
+    }
+    // Nobody observes |target|. Note that on the document while this scope
+    // is active, so that nested scopes for |target| skip the observer lookup,
+    // the way they would share this scope's accumulator if there were one (so
+    // an observer registered before this scope ends gets no record for this
+    // operation, as before). There is one slot: a scope for another
+    // unobserved target nested in this one does the lookup each time.
+    if (!document.UnobservedChildListMutationTarget()) {
+      cached_unobserved_document_ = &document;
+      document.SetUnobservedChildListMutationTarget(&target);
     }
   }
   ChildListMutationScope(const ChildListMutationScope&) = delete;
@@ -102,24 +122,36 @@ class ChildListMutationScope final {
 
   ~ChildListMutationScope() {
     if (accumulator_) {
-      // Unregister a user of the accumulator. If this is the last user
-      // the accumulator will enqueue a mutation record for the mutations.
+      // Unregister a user of the accumulator. If this is the last user the
+      // accumulator will enqueue a mutation record for the mutations.
       accumulator_->LeaveMutationScope();
+    } else if (cached_unobserved_document_) {
+      DCHECK_EQ(
+          cached_unobserved_document_->UnobservedChildListMutationTarget(),
+          target_);
+      cached_unobserved_document_->SetUnobservedChildListMutationTarget(
+          nullptr);
     }
   }
 
   void ChildAdded(Node& child) {
-    if (accumulator_ && accumulator_->HasObservers())
+    if (accumulator_) {
       accumulator_->ChildAdded(child);
+    }
   }
 
   void WillRemoveChild(Node& child) {
-    if (accumulator_ && accumulator_->HasObservers())
+    if (accumulator_) {
       accumulator_->WillRemoveChild(child);
+    }
   }
 
  private:
   ChildListMutationAccumulator* accumulator_ = nullptr;
+  Node* target_;
+  // The document whose UnobservedChildListMutationTarget() this scope set to
+  // |target_|, if it did; the destructor resets it.
+  Document* cached_unobserved_document_ = nullptr;
 };
 
 }  // namespace blink

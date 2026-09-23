@@ -59,7 +59,9 @@ ChildListMutationAccumulator::ChildListMutationAccumulator(
     : target_(target),
       last_added_(nullptr),
       observers_(observers),
-      mutation_scopes_(0) {}
+      mutation_scopes_(0) {
+  DCHECK(observers_);
+}
 
 void ChildListMutationAccumulator::LeaveMutationScope() {
   DCHECK_GT(mutation_scopes_, 0u);
@@ -72,17 +74,25 @@ void ChildListMutationAccumulator::LeaveMutationScope() {
 
 ChildListMutationAccumulator* ChildListMutationAccumulator::GetOrCreate(
     Node& target) {
-  AccumulatorMap::AddResult result =
-      GetAccumulatorMap().insert(&target, nullptr);
-  ChildListMutationAccumulator* accumulator;
-  if (!result.is_new_entry) {
-    accumulator = result.stored_value->value;
-  } else {
-    accumulator = MakeGarbageCollected<ChildListMutationAccumulator>(
-        &target,
-        MutationObserverInterestGroup::CreateForChildListMutation(target));
-    result.stored_value->value = accumulator;
+  AccumulatorMap& map = GetAccumulatorMap();
+  // The map only has entries while a ChildListMutationScope for a node with
+  // interested observers is on the stack, so it is almost always empty.
+  if (!map.empty()) {
+    auto it = map.find(&target);
+    if (it != map.end()) {
+      return it->value.Get();
+    }
   }
+  // Usually nothing observes |target| (e.g. a detached subtree that is being
+  // built); only set up an accumulator when there is somebody to deliver to.
+  MutationObserverInterestGroup* observers =
+      MutationObserverInterestGroup::CreateForChildListMutation(target);
+  if (!observers) {
+    return nullptr;
+  }
+  auto* accumulator =
+      MakeGarbageCollected<ChildListMutationAccumulator>(&target, observers);
+  map.insert(&target, accumulator);
   return accumulator;
 }
 
@@ -92,8 +102,7 @@ inline bool ChildListMutationAccumulator::IsAddedNodeInOrder(Node& child) {
 }
 
 void ChildListMutationAccumulator::ChildAdded(Node& child) {
-  DCHECK(HasObservers());
-
+  DCHECK(observers_);
   if (!IsAddedNodeInOrder(child))
     EnqueueMutationRecord();
 
@@ -111,8 +120,7 @@ inline bool ChildListMutationAccumulator::IsRemovedNodeInOrder(Node& child) {
 }
 
 void ChildListMutationAccumulator::WillRemoveChild(Node& child) {
-  DCHECK(HasObservers());
-
+  DCHECK(observers_);
   if (!added_nodes_.empty() || !IsRemovedNodeInOrder(child))
     EnqueueMutationRecord();
 
@@ -128,7 +136,7 @@ void ChildListMutationAccumulator::WillRemoveChild(Node& child) {
 }
 
 void ChildListMutationAccumulator::EnqueueMutationRecord() {
-  DCHECK(HasObservers());
+  DCHECK(observers_);
   DCHECK(!IsEmpty());
 
   StaticNodeList* added_nodes = StaticNodeList::Adopt(added_nodes_);
