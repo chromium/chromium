@@ -405,8 +405,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
      * layout is in two column mode.
      */
     public boolean isLayoutOpen() {
-        // getView() may be null in tests before the fragment's view is created.
-        if (getView() == null) return false;
+        // getView() may be null in tests before the fragment's view is created, or during Activity
+        // recreation before onCreateView() runs. A restored detail fragment means the detail pane
+        // will be open once the view exists.
+        if (getView() == null) return isAdded() && hasDetailFragment();
 
         if (isTwoColumn()) {
             return true;
@@ -420,6 +422,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // Before the initial layout pass in single-column mode, SlidingPaneLayout.isOpen() defaults
         // to true because isSlideable() is initially false (!mCanSlide). In that pre-layout state,
         // check if a detail fragment is actually present and added in the detail container.
+        return hasDetailFragment();
+    }
+
+    /** Whether a detail fragment is present and added in the detail pane container. */
+    private boolean hasDetailFragment() {
         Fragment detail = getChildFragmentManager().findFragmentById(R.id.preferences_detail);
         return detail != null && detail.isAdded();
     }

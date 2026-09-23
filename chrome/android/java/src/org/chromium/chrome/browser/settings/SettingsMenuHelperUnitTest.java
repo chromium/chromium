@@ -651,13 +651,7 @@ public class SettingsMenuHelperUnitTest {
     @Test
     public void testUpdateNavigationIcon_BackButtonAccessibility() {
         // Update the navigation icon to be a back button.
-        SettingsMenuHelper.updateNavigationIcon(
-                mToolbar,
-                mActivity,
-                /* shownInTab= */ true,
-                /* show= */ true,
-                /* isMultiColumn= */ false,
-                /* isMainSettings= */ false);
+        updateBackButtonInTab();
 
         // The navigation button should be a clickable back button for screen readers.
         View navigationButton = getNavigationButton();
@@ -672,6 +666,66 @@ public class SettingsMenuHelperUnitTest {
     public void testUpdateNavigationIcon_BackButtonFocus_shownInTab() {
         mActivity.setContentView(mToolbar);
 
+        updateBackButtonInTab();
+
+        // requestFocus() and the accessibility focus action are sent together, so view focus
+        // stands in for screen reader focus in these tests.
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isFocusable());
+        assertTrue(navigationButton.isFocused());
+    }
+
+    @Test
+    public void testUpdateNavigationIcon_BackButton_DoesNotFocusWhenAlreadyBackButton() {
+        mActivity.setContentView(mToolbar);
+
+        updateBackButtonInTab();
+
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isFocused());
+
+        // Focus another view to simulate user moving focus elsewhere (e.g. a preference item).
+        View otherView = new View(mActivity);
+        otherView.setFocusable(true);
+        otherView.setFocusableInTouchMode(true);
+        mToolbar.addView(otherView);
+        otherView.requestFocus();
+        assertFalse(navigationButton.isFocused());
+
+        // Calling updateNavigationIcon again when already showing the back button should not
+        // steal focus back to the navigation button.
+        updateBackButtonInTab();
+
+        assertFalse(navigationButton.isFocused());
+    }
+
+    @Test
+    public void testUpdateNavigationIcon_BackButton_DoesNotFocusWhenToolbarNotOnScreen() {
+        // Regression test for crbug.com/556140901: the toolbar is built before it is attached to
+        // the window when the Activity is recreated (e.g. after a theme change). Showing the back
+        // button then must not force focus onto it, so the screen reader can decide where to go.
+        updateBackButtonInTab();
+
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertEquals(mActivity.getString(R.string.back), navigationButton.getContentDescription());
+        assertFalse(navigationButton.isFocused());
+
+        // Attaching the toolbar later and updating again must not focus it either, because the
+        // back button is already displayed.
+        mActivity.setContentView(mToolbar);
+        updateBackButtonInTab();
+
+        assertFalse(navigationButton.isFocused());
+    }
+
+    /**
+     * Shows the toolbar back button for settings in a tab, that is, single-column layout on a
+     * subpage rather than top-level main settings.
+     */
+    private void updateBackButtonInTab() {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
                 mActivity,
@@ -679,11 +733,6 @@ public class SettingsMenuHelperUnitTest {
                 /* show= */ true,
                 /* isMultiColumn= */ false,
                 /* isMainSettings= */ false);
-
-        View navigationButton = getNavigationButton();
-        assertNotNull(navigationButton);
-        assertTrue(navigationButton.isFocusable());
-        assertTrue(navigationButton.isFocused());
     }
 
     /** Returns the navigation button on the toolbar. */

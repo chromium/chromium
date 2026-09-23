@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -282,6 +283,12 @@ public class SettingsMenuHelper {
                             }
                         });
             } else {
+                // Compute whether the navigation icon was a back button before changing it.
+                boolean wasBackButton =
+                        TextUtils.equals(
+                                toolbar.getNavigationContentDescription(),
+                                activity.getString(R.string.back));
+
                 // Show a back button.
                 toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
                 toolbar.setNavigationOnClickListener(v -> activity.onBackPressed());
@@ -292,8 +299,14 @@ public class SettingsMenuHelper {
                 navigationButton.setClickable(true);
                 navigationButton.setFocusable(true);
                 ViewCompat.setAccessibilityDelegate(navigationButton, null);
-                if (shownInTab) {
-                    requestAccessibilityFocus(navigationButton);
+
+                // Move focus to the back button only when the user navigates to a subpage, that is,
+                // when the toolbar is already on screen and it was showing a different icon. Do not
+                // move focus while the toolbar is being built (e.g. on Activity recreation) or on
+                // repeated layout, title and search updates, because that overrides where the
+                // screen reader wants focus. See crbug.com/556140901.
+                if (shownInTab && !wasBackButton && navigationButton.isAttachedToWindow()) {
+                    focusAndSendAccessibilityEvent(navigationButton);
                 }
             }
         } else {
