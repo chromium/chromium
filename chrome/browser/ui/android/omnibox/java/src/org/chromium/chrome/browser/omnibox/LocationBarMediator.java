@@ -61,7 +61,6 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -131,6 +130,7 @@ import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -275,6 +275,8 @@ public class LocationBarMediator
             ObservableSuppliers.createNonNull(false);
     private final Callback<Boolean> mActivationChipSelectedObserver =
             this::onActivationChipSelectionChanged;
+    private final Callback<@Nullable AiModeButtonUiConfig> mAiModeButtonUiConfigObserver =
+            this::onAiModeButtonUiConfigChanged;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             _ -> {
                 updateActivationChip();
@@ -325,8 +327,12 @@ public class LocationBarMediator
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
     private boolean mIsLocationBarFocusedFromNtpScroll;
     private boolean mAccessibilityFocusWorkaroundInProgress;
-    // Whether the client is eligible for AIM, i.e. AI Mode fulfillment for search queries.
-    private boolean mIsAimEligible;
+    // Configuration of the AI Mode entry point offered by the current default search engine, or
+    // null when no entry point may be shown. Native applies every eligibility check before handing
+    // over a config, so a non-null value alone means the entry point is permitted; callers must not
+    // re-derive eligibility (e.g. by special-casing Google) on top of it. See
+    // SearchEngineService#getAiModeButtonUiConfigSupplier.
+    private @Nullable AiModeButtonUiConfig mAiModeButtonUiConfig;
     // Whether the client is eligible for the fusebox; a set of UI tools for creating multimodal,
     // AI-assisted queries that are fulfilled by AI Mode. Every client that is eligible for fusebox
     // is aim-eligible, but not every AIM-eligible client is Fusebox-eligible. AIM-but-not-Fusebox
@@ -668,6 +674,11 @@ public class LocationBarMediator
         }
         mLocationBarLayout.getActivationChip().setOnClickListener(null);
         mActivationChipSelectedSupplier.removeObserver(mActivationChipSelectedObserver);
+        if (mSearchEngineService != null) {
+            mSearchEngineService
+                    .getAiModeButtonUiConfigSupplier()
+                    .removeObserver(mAiModeButtonUiConfigObserver);
+        }
         mHintTextUpdater.destroy();
         mStatusCoordinator = null;
         mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(this);
@@ -2019,6 +2030,11 @@ public class LocationBarMediator
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
 
+        if (mSearchEngineService != null) {
+            mSearchEngineService
+                    .getAiModeButtonUiConfigSupplier()
+                    .removeObserver(mAiModeButtonUiConfigObserver);
+        }
         mSearchEngineService = SearchEngineService.getForProfile(profile);
         mSearchEngineServiceSupplier.set(mSearchEngineService);
         mLocationBarLayout.setSearchEngineService(mSearchEngineService);
@@ -2030,8 +2046,14 @@ public class LocationBarMediator
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         mPrefChangeRegistrar.addObserver(
                 Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, this::updateActivationChip);
-        mIsAimEligible = ComposeplateUtils.isComposeplateEnabled(profile);
         mIsFuseboxEligible = ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(profile);
+        // Registration returns the current value; the observer then keeps it current as the
+        // default search engine or the client's eligibility changes. Seeding it here rather than
+        // via a notify-on-add variant keeps the updates below to a single pass.
+        mAiModeButtonUiConfig =
+                mSearchEngineService
+                        .getAiModeButtonUiConfigSupplier()
+                        .addSyncObserver(mAiModeButtonUiConfigObserver);
         updateActivationChip();
 
         updateAlwaysShowAiModeCallback();
@@ -2047,7 +2069,7 @@ public class LocationBarMediator
         boolean isInAimRequest =
                 mCurrentInput != null && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
 
-        if (!isSuggestionsPopover || isInAimRequest || !mIsAimEligible) {
+        if (!isSuggestionsPopover || isInAimRequest || mAiModeButtonUiConfig == null) {
             mUrlCoordinator.setShowAiModeCallback(null);
             return;
         }
@@ -3694,9 +3716,20 @@ public class LocationBarMediator
         }
     }
 
+    /**
+     * Caches the AI Mode entry point configuration resolved by native and refreshes everything
+     * gated on it. A null {@code config} means the entry point may not be shown, so this both shows
+     * and hides the activation chip as the default search engine or eligibility changes.
+     */
+    private void onAiModeButtonUiConfigChanged(@Nullable AiModeButtonUiConfig config) {
+        mAiModeButtonUiConfig = config;
+        updateActivationChip();
+        updateAlwaysShowAiModeCallback();
+    }
+
     /* package */ void updateActivationChip() {
         boolean showActivationChip =
-                (mIsFuseboxEligible || mIsAimEligible)
+                (mIsFuseboxEligible || mAiModeButtonUiConfig != null)
                         && mCurrentInput != null
                         && mWindowHasFocusSupplier.get()
                         && mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
@@ -3728,11 +3761,35 @@ public class LocationBarMediator
         }
     }
 
+    /**
+     * Navigates to the AI Mode destination declared by the current search engine, if it declares
+     * one. Only third party engines do: Google's AI Mode is fulfilled in product by the paths
+     * below, so its config carries no navigation URLs.
+     *
+     * <p>TODO(crbug.com/561690870): carry the user's query over. Desktop expands it into {@code
+     * navigationUrl} with TemplateURL::GenerateSearchURL, which negotiates encoding against the
+     * engine's input_encodings and has no Java equivalent, so until that is reachable from here
+     * every engagement lands on the query-less entry point.
+     *
+     * @return whether the click was consumed by navigating.
+     */
+    private boolean maybeLoadAiModeNavigationUrl() {
+        if (mAiModeButtonUiConfig == null) return false;
+
+        String url = mAiModeButtonUiConfig.navigationUrlEmpty.getSpec();
+        if (TextUtils.isEmpty(url)) return false;
+
+        loadUrl(new OmniboxLoadUrlParams.Builder(url, PageTransition.FROM_ADDRESS_BAR).build());
+        return true;
+    }
+
     /* package */ void onActivationChipClicked() {
         if (mCurrentInput == null) return;
 
         mCurrentInput.setRequestType(AutocompleteRequestType.AI_MODE);
         FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.DEDICATED_BUTTON);
+
+        if (maybeLoadAiModeNavigationUrl()) return;
 
         if (!mIsFuseboxEligible
                 && (isUrlBarTextUnchanged()
