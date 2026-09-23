@@ -22,9 +22,6 @@ class SidePanelResizeHandle : public ImageView {
  public:
   explicit SidePanelResizeHandle(SidePanel* side_panel);
 
-  // ImageView:
-  void OnThemeChanged() override;
-
  private:
   raw_ptr<SidePanel> side_panel_;
 };

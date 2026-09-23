@@ -12,7 +12,6 @@
 #include "ui/accessibility/mojom/ax_node_data.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -32,18 +31,13 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
   gfx::Size preferred_size(4, 24);
   SetPreferredSize(preferred_size);
   SetCanProcessEventsWithinSubtree(false);
+  SetBackground(
+      CreateRoundedRectBackground(kColorSidePanelHoverResizeAreaHandle,
+                                  /*radius=*/2));
 
   const int resize_handle_left_margin = 2;
   SetProperty(views::kMarginsKey,
               gfx::Insets().set_left(resize_handle_left_margin));
-}
-
-void SidePanelResizeHandle::OnThemeChanged() {
-  ImageView::OnThemeChanged();
-
-  const SkColor resize_handle_color =
-      GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
-  SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
 }
 
 BEGIN_METADATA(SidePanelResizeHandle)
