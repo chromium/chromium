@@ -9,6 +9,23 @@
 
 namespace blink {
 
+LayoutResultList::LayoutResultList(const LayoutResultList& other)
+    : head_(other.head_),
+      tail_(other.tail_
+                ? MakeGarbageCollected<
+                      GCedHeapVector<Member<const LayoutResult>>>(*other.tail_)
+                : nullptr) {}
+
+LayoutResultList& LayoutResultList::operator=(const LayoutResultList& other) {
+  head_ = other.head_;
+  tail_ =
+      other.tail_
+          ? MakeGarbageCollected<GCedHeapVector<Member<const LayoutResult>>>(
+                *other.tail_)
+          : nullptr;
+  return *this;
+}
+
 void LayoutResultList::push_back(const LayoutResult* result) {
   if (!head_) {
     DCHECK(!tail_);

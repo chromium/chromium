@@ -154,6 +154,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   PhysicalOffset frame_location_;
   PhysicalSize frame_size_;
   PhysicalSize previous_size;
+  LayoutResultList previous_layout_results;
   MinMaxSizes intrinsic_logical_widths;
   Member<void*> min_max_sizes_cache;
   Member<void*> cache;
@@ -534,6 +535,7 @@ void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(min_max_sizes_cache_);
   visitor->Trace(measure_cache_);
   visitor->Trace(layout_results_);
+  visitor->Trace(previous_layout_results_);
   visitor->Trace(overflow_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
@@ -2650,8 +2652,10 @@ void LayoutBox::RebuildFragmentTreeSpine() {
   LayoutBox* container = this;
   while (container && container->PhysicalFragmentCount() &&
          !container->NeedsLayout()) {
-    for (auto& result : container->layout_results_)
+    for (auto& result : container->layout_results_) {
       result = LayoutResult::CloneWithPostLayoutFragments(*result);
+    }
+    container->SetHavePhysicalFragmentsChanged();
     if (MeasureCache* measure_cache = container->measure_cache_) {
       // In case any of the now-replaced cached results above were in fact
       // measure-results (see how SetCachedLayoutResult() may write into both
@@ -2697,6 +2701,7 @@ void LayoutBox::CheckMayHaveFragmentItems() const {
 void LayoutBox::InvalidateCachedGeometry() {
   NOT_DESTROYED();
   SetHasValidCachedGeometry(false);
+  SetHavePhysicalFragmentsChanged();
 }
 
 // static
@@ -3280,6 +3285,7 @@ RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflow() {
         if (rebuild_fragment_tree || scrollable_overflow) {
           layout_result = LayoutResult::CloneWithPostLayoutFragments(
               *layout_result, scrollable_overflow);
+          SetHavePhysicalFragmentsChanged();
         }
       } else {
         if (scrollable_overflow) {
@@ -3891,6 +3897,11 @@ OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
                                                         : kOverflowClipX) |
          (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
                                                         : kOverflowClipY);
+}
+
+void LayoutBox::MutableForPainting::SavePreviousPhysicalFragments() {
+  GetLayoutBox().ClearHavePhysicalFragmentsChanged();
+  GetLayoutBox().previous_layout_results_ = GetLayoutBox().layout_results_;
 }
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {

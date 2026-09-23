@@ -592,6 +592,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return layout_results_.size();
   }
 
+  // Make public for LayoutBox.
+  using LayoutBoxModelObject::HavePhysicalFragmentsChanged;
+
   bool IsFragmentLessBox() const final {
     NOT_DESTROYED();
     return !PhysicalFragmentCount();
@@ -911,6 +914,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
+    void SavePreviousPhysicalFragments();
     void SavePreviousSize() {
       GetLayoutBox().previous_size_ = GetLayoutBox().StitchedSize();
     }
@@ -957,6 +961,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   MutableForPainting GetMutableForPainting() const {
     NOT_DESTROYED();
     return MutableForPainting(*this);
+  }
+
+  PhysicalFragmentList PreviousPhysicalFragments() const {
+    NOT_DESTROYED();
+    return PhysicalFragmentList(previous_layout_results_);
   }
 
   PhysicalSize PreviousSize() const {
@@ -1292,6 +1301,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  private:
   // Previous value of frame_size_, updated after paint invalidation.
   PhysicalSize previous_size_;
+  LayoutResultList previous_layout_results_;
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;

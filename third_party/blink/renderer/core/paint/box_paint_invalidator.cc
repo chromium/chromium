@@ -513,6 +513,9 @@ bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {
 
 void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   auto mutable_box = box_.GetMutableForPainting();
+  if (box_.HavePhysicalFragmentsChanged()) {
+    mutable_box.SavePreviousPhysicalFragments();
+  }
   mutable_box.SavePreviousSize();
 
 #if DCHECK_IS_ON()

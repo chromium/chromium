@@ -57,6 +57,10 @@ class CORE_EXPORT LayoutResultList {
   using const_iterator = IteratorTemplate<const LayoutResultList,
                                           const Member<const LayoutResult>>;
 
+  LayoutResultList() = default;
+  LayoutResultList(const LayoutResultList& other);
+  LayoutResultList& operator=(const LayoutResultList& other);
+
   bool empty() const { return !head_; }
   wtf_size_t size() const {
     return (head_ ? 1u : 0u) + (tail_ ? tail_->size() : 0u);

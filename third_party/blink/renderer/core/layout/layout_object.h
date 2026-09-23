@@ -3709,6 +3709,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return has_valid_cached_geometry_;
   }
 
+  bool HavePhysicalFragmentsChanged() const {
+    NOT_DESTROYED();
+    DCHECK(IsBox());
+    return have_physical_fragments_changed_;
+  }
+  void SetHavePhysicalFragmentsChanged() {
+    NOT_DESTROYED();
+    DCHECK(IsBox());
+    have_physical_fragments_changed_ = true;
+  }
+  void ClearHavePhysicalFragmentsChanged() {
+    NOT_DESTROYED();
+    DCHECK(IsBox());
+    have_physical_fragments_changed_ = false;
+  }
+
   // For LayoutBox. They are here to use the bit fields.
   BackgroundPaintLocation GetBackgroundPaintLocation() const {
     NOT_DESTROYED();
@@ -4079,6 +4095,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // physical fragments.
   // This is set to false when LayoutBox::layout_results_ is updated.
   unsigned has_valid_cached_geometry_ : 1 = false;
+
+  // For LayoutBox, true if the physical fragments might be different from
+  // previous_layout_results_. Cleared when previous fragments are saved.
+  unsigned have_physical_fragments_changed_ : 1 = false;
 
   // True if the size has changed since the associated PaintLayer updated
   // its scrollable area.
