@@ -62,7 +62,6 @@
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_trial.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
@@ -96,11 +95,12 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/sync/extension_sync_service.h"  // nogncheck
 #include "extensions/browser/api/storage/storage_frontend.h"        // nogncheck
-#include "extensions/browser/extension_system_provider.h"           // nogncheck
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"           // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -586,9 +586,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(TabContextSyncServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(ThemeServiceFactory::GetInstance());
-#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustedVaultServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(NtpAndroidCustomBackgroundServiceFactory::GetInstance());
@@ -602,6 +599,7 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  DependsOn(ThemeServiceFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

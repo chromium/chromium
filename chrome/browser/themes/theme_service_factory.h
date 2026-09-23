@@ -7,13 +7,16 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
 
 class Profile;
 class ThemeService;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 class Extension;
 }
+#endif
 
 // Singleton that owns all ThemeServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
@@ -29,10 +32,12 @@ class ThemeServiceFactory : public ProfileKeyedServiceFactory {
   // already exist.
   static ThemeService* GetForProfileIfExists(Profile* profile);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Returns the Extension that implements the theme associated with
   // |profile|. Returns NULL if the theme is no longer installed, if there is
   // no installed theme, or the theme was cleared.
   static const extensions::Extension* GetThemeForProfile(Profile* profile);
+#endif
 
   static ThemeServiceFactory* GetInstance();
 

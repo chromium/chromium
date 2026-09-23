@@ -2063,6 +2063,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/supervised_user:test_support",
     "//chrome/browser/sync",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/supervised_user",
     "//chrome/browser/update_client",

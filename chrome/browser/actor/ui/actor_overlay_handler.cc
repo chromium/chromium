@@ -6,6 +6,7 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
@@ -14,9 +15,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_service_factory.h"
-#endif
 
 namespace actor::ui {
 
@@ -25,17 +23,13 @@ ActorOverlayHandler::ActorOverlayHandler(
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver,
     content::WebContents* web_contents)
     : web_contents_(web_contents),
-#if !BUILDFLAG(IS_ANDROID)
       theme_service_(ThemeServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
-#endif
       page_(std::move(page)),
       receiver_{this, std::move(receiver)} {
   native_theme_observation_.Observe(
       ::ui::NativeTheme::GetInstanceForNativeUi());
-#if !BUILDFLAG(IS_ANDROID)
   theme_service_observation_.Observe(theme_service_);
-#endif
 
   // Trigger the initial theme color.
   UpdateActorTheme();
@@ -85,11 +79,9 @@ void ActorOverlayHandler::OnNativeThemeUpdated(
   UpdateActorTheme();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ActorOverlayHandler::OnThemeChanged() {
   UpdateActorTheme();
 }
-#endif
 
 void ActorOverlayHandler::UpdateActorTheme() {
   if (base::FeatureList::IsEnabled(features::kActorUiThemed)) {

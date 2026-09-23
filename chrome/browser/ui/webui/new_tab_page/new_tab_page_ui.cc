@@ -882,12 +882,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       searchbox_page_factory_receiver_(this),
       help_bubble_handler_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-      theme_service_(nullptr),
-#else
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
-#endif
       ntp_custom_background_service_(
           NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
       ntp_custom_background_service_observation_(this),

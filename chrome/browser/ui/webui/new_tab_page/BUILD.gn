@@ -107,6 +107,7 @@ source_set("impl") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
@@ -187,7 +188,6 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/new_tab_footer",
@@ -233,6 +233,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/webui/cr_components/most_visited",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
@@ -244,6 +245,7 @@ source_set("unit_tests") {
     "//components/search_provider_logos",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public:test_support",
+    "//components/themes",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -251,10 +253,8 @@ source_set("unit_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/desktop_to_mobile_promos:utils",
-      "//chrome/browser/themes",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/views/side_panel/customize_chrome",
-      "//components/themes",
     ]
   }
 }

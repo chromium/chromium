@@ -13,12 +13,17 @@
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/grit/theme_resources.h"
-#include "components/grit/components_scaled_resources.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
+
+// The image-backed half of ThemeHelper is compiled out on Android; the grit
+// resources and ResourceBundle it needs are desktop-only deps.
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/grit/theme_resources.h"                  // nogncheck
+#include "components/grit/components_scaled_resources.h"  // nogncheck
+#include "ui/base/resource/resource_bundle.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -106,6 +111,51 @@ int ThemeHelper::GetDisplayProperty(
   return GetDefaultDisplayProperty(id);
 }
 
+int ThemeHelper::GetDefaultDisplayProperty(int id) const {
+  switch (id) {
+    case TP::NTP_BACKGROUND_ALIGNMENT:
+      return TP::ALIGN_CENTER;
+
+    case TP::NTP_BACKGROUND_TILING:
+      return TP::NO_REPEAT;
+
+    case TP::NTP_LOGO_ALTERNATE:
+      return 0;
+
+    case TP::SHOULD_FILL_BACKGROUND_TAB_COLOR:
+      return 1;
+
+    default:
+      return -1;
+  }
+}
+
+color_utils::HSL ThemeHelper::GetTint(
+    int id,
+    bool incognito,
+    const CustomThemeSupplier* theme_supplier) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  color_utils::HSL hsl;
+  if (theme_supplier && theme_supplier->GetTint(id, &hsl)) {
+    return hsl;
+  }
+
+  return TP::GetDefaultTint(id, incognito, UseDarkModeColors(theme_supplier));
+}
+
+// static
+bool ThemeHelper::UseDarkModeColors(const CustomThemeSupplier* theme_supplier) {
+  // Dark mode is disabled for custom themes so they apply atop a predictable
+  // state.
+  const ui::NativeTheme* native_theme =
+      theme_supplier ? theme_supplier->GetNativeTheme()
+                     : ui::NativeTheme::GetInstanceForNativeUi();
+  return !IsCustomTheme(theme_supplier) &&
+         native_theme->preferred_color_scheme() ==
+             ui::NativeTheme::PreferredColorScheme::kDark;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 scoped_refptr<base::RefCountedMemory> ThemeHelper::GetRawData(
     int id,
     const CustomThemeSupplier* theme_supplier,
@@ -130,19 +180,6 @@ scoped_refptr<base::RefCountedMemory> ThemeHelper::GetRawData(
   return data;
 }
 
-color_utils::HSL ThemeHelper::GetTint(
-    int id,
-    bool incognito,
-    const CustomThemeSupplier* theme_supplier) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  color_utils::HSL hsl;
-  if (theme_supplier && theme_supplier->GetTint(id, &hsl)) {
-    return hsl;
-  }
-
-  return TP::GetDefaultTint(id, incognito, UseDarkModeColors(theme_supplier));
-}
-
 gfx::ImageSkia* ThemeHelper::GetImageSkiaNamed(
     int id,
     bool incognito,
@@ -159,34 +196,6 @@ gfx::ImageSkia* ThemeHelper::GetImageSkiaNamed(
 bool ThemeHelper::ShouldUseNativeFrame(
     const CustomThemeSupplier* theme_supplier) const {
   return false;
-}
-
-int ThemeHelper::GetDefaultDisplayProperty(int id) const {
-  switch (id) {
-    case TP::NTP_BACKGROUND_ALIGNMENT:
-      return TP::ALIGN_CENTER;
-
-    case TP::NTP_BACKGROUND_TILING:
-      return TP::NO_REPEAT;
-
-    case TP::NTP_LOGO_ALTERNATE:
-      return 0;
-
-    case TP::SHOULD_FILL_BACKGROUND_TAB_COLOR:
-      return 1;
-
-    default:
-      return -1;
-  }
-}
-
-// static
-bool ThemeHelper::UseDarkModeColors(const CustomThemeSupplier* theme_supplier) {
-  // Dark mode is disabled for custom themes so they apply atop a predictable
-  // state.
-  return !IsCustomTheme(theme_supplier) &&
-         theme_supplier->GetNativeTheme()->preferred_color_scheme() ==
-             ui::NativeTheme::PreferredColorScheme::kDark;
 }
 
 gfx::Image ThemeHelper::GetImageNamed(
@@ -215,3 +224,4 @@ gfx::Image ThemeHelper::GetImageNamed(
 
   return image;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)

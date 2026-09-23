@@ -179,6 +179,7 @@ source_set("impl") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/tab_list",
+    "//chrome/browser/themes",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",

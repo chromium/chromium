@@ -631,7 +631,6 @@ component("base") {
     sources -= [
       "l10n/l10n_font_util.cc",
       "models/button_menu_item_model.cc",
-      "theme_provider.cc",
     ]
   }
 

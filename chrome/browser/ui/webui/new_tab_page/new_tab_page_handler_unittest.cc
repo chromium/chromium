@@ -37,6 +37,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/themes/theme_helper.h"
+#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -87,10 +91,6 @@
 // TODO(b/502297163): Remove this guard once these desktop-only features are
 // enabled on Android.
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_helper.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
@@ -223,18 +223,18 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
   return profile;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class MockThemeProvider : public ui::ThemeProvider {
  public:
-  MOCK_CONST_METHOD1(GetImageSkiaNamed, gfx::ImageSkia*(int));
-  MOCK_CONST_METHOD1(GetColor, SkColor(int));
   MOCK_CONST_METHOD1(GetTint, color_utils::HSL(int));
   MOCK_CONST_METHOD1(GetDisplayProperty, int(int));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_CONST_METHOD1(GetImageSkiaNamed, gfx::ImageSkia*(int));
   MOCK_CONST_METHOD0(ShouldUseNativeFrame, bool());
   MOCK_CONST_METHOD1(HasCustomImage, bool(int));
   MOCK_CONST_METHOD2(
       GetRawData,
       scoped_refptr<base::RefCountedMemory>(int, ui::ResourceScaleFactor));
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 class MockThemeService : public ThemeService {
@@ -253,6 +253,7 @@ class MockThemeService : public ThemeService {
   ThemeHelper theme_helper_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockCustomizeChromeTabHelper
     : public customize_chrome::SidePanelController {
  public:
@@ -307,11 +308,9 @@ class NewTabPageHandlerTest : public testing::Test {
   ~NewTabPageHandlerTest() override = default;
 
   void SetUp() override {
-#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(mock_theme_service_, AddObserver)
         .Times(1)
         .WillOnce(testing::SaveArg<0>(&theme_service_observer_));
-#endif
     EXPECT_CALL(mock_ntp_custom_background_service_, AddObserver)
         .Times(1)
         .WillOnce(
@@ -337,19 +336,12 @@ class NewTabPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
-        &mock_ntp_custom_background_service_,
-#if !BUILDFLAG(IS_ANDROID)
-        &mock_theme_service_,
-#else
-        nullptr,
-#endif
+        &mock_ntp_custom_background_service_, &mock_theme_service_,
         &mock_logo_service_, &test_sync_service_,
         &mock_segmentation_platform_service_, web_contents_, base::Time::Now(),
         base::TimeTicks::Now(), &module_id_details);
     mock_page_.FlushForTesting();
-#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(handler_.get(), theme_service_observer_);
-#endif
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
     testing::Mock::VerifyAndClearExpectations(
@@ -402,18 +394,16 @@ class NewTabPageHandlerTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
 
-#if !BUILDFLAG(IS_ANDROID)
-  MockHatsService* mock_hats_service() { return mock_hats_service_; }
   testing::NiceMock<MockThemeService> mock_theme_service_;
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
+#if !BUILDFLAG(IS_ANDROID)
+  MockHatsService* mock_hats_service() { return mock_hats_service_; }
   std::unique_ptr<MockCustomizeChromeTabHelper>
       mock_customize_chrome_tab_helper_;
 #endif
 
   std::unique_ptr<NewTabPageHandler> handler_;
-#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<ThemeServiceObserver> theme_service_observer_;
-#endif
   raw_ptr<NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observer_;
 

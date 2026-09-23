@@ -2056,7 +2056,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
   ThemeColorPickerHandler::RegisterProfilePrefs(registry);
-  ThemeService::RegisterProfilePrefs(registry);
   toolbar::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -2064,6 +2063,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   lens::prefs::RegisterProfilePrefs(registry);
 #endif
 
+  ThemeService::RegisterProfilePrefs(registry);
   ManagementUI::RegisterProfilePrefs(registry);
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)

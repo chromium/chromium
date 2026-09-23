@@ -106,6 +106,7 @@ source_set("actor_overlay") {
     "actor_overlay_ui.cc",
     "actor_overlay_ui.h",
   ]
+  public_deps = [ "//chrome/browser/themes" ]
   deps = [
     ":mojo_bindings",
     ":ui",
@@ -126,10 +127,6 @@ source_set("actor_overlay") {
     "//ui/native_theme",
     "//ui/webui",
   ]
-
-  if (!is_android) {
-    deps += [ "//chrome/browser/themes" ]
-  }
 }
 
 if (!skip_android_unmigrated_actor_files) {

@@ -1351,6 +1351,7 @@ static_library("ui") {
     "//chrome/browser/sync_tab_context",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
+    "//chrome/browser/themes",
     "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/trusted_vault:impl",

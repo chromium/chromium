@@ -421,6 +421,7 @@ if (!is_android || enable_extensions_core) {
       "//chrome/app/theme:theme_resources",
       "//chrome/browser:resources_util",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/common",

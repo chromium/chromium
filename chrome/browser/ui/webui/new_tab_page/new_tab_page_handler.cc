@@ -118,8 +118,6 @@
 #include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
-#else
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 namespace {
@@ -128,13 +126,11 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 constexpr char kDisableInteraction[] = "disable";
 constexpr char kDismissInteraction[] = "dismiss";
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kIgnoreInteraction[] = "ignore";
-#endif
 constexpr char kUseInteraction[] = "use";
 
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
+constexpr char kIgnoreInteraction[] = "ignore";
 constexpr auto kModuleInteractionNames =
     base::MakeFixedFlatSet<std::string_view>(
         {kDisableInteraction, kDismissInteraction, kIgnoreInteraction,
@@ -149,6 +145,7 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
       ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if we should force dark foreground colors for the Google logo
 // and the One Google Bar. This is done to fix specific GWS themes where the
@@ -173,7 +170,6 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
   const std::string_view extension_id = theme_supplier->extension_id();
   return kPrideThemeExtensionIdsDarkForeground.contains(extension_id);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 new_tab_page::mojom::ThemePtr MakeTheme(
     const ui::ColorProvider& color_provider,
@@ -191,21 +187,19 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           ? ntp_custom_background_service->GetCustomBackground()
           : std::nullopt;
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  theme->is_baseline = true;
-  theme->is_gm3 = false;
-#else
   theme->is_baseline = theme_service->GetIsBaseline();
   // Theme is GM3 if there is a GM3 color set or the theme is baseline and no
   // CWS theme is set.
   theme->is_gm3 =
       (theme_service->GetUserColor().has_value() || theme->is_baseline) &&
       !theme_service->UsingExtensionTheme();
-#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  const bool theme_has_custom_image = false;
+#else
   const bool theme_has_custom_image =
       theme_provider &&
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
+#endif
   SkColor text_color;
   if (custom_background.has_value()) {
     text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
@@ -224,15 +218,9 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     bool use_alternate_logo =
         theme_provider && theme_provider->GetDisplayProperty(
                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
-#if BUILDFLAG(IS_ANDROID)
-    use_alternate_logo =
-        use_alternate_logo ||
-        base::FeatureList::IsEnabled(chrome::android::kWebUiAndroidTheming);
-#else
     use_alternate_logo =
         use_alternate_logo || (!theme_service->GetIsGrayscale() &&
                                theme_service->GetUserColor().has_value());
-#endif
     if (use_alternate_logo) {
       theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
@@ -247,8 +235,10 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->text_color = text_color;
   theme->is_dark =
       !color_utils::IsDark(color_provider.GetColor(kColorNewTabPageText));
-  auto background_image = new_tab_page::mojom::BackgroundImage::New();
+  new_tab_page::mojom::BackgroundImagePtr background_image;
+#if !BUILDFLAG(IS_ANDROID)
   if (theme_has_custom_image) {
+    background_image = new_tab_page::mojom::BackgroundImage::New();
     if (theme_service->UsingExtensionTheme()) {
       background_image->image_source =
           new_tab_page::mojom::NtpBackgroundImageSource::kThirdPartyTheme;
@@ -299,7 +289,10 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     } else {
       background_image->position_y = "center";
     }
-  } else if (custom_background.has_value()) {
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  if (!background_image && custom_background.has_value()) {
+    background_image = new_tab_page::mojom::BackgroundImage::New();
     theme->is_custom_background = true;
     background_image->url = custom_background->custom_background_url;
     new_tab_page::mojom::NtpBackgroundImageSource image_source = new_tab_page::
@@ -320,8 +313,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage;
     }
     background_image->image_source = image_source;
-  } else {
-    background_image = nullptr;
   }
 
   // The special case handling that forces a dark Google logo should only be
@@ -329,12 +320,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   // installed a CWS theme with a bundled background image. The first condition
   // is necessary as a custom background image can be set while a CWS theme with
   // a bundled image is concurrently enabled (see crbug.com/40842679).
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  bool force_dark_logo = false;
-#else
   bool force_dark_logo = ShouldForceDarkForegroundColorsForLogo(theme_service);
-#endif
   if (!custom_background.has_value() && theme_has_custom_image &&
       force_dark_logo) {
     theme->logo_color =
@@ -493,11 +479,8 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
   CHECK(web_contents_);
-#if !BUILDFLAG(IS_ANDROID)
   CHECK(theme_service_);
-  CHECK(feature_promo_helper_);
   theme_service_observation_.Observe(theme_service_.get());
-#endif  // !BUILDFLAG(IS_ANDROID)
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -505,6 +488,7 @@ NewTabPageHandler::NewTabPageHandler(
     microsoft_auth_service_->AddObserver(this);
   }
 #if !BUILDFLAG(IS_ANDROID)
+  CHECK(feature_promo_helper_);
   if (customize_chrome::IsWallpaperSearchEnabledForProfile(profile_)) {
     optimization_guide_keyed_service_ =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
@@ -537,19 +521,19 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
                           base::Unretained(this)));
-
-  pref_change_registrar_.Add(
-      prefs::kSeedColorChangeCount,
-      base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
-                          base::Unretained(this)));
-
   pref_change_registrar_.Add(
       prefs::kNtpToolChipsVisible,
       base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
                           base::Unretained(this)));
 
-// TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
+  // `kSeedColorChangeCount` is registered by ThemeColorPickerHandler, which is
+  // desktop-only, and the toast it drives points at the Chrome Web Store.
+  pref_change_registrar_.Add(
+      prefs::kSeedColorChangeCount,
+      base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
+                          base::Unretained(this)));
+
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHDesktopRealboxContextualSearchFeature)) {
     searchbox_shown_subscription_ =
@@ -1389,11 +1373,13 @@ void NewTabPageHandler::MaybeLaunchInteractionSurvey(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void NewTabPageHandler::MaybeShowWebstoreToast() {
   if (profile_->GetPrefs()->GetInteger(prefs::kSeedColorChangeCount) <= 3) {
     page_->ShowWebstoreToast();
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageHandler::RecordModuleInteraction(const std::string& module_id) {
   DisableModuleAutoRemoval(profile_, module_id);

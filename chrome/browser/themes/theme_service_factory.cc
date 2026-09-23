@@ -4,20 +4,25 @@
 
 #include "chrome/browser/themes/theme_service_factory.h"
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// //chrome/browser/extensions already depends on //chrome/browser/themes, so
+// this cannot be a real dep without introducing a cycle. It is allowed via
+// that target's allow_circular_includes_from, which is itself conditional.
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"  // nogncheck
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
-#include "ui/base/mojom/themes.mojom.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/themes/theme_helper_win.h"
@@ -55,6 +60,7 @@ ThemeService* ThemeServiceFactory::GetForProfileIfExists(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 const extensions::Extension* ThemeServiceFactory::GetThemeForProfile(
     Profile* profile) {
@@ -67,6 +73,7 @@ const extensions::Extension* ThemeServiceFactory::GetThemeForProfile(
       ->enabled_extensions()
       .GetByID(theme_service->GetThemeID());
 }
+#endif
 
 // static
 ThemeServiceFactory* ThemeServiceFactory::GetInstance() {
@@ -86,10 +93,12 @@ ThemeServiceFactory::ThemeServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ExtensionRegistrarFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
+#endif
   DependsOn(NtpCustomBackgroundServiceFactory::GetInstance());
 }
 

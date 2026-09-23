@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/theme_provider.h"
@@ -65,15 +66,24 @@ class ThemeHelper {
   int GetDisplayProperty(int id,
                          const CustomThemeSupplier* theme_supplier) const;
 
-  scoped_refptr<base::RefCountedMemory> GetRawData(
-      int id,
-      const CustomThemeSupplier* theme_supplier,
-      ui::ResourceScaleFactor scale_factor) const;
-
   // Get the specified tint - |id| is one of the TINT_* enum values.
   color_utils::HSL GetTint(int id,
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;
+
+  // Gets the default value of a themeable display property.
+  virtual int GetDefaultDisplayProperty(int id) const;
+
+  void DCheckCalledOnValidSequence() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  // Omitted on Android for binary size; see ui/base/theme_provider.h.
+#if !BUILDFLAG(IS_ANDROID)
+  scoped_refptr<base::RefCountedMemory> GetRawData(
+      int id,
+      const CustomThemeSupplier* theme_supplier,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // These methods provide the implementation for ui::ThemeProvider (exposed
   // via BrowserThemeProvider).
@@ -85,13 +95,7 @@ class ThemeHelper {
   // Implementation for ui::ThemeProvider.
   virtual bool ShouldUseNativeFrame(
       const CustomThemeSupplier* theme_supplier) const;
-
-  void DCheckCalledOnValidSequence() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
-
-  // Gets the default value of a themeable display property.
-  virtual int GetDefaultDisplayProperty(int id) const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class theme_service_internal::ThemeServiceTest;
@@ -99,10 +103,12 @@ class ThemeHelper {
   // Whether dark default colors/tints should be used, if available.
   static bool UseDarkModeColors(const CustomThemeSupplier* theme_supplier);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns a cross platform image for an id.
   gfx::Image GetImageNamed(int id,
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

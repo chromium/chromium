@@ -19,9 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/security_events/security_event_recorder.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
-#include "chrome/browser/themes/theme_local_data_batch_uploader.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -51,6 +48,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/theme_local_data_batch_uploader.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"

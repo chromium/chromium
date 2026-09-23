@@ -498,6 +498,7 @@ source_set("sync_integration_test_support") {
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/send_tab_to_self:impl",
     "//chrome/browser/sync",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/undo",
     "//chrome/browser/webdata_services",
@@ -572,7 +573,6 @@ source_set("sync_integration_test_support") {
 
     deps += [
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/themes",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/webui/signin:login_ui_service",
       "//chrome/browser/ui/webui/signin:test_support_ui",

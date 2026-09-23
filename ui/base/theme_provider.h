@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
@@ -37,16 +38,22 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
  public:
   virtual ~ThemeProvider();
 
-  // Get the image specified by |id|. An implementation of ThemeProvider should
-  // have its own source of ids (e.g. an enum, or external resource bundle).
-  virtual gfx::ImageSkia* GetImageSkiaNamed(int id) const = 0;
-
   // Get the HSL shift specified by |id|.
   virtual color_utils::HSL GetTint(int id) const = 0;
 
   // Get the property (e.g. an alignment expressed in an enum, or a width or
   // height) specified by |id|.
   virtual int GetDisplayProperty(int id) const = 0;
+
+  // The image-backed half of the interface is excluded on Android to keep the
+  // theme image and resource-loading machinery out of the binary. Android only
+  // needs the tint/display-property half, which the WebUI NTP uses for color
+  // theming. Anything guarded here must stay out of code that builds on
+  // Android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Get the image specified by |id|. An implementation of ThemeProvider should
+  // have its own source of ids (e.g. an enum, or external resource bundle).
+  virtual gfx::ImageSkia* GetImageSkiaNamed(int id) const = 0;
 
   // Whether we should use the native system frame (typically Aero glass) or
   // a custom frame.
@@ -62,6 +69,7 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
   virtual scoped_refptr<base::RefCountedMemory> GetRawData(
       int id,
       ui::ResourceScaleFactor scale_factor) const = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace ui

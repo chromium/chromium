@@ -34,8 +34,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -49,7 +47,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/themes/theme_service_utils.h"
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -63,15 +60,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/themes/pref_names.h"
-#include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -85,8 +74,22 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/scoped_observation.h"
+// //chrome/browser/extensions already depends on //chrome/browser/themes, so
+// these cannot be real deps without introducing a cycle. They are allowed via
+// that target's allow_circular_includes_from, which is itself conditional.
+#include "chrome/browser/extensions/extension_service.h"  // nogncheck
+#include "chrome/browser/extensions/theme_installed_infobar_delegate.h"  // nogncheck
 #include "chrome/browser/themes/browser_theme_pack.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
+#include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -102,6 +105,7 @@ using TP = ThemeProperties;
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Wait this many seconds after startup to garbage collect unused themes.
 // Removing unused themes is done after a delay because there is no
 // reason to do it at startup.
@@ -119,6 +123,7 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
 
   pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
 }
+#endif
 
 ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
     ui::mojom::BrowserColorVariant color_variant) {
@@ -216,7 +221,6 @@ class ThemeService::ThemeObserver
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 };
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // ThemeService::ThemeReinstaller -----------------------------------------
 
@@ -237,6 +241,7 @@ void ThemeService::ThemeReinstaller::Reinstall() {
     std::move(installer_).Run();
   }
 }
+#endif
 
 // ThemeService::BrowserThemeProvider ------------------------------------------
 
@@ -250,17 +255,20 @@ ThemeService::BrowserThemeProvider::BrowserThemeProvider(
 
 ThemeService::BrowserThemeProvider::~BrowserThemeProvider() = default;
 
-gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
-    int id) const {
-  return theme_helper_->GetImageSkiaNamed(id, incognito_, GetThemeSupplier());
-}
-
 color_utils::HSL ThemeService::BrowserThemeProvider::GetTint(int id) const {
   return theme_helper_->GetTint(id, incognito_, GetThemeSupplier());
 }
 
 int ThemeService::BrowserThemeProvider::GetDisplayProperty(int id) const {
   return theme_helper_->GetDisplayProperty(id, GetThemeSupplier());
+}
+
+// The image-backed half of ui::ThemeProvider is omitted on Android for binary
+// size; see the comment in ui/base/theme_provider.h.
+#if !BUILDFLAG(IS_ANDROID)
+gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
+    int id) const {
+  return theme_helper_->GetImageSkiaNamed(id, incognito_, GetThemeSupplier());
 }
 
 bool ThemeService::BrowserThemeProvider::ShouldUseNativeFrame() const {
@@ -277,6 +285,7 @@ ThemeService::BrowserThemeProvider::GetRawData(
     ui::ResourceScaleFactor scale_factor) const {
   return theme_helper_->GetRawData(id, GetThemeSupplier(), scale_factor);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 CustomThemeSupplier* ThemeService::BrowserThemeProvider::GetThemeSupplier()
     const {
@@ -367,9 +376,9 @@ void ThemeService::Init() {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ThemeService::OnExtensionServiceReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-#endif
   theme_syncable_service_ =
       std::make_unique<ThemeSyncableService>(profile_, this);
+#endif
 
   ntp_custom_background_service_ =
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
@@ -421,12 +430,12 @@ void ThemeService::Init() {
 void ThemeService::Shutdown() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   theme_observer_.reset();
+  theme_syncable_service_.reset();
 #endif
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->RemoveThemeDelegate();
     ntp_custom_background_service_ = nullptr;
   }
-  theme_syncable_service_.reset();
 }
 
 CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
@@ -447,6 +456,7 @@ bool ThemeService::ShouldUseCustomFrame() const {
 #endif
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ThemeService::SetTheme(const extensions::Extension* extension) {
   DoSetTheme(extension, true);
 }
@@ -464,6 +474,7 @@ void ThemeService::RevertToExtensionTheme(const std::string& extension_id) {
     // Enabling the extension will call back to SetTheme().
   }
 }
+#endif
 
 void ThemeService::UseTheme(ui::SystemTheme system_theme) {
   UseDefaultTheme();
@@ -559,6 +570,7 @@ bool ThemeService::UsingPolicyTheme() const {
       themes::prefs::kPolicyThemeColor);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ThemeService::RemoveUnusedThemes() {
   // We do not want to garbage collect themes on startup (|ready_| is false).
   // Themes will get garbage collected after |kRemoveUnusedThemesStartupDelay|.
@@ -611,6 +623,7 @@ void ThemeService::RemoveUnusedThemes() {
 ThemeSyncableService* ThemeService::GetThemeSyncableService() const {
   return theme_syncable_service_.get();
 }
+#endif
 
 const ui::ThemeProvider& ThemeService::GetDefaultThemeProvider() const {
   return default_theme_provider_;
@@ -661,11 +674,13 @@ void ThemeService::BuildAutogeneratedThemeFromColor(SkColor color,
   if (theme_supplier_) {
     if (store_in_prefs) {
       SetThemePrefsForColor(color);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       // Only disable previous extension theme if new theme is saved to prefs,
       // otherwise there may be issues (ex. when unsetting managed theme).
       if (previous_theme_id.has_value()) {
         DisableExtension(previous_theme_id.value());
       }
+#endif
     }
     NotifyThemeChanged();
   }
@@ -855,6 +870,7 @@ bool ThemeService::GetIsBaseline() const {
   return !GetUserColor().has_value() && !UsingAutogeneratedTheme();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 void ThemeService::DisableThemePackForTesting() {
   g_dont_write_theme_pack_for_testing = true;
@@ -897,6 +913,7 @@ ThemeService::BuildReinstallerForCurrentTheme() {
       profile_, base::BindOnce(&ThemeService::UseTheme,
                                weak_ptr_factory_.GetWeakPtr(), system_theme));
 }
+#endif
 
 void ThemeService::AddObserver(ThemeServiceObserver* observer) {
   observers_.AddObserver(observer);
@@ -944,11 +961,13 @@ void ThemeService::ClearThemeData(bool reset_all_settings) {
     NtpCustomBackgroundService::ResetNtpTheme(profile_);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Disable extension after modifying the prefs so that unloading the extension
   // doesn't trigger |ClearThemeData| again.
   if (previous_theme_id.has_value()) {
     DisableExtension(previous_theme_id.value());
   }
+#endif
 }
 
 void ThemeService::InitFromPrefs() {
@@ -988,6 +1007,7 @@ void ThemeService::InitFromPrefs() {
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   PrefService* prefs = profile_->GetPrefs();
   base::FilePath path = prefs->GetFilePath(prefs::kCurrentThemePackFilename);
   // If we don't have a file pack, we're updating from an old version.
@@ -1002,6 +1022,7 @@ void ThemeService::InitFromPrefs() {
   // Else: wait for the extension service to be ready so that the theme pack
   // can be recreated from the extension.
   std::move(set_ready_cleanup).Cancel();
+#endif
 }
 
 void ThemeService::NotifyThemeChanged() {
@@ -1017,6 +1038,18 @@ void ThemeService::NotifyThemeChanged() {
 
 void ThemeService::FixInconsistentPreferencesIfNeeded() {}
 
+void ThemeService::SwapThemeSupplier(
+    scoped_refptr<CustomThemeSupplier> theme_supplier) {
+  if (theme_supplier_) {
+    theme_supplier_->StopUsingTheme();
+  }
+  theme_supplier_ = theme_supplier;
+  if (theme_supplier_) {
+    theme_supplier_->StartUsingTheme();
+  }
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ThemeService::DoSetTheme(const extensions::Extension* extension,
                               bool suppress_infobar) {
   DCHECK(extension->is_theme());
@@ -1066,18 +1099,6 @@ void ThemeService::MigrateTheme() {
     base::RecordAction(base::UserMetricsAction("Themes.Gone"));
   }
 }
-
-void ThemeService::SwapThemeSupplier(
-    scoped_refptr<CustomThemeSupplier> theme_supplier) {
-  if (theme_supplier_) {
-    theme_supplier_->StopUsingTheme();
-  }
-  theme_supplier_ = theme_supplier;
-  if (theme_supplier_) {
-    theme_supplier_->StartUsingTheme();
-  }
-}
-
 void ThemeService::BuildFromExtension(const extensions::Extension* extension,
                                       bool suppress_infobar) {
   build_extension_task_tracker_.TryCancelAll();
@@ -1219,6 +1240,7 @@ void ThemeService::ShowThemeInstalledInfoBar(
       tab, infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE,
       std::move(params));
 }
+#endif
 
 void ThemeService::HandlePolicyColorUpdate() {
   if (UsingPolicyTheme()) {
@@ -1245,6 +1267,14 @@ void ThemeService::ClearThemePrefs() {
                                   ThemeHelper::kDefaultThemeID);
 }
 
+void ThemeService::SetThemePrefsForColor(SkColor color) {
+  ClearThemePrefs();
+  profile_->GetPrefs()->SetInteger(prefs::kAutogeneratedThemeColor, color);
+  profile_->GetPrefs()->SetString(prefs::kCurrentThemeID,
+                                  kAutogeneratedThemeID);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
@@ -1261,13 +1291,6 @@ void ThemeService::SetThemePrefsForExtension(
   // InitFromPrefs().
   profile_->GetPrefs()->SetFilePath(prefs::kCurrentThemePackFilename,
                                     extension->path());
-}
-
-void ThemeService::SetThemePrefsForColor(SkColor color) {
-  ClearThemePrefs();
-  profile_->GetPrefs()->SetInteger(prefs::kAutogeneratedThemeColor, color);
-  profile_->GetPrefs()->SetString(prefs::kCurrentThemeID,
-                                  kAutogeneratedThemeID);
 }
 
 bool ThemeService::DisableExtension(const std::string& extension_id) {
@@ -1287,3 +1310,4 @@ bool ThemeService::DisableExtension(const std::string& extension_id) {
 void ThemeService::ResetThemeSyncableServiceForTest() {
   theme_syncable_service_.reset();
 }
+#endif

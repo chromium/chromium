@@ -25,14 +25,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/navigation_controller.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "components/omnibox/common/omnibox_features.h"
-#endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -53,6 +45,12 @@
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_desktop_android.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "components/omnibox/common/omnibox_features.h"
 #endif
 
 namespace contextual_tasks {

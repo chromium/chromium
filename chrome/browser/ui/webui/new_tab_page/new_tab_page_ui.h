@@ -24,8 +24,6 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
@@ -101,6 +99,7 @@ class PrefService;
 class Profile;
 class RealboxHandler;
 class TabGroupsPageHandler;
+class ThemeService;
 class NewTabPageUI;
 
 class NewTabPageUI

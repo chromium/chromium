@@ -109,6 +109,7 @@ source_set("impl") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",

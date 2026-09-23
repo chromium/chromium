@@ -16,6 +16,7 @@ source_set("prefs") {
     "//base",
     "//chrome/browser:font_pref",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/zoom",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -24,10 +25,6 @@ source_set("prefs") {
     "//third_party/blink/public/common",
     "//ui/native_theme",
   ]
-
-  if (!is_android) {
-    public_deps += [ "//chrome/browser/themes" ]
-  }
 }
 
 source_set("impl") {
@@ -45,6 +42,7 @@ source_set("impl") {
     "//chrome/browser:font_pref",
     "//chrome/browser:renderer_preferences_util",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/zoom",
     "//components/language/core/browser",
     "//components/live_caption:constants",
@@ -58,8 +56,6 @@ source_set("impl") {
       "//chrome/browser/flags:flags_android",
       "//components/browser_ui/accessibility/android",
     ]
-  } else {
-    deps += [ "//chrome/browser/themes" ]
   }
 
   if (is_linux) {

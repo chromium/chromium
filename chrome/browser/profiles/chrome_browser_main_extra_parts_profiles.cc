@@ -1550,8 +1550,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   tips::TipsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   ThemeColorsSourceManagerFactory::GetInstance();
-  ThemeServiceFactory::GetInstance();
 #endif
+  ThemeServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   thin_webview::android::ChromeThinWebViewInitializer::Initialize();
 #endif

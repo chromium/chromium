@@ -239,6 +239,7 @@ static_library("devtools") {
       "//components/viz/host",
       "//ui/shell_dialogs",
     ]
+    public_deps += [ "//chrome/browser/themes" ]
     if (!is_android) {
       deps += [
         "//chrome/browser:certificate_viewer",
@@ -282,7 +283,6 @@ static_library("devtools") {
       "//chrome/app/theme:theme_resources",
       "//chrome/browser/infobars",
       "//chrome/browser/media/router:media_router_feature",
-      "//chrome/browser/themes",
       "//chrome/browser/ui:tab_modal_confirm_dialog",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/navigator",

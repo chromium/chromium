@@ -130,6 +130,7 @@ source_set("sync") {
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:utils",
+    "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/undo",
     "//chrome/common",
@@ -226,7 +227,6 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
-      "//chrome/browser/themes",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/read_anything:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -248,10 +248,7 @@ source_set("sync") {
     ]
   }
   if (enable_extensions) {
-    deps += [
-      "//chrome/browser/themes",
-      "//chrome/browser/web_applications",
-    ]
+    deps += [ "//chrome/browser/web_applications" ]
   }
   if (is_chromeos) {
     sources += [

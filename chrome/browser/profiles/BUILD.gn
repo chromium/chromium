@@ -113,6 +113,7 @@ source_set("misc") {
     "//chrome/browser/ssl",
     "//chrome/browser/storage",
     "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/themes",
     "//chrome/browser/transition_manager",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
@@ -174,7 +175,6 @@ source_set("misc") {
   } else {
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
-      "//chrome/browser/themes",
       "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/signin",
     ]
@@ -840,6 +840,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/supervised_user",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/themes",
     "//chrome/browser/tips",
     "//chrome/browser/ttc/core",
     "//chrome/browser/ui",
@@ -934,7 +935,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/search",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sharing_hub",
-      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/desktop_to_mobile_promos:service",
       "//chrome/browser/ui/global_error",
