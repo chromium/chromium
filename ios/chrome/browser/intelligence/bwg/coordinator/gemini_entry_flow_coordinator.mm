@@ -181,6 +181,11 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 #pragma mark - GeminiServiceObserving
 
 - (void)geminiEligibilityDidChange {
+  GeminiService* geminiService =
+      GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!geminiService || geminiService->IsWorkspacePolicyCheckPending()) {
+    return;
+  }
   _geminiServiceObserverBridge.reset();
   [self evaluateEligibilityAndRoute];
 }
