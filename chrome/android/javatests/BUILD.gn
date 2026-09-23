@@ -1846,6 +1846,8 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/webid/DigitalCredentialProviderTest.java",
     "src/org/chromium/chrome/browser/webshare/WebShareTest.java",
     "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetControllerTest.java",
+    "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetLargeFormFactorTest.java",
+    "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetTest.java",
     "src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
     "src/org/chromium/chrome/test/memory_leaks/ChromeInstrumentationLeaks.java",
