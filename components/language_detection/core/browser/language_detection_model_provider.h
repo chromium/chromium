@@ -57,6 +57,10 @@ class LanguageDetectionModelProvider {
   // `has_model_ever_been_set_ == false` or the model file is invalid.
   bool HasValidModelFile();
 
+  // Returns whether the model file has ever been explicitly set (including
+  // being unloaded/invalidated).
+  bool HasModelEverBeenSet() const { return has_model_ever_been_set_; }
+
  private:
   // Replaces the current model file with a new one. It is careful to
   // open/close files as necessary on a background thread.

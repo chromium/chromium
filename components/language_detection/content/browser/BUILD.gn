@@ -15,3 +15,17 @@ static_library("browser") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_language_detection_driver_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/language_detection/content/common",
+    "//components/language_detection/core/browser:language_detection_model_service",
+    "//components/language_detection/testing",
+    "//testing/gtest",
+  ]
+}

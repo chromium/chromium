@@ -89,11 +89,9 @@ void LanguageDetectionModelProvider::ReplaceModelFile(base::FilePath path) {
 
 void LanguageDetectionModelProvider::ModelFileReplacedCallback() {
   ScopedModelLoadingResultRecorder result_recorder;
-  if (!language_detection_model_file_.GetFile().IsValid()) {
-    return;
+  if (language_detection_model_file_.GetFile().IsValid()) {
+    result_recorder.set_was_loaded();
   }
-
-  result_recorder.set_was_loaded();
   OnModelFileChangedInternal();
 }
 

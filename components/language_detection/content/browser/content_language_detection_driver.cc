@@ -4,8 +4,9 @@
 
 #include "components/language_detection/content/browser/content_language_detection_driver.h"
 
-#include <memory>
+#include <utility>
 
+#include "base/files/file.h"
 #include "components/language_detection/core/browser/language_detection_model_provider.h"
 
 namespace language_detection {
@@ -35,13 +36,15 @@ void ContentLanguageDetectionDriver::GetLanguageDetectionModel(
 void ContentLanguageDetectionDriver::GetLanguageDetectionModelStatus(
     GetLanguageDetectionModelStatusCallback callback) {
   if (!language_detection_model_provider_) {
-    // TODO (crbug.com/383022111): Pass the model availability based on the
-    // real-time status of the model (if the model is unloaded).
     std::move(callback).Run(mojom::LanguageDetectionModelStatus::kNotAvailable);
     return;
   }
   if (language_detection_model_provider_->HasValidModelFile()) {
     std::move(callback).Run(mojom::LanguageDetectionModelStatus::kReadily);
+    return;
+  }
+  if (language_detection_model_provider_->HasModelEverBeenSet()) {
+    std::move(callback).Run(mojom::LanguageDetectionModelStatus::kNotAvailable);
     return;
   }
   std::move(callback).Run(mojom::LanguageDetectionModelStatus::kAfterDownload);

@@ -1269,7 +1269,11 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
 # The following language_detection tests are currently tested in the optimization_guide bot so as to download
 # the language detection model.
-crbug.com/379516109 external/wpt/ai/language_detection/* [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/detector.https.window.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/detector.optional.https.window.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/language-detector-detect-concurrent.tentative.https.window.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/language-detector-detect-post-abort.tentative.https.window.html [ Failure Timeout ]
 
 # TranslateKit builds are not supported on Win ARM
 crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout ]
