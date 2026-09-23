@@ -172,11 +172,13 @@ void OmniboxPopupFullPresenter::RequestFocus() {
     return;
   }
 
-  // If the popup widget is already active, focus the WebUI content and its
-  // underlying WebContents immediately without deferral.
+  // If the popup widget is already active, focus the WebUI content now so the
+  // caret and selection are correct within this event loop turn. Do NOT return
+  // here: the activation seen at this instant can be torn down later in the
+  // same tab-switch sequence, leaving the popup looking focused while keys go
+  // to the browser widget. See crbug.com/558761131.
   if (GetWidget()->IsActive()) {
     FocusPopupContent();
-    return;
   }
 
   // Defer activation to the next event loop cycle to avoid re-entrant window
