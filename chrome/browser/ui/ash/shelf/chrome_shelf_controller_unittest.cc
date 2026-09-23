@@ -4992,12 +4992,16 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
 
   constexpr char kHistogramName[] =
       "Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch";
+  // Use a HistogramTester rather than querying the StatisticsRecorder, which
+  // is process-wide: an earlier test in the same process may already have
+  // recorded this histogram.
+  base::HistogramTester histogram_tester;
 
   // Launch Play Store in deferred mode.
   arc::LaunchApp(profile(), arc::kPlayStoreAppId, ui::EF_LEFT_MOUSE_BUTTON,
                  arc::UserInteractionType::NOT_USER_INITIATED);
 
-  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(kHistogramName));
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
 
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(arc::mojom::AppInfo::New("", arc::kPlayStorePackage,
@@ -5005,7 +5009,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
   arc_app_test_.app_instance()->SendRefreshAppList(apps);
 
   // No window attached at this time.
-  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(kHistogramName));
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
 
   std::string play_store_window_id("org.chromium.arc.1");
   views::Widget* const play_store_window =
@@ -5015,11 +5019,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
       1, *apps[0], arc_app_test_.app_instance()->launch_intents()[0]);
 
   // UMA is reported since app becomes ready.
-  base::HistogramBase* const histogram =
-      base::StatisticsRecorder::FindHistogram(kHistogramName);
-  ASSERT_TRUE(histogram);
-  std::unique_ptr<base::HistogramSamples> samples = histogram->SnapshotDelta();
-  ASSERT_EQ(1, samples->TotalCount());
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
   play_store_window->Close();
 
   arc_app_test_.PreProfileTearDown();
