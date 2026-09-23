@@ -6,10 +6,20 @@
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 
 namespace ui::ime {
+
+MockAssistiveDelegate::MockAssistiveDelegate() = default;
+
+MockAssistiveDelegate::~MockAssistiveDelegate() = default;
+
 void MockAssistiveDelegate::AssistiveWindowButtonClicked(
     const ui::ime::AssistiveWindowButton& button) const {
   last_window_type_ = button.window_type;
 }
+
+base::WeakPtr<AssistiveDelegate> MockAssistiveDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ash::ime::AssistiveWindowType MockAssistiveDelegate::last_window_type_ =
     ash::ime::AssistiveWindowType::kNone;
 }  // namespace ui::ime

@@ -191,7 +191,7 @@ void SuggestionWindowView::OnThemeChanged() {
 SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
                                            AssistiveDelegate* delegate,
                                            Orientation orientation)
-    : delegate_(delegate) {
+    : delegate_(delegate->GetWeakPtr()) {
   DCHECK(parent);
   // AccessibleRole determines whether the content is announced on pop-up.
   // Inner content should not be announced when the window appears since this
@@ -202,11 +202,11 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   set_parent_window(parent);
   set_margins(gfx::Insets());
   set_adjust_if_offscreen(true);
+  set_clamp_to_work_area(true);
 
   completion_view_ = AddChildView(
       std::make_unique<CompletionSuggestionView>(base::BindRepeating(
-          &AssistiveDelegate::AssistiveWindowButtonClicked,
-          base::Unretained(delegate_),
+          &AssistiveDelegate::AssistiveWindowButtonClicked, delegate_,
           AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
                                 .suggestion_index = 0})));
   completion_view_->SetVisible(false);
@@ -224,10 +224,13 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   setting_link_->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::ITALIC,
                                            kSettingLinkFontSize,
                                            gfx::Font::Weight::NORMAL));
-  const auto on_setting_link_clicked = [](AssistiveDelegate* delegate) {
-    delegate->AssistiveWindowButtonClicked(
-        {.id = ButtonId::kSmartInputsSettingLink});
-  };
+  const auto on_setting_link_clicked =
+      [](const base::WeakPtr<AssistiveDelegate>& delegate) {
+        if (delegate) {
+          delegate->AssistiveWindowButtonClicked(
+              {.id = ButtonId::kSmartInputsSettingLink});
+        }
+      };
   setting_link_->SetCallback(
       base::BindRepeating(on_setting_link_clicked, delegate_));
   setting_link_->SetVisible(false);
@@ -253,8 +256,10 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 SuggestionWindowView::~SuggestionWindowView() = default;
 
 void SuggestionWindowView::LearnMoreClicked() {
-  delegate_->AssistiveWindowButtonClicked(AssistiveWindowButton{
-      .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
+  if (delegate_) {
+    delegate_->AssistiveWindowButtonClicked(AssistiveWindowButton{
+        .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
+  }
 }
 
 raw_ptr<views::ImageButton> SuggestionWindowView::getLearnMoreButton() {
@@ -273,8 +278,7 @@ void SuggestionWindowView::ResizeCandidateArea(
     auto* const candidate = multiple_candidate_area_->AddChildView(
         std::make_unique<IndexedSuggestionCandidateButton>(
             base::BindRepeating(
-                &AssistiveDelegate::AssistiveWindowButtonClicked,
-                base::Unretained(delegate_),
+                &AssistiveDelegate::AssistiveWindowButtonClicked, delegate_,
                 AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
                                       .suggestion_index = index}),
             /* candidate_text=*/new_candidates[index],
@@ -325,8 +329,6 @@ void SuggestionWindowView::Reorient(Orientation orientation,
 void SuggestionWindowView::MakeVisible() {
   multiple_candidate_area_->SetVisible(true);
   SizeToContents();
-  // Docs can put the cursor offscreen - force it onscreen.
-  GetWidget()->SetBoundsConstrained(GetBubbleBounds());
 }
 
 void SuggestionWindowView::SetCandidateHighlighted(

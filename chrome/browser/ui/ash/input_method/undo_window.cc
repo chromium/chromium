@@ -48,13 +48,14 @@ void SetHighlighted(views::View& view, bool highlighted) {
 }  // namespace
 
 UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
-    : delegate_(delegate) {
+    : delegate_(delegate->GetWeakPtr()) {
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
   set_margins(gfx::Insets(kPadding));
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
+  set_clamp_to_work_area(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
@@ -76,8 +77,7 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
 
   learn_more_button_ =
       AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
-          &AssistiveDelegate::AssistiveWindowButtonClicked,
-          base::Unretained(delegate_),
+          &AssistiveDelegate::AssistiveWindowButtonClicked, delegate_,
           AssistiveWindowButton{
               .id = ui::ime::ButtonId::kLearnMore,
               .window_type = ash::ime::AssistiveWindowType::kLearnMore})));
@@ -162,7 +162,9 @@ void UndoWindow::UndoButtonPressed() {
       .id = ButtonId::kUndo,
       .window_type = ash::ime::AssistiveWindowType::kUndoWindow};
   SetButtonHighlighted(button, true);
-  delegate_->AssistiveWindowButtonClicked(button);
+  if (delegate_) {
+    delegate_->AssistiveWindowButtonClicked(button);
+  }
 }
 
 BEGIN_METADATA(UndoWindow)

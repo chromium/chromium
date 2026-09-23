@@ -832,6 +832,9 @@ bool ArcImeService::UpdateCursorRect(
       converted.Offset(0, -bounds.y());
     }
   }
+  if (focused_arc_window_) {
+    converted.AdjustToFit(focused_arc_window_->GetBoundsInScreen());
+  }
 
   if (cursor_rect_ == converted) {
     return false;

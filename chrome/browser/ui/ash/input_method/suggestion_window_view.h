@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/input_method/announcement_label.h"
 #include "chrome/browser/ui/ash/input_method/indexed_suggestion_candidate_button.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
@@ -110,7 +111,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
                                bool highlighted);
 
   // The delegate to handle events from this class.
-  const raw_ptr<AssistiveDelegate, DanglingUntriaged> delegate_;
+  const base::WeakPtr<AssistiveDelegate> delegate_;
 
   // The view containing all the suggestions if multiple candidates are
   // visible.

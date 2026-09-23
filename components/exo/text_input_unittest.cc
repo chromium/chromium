@@ -493,6 +493,22 @@ TEST_F(TextInputTest, CaretBounds) {
   EXPECT_EQ(origin.ToString(),
             text_input()->GetCaretBounds().origin().ToString());
 
+  // Out-of-bounds caret and autocorrect bounds should be clamped to the
+  // surface's screen bounds.
+  const gfx::Point surface_origin =
+      surface()->window()->GetBoundsInScreen().origin();
+  text_input()->SetCaretBounds({-50, -40, 0, 16});
+  EXPECT_EQ(gfx::Rect(surface_origin, gfx::Size(0, 16)),
+            text_input()->GetCaretBounds());
+
+  ui::AutocorrectInfo autocorrect_info;
+  autocorrect_info.range = gfx::Range(0, 3);
+  autocorrect_info.bounds = {-20, -10, 10, 12};
+  text_input()->SetSurroundingText(u"the", 0, gfx::Range(3, 3), std::nullopt,
+                                   autocorrect_info);
+  EXPECT_EQ(gfx::Rect(surface_origin, gfx::Size(10, 12)),
+            text_input()->GetAutocorrectCharacterBounds());
+
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
 }
 

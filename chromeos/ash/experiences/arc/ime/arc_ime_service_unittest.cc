@@ -475,7 +475,7 @@ TEST_F(ArcImeServiceTest, GetCaretBounds) {
 
   EXPECT_EQ(gfx::Rect(), instance_->GetCaretBounds());
 
-  const gfx::Rect window_rect(123, 321, 100, 100);
+  const gfx::Rect window_rect{300, 400};
   arc_win_->SetBounds(window_rect);
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
@@ -500,6 +500,12 @@ TEST_F(ArcImeServiceTest, GetCaretBounds) {
   instance_->OnCursorRectChanged(new_cursor_rect, Coordinate::DISPLAY);
   EXPECT_EQ(cursor_rect + display_origin.OffsetFromOrigin(),
             instance_->GetCaretBounds());
+
+  // Out-of-bounds cursor rect should be clamped to the focused ARC window.
+  ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(std::nullopt);
+  arc_win_->SetBounds({123, 321, 100, 100});
+  instance_->OnCursorRectChanged(cursor_rect, Coordinate::SCREEN);
+  EXPECT_EQ(gfx::Rect(123, 321, 2, 8), instance_->GetCaretBounds());
 }
 
 TEST_F(ArcImeServiceTest, GetCaretBoundsInNotification) {

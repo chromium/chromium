@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 
@@ -49,6 +50,11 @@ class UI_CHROMEOS_EXPORT AssistiveDelegate {
   // updated, etc, then this method is invoked.
   virtual void AssistiveWindowChanged(
       const ash::ime::AssistiveWindow& window) const = 0;
+
+  // Returns a weak pointer to this delegate. Assistive windows are owned by
+  // their widgets, which can outlive the delegate, so they must not hold a raw
+  // pointer to it.
+  virtual base::WeakPtr<AssistiveDelegate> GetWeakPtr() = 0;
 
  protected:
   virtual ~AssistiveDelegate() = default;

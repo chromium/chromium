@@ -1045,9 +1045,14 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   }
 #endif
 
-  return GetBubbleFrameView()->GetUpdatedWindowBounds(
+  gfx::Rect bounds = GetBubbleFrameView()->GetUpdatedWindowBounds(
       anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize({}),
       adjust_to_fix_available_bounds);
+  if (clamp_to_work_area_) {
+    bounds.AdjustToFit(
+        GetBubbleFrameView()->GetAvailableScreenBounds(anchor_rect));
+  }
+  return bounds;
 }
 
 ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
@@ -1084,6 +1089,11 @@ gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
       GetWindowSizeForClientSize(GetWidget(), bubble_bounds.size());
   bubble_bounds.set_size(actual_size);
 #endif
+
+  if (clamp_to_work_area_ && GetBubbleFrameView()) {
+    bubble_bounds.AdjustToFit(
+        GetBubbleFrameView()->GetAvailableScreenBounds(GetAnchorRect()));
+  }
 
   return bubble_bounds;
 }

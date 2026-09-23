@@ -29,7 +29,7 @@ struct AssistiveWindowProperties;
 struct Bounds {
   // Position of the cursor.
   gfx::Rect caret;
-  // Position of the autocorrect span, empty if not present.
+  // Position of the autocorrect span, or `caret` if not present.
   gfx::Rect autocorrect;
 
   bool operator==(const Bounds& rhs) const {

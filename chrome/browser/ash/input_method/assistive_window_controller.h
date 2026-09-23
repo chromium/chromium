@@ -49,6 +49,8 @@ class AssistiveWindowController : public views::WidgetObserver,
 
   ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting();
   ui::ime::UndoWindow* GetUndoWindowForTesting() const;
+  ui::ime::GrammarSuggestionWindow* GetGrammarSuggestionWindowForTesting()
+      const;
 
   // IMEAssistiveWindowHandlerInterface implementation.
   void SetBounds(const Bounds& bounds) override;
@@ -70,6 +72,7 @@ class AssistiveWindowController : public views::WidgetObserver,
       const ui::ime::AssistiveWindowButton& button) const override;
   void AssistiveWindowChanged(
       const ash::ime::AssistiveWindow& window) const override;
+  base::WeakPtr<ui::ime::AssistiveDelegate> GetWeakPtr() override;
 
  private:
   ui::ime::SuggestionWindowView::Orientation WindowOrientationFor(

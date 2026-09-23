@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_INPUT_METHOD_GRAMMAR_SUGGESTION_WINDOW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "chrome/browser/ui/ash/input_method/completion_suggestion_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -48,7 +49,7 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
   void OnThemeChanged() override;
 
  private:
-  raw_ptr<AssistiveDelegate> delegate_;
+  base::WeakPtr<AssistiveDelegate> delegate_;
   raw_ptr<CompletionSuggestionView> suggestion_button_;
   raw_ptr<views::ImageButton> ignore_button_;
 

@@ -370,8 +370,15 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // Whether the arrow will be automatically adjusted if needed to fit the
   // bubble on screen. Has no effect if the bubble has no arrow.
+  // TODO(crbug.com/517926842): This should also clamp to work area if
+  // offscreen.
   bool adjust_if_offscreen() const { return adjust_if_offscreen_; }
   void set_adjust_if_offscreen(bool adjust) { adjust_if_offscreen_ = adjust; }
+
+  // Whether the bubble bounds will be clamped to fit within the available
+  // screen bounds (work area).
+  bool clamp_to_work_area() const { return clamp_to_work_area_; }
+  void set_clamp_to_work_area(bool clamp) { clamp_to_work_area_ = clamp; }
 
   //////////////////////////////////////////////////////////////////////////////
   // Shadows:
@@ -695,6 +702,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
   bool adjust_if_offscreen_ = true;
+  bool clamp_to_work_area_ = false;
   bool focus_traversable_from_anchor_view_ = true;
   bool use_anchor_window_bounds_ = true;
   std::optional<ui::ElementTracker::Subscription>

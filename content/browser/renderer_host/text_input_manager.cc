@@ -269,11 +269,13 @@ void TextInputManager::UpdateTextInputState(
                ? text_input_state.edit_context_control_bounds->ToString()
                : ""));
   text_input_state_map_[view] = text_input_state.Clone();
+  const gfx::Rect viewport_rect = GetRootOrFallbackViewportRect(view);
   for (const auto& ime_text_span_info :
        text_input_state_map_[view]->ime_text_spans_info) {
-    const gfx::Rect& bounds = ime_text_span_info->bounds;
-    ime_text_span_info->bounds = gfx::Rect(
-        view->TransformPointToRootCoordSpace(bounds.origin()), bounds.size());
+    if (!ime_text_span_info->bounds.IsEmpty()) {
+      ime_text_span_info->bounds = TransformAndClampBounds(
+          view, ime_text_span_info->bounds, viewport_rect);
+    }
   }
 
   // If |view| is different from |active_view| and its |TextInputState.type| is

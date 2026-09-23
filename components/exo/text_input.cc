@@ -328,8 +328,13 @@ bool TextInput::CanComposeInline() const {
 }
 
 gfx::Rect TextInput::GetCaretBounds() const {
-  return caret_bounds_ +
-         surface_->window()->GetBoundsInScreen().OffsetFromOrigin();
+  if (!surface_) {
+    return gfx::Rect();
+  }
+  const gfx::Rect surface_bounds = surface_->window()->GetBoundsInScreen();
+  gfx::Rect caret_bounds = caret_bounds_ + surface_bounds.OffsetFromOrigin();
+  caret_bounds.AdjustToFit(surface_bounds);
+  return caret_bounds;
 }
 
 gfx::Rect TextInput::GetSelectionBoundingBox() const {
@@ -509,7 +514,14 @@ gfx::Range TextInput::GetAutocorrectRange() const {
 }
 
 gfx::Rect TextInput::GetAutocorrectCharacterBounds() const {
-  return autocorrect_info_.bounds;
+  if (!surface_ || autocorrect_info_.bounds.IsEmpty()) {
+    return gfx::Rect();
+  }
+  const gfx::Rect surface_bounds = surface_->window()->GetBoundsInScreen();
+  gfx::Rect autocorrect_bounds =
+      autocorrect_info_.bounds + surface_bounds.OffsetFromOrigin();
+  autocorrect_bounds.AdjustToFit(surface_bounds);
+  return autocorrect_bounds;
 }
 
 bool TextInput::SetAutocorrectRange(const gfx::Range& range) {

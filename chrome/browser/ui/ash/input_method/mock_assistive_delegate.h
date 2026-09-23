@@ -11,12 +11,17 @@ namespace ui::ime {
 
 class MockAssistiveDelegate : public AssistiveDelegate {
  public:
-  ~MockAssistiveDelegate() override = default;
+  MockAssistiveDelegate();
+  ~MockAssistiveDelegate() override;
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;
   void AssistiveWindowChanged(
       const ash::ime::AssistiveWindow& window) const override {}
+  base::WeakPtr<AssistiveDelegate> GetWeakPtr() override;
   static ash::ime::AssistiveWindowType last_window_type_;
+
+ private:
+  base::WeakPtrFactory<MockAssistiveDelegate> weak_ptr_factory_{this};
 };
 }  // namespace ui::ime
 

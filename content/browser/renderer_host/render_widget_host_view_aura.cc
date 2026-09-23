@@ -1786,14 +1786,18 @@ gfx::Rect RenderWidgetHostViewAura::GetCaretBounds() const {
   // Check selection bound first (currently populated only for EditContext)
   const std::optional<gfx::Rect> text_selection_bound =
       text_input_manager_->GetTextSelectionBounds();
-  if (text_selection_bound)
-    return ConvertRectToScreen(text_selection_bound.value());
+  if (text_selection_bound) {
+    gfx::Rect caret_rect = ConvertRectToScreen(text_selection_bound.value());
+    caret_rect.AdjustToFit(window_->GetBoundsInScreen());
+    return caret_rect;
+  }
 
   // If no selection bound, we fall back to use selection region.
   const TextInputManager::SelectionRegion* region =
       text_input_manager_->GetSelectionRegion();
   gfx::Rect caret_rect = ConvertRectToScreen(
       gfx::RectBetweenSelectionBounds(region->anchor, region->focus));
+  caret_rect.AdjustToFit(window_->GetBoundsInScreen());
   TRACE_EVENT1("ime", "RenderWidgetHostViewAura::GetCaretBounds", "caret_rect",
                caret_rect.ToString());
   return caret_rect;
@@ -1930,6 +1934,7 @@ bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
   if (index >= composition_range_info->character_bounds.size())
     return false;
   *rect = ConvertRectToScreen(composition_range_info->character_bounds[index]);
+  rect->AdjustToFit(window_->GetBoundsInScreen());
   TRACE_EVENT1("ime", "RenderWidgetHostViewAura::GetCompositionCharacterBounds",
                "comp_char_rect", rect->ToString());
   return true;
@@ -2154,16 +2159,20 @@ gfx::Range RenderWidgetHostViewAura::GetAutocorrectRange() const {
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
-  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
+  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
     return gfx::Rect();
+  }
 
   const std::vector<ui::mojom::ImeTextSpanInfoPtr>& ime_text_spans_info =
       text_input_manager_->GetTextInputState()->ime_text_spans_info;
 
   // If there are multiple autocorrect spans, use the first one.
   for (const auto& ime_text_span_info : ime_text_spans_info) {
-    if (ime_text_span_info->span.type == ui::ImeTextSpan::Type::kAutocorrect) {
-      return ConvertRectToScreen(ime_text_span_info->bounds);
+    if (ime_text_span_info->span.type == ui::ImeTextSpan::Type::kAutocorrect &&
+        !ime_text_span_info->bounds.IsEmpty()) {
+      gfx::Rect rect = ConvertRectToScreen(ime_text_span_info->bounds);
+      rect.AdjustToFit(window_->GetBoundsInScreen());
+      return rect;
     }
   }
   return {};

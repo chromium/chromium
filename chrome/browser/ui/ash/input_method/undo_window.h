@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_INPUT_METHOD_UNDO_WINDOW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -47,7 +48,7 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
  private:
   void UndoButtonPressed();
 
-  raw_ptr<AssistiveDelegate, DanglingUntriaged> delegate_;
+  base::WeakPtr<AssistiveDelegate> delegate_;
   raw_ptr<views::LabelButton> undo_button_;
   raw_ptr<views::ImageButton> learn_more_button_;
 };

@@ -1774,4 +1774,29 @@ TEST_F(BubbleDialogDelegateViewTest, SizeToContentsDuringDestruction) {
   bubble_widget->CloseNow();
 }
 
+TEST_F(BubbleDialogDelegateViewTest, ClampToWorkArea) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(nullptr);
+  bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
+  bubble_delegate->set_clamp_to_work_area(true);
+  const gfx::Rect work_area{800, 600};
+  bubble_delegate->set_available_screen_bounds_callback(base::BindRepeating(
+      [](const gfx::Rect& work_area, const gfx::Rect&) { return work_area; },
+      work_area));
+
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  // Set an anchor rect outside the work area; the bubble bounds should be
+  // clamped to fit within `work_area`.
+  bubble_delegate->SetAnchorRect({900, 700, 10, 10});
+  EXPECT_TRUE(work_area.Contains(bubble_delegate->GetBubbleBounds()));
+  EXPECT_TRUE(work_area.Contains(bubble_widget->GetWindowBoundsInScreen()));
+
+  bubble_widget->CloseNow();
+}
+
 }  // namespace views

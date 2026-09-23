@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,8 +20,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/fake_text_input_client.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/display/screen.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -419,6 +424,80 @@ TEST_F(
   task_environment()->RunUntilIdle();
 
   announcement_view_->VerifyAnnouncement(std::u16string());
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       UpdatesUndoWindowAnchorRectWhenSetBoundsCalledAfterShow) {
+  AssistiveWindowProperties undo_props;
+  undo_props.type = ash::ime::AssistiveWindowType::kUndoWindow;
+  undo_props.visible = true;
+  controller_->SetAssistiveWindowProperties(undo_props);
+
+  ASSERT_NE(controller_->GetUndoWindowForTesting(), nullptr);
+
+  // Calling SetBounds() after UndoWindow is already visible updates its anchor.
+  controller_->SetBounds(
+      Bounds{.caret = {200, 200, 0, 16}, .autocorrect = {120, 140, 40, 20}});
+  gfx::Rect expected_autocorrect_anchor{120, 140, 40, 20};
+  expected_autocorrect_anchor.Inset(-4);
+  EXPECT_EQ(controller_->GetUndoWindowForTesting()->GetAnchorRect(),
+            expected_autocorrect_anchor);
+
+  // When a TextInputClient has empty autocorrect bounds, InputMethodAsh falls
+  // back to the client's caret bounds and updates UndoWindow via SetBounds().
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .caret_bounds = {150, 160, 0, 16}});
+  ui::InputMethod* input_method =
+      ash::Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  input_method->SetFocusedTextInputClient(&client);
+  gfx::Rect expected_caret_anchor{150, 160, 0, 16};
+  expected_caret_anchor.Inset(-4);
+  EXPECT_EQ(controller_->GetUndoWindowForTesting()->GetAnchorRect(),
+            expected_caret_anchor);
+  input_method->DetachTextInputClient(&client);
+}
+
+TEST_F(AssistiveWindowControllerTest, ClampsAssistiveWindowsToWorkArea) {
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
+
+  // Position the caret and autocorrect bounds outside the bottom-right of the
+  // work area (e.g. inside the shelf or offscreen).
+  const gfx::Rect offscreen_bounds{work_area.right() + 50,
+                                   work_area.bottom() + 20, 0, 16};
+  controller_->SetBounds(
+      Bounds{.caret = offscreen_bounds, .autocorrect = offscreen_bounds});
+
+  AssistiveWindowProperties undo_props;
+  undo_props.type = ash::ime::AssistiveWindowType::kUndoWindow;
+  undo_props.visible = true;
+  controller_->SetAssistiveWindowProperties(undo_props);
+  ASSERT_NE(controller_->GetUndoWindowForTesting(), nullptr);
+  EXPECT_TRUE(work_area.Contains(controller_->GetUndoWindowForTesting()
+                                     ->GetWidget()
+                                     ->GetWindowBoundsInScreen()));
+
+  AssistiveWindowProperties grammar_props;
+  grammar_props.type = ash::ime::AssistiveWindowType::kGrammarSuggestion;
+  grammar_props.visible = true;
+  grammar_props.candidates = {u"grammar"};
+  controller_->SetAssistiveWindowProperties(grammar_props);
+  ASSERT_NE(controller_->GetGrammarSuggestionWindowForTesting(), nullptr);
+  EXPECT_TRUE(
+      work_area.Contains(controller_->GetGrammarSuggestionWindowForTesting()
+                             ->GetWidget()
+                             ->GetWindowBoundsInScreen()));
+
+  AssistiveWindowProperties suggestion_props;
+  suggestion_props.type = ash::ime::AssistiveWindowType::kMultiWordSuggestion;
+  suggestion_props.visible = true;
+  suggestion_props.candidates = {u"candidate"};
+  controller_->SetAssistiveWindowProperties(suggestion_props);
+  ASSERT_NE(controller_->GetSuggestionWindowViewForTesting(), nullptr);
+  EXPECT_TRUE(
+      work_area.Contains(controller_->GetSuggestionWindowViewForTesting()
+                             ->GetWidget()
+                             ->GetWindowBoundsInScreen()));
 }
 
 }  // namespace input_method

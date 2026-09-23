@@ -184,6 +184,7 @@ class VIEWS_EXPORT BubbleFrameView : public FrameView {
     use_anchor_window_bounds_ = use_anchor_window_bounds;
   }
 
+  virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
   gfx::Rect GetDefaultAvailableScreenBounds(const gfx::Rect& rect) const;
   void set_available_screen_bounds_callback(
       GetAvailableScreenBoundsCallback callback) {
@@ -245,9 +246,6 @@ class VIEWS_EXPORT BubbleFrameView : public FrameView {
   gfx::Insets GetClientViewInsets() const;
 
  protected:
-  // Returns the available screen bounds if the frame were to show in |rect|.
-  virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
-
   // Returns the available anchor window bounds in the screen.
   // This will only be used if `use_anchor_window_bounds_` is true.
   virtual gfx::Rect GetAvailableAnchorWindowBounds() const;
