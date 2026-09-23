@@ -234,9 +234,11 @@ class TestVisualGuidedSetterControllerWin
     hide_overlay_count_ = 0;
   }
 
-  gfx::Rect ComputeDockedSettingsRect() const override {
-    return kTestDockedRect;
-  }
+  gfx::Rect ComputeDockedSettingsRect() const override { return docked_rect_; }
+
+  // Where the next layout will ask the Settings window to go. Defaults to a
+  // rect wide enough for the "Default apps" page to lay out predictably.
+  void set_docked_rect(const gfx::Rect& rect) { docked_rect_ = rect; }
 
  private:
   int show_overlay_count_ = 0;
@@ -248,6 +250,7 @@ class TestVisualGuidedSetterControllerWin
   bool chrome_window_active_ = true;
   bool dpi_compatible_ = true;
   bool close_settings_window_called_ = false;
+  gfx::Rect docked_rect_ = kTestDockedRect;
   std::optional<gfx::Rect> settings_window_rect_ =
       gfx::Rect(1000, 300, 800, 600);
   std::optional<gfx::Rect> settings_client_rect_;
@@ -497,15 +500,44 @@ TEST_F(VisualGuidedSetterControllerWinTest, StageTooSmallDegrades) {
   controller_->test_finder()->TriggerFound(fake_hwnd);
   task_environment()->FastForwardBy(base::Milliseconds(100));
 
-  // Stage too small triggers on next dock tick.
+  // Stage too small triggers on next dock tick. The size gate reads the anchor
+  // the page reported, not the screen rect, so that is the one to shrink.
   gfx::Rect small_anchor(100, 100, 200, 100);  // 200x100 is too small.
   controller_->SetAnchorRect(small_anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 200, 100));
   task_environment()->FastForwardBy(base::Milliseconds(100));
 
   controller_->Stop();
   histograms.ExpectUniqueSample(
       "DefaultBrowser.VisualGuide.Outcome",
       TestVisualGuidedSetterControllerWin::Outcome::kStageTooSmall, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, UnstableSettingsLayoutDegrades) {
+  base::HistogramTester histograms;
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  ASSERT_GT(controller_->applied_rects().size(), 0u);
+  controller_->clear_applied_rects();
+
+  // A window this narrow stacks the "Set default" button below the name Chrome
+  // is registered under, which is not a shape the arrow knows how to aim at.
+  // The stage it docks into is unchanged and still large enough, so this is a
+  // layout the flow cannot read rather than a stage it cannot fit.
+  controller_->set_docked_rect(gfx::Rect(1200, 300, 120, 220));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Degradation should occur, meaning it stops applying positioning.
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  controller_->Stop();
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsLayoutUnstable, 1);
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest, TopmostPolicyRequiresFocus) {

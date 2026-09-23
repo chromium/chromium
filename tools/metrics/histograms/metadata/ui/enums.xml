@@ -160,6 +160,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="User navigated the guide tab away before completion"/>
   <int value="7"
       label="User moved or resized the Settings window (degraded to floating)"/>
+  <int value="8"
+      label="Settings page layout unpredictable (degraded to floating)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_controller_win.h:DefaultBrowserVisualGuideOutcome) -->

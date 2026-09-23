@@ -464,12 +464,18 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   }
 
   if (!visual_guided_setter::IsAnchorLargeEnoughForDocking(
-          *anchor_rect_screen)) {
+          GetAnchorRectScreenDip())) {
     EnterDegradedFloating(Outcome::kStageTooSmall);
     return;
   }
 
   const gfx::Rect settings_target = ComputeDockedSettingsRect();
+
+  if (!visual_guided_setter::IsSettingsLayoutStableForDocking(
+          settings_hwnd_, settings_target)) {
+    EnterDegradedFloating(Outcome::kSettingsLayoutUnstable);
+    return;
+  }
 
   bool dpi_compatible =
       IsDpiCompatibleForDocking(chrome_hwnd_, settings_target);

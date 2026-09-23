@@ -72,7 +72,13 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
     // The user moved or resized the Settings window, taking over its
     // placement. The flow stops docking and leaves the window floating.
     kUserRepositioned = 7,
-    kMaxValue = kUserRepositioned,
+    // The width the Settings window would dock at puts the "Default apps" page
+    // in a layout whose rows we cannot place: the "Set default" button wraps
+    // below the name Chrome is registered under, or the width sits on the
+    // breakpoint where the navigation pane collapses. We degrade to floating
+    // rather than point the guidance arrow at the wrong row.
+    kSettingsLayoutUnstable = 8,
+    kMaxValue = kSettingsLayoutUnstable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserVisualGuideOutcome)
 
