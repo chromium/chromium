@@ -2856,7 +2856,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
         PropertyModel headerModel = itemList.get(0).model;
-        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
         assertThat(
                 headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
         assertThat(headerModel.get(TITLE_BOTTOM_MARGIN), is(ID_NULL));
@@ -2882,7 +2882,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
         PropertyModel headerModel = itemList.get(0).model;
-        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.fre_product_logo));
         assertThat(
                 headerModel.get(TITLE_ID), is(R.string.autofill_payment_method_bottom_sheet_title));
         assertThat(headerModel.get(TITLE_BOTTOM_MARGIN), is(ID_NULL));

@@ -104,7 +104,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(18)
+                    .setRevision(17)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

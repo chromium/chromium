@@ -785,7 +785,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                                     () -> this.onSelectedIban(mIbans.get(0)))));
         }
 
-        sheetItems.add(0, buildHeaderForPayments(/* shouldShowGPayLogo= */ true));
+        sheetItems.add(0, buildHeaderForPayments(/* shouldShowGPayLogo= */ false));
         sheetItems.add(buildFooterForIban());
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
