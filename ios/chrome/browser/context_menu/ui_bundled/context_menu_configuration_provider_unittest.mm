@@ -717,8 +717,9 @@ TEST_F(ContextMenuConfigurationProviderTest,
   // Verify that the action is disabled and displays the limit reset subtitle.
   EXPECT_TRUE(action.attributes & UIMenuElementAttributesDisabled);
   EXPECT_NE(action.subtitle, nil);
-  EXPECT_TRUE([action.subtitle
-      containsString:@"Images will be available again when your limit resets"]);
+  NSString* expected_prefix = l10n_util::GetNSStringF(
+      IDS_IOS_GEMINI_IMAGE_REMIX_LIMIT_RESET_SUBTITLE, std::u16string());
+  EXPECT_TRUE([action.subtitle hasPrefix:expected_prefix]);
 }
 
 // Tests that an image preview provider is created when given valid image params

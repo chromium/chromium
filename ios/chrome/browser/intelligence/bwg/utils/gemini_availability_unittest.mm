@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,6 +39,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace ios::provider {
 void SetMockFeatureModeDisabledByQuota(bool disabled);
@@ -170,8 +172,9 @@ TEST_F(GeminiAvailabilityTest, ImageContextMenuQuotaReached) {
   EXPECT_FALSE(result.enabled);
   EXPECT_EQ(result.disabled_reason, EntryPointDisabledReason::kQuotaExhausted);
   EXPECT_NE(result.disabled_reason_subtitle, nil);
-  EXPECT_TRUE([result.disabled_reason_subtitle
-      containsString:@"Images will be available again when your limit resets"]);
+  NSString* expected_prefix = l10n_util::GetNSStringF(
+      IDS_IOS_GEMINI_IMAGE_REMIX_LIMIT_RESET_SUBTITLE, std::u16string());
+  EXPECT_TRUE([result.disabled_reason_subtitle hasPrefix:expected_prefix]);
   histogram_tester.ExpectUniqueSample(kEntryPointDisabledByQuotaHistogram,
                                       EntryPoint::ImageContextMenu, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -197,8 +200,9 @@ TEST_F(GeminiAvailabilityTest, ImageRemixIPHQuotaReached) {
   EXPECT_FALSE(result.enabled);
   EXPECT_EQ(result.disabled_reason, EntryPointDisabledReason::kQuotaExhausted);
   EXPECT_NE(result.disabled_reason_subtitle, nil);
-  EXPECT_TRUE([result.disabled_reason_subtitle
-      containsString:@"Images will be available again when your limit resets"]);
+  NSString* expected_prefix = l10n_util::GetNSStringF(
+      IDS_IOS_GEMINI_IMAGE_REMIX_LIMIT_RESET_SUBTITLE, std::u16string());
+  EXPECT_TRUE([result.disabled_reason_subtitle hasPrefix:expected_prefix]);
   histogram_tester.ExpectUniqueSample(kEntryPointDisabledByQuotaHistogram,
                                       EntryPoint::ImageRemixIPH, 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(

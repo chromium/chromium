@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/bwg/model:test_support",
@@ -130,5 +131,6 @@ source_set("unit_tests") {
     "//net",
     "//net:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
