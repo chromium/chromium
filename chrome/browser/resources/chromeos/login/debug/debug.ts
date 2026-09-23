@@ -1839,7 +1839,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           optInVisibility: true,
           optInDefaultState: true,
           legalFooterVisibility: false,
-          cloudGamingDevice: false,
         },
         trigger: (screen: any) => {
           screen.setUIStep('overview');
@@ -1852,7 +1851,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           optInVisibility: false,
           optInDefaultState: false,
           legalFooterVisibility: false,
-          cloudGamingDevice: false,
         },
         trigger: (screen: any) => {
           screen.setUIStep('overview');
@@ -1865,7 +1863,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           optInVisibility: true,
           optInDefaultState: true,
           legalFooterVisibility: true,
-          cloudGamingDevice: false,
         },
         trigger: (screen: any) => {
           screen.setUIStep('overview');
@@ -1878,7 +1875,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           optInVisibility: true,
           optInDefaultState: true,
           legalFooterVisibility: true,
-          cloudGamingDevice: false,
         },
         trigger: (screen: any) => {
           screen.setUIStep('overview');
@@ -2280,20 +2276,6 @@ export class DebuggerUi {
     });
   }
 
-  private toggleGameMode(): void {
-    KNOWN_SCREENS.forEach((screen, _index) => {
-      if (screen.id === 'marketing-opt-in' && screen.states) {
-        for (const state of screen.states) {
-          if (state.data) {
-            state.data.cloudGamingDevice = !(state.data.cloudGamingDevice);
-          }
-        }
-      }
-    });
-
-    this.triggerScreenState(this.currentScreenId_, this.lastScreenState_);
-  }
-
   private createLanguagePanel(): void {
     const langPanel = new ToolPanel(
         this.debuggerOverlay_, 'Language', 'DebuggerPanelLanguage');
@@ -2327,10 +2309,6 @@ export class DebuggerUi {
     new DebugButton(panel.content, 'Toggle color mode', () => {
       chrome.send('debug.toggleColorMode');
     });
-    const button = new DebugButton(
-        panel.content, 'Toggle gaming mode', this.toggleGameMode.bind(this));
-
-    button.element.classList.add('gametoggle-button');
   }
 
   private createWallpaperPanel(): void {
@@ -2506,14 +2484,6 @@ export class DebuggerUi {
       if (state.id === this.lastScreenState_) {
         button.element.classList.add('debug-button-selected');
       }
-    }
-
-    if (this.currentScreenId_ === 'marketing-opt-in') {
-      document.getElementsByClassName('gametoggle-button')[0].removeAttribute(
-          'hidden');
-    } else {
-      document.getElementsByClassName('gametoggle-button')[0].setAttribute(
-          'hidden', 'true');
     }
 
     this.statesPanel.show();

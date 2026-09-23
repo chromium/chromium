@@ -48,7 +48,6 @@ interface MarketingScreenData {
   optInVisibility: boolean;
   optInDefaultState: boolean;
   legalFooterVisibility: boolean;
-  cloudGamingDevice: boolean;
 }
 
 export class MarketingOptIn extends MarketingScreenElementBase {
@@ -91,22 +90,12 @@ export class MarketingOptIn extends MarketingScreenElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Whether the device is cloud gaming device, which will
-       * alternate different title, subtitle and animation.
-       */
-      isCloudGamingDevice: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   declare private isA11ySettingsButtonVisible: boolean;
   declare private marketingOptInVisible: boolean;
   declare private hasLegalFooter: boolean;
-  declare private isCloudGamingDevice: boolean;
 
   override get UI_STEPS() {
     return MarketingOptInStep;
@@ -155,8 +144,6 @@ export class MarketingOptIn extends MarketingScreenElementBase {
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
-    this.isCloudGamingDevice =
-        'cloudGamingDevice' in data && data.cloudGamingDevice;
     this.setAnimationPlay(true);
     this.shadowRoot!
         .querySelector<OobeAdaptiveDialog>(
@@ -220,14 +207,6 @@ export class MarketingOptIn extends MarketingScreenElementBase {
       this.shadowRoot!.querySelector<HTMLInputElement>(
                           '#a11yNavButtonToggle')!.checked,
     ]);
-  }
-
-  /**
-   * Returns the src of the icon.
-   */
-  private getIcon(): string {
-    return this.isCloudGamingDevice ? 'oobe-32:game-controller' :
-                                      'oobe-32:checkmark';
   }
 }
 

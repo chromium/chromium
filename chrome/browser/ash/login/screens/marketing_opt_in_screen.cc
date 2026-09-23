@@ -32,7 +32,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -122,14 +121,10 @@ void MarketingOptInScreen::ShowImpl() {
   const bool legal_footer_visible =
       email_opt_in_visible_ && countries_with_legal_footer.count(country_);
 
-  const bool cloud_gaming_enabled =
-      chromeos::features::IsCloudGamingDeviceEnabled();
-
   if (view_) {
     view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
                 /*opt_in_default_state=*/IsDefaultOptInCountry(),
-                /*legal_footer_visible=*/legal_footer_visible,
-                /*cloud_gaming_enabled=*/cloud_gaming_enabled);
+                /*legal_footer_visible=*/legal_footer_visible);
   }
 
   // Mark the screen as shown for this user.

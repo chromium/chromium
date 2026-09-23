@@ -386,12 +386,6 @@
       <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE" desc="The sub-title of the dialog that allows user to opt-in into several Google marketing options.">
         Get <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> tips, offers, and updates, and share feedback.
       </message>
-      <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_TITLE" desc="An alternate title for the last dialog the marketing opt-in for cloud gaming devices.">
-        Setup is complete! Get your device ready for gaming next
-      </message>
-      <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_SUBTITLE" desc="An alternate subtitle for the last dialog the marketing opt-in for cloud gaming devices.">
-        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers, and discover gaming features that come with your device.
-      </message>
       <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_SHORT" desc="Disclaimer about being able to unsubscribe">
         Unsubscribe anytime.
       </message>
@@ -403,9 +397,6 @@
       </message>
       <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES_SIGN_ME_UP" desc="A lablel next to the checkbox that controls user subscription to marketing updates and useful information about the user's Chrome device.">
         Sign me up
-      </message>
-      <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_SIGN_ME_UP" desc="Alternate the lablel next to the checkbox that controls user subscription to marketing updates and useful information about the user's Chrome device for gaming device.">
-        Sign up for <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> emails
       </message>
       <message name="IDS_LOGIN_GET_STARTED" desc="A label on the button. Used on the welcome screen (the first one on OOBE) and on the marketing optin screen (the last one in OOBE).">
         Get started

@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -43,10 +42,6 @@
 namespace ash {
 namespace {
 
-const test::UIPath kChromebookGameTitle = {"marketing-opt-in",
-                                           "marketingOptInGameDeviceTitle"};
-const test::UIPath kChromebookGameSubtitle = {
-    "marketing-opt-in", "marketingOptInGameDeviceSubtitle"};
 const test::UIPath kChromebookEmailToggle = {"marketing-opt-in",
                                              "chromebookUpdatesOption"};
 const test::UIPath kChromebookEmailToggleDiv = {"marketing-opt-in",
@@ -578,43 +573,6 @@ IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestNotBrandedChrome,
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             MarketingOptInScreen::Result::NOT_APPLICABLE);
-}
-
-class MarketingOptInScreenTestGameDevice : public MarketingOptInScreenTest {
- public:
-  MarketingOptInScreenTestGameDevice() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {
-            chromeos::features::kCloudGamingDevice,
-        },
-        {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestGameDevice,
-                       ScreenElementsVisible) {
-  PerformLogin();
-  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-  // Expect the screen to not have been shown before.
-  EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-      prefs::kOobeMarketingOptInScreenFinished));
-  LoginDisplayHost::default_host()->StartWizard(
-      MarketingOptInScreenView::kScreenId);
-
-  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
-  // check the Screen is Visible
-  test::OobeJS().ExpectVisiblePath(
-      {"marketing-opt-in", "marketingOptInOverviewDialog"});
-  // check the correct game mode title is visible
-  test::OobeJS().ExpectVisiblePath(kChromebookGameTitle);
-  // check the correct game mode description is visible
-  test::OobeJS().ExpectVisiblePath(kChromebookGameSubtitle);
-  TapOnGetStartedAndWaitForScreenExit();
-
-  // Expect the screen to be marked as shown.
-  EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-      prefs::kOobeMarketingOptInScreenFinished));
 }
 
 }  // namespace

@@ -435,13 +435,6 @@ class MarketingOptInScreenTester extends ScreenElementApi {
   getGetStartedButtonName(): string {
     return loadTimeData.getString('marketingOptInScreenAllSet');
   }
-
-  /**
-   * Returns gaming-specific title.
-   */
-  getCloudGamingDeviceTitle(): string {
-    return loadTimeData.getString('marketingOptInScreenGameDeviceTitle');
-  }
 }
 
 class ThemeSelectionScreenTester extends ScreenElementApi {

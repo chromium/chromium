@@ -24,8 +24,7 @@ class MarketingOptInScreenView {
   // Shows the contents of the screen.
   virtual void Show(bool opt_in_visible,
                     bool opt_in_default_state,
-                    bool legal_footer_visible,
-                    bool cloud_gaming_enabled) = 0;
+                    bool legal_footer_visible) = 0;
 
   // Sets whether the a11y Settings button is visible.
   virtual void UpdateA11ySettingsButtonVisibility(bool shown) = 0;
@@ -59,8 +58,7 @@ class MarketingOptInScreenHandler final : public BaseScreenHandler,
   // MarketingOptInScreenView:
   void Show(bool opt_in_visible,
             bool opt_in_default_state,
-            bool legal_footer_visible,
-            bool cloud_gaming_enabled) override;
+            bool legal_footer_visible) override;
   void UpdateA11ySettingsButtonVisibility(bool shown) override;
   void UpdateA11yShelfNavigationButtonToggle(bool enabled) override;
   base::WeakPtr<MarketingOptInScreenView> AsWeakPtr() override;
