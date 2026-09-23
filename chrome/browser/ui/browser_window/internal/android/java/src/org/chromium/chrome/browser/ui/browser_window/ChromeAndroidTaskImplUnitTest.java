@@ -58,7 +58,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowRoleManager;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -1914,7 +1913,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void canResize_noRestrictions() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1936,7 +1935,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void canResize_notBrowserRole_returnsBrowserRoleNotHeld() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1954,7 +1953,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void canResize_notInDesktopWindow_returnsNotAFreeformWindow() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1968,7 +1967,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void canResize_nullAppTask_returnsNullAppTask() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1982,26 +1981,11 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
-    public void canResize_nullAconfigFlaggedApiDelegate_returnsNullAconfigFlaggedApiDelegate() {
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
-
-        // Act & Assert.
-        assertEquals(
-                WindowResizePrecheckResult.NULL_ACONFIG_FLAGGED_API_DELEGATE,
-                chromeAndroidTask.canResize());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void maximize_maximizeToMaximizedBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         // Act.
@@ -2019,11 +2003,11 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void maximize_cannotSetBounds_noOp() {
         // Arrange: Set up ChromeAndroidTask and its mock dependencies.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
@@ -2039,11 +2023,11 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void maximize_whenWindowMinimized_shouldActivateWindow() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
         var mockActivityManager =
                 (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
@@ -2156,12 +2140,12 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void setBoundsInDp_setsNewBoundsInPx() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var displayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         float dipScale = 2.0f;
@@ -2185,12 +2169,12 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void setBoundsInDp_clampsBoundsThatAreTooLarge() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var displayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         float dipScale = 2.0f;
@@ -2213,12 +2197,12 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void setBoundsInDp_clampsBoundsThatAreTooSmall() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var displayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         float dipScale = 2.0f;
@@ -2259,13 +2243,13 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void setBoundsInDp_cannotSetBounds_noOp() {
         // Arrange: Set up ChromeAndroidTask and its dependencies.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var displayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         float dipScale = 2.0f;
@@ -2287,11 +2271,11 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void restore_restoresToPreviousBounds() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
@@ -2322,12 +2306,12 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void restore_whenMinimized_activateFirstBeforeSettingBounds() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
@@ -2370,11 +2354,11 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void restore_cannotSetBounds_noOp() {
         // Arrange: Set up ChromeAndroidTask and its mock dependencies.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
@@ -2777,7 +2761,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void maximize_whenPendingUpdate_isMaximizeReturnsTrue() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -2787,7 +2771,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTaskWithMockDeps
                         .mActivityWindowAndroidMocks
                         .mMockActivityWindowAndroid;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var promise = new Promise<Pair<Integer, Rect>>();
         when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
 
@@ -2818,7 +2802,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void maximize_whenPendingUpdate_notAffectIsActive() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -2828,7 +2812,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTaskWithMockDeps
                         .mActivityWindowAndroidMocks
                         .mMockActivityWindowAndroid;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var promise = new Promise<Pair<Integer, Rect>>();
         when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
         when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
@@ -2882,7 +2866,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void restore_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var task =
@@ -2907,7 +2891,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTaskWithMockDeps
                         .mActivityWindowAndroidMocks
                         .mMockActivityWindowAndroid;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var promise = new Promise<Pair<Integer, Rect>>();
         when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
 
@@ -3094,7 +3078,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void isMaximized_whenSetBoundsPending_returnsBasedOnFutureBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -3102,7 +3086,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var promise = new Promise<Pair<Integer, Rect>>();
         when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
 
@@ -3486,7 +3470,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void addActivityScopedObjects_fromPendingState_dispatchesPendingMaximize() {
         int unusedTaskId = 3;
 
@@ -3495,7 +3479,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         // Arrange: Request MAXIMIZE on a pending task.
@@ -3541,7 +3525,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void
             addActivityScopedObjects_fromPendingState_withNonEmptyPendingBounds_dispatchesPendingRestore() {
         int unusedTaskId = 3;
@@ -3551,7 +3535,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         // Arrange: Setup display parameters.
@@ -3578,7 +3562,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void
             addActivityScopedObjects_fromPendingState_withEmptyPendingBounds_ignoresPendingRestore() {
         int unusedTaskId = 3;
@@ -3588,7 +3572,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         // Arrange: Request RESTORE on a pending task.
         chromeAndroidTask.restore();
@@ -3602,7 +3586,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void addActivityScopedObjects_fromPendingState_dispatchesPendingPushBounds() {
         int unusedTaskId = 3;
 
@@ -3613,7 +3597,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
 
         // Arrange: Setup display parameters.
         var displayAndroid =

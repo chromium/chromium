@@ -35,7 +35,6 @@ import android.util.SparseIntArray;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
@@ -1689,11 +1688,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param bounds The bounds to move the activity to.
      */
     public static void moveActivityToBounds(Activity activity, Rect bounds) {
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            return;
-        }
-
         final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) {
             return;
@@ -1708,7 +1702,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         final DisplayAndroid display = localCoordinates.first;
         final Rect localBounds = localCoordinates.second;
 
-        delegate.moveTaskTo(
+        AndroidTaskUtils.moveTaskTo(
                 appTask,
                 display.getDisplayId(),
                 DisplayUtil.clampWindowToDisplay(localBounds, display));

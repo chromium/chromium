@@ -15,7 +15,6 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskUnitTestSupport.java" ]
     deps = [
       "//base:base_java",
-      "//base:flagged_apis_java",
       "//build/android:build_java",
       "//chrome/browser/android/customtabs:java",
       "//chrome/browser/android/lifecycle:java",

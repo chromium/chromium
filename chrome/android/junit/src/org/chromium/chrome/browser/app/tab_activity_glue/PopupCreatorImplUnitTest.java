@@ -57,7 +57,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -107,7 +106,7 @@ public class PopupCreatorImplUnitTest {
     @Mock DisplayAndroid mExternalDisplay;
     @Mock DisplayAndroidManager mDisplayAndroidManager;
     @Mock ReparentingTask mReparentingTask;
-    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
+    @Mock AndroidTaskUtils.MoveTaskDelegate mMoveTaskDelegate;
     @Mock Context mContext;
     @Mock Resources mResources;
     @Mock InsetObserver mInsetObserver;
@@ -181,7 +180,7 @@ public class PopupCreatorImplUnitTest {
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
 
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
+        AndroidTaskUtils.setMoveTaskDelegateForTesting(mMoveTaskDelegate);
 
         doReturn(mWindow).when(mWebContents).getTopLevelNativeWindow();
     }
@@ -892,14 +891,14 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void testAdjustWindowBounds_nullFeatures_bailsOut() {
         PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, null);
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void testAdjustWindowBounds_perfectMatch_noOp() {
         setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
 
@@ -907,11 +906,11 @@ public class PopupCreatorImplUnitTest {
         WindowFeatures windowFeatures = new WindowFeatures(null, null, 200, 300);
 
         PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
     public void testAdjustWindowBounds_callsMoveTaskTo() {
         setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
 
@@ -921,7 +920,7 @@ public class PopupCreatorImplUnitTest {
         PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
 
         ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
-        verify(mFlaggedApiDelegate).moveTaskTo(any(), anyInt(), captor.capture());
+        verify(mMoveTaskDelegate).moveTaskTo(any(), anyInt(), captor.capture());
 
         Rect targetBounds = captor.getValue();
         // Width difference: 400 - 200 = 200dp

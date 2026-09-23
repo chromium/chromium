@@ -7,18 +7,27 @@ package org.chromium.chrome.browser.util;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
+import android.app.TaskLocation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
+import android.os.OutcomeReceiver;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.view.Display;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.task.PostTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -39,8 +48,22 @@ public class AndroidTaskUtils {
     // that won't cause Chrome to blow up in degenerate cases.
     private static final int MAX_NUM_TASKS = 100;
 
-    @Nullable private static AppTask sAppTaskForTesting;
-    @Nullable private static Map<AppTask, RecentTaskInfo> sTaskInfosForTesting;
+    /** Delegate interface for testing {@link #moveTaskTo} and {@link #moveTaskToWithPromise}. */
+    @VisibleForTesting
+    public interface MoveTaskDelegate {
+        default void moveTaskTo(AppTask at, int displayId, Rect bounds) {
+            moveTaskToWithPromise(at, displayId, bounds);
+        }
+
+        default Promise<Pair<Integer, Rect>> moveTaskToWithPromise(
+                AppTask at, int displayId, Rect bounds) {
+            return Promise.fulfilled(Pair.create(Display.INVALID_DISPLAY, new Rect()));
+        }
+    }
+
+    private static @Nullable AppTask sAppTaskForTesting;
+    private static @Nullable Map<AppTask, RecentTaskInfo> sTaskInfosForTesting;
+    private static @Nullable MoveTaskDelegate sMoveTaskDelegateForTesting;
 
     /**
      * Finishes tasks other than the one with the given ID that were started with the given data in
@@ -267,5 +290,80 @@ public class AndroidTaskUtils {
     public static void setAppTaskForTesting(@Nullable AppTask task) {
         sAppTaskForTesting = task;
         ResettersForTesting.register(() -> sAppTaskForTesting = null);
+    }
+
+    public static void setMoveTaskDelegateForTesting(@Nullable MoveTaskDelegate delegate) {
+        sMoveTaskDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sMoveTaskDelegateForTesting = null);
+    }
+
+    /**
+     * Calls the {@link android.app.ActivityManager.AppTask#moveTaskTo} method if supported,
+     * otherwise no-op.
+     *
+     * @param at {@link android.app.ActivityManager.AppTask} on which the method should be called.
+     * @param displayId identifier of the target display.
+     * @param bounds pixel-based target coordinates relative to the top-left corner of the target
+     *     display.
+     */
+    public static void moveTaskTo(AppTask at, int displayId, Rect bounds) {
+        if (sMoveTaskDelegateForTesting != null) {
+            sMoveTaskDelegateForTesting.moveTaskTo(at, displayId, bounds);
+            return;
+        }
+        moveTaskToWithPromise(at, displayId, bounds);
+    }
+
+    /**
+     * Calls the {@link android.app.ActivityManager.AppTask#moveTaskTo} method if supported,
+     * otherwise no-op. Trigger callback when this succeeds or fails.
+     *
+     * @param at {@link android.app.ActivityManager.AppTask} on which the method should be called.
+     * @param displayId identifier of the target display.
+     * @param bounds pixel-based target coordinates relative to the top-left corner of the target
+     *     display.
+     * @return A promise fulfilled with a pair of the actual target display id and actual updated
+     *     bounds.
+     */
+    public static Promise<Pair<Integer, Rect>> moveTaskToWithPromise(
+            AppTask at, int displayId, Rect bounds) {
+        if (sMoveTaskDelegateForTesting != null) {
+            return sMoveTaskDelegateForTesting.moveTaskToWithPromise(at, displayId, bounds);
+        }
+        final Promise<Pair<Integer, Rect>> result = new Promise<>();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return result;
+        }
+        final OutcomeReceiver<TaskLocation, Exception> listener =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onError(Exception e) {
+                        Log.w(TAG, e);
+                        result.reject(e);
+                    }
+
+                    @Override
+                    public void onResult(TaskLocation tl) {
+                        Log.d(
+                                TAG,
+                                "moveTaskTo call returned new task location {displayId: "
+                                        + tl.getDisplayId()
+                                        + ", bounds: "
+                                        + tl.getBounds()
+                                        + "}");
+                        result.fulfill(Pair.create(tl.getDisplayId(), tl.getBounds()));
+                    }
+                };
+        try {
+            // Use a UI thread executor so that the Promise is fulfilled on the thread that
+            // created it.
+            at.moveTaskTo(
+                    new TaskLocation(displayId, bounds),
+                    PostTask.getUiUserVisibleExecutor(),
+                    listener);
+        } catch (Exception e) {
+            Log.w(TAG, e);
+        }
+        return result;
     }
 }

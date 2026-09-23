@@ -23,7 +23,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
@@ -532,8 +531,8 @@ final class ChromeAndroidTaskImpl
      */
     private static @WindowResizePrecheckResult int canResizeInternal(
             TopActivityScopedObjects topActivityScopedObjects) {
-        // The Android API to change window bounds is available on BAKLAVA+.
-        if (Build.VERSION.SDK_INT < VERSION_CODES.BAKLAVA) {
+        // The Android API to change window bounds is available on CINNAMON_BUN+.
+        if (Build.VERSION.SDK_INT < VERSION_CODES.CINNAMON_BUN) {
             Log.w(TAG, "Unable to set bounds: unsupported API level");
             return WindowResizePrecheckResult.SDK_TOO_LOW;
         }
@@ -575,14 +574,6 @@ final class ChromeAndroidTaskImpl
         if (appTask == null) {
             Log.w(TAG, "Unable to set bounds: null AppTask");
             return WindowResizePrecheckResult.NULL_APP_TASK;
-        }
-
-        // Chrome wraps the Android API in AconfigFlaggedApiDelegate, so AconfigFlaggedApiDelegate
-        // must be non-null.
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.w(TAG, "Unable to set bounds: null AconfigFlaggedApiDelegate");
-            return WindowResizePrecheckResult.NULL_ACONFIG_FLAGGED_API_DELEGATE;
         }
 
         return WindowResizePrecheckResult.OK;
@@ -1787,13 +1778,10 @@ final class ChromeAndroidTaskImpl
         var activity = topActivityScopedObjects.mActivity;
         int displayId = topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayId();
 
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
         var appTask = AndroidTaskUtils.getAppTaskFromId(activity, getTaskId(activity));
-        assert aconfigFlaggedApiDelegate != null && appTask != null
-                : "use canResizeInternal() to prevent null values";
+        assert appTask != null : "use canResizeInternal() to prevent null values";
 
-        aconfigFlaggedApiDelegate
-                .moveTaskToWithPromise(appTask, displayId, boundsInPx)
+        AndroidTaskUtils.moveTaskToWithPromise(appTask, displayId, boundsInPx)
                 .then(
                         (pair) -> {
                             var actions =

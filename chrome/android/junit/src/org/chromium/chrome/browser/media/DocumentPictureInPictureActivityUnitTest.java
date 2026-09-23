@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -63,7 +62,7 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Mock private WindowManager mWindowManager;
     @Mock private WindowMetrics mWindowMetrics;
     @Mock private FrameLayout mContentLayout;
-    @Mock private AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
+    @Mock private AndroidTaskUtils.MoveTaskDelegate mMoveTaskDelegate;
     @Mock private AppTask mAppTask;
     @Mock private DisplayAndroidManager mDisplayAndroidManager;
     @Mock private DocumentPictureInPictureActivity.Natives mMockActivityNatives;
@@ -72,7 +71,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
     @Before
     public void setUp() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mAconfigFlaggedApiDelegate);
+        AndroidTaskUtils.setMoveTaskDelegateForTesting(mMoveTaskDelegate);
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
         DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
@@ -104,7 +103,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
     @After
     public void tearDown() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        AndroidTaskUtils.setMoveTaskDelegateForTesting(null);
         AndroidTaskUtils.setAppTaskForTesting(null);
         DisplayAndroidManager.resetInstanceForTesting();
         DisplayAndroid.setNonMultiDisplayForTesting(null);
@@ -137,7 +136,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         // localBounds (Px) = newBounds (Global Dip) (since density 1.0 and origin 0,0) = 50, 50,
         // 300, 300
 
-        verify(mAconfigFlaggedApiDelegate)
+        verify(mMoveTaskDelegate)
                 .moveTaskTo(
                         eq(mAppTask),
                         eq(0), // displayId
@@ -152,7 +151,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         mActivity.resizeContents(100, 100);
 
-        verifyNoInteractions(mAconfigFlaggedApiDelegate);
+        verifyNoInteractions(mMoveTaskDelegate);
     }
 
     @Test
@@ -241,8 +240,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         // newBounds.left = currentWindowBounds.left - widthDiff = 100 - (-140) = 240
         // newBounds.top = currentWindowBounds.top - heightDiff = 100 - (-80) = 180
         // newBounds.right = 300, newBounds.bottom = 300
-        verify(mAconfigFlaggedApiDelegate)
-                .moveTaskTo(eq(mAppTask), eq(0), eq(new Rect(240, 180, 300, 300)));
+        verify(mMoveTaskDelegate).moveTaskTo(eq(mAppTask), eq(0), eq(new Rect(240, 180, 300, 300)));
     }
 
     @Test
@@ -262,7 +260,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.revertToRequestedBounds();
 
         // It should NOT revert.
-        verifyNoInteractions(mAconfigFlaggedApiDelegate);
+        verifyNoInteractions(mMoveTaskDelegate);
     }
 
     @Test
@@ -283,7 +281,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.revertToRequestedBounds();
 
         // It should NOT revert since it was already large enough.
-        verifyNoInteractions(mAconfigFlaggedApiDelegate);
+        verifyNoInteractions(mMoveTaskDelegate);
     }
 
     @Test

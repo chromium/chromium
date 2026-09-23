@@ -10,16 +10,22 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager.AppTask;
+import android.app.TaskLocation;
+import android.app.role.RoleManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.OutcomeReceiver;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -29,10 +35,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -54,6 +61,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -67,6 +75,7 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -501,8 +510,8 @@ public class ChromeAndroidTaskIntegrationTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.R)
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET /* non-desktop windowing mode */)
-    @SuppressLint("NewApi" /* @MinAndroidSdkLevel already specifies the required SDK */)
     public void getBoundsInDp_nonDesktopWindowingMode_returnsMaximizedBounds() {
         // Arrange
         mFreshCtaTransitTestRule.startOnBlankPage();
@@ -863,7 +872,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     public void canResize_customTabActivity_returnsOk() {
         // Arrange.
@@ -872,9 +881,6 @@ public class ChromeAndroidTaskIntegrationTest {
         int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNotNull(chromeAndroidTask);
-
-        var delegate = new TestAconfigFlaggedApiDelegate();
-        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
 
         // Act.
         @WindowResizePrecheckResult
@@ -887,7 +893,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     public void canResize_webappActivity_returnsOk() {
         // Arrange.
@@ -895,9 +901,6 @@ public class ChromeAndroidTaskIntegrationTest {
         int taskId = mWebappActivityTestRule.getActivity().getTaskId();
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNotNull(chromeAndroidTask);
-
-        var delegate = new TestAconfigFlaggedApiDelegate();
-        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
 
         // Act.
         @WindowResizePrecheckResult
@@ -909,7 +912,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
     public void canResize_twaActivity_returnsOk() throws Exception {
         // Arrange.
@@ -918,9 +921,6 @@ public class ChromeAndroidTaskIntegrationTest {
         int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
         var chromeAndroidTask = getChromeAndroidTask(taskId);
         assertNotNull(chromeAndroidTask);
-
-        var delegate = new TestAconfigFlaggedApiDelegate();
-        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
 
         // Act.
         @WindowResizePrecheckResult
@@ -1398,19 +1398,728 @@ public class ChromeAndroidTaskIntegrationTest {
                 /* checkIntervalMs= */ 1000L);
     }
 
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void taskBoundsChangedByResizingWindow_invokesOnTaskBoundsChangedForFeature()
+            throws Exception {
+        assumeBrowserRole();
+        testOnTaskBoundsChangedForFeature(/* deltaBounds= */ new Rect(100, 100, -100, -100));
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void taskBoundsChangedByMovingWindow_invokesOnTaskBoundsChangedForFeature()
+            throws Exception {
+        assumeBrowserRole();
+        testOnTaskBoundsChangedForFeature(/* deltaBounds= */ new Rect(30, 30, 30, 30));
+    }
+
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    private void testOnTaskBoundsChangedForFeature(Rect deltaBounds) throws Exception {
+        // Arrange:
+        // Launch ChromeTabbedActivity;
+        // Find its ChromeAndroidTask;
+        // Add a mock ChromeAndroidTaskFeature.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        var chromeTabbedActivity = webPageStation.getActivity();
+        var chromeAndroidTask = getChromeAndroidTask(chromeTabbedActivity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+        var testFeature = new TestChromeAndroidTaskFeature();
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, webPageStation.getTab().getProfile());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> chromeAndroidTask.addFeature(featureKey, () -> testFeature));
+
+        // Act:
+        Rect currentBounds =
+                chromeTabbedActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        Rect expectedNewBoundsInPx =
+                new Rect(
+                        currentBounds.left + deltaBounds.left,
+                        currentBounds.top + deltaBounds.top,
+                        currentBounds.right + deltaBounds.right,
+                        currentBounds.bottom + deltaBounds.bottom);
+        Rect expectedNewBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        expectedNewBoundsInPx, 1.0f / getDipScale(chromeTabbedActivity));
+        setBounds(chromeTabbedActivity, expectedNewBoundsInPx);
+
+        // Assert:
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<Rect> boundsChangePxHistory = testFeature.mTaskBoundsChangePxHistory;
+                    List<Rect> boundsChangeDpHistory = testFeature.mTaskBoundsChangeDpHistory;
+                    if (boundsChangePxHistory.isEmpty() || boundsChangeDpHistory.isEmpty()) {
+                        return false;
+                    }
+
+                    assertEquals(1, boundsChangePxHistory.size());
+                    assertEquals(1, boundsChangeDpHistory.size());
+
+                    Rect actualNewBoundsInPx = boundsChangePxHistory.get(0);
+                    Rect actualNewBoundsInDp = boundsChangeDpHistory.get(0);
+                    return areBoundsCloseEnough(expectedNewBoundsInDp, actualNewBoundsInDp)
+                            && areBoundsCloseEnough(expectedNewBoundsInPx, actualNewBoundsInPx);
+                },
+                /* maxTimeoutMs= */ 5000L,
+                /* checkIntervalMs= */ 1000L);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void getBoundsInDp_afterWindowIsResized_returnsCorrectBounds() throws Exception {
+        assumeBrowserRole();
+        testGetBoundsInDpAfterWindowBoundsChange(/* deltaBounds= */ new Rect(100, 100, -100, -100));
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void getBoundsInDp_afterWindowIsMoved_returnsCorrectBounds() throws Exception {
+        assumeBrowserRole();
+        testGetBoundsInDpAfterWindowBoundsChange(/* deltaBounds= */ new Rect(50, 50, 50, 50));
+    }
+
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    private void testGetBoundsInDpAfterWindowBoundsChange(Rect deltaBounds) throws Exception {
+        // Arrange:
+        // Launch ChromeTabbedActivity;
+        // Find its ChromeAndroidTask;
+        // Add a mock ChromeAndroidTaskFeature.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        var chromeTabbedActivity = webPageStation.getActivity();
+        var chromeAndroidTask = getChromeAndroidTask(chromeTabbedActivity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+
+        // Act:
+        Rect currentBounds =
+                chromeTabbedActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        Rect expectedNewBoundsInPx =
+                new Rect(
+                        currentBounds.left + deltaBounds.left,
+                        currentBounds.top + deltaBounds.top,
+                        currentBounds.right + deltaBounds.right,
+                        currentBounds.bottom + deltaBounds.bottom);
+        Rect expectedNewBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        expectedNewBoundsInPx, 1.0f / getDipScale(chromeTabbedActivity));
+        setBounds(chromeTabbedActivity, expectedNewBoundsInPx);
+
+        // Assert:
+        CriteriaHelper.pollUiThread(
+                () ->
+                        areBoundsCloseEnough(
+                                expectedNewBoundsInDp, chromeAndroidTask.getBoundsInDp()),
+                /* maxTimeoutMs= */ 5000L,
+                /* checkIntervalMs= */ 1000L);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void setBoundsInDp_setsCorrectBounds() {
+        assumeBrowserRole();
+        // Arrange: Launch ChromeTabbedActivity and find its ChromeAndroidTask.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        var chromeTabbedActivity = webPageStation.getActivity();
+        var chromeAndroidTask = getChromeAndroidTask(chromeTabbedActivity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+
+        Rect currentBoundsInDp =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getBoundsInDp);
+        Rect newBoundsInDp =
+                new Rect(
+                        currentBoundsInDp.left + 50,
+                        currentBoundsInDp.top + 50,
+                        currentBoundsInDp.right - 50,
+                        currentBoundsInDp.bottom - 50);
+
+        // Act: Call setBoundsInDp.
+        ThreadUtils.runOnUiThreadBlocking(() -> chromeAndroidTask.setBoundsInDp(newBoundsInDp));
+
+        // Assert: Verify that the new bounds are applied.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            chromeAndroidTask
+                                    .getPendingActionManagerForTesting()
+                                    .getFutureBoundsInDp(),
+                            Matchers.nullValue());
+                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void maximize_maximizesTask() throws Exception {
+        assumeBrowserRole();
+        // Arrange: Launch ChromeTabbedActivity and find its ChromeAndroidTask.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        var chromeTabbedActivity = webPageStation.getActivity();
+        var chromeAndroidTask = getChromeAndroidTask(chromeTabbedActivity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+
+        // Act: Call maximize.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::maximize);
+
+        // Assert: Verify that the task is maximized.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            chromeAndroidTask
+                                    .getPendingActionManagerForTesting()
+                                    .isMaximizedFuture(chromeAndroidTask.getState()),
+                            Matchers.nullValue());
+
+                    Criteria.checkThat(
+                            ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::isMaximized),
+                            Matchers.is(true));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void restore_restoresTaskBounds() {
+        assumeBrowserRole();
+        // Arrange: Launch ChromeTabbedActivity and find its ChromeAndroidTask.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        var chromeTabbedActivity = webPageStation.getActivity();
+        var chromeAndroidTask = getChromeAndroidTask(chromeTabbedActivity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+
+        Rect currentBoundsInDp =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getBoundsInDp);
+        Rect currentBoundsInPx =
+                chromeTabbedActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
+        Rect newBoundsInDp =
+                new Rect(
+                        currentBoundsInDp.left + 50,
+                        currentBoundsInDp.top + 50,
+                        currentBoundsInDp.right - 50,
+                        currentBoundsInDp.bottom - 50);
+
+        // Set specific bounds first.
+        ThreadUtils.runOnUiThreadBlocking(() -> chromeAndroidTask.setBoundsInDp(newBoundsInDp));
+
+        // Wait for bounds to be applied so that WindowStateManager updates restored bounds.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
+                });
+
+        // Maximize it.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::maximize);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            chromeAndroidTask
+                                    .getPendingActionManagerForTesting()
+                                    .isMaximizedFuture(chromeAndroidTask.getState()),
+                            Matchers.nullValue());
+                    Criteria.checkThat(
+                            chromeTabbedActivity
+                                    .getWindowManager()
+                                    .getCurrentWindowMetrics()
+                                    .getBounds(),
+                            Matchers.not(currentBoundsInPx));
+                });
+
+        // Act: Call restore.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::restore);
+
+        // Assert: Verify that the bounds are restored.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            chromeAndroidTask
+                                    .getPendingActionManagerForTesting()
+                                    .getFutureBoundsInDp(),
+                            Matchers.nullValue());
+                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_withInitialBounds_createsTaskWithCorrectBounds() {
+        assumeBrowserRole();
+        // Arrange: Start on blank page to have a profile.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+        Rect initialBoundsInDp = new Rect(100, 100, 500, 500);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        initialBoundsInDp.left,
+                        initialBoundsInDp.top,
+                        initialBoundsInDp.right,
+                        initialBoundsInDp.bottom,
+                        WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Act: Create pending task and keep the reference.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+        assertNotNull(chromeAndroidTask);
+
+        // Wait for the new activity to be created.
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+
+        // Assert: Verify that the new activity has the correct bounds using the kept reference.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        assertBoundsCloseEnoughInDp(
+                                initialBoundsInDp, chromeAndroidTask.getBoundsInDp()));
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_withInitialShowStateAsMaximized_createsTaskWithMaximizedBounds() {
+        assumeBrowserRole();
+        // Arrange.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        // Act: Create a pending Task with the initialShowState as maximized.
+        var newTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            AndroidBrowserWindowCreateParams createParams =
+                                    AndroidBrowserWindowCreateParamsImpl.create(
+                                            BrowserWindowType.NORMAL,
+                                            profile,
+                                            /* leftBound= */ 0,
+                                            /* topBound= */ 0,
+                                            /* rightBound= */ 0,
+                                            /* bottomBound= */ 0,
+                                            /* initialShowState= */ WindowShowState.MAXIMIZED,
+                                            /* webContents= */ null);
+                            return chromeAndroidTaskTracker.createPendingTask(
+                                    createParams, /* callback= */ null);
+                        });
+        assertNotNull(newTask);
+
+        // Assert:
+        //
+        // (1) Wait for the pending Task to become idle, which means the pending Task has been
+        // backed by a real Activity;
+        // (2) The Task reports it's in the maximized state.
+        //
+        // Note: we should wait longer than CriteriaHelper's default timeout since new Task/Activity
+        // creation takes time.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        newTask.getState() == ChromeAndroidTaskImpl.State.IDLE
+                                && newTask.isMaximized(),
+                /* maxTimeoutMs= */ 10_000L,
+                /* checkIntervalMs= */ 1_000L);
+
+        // Assert:
+        // The new Task's top Activity has maximized bounds.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var newActivityWindowAndroid = newTask.getTopActivityWindowAndroid();
+                    assertNotNull(newActivityWindowAndroid);
+
+                    var newActivity = newActivityWindowAndroid.getActivity().get();
+                    assertNotNull(newActivity);
+
+                    var windowManager = newActivity.getWindowManager();
+                    var currentBounds = windowManager.getCurrentWindowMetrics().getBounds();
+                    var maximizedBounds =
+                            ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(windowManager);
+                    assertEquals(maximizedBounds, currentBounds);
+                });
+
+        // Cleanup.
+        ThreadUtils.runOnUiThreadBlocking(newTask::close);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_requestSetBounds_dispatchesSetBounds() {
+        assumeBrowserRole();
+        // Arrange: Start on blank page to have a profile.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+        Rect initialBoundsInDp = new Rect(100, 100, 500, 500);
+        Rect newBoundsInDp = new Rect(200, 200, 600, 600);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        initialBoundsInDp.left,
+                        initialBoundsInDp.top,
+                        initialBoundsInDp.right,
+                        initialBoundsInDp.bottom,
+                        WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Pause pending task activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                chromeAndroidTaskTracker::pausePendingTaskActivityCreationForTesting);
+
+        // Act: Create pending task.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+        assertNotNull(chromeAndroidTask);
+
+        var pendingTaskInfo =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getPendingTaskInfo);
+        assertNotNull(pendingTaskInfo);
+
+        // Request setBounds on pending task.
+        ThreadUtils.runOnUiThreadBlocking(() -> chromeAndroidTask.setBoundsInDp(newBoundsInDp));
+
+        // Resume activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                pendingTaskInfo.mPendingTaskId));
+
+        // Assert: Verify that the new activity has the requested bounds (newBoundsInDp, not
+        // initialBoundsInDp).
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        assertBoundsCloseEnoughInDp(
+                                newBoundsInDp, chromeAndroidTask.getBoundsInDp()));
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_requestMaximize_dispatchesMaximize() throws Exception {
+        assumeBrowserRole();
+        // Arrange: Start on blank page to have a profile.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        /* leftBound= */ 0,
+                        /* topBound= */ 0,
+                        /* rightBound= */ 0,
+                        /* bottomBound= */ 0,
+                        WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Pause pending task activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                chromeAndroidTaskTracker::pausePendingTaskActivityCreationForTesting);
+
+        // Act: Create pending task.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+        assertNotNull(chromeAndroidTask);
+
+        var pendingTaskInfo =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getPendingTaskInfo);
+        assertNotNull(pendingTaskInfo);
+
+        // Request maximize on pending task.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::maximize);
+
+        // Resume activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                pendingTaskInfo.mPendingTaskId));
+
+        // Assert: Verify that the new activity is maximized.
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(chromeAndroidTask.isMaximized(), Matchers.is(true)));
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_requestMinimize_dispatchesMinimize() throws Exception {
+        assumeBrowserRole();
+        // Arrange: Start on blank page to have a profile.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        /* leftBound= */ 0,
+                        /* topBound= */ 0,
+                        /* rightBound= */ 0,
+                        /* bottomBound= */ 0,
+                        WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Pause pending task activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                chromeAndroidTaskTracker::pausePendingTaskActivityCreationForTesting);
+
+        // Act: Create pending task.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+        assertNotNull(chromeAndroidTask);
+
+        var pendingTaskInfo =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getPendingTaskInfo);
+        assertNotNull(pendingTaskInfo);
+
+        // Request minimize on pending task.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::minimize);
+
+        // Intercept moveTaskToBack to verify minimize.
+        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
+
+        // Resume activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                pendingTaskInfo.mPendingTaskId));
+
+        // Assert: Verify that the new activity is minimized (moveTaskToBack intercepted).
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+
+        CriteriaHelper.pollUiThread(
+                ChromeTabbedActivity::wasMoveTaskToBackInterceptedForTesting,
+                "Failed to move task to the background.");
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_requestSetBoundsAndDeactivate_dispatchesBoth() {
+        assumeBrowserRole();
+        // Arrange: Start on blank page to have a profile.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = assumeNonNull(webPageStation.getTab().getProfile());
+        Rect initialBoundsInDp = new Rect(100, 100, 500, 500);
+        Rect newBoundsInDp = new Rect(200, 200, 600, 600);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        initialBoundsInDp.left,
+                        initialBoundsInDp.top,
+                        initialBoundsInDp.right,
+                        initialBoundsInDp.bottom,
+                        WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(ChromeAndroidTaskTrackerImpl::getInstance);
+        assertNotNull(chromeAndroidTaskTracker);
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Pause pending task activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                chromeAndroidTaskTracker::pausePendingTaskActivityCreationForTesting);
+
+        // Act: Create pending task.
+        var chromeAndroidTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+        assertNotNull(chromeAndroidTask);
+
+        var pendingTaskInfo =
+                ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getPendingTaskInfo);
+        assertNotNull(pendingTaskInfo);
+
+        // Request setBounds on pending task.
+        ThreadUtils.runOnUiThreadBlocking(() -> chromeAndroidTask.setBoundsInDp(newBoundsInDp));
+
+        // Request deactivate on pending task.
+        ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::deactivate);
+
+        // Resume activity creation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                pendingTaskInfo.mPendingTaskId));
+
+        // Assert: Verify that the new activity has the requested bounds and is not active.
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+        var windowAndroid = newActivity.getWindowAndroid();
+        assertNotNull(windowAndroid);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
+                    Criteria.checkThat(windowAndroid.isTopResumedActivity(), Matchers.is(false));
+                });
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private static void assumeBrowserRole() {
+        assumeTrue(
+                "The test suite requires the APK to be the default browser. "
+                        + "Please run "
+                        + "'adb shell cmd role add-role-holder android.app.role.BROWSER "
+                        + ContextUtils.getApplicationContext().getPackageName()
+                        + "'",
+                hasBrowserRole());
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private static boolean hasBrowserRole() {
+        Context appContext = ContextUtils.getApplicationContext();
+        var roleManager = appContext.getSystemService(RoleManager.class);
+        return roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
+    }
+
+    private float getDipScale(ChromeTabbedActivity chromeTabbedActivity) {
+        var activityWindowAndroid = chromeTabbedActivity.getWindowAndroid();
+        assertNotNull(activityWindowAndroid);
+
+        return activityWindowAndroid.getDisplay().getDipScale();
+    }
+
+    private static boolean areBoundsCloseEnough(Rect expected, Rect actual) {
+        return Math.abs(actual.left - expected.left) <= BOUNDS_CHECK_TOLERANCE_DP
+                && Math.abs(actual.top - expected.top) <= BOUNDS_CHECK_TOLERANCE_DP
+                && Math.abs(actual.right - expected.right) <= BOUNDS_CHECK_TOLERANCE_DP
+                && Math.abs(actual.bottom - expected.bottom) <= BOUNDS_CHECK_TOLERANCE_DP;
+    }
+
     private static void assertBoundsCloseEnoughInDp(Rect expected, Rect actual) {
-        boolean closeEnough =
-                Math.abs(actual.left - expected.left) <= BOUNDS_CHECK_TOLERANCE_DP
-                        && Math.abs(actual.top - expected.top) <= BOUNDS_CHECK_TOLERANCE_DP
-                        && Math.abs(actual.right - expected.right) <= BOUNDS_CHECK_TOLERANCE_DP
-                        && Math.abs(actual.bottom - expected.bottom) <= BOUNDS_CHECK_TOLERANCE_DP;
         assertTrue(
                 String.format(
                         Locale.US,
                         "Bounds not close enough. Expected: %s; Actual: %s",
                         expected,
                         actual),
-                closeEnough);
+                areBoundsCloseEnough(expected, actual));
+    }
+
+    private AppTask getAppTask(Activity activity) {
+        var appTaskForActivity = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        assertNotNull(appTaskForActivity);
+        return appTaskForActivity;
+    }
+
+    private int getDisplayId(ChromeTabbedActivity chromeTabbedActivity) {
+        var windowAndroid = chromeTabbedActivity.getWindowAndroid();
+        assertNotNull(windowAndroid);
+
+        return windowAndroid.getDisplay().getDisplayId();
+    }
+
+    /**
+     * Sets the bounds of the given {@link ChromeTabbedActivity}'s Task.
+     *
+     * <p>The method won't return until the new bounds are applied or the operation fails.
+     */
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    private void setBounds(ChromeTabbedActivity chromeTabbedActivity, Rect newBounds)
+            throws Exception {
+        var callBackHelper = new CallbackHelper();
+
+        OutcomeReceiver<TaskLocation, Exception> listener =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onError(Exception e) {
+                        callBackHelper.notifyFailed(e.toString());
+                    }
+
+                    @Override
+                    public void onResult(TaskLocation tl) {
+                        callBackHelper.notifyCalled();
+                    }
+                };
+        getAppTask(chromeTabbedActivity)
+                .moveTaskTo(
+                        new TaskLocation(getDisplayId(chromeTabbedActivity), newBounds),
+                        Runnable::run,
+                        listener);
+
+        callBackHelper.waitForCallback(/* currentCallCount= */ 0);
     }
 
     private static ChromeTabbedActivity waitForNewTabbedActivity(
@@ -1479,6 +2188,10 @@ public class ChromeAndroidTaskIntegrationTest {
 
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
 
+        final List<Rect> mTaskBoundsChangeDpHistory =
+                Collections.synchronizedList(new ArrayList<>());
+        final List<Rect> mTaskBoundsChangePxHistory =
+                Collections.synchronizedList(new ArrayList<>());
         final List<Boolean> mTaskFocusChangedParams = new ArrayList<>();
 
         @Override
@@ -1488,10 +2201,14 @@ public class ChromeAndroidTaskIntegrationTest {
         public void onFeatureRemoved() {}
 
         @Override
+        public void onTaskBoundsChanged(int displayId, Rect newBoundsInDp, Rect newBoundsInPx) {
+            mTaskBoundsChangeDpHistory.add(newBoundsInDp);
+            mTaskBoundsChangePxHistory.add(newBoundsInPx);
+        }
+
+        @Override
         public void onTaskFocusChanged(boolean hasFocus) {
             mTaskFocusChangedParams.add(hasFocus);
         }
     }
-
-    private static final class TestAconfigFlaggedApiDelegate implements AconfigFlaggedApiDelegate {}
 }

@@ -35,7 +35,6 @@ import android.view.WindowMetrics;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
@@ -130,7 +129,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
         public final Profile mMockProfile;
         public final AppTask mMockAppTask;
-        public final AconfigFlaggedApiDelegate mMockAconfigFlaggedApiDelegate;
+        public final AndroidTaskUtils.MoveTaskDelegate mMockMoveTaskDelegate;
 
         /** Mock {@link AndroidBrowserWindow.Natives}. */
         final AndroidBrowserWindow.@Nullable Natives mMockAndroidBrowserWindowNatives;
@@ -141,14 +140,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
                 Profile mockProfile,
                 AppTask appTask,
-                AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate,
+                AndroidTaskUtils.MoveTaskDelegate moveTaskDelegate,
                 AndroidBrowserWindow.@Nullable Natives mockAndroidBrowserWindowNatives) {
             mChromeAndroidTask = chromeAndroidTask;
             mActivityScopedObjects = activityScopedObjects;
             mActivityWindowAndroidMocks = activityWindowAndroidMocks;
             mMockProfile = mockProfile;
             mMockAppTask = appTask;
-            mMockAconfigFlaggedApiDelegate = aconfigFlaggedApiDelegate;
+            mMockMoveTaskDelegate = moveTaskDelegate;
             mMockAndroidBrowserWindowNatives = mockAndroidBrowserWindowNatives;
         }
     }
@@ -267,9 +266,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
 
-        var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
-        when(mockApiDelegate.moveTaskToWithPromise(any(), anyInt(), any()))
+        var mockMoveTaskDelegate = mock(AndroidTaskUtils.MoveTaskDelegate.class);
+        AndroidTaskUtils.setMoveTaskDelegateForTesting(mockMoveTaskDelegate);
+        when(mockMoveTaskDelegate.moveTaskToWithPromise(any(), anyInt(), any()))
                 .thenReturn(Promise.fulfilled(Pair.create(-1, new Rect())));
 
         return new ChromeAndroidTaskWithMockDeps(
@@ -278,7 +277,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 activityWindowAndroidMocks,
                 profile,
                 mockAppTask,
-                mockApiDelegate,
+                mockMoveTaskDelegate,
                 mockAndroidBrowserWindowNatives);
     }
 

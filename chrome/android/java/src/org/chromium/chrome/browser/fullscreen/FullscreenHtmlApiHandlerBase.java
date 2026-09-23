@@ -24,10 +24,10 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
@@ -461,11 +461,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     }
 
     private void tryToMoveTaskTo(long displayId, Rect targetBounds) {
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            return;
-        }
-
         final ActivityManager.AppTask appTask =
                 AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
         if (appTask == null) {
@@ -474,7 +469,7 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         // TODO(crbug.com/441031399): Right now we do not care about window move result. Maybe we
         // should trace the statistics here.
-        delegate.moveTaskTo(appTask, (int) displayId, targetBounds);
+        AndroidTaskUtils.moveTaskTo(appTask, (int) displayId, targetBounds);
     }
 
     private void ensureTaskMovedToFront() {
@@ -519,10 +514,11 @@ public abstract class FullscreenHtmlApiHandlerBase
                 && DeviceClassManager.enableFullscreen();
     }
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     private static boolean isWindowMoveAvailable() {
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA;
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN;
     }
 
     /**

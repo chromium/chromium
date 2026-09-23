@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -165,9 +164,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock TabCreator mTabCreator;
     @Mock TabModel mTabModel;
     @Mock ActivityManager mActivityManager;
-    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
     @Mock DisplayAndroid mDisplayAndroid;
     @Mock DisplayAndroidManager mDisplayAndroidManager;
+    @Mock AndroidTaskUtils.MoveTaskDelegate mMoveTaskDelegate;
     @Mock AppTask mAppTask;
     @Mock PopupCreator mPopupCreator;
     @Mock MultiWindowUtils mMultiWindowUtils;
@@ -204,7 +203,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                         mExclusiveAccessManager,
                         mFullscreenManager);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
+        AndroidTaskUtils.setMoveTaskDelegateForTesting(mMoveTaskDelegate);
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -613,20 +612,11 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 mWebContents, new Rect(-100, -100, 2000, 2000));
 
         ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
-        verify(mFlaggedApiDelegate).moveTaskTo(any(), eq(TEST_DISPLAY_ID), captor.capture());
+        verify(mMoveTaskDelegate).moveTaskTo(any(), eq(TEST_DISPLAY_ID), captor.capture());
         final Rect passedBounds = captor.getValue();
         Assert.assertTrue(
                 "The bounds passed to moveTaskTo do not fit inside display",
                 TEST_LOCAL_BOUNDS.contains(passedBounds));
-    }
-
-    @Test
-    public void testSetContentsBoundsNoOpIfDelegateNull() {
-        mTabWebContentsDelegateAndroid.setIsPopup(true);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
-
-        mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
-        // No assertions -- just verifying that there is no NPE thrown.
     }
 
     @Test
@@ -635,7 +625,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     @Test
@@ -645,7 +635,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
 
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+        verify(mMoveTaskDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
     @Test

@@ -84,6 +84,7 @@ android_library("javatests") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeIntegrationTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
@@ -92,8 +93,10 @@ android_library("javatests") {
     "//chrome/browser/ui/android/extensions/windowing:java",
     "//chrome/browser/ui/browser_window/internal:java",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",

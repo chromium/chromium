@@ -22,7 +22,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.jni_zero.CalledByNativeForTesting;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -195,7 +194,7 @@ public class PopupCreatorImpl implements PopupCreator {
      */
     public static void adjustWindowBoundsToRequested(
             ChromeActivity activity, @Nullable WindowFeatures requestedWindowFeaturesDp) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
             return;
         }
 
@@ -321,12 +320,6 @@ public class PopupCreatorImpl implements PopupCreator {
                 realWindowBoundsPx,
                 targetWindowBoundsPx);
 
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            Log.w(TAG, "adjustWindowBounds: AconfigFlaggedApiDelegate is null -- bailing out");
-            return;
-        }
-
         final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) {
             Log.w(TAG, "adjustWindowBounds: cannot find the AppTask -- bailing out");
@@ -334,7 +327,8 @@ public class PopupCreatorImpl implements PopupCreator {
         }
 
         Log.v(TAG, "adjustWindowBounds: dispatching the moveTaskTo call");
-        delegate.moveTaskTo(appTask, INVALID_DISPLAY /* current display */, targetWindowBoundsPx);
+        AndroidTaskUtils.moveTaskTo(
+                appTask, INVALID_DISPLAY /* current display */, targetWindowBoundsPx);
     }
 
     @Override
