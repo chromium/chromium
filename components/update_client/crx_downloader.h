@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>
@@ -147,6 +148,11 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
 
   std::vector<DownloadMetrics> download_metrics_;
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         CrxDownloader::DownloadMetrics::Downloader downloader);
+std::ostream& operator<<(std::ostream& os,
+                         const CrxDownloader::DownloadMetrics& metrics);
 
 }  // namespace update_client
 

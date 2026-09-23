@@ -139,9 +139,8 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   download_metrics.total_bytes = total_bytes_;
   download_metrics.download_time_ms = download_time.InMilliseconds();
 
-  VLOG(1) << "Downloaded " << content_size << " bytes in "
-          << download_time.InMilliseconds() << "ms from " << url().spec()
-          << " to " << result.response.value();
+  VLOG(1) << (error ? "Download failed: " : "Download succeeded: ")
+          << download_metrics << ", file: " << result.response;
 
   // Delete the download directory in the error cases.
   if (error && !download_dir_.empty()) {

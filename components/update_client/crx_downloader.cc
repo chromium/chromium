@@ -7,16 +7,19 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -145,6 +148,8 @@ void CrxDownloader::OnDownloadComplete(
           [](scoped_refptr<CrxDownloader> downloader, Result result,
              DownloadMetrics download_metrics, CrxDownloaderError error) {
             if (error == CrxDownloaderError::NONE) {
+              VLOG(1) << "Download succeeded: " << download_metrics
+                      << ", file: " << result.response;
               downloader->download_metrics_.push_back(download_metrics);
               downloader->main_task_runner()->PostTask(
                   FROM_HERE,
@@ -185,6 +190,8 @@ void CrxDownloader::HandleDownloadError(
   CHECK(result.response.empty());
   CHECK_NE(0, download_metrics.error);
 
+  VLOG(1) << "Download failed: " << download_metrics;
+
   download_metrics_.push_back(download_metrics);
 
   // Prevent the downloader from attempting other URLs or falling back to
@@ -223,6 +230,33 @@ void CrxDownloader::HandleDownloadError(
   // download request further.
   main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(std::move(download_callback_), result));
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    CrxDownloader::DownloadMetrics::Downloader downloader) {
+  switch (downloader) {
+    case CrxDownloader::DownloadMetrics::kNone:
+      return os << "none";
+    case CrxDownloader::DownloadMetrics::kUrlFetcher:
+      return os << "direct";
+    case CrxDownloader::DownloadMetrics::kBits:
+      return os << "bits";
+    case CrxDownloader::DownloadMetrics::kBackgroundMac:
+      return os << "nsurlsession_background";
+  }
+  return os << "unknown(" << std::to_underlying(downloader) << ")";
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const CrxDownloader::DownloadMetrics& metrics) {
+  return os << "DownloadMetrics{url=" << metrics.url.spec()
+            << ", downloader=" << metrics.downloader
+            << ", error=" << metrics.error
+            << ", extra_code1=" << metrics.extra_code1
+            << ", downloaded_bytes=" << metrics.downloaded_bytes
+            << ", total_bytes=" << metrics.total_bytes
+            << ", download_time_ms=" << metrics.download_time_ms << "}";
 }
 
 }  // namespace update_client
