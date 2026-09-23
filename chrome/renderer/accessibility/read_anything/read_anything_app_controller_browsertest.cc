@@ -412,6 +412,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
   }
 
+  void DisableLineFocus() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kReadAnythingLineFocus);
+  }
+
   void StartLineFocusSession() { controller_->StartLineFocusSession(); }
 
   void LogLineFocusSession() { controller_->LogLineFocusSession(); }
@@ -567,6 +573,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnDeviceLocked_DoesNotLogLineFocusSessionWithoutFlag) {
+  DisableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnDeviceLocked();
@@ -707,6 +714,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_DoesNotLogLineFocusSessionWithoutFlag) {
+  DisableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnReadingModeHidden(true);
@@ -780,6 +788,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnTabWillDetach_DoesNotLogLineFocusSessionWithoutFlag) {
+  DisableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnTabWillDetach();
@@ -1127,6 +1136,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        StartLineFocusSession_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   StartLineFocusSession();
   ASSERT_FALSE(model().line_focus_session_start_time().has_value());
 }
@@ -1140,6 +1150,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        AddLineFocusScrollDistance_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   const int distance = 100;
   AddLineFocusScrollDistance(distance);
   ASSERT_EQ(model().line_focus_scroll_distance(), 0);
@@ -1159,6 +1170,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        AddLineFocusMouseDistance_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   const int distance = 100;
   AddLineFocusMouseDistance(distance);
   ASSERT_EQ(model().line_focus_scroll_distance(), 0);
@@ -1178,6 +1190,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        IncrementLineFocusKeyboardLines_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   IncrementLineFocusKeyboardLines();
   ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
 }
@@ -1195,6 +1208,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        IncrementLineFocusSpeechLines_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   IncrementLineFocusSpeechLines();
   ASSERT_EQ(model().line_focus_speech_lines(), 0);
 }
@@ -1212,6 +1226,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        LogLineFocusSession_DoesNothingWithoutFlag) {
+  DisableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   model().set_line_focus_mouse_distance(1000);
@@ -1334,7 +1349,9 @@ TEST_F(ReadAnythingAppControllerTest,
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
 }
 
-TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
+TEST_F(ReadAnythingAppControllerTest,
+       OnSettingsRestoredFromPrefs_WithLineFocusFlagDisabled) {
+  DisableLineFocus();
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
   std::string font_name = "Roboto";
@@ -3139,6 +3156,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionWithoutFlag) {
+  DisableLineFocus();
   model().set_line_focus_enabled(true);
   StartLineFocusSession();
 
@@ -6666,6 +6684,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_DoesNotStartLineFocusSessionWithoutFlag) {
+  DisableLineFocus();
   model().set_line_focus_enabled(true);
 
   controller().OnReadingModeShown(

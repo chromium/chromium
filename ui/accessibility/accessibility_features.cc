@@ -410,7 +410,7 @@ bool IsReadAnythingTranslateEntryPointEnabled() {
       ::features::kReadAnythingTranslateEntryPoint);
 }
 
-BASE_FEATURE(kReadAnythingLineFocus, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReadAnythingLineFocus, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingLineFocusEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingLineFocus);
 }
