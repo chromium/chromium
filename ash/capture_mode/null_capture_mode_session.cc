@@ -117,7 +117,8 @@ void NullCaptureModeSession::OnPerformCaptureForSearchStarting(
     PerformCaptureType capture_type) {}
 
 void NullCaptureModeSession::OnPerformCaptureForSearchEnded(
-    PerformCaptureType capture_type) {}
+    PerformCaptureType capture_type,
+    bool capture_succeeded) {}
 
 base::WeakPtr<BaseCaptureModeSession>
 NullCaptureModeSession::GetImageSearchToken() {

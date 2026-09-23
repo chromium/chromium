@@ -2057,9 +2057,28 @@ void CaptureModeController::OnImageCapturedForSearch(
     VLOG(1) << "Image search token invalid after capturing image.";
     return;
   }
-  capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
+
+  // Handle capture failure where snapshotting returned a null or empty buffer.
+  // We must notify the session to restore UI widgets without starting the glow
+  // animation or proceeding to decode and dispatch search requests.
+  if (!jpeg_bytes || !jpeg_bytes->size()) {
+    LOG(ERROR) << "Failed to capture image for search: empty buffer.";
+    image_search_token->OnPerformCaptureForSearchEnded(
+        capture_type, /*capture_succeeded=*/false);
+    return;
+  }
 
   const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
+  // Handle corrupted or un-decodable JPEG bytes.
+  if (bitmap.drawsNothing()) {
+    LOG(ERROR) << "Failed to decode captured image for search.";
+    image_search_token->OnPerformCaptureForSearchEnded(
+        capture_type, /*capture_succeeded=*/false);
+    return;
+  }
+
+  image_search_token->OnPerformCaptureForSearchEnded(
+      capture_type, /*capture_succeeded=*/true);
   if (ShouldPerformTextDetection(capture_type)) {
     delegate_->DetectTextInImage(
         bitmap, base::BindOnce(&CaptureModeController::OnTextDetectionComplete,

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace aura {
 class Window;
@@ -31,6 +32,7 @@ class Widget;
 
 namespace ash {
 
+class BaseCaptureModeSession;
 class CaptureModeController;
 class AnnotationsOverlayController;
 
@@ -93,6 +95,23 @@ class ASH_EXPORT CaptureModeTestApi {
       base::OnceCallback<void(PerformCaptureType capture_type)>;
   void SetOnImageCapturedForSearchCallback(
       OnImageCapturedForSearchCallback callback);
+
+  // Simulates starting an image capture for search (hiding widgets and setting
+  // in-flight search flag).
+  void SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType capture_type);
+
+  // Simulates ending an image capture for search with the given `jpeg_bytes`.
+  void SimulateOnImageCapturedForSearch(
+      PerformCaptureType capture_type,
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes);
+
+  // Simulates ending an image capture for search with the given `token` and
+  // `jpeg_bytes`.
+  void SimulateOnImageCapturedForSearch(
+      PerformCaptureType capture_type,
+      base::WeakPtr<BaseCaptureModeSession> token,
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
   // Stops the video recording. Can only be called if a video recording was
   // in progress.

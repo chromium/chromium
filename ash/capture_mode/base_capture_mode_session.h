@@ -165,9 +165,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   virtual void OnPerformCaptureForSearchStarting(
       PerformCaptureType capture_type) = 0;
   // Called just after finishing performing capture for search.
-  // This will reshow capture UI widgets if needed.
-  virtual void OnPerformCaptureForSearchEnded(
-      PerformCaptureType capture_type) = 0;
+  // This will reshow capture UI widgets if needed. If `capture_succeeded` is
+  // false, the glow animation will not be started.
+  virtual void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type,
+                                              bool capture_succeeded) = 0;
 
   // Gets a weak pointer to a "token" which is automatically reset when any
   // parameters relating to the capture (type, source, bounds - excluding

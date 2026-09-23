@@ -57,6 +57,10 @@ RecordingTypeMenuView* CaptureModeSessionTestApi::GetRecordingTypeMenuView() {
   return static_cast<RecordingTypeMenuView*>(widget->GetContentsView());
 }
 
+views::Widget* CaptureModeSessionTestApi::GetCaptureModeBarWidget() {
+  return session_->GetCaptureModeBarWidget();
+}
+
 views::Widget* CaptureModeSessionTestApi::GetCaptureModeSettingsWidget() {
   return session_->capture_mode_settings_widget_.get();
 }
@@ -134,6 +138,10 @@ bool CaptureModeSessionTestApi::IsFolderSelectionDialogShown() {
 
 bool CaptureModeSessionTestApi::AreAllUisVisible() {
   return session_->is_all_uis_visible_;
+}
+
+bool CaptureModeSessionTestApi::IsCapturingForSearch() const {
+  return session_->is_capturing_for_search_;
 }
 
 gfx::Rect CaptureModeSessionTestApi::GetSelectedWindowTargetBounds() {

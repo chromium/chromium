@@ -46,6 +46,8 @@ class CaptureModeSessionTestApi {
 
   RecordingTypeMenuView* GetRecordingTypeMenuView();
 
+  views::Widget* GetCaptureModeBarWidget();
+
   views::Widget* GetCaptureModeSettingsWidget();
 
   views::Widget* GetCaptureLabelWidget();
@@ -85,6 +87,9 @@ class CaptureModeSessionTestApi {
   // Returns true if all UIs (cursors, widgets, and paintings on the layer) of
   // the capture mode session are visible.
   bool AreAllUisVisible();
+
+  // Returns true if an image capture for search is currently in flight.
+  bool IsCapturingForSearch() const;
 
   gfx::Rect GetSelectedWindowTargetBounds();
 

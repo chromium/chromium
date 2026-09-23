@@ -182,7 +182,8 @@ class ASH_EXPORT CaptureModeSession
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
   void OnPerformCaptureForSearchStarting(
       PerformCaptureType capture_type) override;
-  void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
+  void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type,
+                                      bool capture_succeeded) override;
   base::WeakPtr<BaseCaptureModeSession> GetImageSearchToken() override;
   ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
                                     std::u16string text,

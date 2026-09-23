@@ -137,6 +137,32 @@ void CaptureModeTestApi::SetOnImageCapturedForSearchCallback(
       std::move(callback);
 }
 
+void CaptureModeTestApi::SimulateOnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {
+  DCHECK(controller_->IsActive());
+  controller_->capture_mode_session_->OnPerformCaptureForSearchStarting(
+      capture_type);
+}
+
+void CaptureModeTestApi::SimulateOnImageCapturedForSearch(
+    PerformCaptureType capture_type,
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
+  DCHECK(controller_->IsActive());
+  controller_->OnImageCapturedForSearch(
+      capture_type, /*was_cursor_originally_blocked=*/false,
+      controller_->capture_mode_session_->GetImageSearchToken(),
+      std::move(jpeg_bytes));
+}
+
+void CaptureModeTestApi::SimulateOnImageCapturedForSearch(
+    PerformCaptureType capture_type,
+    base::WeakPtr<BaseCaptureModeSession> token,
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
+  controller_->OnImageCapturedForSearch(
+      capture_type, /*was_cursor_originally_blocked=*/false, token,
+      std::move(jpeg_bytes));
+}
+
 void CaptureModeTestApi::SetAudioRecordingMode(AudioRecordingMode mode) {
   DCHECK(!controller_->is_recording_in_progress());
   controller_->audio_recording_mode_ = mode;

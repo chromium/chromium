@@ -2610,6 +2610,223 @@ TEST_F(SunfishTest, PressingSearchButtonExitsIfLensError) {
   ASSERT_FALSE(controller->IsActive());
 }
 
+// Tests that a null JPEG buffer returned to OnImageCapturedForSearch does not
+// crash, resets is_capturing_for_search_, and restores UI without glowing.
+TEST_F(SunfishTest, OnImageCapturedForSearchNullBufferDoesNotCrash) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  CaptureModeTestApi test_api;
+
+  // Simulate starting search capture.
+  test_api.SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType::kSunfish);
+  EXPECT_TRUE(session_test_api.IsCapturingForSearch());
+  EXPECT_FALSE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  // Return a null JPEG buffer. This must not crash.
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            /*jpeg_bytes=*/nullptr);
+
+  // Verify that the session is still active, capture flag is reset, and
+  // selection UI is visible.
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(session_test_api.IsCapturingForSearch());
+  EXPECT_TRUE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+  if (session_test_api.GetCaptureRegionOverlayController()) {
+    EXPECT_FALSE(session_test_api.GetCaptureRegionOverlayController()
+                     ->HasGlowAnimation());
+  }
+}
+
+// Tests that an empty (zero-length) JPEG buffer returned to
+// OnImageCapturedForSearch does not crash, resets
+// is_capturing_for_search_, and restores UI without glowing.
+TEST_F(SunfishTest, OnImageCapturedForSearchEmptyBufferDoesNotCrash) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  CaptureModeTestApi test_api;
+
+  // Simulate starting search capture.
+  test_api.SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType::kSunfish);
+  EXPECT_TRUE(session_test_api.IsCapturingForSearch());
+  EXPECT_FALSE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  // Return an empty JPEG buffer. This must not crash.
+  auto empty_bytes = base::MakeRefCounted<base::RefCountedBytes>();
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            empty_bytes);
+
+  // Verify that the session is still active, capture flag is reset, and
+  // selection UI is visible.
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(session_test_api.IsCapturingForSearch());
+  EXPECT_TRUE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+  if (session_test_api.GetCaptureRegionOverlayController()) {
+    EXPECT_FALSE(session_test_api.GetCaptureRegionOverlayController()
+                     ->HasGlowAnimation());
+  }
+}
+
+// Tests that corrupted non-decodable JPEG bytes returned to
+// OnImageCapturedForSearch do not crash, reset is_capturing_for_search_,
+// and restore UI without glowing.
+TEST_F(SunfishTest, OnImageCapturedForSearchCorruptedJPEGDoesNotCrash) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  CaptureModeTestApi test_api;
+
+  // Simulate starting search capture.
+  test_api.SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType::kSunfish);
+  EXPECT_TRUE(session_test_api.IsCapturingForSearch());
+  EXPECT_FALSE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  // Return corrupted non-JPEG bytes. Decode will yield an empty bitmap.
+  const std::vector<uint8_t> corrupted_data = {0x12, 0x34, 0x56, 0x78, 0x9a};
+  auto corrupted_bytes =
+      base::MakeRefCounted<base::RefCountedBytes>(corrupted_data);
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            corrupted_bytes);
+
+  // Verify that the session is still active, capture flag is reset, and
+  // selection UI is visible.
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(session_test_api.IsCapturingForSearch());
+  EXPECT_TRUE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+  if (session_test_api.GetCaptureRegionOverlayController()) {
+    EXPECT_FALSE(session_test_api.GetCaptureRegionOverlayController()
+                     ->HasGlowAnimation());
+  }
+}
+
+// Tests that adjusting the selected region while search capture is in
+// flight cancels and unwinds the in-flight capture state, resetting
+// is_capturing_for_search_ and repainting region boundaries.
+TEST_F(SunfishTest, InFlightRegionAdjustmentInvalidatesSearchAndRestoresUI) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 300, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  CaptureModeTestApi test_api;
+
+  // Simulate starting search capture.
+  test_api.SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType::kSunfish);
+  EXPECT_TRUE(session_test_api.IsCapturingForSearch());
+  EXPECT_FALSE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  // Capture the in-flight token before adjusting region.
+  base::WeakPtr<BaseCaptureModeSession> in_flight_token =
+      session->GetImageSearchToken();
+  EXPECT_TRUE(in_flight_token);
+
+  // Adjust the region from the northwest corner while capture is in flight.
+  // This must unwind the in-flight search state and invalidate the token.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 100));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(50, 50));
+  ASSERT_TRUE(session->is_drag_in_progress());
+  EXPECT_FALSE(session_test_api.IsCapturingForSearch());
+  EXPECT_FALSE(in_flight_token);
+  EXPECT_TRUE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  // When delayed capture results arrive for the invalidated token,
+  // OnImageCapturedForSearch must safely drop the stale result.
+  const std::vector<uint8_t> dummy_data = {0xff, 0xd8, 0xff, 0xd9};
+  auto dummy_bytes = base::MakeRefCounted<base::RefCountedBytes>(dummy_data);
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            in_flight_token, dummy_bytes);
+
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(session_test_api.IsCapturingForSearch());
+  EXPECT_TRUE(session_test_api.GetCaptureModeBarWidget()->IsVisible());
+
+  event_generator->ReleaseLeftButton();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+}
+
+// Tests that when the session is destroyed while search capture is in flight,
+// the delayed OnImageCapturedForSearch callback exits gracefully without
+// accessing destroyed session state or crashing.
+TEST_F(SunfishTest, OnImageCapturedForSearchAfterSessionDestroyed) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeTestApi test_api;
+
+  // Simulate starting search capture and obtain the in-flight token.
+  test_api.SimulateOnPerformCaptureForSearchStarting(
+      PerformCaptureType::kSunfish);
+  base::WeakPtr<BaseCaptureModeSession> in_flight_token =
+      session->GetImageSearchToken();
+  EXPECT_TRUE(in_flight_token);
+
+  // Stop the session while capture is in flight.
+  controller->Stop();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(in_flight_token);
+
+  // Deliver capture results (both null and non-null) for the destroyed
+  // session. Neither invocation must crash.
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            in_flight_token,
+                                            /*jpeg_bytes=*/nullptr);
+  EXPECT_FALSE(controller->IsActive());
+
+  const std::vector<uint8_t> dummy_data = {0xff, 0xd8, 0xff, 0xd9};
+  auto dummy_bytes = base::MakeRefCounted<base::RefCountedBytes>(dummy_data);
+  test_api.SimulateOnImageCapturedForSearch(PerformCaptureType::kSunfish,
+                                            in_flight_token, dummy_bytes);
+  EXPECT_FALSE(controller->IsActive());
+}
+
 TEST_F(SunfishTest, PinnedWindowExitSession) {
   auto* controller = CaptureModeController::Get();
 
