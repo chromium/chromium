@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace metrics {
@@ -65,13 +66,13 @@ class SubprocessMetricsProvider
   // Indicates subprocess to be monitored with unique id for later reference.
   // Metrics reporting will read histograms from it and upload them to UMA.
   void RegisterSubprocessAllocator(
-      int id,
+      content::ChildProcessId id,
       std::unique_ptr<base::PersistentHistogramAllocator> allocator,
       bool is_webium_renderer = false);
 
   // Indicates that a subprocess has exited and is thus finished with the
   // allocator it was using.
-  void DeregisterSubprocessAllocator(int id);
+  void DeregisterSubprocessAllocator(content::ChildProcessId id);
 
  private:
   friend class SubprocessMetricsProviderTest;
@@ -142,7 +143,7 @@ class SubprocessMetricsProvider
   // is called periodically during UMA metrics collection (if enabled) and
   // possibly on-demand for other purposes. May be called on a background
   // thread.
-  static void MergeHistogramDeltasFromAllocator(int id,
+  static void MergeHistogramDeltasFromAllocator(content::ChildProcessId id,
                                                 RefCountedAllocator* allocator);
 
   // Returns the overridden histogram name for merging if the mapping is
@@ -156,7 +157,8 @@ class SubprocessMetricsProvider
   // Does not have any form of ownership on the allocators. May be called on a
   // background thread.
   using AllocatorByIdMap =
-      absl::flat_hash_map<int, scoped_refptr<RefCountedAllocator>>;
+      absl::flat_hash_map<content::ChildProcessId,
+                          scoped_refptr<RefCountedAllocator>>;
   static void MergeHistogramDeltasFromAllocators(AllocatorByIdMap* allocators);
 
   // Callback for when MergeHistogramDeltasFromAllocator() is called in a

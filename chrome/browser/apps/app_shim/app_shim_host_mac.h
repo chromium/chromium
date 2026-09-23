@@ -19,6 +19,7 @@
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/metrics/histogram_child_process.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -204,7 +205,7 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Not a system-level PID, rather an ID assigned by content::ChildProcessHost
   // used to identify this process when registering with
   // metrics::SubprocessMetricsProvider.
-  const int child_process_host_id_;
+  const content::ChildProcessId child_process_id_;
 
   // This holds the histogram allocator to be used for this app shim before it
   // gets passed to the remote host when it finished launching.

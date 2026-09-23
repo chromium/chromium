@@ -158,13 +158,13 @@ class SubprocessMetricsProviderTest : public testing::Test {
   }
 
   void RegisterSubprocessAllocator(
-      int id,
+      content::ChildProcessId id,
       std::unique_ptr<base::PersistentHistogramAllocator> allocator) {
     SubprocessMetricsProvider::GetInstance()->RegisterSubprocessAllocator(
         id, std::move(allocator));
   }
 
-  void DeregisterSubprocessAllocator(int id) {
+  void DeregisterSubprocessAllocator(content::ChildProcessId id) {
     SubprocessMetricsProvider::GetInstance()->DeregisterSubprocessAllocator(id);
   }
 
@@ -204,7 +204,8 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   bool duplicate_allocator_destroyed = false;
   duplicate_allocator->SetDestroyedCallback(base::BindLambdaForTesting(
       [&] { duplicate_allocator_destroyed = true; }));
-  RegisterSubprocessAllocator(123, std::move(duplicate_allocator));
+  RegisterSubprocessAllocator(content::ChildProcessId(123),
+                              std::move(duplicate_allocator));
 
   // Recording should find the two histograms created in persistent memory.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -234,7 +235,7 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   // Ensure that deregistering does a final merge of the data.
   foo->Add(10);
   bar->Add(20);
-  DeregisterSubprocessAllocator(123);
+  DeregisterSubprocessAllocator(content::ChildProcessId(123));
   // Do not call MergeHistogramDeltas() here, because the call to
   // DeregisterSubprocessAllocator() should have already scheduled a task to
   // merge the histograms.
@@ -269,7 +270,8 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   // Register a new allocator that duplicates the global one.
   base::GlobalHistogramAllocator* global_allocator(
       base::GlobalHistogramAllocator::ReleaseForTesting());
-  RegisterSubprocessAllocator(123, CreateDuplicateAllocator(global_allocator));
+  RegisterSubprocessAllocator(content::ChildProcessId(123),
+                              CreateDuplicateAllocator(global_allocator));
 
   // Recording should find the two histograms created in persistent memory.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
@@ -308,7 +310,7 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   // Ensure that deregistering does a final merge of the data.
   foo->Add(10);
   bar->Add(20);
-  DeregisterSubprocessAllocator(123);
+  DeregisterSubprocessAllocator(content::ChildProcessId(123));
   // Do not call MergeHistogramDeltas() here, because the call to
   // DeregisterSubprocessAllocator() should have already scheduled a task to
   // merge the histograms.
@@ -354,13 +356,14 @@ TEST_F(SubprocessMetricsProviderTest, AllocatorRefCounted) {
   bool duplicate_allocator_destroyed = false;
   duplicate_allocator->SetDestroyedCallback(base::BindLambdaForTesting(
       [&] { duplicate_allocator_destroyed = true; }));
-  RegisterSubprocessAllocator(123, std::move(duplicate_allocator));
+  RegisterSubprocessAllocator(content::ChildProcessId(123),
+                              std::move(duplicate_allocator));
 
   // Merge histogram deltas. This will be done asynchronously.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
       /*async=*/true, /*done_callback=*/base::DoNothing());
   // Deregister the allocator. This will be done asynchronously.
-  DeregisterSubprocessAllocator(123);
+  DeregisterSubprocessAllocator(content::ChildProcessId(123));
 
   // The call to DeregisterSubprocessAllocator() above will have removed the
   // allocator from the internal map. However, the allocator should not have

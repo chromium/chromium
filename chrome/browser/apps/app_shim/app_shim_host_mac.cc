@@ -38,7 +38,7 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
       app_id_(app_id),
       profile_path_(profile_path),
       uses_remote_views_(uses_remote_views),
-      child_process_host_id_(
+      child_process_id_(
           content::ChildProcessHost::GenerateChildProcessUniqueId()),
       launch_weak_factory_(this) {
   // Create the interfaces used to host windows, so that browser windows may be
@@ -58,7 +58,7 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
   }
 
   auto shared_memory = base::HistogramSharedMemory::Create(
-      child_process_host_id_,
+      child_process_id_.value(),
       {content::PROCESS_TYPE_UTILITY, "AppShimMetrics", 512 << 10});
   if (shared_memory) {
     histogram_allocator_ = std::move(shared_memory->allocator);
@@ -89,7 +89,7 @@ void AppShimHost::ChannelError(uint32_t custom_reason,
              << " description: " << description;
 
   if (auto* provider = metrics::SubprocessMetricsProvider::GetInstance()) {
-    provider->DeregisterSubprocessAllocator(child_process_host_id_);
+    provider->DeregisterSubprocessAllocator(child_process_id_);
   } else {
     // SubprocessMetricsProvider can be null in tests.
     CHECK_IS_TEST();
@@ -144,7 +144,7 @@ void AppShimHost::OnShimProcessTerminated(
   DCHECK(!bootstrap_);
 
   if (auto* provider = metrics::SubprocessMetricsProvider::GetInstance()) {
-    provider->DeregisterSubprocessAllocator(child_process_host_id_);
+    provider->DeregisterSubprocessAllocator(child_process_id_);
   } else {
     // SubprocessMetricsProvider can be null in tests.
     CHECK_IS_TEST();
@@ -219,9 +219,8 @@ void AppShimHost::OnBootstrapConnected(
     CHECK_IS_TEST();
   } else if (histogram_allocator_) {
     provider->RegisterSubprocessAllocator(
-        child_process_host_id_,
-        std::make_unique<base::PersistentHistogramAllocator>(
-            std::move(histogram_allocator_)));
+        child_process_id_, std::make_unique<base::PersistentHistogramAllocator>(
+                               std::move(histogram_allocator_)));
   }
 
   if (on_shim_connected_for_testing_) {
@@ -351,5 +350,6 @@ void AppShimHost::MaybeRecordLaunchResult(LaunchResult result) {
 }
 
 uint64_t AppShimHost::GetProcessIdForHistogram() const {
-  return child_process_host_id_;
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  return child_process_id_.GetUnsafeValue();
 }

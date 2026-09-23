@@ -94,7 +94,7 @@ SubprocessMetricsProvider::~SubprocessMetricsProvider() {
 }
 
 void SubprocessMetricsProvider::RegisterSubprocessAllocator(
-    int id,
+    content::ChildProcessId id,
     std::unique_ptr<base::PersistentHistogramAllocator> allocator,
     bool is_webium_renderer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -116,7 +116,8 @@ void SubprocessMetricsProvider::RegisterSubprocessAllocator(
   CHECK(result.second);
 }
 
-void SubprocessMetricsProvider::DeregisterSubprocessAllocator(int id) {
+void SubprocessMetricsProvider::DeregisterSubprocessAllocator(
+    content::ChildProcessId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = allocators_by_id_.find(id);
   if (it == allocators_by_id_.end()) {
@@ -182,7 +183,7 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   // See if the new process has a memory allocator and take control of it if so.
   // This call can only be made on the browser's IO thread.
   content::BrowserChildProcessHost* host =
-      content::BrowserChildProcessHost::FromID(data.id);
+      content::BrowserChildProcessHost::FromID(data.GetChildProcessId());
   // |host| should not be null, but such cases have been observed in the wild so
   // gracefully handle this scenario.
   if (!host) {
@@ -197,28 +198,29 @@ void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   }
 
   RegisterSubprocessAllocator(
-      data.id, std::make_unique<base::PersistentHistogramAllocator>(
-                   std::move(allocator)));
+      data.GetChildProcessId(),
+      std::make_unique<base::PersistentHistogramAllocator>(
+          std::move(allocator)));
 }
 
 void SubprocessMetricsProvider::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DeregisterSubprocessAllocator(data.id);
+  DeregisterSubprocessAllocator(data.GetChildProcessId());
 }
 
 void SubprocessMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DeregisterSubprocessAllocator(data.id);
+  DeregisterSubprocessAllocator(data.GetChildProcessId());
 }
 
 void SubprocessMetricsProvider::BrowserChildProcessKilled(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DeregisterSubprocessAllocator(data.id);
+  DeregisterSubprocessAllocator(data.GetChildProcessId());
 }
 
 void SubprocessMetricsProvider::OnRenderProcessHostCreated(
@@ -240,7 +242,7 @@ void SubprocessMetricsProvider::RenderProcessReady(
       host->TakeMetricsAllocator();
   if (allocator) {
     RegisterSubprocessAllocator(
-        host->GetDeprecatedID(),
+        host->GetID(),
         std::make_unique<base::PersistentHistogramAllocator>(
             std::move(allocator)),
         host->IsForTopChromeWebUI());
@@ -252,7 +254,7 @@ void SubprocessMetricsProvider::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  DeregisterSubprocessAllocator(host->GetDeprecatedID());
+  DeregisterSubprocessAllocator(host->GetID());
 }
 
 void SubprocessMetricsProvider::RenderProcessHostDestroyed(
@@ -263,7 +265,7 @@ void SubprocessMetricsProvider::RenderProcessHostDestroyed(
   // (above) being called so it's necessary to de-register also upon the
   // destruction of the host. If both get called, no harm is done.
 
-  DeregisterSubprocessAllocator(host->GetDeprecatedID());
+  DeregisterSubprocessAllocator(host->GetID());
   scoped_observations_.RemoveObservation(host);
 }
 
@@ -287,7 +289,7 @@ std::string_view SubprocessMetricsProvider::GetHistogramNameForMerging(
 
 // static
 void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
-    int id,
+    content::ChildProcessId id,
     RefCountedAllocator* allocator) {
   DCHECK(allocator);
 
