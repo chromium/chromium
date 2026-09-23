@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/searchbox/searchbox_compose_button.js';
 import 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 
+import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail} from 'chrome://resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
@@ -3478,5 +3479,57 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     const args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals('@history ', args.input);
     assertEquals('', args.keyword);
+  });
+
+  test('navigateToMatch exits keyword mode', async () => {
+    element.keywordModeManager.enter(
+        'google.com', 'Google', KeywordModeEntryMethod.TAB);
+    assertTrue(element.keywordModeManager.isInKeywordMode);
+
+    element.activeQueryId = 0;
+    await element.onAutocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: 0,
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'google.com query',
+            }),
+          ],
+        }));
+
+    element.navigateToMatch(
+        0, new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
+    assertFalse(element.keywordModeManager.isInKeywordMode);
+  });
+
+  test('openCtrlEnterMatch exits keyword mode', async () => {
+    element.keywordModeManager.enter(
+        'google.com', 'Google', KeywordModeEntryMethod.TAB);
+    assertTrue(element.keywordModeManager.isInKeywordMode);
+
+    element.activeQueryId = 0;
+    await element.onAutocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: 0,
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'google.com query',
+            }),
+          ],
+        }));
+
+    element.openCtrlEnterMatch(0);
+    assertFalse(element.keywordModeManager.isInKeywordMode);
+  });
+
+  test('onMatchClick exits keyword mode', () => {
+    element.keywordModeManager.enter(
+        'google.com', 'Google', KeywordModeEntryMethod.TAB);
+    assertTrue(element.keywordModeManager.isInKeywordMode);
+
+    element.onMatchClick();
+    assertFalse(element.keywordModeManager.isInKeywordMode);
   });
 });
