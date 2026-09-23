@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
-#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -58,6 +57,8 @@
 #include "content/public/common/resource_request_body_android.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/android/window_android.h"
+#include "ui/base/base_window.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/range/range.h"
@@ -96,12 +97,20 @@ std::vector<TabAndroid*> GetAllTabsFromHandles(const Container& handles) {
   return tabs;
 }
 
-AndroidBrowserWindow* GetAndroidBrowserWindow(SessionID session_id) {
+// Returns the WindowAndroid* for the given session ID and the expected
+// off-the-record status.
+ui::WindowAndroid* GetWindowAndroid(SessionID session_id,
+                                    bool is_off_the_record) {
   for (BrowserWindowInterface* window : GetAllBrowserWindowInterfaces()) {
-    if (window->GetSessionID() == session_id) {
-      return static_cast<AndroidBrowserWindow*>(window);
+    if (window->GetSessionID() != session_id) {
+      continue;
     }
+
+    CHECK_EQ(window->GetProfile()->IsOffTheRecord(), is_off_the_record);
+    ui::BaseWindow* base_window = window->GetWindow();
+    return base_window ? base_window->GetNativeWindow() : nullptr;
   }
+
   return nullptr;
 }
 
@@ -170,10 +179,10 @@ TabAndroid* TabModelJniBridge::DuplicateTab(JNIEnv* env, TabAndroid* tab) {
 void TabModelJniBridge::MoveTabToWindowForTesting(
     JNIEnv* env,
     TabAndroid* tab,
-    long android_browser_window_ptr,
+    long native_browser_window_ptr,
     int new_index) {
   SessionID destination_window_id =
-      reinterpret_cast<AndroidBrowserWindow*>(android_browser_window_ptr)
+      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
           ->GetSessionID();
   MoveTabToWindow(tab->GetHandle(), destination_window_id, new_index);
 }
@@ -181,10 +190,10 @@ void TabModelJniBridge::MoveTabToWindowForTesting(
 bool TabModelJniBridge::MoveTabGroupToWindowForTesting(
     JNIEnv* env,
     const base::Token& group_id,
-    long android_browser_window_ptr,
+    long native_browser_window_ptr,
     int new_index) {
   SessionID destination_window_id =
-      reinterpret_cast<AndroidBrowserWindow*>(android_browser_window_ptr)
+      reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
           ->GetSessionID();
   return MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
                               destination_window_id, new_index);
@@ -925,34 +934,31 @@ void TabModelJniBridge::MoveTabToWindow(tabs::TabHandle tab,
     return;
   }
 
-  ScopedJavaLocalRef<jobject> jactivity =
-      GetActivityForWindow(destination_window_id);
+  ui::WindowAndroid* window_android =
+      GetWindowAndroid(destination_window_id, IsOffTheRecord());
+  if (!window_android) {
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_moveTabToWindowInternal(env, jobj, tab_android,
-                                                 jactivity, destination_index);
+  Java_TabModelJniBridge_moveTabToWindowInternal(
+      env, jobj, tab_android, window_android, destination_index);
 }
 
 bool TabModelJniBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                              SessionID destination_window_id,
                                              int destination_index) {
-  ScopedJavaLocalRef<jobject> jactivity =
-      GetActivityForWindow(destination_window_id);
+  ui::WindowAndroid* window_android =
+      GetWindowAndroid(destination_window_id, IsOffTheRecord());
+  if (!window_android) {
+    return false;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   return Java_TabModelJniBridge_moveTabGroupToWindowInternal(
-      env, jobj, group_id.token(), jactivity, destination_index);
-}
-
-ScopedJavaLocalRef<jobject> TabModelJniBridge::GetActivityForWindow(
-    SessionID window_id) {
-  AndroidBrowserWindow* window = GetAndroidBrowserWindow(window_id);
-  if (!window) {
-    return ScopedJavaLocalRef<jobject>();
-  }
-  CHECK_EQ(window->GetProfile()->IsOffTheRecord(),
-           GetProfile()->IsOffTheRecord());
-  return window->GetActivity();
+      env, jobj, group_id.token(), window_android, destination_index);
 }
 
 // static

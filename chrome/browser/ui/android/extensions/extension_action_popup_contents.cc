@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_widget_host_view.h"

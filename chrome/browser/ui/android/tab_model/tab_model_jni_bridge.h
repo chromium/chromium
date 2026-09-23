@@ -56,11 +56,11 @@ class TabModelJniBridge : public TabModel {
   TabAndroid* DuplicateTab(JNIEnv* env, TabAndroid* tab);
   void MoveTabToWindowForTesting(JNIEnv* env,
                                  TabAndroid* tab,
-                                 long android_browser_window_ptr,
+                                 long native_browser_window_ptr,
                                  int new_index);
   bool MoveTabGroupToWindowForTesting(JNIEnv* env,
                                       const base::Token& group_id,
-                                      long android_browser_window_ptr,
+                                      long native_browser_window_ptr,
                                       int new_index);
   void SetMuteSetting(JNIEnv* env, std::vector<TabAndroid*> tabs, bool mute);
   int32_t GetSessionIdForTesting(JNIEnv* env);
@@ -187,9 +187,6 @@ class TabModelJniBridge : public TabModel {
   static TabModel* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
 
  protected:
-  jni_zero::ScopedJavaLocalRef<jobject> GetActivityForWindow(
-      SessionID window_id);
-
   JavaObjectWeakGlobalRef java_object_;
 
   // The observer bridge. This exists as long as there are registered observers.

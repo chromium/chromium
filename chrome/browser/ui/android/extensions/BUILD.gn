@@ -59,7 +59,6 @@ if (enable_extensions_core) {
       "//chrome/browser/ui/android/extensions:jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window/internal",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extensions_menu_handler",

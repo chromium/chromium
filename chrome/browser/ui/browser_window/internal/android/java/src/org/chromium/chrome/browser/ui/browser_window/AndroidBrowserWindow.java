@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import android.app.Activity;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -127,11 +125,6 @@ final class AndroidBrowserWindow {
 
     @Nullable ActivityWindowAndroid getActivityWindowAndroid() {
         return mActivityWindowAndroid;
-    }
-
-    @CalledByNative
-    @Nullable Activity getActivity() {
-        return mActivityWindowAndroid == null ? null : mActivityWindowAndroid.getActivity().get();
     }
 
     @CalledByNative
