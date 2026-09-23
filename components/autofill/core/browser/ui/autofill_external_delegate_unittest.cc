@@ -2333,8 +2333,49 @@ TEST_F(AutofillExternalDelegateTest,
   const std::u16string promo_code_value = u"PROMOCODE1234";
   suggestions.emplace_back(/*main_text=*/promo_code_value,
                            SuggestionType::kMerchantPromoCodeEntry);
+  suggestions[0].payload = Suggestion::PromoCode("PROMOCODE1234");
   suggestions[0].main_text.value = promo_code_value;
   suggestions[0].labels = {{Suggestion::Text(u"12.34% off your purchase!")}};
+  OnSuggestionsReturned(queried_field(), suggestions);
+
+  EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         promo_code_value, FillingProduct::kMerchantPromoCode,
+                         std::optional(MERCHANT_PROMO_CODE)));
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(std::nullopt)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         promo_code_value, FillingProduct::kMerchantPromoCode,
+                         std::optional(MERCHANT_PROMO_CODE)));
+
+  external_delegate().DidAcceptSuggestion(
+      suggestions[0], SuggestionPosition{.multi_index = {0}});
+}
+
+// Test that the Autofill delegate uses the promo code from the offer payload
+// when previewing and filling a `SuggestionType::kMerchantPromoCodeEntry`
+// suggestion.
+TEST_F(AutofillExternalDelegateTest,
+       ExternalDelegateFillsMerchantPromoCodeOffer_UsesPromoCodeFromPayload) {
+  IssueOnQuery();
+
+  std::vector<Suggestion> suggestions;
+  const std::u16string promo_code_value = u"5PCTOFFSHOES";
+  const std::u16string value_prop_text = u"50% off";
+  suggestions.emplace_back(value_prop_text,
+                           SuggestionType::kMerchantPromoCodeEntry);
+  suggestions[0].payload = Suggestion::PromoCode("5PCTOFFSHOES");
+  suggestions[0].labels = {{Suggestion::Text(promo_code_value)}};
   OnSuggestionsReturned(queried_field(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
@@ -4709,6 +4750,7 @@ TEST_F(AutofillExternalDelegateTest,
 
   std::u16string dummy_promo_code_string(u"merchant promo");
   Suggestion suggestion(SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.payload = Suggestion::PromoCode("merchant promo");
   suggestion.main_text.value = dummy_promo_code_string;
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -4722,7 +4764,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kMerchantPromoCodeEntry,
-                               dummy_promo_code_string),
+                               dummy_promo_code_string,
+                               Suggestion::PromoCode("merchant promo")),
       SuggestionPosition{.multi_index = {0}});
 }
 

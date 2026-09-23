@@ -294,6 +294,7 @@ struct Suggestion {
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   // TODO(crbug.com/477689220): Directly use BnplIssuer and remove the alias.
   using BnplIssuer = base::StrongAlias<class BnplIssuerTag, BnplIssuer>;
+  using PromoCode = base::StrongAlias<class PromoCodeTag, std::string>;
   using Payload = std::variant<Guid,
                                InstrumentId,
                                AutofillProfilePayload,
@@ -306,7 +307,8 @@ struct Suggestion {
                                BnplIssuer,
                                AtMemoryPayload,
                                OpenGeminiPayload,
-                               AutocompleteSearchResultLabelSensitive>;
+                               AutocompleteSearchResultLabelSensitive,
+                               PromoCode>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -573,6 +575,8 @@ struct Suggestion {
         return std::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
         return std::holds_alternative<GURL>(payload);
+      case SuggestionType::kMerchantPromoCodeEntry:
+        return std::holds_alternative<PromoCode>(payload);
       case SuggestionType::kIbanEntry:
         return std::holds_alternative<Guid>(payload) ||
                std::holds_alternative<InstrumentId>(payload);

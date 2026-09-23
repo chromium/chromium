@@ -12,7 +12,6 @@
 #include "base/functional/function_ref.h"
 #include "base/i18n/time_formatting.h"
 #include "base/not_fatal_until.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -64,7 +63,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
 
     suggestion.labels = std::move(labels);
     suggestion.payload =
-        Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
+        Suggestion::PromoCode(promo_code_offer->GetPromoCode());
   }
 
   suggestions.emplace_back(SuggestionType::kSeparator);

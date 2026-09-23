@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "build/branding_buildflags.h"
@@ -782,7 +783,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
           mojom::FieldActionType::kReplaceAll, effective_form_id,
-          effective_field_id, suggestion.main_text.value,
+          effective_field_id,
+          base::UTF8ToUTF16(
+              suggestion.GetPayload<Suggestion::PromoCode>().value()),
           FillingProduct::kMerchantPromoCode, MERCHANT_PROMO_CODE);
       break;
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -1729,7 +1732,9 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       // directly.
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-          form_id, field_id, suggestion.main_text.value,
+          form_id, field_id,
+          base::UTF8ToUTF16(
+              suggestion.GetPayload<Suggestion::PromoCode>().value()),
           FillingProduct::kMerchantPromoCode, MERCHANT_PROMO_CODE);
       manager_->OnSingleFieldSuggestionSelected(suggestion, form_id, field_id);
       break;

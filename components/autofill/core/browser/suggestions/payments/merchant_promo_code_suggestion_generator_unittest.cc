@@ -195,8 +195,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value,
             u"test_value_prop_text_1");
-  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("1"));
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::PromoCode>(),
+            Suggestion::PromoCode("test_promo_code_1"));
 
   std::u16string expected_expiration_date = base::TimeFormatShortDate(expiry);
   EXPECT_THAT(promo_code_suggestions[0],
@@ -215,8 +215,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value,
             u"test_value_prop_text_2");
-  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("2"));
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::PromoCode>(),
+            Suggestion::PromoCode("test_promo_code_2"));
   EXPECT_THAT(promo_code_suggestions[1],
               Field(&Suggestion::labels,
                     std::vector<std::vector<Suggestion::Text>>{
