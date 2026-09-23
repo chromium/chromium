@@ -23,6 +23,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/block_universal_links_buildflags.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_web_view_navigation_observer.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
@@ -151,6 +152,7 @@ const char kTestDataURL[] = "data:text/html,";
 
 const char kTestURLString[] = "http://www.google.com/";
 const char kTestAppSpecificURL[] = "testwebui://test/";
+const char kTestAttackerURL[] = "https://attacker.example/";
 
 const char kTestMimeType[] = "application/vnd.test";
 
@@ -1713,6 +1715,240 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return callback_called;
   }));
+}
+
+// Tests that when a provisional navigation fails with an NSError reporting a
+// forged failing URL that does not match the navigation context URL, the
+// error's failing URL is rewritten to the navigation context URL, and
+// navigation to an error page embedding the forged URL is cancelled.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       RejectNavigationToForgedErrorPageURLAfterFailingNavigation) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@(kTestAttackerURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+
+  NSURL* forged_failing_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : forged_failing_url,
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorCannotConnectToHost
+                                   userInfo:user_info];
+
+  [navigation_delegate_ webView:mock_web_view_
+      didFailProvisionalNavigation:navigation
+                         withError:error];
+
+  NSURL* allowed_error_url =
+      [web_controller() navigationHandler].allowedErrorPageFileURL;
+  ASSERT_TRUE(allowed_error_url);
+
+  // The allowed error page file URL must embed the legitimate navigation
+  // context URL, not the forged failing URL.
+  GURL allowed_failing_url = [CRWErrorPageHelper
+      failedNavigationURLFromErrorPageFileURL:net::GURLWithNSURL(
+                                                  allowed_error_url)];
+  EXPECT_EQ(GURL(kTestAttackerURL), allowed_failing_url);
+  EXPECT_NE(GURL(kTestAppSpecificURL), allowed_failing_url);
+
+  // A navigation to the forged error page URL embedding the app-specific URL
+  // must be cancelled because the handler did not authorize it.
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
+  ASSERT_TRUE(path);
+  NSURL* forged_error_page_url =
+      [NSURL URLWithString:[NSString stringWithFormat:@"file://%@?url=%@", path,
+                                                      @(kTestAppSpecificURL)]];
+  NSMutableURLRequest* forged_request =
+      [NSMutableURLRequest requestWithURL:forged_error_page_url];
+  forged_request.mainDocumentURL = forged_error_page_url;
+
+  FakeWKFrameInfo* fake_frame = [[FakeWKFrameInfo alloc] init];
+  fake_frame.mainFrame = YES;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = forged_request;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+}
+
+// Tests that when a provisional navigation fails with a forged failing URL,
+// navigation to the legitimate error page with the rewritten failing URL is
+// allowed and clears `allowedErrorPageFileURL`.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       AllowNavigationToRewrittenErrorPageURLAfterFailingNavigation) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@(kTestAttackerURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+
+  NSURL* forged_failing_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : forged_failing_url,
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorCannotConnectToHost
+                                   userInfo:user_info];
+
+  [navigation_delegate_ webView:mock_web_view_
+      didFailProvisionalNavigation:navigation
+                         withError:error];
+
+  NSURL* allowed_error_url =
+      [web_controller() navigationHandler].allowedErrorPageFileURL;
+  ASSERT_TRUE(allowed_error_url);
+
+  // The legitimate error page load with the rewritten context URL is allowed
+  // and clears `allowedErrorPageFileURL`.
+  NSMutableURLRequest* allowed_request =
+      [NSMutableURLRequest requestWithURL:allowed_error_url];
+  allowed_request.mainDocumentURL = allowed_error_url;
+
+  FakeWKFrameInfo* fake_frame = [[FakeWKFrameInfo alloc] init];
+  fake_frame.mainFrame = YES;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = allowed_request;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  EXPECT_FALSE([web_controller() navigationHandler].allowedErrorPageFileURL);
+}
+
+// Tests that when a provisional navigation fails with an NSError reporting the
+// actual URL of the navigation context, the failing URL is preserved.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       MatchingFailingURLInErrorPreservedInAllowedErrorPage) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@(kTestAttackerURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+
+  NSURL* legitimate_failing_url = [NSURL URLWithString:@(kTestAttackerURL)];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : legitimate_failing_url,
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorCannotConnectToHost
+                                   userInfo:user_info];
+
+  [navigation_delegate_ webView:mock_web_view_
+      didFailProvisionalNavigation:navigation
+                         withError:error];
+
+  NSURL* allowed_error_url =
+      [web_controller() navigationHandler].allowedErrorPageFileURL;
+  ASSERT_TRUE(allowed_error_url);
+
+  GURL allowed_failing_url = [CRWErrorPageHelper
+      failedNavigationURLFromErrorPageFileURL:net::GURLWithNSURL(
+                                                  allowed_error_url)];
+  EXPECT_EQ(GURL(kTestAttackerURL), allowed_failing_url);
+}
+
+// Tests that when a provisional navigation fails with NSURLErrorCancelled and a
+// forged app-specific failing URL, the error is sanitized so the load is
+// correctly cancelled instead of ignored.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       CancelledErrorWithForgedAppSpecificURLStillCancelsNavigation) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@(kTestAttackerURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+
+  ASSERT_TRUE([[web_controller() navigationHandler].navigationStates
+      contextForNavigation:navigation]);
+
+  NSURL* forged_failing_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : forged_failing_url,
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorCancelled
+                                   userInfo:user_info];
+
+  [navigation_delegate_ webView:mock_web_view_
+      didFailProvisionalNavigation:navigation
+                         withError:error];
+
+  // The navigation should be cancelled and removed from active navigations.
+  EXPECT_FALSE([[web_controller() navigationHandler].navigationStates
+      contextForNavigation:navigation]);
+}
+
+// Tests that when a provisional navigation is redirected and fails with an
+// NSError containing the pre-redirect URL in NSURLErrorFailingURLErrorKey,
+// the failing URL is rewritten to the navigation context's redirected URL in
+// the allowed error page.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       RedirectFailingURLRewrittenToNavigationContextURL) {
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  const char kInitialURL[] = "https://initial.example/";
+  const char kRedirectURL[] = "https://redirect.example/";
+
+  SetWebViewURL(@(kInitialURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+
+  // Simulate server redirect to kRedirectURL.
+  SetWebViewURL(@(kRedirectURL));
+  [navigation_delegate_ webView:mock_web_view_
+      didReceiveServerRedirectForProvisionalNavigation:navigation];
+
+  // The error still reports the pre-redirect URL.
+  NSURL* initial_failing_url = [NSURL URLWithString:@(kInitialURL)];
+  NSDictionary* user_info = @{
+    NSURLErrorFailingURLErrorKey : initial_failing_url,
+  };
+  NSError* error = [NSError errorWithDomain:NSURLErrorDomain
+                                       code:NSURLErrorCannotConnectToHost
+                                   userInfo:user_info];
+
+  [navigation_delegate_ webView:mock_web_view_
+      didFailProvisionalNavigation:navigation
+                         withError:error];
+
+  NSURL* allowed_error_url =
+      [web_controller() navigationHandler].allowedErrorPageFileURL;
+  ASSERT_TRUE(allowed_error_url);
+
+  // The allowed error page must embed the redirected navigation context URL,
+  // not the pre-redirect URL from the NSError.
+  GURL allowed_failing_url = [CRWErrorPageHelper
+      failedNavigationURLFromErrorPageFileURL:net::GURLWithNSURL(
+                                                  allowed_error_url)];
+  EXPECT_EQ(GURL(kRedirectURL), allowed_failing_url);
 }
 
 // Test fixture for window.open tests.

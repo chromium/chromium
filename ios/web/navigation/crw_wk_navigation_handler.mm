@@ -161,6 +161,44 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                 failure_type);
 }
 
+// Returns a sanitized copy of `error` where `NSURLErrorFailingURLErrorKey` is
+// rewritten to match `navigation_context->GetUrl()` if they differ. Otherwise,
+// returns `error` unchanged.
+//
+// This handles cases where the failing URL in `error` diverges from the
+// navigation context URL:
+// - Redirects: When a provisional navigation fails after a redirect, WebKit
+//   reports the redirect target URL in `NSURLErrorFailingURLErrorKey`.
+//   Rewriting preserves the original requested URL for the error page and
+//   navigation item.
+// - Security: A compromised WebContent process can forge
+//   `NSURLErrorFailingURLErrorKey` with an app-specific URL to gain WebUI
+//   access via `allowedErrorPageFileURL` or manipulate navigation cancellation.
+NSError* SanitizeNavigationError(
+    NSError* error,
+    web::NavigationContextImpl* navigation_context) {
+  if (!error || !navigation_context) {
+    return error;
+  }
+
+  GURL reported_failing_url =
+      net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]);
+  if (reported_failing_url != navigation_context->GetUrl()) {
+    NSMutableDictionary* user_info = [error.userInfo mutableCopy];
+    NSURL* context_url = net::NSURLWithGURL(navigation_context->GetUrl());
+    if (context_url) {
+      user_info[NSURLErrorFailingURLErrorKey] = context_url;
+    } else {
+      [user_info removeObjectForKey:NSURLErrorFailingURLErrorKey];
+    }
+    return [NSError errorWithDomain:error.domain
+                               code:error.code
+                           userInfo:user_info];
+  }
+
+  return error;
+}
+
 }  // namespace
 
 @interface CRWWKNavigationHandler () <DownloadNativeTaskBridgeDelegate> {
@@ -756,9 +794,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                        withError:(NSError*)error {
   [self didReceiveWKNavigationDelegateCallback];
 
-  BOOL wasRedirected = [self.navigationStates stateForNavigation:navigation] ==
-                       web::WKNavigationState::REDIRECTED;
-
   [self.navigationStates setState:web::WKNavigationState::PROVISIONALY_FAILED
                     forNavigation:navigation];
 
@@ -771,16 +806,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
-  if (wasRedirected && navigationContext) {
-    // If there was a redirect, change the URL to have the URL of the first
-    // page.
-    NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
-    userInfo[NSURLErrorFailingURLErrorKey] =
-        net::NSURLWithGURL(navigationContext->GetUrl());
-    error = [NSError errorWithDomain:error.domain
-                                code:error.code
-                            userInfo:userInfo];
-  }
+  // If there was a redirect, or if a compromised WebContent process forged the
+  // failing URL, ensure the error reports the actual navigation target URL.
+  error = SanitizeNavigationError(error, navigationContext);
 
   if (@available(iOS 26, *)) {
     if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
@@ -1125,6 +1153,10 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
             withError:(NSError*)error {
   [self didReceiveWKNavigationDelegateCallback];
 
+  web::NavigationContextImpl* navigationContext =
+      [self.navigationStates contextForNavigation:navigation];
+  error = SanitizeNavigationError(error, navigationContext);
+
   // `webView:didFailNavigation:withError:` may be called after the document has
   // already loaded which should be ignored. This can happen when navigating
   // back to a page which loads from the back forward cache. See
@@ -1154,8 +1186,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       error.code == web::kWebKitErrorPlugInLoadFailed) {
     // In cases where a Plug-in handles the load, mark the navigation as
     // successful even though it is reported as a failed navigation.
-    web::NavigationContextImpl* navigationContext =
-        [self.navigationStates contextForNavigation:navigation];
     [self updateStateForNavigation:navigation
              toFinishedWithContext:navigationContext];
     return;
@@ -2020,6 +2050,21 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           forNavigation:(WKNavigation*)navigation
                 webView:(WKWebView*)webView
         provisionalLoad:(BOOL)provisionalLoad {
+  if (!navigation) {
+    base::RecordAction(base::UserMetricsAction("IOS.NilWKNavigationOnError"));
+    return;
+  }
+
+  web::NavigationContextImpl* navigationContext =
+      [self.navigationStates contextForNavigation:navigation];
+  if (!navigationContext) {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.NilNavigationContextOnError"));
+    return;
+  }
+
+  error = SanitizeNavigationError(error, navigationContext);
+
   NSError* policyDecisionCancellationError =
       self.pendingNavigationInfo.cancellationError;
   if (!policyDecisionCancellationError && error.code == NSURLErrorCancelled) {
@@ -2035,19 +2080,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (policyDecisionCancellationError) {
     contextError = base::ios::ErrorWithAppendedUnderlyingError(
         contextError, policyDecisionCancellationError);
-  }
-
-  if (!navigation) {
-    base::RecordAction(base::UserMetricsAction("IOS.NilWKNavigationOnError"));
-    return;
-  }
-
-  web::NavigationContextImpl* navigationContext =
-      [self.navigationStates contextForNavigation:navigation];
-  if (!navigationContext) {
-    base::RecordAction(
-        base::UserMetricsAction("IOS.NilNavigationContextOnError"));
-    return;
   }
 
   web::HttpsUpgradeType failed_upgrade_type = GetFailedHttpsUpgradeType(
@@ -2291,9 +2323,12 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 - (void)handleCancelledError:(NSError*)error
                forNavigation:(WKNavigation*)navigation
              provisionalLoad:(BOOL)provisionalLoad {
+  web::NavigationContextImpl* context =
+      [self.navigationStates contextForNavigation:navigation];
+  error = SanitizeNavigationError(error, context);
+
   web::HttpsUpgradeType failed_upgrade_type = GetFailedHttpsUpgradeType(
-      error, [self.navigationStates contextForNavigation:navigation],
-      self.pendingNavigationInfo.cancellationError);
+      error, context, self.pendingNavigationInfo.cancellationError);
   if (failed_upgrade_type == web::HttpsUpgradeType::kNone &&
       ![self shouldCancelLoadForCancelledError:error
                                provisionalLoad:provisionalLoad]) {

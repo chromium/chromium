@@ -456,6 +456,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/navigation",
     "//ios/web/navigation:block_universal_links_buildflags",
     "//ios/web/navigation:core",
+    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/extension",
