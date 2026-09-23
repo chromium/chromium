@@ -1181,6 +1181,7 @@ if (is_android) {
       "//chrome/browser/glic/android:test_support_java",
       "//chrome/browser/history",
       "//chrome/browser/keyboard_accessory/android",
+      "//chrome/browser/language_detection:browser_tests",
       "//chrome/browser/lifetime",
       "//chrome/browser/metrics:android_browsertests",
       "//chrome/browser/metrics:test_support",
