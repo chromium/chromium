@@ -473,7 +473,7 @@ suite('scanPreviewTest', function() {
   // Verify "ready to scan" dynamic SVG use when dynamic colors enabled.
   test('jellyColors_ReadyToScanSvg', async () => {
     assert(scanPreview);
-    const dynamicSvg = `svg/illo_ready_to_scan.svg#illo_ready_to_scan`;
+    const dynamicSvg = 'svg/illo_ready_to_scan.svg#illo_ready_to_scan';
 
     const getReadyToScanVisual = (): SVGUseElement => strictQuery(
         '#readyToScanSvg > use', scanPreview!.shadowRoot, SVGUseElement);

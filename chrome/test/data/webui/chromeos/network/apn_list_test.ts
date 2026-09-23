@@ -771,7 +771,7 @@ suite('ApnListTest', () => {
                     assertEquals(
                         scenario.shouldShowApn,
                         apnSelectionDialog.apnList.length === 1,
-                        `APN should be displayed`);
+                        'APN should be displayed');
                     if (scenario.shouldShowApn) {
                       assertTrue(!!apnSelectionDialog.apnList[0]);
                       assertTrue(OncMojo.apnMatch(

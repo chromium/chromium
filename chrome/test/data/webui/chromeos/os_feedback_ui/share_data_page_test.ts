@@ -117,7 +117,7 @@ suite('shareDataPageTestSuite', () => {
     // Verify don't include email address is in the page.
     assertTrue(page.i18nExists('anonymousUser'));
     assertEquals(
-        `Don't include email address`, getElementContent('#anonymousUser'));
+        'Don\'t include email address', getElementContent('#anonymousUser'));
 
     // Verify the share diagnostic data label is in the page.
     assertTrue(page.i18nExists('shareDiagnosticDataLabel'));

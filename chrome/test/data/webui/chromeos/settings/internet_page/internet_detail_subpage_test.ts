@@ -1992,7 +1992,7 @@ suite('<settings-internet-detail-subpage>', () => {
 
     [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
       test(
-          `Managed APN icon visibility when ` +
+          'Managed APN icon visibility when ' +
               `isApnRevampAndAllowApnModificationPolicyEnabled is ${
                   isApnRevampAndAllowApnModificationPolicyEnabled}`,
           async () => {

@@ -61,7 +61,7 @@ suite('DestinationSelectTest', function() {
     compareIcon(selectEl, 'print');
 
     // Select a destination with the enterprise printer icon.
-    return selectOption(destinationSelect, `ID4/local/`).then(() => {
+    return selectOption(destinationSelect, 'ID4/local/').then(() => {
       const enterpriseIcon = 'business';
 
       compareIcon(selectEl, enterpriseIcon);

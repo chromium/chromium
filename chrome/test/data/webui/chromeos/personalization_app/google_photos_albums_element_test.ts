@@ -66,7 +66,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         title: 'Album 0',
         photoCount: 0,
         preview: createSvgDataUrl('svg-0'),
-        timestamp: {internalValue: BigInt(`13318040939308000`)},
+        timestamp: {internalValue: BigInt('13318040939308000')},
         isShared: false,
       },
       {
@@ -74,7 +74,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         title: 'Album 1',
         photoCount: 1,
         preview: createSvgDataUrl('svg-1'),
-        timestamp: {internalValue: BigInt(`13318040939307000`)},
+        timestamp: {internalValue: BigInt('13318040939307000')},
         isShared: false,
       },
       {
@@ -82,7 +82,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         title: 'Album 2',
         photoCount: 2,
         preview: createSvgDataUrl('svg-2'),
-        timestamp: {internalValue: BigInt(`13318040939306000`)},
+        timestamp: {internalValue: BigInt('13318040939306000')},
         isShared: false,
       },
     ];

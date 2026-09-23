@@ -20,7 +20,7 @@ function subcategoryGroupSelector(category: string, subcategory: string) {
       `emoji-group[category="${category}"]`;
 }
 
-suite(`emoji-picker-validation-gif`, () => {
+suite('emoji-picker-validation-gif', () => {
   const oneByOneGif =
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
   const oneByTwoGif =
@@ -151,8 +151,8 @@ suite(`emoji-picker-validation-gif`, () => {
 
 
   test(
-      `recently used gif group should contain the ` +
-          `correct gifs after it is has been validated.`,
+      'recently used gif group should contain the ' +
+          'correct gifs after it is has been validated.',
       async () => {
         await emojiPicker.updateIncognitoState(false);
 

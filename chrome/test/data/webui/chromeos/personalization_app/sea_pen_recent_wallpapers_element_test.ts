@@ -483,7 +483,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             actionMenu2.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
         assertTrue(
             menuDialog2!.open,
-            `menu dialog for the 3rd image should be opened.`);
+            'menu dialog for the 3rd image should be opened.');
 
         // Wallpaper Info menu option is available. Click on this option.
         const wallpaperInfoOption2 =
@@ -546,7 +546,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             actionMenu0.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
         assertTrue(
             menuDialog0!.open,
-            `menu dialog for the 1st image should be opened.`);
+            'menu dialog for the 1st image should be opened.');
 
         // Wallpaper Info menu option is not available as SeaPenRecentData has
         // no imageInfo.
@@ -606,7 +606,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     const actionMenu = actionMenus[0] as HTMLElement;
     const menuDialog =
         actionMenu.shadowRoot!.querySelector<HTMLDialogElement>('dialog');
-    assertTrue(menuDialog!.open, `menu dialog 0 should be opened.`);
+    assertTrue(menuDialog!.open, 'menu dialog 0 should be opened.');
 
     // Wallpaper Info menu option is available. Click on this option.
     const deleteWallpaperOption =

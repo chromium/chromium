@@ -68,7 +68,7 @@ suite('<settings-mouse-keys-subpage>', () => {
     // kAccessibilityMouseKeysDominantHand
     // Ensure dominantHandControl exists.
     const dominantHandControl =
-        page.shadowRoot!.querySelector<HTMLElement>(`#mouseKeysDominantHand`);
+        page.shadowRoot!.querySelector<HTMLElement>('#mouseKeysDominantHand');
     assert(dominantHandControl);
     assertTrue(isVisible(dominantHandControl));
 
@@ -111,7 +111,7 @@ suite('<settings-mouse-keys-subpage>', () => {
     await initPage();
 
     const primaryKeysKeyboardPreview =
-        page.shadowRoot!.querySelector<HTMLElement>(`#primaryKeysPreview`);
+        page.shadowRoot!.querySelector<HTMLElement>('#primaryKeysPreview');
 
     assert(primaryKeysKeyboardPreview);
     assertTrue(isVisible(primaryKeysKeyboardPreview));

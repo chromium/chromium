@@ -491,7 +491,7 @@ suite('<settings-internet-page>', () => {
             `VPNs prohibited by policy: ${
                 vpnProhibited}, always on VPN set by policy: ${
                   !!arcVpnAlwaysOnPackageNamePrefValue}, ` +
-                `setDoesDisconnectProhibitedAlwaysOnVpnPrefs allowed ` +
+                'setDoesDisconnectProhibitedAlwaysOnVpnPrefs allowed ' +
                 `by policy: ${manualDisconnectionAllowed}`,
             async () => {
           await init();
@@ -1191,7 +1191,7 @@ suite('<settings-internet-page>', () => {
 
   [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
     test(
-        `Managed APN UI states when ` +
+        'Managed APN UI states when ' +
             `isApnRevampAndAllowApnModificationPolicyEnabled is ${
                 isApnRevampAndAllowApnModificationPolicyEnabled}`,
         async () => {

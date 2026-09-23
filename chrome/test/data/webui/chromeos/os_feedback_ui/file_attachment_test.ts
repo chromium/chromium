@@ -261,7 +261,7 @@ suite('fileAttachmentTestSuite', () => {
         strictQuery('#fileTooBigErrorMessage', page!.shadowRoot, CrToastElement)
             .open);
     assertEquals(
-        `Can't upload file larger than 10 MB`,
+        'Can\'t upload file larger than 10 MB',
         getElementContent('#fileTooBigErrorMessage > #errorMessage'));
     // There should not be a selected file.
     assertEquals('', getElementContent('#selectedFileName'));

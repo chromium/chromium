@@ -27,7 +27,7 @@ suite('SeaPenRouterElementTest', function() {
                                 SeaPenIntroductionDialogElement.is);
     assertTrue(!!introDialog, 'dialog element must exist to click button');
     const button = introDialog.shadowRoot!.getElementById('close');
-    assertTrue(!!button, `close button must exist`);
+    assertTrue(!!button, 'close button must exist');
     button.click();
     await waitAfterNextRender(routerElement!);
   }

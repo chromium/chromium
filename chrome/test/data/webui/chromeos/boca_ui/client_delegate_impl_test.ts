@@ -444,7 +444,7 @@ suite('ClientDelegateTest', function() {
 
   urlTypeTestCases.forEach((testCase) => {
     test(
-        `client delegate should properly translate mojom layer data for ` +
+        'client delegate should properly translate mojom layer data for ' +
             `windows list with urlType: ${testCase.name}`,
         async () => {
           remoteHandler.urlTypeMojo = testCase.urlTypeMojo;
@@ -566,7 +566,7 @@ suite('ClientDelegateTest', function() {
 
   urlTypeTestCases.forEach((testCase) => {
     test(
-        `client delegate should translate data for creating session with ` +
+        'client delegate should translate data for creating session with ' +
             `urlType: ${testCase.name}`,
         async () => {
           remoteHandler.urlTypeMojo = testCase.urlTypeMojo;
@@ -765,7 +765,7 @@ suite('ClientDelegateTest', function() {
 
   urlTypeTestCases.forEach((testCase) => {
     test(
-        `client delegate should translate data for update on task config ` +
+        'client delegate should translate data for update on task config ' +
             `with urlType: ${testCase.name}`,
         async () => {
           remoteHandler.urlTypeMojo = testCase.urlTypeMojo;

@@ -64,7 +64,7 @@ function overriddenValues(privacyHubVersion: string) {
       };
     }
     default: {
-      assertNotReached(`Unsupported Privacy Hub version: {privacyHubVersion}`);
+      assertNotReached('Unsupported Privacy Hub version: {privacyHubVersion}');
     }
   }
 }

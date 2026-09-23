@@ -69,7 +69,7 @@ suite('GooglePhotosZeroStateElementTest', function() {
         'localizedLink has message set as TrustedHTML');
 
     assertEquals(
-        `This album doesn't have any photos. ` +
+        'This album doesn\'t have any photos. ' +
             'To add photos, go to ' +
             '<a target="_blank" href="https://photos.google.com">' +
             'photos.google.com</a>',

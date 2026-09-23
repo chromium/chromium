@@ -96,7 +96,7 @@ suite('NetworkSummary', () => {
     assert(hotspotSummaryItem);
   });
 
-  test(`Tether hosts section is shown?`, async () => {
+  test('Tether hosts section is shown?', async () => {
     setNetworksForTest(NetworkType.kTether, [
       OncMojo.getDefaultNetworkState(NetworkType.kTether, 'tether1'),
     ]);

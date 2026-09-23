@@ -339,7 +339,7 @@ suite('<file-handler-page>', () => {
           }));
 
   /** Test that the accordion doesn't show when there are no local tasks.*/
-  test(`No accordion when no local task`, async () => {
+  test('No accordion when no local task', async () => {
     const numTasks = 0;
     await setUp({
       fileNames: ['file.docx'],
@@ -401,7 +401,7 @@ suite('<file-handler-page>', () => {
    * collapsed.
    */
   test(
-      `Collapsing the accordion unselects any selected local task`,
+      'Collapsing the accordion unselects any selected local task',
       async () => {
         const numTasks = 1;
         await setUp({

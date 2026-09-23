@@ -154,7 +154,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       title: 'Album 0',
       photoCount: 1,
       preview: 'foo.com',
-      timestamp: {internalValue: BigInt(`13318040939308000`)},
+      timestamp: {internalValue: BigInt('13318040939308000')},
       isShared: false,
     }];
     wallpaperProvider.setGooglePhotosAlbums(albums);

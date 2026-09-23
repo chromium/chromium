@@ -36,7 +36,7 @@ import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 
-suite(`CrComponentsEsimFlowUiTest`, function() {
+suite('CrComponentsEsimFlowUiTest', function() {
   const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
 
   let eSimPage: EsimFlowUiElement;

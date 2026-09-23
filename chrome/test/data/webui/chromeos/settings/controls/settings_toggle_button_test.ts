@@ -313,7 +313,7 @@ suite('SettingsToggleButton', () => {
   });
 
   test('sub label with action link should have proper role', () => {
-    testElement.subLabelWithLink = `<a is="action-link"></a>`;
+    testElement.subLabelWithLink = '<a is="action-link"></a>';
     flush();
 
     const subLabelTextWithLink =
@@ -327,7 +327,7 @@ suite('SettingsToggleButton', () => {
   });
 
   test('sub label should be able to have aria-label', () => {
-    testElement.subLabelWithLink = `<a aria-label="Label"></a>`;
+    testElement.subLabelWithLink = '<a aria-label="Label"></a>';
     flush();
 
     const subLabelTextWithLink =
@@ -344,7 +344,7 @@ suite('SettingsToggleButton', () => {
     let subLabelTextWithLink =
         testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
     assertFalse(!!subLabelTextWithLink);
-    testElement.set('subLabelWithLink', `<a href="#"></a>`);
+    testElement.set('subLabelWithLink', '<a href="#"></a>');
     flush();
 
     subLabelTextWithLink =
@@ -365,7 +365,7 @@ suite('SettingsToggleButton', () => {
         testElement.shadowRoot!.querySelector<HTMLElement>(
             '#sub-label-text-with-link');
     assertFalse(!!subLabelTextWithLink);
-    testElement.set('subLabelWithLink', `<a href="#"></a>`);
+    testElement.set('subLabelWithLink', '<a href="#"></a>');
     flush();
 
     subLabelTextWithLink = testElement.shadowRoot!.querySelector<HTMLElement>(

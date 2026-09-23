@@ -258,32 +258,32 @@ suite('network-config-vpn', function() {
       const peer = configProperties.typeConfig.vpn.wireguard.peers[0];
       peer.publicKey = 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=';
       networkConfig.notifyPath(
-          `configProperties_.typeConfig.vpn.wireguard.peers.0.publicKey`);
+          'configProperties_.typeConfig.vpn.wireguard.peers.0.publicKey');
       await flushTasks();
       assertFalse(networkConfig.enableConnect);
 
       peer.endpoint = '192.168.66.66:32000';
       peer.allowedIps = '0.0.0.0/0';
       networkConfig.notifyPath(
-          `configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint`);
+          'configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint');
       await flushTasks();
       assertTrue(networkConfig.enableConnect);
 
       peer.endpoint = '[fd01::1]:12345';
       networkConfig.notifyPath(
-          `configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint`);
+          'configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint');
       await flushTasks();
       assertTrue(networkConfig.enableConnect);
 
       peer.presharedKey = 'invalid_key';
       networkConfig.notifyPath(
-          `configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey`);
+          'configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey');
       await flushTasks();
       assertFalse(networkConfig.enableConnect);
 
       peer.presharedKey = '';
       networkConfig.notifyPath(
-          `configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey`);
+          'configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey');
       await flushTasks();
       assertTrue(networkConfig.enableConnect);
 
@@ -295,7 +295,7 @@ suite('network-config-vpn', function() {
       ];
       for (const input of badInputsForIp) {
         networkConfig.set('ipAddressInput_', input);
-        networkConfig.notifyPath(`configProperties_.ipAddressInput_`);
+        networkConfig.notifyPath('configProperties_.ipAddressInput_');
         await flushTasks();
         assertFalse(networkConfig.enableConnect);
       }
@@ -303,7 +303,7 @@ suite('network-config-vpn', function() {
       const goodInputsForIp = ['10.10.0.1', 'fd00::1', '10.10.10.1,fd00::1'];
       for (const input of goodInputsForIp) {
         networkConfig.set('ipAddressInput_', input);
-        networkConfig.notifyPath(`configProperties_.ipAddressInput_`);
+        networkConfig.notifyPath('configProperties_.ipAddressInput_');
         await flushTasks();
         assertTrue(networkConfig.enableConnect);
       }
@@ -312,7 +312,7 @@ suite('network-config-vpn', function() {
       for (const input of badInputsForAllowedIps) {
         peer.allowedIps = input;
         networkConfig.notifyPath(
-            `configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint`);
+            'configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint');
         await flushTasks();
         assertFalse(networkConfig.enableConnect);
       }
@@ -321,7 +321,7 @@ suite('network-config-vpn', function() {
       for (const input of goodInputsForAllowedIps) {
         peer.allowedIps = input;
         networkConfig.notifyPath(
-            `configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint`);
+            'configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint');
         await flushTasks();
         assertTrue(networkConfig.enableConnect);
       }

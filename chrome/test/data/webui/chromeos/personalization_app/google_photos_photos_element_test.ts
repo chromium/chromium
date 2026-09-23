@@ -844,7 +844,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     const photoElements = querySelectorAll(
-        `wallpaper-grid-item:not([hidden]).photo:not([placeholder])`);
+        'wallpaper-grid-item:not([hidden]).photo:not([placeholder])');
 
     assertDeepEquals(
         ['bare', 'baze'], photoElements?.map(item => item.ariaLabel),

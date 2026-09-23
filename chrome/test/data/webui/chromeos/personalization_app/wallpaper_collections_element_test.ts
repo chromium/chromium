@@ -257,7 +257,7 @@ suite('WallpaperCollectionsElementTest', function() {
   });
 
   test('customizes text for managed google photos', async () => {
-    const managedIconSelector = `iron-icon[icon^='personalization:managed']`;
+    const managedIconSelector = 'iron-icon[icon^=\'personalization:managed\']';
 
     personalizationStore.data.wallpaper.googlePhotos.enabled =
         GooglePhotosEnablementState.kEnabled;
@@ -652,7 +652,7 @@ suite('WallpaperCollectionsElementTest', function() {
 
     const promotedTiles =
         wallpaperCollectionsElement.shadowRoot!.querySelector<HTMLElement>(
-            `#promoted`);
+            '#promoted');
     assertFalse(!!promotedTiles, 'promoted tiles are hidden');
 
     await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ true);

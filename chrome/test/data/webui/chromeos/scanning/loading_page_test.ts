@@ -103,7 +103,7 @@ suite('loadingPageTest', function() {
   // Verify "no scanners" dynamic SVG use.
   test('jellyColors_NoScannersSvg', async () => {
     assert(loadingPage);
-    const dynamicSvg = `svg/illo_no_scanner.svg#illo_no_scanner`;
+    const dynamicSvg = 'svg/illo_no_scanner.svg#illo_no_scanner';
     const getNoScannersVisual = (): SVGUseElement => strictQuery(
         '#noScannersDiv > svg > use', loadingPage!.shadowRoot, SVGUseElement);
 
@@ -120,7 +120,7 @@ suite('loadingPageTest', function() {
   // Verify "loading scanners" dynamic SVG use.
   test('jellyColors_LoadingScannersSvg', async () => {
     assert(loadingPage);
-    const dynamicSvg = `svg/illo_loading_scanner.svg#illo_loading_scanner`;
+    const dynamicSvg = 'svg/illo_loading_scanner.svg#illo_loading_scanner';
 
     const getLoadingVisual = (): SVGUseElement => strictQuery(
         '#loadingDiv > svg > use', loadingPage!.shadowRoot, SVGUseElement);

@@ -82,7 +82,7 @@ suite('WallpaperImagesElementTest', function() {
     assertDeepEquals(
         selectedElements[0]!.src,
         [wallpaperProvider.images![0]!.url, wallpaperProvider.images![2]!.url],
-        `item has correct src`);
+        'item has correct src');
 
     const notSelectedElements: HTMLElement[] =
         Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(

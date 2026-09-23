@@ -400,8 +400,8 @@ suite('CrActionMenu', function() {
       left: 0,
       top: 0,
     }));
-    assertEquals(`0px`, dialog.style.left);
-    assertEquals(`0px`, dialog.style.top);
+    assertEquals('0px', dialog.style.left);
+    assertEquals('0px', dialog.style.top);
     menu.close();
 
     // Being aligned to a point in the bottom right should anchor to the top
@@ -425,7 +425,7 @@ suite('CrActionMenu', function() {
       maxX: menuWidth * 2 - 10,
     });
     assertEquals(`${menuWidth - 10}px`, dialog.style.left);
-    assertEquals(`0px`, dialog.style.top);
+    assertEquals('0px', dialog.style.top);
     menu.close();
 
     // Alignment is reversed in RTL.

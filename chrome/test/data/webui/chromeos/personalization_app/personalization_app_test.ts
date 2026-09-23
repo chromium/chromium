@@ -322,9 +322,10 @@ suite('wallpaper subpage', () => {
       const onlineTileToClick = await waitUntil(
           () =>
               Array
-                  .from(collections!.shadowRoot!.querySelectorAll<
-                        WallpaperGridItemElement>(
-                      `wallpaper-grid-item[aria-disabled='false'][data-online]`))
+                  .from(
+                      collections!.shadowRoot!.querySelectorAll<
+                          WallpaperGridItemElement>(
+                          'wallpaper-grid-item[aria-disabled=\'false\'][data-online]'))
                   .find(tile => tile.primaryText === 'Test Collection 2'),
           'waiting for online tile with title Test Collection 2 to load');
 
@@ -359,7 +360,7 @@ suite('wallpaper subpage', () => {
       await waitUntil(
           () => textContainer.querySelector('#imageTitle')
                     ?.textContent?.trim() === expectedImageTitle,
-          () => `failed waiting for expected image title ` +
+          () => 'failed waiting for expected image title ' +
               `${expectedImageTitle} after selecting wallpaper. ` +
               `html:\n${textContainer.outerHTML}`,
           /*intervalMs=*/ 500,
@@ -386,8 +387,8 @@ suite('wallpaper subpage', () => {
       const googlePhotosTile = await waitUntil(
           () => subpage.shadowRoot?.querySelector('wallpaper-collections')
                     ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[aria-disabled='false']` +
-                        `[data-google-photos]`),
+                        'wallpaper-grid-item[aria-disabled=\'false\']' +
+                        '[data-google-photos]'),
           'failed waiting for google photos tile to load');
       googlePhotosTile.click();
 
@@ -484,7 +485,7 @@ suite('wallpaper subpage', () => {
           /^Daily Refresh\: fake_google_photos_photo_id_\d$/;
       await waitUntil(
           () => dailyRefreshRegex.test(imageTitle.textContent.trim()),
-          () => `Expected Daily refresh text to match regex ` +
+          () => 'Expected Daily refresh text to match regex ' +
               `${dailyRefreshRegex.source} but received:\n` +
               `${imageTitle.outerHTML}`,
           /*intervalMs=*/ 500,
@@ -531,8 +532,8 @@ suite('sea pen', () => {
     const seaPenTile = await waitUntil(
         () => subpage.shadowRoot?.querySelector('wallpaper-collections')
                   ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
-                      `wallpaper-grid-item[aria-disabled='false']` +
-                      `[data-sea-pen]`),
+                      'wallpaper-grid-item[aria-disabled=\'false\']' +
+                      '[data-sea-pen]'),
         'waiting for sea-pen-tile',
         /*intervalMs=*/ 500,
         /*timeoutMs=*/ 3001);
@@ -552,7 +553,7 @@ suite('sea pen', () => {
     const templates = await waitUntil(
         () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
                   ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
-                      `wallpaper-grid-item[data-sea-pen-image]`),
+                      'wallpaper-grid-item[data-sea-pen-image]'),
         'waiting for sea-pen-tile',
         /*intervalMs=*/ 500,
         /*timeoutMs=*/ 3001);
@@ -613,7 +614,7 @@ suite('sea pen', () => {
   suite('feedback', () => {
     // At the end of this test, a feedback dialog is expected to be opened in an
     // external window.
-    test(`open feedback dialog`, async () => {
+    test('open feedback dialog', async () => {
       const seaPenRouter = await getSeaPenRouter();
       const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
       // Creates images.
@@ -628,7 +629,7 @@ suite('sea pen', () => {
       const feedbacks = await waitUntil(
           () => Array.from(
               seaPenImages.shadowRoot!.querySelectorAll<SeaPenFeedbackElement>(
-                  `sea-pen-feedback`)),
+                  'sea-pen-feedback')),
           'waiting for thumbnails load');
       assertTrue(!!feedbacks, 'feedbacks should exist');
 
@@ -749,7 +750,7 @@ suite('sea pen', () => {
         const thumbnailsToClick = await waitUntil(
             () => Array.from(seaPenImages.shadowRoot!.querySelectorAll<
                              WallpaperGridItemElement>(
-                `wallpaper-grid-item[aria-disabled='false'][data-sea-pen-image]`)),
+                'wallpaper-grid-item[aria-disabled=\'false\'][data-sea-pen-image]')),
             'waiting for thumbnails load');
         assertTrue(!!thumbnailsToClick, 'thumbnails should show up');
 
@@ -805,13 +806,13 @@ suite('sea pen', () => {
 
         const menuButton = recentImages.shadowRoot?.querySelector<
             CrIconButtonElement>(
-            `wallpaper-grid-item[aria-selected=true] + .menu-icon-container cr-icon-button`);
+            'wallpaper-grid-item[aria-selected=true] + .menu-icon-container cr-icon-button');
         assertTrue(!!menuButton, 'menu button exists');
         menuButton.click();
 
         const aboutButton = await waitUntil(
             () => recentImages.shadowRoot?.querySelector<HTMLButtonElement>(
-                `wallpaper-grid-item[aria-selected=true] ~ cr-action-menu .wallpaper-info-option`),
+                'wallpaper-grid-item[aria-selected=true] ~ cr-action-menu .wallpaper-info-option'),
             'waiting for about wallpaper button');
         assertTrue(!!aboutButton, 'about wallpaper button exists');
         aboutButton.click();
@@ -849,7 +850,7 @@ suite('sea pen', () => {
       // Selects first non-selected image.
       const image =
           recentImages.shadowRoot?.querySelector<WallpaperGridItemElement>(
-              `wallpaper-grid-item[aria-selected=false]`);
+              'wallpaper-grid-item[aria-selected=false]');
       assertTrue(!!image, 'image exists');
       image.click();
       assertTrue(
@@ -861,13 +862,13 @@ suite('sea pen', () => {
       // Verifies the image is set properly.
       const menuButton = recentImages.shadowRoot?.querySelector<
           CrIconButtonElement>(
-          `wallpaper-grid-item[aria-selected=true] + .menu-icon-container cr-icon-button`);
+          'wallpaper-grid-item[aria-selected=true] + .menu-icon-container cr-icon-button');
       assertTrue(!!menuButton);
       menuButton.click();
 
       const aboutButton = await waitUntil(
           () => recentImages.shadowRoot?.querySelector<HTMLButtonElement>(
-              `wallpaper-grid-item[aria-selected=true] ~ cr-action-menu .wallpaper-info-option`),
+              'wallpaper-grid-item[aria-selected=true] ~ cr-action-menu .wallpaper-info-option'),
           'waiting for about wallpaper button');
       assertTrue(!!aboutButton, 'about wallpaper button exists');
       aboutButton.click();
@@ -896,8 +897,8 @@ suite('sea pen', () => {
       await waitUntil(
           () => promptText?.includes(
               textContainer.querySelector('#imageTitle')?.textContent?.trim()!),
-          () => `failed waiting for expected image title ` +
-              `after selecting wallpaper. ` +
+          () => 'failed waiting for expected image title ' +
+              'after selecting wallpaper. ' +
               `html:\n${textContainer.outerHTML}`,
           /*intervalMs=*/ 500,
           /*timeoutMs=*/ 3001);
@@ -923,7 +924,7 @@ suite('sea pen', () => {
       const thumbnailsToClick = await waitUntil(
           () => Array.from(seaPenImages.shadowRoot!.querySelectorAll<
                            WallpaperGridItemElement>(
-              `wallpaper-grid-item[aria-disabled='false'][data-sea-pen-image]`)),
+              'wallpaper-grid-item[aria-disabled=\'false\'][data-sea-pen-image]')),
           'waiting for thumbnails load');
       assertTrue(!!thumbnailsToClick, 'thumbnails should show up');
 
@@ -962,7 +963,7 @@ suite('sea pen', () => {
 
     const images =
         Array.from(recentImages.shadowRoot!.querySelectorAll<HTMLElement>(
-            `.recent-image-container:not([hidden])`));
+            '.recent-image-container:not([hidden])'));
     assertTrue(images.length > 0, 'there should be at least 1 recent image');
 
     const targetRecentImage = images.find(
@@ -1025,7 +1026,7 @@ suite('sea pen', () => {
 
     const images =
         Array.from(recentImages.shadowRoot!.querySelectorAll<HTMLElement>(
-            `.recent-image-container:not([hidden])`));
+            '.recent-image-container:not([hidden])'));
     assertTrue(images.length > 0, 'there should be at least 1 recent image');
 
     const targetRecentImage = images.find(
@@ -1115,7 +1116,7 @@ suite('sea pen', () => {
     assertTrue(!!recentImages, 'recent images should exist');
 
     const images = recentImages.shadowRoot?.querySelectorAll<HTMLElement>(
-        `.recent-image-container:not([hidden])`);
+        '.recent-image-container:not([hidden])');
     assertTrue(!!images, 'images should exist');
     assertTrue(images.length > 0, 'there should be at least 1 recent image');
     const numImages = images.length;
@@ -1128,7 +1129,7 @@ suite('sea pen', () => {
 
     const deleteButton = await waitUntil(
         () => recentImages.shadowRoot?.querySelector<HTMLButtonElement>(
-            `wallpaper-grid-item ~ cr-action-menu .delete-wallpaper-option`),
+            'wallpaper-grid-item ~ cr-action-menu .delete-wallpaper-option'),
         'waiting for delete wallpaper button');
     assertTrue(!!deleteButton, 'delete wallpaper button exists');
     deleteButton.click();
@@ -1144,7 +1145,7 @@ suite('sea pen', () => {
         () => numImages - 1 ===
             recentImages.shadowRoot
                 ?.querySelectorAll<HTMLElement>(
-                    `.recent-image-container:not([hidden])`)
+                    '.recent-image-container:not([hidden])')
                 ?.length,
         'a recent image has been deleted',
         /*intervalMs=*/ 500,

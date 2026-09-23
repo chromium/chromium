@@ -292,7 +292,7 @@ suite('WallpaperSelectedElementTest', function() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     assertStringContains(
-        img.src, `chrome://personalization/wallpaper.jpg?key=new_key`);
+        img.src, 'chrome://personalization/wallpaper.jpg?key=new_key');
   });
 
   test('shows placeholders when image fails to load', async () => {
@@ -900,12 +900,12 @@ suite('WallpaperSelectedElementTest', function() {
     assertEquals(
         'title text',
         dialog.querySelector<HTMLHeadingElement>(
-                  `h3[slot='title']`)!.innerText.trim(),
+                  'h3[slot=\'title\']')!.innerText.trim(),
         'title text matches');
     assertEquals(
         'content text',
         dialog.querySelector<HTMLParagraphElement>(
-                  `p[slot='body']`)!.innerText.trim(),
+                  'p[slot=\'body\']')!.innerText.trim(),
         'content text matches');
 
     wallpaperSelectedElement.shadowRoot!.getElementById(

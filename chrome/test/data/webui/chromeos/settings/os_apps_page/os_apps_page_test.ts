@@ -552,7 +552,7 @@ suite('AppsPageTests', () => {
           });
 
       test(
-          `Entering the correct PIN navigates to the parental controls subpage`,
+          'Entering the correct PIN navigates to the parental controls subpage',
           async () => {
             // Setup the initial PIN.
             const pin = '123456';
@@ -1035,7 +1035,7 @@ suite('AppsPageTests', () => {
 
       assertEquals(
           subpageLink, subpage.shadowRoot!.activeElement,
-          `#manageArcvmShareUsbDevices should be focused.`);
+          '#manageArcvmShareUsbDevices should be focused.');
     });
 
     test(

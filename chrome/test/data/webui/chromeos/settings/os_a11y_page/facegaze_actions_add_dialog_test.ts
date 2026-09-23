@@ -893,7 +893,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         // Default confidence threshold is 50, so only one gesture should
         // register as detected.
-        assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
+        assertEquals('Detected 1 time', gestureCountDiv.innerText);
       });
 
   test(
@@ -912,7 +912,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         // Default confidence threshold is 50, so only one gesture should
         // register as detected.
-        assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
+        assertEquals('Detected 1 time', gestureCountDiv.innerText);
       });
 
   test(
@@ -949,7 +949,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         // Default confidence threshold is 50, so three gestures should register
         // as detected.
-        assertEquals(`Detected 3 times`, gestureCountDiv.innerText);
+        assertEquals('Detected 3 times', gestureCountDiv.innerText);
       });
 
   test(
@@ -964,7 +964,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         ]);
 
         const gestureCountDiv = getGestureCountDiv();
-        assertEquals(`Not detected`, gestureCountDiv.innerText);
+        assertEquals('Not detected', gestureCountDiv.innerText);
       });
 
   test(

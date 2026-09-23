@@ -88,7 +88,7 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     const buttonName = page!.selectedMouse.settings.buttonRemappings[0]!.name;
     assertEquals(buttonName, 'Back Button');
     page.set(
-        `selectedMouse.settings.buttonRemappings.0.name`, 'new button name');
+        'selectedMouse.settings.buttonRemappings.0.name', 'new button name');
     await flushTasks();
     assertEquals(provider.getSetMouseSettingsCallCount(), 0);
     page.dispatchEvent(new CustomEvent('button-remapping-changed', {

@@ -493,7 +493,7 @@ suite('internet-detail-dialog', () => {
 
   [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
     test(
-        `Managed APN UI states when ` +
+        'Managed APN UI states when ' +
             `isApnRevampAndAllowApnModificationPolicyEnabled is ${
                 isApnRevampAndAllowApnModificationPolicyEnabled}`,
         async () => {

@@ -165,7 +165,7 @@ suite('<settings-internet-subpage>', () => {
               WIFI_ON_OFF_SETTING}.`);
     });
 
-    test(`Tether`, async () => {
+    test('Tether', async () => {
       createSubpage();
       await initSubpage();
       setNetworksForTest(NetworkType.kTether, [
@@ -275,7 +275,7 @@ suite('<settings-internet-subpage>', () => {
               ADD_ESIM_NETWORK_SETTING}.`);
     });
 
-    test(`Tether plus Cellular`, async () => {
+    test('Tether plus Cellular', async () => {
       createSubpage();
       await initSubpage();
       addCellularNetworks();

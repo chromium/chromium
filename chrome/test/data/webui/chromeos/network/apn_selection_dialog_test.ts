@@ -133,12 +133,12 @@ suite('ApnSelectionDialog', () => {
 
     const ironList = apnSelectionDialog.shadowRoot!.querySelector('iron-list');
     assertTrue(!!ironList && !!ironList.items);
-    assertEquals(2, ironList.items.length, `Iron list items don't match`);
+    assertEquals(2, ironList.items.length, 'Iron list items don\'t match');
 
     const listItems = apnSelectionDialog.shadowRoot!.querySelectorAll(
         'apn-selection-dialog-list-item');
     assertEquals(
-        apnList.length, listItems.length, `APN list lengths don't match`);
+        apnList.length, listItems.length, 'APN list lengths don\'t match');
     assertTrue(!!listItems[0]);
     assertTrue(!!listItems[1]);
     assertTrue(OncMojo.apnMatch(apn1 as ApnProperties, listItems[0].apn));
@@ -172,12 +172,12 @@ suite('ApnSelectionDialog', () => {
     // De-select the APN.
     listItems[1].click();
     await flushTasks();
-    assertNull(ironList.selectedItem, `List has a non-null selected item`);
+    assertNull(ironList.selectedItem, 'List has a non-null selected item');
     assertFalse(
-        listItems[0].selected, `apn1 is selected when it shouldn\'t be`);
+        listItems[0].selected, 'apn1 is selected when it shouldn\'t be');
     assertEquals('false', listItems[0].ariaSelected);
     assertFalse(
-        listItems[1].selected, `apn2 is selected when it shouldn\'t be`);
+        listItems[1].selected, 'apn2 is selected when it shouldn\'t be');
     assertEquals('false', listItems[0].ariaSelected);
 
     // Button state becomes disabled, announcement should be made.
@@ -216,15 +216,15 @@ suite('ApnSelectionDialog', () => {
         apnSelectionDialog.shadowRoot!.querySelector<CrButtonElement>(
             '.cancel-button');
 
-    assertTrue(!!actionBtn, `action button does not exist`);
-    assertTrue(!!cancelBtn, `cancel button does not exist`);
+    assertTrue(!!actionBtn, 'action button does not exist');
+    assertTrue(!!cancelBtn, 'cancel button does not exist');
 
     // No APN selected, so action button is disabled.
     const ironList = apnSelectionDialog.shadowRoot!.querySelector('iron-list');
     assertTrue(!!ironList && !!ironList.items);
-    assertEquals(1, ironList.items.length, `Iron list items don't match`);
-    assertTrue(actionBtn.disabled, `action button is not disabled`);
-    assertFalse(cancelBtn.disabled, `cancel button is disabled`);
+    assertEquals(1, ironList.items.length, 'Iron list items don\'t match');
+    assertTrue(actionBtn.disabled, 'action button is not disabled');
+    assertFalse(cancelBtn.disabled, 'cancel button is disabled');
 
     const listItems = apnSelectionDialog.shadowRoot!.querySelectorAll(
         'apn-selection-dialog-list-item');

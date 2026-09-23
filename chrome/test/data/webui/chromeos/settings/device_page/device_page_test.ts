@@ -1548,7 +1548,7 @@ suite('<settings-device-page>', () => {
     setup(async () => {
       await init();
       const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-          `#main #perDeviceKeyboardRow`);
+          '#main #perDeviceKeyboardRow');
       assertTrue(!!row);
       row.click();
       assertEquals(
@@ -1601,7 +1601,7 @@ suite('<settings-device-page>', () => {
 
     test('per-device mouse subpage visibility', () => {
       const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-          `#main #perDeviceMouseRow`);
+          '#main #perDeviceMouseRow');
       assertTrue(!!row);
       row.click();
       assertEquals(routes.PER_DEVICE_MOUSE, Router.getInstance().currentRoute);
@@ -1626,7 +1626,7 @@ suite('<settings-device-page>', () => {
 
     test('per-device touchpad subpage visibility', () => {
       const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-          `#main #perDeviceTouchpadRow`);
+          '#main #perDeviceTouchpadRow');
       assertTrue(!!row);
       row.click();
       assertEquals(
@@ -1652,7 +1652,7 @@ suite('<settings-device-page>', () => {
 
     test('per-device pointing stick subpage visibility', () => {
       const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-          `#main #perDevicePointingStickRow`);
+          '#main #perDevicePointingStickRow');
       assertTrue(!!row);
       row.click();
       assertEquals(

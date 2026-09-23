@@ -28,16 +28,18 @@ suite('SeaPenImagesElementTest', function() {
   let seaPenImagesElement: SeaPenImagesElement|null;
 
   function getWallpaperGridItems(): WallpaperGridItemElement[] {
-    return Array.from(seaPenImagesElement!.shadowRoot!
-                          .querySelectorAll<WallpaperGridItemElement>(
-                              `div:not([hidden]).thumbnail-item-container ` +
-                              `wallpaper-grid-item:not([hidden])`));
+    return Array.from(
+        seaPenImagesElement!.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                'div:not([hidden]).thumbnail-item-container ' +
+                'wallpaper-grid-item:not([hidden])'));
   }
 
   function getThumbnailLoadingElements(): SeaPenImageLoadingElement[] {
-    return Array.from(seaPenImagesElement!.shadowRoot!.querySelectorAll<
-                      SeaPenImageLoadingElement>(
-        `div:not([hidden]).thumbnail-item-container sea-pen-image-loading`));
+    return Array.from(
+        seaPenImagesElement!.shadowRoot!.querySelectorAll<
+            SeaPenImageLoadingElement>(
+            'div:not([hidden]).thumbnail-item-container sea-pen-image-loading'));
   }
 
   setup(() => {
@@ -373,7 +375,7 @@ suite('SeaPenImagesElementTest', function() {
 
     const feedbackButtons: CrIconButtonElement[] = Array.from(
         seaPenImagesElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
-            `div:not([hidden]).thumbnail-item-container sea-pen-feedback`));
+            'div:not([hidden]).thumbnail-item-container sea-pen-feedback'));
     assertTrue(feedbackButtons.length > 0);
   });
 
@@ -388,7 +390,7 @@ suite('SeaPenImagesElementTest', function() {
 
     assertFalse(
         !!seaPenImagesElement.shadowRoot!.querySelector<CrIconButtonElement>(
-            `div:not([hidden]).thumbnail-item-container sea-pen-feedback`));
+            'div:not([hidden]).thumbnail-item-container sea-pen-feedback'));
   });
 
   test('hide error state on success', async () => {

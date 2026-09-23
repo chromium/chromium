@@ -151,7 +151,7 @@ suite('<cellular-networks-list>', () => {
         .querySelector<PaperSpinnerLiteElement>('#inhibitedSpinner');
   }
 
-  test(`Tether, cellular and eSIM profiles`, async () => {
+  test('Tether, cellular and eSIM profiles', async () => {
     eSimManagerRemote.addEuiccForTest(2);
 
     await init();

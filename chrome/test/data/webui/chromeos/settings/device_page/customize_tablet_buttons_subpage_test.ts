@@ -88,7 +88,7 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
         page!.selectedTablet.settings.tabletButtonRemappings[0]!.name;
     assertEquals(buttonName, 'Back Button');
     page.set(
-        `selectedTablet.settings.tabletButtonRemappings.0.name`,
+        'selectedTablet.settings.tabletButtonRemappings.0.name',
         'new button name');
     await flushTasks();
     assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 0);

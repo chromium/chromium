@@ -92,7 +92,7 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
         page!.selectedTablet.settings.penButtonRemappings[0]!.name;
     assertEquals(buttonName, 'Undo');
     page.set(
-        `selectedTablet.settings.penButtonRemappings.0.name`,
+        'selectedTablet.settings.penButtonRemappings.0.name',
         'new button name');
     await flushTasks();
     assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 0);

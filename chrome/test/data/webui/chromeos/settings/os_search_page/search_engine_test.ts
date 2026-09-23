@@ -104,7 +104,7 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
   });
 });
 
-suite(`SearchPageTestWithSearchSettingsUpdate`, () => {
+suite('SearchPageTestWithSearchSettingsUpdate', () => {
   let searchEngineElement: SettingsSearchEngineElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
 

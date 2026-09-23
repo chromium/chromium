@@ -982,7 +982,7 @@ suite('<os-settings-menu>', () => {
           pageContentData.hostDeviceName = '';
           setPageContentData(pageContentData);
           assertEquals(
-              `Connected to Android phone`, multideviceMenuItem.sublabel);
+              'Connected to Android phone', multideviceMenuItem.sublabel);
         });
 
     test(
