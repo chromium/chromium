@@ -94,8 +94,10 @@
 // - external/xnnpack+/src/f16-vapproxgelu/gen/f16-vapproxgelu-avx512fp16-rational-6-4-div.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vadd-avx512fp16-u64.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vadd-f16c-u16.c
+// - external/xnnpack+/src/f16-vbinary/gen/f16-vadd-scalar-u1.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vaddc-avx512fp16-u64.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vaddc-f16c-u16.c
+// - external/xnnpack+/src/f16-vbinary/gen/f16-vaddc-scalar-u1.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vdiv-avx512fp16-u64.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vdiv-f16c-u8.c
 // - external/xnnpack+/src/f16-vbinary/gen/f16-vdivc-avx512fp16-u64.c
@@ -1112,10 +1114,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  193, 180, 119,  10,  32, 162, 150, 197,
-   92, 129, 197,  55, 135, 121, 165,  47,
-  205, 228, 144, 214,   4, 126, 109,  73,
-   40,  21, 149,  25, 163, 230,  70, 193
+   24,  54, 160,  89, 156,  63, 240, 237,
+  250,  47, 229, 128,  37, 156, 165, 139,
+  107,  92, 176, 194, 172,  89, 208,  43,
+  181,  94, 162,   9, 196, 207, 118, 186
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
