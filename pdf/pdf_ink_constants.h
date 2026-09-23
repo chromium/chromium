@@ -16,7 +16,7 @@ inline constexpr char kInkAnnotationIdentifierKeyV2[] = "GOOG:INKIsInker";
 inline constexpr char kInkTextAnnotationIdentifierKey[] = "GOOG:CrText";
 
 // The current version of text annotations.
-// Version 2 adds strikethrough text styling.
+// Version 2 adds strikethrough and underline text styling.
 inline constexpr int kInkTextAnnotationVersion = 2;
 
 // Since PDFium does not support UserUnit, this is the maximum possible PDF

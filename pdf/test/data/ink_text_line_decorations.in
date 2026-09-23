@@ -46,6 +46,7 @@ stream
   /IsBold 1
   /IsItalic 0
   /IsStrikethrough 1
+  /IsUnderline 1
 >> BDC
 BT
 0 0 0 rg
@@ -67,8 +68,16 @@ ET
 38 102.32 l
 S
 
+20 99.25 m
+38 99.25 l
+S
+
 20 90.32 m
 22.1 90.32 l
+S
+
+20 87.25 m
+22.1 87.25 l
 S
 EMC
 endstream

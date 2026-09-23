@@ -239,7 +239,9 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
 
   std::optional<int> strikethrough =
       GetPageObjectMarkIntParam(mark, "IsStrikethrough");
-  if (version.value() >= 2 && !strikethrough.has_value()) {
+  std::optional<int> underline = GetPageObjectMarkIntParam(mark, "IsUnderline");
+  if (version.value() >= 2 &&
+      (!strikethrough.has_value() || !underline.has_value())) {
     return std::nullopt;
   }
 
@@ -277,6 +279,7 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
   const bool is_bold = bold.value() != 0;
   const bool is_italic = italic.value() != 0;
   const bool is_strikethrough = strikethrough.value_or(0) != 0;
+  const bool is_underline = underline.value_or(0) != 0;
   return InkTextBoxAttributes{
       .rect = bounds,
       .color = SkColorSetRGB(r, g, b),
@@ -288,6 +291,7 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
       .is_bold = is_bold,
       .is_italic = is_italic,
       .is_strikethrough = is_strikethrough,
+      .is_underline = is_underline,
       .text = base::UTF16ToUTF8(text.value()),
   };
 }
