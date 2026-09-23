@@ -796,7 +796,9 @@ Widget* DesktopNativeWidgetAura::GetTopLevelWidget() {
 }
 
 const ui::Compositor* DesktopNativeWidgetAura::GetCompositor() const {
-  return content_window_ ? content_window_->layer()->GetCompositor() : nullptr;
+  return content_window_ && content_window_->GetHost()
+             ? content_window_->GetHost()->compositor()
+             : nullptr;
 }
 
 const ui::Layer* DesktopNativeWidgetAura::GetLayer() const {

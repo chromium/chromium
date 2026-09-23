@@ -1405,6 +1405,13 @@ TEST_F(NativeViewHostAuraTest, AttachFromAnotherWindowTreeHostWithObserver) {
   winA->Init(ui::LAYER_TEXTURED);
   winA->SetBounds({10, 10, 50, 50});
   winA->Show();
+
+  auto child_win = std::make_unique<aura::Window>(nullptr);
+  child_win->SetName("child_win");
+  child_win->Init(ui::LAYER_SOLID_COLOR);
+  child_win->SetEmbedFrameSinkId(viz::FrameSinkId(1, 1));
+  winA->AddChild(child_win.get());
+
   host1->Attach(winA.get());
 
   class BoundsInRootObserver : public aura::WindowObserver {
@@ -1451,6 +1458,7 @@ TEST_F(NativeViewHostAuraTest, AttachFromAnotherWindowTreeHostWithObserver) {
   host2->SetBounds(5, 5, 50, 50);
 
   host2->Attach(winA.get());
+  host2->Detach();
 }
 
 }  // namespace views

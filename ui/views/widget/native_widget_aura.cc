@@ -437,7 +437,8 @@ Widget* NativeWidgetAura::GetTopLevelWidget() {
 }
 
 const ui::Compositor* NativeWidgetAura::GetCompositor() const {
-  return window_ ? window_->layer()->GetCompositor() : nullptr;
+  return window_ && window_->GetHost() ? window_->GetHost()->compositor()
+                                       : nullptr;
 }
 
 const ui::Layer* NativeWidgetAura::GetLayer() const {
