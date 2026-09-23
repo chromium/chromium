@@ -317,14 +317,6 @@ enum class PasskeyCreationEligibility {
 
 - (void)performPasskeyRegistrationWithoutUserInteractionIfPossible:
     (ASPasskeyCredentialRequest*)registrationRequest {
-  // TODO(crbug.com/515318495): Force disable registration to prevent the CPE
-  // startup crash in M149
-  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
-  return;
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code"
-
   PasskeyRequestDetails* passkeyRequestDetails =
       [self passkeyDetailsFromConditionalCreateRequest:registrationRequest];
   if (![passkeyRequestDetails
@@ -347,8 +339,6 @@ enum class PasskeyCreationEligibility {
 
   // Try to create a passkey while user interaction is disallowed.
   [self createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
-
-#pragma clang diagnostic pop
 }
 
 - (void)prepareInterfaceForPasskeyRegistration:
