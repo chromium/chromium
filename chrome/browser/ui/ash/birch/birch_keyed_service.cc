@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
@@ -72,8 +71,10 @@ void OnGotFaviconImageRaw(
 
 BirchKeyedService::BirchKeyedService(Profile* profile,
                                      signin::IdentityManager* identity_manager,
-                                     history::HistoryService* history_service)
+                                     history::HistoryService* history_service,
+                                     favicon::FaviconService* favicon_service)
     : profile_(profile),
+      favicon_service_(favicon_service),
       calendar_provider_(
           std::make_unique<BirchCalendarProvider>(profile, identity_manager)),
       file_suggest_provider_(
@@ -89,6 +90,10 @@ BirchKeyedService::BirchKeyedService(Profile* profile,
       lost_media_provider_(std::make_unique<BirchLostMediaProvider>(profile)),
       refresh_token_waiter_(
           std::make_unique<RefreshTokenWaiter>(identity_manager)) {
+  // BirchKeyedServiceFactory is built for a subset of the profiles
+  // FaviconServiceFactory is (regular and ash-internals, minus guest) and
+  // depends on it, so the service is always present here.
+  CHECK(favicon_service_);
   calendar_provider_->Initialize();
   Shell::Get()->birch_model()->SetClientAndInit(this);
   shell_observation_.Observe(Shell::Get());
@@ -178,19 +183,16 @@ void BirchKeyedService::GetFaviconImage(
     const GURL& url,
     const bool is_page_url,
     base::OnceCallback<void(const ui::ImageModel&)> callback) {
-  favicon::FaviconService* service =
-      FaviconServiceFactory::GetInstance()->GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   favicon_base::IconType icon_type = favicon_base::IconType::kFavicon;
 
   if (is_page_url) {
     const favicon_base::IconTypeSet icon_types = {icon_type};
-    service->GetLargestRawFaviconForPageURL(
+    favicon_service_->GetLargestRawFaviconForPageURL(
         url, {icon_types}, kMinimumFaviconSize,
         base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
         &cancelable_task_tracker_);
   } else {
-    service->GetRawFavicon(
+    favicon_service_->GetRawFavicon(
         url, icon_type, kMinimumFaviconSize,
         base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
         &cancelable_task_tracker_);

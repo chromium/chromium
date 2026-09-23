@@ -65,6 +65,8 @@ BirchKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<BirchKeyedService>(
       profile, IdentityManagerFactory::GetForProfile(profile),
       HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS));
 }
 

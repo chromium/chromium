@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
@@ -22,11 +23,18 @@ namespace ash {
 class BirchKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  protected:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    // Use the real HistoryServiceFactory so the history-backed providers get a
-    // genuine, initialized HistoryService.
-    return {TestingProfile::TestingFactory{
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory()}};
+    // Use the real factories so the history-backed providers get a genuine,
+    // initialized HistoryService, and so BirchKeyedService gets a
+    // FaviconService -- FaviconServiceFactory::ServiceIsNULLWhileTesting() is
+    // true, so without this it would hand out null.
+    return {
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            HistoryServiceFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            FaviconServiceFactory::GetInstance(),
+            FaviconServiceFactory::GetDefaultFactory()},
+    };
   }
 };
 
