@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_SKILLS_MANAGER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "components/skills/public/skill.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace tabs {
 class TabInterface;

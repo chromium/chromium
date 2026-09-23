@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_UI_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_internals.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "content/public/browser/web_ui_controller.h"

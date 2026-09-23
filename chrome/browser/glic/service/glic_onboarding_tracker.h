@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

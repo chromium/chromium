@@ -12,6 +12,8 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class Profile;
+
 namespace glic {
 
 class GlicInstanceCoordinator;

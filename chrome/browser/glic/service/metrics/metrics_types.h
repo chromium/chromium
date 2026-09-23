@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "chrome/browser/glic/glic_enums.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace tabs {

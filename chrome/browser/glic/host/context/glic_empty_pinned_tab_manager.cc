@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
 
+#include "chrome/browser/glic/host/glic.mojom.h"
+
 namespace glic {
 
 GlicEmptyPinnedTabManager::GlicEmptyPinnedTabManager() = default;

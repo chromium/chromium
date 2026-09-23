@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"

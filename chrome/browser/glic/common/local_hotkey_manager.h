@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/glic_enums.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
 #include "components/prefs/pref_change_registrar.h"

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"

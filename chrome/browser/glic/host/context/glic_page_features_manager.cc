@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/browser/navigation_handle.h"

@@ -14,7 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_types.h"
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/common/chrome_render_frame.mojom.h"

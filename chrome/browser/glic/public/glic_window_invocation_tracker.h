@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_WINDOW_INVOCATION_TRACKER_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_WINDOW_INVOCATION_TRACKER_H_
 
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 
 namespace glic {

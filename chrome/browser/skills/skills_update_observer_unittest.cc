@@ -5,6 +5,7 @@
 #include "chrome/browser/skills/skills_update_observer.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

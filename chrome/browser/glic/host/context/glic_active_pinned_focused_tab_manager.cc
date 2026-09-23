@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 
 namespace glic {

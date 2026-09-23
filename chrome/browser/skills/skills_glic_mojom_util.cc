@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/skills/public/skill.h"
 #include "url/gurl.h"
 

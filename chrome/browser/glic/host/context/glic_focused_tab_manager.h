@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"

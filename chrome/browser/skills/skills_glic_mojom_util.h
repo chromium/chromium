@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SKILLS_SKILLS_GLIC_MOJOM_UTIL_H_
 #define CHROME_BROWSER_SKILLS_SKILLS_GLIC_MOJOM_UTIL_H_
 
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "components/skills/public/skill.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 

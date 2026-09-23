@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_PAGE_CONTEXT_FETCHER_H_
 
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
 namespace tabs {

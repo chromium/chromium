@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "components/glic/glic_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 

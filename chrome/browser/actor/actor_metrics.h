@@ -10,7 +10,7 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 

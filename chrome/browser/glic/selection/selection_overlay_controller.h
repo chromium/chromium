@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"

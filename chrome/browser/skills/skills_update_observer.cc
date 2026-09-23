@@ -4,6 +4,7 @@
 
 #include "chrome/browser/skills/skills_update_observer.h"
 
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"

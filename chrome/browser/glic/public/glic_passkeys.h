@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PASSKEYS_H_
 
 #include "base/types/pass_key.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 
 namespace tabs {

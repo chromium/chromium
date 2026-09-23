@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_PIN_CANDIDATE_PROVIDER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_PIN_CANDIDATE_PROVIDER_H_
 
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace glic {

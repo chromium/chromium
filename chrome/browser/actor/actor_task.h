@@ -24,7 +24,7 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/actor_ui_mode.h"

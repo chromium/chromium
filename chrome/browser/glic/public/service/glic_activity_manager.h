@@ -10,7 +10,7 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "components/actor/core/task_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"

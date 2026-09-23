@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ActorTaskListBubbleController;

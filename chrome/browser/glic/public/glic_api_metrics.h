@@ -9,7 +9,7 @@
 
 #include <string_view>
 
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 
 namespace glic {
 
