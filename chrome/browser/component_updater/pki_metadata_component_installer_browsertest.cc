@@ -1432,8 +1432,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
           mtc_metadata_proto.add_mtc_anchor_data();
       mtc_anchor_metadata->set_ca_id(
           base::as_string_view(kMtcCaInMetadataWithNoLandmarksId));
-      chrome_root_store::MtcIndexRange* revoked_range =
-          mtc_anchor_metadata->add_revoked_indices();
+      chrome_root_store::MtcSerialRange* revoked_range =
+          mtc_anchor_metadata->add_revoked_serials();
       revoked_range->set_start_inclusive(5);
       revoked_range->set_end_exclusive(10);
     }
@@ -1685,8 +1685,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
           mtc_metadata_proto.add_mtc_anchor_data();
       mtc_anchor_metadata->set_ca_id(
           base::as_string_view(kMtcCaInMetadataWithNoLandmarksId));
-      chrome_root_store::MtcIndexRange* revoked_range =
-          mtc_anchor_metadata->add_revoked_indices();
+      chrome_root_store::MtcSerialRange* revoked_range =
+          mtc_anchor_metadata->add_revoked_serials();
       revoked_range->set_start_inclusive(5);
       revoked_range->set_end_exclusive(10);
     }
@@ -2418,7 +2418,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
     // Add revoked range that contains 1 certificate.
     {
-      auto* revoked_range = mtc_anchor_data->add_revoked_indices();
+      auto* revoked_range = mtc_anchor_data->add_revoked_serials();
       revoked_range->set_start_inclusive(test_cert_data[1].mtc_serial);
       revoked_range->set_end_exclusive(test_cert_data[2].mtc_serial);
       test_cert_data[1].expect_is_revoked = true;
@@ -2426,7 +2426,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
     // Add revoked range that contains multiple certificates.
     {
-      auto* revoked_range = mtc_anchor_data->add_revoked_indices();
+      auto* revoked_range = mtc_anchor_data->add_revoked_serials();
       revoked_range->set_start_inclusive(test_cert_data[3].mtc_serial);
       revoked_range->set_end_exclusive(test_cert_data[5].mtc_serial);
       test_cert_data[3].expect_is_revoked = true;
@@ -2807,7 +2807,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     issuer->set_realm(realm());
     auto* constraint = issuer->add_constraints();
     constraint->add_permitted_dns_names("example.org");
-    constraint->set_index_not_after((kLogNumber << 48) + mtc_log_index2);
+    constraint->set_serial_not_after((kLogNumber << 48) + mtc_log_index2);
 
     InstallCRSUpdate(root_store_proto, mtc_config);
   }

@@ -251,13 +251,13 @@ void MaybeWriteConstraintsConstant(
     }
 
     constraint_params.push_back(
-        constraint.has_index_not_after()
-            ? base::NumberToString(constraint.index_not_after())
+        constraint.has_serial_not_after()
+            ? base::NumberToString(constraint.serial_not_after())
             : kNulloptString);
 
     constraint_params.push_back(
-        constraint.has_index_after()
-            ? base::NumberToString(constraint.index_after())
+        constraint.has_serial_after()
+            ? base::NumberToString(constraint.serial_after())
             : kNulloptString);
 
     constraint_params.push_back(

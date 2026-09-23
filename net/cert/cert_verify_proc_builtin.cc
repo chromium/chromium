@@ -905,25 +905,21 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     }
 
     if (path->trust_anchor.MTCAnchor() &&
-        (constraint.index_not_after.has_value() ||
-         constraint.index_after.has_value())) {
-      // Note: the index_not_after and index_after constraints are misnamed,
-      // they actually operate on serial numbers, not indexes. (They were named
-      // based on an older MTC draft.)
-      // TODO(crbug.com/452986180): is it plausible to rename them in the proto?
+        (constraint.serial_not_after.has_value() ||
+         constraint.serial_after.has_value())) {
       const auto& leaf = path->certs.front();
       uint64_t serial;
       if (!bssl::der::ParseUint64(leaf->tbs().serial_number, &serial)) {
         return false;
       }
 
-      if (constraint.index_not_after.has_value() &&
-          serial > constraint.index_not_after) {
+      if (constraint.serial_not_after.has_value() &&
+          serial > constraint.serial_not_after) {
         return false;
       }
 
-      if (constraint.index_after.has_value() &&
-          serial <= constraint.index_after) {
+      if (constraint.serial_after.has_value() &&
+          serial <= constraint.serial_after) {
         return false;
       }
     }

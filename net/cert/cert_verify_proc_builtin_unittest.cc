@@ -2097,54 +2097,58 @@ TEST_F(CertVerifyProcBuiltinTest,
     bool expected_verification_success;
   };
   const TestCase tests[] = {
-      // index_not_after cases:
-      {{.index_not_after = leaf_serial + 1}, true},
-      {{.index_not_after = leaf_serial}, true},
-      {{.index_not_after = leaf_serial - 1}, false},
-      {{.index_not_after = leaf_serial - 2}, false},
-      // index_after cases:
-      {{.index_after = leaf_serial + 1}, false},
-      {{.index_after = leaf_serial}, false},
-      {{.index_after = leaf_serial - 1}, true},
-      {{.index_after = leaf_serial - 2}, true},
-      // Both index_not_after and index_after cases:
-      {{.index_not_after = leaf_serial + 1, .index_after = leaf_serial - 2},
+      // serial_not_after cases:
+      {{.serial_not_after = leaf_serial + 1}, true},
+      {{.serial_not_after = leaf_serial}, true},
+      {{.serial_not_after = leaf_serial - 1}, false},
+      {{.serial_not_after = leaf_serial - 2}, false},
+      // serial_after cases:
+      {{.serial_after = leaf_serial + 1}, false},
+      {{.serial_after = leaf_serial}, false},
+      {{.serial_after = leaf_serial - 1}, true},
+      {{.serial_after = leaf_serial - 2}, true},
+      // Both serial_not_after and serial_after cases:
+      {{.serial_not_after = leaf_serial + 1, .serial_after = leaf_serial - 2},
        true},
-      {{.index_not_after = leaf_serial, .index_after = leaf_serial - 1}, true},
-      {{.index_not_after = leaf_serial + 1, .index_after = leaf_serial}, false},
-      {{.index_not_after = leaf_serial - 1, .index_after = leaf_serial - 2},
+      {{.serial_not_after = leaf_serial, .serial_after = leaf_serial - 1},
+       true},
+      {{.serial_not_after = leaf_serial + 1, .serial_after = leaf_serial},
+       false},
+      {{.serial_not_after = leaf_serial - 1, .serial_after = leaf_serial - 2},
        false},
 
-      // Invalid combinations of index_not_after and index_after. These are
+      // Invalid combinations of serial_not_after and serial_after. These are
       // cases in which the constraint can never be valid, ideally there should
       // be something that prevents creating a root store with such a
       // constraint. But test them anyway just to ensure that these do behave
       // as expected.
       //
-      // index_not_after == index_after:
-      {{.index_not_after = leaf_serial + 1, .index_after = leaf_serial + 1},
+      // serial_not_after == serial_after:
+      {{.serial_not_after = leaf_serial + 1, .serial_after = leaf_serial + 1},
        false},
-      {{.index_not_after = leaf_serial, .index_after = leaf_serial}, false},
-      {{.index_not_after = leaf_serial - 1, .index_after = leaf_serial - 1},
+      {{.serial_not_after = leaf_serial, .serial_after = leaf_serial}, false},
+      {{.serial_not_after = leaf_serial - 1, .serial_after = leaf_serial - 1},
        false},
-      {{.index_not_after = leaf_serial - 2, .index_after = leaf_serial - 2},
+      {{.serial_not_after = leaf_serial - 2, .serial_after = leaf_serial - 2},
        false},
-      // index_not_after < index_after:
-      {{.index_not_after = leaf_serial, .index_after = leaf_serial + 1}, false},
-      {{.index_not_after = leaf_serial - 1, .index_after = leaf_serial}, false},
-      {{.index_not_after = leaf_serial - 2, .index_after = leaf_serial - 1},
+      // serial_not_after < serial_after:
+      {{.serial_not_after = leaf_serial, .serial_after = leaf_serial + 1},
+       false},
+      {{.serial_not_after = leaf_serial - 1, .serial_after = leaf_serial},
+       false},
+      {{.serial_not_after = leaf_serial - 2, .serial_after = leaf_serial - 1},
        false},
   };
 
   for (const auto& test : tests) {
     SCOPED_TRACE("leaf_serial = " + base::NumberToString(leaf_serial));
-    SCOPED_TRACE("index_not_after = " +
-                 (test.constraint.index_not_after
-                      ? base::NumberToString(*test.constraint.index_not_after)
+    SCOPED_TRACE("serial_not_after = " +
+                 (test.constraint.serial_not_after
+                      ? base::NumberToString(*test.constraint.serial_not_after)
                       : "nullopt"));
-    SCOPED_TRACE("index_after = " +
-                 (test.constraint.index_after
-                      ? base::NumberToString(*test.constraint.index_after)
+    SCOPED_TRACE("serial_after = " +
+                 (test.constraint.serial_after
+                      ? base::NumberToString(*test.constraint.serial_after)
                       : "nullopt"));
 
     SetMockChromeRootConstraints(base::span_from_ref(test.constraint));

@@ -42,15 +42,15 @@ message ConstraintSet {
   // represented in this message, but moved to TrustAnchor.
   reserved 6, 7;
 
-  // A leaf MTC chaining to a MtcAnchor with this constraint must not have an
-  // index higher than the specified value. Ignored if specified on a classical
+  // A leaf MTC chaining to a MtcAnchor with this constraint must not have a
+  // serial higher than the specified value. Ignored if specified on a classical
   // TrustAnchor.
-  optional uint64 index_not_after = 8;
+  optional uint64 serial_not_after = 8;
 
-  // A leaf MTC chaining to a MtcAnchor with this constraint must have an index
+  // A leaf MTC chaining to a MtcAnchor with this constraint must have a serial
   // higher than the specified value. Ignored if specified on a classical
   // TrustAnchor.
-  optional uint64 index_after = 9;
+  optional uint64 serial_after = 9;
 
   // The leaf certificate validity notBefore time must not be after the
   // specified value, specified in seconds since the unix epoch.
@@ -155,9 +155,7 @@ message MtcSubTree {
 }
 
 // Represents a range of Merkle Tree Certificate serials.
-// For the Cloudflare experiment, these are indices in the log instead of
-// serials as defined in the MTC spec.
-message MtcIndexRange {
+message MtcSerialRange {
   // The start index of the range.
   optional uint64 start_inclusive = 1;
 
@@ -188,7 +186,7 @@ message MtcAnchorData {
   // Ranges of Merkle Tree Certificate indices which are revoked.
   // Serial numbers contain information about the log number and cert index, so
   // this is tracked at the CA level rather than the log level.
-  repeated MtcIndexRange revoked_indices = 4;
+  repeated MtcSerialRange revoked_serials = 4;
 
   // The CA ID in binary representation. This must match
   // the `base_id` for an issuer in the signer set, or this MtcAnchorData

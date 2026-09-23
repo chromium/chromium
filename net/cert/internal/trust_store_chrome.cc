@@ -68,8 +68,8 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Version> min_version,
     std::optional<base::Version> max_version_exclusive,
     std::vector<std::string> permitted_dns_names,
-    std::optional<uint64_t> index_not_after,
-    std::optional<uint64_t> index_after,
+    std::optional<uint64_t> serial_not_after,
+    std::optional<uint64_t> serial_after,
     std::optional<base::Time> validity_starts_not_after,
     std::optional<base::Time> validity_starts_after)
     : sct_not_after(sct_not_after),
@@ -77,8 +77,8 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
       min_version(std::move(min_version)),
       max_version_exclusive(std::move(max_version_exclusive)),
       permitted_dns_names(std::move(permitted_dns_names)),
-      index_not_after(index_not_after),
-      index_after(index_after),
+      serial_not_after(serial_not_after),
+      serial_after(serial_after),
       validity_starts_not_after(validity_starts_not_after),
       validity_starts_after(validity_starts_after) {}
 
@@ -88,8 +88,8 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
       sct_all_after(constraints.sct_all_after),
       min_version(constraints.min_version),
       max_version_exclusive(constraints.max_version_exclusive),
-      index_not_after(constraints.index_not_after),
-      index_after(constraints.index_after),
+      serial_not_after(constraints.serial_not_after),
+      serial_after(constraints.serial_after),
       validity_starts_not_after(constraints.validity_starts_not_after),
       validity_starts_after(constraints.validity_starts_after) {
   for (std::string_view name : constraints.permitted_dns_names) {
@@ -189,11 +189,11 @@ std::optional<std::vector<ChromeRootCertConstraints>> CreateConstraints(
             : std::nullopt,
         min_version, max_version_exclusive,
         base::ToVector(constraint.permitted_dns_names()),
-        constraint.has_index_not_after()
-            ? std::optional(constraint.index_not_after())
+        constraint.has_serial_not_after()
+            ? std::optional(constraint.serial_not_after())
             : std::nullopt,
-        constraint.has_index_after() ? std::optional(constraint.index_after())
-                                     : std::nullopt,
+        constraint.has_serial_after() ? std::optional(constraint.serial_after())
+                                      : std::nullopt,
         constraint.has_validity_starts_not_after_sec()
             ? std::optional(
                   base::Time::UnixEpoch() +
@@ -1098,20 +1098,20 @@ std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
     return std::nullopt;
   }
 
-  std::vector<std::pair<uint64_t, uint64_t>> revoked_indices_storage;
-  revoked_indices_storage.reserve(proto_mtc_anchor_data.revoked_indices_size());
-  for (const auto& revoked_range : proto_mtc_anchor_data.revoked_indices()) {
+  std::vector<std::pair<uint64_t, uint64_t>> revoked_serials_storage;
+  revoked_serials_storage.reserve(proto_mtc_anchor_data.revoked_serials_size());
+  for (const auto& revoked_range : proto_mtc_anchor_data.revoked_serials()) {
     if (!revoked_range.has_end_exclusive() ||
         !revoked_range.has_start_inclusive()) {
       return std::nullopt;
     }
-    revoked_indices_storage.emplace_back(revoked_range.end_exclusive(),
+    revoked_serials_storage.emplace_back(revoked_range.end_exclusive(),
                                          revoked_range.start_inclusive());
   }
 
   ChromeRootStoreMtcMetadata::MtcAnchorData anchor_data;
   anchor_data.revoked_serials =
-      base::flat_map<uint64_t, uint64_t>(std::move(revoked_indices_storage));
+      base::flat_map<uint64_t, uint64_t>(std::move(revoked_serials_storage));
 
   for (const auto& proto_mtc_log_data : proto_mtc_anchor_data.mtc_log_data()) {
     if (!proto_mtc_log_data.has_log_number() ||

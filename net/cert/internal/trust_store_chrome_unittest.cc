@@ -329,8 +329,8 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
       proto_constraints->set_max_version_exclusive("125.0.6368.2");
       proto_constraints->add_permitted_dns_names("foo.example.com");
       proto_constraints->add_permitted_dns_names("bar.example.com");
-      proto_constraints->set_index_not_after(1234);
-      proto_constraints->set_index_after(987);
+      proto_constraints->set_serial_not_after(1234);
+      proto_constraints->set_serial_after(987);
       proto_constraints->set_validity_starts_not_after_sec(56781);
       proto_constraints->set_validity_starts_after_sec(1236890);
 
@@ -384,8 +384,8 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
                 std::vector<uint32_t>({125, 0, 6368, 2}));
       EXPECT_THAT(constraints[0].permitted_dns_names,
                   testing::ElementsAre("foo.example.com", "bar.example.com"));
-      EXPECT_EQ(constraints[0].index_not_after, 1234U);
-      EXPECT_EQ(constraints[0].index_after, 987U);
+      EXPECT_EQ(constraints[0].serial_not_after, 1234U);
+      EXPECT_EQ(constraints[0].serial_after, 987U);
 
       ASSERT_TRUE(constraints[0].validity_starts_not_after.has_value());
       EXPECT_EQ(constraints[0]
@@ -1730,8 +1730,8 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProto) {
     auto* anchor = proto.add_mtc_anchor_data();
     anchor->set_ca_id("\x01\x03\x06\x01\x04\x02");
 
-    // Add revoked indices
-    auto* revoked = anchor->add_revoked_indices();
+    // Add revoked serials
+    auto* revoked = anchor->add_revoked_serials();
     revoked->set_start_inclusive(500);
     revoked->set_end_exclusive(600);
 
@@ -1763,13 +1763,13 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProto) {
       subtree->set_hash(std::string(32, '\xcc'));
     }
   }
-  // Add plants format MtcAnchorData that has revoked_indices but no log_data.
+  // Add plants format MtcAnchorData that has revoked_serials but no log_data.
   {
     auto* anchor = proto.add_mtc_anchor_data();
     anchor->set_ca_id("\x01\x03\x06\x01\x04\x03");
 
-    // Add revoked indices
-    auto* revoked = anchor->add_revoked_indices();
+    // Add revoked serials
+    auto* revoked = anchor->add_revoked_serials();
     revoked->set_start_inclusive(700);
     revoked->set_end_exclusive(800);
   }
