@@ -126,13 +126,13 @@ public class FakeIdentityManager implements IdentityManager {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrimaryAccount = accountInfo;
+                    @PrimaryAccountChangeEvent.Type
+                    int eventType =
+                            mPrimaryAccount != null
+                                    ? PrimaryAccountChangeEvent.Type.SET
+                                    : PrimaryAccountChangeEvent.Type.CLEARED;
                     for (Observer observer : mObservers) {
-                        @PrimaryAccountChangeEvent.Type
-                        int type =
-                                mPrimaryAccount == null
-                                        ? PrimaryAccountChangeEvent.Type.SET
-                                        : PrimaryAccountChangeEvent.Type.CLEARED;
-                        observer.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(type));
+                        observer.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(eventType));
                     }
                 });
     }
