@@ -409,6 +409,7 @@ export class OmniboxEverywhereOmniboxElement extends
     }
     this.notifyHelpBubbleAnchorActivated(
         'kOmniboxEverywhereLensButtonElementId');
+    this.hideHelpBubble('kOmniboxEverywhereLensButtonElementId');
     this.isScreenshotMenuOpen = true;
     const anchor = e.currentTarget as HTMLElement;
     const rect = anchor.getBoundingClientRect();

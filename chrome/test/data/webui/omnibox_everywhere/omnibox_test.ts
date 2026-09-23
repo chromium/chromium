@@ -511,6 +511,24 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertFalse(lensContainer.classList.contains('menu-open'));
       });
 
+  test('clicking lens button hides lens IPH help bubble', async () => {
+    let hideCalledWith = '';
+    const originalHideHelpBubble = omnibox.hideHelpBubble.bind(omnibox);
+    omnibox.hideHelpBubble = (nativeId: string) => {
+      hideCalledWith = nativeId;
+      return originalHideHelpBubble(nativeId);
+    };
+
+    const lensButton =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+    assertTrue(!!lensButton);
+
+    lensButton.click();
+    await microtasksFinished();
+
+    assertEquals('kOmniboxEverywhereLensButtonElementId', hideCalledWith);
+  });
+
   test(
       'clicking lens button again toggles it off without calling ' +
           'showScreenshotMenu again',
@@ -1068,6 +1086,27 @@ suite('OmniboxEverywhereComposeboxTest', () => {
 
         assertFalse(composebox.isScreenshotMenuOpen);
         assertFalse(lensContainer.classList.contains('menu-open'));
+      });
+
+  test(
+      'clicking lens button in composebox hides lens IPH help bubble',
+      async () => {
+        let hideCalledWith = '';
+        const originalHideHelpBubble =
+            composebox.hideHelpBubble.bind(composebox);
+        composebox.hideHelpBubble = (nativeId: string) => {
+          hideCalledWith = nativeId;
+          return originalHideHelpBubble(nativeId);
+        };
+
+        const lensButton = composebox.shadowRoot.querySelector<HTMLElement>(
+            '#lensSearchButton');
+        assertTrue(!!lensButton);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertEquals('kOmniboxEverywhereLensButtonElementId', hideCalledWith);
       });
 
   test(

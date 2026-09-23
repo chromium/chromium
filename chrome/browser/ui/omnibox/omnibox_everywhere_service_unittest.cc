@@ -103,4 +103,20 @@ TEST_F(OmniboxEverywhereServiceTest, ProfileAccessorReturnsProfile) {
   ASSERT_TRUE(service);
   EXPECT_EQ(&profile, service->profile());
 }
+
+TEST_F(OmniboxEverywhereServiceTest, OnLensSearchClickedDoesNotCrash) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+  service->OnLensSearchClicked();
+}
+
+TEST_F(OmniboxEverywhereServiceTest, OnScreensharePickerOpenedDoesNotCrash) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+  service->OnScreensharePickerOpened();
+}
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
