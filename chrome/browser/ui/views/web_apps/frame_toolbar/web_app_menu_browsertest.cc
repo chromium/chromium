@@ -127,7 +127,7 @@ class WebAppMenuBrowserTest
 
 void WebAppMenuBrowserTest::ShowUi(const std::string& name) {
   // Include mnemonics in screenshots so that we detect changes to them.
-  menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
+  menu_button()->ShowMenuWithFlags(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
 }
 
 bool WebAppMenuBrowserTest::VerifyUi() {

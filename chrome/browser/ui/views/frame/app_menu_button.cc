@@ -94,6 +94,14 @@ void AppMenuButton::ShowMenu() {
   menu_button_controller_->Activate(nullptr);
 }
 
+AppMenu* AppMenuButton::GetAppMenu() {
+  return menu_.get();
+}
+
+AppMenuModel* AppMenuButton::GetAppMenuModel() {
+  return menu_model_.get();
+}
+
 void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
   observer_list_.AddObserver(observer);
 }

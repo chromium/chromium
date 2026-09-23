@@ -40,6 +40,9 @@ class WebUIAppMenuControl : public AppMenuControl {
   views::DialogDelegate* GetDialogDelegate() override;
   void CloseMenu() override;
   void ShowMenu() override;
+  void ShowMenuWithFlags(int run_types) override;
+  AppMenu* GetAppMenu() override;
+  AppMenuModel* GetAppMenuModel() override;
   void AddObserver(AppMenuButtonObserver* observer) override;
   void RemoveObserver(AppMenuButtonObserver* observer) override;
   bool HasFocus() const override;
@@ -60,6 +63,10 @@ class WebUIAppMenuControl : public AppMenuControl {
                          ui::mojom::MenuSourceType source);
 
  private:
+  void RunMenu(const gfx::Rect& anchor_bounds,
+               ui::mojom::MenuSourceType source,
+               int run_flags);
+
   // Updates the open state of the app menu control and notifies the delegate.
   void UpdateOpenState();
 

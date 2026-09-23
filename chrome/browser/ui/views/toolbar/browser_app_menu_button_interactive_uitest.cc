@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -81,26 +82,14 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveFeaturePromoTest {
 
   auto CheckAlertStatus(ui::ElementIdentifier element_id, bool is_alerted) {
     return Check([this, element_id, is_alerted]() mutable {
-      auto* button = views::AsViewClass<BrowserAppMenuButton>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kToolbarAppMenuButtonElementId,
-              BrowserView::GetBrowserViewForBrowser(browser())
-                  ->GetElementContext()));
-      auto* model = button->app_menu_model();
-      EXPECT_EQ(model->IsElementIdAlerted(element_id), is_alerted);
+      AppMenuTestAccessor accessor(browser());
+      EXPECT_EQ(accessor.IsElementIdAlerted(element_id), is_alerted);
       return true;
     });
   }
 
   auto CloseMenu() {
-    return Do([this]() mutable {
-      auto* button = views::AsViewClass<BrowserAppMenuButton>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kToolbarAppMenuButtonElementId,
-              BrowserView::GetBrowserViewForBrowser(browser())
-                  ->GetElementContext()));
-      button->CloseMenu();
-    });
+    return Do([this]() mutable { AppMenuTestAccessor(browser()).CloseMenu(); });
   }
 
  private:

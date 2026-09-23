@@ -14,11 +14,11 @@
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -132,13 +132,12 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest, OpenDialogFromAppMenu) {
   // Start with one tab showing about:blank.
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
-  std::unique_ptr<test::AppMenuTestApi> app_menu_test_api =
-      test::AppMenuTestApi::Create(browser());
-  app_menu_test_api->ShowMenu();
+  AppMenuTestAccessor app_menu(browser());
+  app_menu.ShowMenu();
 
   MediaRouterDialogController* dialog_controller = GetDialogController();
   ASSERT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
-  app_menu_test_api->ExecuteCommand(IDC_ROUTE_MEDIA);
+  app_menu.ExecuteCommand(IDC_ROUTE_MEDIA);
   views::test::WidgetVisibleWaiter(GetDialogWidget()).Wait();
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 

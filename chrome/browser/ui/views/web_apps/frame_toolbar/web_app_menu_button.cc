@@ -78,8 +78,9 @@ void WebAppMenuButton::StartHighlightAnimation() {
 }
 
 void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
-  ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
-                              : views::MenuRunner::NO_FLAGS);
+  ShowMenuWithFlags(event.IsKeyEvent()
+                        ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+                        : views::MenuRunner::NO_FLAGS);
   // Add UMA for how many times the web app menu button are clicked.
   base::RecordAction(
       base::UserMetricsAction("HostedAppMenuButtonButton_Clicked"));
@@ -135,7 +136,7 @@ base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
   return label()->AddTextChangedCallback(callback);
 }
 
-void WebAppMenuButton::ShowMenu(int run_types) {
+void WebAppMenuButton::ShowMenuWithFlags(int run_types) {
   BrowserWindowInterface* browser = browser_view_->browser();
   RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
           run_types);

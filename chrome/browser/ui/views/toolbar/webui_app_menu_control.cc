@@ -114,8 +114,26 @@ void WebUIAppMenuControl::CloseMenu() {
 }
 
 void WebUIAppMenuControl::ShowMenu() {
-  HandleContextMenu(GetAnchor().GetAnchorRect(),
-                    ui::mojom::MenuSourceType::kKeyboard);
+  ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+}
+
+void WebUIAppMenuControl::ShowMenuWithFlags(int run_types) {
+  if (IsMenuShowing()) {
+    return;
+  }
+  ui::mojom::MenuSourceType source =
+      (run_types & views::MenuRunner::INVOKED_FROM_KEYBOARD)
+          ? ui::mojom::MenuSourceType::kKeyboard
+          : ui::mojom::MenuSourceType::kNone;
+  RunMenu(GetAnchor().GetAnchorRect(), source, run_types);
+}
+
+AppMenu* WebUIAppMenuControl::GetAppMenu() {
+  return menu_.get();
+}
+
+AppMenuModel* WebUIAppMenuControl::GetAppMenuModel() {
+  return menu_model_.get();
 }
 
 void WebUIAppMenuControl::AddObserver(AppMenuButtonObserver* observer) {
@@ -147,6 +165,17 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
     return;
   }
 
+  int run_flags = views::MenuRunner::HAS_MNEMONICS;
+  if (source == ui::mojom::MenuSourceType::kKeyboard) {
+    run_flags |= views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                 views::MenuRunner::INVOKED_FROM_KEYBOARD;
+  }
+  RunMenu(anchor_bounds, source, run_flags);
+}
+
+void WebUIAppMenuControl::RunMenu(const gfx::Rect& anchor_bounds,
+                                  ui::mojom::MenuSourceType source,
+                                  int run_flags) {
   BrowserWindowInterface* browser_window = delegate_->GetBrowser();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_window);
@@ -164,12 +193,6 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
       toolbar_view, browser, toolbar_view->app_menu_icon_controller(),
       AppMenuModel::GetAlertItemForRunningTutorial(browser));
   menu_model_->Init();
-
-  int run_flags = views::MenuRunner::HAS_MNEMONICS;
-  if (source == ui::mojom::MenuSourceType::kKeyboard) {
-    run_flags |= views::MenuRunner::SHOULD_SHOW_MNEMONICS |
-                 views::MenuRunner::INVOKED_FROM_KEYBOARD;
-  }
 
   menu_ = std::make_unique<AppMenu>(
       browser, menu_model_.get(), run_flags,

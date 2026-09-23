@@ -34,10 +34,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
 
-  // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
-  // with the menu.
-  using AppMenuButton::ShowMenu;
-  void ShowMenu(int run_types);
+  // AppMenuControl:
+  void ShowMenuWithFlags(int run_types) override;
 
   // Opens the app menu immediately during a drag-and-drop operation.
   // Used only in testing.

@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class AppMenu;
 class AppMenuButtonObserver;
+class AppMenuModel;
 namespace views {
 class AccessiblePaneView;
 class DialogDelegate;
@@ -37,8 +39,18 @@ class AppMenuControl {
   // Closes the app menu if it is currently showing.
   virtual void CloseMenu() = 0;
 
-  // Shows the app menu.
+  // Shows the app menu simulating user activation (handles promo checks,
+  // animations, and default mnemonic flags).
   virtual void ShowMenu() = 0;
+
+  // Shows the app menu directly with specified MenuRunner::RunTypes flags.
+  virtual void ShowMenuWithFlags(int run_types) = 0;
+
+  // Returns the AppMenu, or nullptr if none exists.
+  virtual AppMenu* GetAppMenu() = 0;
+
+  // Returns the AppMenuModel, or nullptr if none exists.
+  virtual AppMenuModel* GetAppMenuModel() = 0;
 
   // Adds or removes an observer to be notified of app menu events.
   virtual void AddObserver(AppMenuButtonObserver* observer) = 0;

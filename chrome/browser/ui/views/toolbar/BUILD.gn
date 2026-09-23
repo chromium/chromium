@@ -386,6 +386,8 @@ if (!is_android) {
     sources = [
       "mock_webui_toolbar_control_delegate.cc",
       "mock_webui_toolbar_control_delegate.h",
+      "test_support/app_menu_test_accessor.cc",
+      "test_support/app_menu_test_accessor.h",
       "webui_test_utils.cc",
       "webui_test_utils.h",
     ]
@@ -396,6 +398,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button",

@@ -46,6 +46,9 @@ class AppMenuButton : public ToolbarButton, public AppMenuControl {
   views::DialogDelegate* GetDialogDelegate() override;
   void CloseMenu() override;
   void ShowMenu() override;
+  void ShowMenuWithFlags(int run_types) override = 0;
+  AppMenu* GetAppMenu() override;
+  AppMenuModel* GetAppMenuModel() override;
   void AddObserver(AppMenuButtonObserver* observer) override;
   void RemoveObserver(AppMenuButtonObserver* observer) override;
   bool HasFocus() const override;

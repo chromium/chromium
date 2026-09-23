@@ -80,7 +80,7 @@ void BrowserAppMenuButton::SetTypeAndSeverity(
   UpdateThemeBasedState();
 }
 
-void BrowserAppMenuButton::ShowMenu(int run_types) {
+void BrowserAppMenuButton::ShowMenuWithFlags(int run_types) {
   if (IsMenuShowing()) {
     return;
   }
@@ -287,15 +287,16 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
-                                 views::MenuRunner::INVOKED_FROM_KEYBOARD)
-                              : views::MenuRunner::NO_FLAGS);
+  ShowMenuWithFlags(event.IsKeyEvent()
+                        ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                           views::MenuRunner::INVOKED_FROM_KEYBOARD)
+                        : views::MenuRunner::NO_FLAGS);
 }
 
 bool BrowserAppMenuButton::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
-    ShowMenu(views::MenuRunner::NO_FLAGS);
+    ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {

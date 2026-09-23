@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
   EXPECT_FALSE(menu_button->IsMenuShowing());
   EXPECT_FALSE(menu_button->action_app_menu());
 
-  menu_button->ShowMenu(views::MenuRunner::NO_FLAGS);
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
   EXPECT_TRUE(menu_button->IsMenuShowing());
   ActionAppMenu* action_menu = menu_button->action_app_menu();
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenuDarkMode) {
   BrowserAppMenuButton* menu_button = GetMenuButton();
   ASSERT_TRUE(menu_button);
 
-  menu_button->ShowMenu(views::MenuRunner::NO_FLAGS);
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu_button->IsMenuShowing());
   ActionAppMenu* action_menu = menu_button->action_app_menu();
   ASSERT_TRUE(action_menu);
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   EXPECT_FALSE(menu_button->IsMenuShowing());
   EXPECT_FALSE(menu_button->action_app_menu());
 
-  menu_button->ShowMenu(views::MenuRunner::NO_FLAGS);
+  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
   EXPECT_TRUE(menu_button->IsMenuShowing());
   ActionAppMenu* action_menu = menu_button->action_app_menu();
