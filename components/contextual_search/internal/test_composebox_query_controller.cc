@@ -134,6 +134,9 @@ TestComposeboxQueryController::CreateEndpointFetcher(
       sent_interaction_requests_.push_back(sent_request);
     } else {
       sent_upload_requests_.push_back(sent_request);
+      if (disable_file_upload_response_) {
+        disable_response = true;
+      }
     }
   }
 

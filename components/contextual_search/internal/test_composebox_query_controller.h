@@ -79,6 +79,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   using ComposeboxQueryController::ClearClusterInfo;
   using ComposeboxQueryController::
       CreateFileUploadRequestProtoWithImageDataAndContinue;
+  using ComposeboxQueryController::HandleUploadResponse;
 
   // Mutators.
   void set_fake_cluster_info_response(
@@ -104,6 +105,10 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       bool set_next_file_upload_request_should_return_error) {
     next_file_upload_request_should_return_error_ =
         set_next_file_upload_request_should_return_error;
+  }
+
+  void set_disable_file_upload_response(bool disable) {
+    disable_file_upload_response_ = disable;
   }
 
   void set_enable_cluster_info_ttl(bool enable_cluster_info_ttl) {
@@ -239,6 +244,9 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // If true, the next file upload request will return an error.
   bool next_file_upload_request_should_return_error_ = false;
+
+  // If true, file upload requests will not respond.
+  bool disable_file_upload_response_ = false;
 
   // If true, the cluster info will expire when the TTL expires as normal.
   // Set to false by default to prevent flakiness in tests that expect the

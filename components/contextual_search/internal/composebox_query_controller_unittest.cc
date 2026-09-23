@@ -264,7 +264,9 @@ class ComposeboxQueryControllerTest
   }
 
   void TearDown() override {
-    controller_->RemoveObserver(this);
+    if (controller_) {
+      controller_->RemoveObserver(this);
+    }
     while (!controller_state_future_.IsEmpty()) {
       controller_state_future_.Take();
     }
@@ -626,6 +628,8 @@ class ComposeboxQueryControllerTest
 
   // Returns the task environment.
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
+  void ResetController() { controller_.reset(); }
 
   base::test::RepeatingTestFuture<QueryControllerState>
       controller_state_future_;
@@ -8320,6 +8324,139 @@ TEST_F(ComposeboxQueryControllerTest,
       "Lens.Composebox.SearchUrl.ContextFilesAttached", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Composebox.SearchUrl.ContextFilesValidatedAndIncluded", 0, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ContextUploadTerminalStatus_Success) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  controller().ClearFiles();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::kSuccess, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ContextUploadTerminalStatus_HttpError) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  controller().set_next_file_upload_request_should_return_error(true);
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    contextual_search::ContextUploadStatus::kUploadFailed,
+                    contextual_search::ContextUploadErrorType::kServerError);
+
+  controller().ClearFiles();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::kHttpError, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ContextUploadTerminalStatus_Cancelled) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  EXPECT_TRUE(controller().DeleteFile(file_token));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::kCancelled, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ContextUploadTerminalStatus_InFlightAtTeardown) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  controller().set_disable_file_upload_response(true);
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+  WaitForClusterInfo();
+
+  // Consume processing, suggest signals ready, and upload started status
+  // events.
+  auto status1 = context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(status1),
+            contextual_search::ContextUploadStatus::kProcessing);
+  auto status2 = context_upload_status_future_.Take();
+  EXPECT_EQ(
+      std::get<2>(status2),
+      contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady);
+  auto status3 = context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(status3),
+            contextual_search::ContextUploadStatus::kUploadStarted);
+
+  // Destroy the controller while the upload request is in-flight.
+  ResetController();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::
+          kInFlightAtTeardown,
+      1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ContextUploadTerminalStatus_NeverIssued) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->is_page_context_eligible = false;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  auto status1 = context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(status1),
+            contextual_search::ContextUploadStatus::kProcessing);
+  auto status2 = context_upload_status_future_.Take();
+  EXPECT_EQ(std::get<2>(status2),
+            contextual_search::ContextUploadStatus::kValidationFailed);
+
+  // Destroy the controller.
+  ResetController();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::kNeverIssued, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ContextUploadTerminalStatus_ResponseAfterFileInfoDestroyed) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  // Call HandleUploadResponse for a non-existent / destroyed file token.
+  controller().HandleUploadResponse(
+      file_token, /*request_index=*/0,
+      std::make_unique<endpoint_fetcher::EndpointResponse>());
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ContextUpload.TerminalStatus",
+      ComposeboxQueryController::ContextUploadTerminalStatus::
+          kResponseAfterFileInfoDestroyed,
+      1);
 }
 
 }  // namespace contextual_search

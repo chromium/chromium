@@ -39,6 +39,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_composebox_user_action.h:LensComposeboxUserAction) -->
 
+<!-- LINT.IfChange(ContextUploadTerminalStatus) -->
+
+<enum name="ContextUploadTerminalStatus">
+  <summary>
+    The terminal status of a contextual search file upload request in the
+    composebox.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="HTTP Error"/>
+  <int value="2" label="Never Issued"/>
+  <int value="3" label="Response After FileInfo Destroyed"/>
+  <int value="4" label="Pending Chunker Retry"/>
+  <int value="5" label="In-Flight At Teardown"/>
+  <int value="6" label="Cancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/internal/composebox_query_controller.h:ContextUploadTerminalStatus) -->
+
 <!-- LINT.IfChange(LensComposeboxClusterInfoStatus) -->
 
 <enum name="LensComposeboxClusterInfoStatus">

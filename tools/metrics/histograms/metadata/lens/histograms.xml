@@ -151,6 +151,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Composebox.ContextUpload.TerminalStatus"
+    enum="ContextUploadTerminalStatus" expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded exactly once per contextual file upload request (or upon file
+    destruction if unissued) when the request reaches a terminal state. Tracks
+    the outcome including successes, HTTP failures, drops after teardown,
+    pending chunker retries, in-flight cancellations, and unissued requests.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Composebox.HandshakeCompletedInSession" enum="Boolean"
     expires_after="2026-12-27">
   <owner>mercerd@google.com</owner>
