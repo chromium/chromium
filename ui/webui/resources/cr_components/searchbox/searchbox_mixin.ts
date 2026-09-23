@@ -631,7 +631,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
      * Handles Enter key presses on virtually focused elements (AIM, Action,
      * Remove Suggestion). Returns true if the event was handled.
      */
-    private handleVirtualFocusEnter_(e: KeyboardEvent): boolean {
+    handleVirtualFocusEnter(e: KeyboardEvent): boolean {
       if (this.selection.state === SelectionLineState.kFocusedButtonAim) {
         e.preventDefault();
         const button =
@@ -733,7 +733,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           this.controlKeyState_ !== ControlKeyState.DOWN_AND_CONSUMED;
 
       e.preventDefault();
-      if (this.handleVirtualFocusEnter_(e)) {
+      if (this.handleVirtualFocusEnter(e)) {
         return;
       }
       // If no new query's `results` are pending (though new async results for
@@ -814,7 +814,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       if (this.virtualFocusEnabled && e.key === 'Enter' &&
-          this.handleVirtualFocusEnter_(e)) {
+          this.handleVirtualFocusEnter(e)) {
         return;
       }
 
@@ -1112,6 +1112,7 @@ export interface SearchboxMixinInterface extends
   getInputElement(): SearchboxInputElement;
   getWrapperElement(): HTMLElement;
   handleKeyNavigation(e: KeyboardEvent): void;
+  handleVirtualFocusEnter(e: KeyboardEvent): boolean;
   hasMatches(): boolean;
   isAutocompleteResultStale(result: AutocompleteResult): boolean;
   isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean;

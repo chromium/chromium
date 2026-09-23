@@ -2957,9 +2957,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         await microtasksFinished();
 
         const handled =
-            (element as unknown as {
-              handleVirtualFocusEnter_: (e: KeyboardEvent) => boolean,
-            }).handleVirtualFocusEnter_(createKeyboardEvent('Enter'));
+            element.handleVirtualFocusEnter(createKeyboardEvent('Enter'));
         assertFalse(handled);
       });
 

@@ -56,8 +56,8 @@
   }
 }
 
-:host-context(.focus-outline-visible)
-    .searchbox-icon-button-container:focus-within {
+.searchbox-icon-button-container:has(:focus-visible),
+.searchbox-icon-button-container[has-virtual-focus] {
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 

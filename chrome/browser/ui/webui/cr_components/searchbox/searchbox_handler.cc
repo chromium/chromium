@@ -1596,8 +1596,9 @@ OmniboxPopupSelection ConvertSelection(
       state = OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM;
       break;
     }
-    case searchbox::mojom::SelectionLineState::
-        kFocusedButtonContextEntrypoint: {
+    case searchbox::mojom::SelectionLineState::kFocusedButtonContextEntrypoint:
+    case searchbox::mojom::SelectionLineState::kFocusedButtonVoiceSearch:
+    case searchbox::mojom::SelectionLineState::kFocusedButtonLensSearch: {
       // Handled directly by webui omnibox popup.
       NOTREACHED();
     }
