@@ -1367,8 +1367,9 @@ AtomicString Document::ConvertLocalName(const AtomicString& name) {
 // custom element processing.
 // This is a common code for step 5.2 and 7.2 of "create an element"
 // <https://dom.spec.whatwg.org/#concept-create-element>
-// Functions other than this one should not use HTMLElementFactory and
-// SVGElementFactory because they don't support prefixes correctly.
+// Functions other than this one (and the prefix-less fast paths in
+// CreateElementForBinding / createElementNS) should not use HTMLElementFactory
+// and SVGElementFactory because they don't support prefixes correctly.
 Element* Document::CreateRawElement(const QualifiedName& qname,
                                     CreateElementFlags flags) {
   Element* element = nullptr;
@@ -1413,6 +1414,21 @@ Element* Document::CreateRawElement(const QualifiedName& qname,
 // https://dom.spec.whatwg.org/#dom-document-createelement
 Element* Document::CreateElementForBinding(const AtomicString& name,
                                            ExceptionState& exception_state) {
+  // Fast path: standard HTML tag names (e.g. "div", "span", "p", "a") are
+  // guaranteed to be valid XML 1.0 Names, lowercase ASCII, and never match
+  // autonomous custom elements (which require hyphens). Probing
+  // HTMLElementFactory::Create upfront bypasses string validation, lowercasing,
+  // and custom element checks on the hottest DOM creation paths in O(1) time
+  // without observable behavioral changes.
+  if (IsA<HTMLDocument>(this) || IsXHTMLDocument()) {
+    if (auto* element = HTMLElementFactory::Create(
+            name, *this, CreateElementFlags::ByCreateElement())) {
+      DCHECK(IsValidElementName(name));
+      DCHECK(!CustomElement::ShouldCreateCustomElement(ConvertLocalName(name)));
+      return element;
+    }
+  }
+
   if (!IsValidElementName(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
@@ -1562,6 +1578,32 @@ static inline QualifiedName CreateQualifiedName(
 Element* Document::createElementNS(const AtomicString& namespace_uri,
                                    const AtomicString& qualified_name,
                                    ExceptionState& exception_state) {
+  // Fast path: prefix-less standard elements in known namespaces bypass
+  // CreateQualifiedName parsing, prefix validation, and custom element checks.
+  // Any qualified name containing a prefix with a colon will miss in the
+  // factory map (which only contains prefix-less local names) and fall through
+  // to the general path.
+  Element* element = nullptr;
+  if (namespace_uri == svg_names::kNamespaceURI) {
+    element = SVGElementFactory::Create(qualified_name, *this,
+                                        CreateElementFlags::ByCreateElement());
+  } else if (namespace_uri == html_names::xhtmlNamespaceURI) {
+    element = HTMLElementFactory::Create(qualified_name, *this,
+                                         CreateElementFlags::ByCreateElement());
+  } else if (namespace_uri == mathml_names::kNamespaceURI) {
+    element = MathMLElementFactory::Create(
+        qualified_name, *this, CreateElementFlags::ByCreateElement());
+  }
+  if (element) {
+    DCHECK_EQ(CreateQualifiedName(
+                  namespace_uri, qualified_name, exception_state,
+                  Document::QualifiedNameParsingMode::kParsingElement),
+              element->TagQName());
+    DCHECK(!CustomElement::ShouldCreateCustomElement(element->TagQName()));
+    saw_elements_in_known_namespaces_ = true;
+    return element;
+  }
+
   QualifiedName q_name(
       CreateQualifiedName(namespace_uri, qualified_name, exception_state,
                           Document::QualifiedNameParsingMode::kParsingElement));

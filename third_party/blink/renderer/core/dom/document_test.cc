@@ -86,12 +86,14 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html/html_unknown_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -2470,6 +2472,91 @@ TEST_F(DocumentFocusUseCounterTest,
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFocusWithoutUserActivationBlocked));
+}
+
+TEST_F(DocumentTest, CreateElementFastPath) {
+  // 1. Standard HTML elements hit the fast path in CreateElementForBinding.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* div = GetDocument().CreateElementForBinding(AtomicString("div"),
+                                                         exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(div);
+    EXPECT_TRUE(IsA<HTMLDivElement>(div));
+    EXPECT_EQ(div->tagName(), "DIV");
+    EXPECT_EQ(div->namespaceURI(), html_names::xhtmlNamespaceURI);
+    EXPECT_EQ(div->prefix(), g_null_atom);
+  }
+
+  // 2. Uppercase names fall through to the slow path, convert to lowercase,
+  // and construct the same element type.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* div_upper = GetDocument().CreateElementForBinding(
+        AtomicString("DIV"), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(div_upper);
+    EXPECT_TRUE(IsA<HTMLDivElement>(div_upper));
+    EXPECT_EQ(div_upper->tagName(), "DIV");
+  }
+
+  // 3. Invalid tag names fail validation in the slow path and throw.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* invalid_element = GetDocument().CreateElementForBinding(
+        AtomicString("123 invalid"), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kInvalidCharacterError);
+    EXPECT_FALSE(invalid_element);
+  }
+
+  // 4. createElementNS fast path: prefix-less SVG elements in SVG namespace.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* svg_path = GetDocument().createElementNS(
+        svg_names::kNamespaceURI, AtomicString("path"), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(svg_path);
+    EXPECT_EQ(svg_path->namespaceURI(), svg_names::kNamespaceURI);
+    EXPECT_EQ(svg_path->prefix(), g_null_atom);
+    EXPECT_EQ(svg_path->localName(), "path");
+  }
+
+  // 5. createElementNS slow path: prefixed SVG elements fall through to
+  // CreateQualifiedName and properly preserve the prefix.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* svg_prefixed = GetDocument().createElementNS(
+        svg_names::kNamespaceURI, AtomicString("svg:path"), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(svg_prefixed);
+    EXPECT_EQ(svg_prefixed->namespaceURI(), svg_names::kNamespaceURI);
+    EXPECT_EQ(svg_prefixed->prefix(), "svg");
+    EXPECT_EQ(svg_prefixed->localName(), "path");
+  }
+
+  // 6. createElementNS slow path: uppercase HTML in XHTML namespace returns
+  // HTMLUnknownElement because createElementNS is case-sensitive.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* html_upper = GetDocument().createElementNS(
+        html_names::xhtmlNamespaceURI, AtomicString("DIV"), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ASSERT_TRUE(html_upper);
+    EXPECT_TRUE(IsA<HTMLUnknownElement>(html_upper));
+  }
+
+  // 7. createElementNS invalid qualified name throws.
+  {
+    DummyExceptionStateForTesting exception_state;
+    Element* invalid_ns = GetDocument().createElementNS(
+        svg_names::kNamespaceURI, AtomicString("123 invalid"), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kInvalidCharacterError);
+    EXPECT_FALSE(invalid_ns);
+  }
 }
 
 }  // namespace blink

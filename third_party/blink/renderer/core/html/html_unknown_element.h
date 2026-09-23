@@ -52,6 +52,13 @@ inline bool IsHTMLUnknownElement(const HTMLElement& element) {
   return element.IsHTMLUnknownElement();
 }
 
+template <>
+struct DowncastTraits<HTMLUnknownElement> {
+  static bool AllowFrom(const Node& node) {
+    return node.GetElementType() == ElementType::kHTMLUnknownElement;
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_UNKNOWN_ELEMENT_H_
