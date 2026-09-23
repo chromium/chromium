@@ -20,7 +20,6 @@
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/dummy_auth_service.h"
@@ -34,8 +33,6 @@
 
 namespace {
 
-const char kGoogleCalendarLastDismissedTimePrefName[] =
-    "NewTabPage.GoogleCalendar.LastDimissedTime";
 const int32_t kNumEvents = 10;
 
 base::ListValue CreateAttachments() {
@@ -142,7 +139,6 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
     feature_list_.InitAndEnableFeature(ntp_features::kNtpCalendarModule);
     profile_ =
         MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper());
-    pref_service_ = profile_->GetPrefs();
   }
 
   std::unique_ptr<GoogleCalendarPageHandler> CreateHandler() {
@@ -195,7 +191,6 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  PrefService& pref_service() { return *pref_service_; }
   TestingProfile& profile() { return *profile_; }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
@@ -219,65 +214,8 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<PrefService> pref_service_;
   base::HistogramTester histogram_tester_;
 };
-
-TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
-  std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();
-  EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
-            base::Time());
-  handler->DismissModule();
-
-  EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
-            base::Time::Now());
-  handler->RestoreModule();
-
-  EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
-            base::Time());
-}
-
-TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
-  std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();
-  base::FieldTrialParams params;
-  params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
-  feature_list().Reset();
-  feature_list().InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpCalendarModule, params);
-
-  std::vector<ntp::calendar::mojom::CalendarEventPtr> response1;
-  std::vector<ntp::calendar::mojom::CalendarEventPtr> response2;
-  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback1;
-  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback2;
-  EXPECT_CALL(callback1, Run(testing::_))
-      .Times(1)
-      .WillOnce(
-          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
-            response1 = std::move(events);
-          });
-  EXPECT_CALL(callback2, Run(testing::_))
-      .Times(1)
-      .WillOnce(
-          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
-            response2 = std::move(events);
-          });
-
-  handler->DismissModule();
-
-  // Move time forward 1 hour.
-  task_environment().AdvanceClock(base::Hours(1));
-
-  // Expect empty result since it has been less than 12 hours.
-  handler->GetEvents(callback1.Get());
-  EXPECT_EQ(response1.size(), 0u);
-
-  // Move clock forward 11 more hours to be at 12 hours since dismissal.
-  task_environment().AdvanceClock(base::Hours(11));
-
-  // Expect non-empty result since it has been 12 hours.
-  handler->GetEvents(callback2.Get());
-  EXPECT_GT(response2.size(), 0u);
-}
 
 TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   std::unique_ptr<GoogleCalendarPageHandler> handler = CreateHandler();

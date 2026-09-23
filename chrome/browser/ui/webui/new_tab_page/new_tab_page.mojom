@@ -176,8 +176,6 @@ interface PageHandler {
   GetDoodle() => (Doodle? doodle);
   // Called when a module the given id is dismissed.
   OnDismissModule(string module_id);
-  // Called when a module the given id is restored.
-  OnRestoreModule(string module_id);
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
   // Triggers a call to |SetDisabledModules|.

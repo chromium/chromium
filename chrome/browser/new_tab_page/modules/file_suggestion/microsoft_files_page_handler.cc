@@ -154,8 +154,6 @@ const char kFakeTrendingData[] =
       }
   ]})";
 
-constexpr base::TimeDelta kModuleDismissalDuration = base::Hours(12);
-
 const char kBatchRequestUrl[] = "https://graph.microsoft.com/v1.0/$batch";
 const char kNonInsightsRequestBody[] =
     R"({
@@ -363,8 +361,6 @@ void RecordSubstitutionType(MicrosoftFilesSubstitutionType substitution_type) {
 // static
 void MicrosoftFilesPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
-                             base::Time());
   registry->RegisterTimePref(prefs::kNtpMicrosoftFilesModuleRetryAfterTime,
                              base::Time());
 }
@@ -383,15 +379,6 @@ MicrosoftFilesPageHandler::MicrosoftFilesPageHandler(
 MicrosoftFilesPageHandler::~MicrosoftFilesPageHandler() = default;
 
 void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
-  // Return empty list of files if the module was recently dismissed.
-  base::Time last_dismissed_time =
-      pref_service_->GetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime);
-  if (last_dismissed_time != base::Time() &&
-      base::Time::Now() - last_dismissed_time < kModuleDismissalDuration) {
-    std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
-    return;
-  }
-
   // Ensure requests aren't made when a throttling error must be waited out.
   base::Time retry_after_time =
       pref_service_->GetTime(prefs::kNtpMicrosoftFilesModuleRetryAfterTime);
@@ -420,16 +407,6 @@ void MicrosoftFilesPageHandler::GetFiles(GetFilesCallback callback) {
       ParseFakeData(std::move(callback));
       break;
   }
-}
-
-void MicrosoftFilesPageHandler::DismissModule() {
-  pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
-                         base::Time::Now());
-}
-
-void MicrosoftFilesPageHandler::RestoreModule() {
-  pref_service_->SetTime(prefs::kNtpMicrosoftFilesModuleLastDismissedTime,
-                         base::Time());
 }
 
 void MicrosoftFilesPageHandler::RequestFiles(

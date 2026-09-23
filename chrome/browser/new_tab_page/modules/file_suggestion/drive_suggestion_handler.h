@@ -25,8 +25,6 @@ class DriveSuggestionHandler
 
   // file_suggestion::mojom::DriveSuggestionHandler:
   void GetFiles(GetFilesCallback callback) override;
-  void DismissModule() override;
-  void RestoreModule() override;
 
  private:
   mojo::Receiver<file_suggestion::mojom::DriveSuggestionHandler> handler_;

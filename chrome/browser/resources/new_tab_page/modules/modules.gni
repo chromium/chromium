@@ -19,7 +19,7 @@ modules_ts_files =
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
       "modules/microsoft_auth_frame_connector.ts",
-    ] + authentication_ts_files + calendar_ts_files + file_suggestion_ts_files +
+    ] + calendar_ts_files + file_suggestion_ts_files +
     most_relevant_tab_resumption_ts_files + tab_groups_ts_files
 
 if (!is_official_build) {

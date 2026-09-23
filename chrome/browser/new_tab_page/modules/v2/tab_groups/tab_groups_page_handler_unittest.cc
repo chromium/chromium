@@ -659,27 +659,3 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeZeroStateTabGroups) {
   EXPECT_TRUE(tab_groups_mojom->empty());
   EXPECT_TRUE(should_show_zero_state);
 }
-
-TEST_F(TabGroupsPageHandlerTest, DismissAndRestoreModule) {
-  // Enable the feature and set the parameter to "Fake Data".
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpTabGroupsModule,
-      {{ntp_features::kNtpTabGroupsModuleDataParam, "Fake Data"}});
-
-  // With no dismissal pref set we should get the fake data.
-  auto initial_tab_groups = RunGetTabGroups();
-  ASSERT_TRUE(initial_tab_groups.has_value());
-  EXPECT_FALSE(initial_tab_groups.value().empty());
-
-  // Call DismissModule() and subsequent GetTabGroups() must return nullopt.
-  handler()->DismissModule();
-  auto module_dismissed = RunGetTabGroups();
-  EXPECT_FALSE(module_dismissed.has_value());
-
-  // Call RestoreModule() and data should again be returned.
-  handler()->RestoreModule();
-  auto module_restored = RunGetTabGroups();
-  ASSERT_TRUE(module_restored.has_value());
-  EXPECT_FALSE(module_restored.value().empty());
-}

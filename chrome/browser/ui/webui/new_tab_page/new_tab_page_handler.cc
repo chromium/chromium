@@ -420,8 +420,6 @@ base::DictValue MakeModuleInteractionTriggerIdDictionary() {
 // static
 const char NewTabPageHandler::kModuleDismissedHistogram[] =
     "NewTabPage.Modules.Dismissed";
-const char NewTabPageHandler::kModuleRestoredHistogram[] =
-    "NewTabPage.Modules.Restored";
 
 NewTabPageHandler::NewTabPageHandler(
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -637,12 +635,6 @@ void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
 
   RecordModuleInteraction(module_id);
   MaybeLaunchInteractionSurvey(kDismissInteraction, module_id);
-}
-
-void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
-  const std::string histogram_prefix(kModuleRestoredHistogram);
-  base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
-  base::UmaHistogramExactLinear(histogram_prefix + "." + module_id, 1, 1);
 }
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {

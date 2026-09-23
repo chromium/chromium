@@ -53,5 +53,5 @@ DriveServiceFactory::BuildServiceInstanceForBrowserContext(
       url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile),
-      g_browser_process->GetApplicationLocale(), profile->GetPrefs());
+      g_browser_process->GetApplicationLocale());
 }

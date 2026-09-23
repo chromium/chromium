@@ -16,7 +16,6 @@ import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getCss} from './microsoft_auth_module.css.js';
 import {getHtml} from './microsoft_auth_module.html.js';
-import {MicrosoftAuthProxyImpl} from './microsoft_auth_module_proxy.js';
 
 
 export interface MicrosoftAuthModuleElement {
@@ -92,15 +91,9 @@ declare global {
 customElements.define(
     MicrosoftAuthModuleElement.is, MicrosoftAuthModuleElement);
 
-async function createMicrosoftAuthElement():
+function createMicrosoftAuthElement():
     Promise<MicrosoftAuthModuleElement|null> {
-  const {show} =
-      await MicrosoftAuthProxyImpl.getInstance().handler.shouldShowModule();
-  if (!show) {
-    return null;
-  } else {
-    return new MicrosoftAuthModuleElement();
-  }
+  return Promise.resolve(new MicrosoftAuthModuleElement());
 }
 
 export const microsoftAuthModuleDescriptor: ModuleDescriptor =

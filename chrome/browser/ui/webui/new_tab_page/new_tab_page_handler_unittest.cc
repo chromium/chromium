@@ -792,8 +792,6 @@ INSTANTIATE_TEST_SUITE_P(All, NewTabPageHandlerThemeTest, ::testing::Bool());
 TEST_F(NewTabPageHandlerTest, Histograms) {
   histogram_tester_.ExpectTotalCount(
       NewTabPageHandler::kModuleDismissedHistogram, 0);
-  histogram_tester_.ExpectTotalCount(
-      NewTabPageHandler::kModuleRestoredHistogram, 0);
 
   handler_->OnDismissModule("shopping_tasks");
   histogram_tester_.ExpectTotalCount(
@@ -801,14 +799,6 @@ TEST_F(NewTabPageHandlerTest, Histograms) {
   histogram_tester_.ExpectTotalCount(
       std::string(NewTabPageHandler::kModuleDismissedHistogram) +
           ".shopping_tasks",
-      1);
-
-  handler_->OnRestoreModule("kaleidoscope");
-  histogram_tester_.ExpectTotalCount(
-      NewTabPageHandler::kModuleRestoredHistogram, 1);
-  histogram_tester_.ExpectTotalCount(
-      std::string(NewTabPageHandler::kModuleRestoredHistogram) +
-          ".kaleidoscope",
       1);
 }
 

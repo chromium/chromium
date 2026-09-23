@@ -18,7 +18,6 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
-#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -402,13 +401,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
           render_frame_host->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::calendar::mojom::OutlookCalendarPageHandler, NewTabPageUI>(map);
-  }
-
-  if (IsMicrosoftModuleEnabledForProfile(Profile::FromBrowserContext(
-          render_frame_host->GetBrowserContext()))) {
-    RegisterWebUIControllerInterfaceBinder<
-        ntp::authentication::mojom::MicrosoftAuthPageHandler, NewTabPageUI>(
-        map);
   }
 
   if (IsMicrosoftFilesModuleEnabledForProfile(Profile::FromBrowserContext(

@@ -20,8 +20,6 @@ class EventList;
 }  // namespace calendar
 }  // namespace google_apis
 
-class PrefRegistrySimple;
-class PrefService;
 class Profile;
 
 class GoogleCalendarPageHandler
@@ -38,12 +36,8 @@ class GoogleCalendarPageHandler
       Profile* profile);
   ~GoogleCalendarPageHandler() override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   // ntp::calendar::mojom::GoogleCalendarPageHandler:
   void GetEvents(GetEventsCallback callback) override;
-  void DismissModule() override;
-  void RestoreModule() override;
 
  private:
   void OnRequestComplete(
@@ -53,7 +47,6 @@ class GoogleCalendarPageHandler
 
   mojo::Receiver<ntp::calendar::mojom::GoogleCalendarPageHandler> handler_;
   raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<google_apis::RequestSender> sender_;
   google_apis::calendar::CalendarApiUrlGenerator url_generator_;
 

@@ -19,14 +19,8 @@ interface PageHandler {
   // Queries for url visits.
   GetURLVisits() => (array<URLVisit> url_visits);
 
-  // Dismisses module until new url_visits are found.
-  DismissModule(array<URLVisit> url_visits);
-
   // Dismisses a single entry.
   DismissURLVisit(URLVisit url_visit);
-
-  // Restores the module immediately.
-  RestoreModule(array<URLVisit> url_visits);
 
   // Restores a single entry that was dismissed.
   RestoreURLVisit(URLVisit url_visit);

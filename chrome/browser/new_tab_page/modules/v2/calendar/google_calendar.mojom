@@ -10,8 +10,4 @@ import "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom";
 interface GoogleCalendarPageHandler {
   // Returns a list of the events on the user's Google Calendar for today.
   GetEvents() => (array<CalendarEvent> events);
-  // Dismisses module for fixed amount of time.
-  DismissModule();
-  // Restores the module immediately.
-  RestoreModule();
 };

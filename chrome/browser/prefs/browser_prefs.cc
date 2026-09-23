@@ -232,8 +232,6 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
-#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
-#include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -311,9 +309,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -1039,6 +1035,20 @@ inline constexpr char kHatsBorealisGamesLastInteractionTimestamp[] =
     "hats_borealis_games_last_interaction_timestamp";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 09/2026.
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+constexpr char kNtpDriveLastDismissedTime[] =
+    "NewTabPage.Drive.LastDimissedTime";
+constexpr char kNtpGoogleCalendarLastDismissedTime[] =
+    "NewTabPage.GoogleCalendar.LastDimissedTime";
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kNtpMicrosoftAuthLastDismissedTime[] =
+    "NewTabPage.MicrosoftAuthentication.LastDimissedTime";
+constexpr char kNtpTabGroupsLastDismissedTime[] =
+    "NewTabPage.TabGroups.LastDimissedTime";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1437,6 +1447,16 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kHatsBorealisGamesLastInteractionTimestamp,
                              base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 09/2026.
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  registry->RegisterTimePref(kNtpDriveLastDismissedTime, base::Time());
+  registry->RegisterTimePref(kNtpGoogleCalendarLastDismissedTime, base::Time());
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterTimePref(kNtpMicrosoftAuthLastDismissedTime, base::Time());
+  registry->RegisterTimePref(kNtpTabGroupsLastDismissedTime, base::Time());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2002,8 +2022,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabPageUI::RegisterProfilePrefs(registry);
   MostVisitedPrefObserver::RegisterProfilePrefs(registry);
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
-  DriveService::RegisterProfilePrefs(registry);
-  GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
 #else
   // Registered here because it is still accessed on Android (which doesn't use
   // WebUI NTP).
@@ -2043,7 +2061,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   HatsServiceDesktop::RegisterProfilePrefs(registry);
   media_router::RegisterAccessCodeProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
-  MicrosoftAuthPageHandler::RegisterProfilePrefs(registry);
   MicrosoftFilesPageHandler::RegisterProfilePrefs(registry);
   OutlookCalendarPageHandler::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
@@ -2052,7 +2069,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   settings::SettingsUI::RegisterProfilePrefs(registry);
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
-  TabGroupsPageHandler::RegisterProfilePrefs(registry);
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
   ThemeColorPickerHandler::RegisterProfilePrefs(registry);
@@ -2793,6 +2809,16 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsBorealisGamesSurveyIsSelected);
   profile_prefs->ClearPref(kHatsBorealisGamesLastInteractionTimestamp);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 09/2026.
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  profile_prefs->ClearPref(kNtpDriveLastDismissedTime);
+  profile_prefs->ClearPref(kNtpGoogleCalendarLastDismissedTime);
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kNtpMicrosoftAuthLastDismissedTime);
+  profile_prefs->ClearPref(kNtpTabGroupsLastDismissedTime);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

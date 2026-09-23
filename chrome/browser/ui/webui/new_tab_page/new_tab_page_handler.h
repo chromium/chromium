@@ -103,9 +103,8 @@ class NewTabPageHandler
 
   ~NewTabPageHandler() override;
 
-  // Histograms being recorded when a module is dismissed or restored.
+  // Histograms being recorded when a module is dismissed.
   static const char kModuleDismissedHistogram[];
-  static const char kModuleRestoredHistogram[];
   // Histograms being recorded when auto removal/undo event is triggered.
   static const char kModuleAutoRemovalHistogram[];
   static const char kModuleAutoRemovalUndoneHistogram[];
@@ -129,7 +128,6 @@ class NewTabPageHandler
   void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
   void GetDoodle(GetDoodleCallback callback) override;
   void OnDismissModule(const std::string& module_id) override;
-  void OnRestoreModule(const std::string& module_id) override;
   void SetModulesVisible(bool visible) override;
   void SetModulesDisabled(const std::vector<std::string>& module_ids,
                           bool disabled,

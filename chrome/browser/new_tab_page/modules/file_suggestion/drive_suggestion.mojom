@@ -10,8 +10,4 @@ import "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojo
 interface DriveSuggestionHandler {
   // Fetches document suggestions from ItemSuggest API.
   GetFiles() => (array<File> files);
-  // Dismissed module for fixed amount of time.
-  DismissModule();
-  // Restores the module immediately.
-  RestoreModule();
 };

@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -49,10 +48,9 @@ class DriveServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         identity_test_env.identity_manager(),
-        &mock_segmentation_platform_service_, "en-US", &prefs_);
+        &mock_segmentation_platform_service_, "en-US");
     identity_test_env.MakePrimaryAccountAvailable(
         "example@google.com", signin::ConsentLevel::kSignin);
-    service_->RegisterProfilePrefs(prefs_.registry());
   }
 
   void TearDown() override {
@@ -67,7 +65,6 @@ class DriveServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env;
   segmentation_platform::MockSegmentationPlatformService
       mock_segmentation_platform_service_;
-  TestingPrefServiceSimple prefs_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -82,10 +79,6 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
         actual_documents = std::move(documents);
         quit_closure.Run();
       });
-
-  // Make sure we are not in the dismissed time window.
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  task_environment_.AdvanceClock(DriveService::kDismissDuration);
 
   service_->GetDriveFiles(callback.Get());
 
@@ -322,10 +315,6 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
       ntp_features::kNtpDriveModule,
       {{ntp_features::kNtpDriveModuleCacheMaxAgeSParam, "10"}});
 
-  // Make sure we are not in the dismissed time window.
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  task_environment_.AdvanceClock(DriveService::kDismissDuration);
-
   // First request populates the cache.
   service_->GetDriveFiles(callback.Get());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -419,10 +408,6 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
         quit_closure.Run();
       });
 
-  // Make sure we are not in the dismissed time window.
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  task_environment_.AdvanceClock(DriveService::kDismissDuration);
-
   service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -471,10 +456,6 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
 }
 
 TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
-  // Make sure we are not in the dismissed time window.
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  task_environment_.AdvanceClock(DriveService::kDismissDuration);
-
   // Set client tag.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
@@ -495,22 +476,6 @@ TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
       request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("foo", *body_value->GetDict().FindStringByDottedPath(
                        "client_info.client_tags.name"));
-}
-
-TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
-  bool passed_no_data = false;
-  base::MockCallback<DriveService::GetFilesCallback> callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce([&passed_no_data](
-                    std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-        passed_no_data = suggestions.empty();
-      });
-
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  service_->GetDriveFiles(callback.Get());
-
-  EXPECT_TRUE(passed_no_data);
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
@@ -642,18 +607,6 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
                    ItemSuggestRequestResult::kContentError));
 }
 
-TEST_F(DriveServiceTest, DismissModule) {
-  service_->DismissModule();
-  EXPECT_EQ(base::Time::Now(),
-            prefs_.GetTime(DriveService::kLastDismissedTimePrefName));
-}
-
-TEST_F(DriveServiceTest, RestoreModule) {
-  service_->RestoreModule();
-  EXPECT_EQ(base::Time(),
-            prefs_.GetTime(DriveService::kLastDismissedTimePrefName));
-}
-
 class DriveServiceFakeDataTest : public DriveServiceTest {
  public:
   DriveServiceFakeDataTest() {
@@ -674,8 +627,6 @@ TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
         fake_documents = std::move(documents);
       });
 
-  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
-  task_environment_.AdvanceClock(DriveService::kDismissDuration);
   service_->GetDriveFiles(callback.Get());
   task_environment_.RunUntilIdle();
 

@@ -51,14 +51,8 @@ class MostRelevantTabResumptionPageHandler
 
   // most_relevant_tab_resumption::mojom::PageHandler:
   void GetURLVisits(GetURLVisitsCallback callback) override;
-  void DismissModule(
-      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
-          url_visits) override;
   void DismissURLVisit(
       ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) override;
-  void RestoreModule(
-      const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
-          url_visits) override;
   void RestoreURLVisit(
       ntp::most_relevant_tab_resumption::mojom::URLVisitPtr tab) override;
   void RecordAction(

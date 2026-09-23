@@ -21,7 +21,6 @@ source_set("new_tab_page") {
     "modules/modules_constants.h",
     "modules/modules_switches.h",
     "modules/new_tab_page_modules.h",
-    "modules/v2/authentication/microsoft_auth_page_handler.h",
     "modules/v2/calendar/calendar_fake_data_helper.h",
     "modules/v2/calendar/google_calendar_page_handler.h",
     "modules/v2/calendar/outlook_calendar_page_handler.h",
@@ -37,7 +36,6 @@ source_set("new_tab_page") {
   ]
   public_deps = [
     "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
-    "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
     "//chrome/browser/new_tab_page/modules/v2/tab_groups:mojo_bindings",
@@ -82,7 +80,6 @@ source_set("impl") {
     "modules/microsoft_modules_helper.cc",
     "modules/modules_switches.cc",
     "modules/new_tab_page_modules.cc",
-    "modules/v2/authentication/microsoft_auth_page_handler.cc",
     "modules/v2/calendar/calendar_fake_data_helper.cc",
     "modules/v2/calendar/google_calendar_page_handler.cc",
     "modules/v2/calendar/outlook_calendar_page_handler.cc",
@@ -205,7 +202,6 @@ source_set("unit_tests") {
       "microsoft_auth/microsoft_auth_service_unittest.cc",
       "modules/file_suggestion/microsoft_files_page_handler_unittest.cc",
       "modules/new_tab_page_modules_unittest.cc",
-      "modules/v2/authentication/microsoft_auth_page_handler_unittest.cc",
       "modules/v2/calendar/outlook_calendar_page_handler_unittest.cc",
       "modules/v2/tab_groups/tab_groups_page_handler_unittest.cc",
       "one_google_bar/one_google_bar_loader_impl_unittest.cc",

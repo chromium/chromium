@@ -836,25 +836,6 @@ TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
       "NewTabPage.OutlookCalendar.ResponseResult", 3, 1);
 }
 
-// Verifies that prefs are accurately set on dismissal and restoring of module.
-TEST_F(OutlookCalendarPageHandlerTest, DismissAndRestoreModule) {
-  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
-
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpOutlookCalendarLastDismissedTime),
-            base::Time());
-
-  handler->DismissModule();
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpOutlookCalendarLastDismissedTime),
-            base::Time::Now());
-
-  handler->RestoreModule();
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpOutlookCalendarLastDismissedTime),
-            base::Time());
-}
-
 // Verifies that an event isn't created if the event has been declined.
 TEST_F(OutlookCalendarPageHandlerTest, DeclinedEventNotCreated) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();

@@ -41,7 +41,6 @@ export {IframeElement} from './iframe.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {microsoftAuthModuleDescriptor, MicrosoftAuthModuleElement} from './modules/authentication/microsoft_auth_module.js';
-export {MicrosoftAuthProxyImpl} from './modules/authentication/microsoft_auth_module_proxy.js';
 export {CalendarElement} from './modules/calendar/calendar.js';
 export {CalendarEventElement} from './modules/calendar/calendar_event.js';
 export {CalendarAction} from './modules/calendar/common.js';

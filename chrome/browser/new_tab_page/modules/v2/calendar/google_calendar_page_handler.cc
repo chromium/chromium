@@ -18,8 +18,6 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,9 +29,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
-
-const char kGoogleCalendarLastDismissedTimePrefName[] =
-    "NewTabPage.GoogleCalendar.LastDimissedTime";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
@@ -104,13 +99,6 @@ std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
 
 }  // namespace
 
-// static
-void GoogleCalendarPageHandler::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-    registry->RegisterTimePref(kGoogleCalendarLastDismissedTimePrefName,
-                               base::Time());
-}
-
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         handler,
@@ -118,7 +106,6 @@ GoogleCalendarPageHandler::GoogleCalendarPageHandler(
     std::unique_ptr<google_apis::RequestSender> sender)
     : handler_(this, std::move(handler)),
       profile_(profile),
-      pref_service_(profile_->GetPrefs()),
       sender_(std::move(sender)) {}
 
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
@@ -135,16 +122,6 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       std::vector<ntp::calendar::mojom::CalendarEventPtr>());
-
-  // Do not grab data if it is within 12 hours since the module was dismissed.
-  base::Time dismiss_time =
-      pref_service_->GetTime(kGoogleCalendarLastDismissedTimePrefName);
-  if (dismiss_time != base::Time() &&
-      base::Time::Now() - dismiss_time < base::Hours(12)) {
-    std::move(callback).Run(
-        std::vector<ntp::calendar::mojom::CalendarEventPtr>());
-    return;
-  }
 
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpCalendarModule,
@@ -172,16 +149,6 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
         "NewTabPage.Modules.DataRequest",
         base::PersistentHash(ntp_modules::kGoogleCalendarModuleId));
   }
-}
-
-void GoogleCalendarPageHandler::DismissModule() {
-  pref_service_->SetTime(kGoogleCalendarLastDismissedTimePrefName,
-                         base::Time::Now());
-}
-
-void GoogleCalendarPageHandler::RestoreModule() {
-  pref_service_->SetTime(kGoogleCalendarLastDismissedTimePrefName,
-                         base::Time());
 }
 
 void GoogleCalendarPageHandler::OnRequestComplete(

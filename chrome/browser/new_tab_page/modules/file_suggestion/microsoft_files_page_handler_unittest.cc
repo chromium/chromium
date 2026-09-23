@@ -345,23 +345,6 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending,
   histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
-// Verifies that prefs are accurately set on dismissal and restoring of module.
-TEST_F(MicrosoftFilesPageHandlerTestForTrending, DismissAndRestoreModule) {
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
-            base::Time());
-
-  handler().DismissModule();
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
-            base::Time::Now());
-
-  handler().RestoreModule();
-  EXPECT_EQ(profile().GetPrefs()->GetTime(
-                prefs::kNtpMicrosoftFilesModuleLastDismissedTime),
-            base::Time());
-}
-
 TEST_F(MicrosoftFilesPageHandlerTestForFakeNonInsights,
        GetFakeNonInsightsFiles) {
   base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;

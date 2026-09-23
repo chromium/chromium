@@ -67,8 +67,6 @@ class MicrosoftFilesPageHandler
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // file_suggestion::mojom::MicrosoftFilesPageHandler
-  void DismissModule() override;
-  void RestoreModule() override;
   void GetFiles(GetFilesCallback callback) override;
 
  private:

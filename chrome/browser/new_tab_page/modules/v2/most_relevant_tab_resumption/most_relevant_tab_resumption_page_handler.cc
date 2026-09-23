@@ -293,12 +293,6 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
       base::PersistentHash(ntp_modules::kMostRelevantTabResumptionModuleId));
 }
 
-void MostRelevantTabResumptionPageHandler::DismissModule(
-    const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
-        url_visits) {
-  DismissURLVisits(url_visits);
-}
-
 void MostRelevantTabResumptionPageHandler::DismissURLVisit(
     ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) {
   std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
@@ -327,12 +321,6 @@ void MostRelevantTabResumptionPageHandler::DismissURLVisits(
         segmentation_platform::TrainingRequestId(
             url_visit->training_request_id));
   }
-}
-
-void MostRelevantTabResumptionPageHandler::RestoreModule(
-    const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
-        url_visits) {
-  RestoreURLVisits(std::move(url_visits));
 }
 
 void MostRelevantTabResumptionPageHandler::RestoreURLVisit(
