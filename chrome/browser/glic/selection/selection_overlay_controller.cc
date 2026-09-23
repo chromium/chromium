@@ -19,7 +19,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
-#include "chrome/browser/glic/selection/static_selection_suggestion_endpoint.h"
+#include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -224,11 +224,11 @@ SelectionOverlayController::SelectionOverlayController(
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
-    static_suggestion_endpoint_ =
-        std::make_unique<StaticSelectionSuggestionEndpoint>(CHECK_DEREF(tab_));
+    static_suggestion_tool_ =
+        std::make_unique<StaticSelectionSuggestionTool>(CHECK_DEREF(tab_));
     if (auto* suggestion_service =
             ::selection::SuggestionService::From(tab_)) {
-      suggestion_service->RegisterEndpoint(static_suggestion_endpoint_.get());
+      suggestion_service->RegisterTool(static_suggestion_tool_.get());
     }
   }
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
@@ -250,10 +250,10 @@ SelectionOverlayController::SelectionOverlayController(
 }
 
 SelectionOverlayController::~SelectionOverlayController() {
-  if (static_suggestion_endpoint_) {
+  if (static_suggestion_tool_) {
     if (auto* suggestion_service =
             ::selection::SuggestionService::From(tab_)) {
-      suggestion_service->UnregisterEndpoint(static_suggestion_endpoint_.get());
+      suggestion_service->UnregisterTool(static_suggestion_tool_.get());
     }
   }
   if (tab_ && tab_->GetBrowserWindowInterface()) {

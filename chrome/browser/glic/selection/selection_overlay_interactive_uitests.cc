@@ -18,7 +18,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
-#include "chrome/browser/glic/selection/static_selection_suggestion_endpoint.h"
+#include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/selection/suggestion_service.h"
@@ -195,27 +195,27 @@ class SelectionOverlayInteractiveTestWithPrompt
   void SetUpOnMainThread() override {
     SelectionOverlayInteractiveTest::SetUpOnMainThread();
     tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-    static_endpoint_ =
-        std::make_unique<StaticSelectionSuggestionEndpoint>(CHECK_DEREF(tab));
+    static_tool_ =
+        std::make_unique<StaticSelectionSuggestionTool>(CHECK_DEREF(tab));
     if (auto* service = ::selection::SuggestionService::From(tab)) {
-      service->RegisterEndpoint(static_endpoint_.get());
+      service->RegisterTool(static_tool_.get());
     }
   }
 
   void TearDownOnMainThread() override {
     tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-    if (tab && static_endpoint_) {
+    if (tab && static_tool_) {
       if (auto* service = ::selection::SuggestionService::From(tab)) {
-        service->UnregisterEndpoint(static_endpoint_.get());
+        service->UnregisterTool(static_tool_.get());
       }
     }
-    static_endpoint_.reset();
+    static_tool_.reset();
     SelectionOverlayInteractiveTest::TearDownOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<StaticSelectionSuggestionEndpoint> static_endpoint_;
+  std::unique_ptr<StaticSelectionSuggestionTool> static_tool_;
 };
 
 class SelectionOverlayInteractiveTestWithSplitView

@@ -20,8 +20,8 @@ source_set("selection") {
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",
     "selection_overlay_untrusted_ui.h",
-    "static_selection_suggestion_endpoint.cc",
-    "static_selection_suggestion_endpoint.h",
+    "static_selection_suggestion_tool.cc",
+    "static_selection_suggestion_tool.h",
   ]
 
   public_deps = [

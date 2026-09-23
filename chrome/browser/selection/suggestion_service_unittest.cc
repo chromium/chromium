@@ -32,11 +32,11 @@ class TestSuggestion : public Suggestion {
   std::u16string label_;
 };
 
-class CustomTestEndpoint : public SuggestionEndpoint {
+class CustomTestTool : public SuggestionTool {
  public:
-  explicit CustomTestEndpoint(std::u16string label = u"Custom Action")
+  explicit CustomTestTool(std::u16string label = u"Custom Action")
       : label_(std::move(label)) {}
-  ~CustomTestEndpoint() override = default;
+  ~CustomTestTool() override = default;
 
   void RequestSuggestions(const AreaOfInterest& processed_area,
                           SuggestionsCallback callback) override {
@@ -49,10 +49,10 @@ class CustomTestEndpoint : public SuggestionEndpoint {
   std::u16string label_;
 };
 
-class AsyncCustomTestEndpoint : public SuggestionEndpoint {
+class AsyncCustomTestTool : public SuggestionTool {
  public:
-  AsyncCustomTestEndpoint() = default;
-  ~AsyncCustomTestEndpoint() override = default;
+  AsyncCustomTestTool() = default;
+  ~AsyncCustomTestTool() override = default;
 
   void RequestSuggestions(const AreaOfInterest& processed_area,
                           SuggestionsCallback callback) override {
@@ -81,20 +81,20 @@ class SuggestionServiceUnitTest : public testing::Test {
   std::unique_ptr<SuggestionService> service_;
 };
 
-TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomEndpoint) {
+TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   EXPECT_EQ(SuggestionService::From(&mock_tab_), service_.get());
 
-  CustomTestEndpoint endpoint1(u"Static Action 1");
-  CustomTestEndpoint endpoint2(u"Static Action 2");
-  service_->RegisterEndpoint(&endpoint1);
-  service_->RegisterEndpoint(&endpoint2);
+  CustomTestTool tool1(u"Static Action 1");
+  CustomTestTool tool2(u"Static Action 2");
+  service_->RegisterTool(&tool1);
+  service_->RegisterTool(&tool2);
 
   AreaOfInterest aoi;
   base::test::TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
       base::test::TestFutureMode::kQueue};
   service_->RequestSuggestions(aoi, future.GetRepeatingCallback());
 
-  // Both synchronous endpoints are batched into a single callback invocation
+  // Both synchronous tools are batched into a single callback invocation
   // with complete=true.
   auto [batch, complete] = future.Take();
   EXPECT_TRUE(complete);
@@ -102,8 +102,8 @@ TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomEndpoint) {
   EXPECT_EQ(batch[0]->GetLabel(), u"Static Action 1");
   EXPECT_EQ(batch[1]->GetLabel(), u"Static Action 2");
 
-  service_->UnregisterEndpoint(&endpoint1);
-  service_->UnregisterEndpoint(&endpoint2);
+  service_->UnregisterTool(&tool1);
+  service_->UnregisterTool(&tool2);
 
   service_->RequestSuggestions(aoi, future.GetRepeatingCallback());
   auto [empty_batch, empty_complete] = future.Take();
@@ -111,31 +111,31 @@ TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomEndpoint) {
   EXPECT_TRUE(empty_batch.empty());
 }
 
-TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncEndpoint) {
-  CustomTestEndpoint static_endpoint(u"Static Action");
-  AsyncCustomTestEndpoint async_endpoint;
-  service_->RegisterEndpoint(&static_endpoint);
-  service_->RegisterEndpoint(&async_endpoint);
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncTool) {
+  CustomTestTool static_tool(u"Static Action");
+  AsyncCustomTestTool async_tool;
+  service_->RegisterTool(&static_tool);
+  service_->RegisterTool(&async_tool);
 
   AreaOfInterest aoi;
   base::test::TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
       base::test::TestFutureMode::kQueue};
   service_->RequestSuggestions(aoi, future.GetRepeatingCallback());
 
-  // First batch: Synchronous endpoint suggestions.
+  // First batch: Synchronous tool suggestions.
   auto [static_suggestions, static_complete] = future.Take();
   EXPECT_FALSE(static_complete);
   ASSERT_EQ(static_suggestions.size(), 1u);
   EXPECT_EQ(static_suggestions[0]->GetLabel(), u"Static Action");
 
-  // Second batch: Async custom endpoint suggestions.
+  // Second batch: Async custom tool suggestions.
   auto [async_suggestions, async_complete] = future.Take();
   EXPECT_TRUE(async_complete);
   ASSERT_EQ(async_suggestions.size(), 1u);
   EXPECT_EQ(async_suggestions[0]->GetLabel(), u"Async Action");
 
-  service_->UnregisterEndpoint(&static_endpoint);
-  service_->UnregisterEndpoint(&async_endpoint);
+  service_->UnregisterTool(&static_tool);
+  service_->UnregisterTool(&async_tool);
 }
 
 }  // namespace

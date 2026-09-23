@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/selection/static_selection_suggestion_endpoint.h"
+#include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 
 #include <memory>
 #include <utility>
@@ -12,14 +12,14 @@
 
 namespace glic {
 
-StaticSelectionSuggestionEndpoint::StaticSelectionSuggestionEndpoint(
+StaticSelectionSuggestionTool::StaticSelectionSuggestionTool(
     tabs::TabInterface& tab)
     : tab_(tab) {}
 
-StaticSelectionSuggestionEndpoint::~StaticSelectionSuggestionEndpoint() =
+StaticSelectionSuggestionTool::~StaticSelectionSuggestionTool() =
     default;
 
-void StaticSelectionSuggestionEndpoint::RequestSuggestions(
+void StaticSelectionSuggestionTool::RequestSuggestions(
     const ::selection::AreaOfInterest& processed_area,
     ::selection::SuggestionsCallback callback) {
   std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
@@ -34,3 +34,4 @@ void StaticSelectionSuggestionEndpoint::RequestSuggestions(
 }
 
 }  // namespace glic
+

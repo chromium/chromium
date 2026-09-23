@@ -161,12 +161,12 @@ class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
 
 namespace {
 
-class FakeStaticSelectionSuggestionEndpoint
-    : public ::selection::SuggestionEndpoint {
+class FakeStaticSelectionSuggestionTool
+    : public ::selection::SuggestionTool {
  public:
-  explicit FakeStaticSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+  explicit FakeStaticSelectionSuggestionTool(tabs::TabInterface* tab)
       : tab_(tab) {}
-  ~FakeStaticSelectionSuggestionEndpoint() override = default;
+  ~FakeStaticSelectionSuggestionTool() override = default;
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
@@ -185,12 +185,12 @@ class FakeStaticSelectionSuggestionEndpoint
   raw_ptr<tabs::TabInterface> tab_;
 };
 
-class FakeSelectionSuggestionEndpoint
-    : public ::selection::SuggestionEndpoint {
+class FakeSelectionSuggestionTool
+    : public ::selection::SuggestionTool {
  public:
-  explicit FakeSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+  explicit FakeSelectionSuggestionTool(tabs::TabInterface* tab)
       : tab_(tab) {}
-  ~FakeSelectionSuggestionEndpoint() override = default;
+  ~FakeSelectionSuggestionTool() override = default;
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
@@ -218,8 +218,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);
-  FakeStaticSelectionSuggestionEndpoint static_endpoint(tab);
-  suggestion_service->RegisterEndpoint(&static_endpoint);
+  FakeStaticSelectionSuggestionTool static_tool(tab);
+  suggestion_service->RegisterTool(&static_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_NE(actions[0]->id, actions[1]->id);
   EXPECT_NE(actions[1]->id, actions[2]->id);
 
-  suggestion_service->UnregisterEndpoint(&static_endpoint);
+  suggestion_service->UnregisterTool(&static_tool);
 }
 
 class SelectionOverlayStaticSuggestionsBrowserTest : public GlicBrowserTest {
@@ -347,16 +347,16 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
-                       SuggestedActionsFromMockEndpoint) {
+                       SuggestedActionsFromMockTool) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);
-  FakeStaticSelectionSuggestionEndpoint static_endpoint(tab);
-  FakeSelectionSuggestionEndpoint fake_endpoint(tab);
-  suggestion_service->RegisterEndpoint(&static_endpoint);
-  suggestion_service->RegisterEndpoint(&fake_endpoint);
+  FakeStaticSelectionSuggestionTool static_tool(tab);
+  FakeSelectionSuggestionTool fake_tool(tab);
+  suggestion_service->RegisterTool(&static_tool);
+  suggestion_service->RegisterTool(&fake_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -389,18 +389,18 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_EQ(actions[4]->title, "Fact check");
   EXPECT_NE(actions[3]->id, actions[4]->id);
 
-  suggestion_service->UnregisterEndpoint(&static_endpoint);
-  suggestion_service->UnregisterEndpoint(&fake_endpoint);
+  suggestion_service->UnregisterTool(&static_tool);
+  suggestion_service->UnregisterTool(&fake_tool);
 }
 
 namespace {
 
-class CountingSelectionSuggestionEndpoint
-    : public ::selection::SuggestionEndpoint {
+class CountingSelectionSuggestionTool
+    : public ::selection::SuggestionTool {
  public:
-  explicit CountingSelectionSuggestionEndpoint(tabs::TabInterface* tab)
+  explicit CountingSelectionSuggestionTool(tabs::TabInterface* tab)
       : tab_(tab) {}
-  ~CountingSelectionSuggestionEndpoint() override = default;
+  ~CountingSelectionSuggestionTool() override = default;
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
@@ -433,8 +433,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);
-  CountingSelectionSuggestionEndpoint counting_endpoint(tab);
-  suggestion_service->RegisterEndpoint(&counting_endpoint);
+  CountingSelectionSuggestionTool counting_tool(tab);
+  suggestion_service->RegisterTool(&counting_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
     listener.WaitForBatches(1);
     EXPECT_TRUE(listener.actions().empty());
-    EXPECT_EQ(counting_endpoint.request_count(), 0);
+    EXPECT_EQ(counting_tool.request_count(), 0);
   }
 
   // 2. Select Region 1 and request suggestions -> fetches once ("Action 1").
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
     region1_action_id = listener.actions()[0]->id;
-    EXPECT_EQ(counting_endpoint.request_count(), 1);
+    EXPECT_EQ(counting_tool.request_count(), 1);
   }
 
   // 3. Re-request for Region 1 without changing bounds -> returns stored
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
     EXPECT_EQ(listener.actions()[0]->id, region1_action_id);
-    EXPECT_EQ(counting_endpoint.request_count(), 1);
+    EXPECT_EQ(counting_tool.request_count(), 1);
   }
 
   // 4. Select Region 2 -> Region 2 becomes active; requesting suggestions
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     listener.WaitForBatches(1);
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 2");
-    EXPECT_EQ(counting_endpoint.request_count(), 2);
+    EXPECT_EQ(counting_tool.request_count(), 2);
   }
 
   // 5. Delete Region 2 so Region 1 becomes active again -> returns stored
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
     EXPECT_EQ(listener.actions()[0]->id, region1_action_id);
-    EXPECT_EQ(counting_endpoint.request_count(), 2);
+    EXPECT_EQ(counting_tool.request_count(), 2);
   }
 
   // 6. Adjust Region 1's bounds -> invalidates stored suggestions and refetches
@@ -532,10 +532,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     ASSERT_EQ(listener.actions().size(), 1u);
     EXPECT_EQ(listener.actions()[0]->title, "Action 3");
     EXPECT_NE(listener.actions()[0]->id, region1_action_id);
-    EXPECT_EQ(counting_endpoint.request_count(), 3);
+    EXPECT_EQ(counting_tool.request_count(), 3);
   }
 
-  suggestion_service->UnregisterEndpoint(&counting_endpoint);
+  suggestion_service->UnregisterTool(&counting_tool);
 }
 
 }  // namespace glic

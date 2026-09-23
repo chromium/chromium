@@ -8,9 +8,9 @@ source_set("selection") {
   sources = [
     "suggestion.cc",
     "suggestion.h",
-    "suggestion_endpoint.h",
     "suggestion_service.cc",
     "suggestion_service.h",
+    "suggestion_tool.h",
   ]
 
   public_deps = [

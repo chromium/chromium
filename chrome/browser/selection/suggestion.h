@@ -41,7 +41,7 @@ class Suggestion {
   // Called when the suggestion is presented.
   virtual void OnSuggestionPresented() = 0;
 
-  // Called when the user accepts a suggestion associated with this endpoint.
+  // Called when the user accepts a suggestion associated with this tool.
   virtual void OnSuggestionExecuted() = 0;
 };
 
