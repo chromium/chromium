@@ -112,6 +112,7 @@
 <translation id="132683371494960526">扲兩下就可以更改上層資料夾。</translation>
 <translation id="132969855425874290">關閉「尋找並填入」</translation>
 <translation id="1333455942675373522">鍵盤</translation>
+<translation id="1333669029961409292">「檢查密碼」完成！</translation>
 <translation id="1334485477792811969">網絡服務</translation>
 <translation id="1335767868357998043">選擇網址列位置</translation>
 <translation id="1347468774581902829">管理活動</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用導航功能即時規劃前往目的地的路線</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
+<translation id="1644229815617955289">管理記錄、Cookie 等資料，保障你的私隱</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
 <translation id="1650979352027263879">已移除外觀偏好設定</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">有可用的設定描述檔</translation>
 <translation id="2244080985779413662">此網站想下載檔案並在「錢包」中開啟。</translation>
 <translation id="2245007488813216650">正在翻譯…</translation>
+<translation id="2246445006133863463">這樣就可以用語音與 Gemini 對話</translation>
 <translation id="2249119578464404734">輕按畫面頂部的「搜尋」圖示</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
 <translation id="2252378061043785266">永不顯示此網站</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">請繼續將密碼儲存至 Google 帳戶 (<ph name="EMAIL" />)，或使用帳戶中的密碼</translation>
 <translation id="3853873210696342070">匯入</translation>
 <translation id="3854052088499589035">你將會收到 Level Up 的進度更新通知</translation>
+<translation id="3854214753902617617">探索「強化安全瀏覽」</translation>
 <translation id="3857113360369572832">開啟 [Safari 設定]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="386224966259596343">下次填寫相關表格時，你可以選擇將資料儲存至「錢包」。</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">分享密碼</translation>
 <translation id="4049419681095579435">已追蹤包裹</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
+<translation id="4052951214266508382">允許「Gemini」使用麥克風</translation>
 <translation id="4054290211988862686">選擇檔案</translation>
 <translation id="4070132839822635162">不要登入</translation>
 <translation id="4072473499345702662">前往「升級」功能頁面</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">活動</translation>
 <translation id="5749158352074143502">繼續使用此分頁</translation>
 <translation id="5753021559215751319">儲存密碼</translation>
+<translation id="5756200167514420691">以無痕模式開啟分頁，提升網頁瀏覽私隱</translation>
 <translation id="5756525336488841345">隱藏「書籤」</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
 <translation id="57586589942790530">信用卡號碼無效</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">在分頁上查看降價資料。</translation>
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
 <translation id="599343768974649785">顯示文字</translation>
+<translation id="6000893618966378846">「刪除瀏覽資料」完成！</translation>
 <translation id="6004988584831654445">大功告成！在有新任務時接收通知。</translation>
 <translation id="6006672969046233841">新分頁</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
+<translation id="6749473226660745022">相片</translation>
 <translation id="6750456911389438250">{count,plural, =1{已匯入 {count} 個記錄項目}other{已匯入 {count} 個記錄項目}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{鍵盤上面顯示 {count} 個憑證選項。}other{鍵盤上面顯示 {count} 個憑證選項。}}</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
@@ -1973,6 +1981,7 @@
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312823817809783355">你的任務</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
+<translation id="7318555235645532245">「進入無痕模式」完成！</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} 個自動填入選項顯示喺鍵盤上方。}other{{count} 個自動填入選項顯示喺鍵盤上方。}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">下載咗百分之 <ph name="PERCENT" /></translation>
@@ -2149,6 +2158,7 @@
 <translation id="7857520352710212030">已固定網站</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
 <translation id="7863211248337747225">下載應用程式</translation>
+<translation id="7863990181930071932">已停用位置存取權</translation>
 <translation id="7865127013871431856">翻譯選項</translation>
 <translation id="7866872729285243843">如要將閱讀清單同步到所有裝置，請在設定中開啟「閱讀清單」。</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> 自動填寫表格</translation>
@@ -2457,6 +2467,7 @@
 <translation id="8786100550345425552">編輯權限</translation>
 <translation id="878871978861915380">隱藏「價格追蹤」</translation>
 <translation id="8792626944327216835">麥克風</translation>
+<translation id="8795809107245894196">使用「密碼安全檢查」確保密碼安全</translation>
 <translation id="8796634520835503150">可使用閱讀模式</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8803639129939845298">安全</translation>
@@ -2489,6 +2500,7 @@
 <translation id="8879952635974818770">個人化內容</translation>
 <translation id="8887595428614802520">關閉所有分頁和群組</translation>
 <translation id="8888595487174963247">移除提醒</translation>
+<translation id="8890516388109605451">來源</translation>
 <translation id="8893208530912252670">影片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="8900845556227858314">瀏覽器應用程式</translation>
@@ -2529,6 +2541,7 @@
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9013605037177245304">開啟通知</translation>
 <translation id="9029650858822697271">系統已將你登出</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9035699147763101514">採用 Gemini「個人化智能」技術。你可以在設定中管理選擇。</translation>
 <translation id="9038526468059454274">想總結內容，就用</translation>

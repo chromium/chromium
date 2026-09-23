@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">শর্টকাট অ্যাক্টিভ নয়</translation>
 <translation id="2227179592712503583">সাজেশন সরিয়ে দিন</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
-<translation id="2230411774874187555">আপনার সেভ করা সব তথ্য পান</translation>
 <translation id="2230777942707397948">ফাঁকা উইন্ডো</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2233735624724508540">টাইমফ্রেম বেছে নিন এবং তারপর 'ডেটা মুছে দিন' বিকল্পে ট্যাপ করুন</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">এই ডিভাইসে পাসওয়ার্ড চেক করা যাচ্ছে না</translation>
 <translation id="2414886740292270097">অন্ধকার</translation>
 <translation id="2415037988255164008">উইন্ডো ফিরিয়ে আনতে চান?</translation>
-<translation id="2426805022920575512">অন্য একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ভিডিও, তালিকাতে ১টি ভিডিও আছে}one{ভিডিও, তালিকাতে #টি ভিডিও আছে}other{ভিডিও, তালিকাতে #টি ভিডিও আছে}}</translation>
 <translation id="2433507940547922241">উপস্থিতি</translation>
 <translation id="2449931042095204989">কোনও Google সাইট বা অ্যাপ তার পৃষ্ঠার লিঙ্ক ব্যক্তিগতভাবে প্রিলোড করা হোক বলে নির্দেশ দিলে, কুকি ছাড়াই Google সার্ভারের মাধ্যমে Chrome, সেইসব পৃষ্ঠা এনক্রিপ্ট ও প্রিলোড করে। এর ফলে প্রিলোড করা সাইট আপনার পরিচয় দেখতে পায় না।</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="2996682533106928201">বাতিল করতে ট্যাপ করুন</translation>
 <translation id="2996809686854298943">URL প্রয়োজন</translation>
-<translation id="3007318536447999974">Gemini-র সাথে কথা বলতে, এটিকে আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দিন। এছাড়াও, আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি ম্যানেজ করতে পারবেন</translation>
 <translation id="3024215143424744261">রিডিং মোড সম্পর্কিত পছন্দ বন্ধ করা হয়েছে</translation>
 <translation id="3024277805447899099">ছবির প্রিভিউ দেখুন</translation>
 <translation id="3026955690410463085">লিঙ্ক যোগ করুন</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6196315980958524839">পাসওয়ার্ড এই ডিভাইসের Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা হয়</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-এর থেকে সম্ভাব্য স্প্যাম শনাক্ত করেছে।</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
 <translation id="6212567362666004597">গ্রুপে ট্যাব যোগ করুন</translation>
 <translation id="6225572914528673855">অ্যাড্রেস বার</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">ফাইল নিরাপদে ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="8571213806525832805">গত ৪ সপ্তাহ</translation>
 <translation id="8580435650274205305">মেয়াদ সমাপ্তির তারিখ, প্রয়োজন</translation>
-<translation id="8582529315803410153">অন্যান্য ডিভাইস থেকে আপনার ট্যাবগুলি এখানে দেখতে পাবেন</translation>
 <translation id="8585103689515290060">অটোফিল পরিষেবা</translation>
 <translation id="8586116786993312006">Chrome-এ ব্রাউজ করা ডেটা মুছতে ট্যাপ করুন</translation>
 <translation id="859046281437143747">'আরও বিকল্প' বোতাম থেকে দাম ট্র্যাক করুন</translation>

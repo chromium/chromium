@@ -197,7 +197,6 @@
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
 <translation id="2915996080311180594">הפעלה מחדש מאוחר יותר</translation>
-<translation id="2916983411556218750">‏עכשיו נגדיר את Chrome</translation>
 <translation id="2926952073016206995">‏נדרשת הרשאת גישה למצלמה ב-Chrome עבור האתר הזה</translation>
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
 <translation id="2959224682348913614">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסיסמאות שלך ופרטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
@@ -541,6 +540,7 @@
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6334815226785304306">‏הגדרת Google Chrome כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="63540178978900677">‏‫Chrome לא מוגדר יותר כדפדפן ברירת המחדל. אני רוצה ש-Chrome יהיה דפדפן ברירת המחדל</translation>
+<translation id="6357670763064300993">‏‫Gemini Enterprise ב-Chrome</translation>
 <translation id="6360449101159168105">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chrome ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
 <translation id="6362984640667950211">‏החשבון של <ph name="EXISTING_USER" /> כבר מחובר. כדי לשמור על סביבת גלישה נפרדת, אפשר להיכנס ל-Chrome בפרופיל נפרד בתור <ph name="USER_EMAIL_ADDRESS" />. אפשר לקבל גם את רשימת הקריאה ופריטים נוספים בכל המכשירים.</translation>
 <translation id="6388799252195623474">אני רוצה עזרה בנושא הזה</translation>

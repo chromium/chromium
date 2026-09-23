@@ -467,7 +467,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1757773103848038814">Tipus de lletra monoespaiada</translation>
 <translation id="1757935267918149452">Botó Canvia la contrasenya de Google: activa'l per canviar la contrasenya del teu Compte de Google</translation>
 <translation id="1759776526873274358">Emplena automàticament els codis de verificació que els llocs web utilitzen per millorar la teva seguretat. Chrome pot obtenir aquests codis a partir del teu compte de Gmail. <ph name="BEGIN_LINK" />Més informació sobre aquesta funció<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Visita Google Wallet per controlar les <ph name="BEGIN_LINK1" />preferències de dades i privadesa<ph name="END_LINK1" /> o gestionar les <ph name="BEGIN_LINK2" />formes de pagament<ph name="END_LINK2" /> i els <ph name="BEGIN_LINK3" />passis<ph name="END_LINK3" />, com ara les targetes de fidelització i els documents d'identitat</translation>
 <translation id="1763864636252898013">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre dispositiu considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova d'executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arxiu)</translation>
@@ -777,7 +776,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2292556288342944218">El vostre accés a Internet està bloquejat</translation>
 <translation id="2294150501457238325">Afegeix el passaport de manera segura</translation>
 <translation id="2295831393422400053">Per utilitzar la funció Ajuda'm a escriure, activa l'opció Millora les cerques i la navegació</translation>
-<translation id="2296244067976588032">Clau d'accés • Clauer de l'iCloud</translation>
 <translation id="2296331629987861142">Paga a terminis còmodes (subjecte a idoneïtat, s'apliquen comissions)</translation>
 <translation id="2300306941146563769">No penjat</translation>
 <translation id="2301064673700597535">Declaracions de certificats qualificats</translation>
@@ -905,6 +903,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2493122313108999546">S'ha canviat la mida</translation>
 <translation id="249376477913017009">S'ha obert l'avís sobre l'emplenament automàtic de Gmail i més</translation>
 <translation id="2495083838625180221">Analitzador JSON</translation>
+<translation id="2495909791227061512">Vols connectar-te a dispositius propers?</translation>
 <translation id="2496402116964818747">A la <ph name="SETTINGS" />, pots canviar si vols utilitzar l'empremta digital per emplenar contrasenyes</translation>
 <translation id="2498091847651709837">Escaneja una targeta nova</translation>
 <translation id="2501270939904835585">Etiquetes (setinades)</translation>
@@ -913,6 +912,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2505063700931618106">S'ha desat la informació de la targeta</translation>
 <translation id="2505268675989099013">Protegeix el compte</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (condicions aplicables)</translation>
+<translation id="251033673027346551">Visita Google Wallet per gestionar les <ph name="BEGIN_LINK" />preferències de dades i privadesa<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">No permès (opció predeterminada)</translation>
 <translation id="2512413427717747692">Botó per establir Chrome com a navegador predeterminat: prem Retorn per establir Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
 <translation id="2515629240566999685">Comprova el senyal a la teva zona.</translation>
@@ -1305,6 +1305,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3209034400446768650">És possible que la pàgina faci un càrrec de diners</translation>
 <translation id="3209071504641569648">Les teves sol·licituds, els títols de les pàgines i els URL s'envien a Google i és possible que es revisin per perfeccionar l'emplenament automàtic millorat</translation>
+<translation id="3211727636285361260">Obre els enllaços de <ph name="PROTOCOL" /> mitjançant <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">S'ha iniciat la baixada. Per veure-la, arrossega des de la part superior i toca el botó Enrere.</translation>
 <translation id="3212581601480735796">La teva activitat a <ph name="HOSTNAME" /> s'està supervisant</translation>
 <translation id="3215092763954878852">No s'ha pogut utilitzar WebAuthn</translation>
@@ -2087,6 +2088,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
 <translation id="4493480324863638523">L'URL no és vàlid. Ha de tenir un esquema estàndard, com ara "http://example.com" o "https://example.com".</translation>
 <translation id="4497010149473852018">Hi ha targetes de fidelització que es poden emplenar amb un toc. El teclat està amagat.</translation>
+<translation id="4497843134750481377">Gestiona les ofertes</translation>
 <translation id="4500587658229086076">contingut no segur</translation>
 <translation id="4501939680615452918">Cerca taula en restaurants de moda</translation>
 <translation id="4503459574136856756">Reescriu la meva biografia perquè soni més professional</translation>
@@ -3751,6 +3753,7 @@ Detalls addicionals:
 <translation id="7347640536700429009">El nom del titular de la targeta no és vàlid</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353601530677266744">Línia d'ordres</translation>
+<translation id="7358055687760675498">Obre els enllaços de <ph name="PROTOCOL" /> mitjançant <ph name="HANDLER_HOSTNAME" /> en lloc de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">S'han bloquejat els anuncis.</translation>
 <translation id="7362281996276843968">Aquest grup està tancat</translation>
 <translation id="7363096869660964304">Tanmateix, no ets invisible. La teva empresa, el teu proveïdor de serveis d'Internet i els llocs web que visites poden veure la navegació d'incògnit.</translation>

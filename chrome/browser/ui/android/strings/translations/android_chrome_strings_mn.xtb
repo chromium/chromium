@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Идэвхгүй товчлолууд</translation>
 <translation id="2227179592712503583">Зөвлөмжийг устгах</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />-р үргэлжлүүлэх</translation>
-<translation id="2230411774874187555">Хадгалсан бүх мэдээллээ авах</translation>
 <translation id="2230777942707397948">Хоосон цонх</translation>
 <translation id="223356358902285214">Веб, аппын үйл ажиллагаа</translation>
 <translation id="2233735624724508540">Хугацаа сонгоод, Өгөгдөл устгах дээр товшино уу</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Энэ төхөөрөмж дээрх нууц үгийг шалгах боломжгүй</translation>
 <translation id="2414886740292270097">Хар</translation>
 <translation id="2415037988255164008">Цонхнуудыг сэргээх үү?</translation>
-<translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеонууд, жагсаалтад 1 видео байна}other{Видеонууд, жагсаалтад # видео байна}}</translation>
 <translation id="2433507940547922241">Харагдах байдал</translation>
 <translation id="2449931042095204989">Google-н сайт, апп өөрийн хуудсан дээр холбооснуудыг нууцлалтайгаар урьдчилан ачаалахыг хүсэхэд Chrome хуудаснуудыг күүкигүйгээр Google-н серверүүдээр дамжуулан шифрлэж, урьдчилан ачаална. Энэ нь таны хувийн мэдээллийг урьдчилан ачаалсан сайтаас нууна.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Нэвтрэх үг үүсгэх</translation>
 <translation id="2996682533106928201">Хаахын тулд товшино уу</translation>
 <translation id="2996809686854298943">URL шаардлагатай</translation>
-<translation id="3007318536447999974">Gemini-тай ярихын тулд таны микрофоныг ашиглах зөвшөөрөл өгнө үү. Та үүнийг мөн <ph name="BEGIN_LINK" />Тохиргооноос<ph name="END_LINK" /> удирдах боломжтой</translation>
 <translation id="3024215143424744261">Унших горимын сонголтуудыг хаасан</translation>
 <translation id="3024277805447899099">Зураг урьдчилан үзэх</translation>
 <translation id="3026955690410463085">Холбоос оруулна уу</translation>
@@ -1291,7 +1288,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6196315980958524839">Нууц үгнүүдийг энэ төхөөрөмж дээр Google Password Manager-т хадгалдаг</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-с болзошгүй спам илрүүллээ.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
 <translation id="6211386937064921208">Энэ хуудсыг урьдчилан үзэж байна</translation>
 <translation id="6212567362666004597">Табыг бүлэгт нэмэх</translation>
 <translation id="6225572914528673855">Хаяг оруулах хэсэг</translation>
@@ -1950,7 +1946,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
 <translation id="8580435650274205305">Хүчинтэй хугацаа, оруулах шаардлагатай</translation>
-<translation id="8582529315803410153">Та бусад төхөөрөмжийн табаа эндээс олно</translation>
 <translation id="8585103689515290060">Автоматаар бөглөх хэсгийн үйлчилгээ</translation>
 <translation id="8586116786993312006">Chrome-н интернэтээр үзсэн өгөгдлийг устгахын тулд товшино уу</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>

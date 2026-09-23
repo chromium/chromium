@@ -72,6 +72,7 @@
             Os marcadores, o historial e os contrasinais gardados non se verán afectados.</translation>
 <translation id="1619887657840448962">Para conseguir que Chrome resulte máis seguro, desactivamos a seguinte extensión que non aparece en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que quizais se engadise sen o teu coñecemento.</translation>
 <translation id="1628000112320670027">Obter axuda sobre Chrome</translation>
+<translation id="1632241302126471515">Facer buscas con Chrome Canary</translation>
 <translation id="1640672724030957280">Descargando…</translation>
 <translation id="1651617469580841801">Cando usas Google Lens, envíanse a Google o contido (incluídos os PDF), o URL e o título da páxina. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Acerca de Chrome OS Flex</translation>
@@ -201,7 +202,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2885378588091291677">Xestor de tarefas</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2915996080311180594">Reiniciar máis tarde</translation>
-<translation id="2916983411556218750">Preparemos o teu Chrome</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar dos teus contrasinais e moito máis desde <ph name="DEVICE" />.</translation>
@@ -275,6 +275,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{O teu administrador require que reinicies Chrome para aplicar unha actualización}=1{O teu administrador require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3597003331831379823">Produciuse un erro ao executar a configuración con privilexios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">Mostrar Gemini en Chrome na bandexa do sistema</translation>
+<translation id="3616622400661108683">Fai preguntas sobre contido que non estea en Chrome, senón noutras aplicacións ou ficheiros</translation>
 <translation id="3622716124581627104">Identifica obxectos ou lugares, e copia ou traduce texto. Cando usas Google Lens, envíase unha captura de pantalla da páxina a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Agora é máis fácil utilizar Chrome coa túa conta de Google e en ordenadores compartidos.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos.</translation>
@@ -549,6 +550,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6334815226785304306">Definir Google Chrome como o navegador predeterminado e fixalo na barra de tarefas</translation>
 <translation id="63540178978900677">Chrome xa non é o teu navegador predeterminado. Queres que Chrome sexa o navegador predeterminado?</translation>
+<translation id="6357670763064300993">Gemini Enterprise en Chrome</translation>
 <translation id="6360449101159168105">Mentres esta pestana estaba inactiva, liberouse memoria para que Chrome siga funcionando rápido. Podes optar por excluír este sitio para que nunca estea inactivo.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas dos teus dispositivos.</translation>
 <translation id="6388799252195623474">axúdame con isto</translation>
@@ -757,7 +759,9 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8162006532256575008">Usar Chrome sen ningunha conta</translation>
 <translation id="8172231188687329735">Descarga a aplicación Chrome para gardar contrasinais esteas onde esteas</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
+<translation id="8196526165798579689">Facer buscas con Chrome Dev</translation>
 <translation id="8221491193165283816">Adoitas bloquear as notificacións. Para permitir que este sitio che envíe notificacións, fai clic aquí.</translation>
+<translation id="8227493674161801700">Facer buscas con Chrome Beta</translation>
 <translation id="8253851811470049684">Abre ligazóns en Chrome desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8260086374035800939">Se Gemini en Chrome está aberto, o panel lateral permanecerá aberto cando crees pestanas novas</translation>

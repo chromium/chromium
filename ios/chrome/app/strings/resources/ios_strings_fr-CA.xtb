@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Touchez deux fois pour modifier le dossier parent.</translation>
 <translation id="132969855425874290">Fermer Trouver et remplir</translation>
 <translation id="1333455942675373522">Clavier</translation>
+<translation id="1333669029961409292">La tâche « Vérifier vos mots de passe » a bien été terminée!</translation>
 <translation id="1334485477792811969">Services Web</translation>
 <translation id="1335767868357998043">Choisir la position de la barre d'adresse</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtenez des indications pour vous rendre à votre destination avec un itinéraire détaillé à l'aide de la fonctionnalité de navigation</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
+<translation id="1644229815617955289">Gérez votre historique, vos témoins et plus encore pour protéger votre confidentialité</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
 <translation id="1650979352027263879">Vos préférences d'apparence ont été retirées</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Profil de configuration proposé</translation>
 <translation id="2244080985779413662">Ce site Web veut télécharger un fichier et l'ouvrir dans votre Portefeuille.</translation>
 <translation id="2245007488813216650">Traduction en cours…</translation>
+<translation id="2246445006133863463">Cela vous permet de discuter avec Gemini en utilisant votre voix</translation>
 <translation id="2249119578464404734">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
 <translation id="2252378061043785266">Ne jamais afficher ce site</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Continuez à utiliser et à enregistrer les mots de passe dans votre compte Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importer</translation>
 <translation id="3854052088499589035">Vous recevrez des mises à jour lorsque vous progresserez dans Level Up</translation>
+<translation id="3854214753902617617">Explorer la navigation sécurisée améliorée</translation>
 <translation id="3857113360369572832">Ouvrez les <ph name="BEGIN_BOLD" />réglages de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="386224966259596343">Vous aurez la possibilité d'enregistrer ces informations dans Portefeuille la prochaine fois que vous remplirez un formulaire pertinent.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Partager vos mots de passe</translation>
 <translation id="4049419681095579435">Colis déjà suivi</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
+<translation id="4052951214266508382">Autoriser « Gemini » à utiliser votre microphone</translation>
 <translation id="4054290211988862686">Sélectionner un fichier</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
 <translation id="4072473499345702662">Accéder au niveau supérieur</translation>
@@ -1481,6 +1486,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="574762237186762643">Événements</translation>
 <translation id="5749158352074143502">Continuer avec cet onglet</translation>
 <translation id="5753021559215751319">Enregistrer le mot de passe</translation>
+<translation id="5756200167514420691">Ouvrez des onglets en mode Navigation privée pour naviguer sur le Web de manière plus privée</translation>
 <translation id="5756525336488841345">Masquer les favoris</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="57586589942790530">Numéro de carte incorrect</translation>
@@ -1551,6 +1557,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="599343768974649785">Texte explicite</translation>
+<translation id="6000893618966378846">La tâche « Supprimer les données de navigation » a bien été terminée!</translation>
 <translation id="6004988584831654445">Vous êtes prêt! Recevez une notification lorsque de nouvelles tâches arrivent.</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
@@ -1810,6 +1817,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Vérifiez les données de votre compte</translation>
+<translation id="6749473226660745022">Photos</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} élément de l'historique importé}one{{count} élément de l'historique importé}other{{count} éléments de l'historique importés}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} option d'authentifiant accessible au-dessus de votre clavier.}one{{count} option d'authentifiant accessible au-dessus de votre clavier.}other{{count} options d'authentifiant accessibles au-dessus de votre clavier.}}</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
@@ -1975,6 +1983,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7312823817809783355">Vos tâches</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
+<translation id="7318555235645532245">La tâche « Utiliser la navigation privée » a bien été terminée!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} option de remplissage automatique accessible au-dessus de votre clavier.}one{{count} option de remplissage automatique accessible au-dessus de votre clavier.}other{{count} options de remplissage automatique accessibles au-dessus de votre clavier.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
@@ -2151,6 +2160,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7857520352710212030">Site épinglé</translation>
 <translation id="7859988229622350291">Ne jamais traduire les pages rédigées en</translation>
 <translation id="7863211248337747225">Télécharger l'appli</translation>
+<translation id="7863990181930071932">Accès à la position désactivé</translation>
 <translation id="7865127013871431856">Options de traduction</translation>
 <translation id="7866872729285243843">Pour obtenir votre Liste de lecture sur tous vos appareils, activez « Liste de lecture » dans les paramètres.</translation>
 <translation id="7874107544081154809">Remplir automatiquement le formulaire avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8786100550345425552">Modifier les autorisations</translation>
 <translation id="878871978861915380">Masquer « Suivi des prix »</translation>
 <translation id="8792626944327216835">Microphone</translation>
+<translation id="8795809107245894196">Utilisez la fonctionnalité Vérification de mot de passe pour vous assurer que vos mots de passe sont sécurisés</translation>
 <translation id="8796634520835503150">Mode Lecture accessible</translation>
 <translation id="8803526663383843427">Lorsque activée</translation>
 <translation id="8803639129939845298">Sécuritaire</translation>
@@ -2491,6 +2502,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8879952635974818770">Contenu personnalisé</translation>
 <translation id="8887595428614802520">Fermer tous les onglets et groupes</translation>
 <translation id="8888595487174963247">Retirer le rappel</translation>
+<translation id="8890516388109605451">Sources</translation>
 <translation id="8893208530912252670">Vidéos</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8900845556227858314">Appli de navigation</translation>
@@ -2531,6 +2543,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9013605037177245304">Activer les notifications</translation>
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmer la suppression des données de navigation</translation>
 <translation id="9035699147763101514">Propulsé par l'Intelligence personnalisée avec Gemini. Gérez vos choix dans les paramètres.</translation>
 <translation id="9038526468059454274">Résumer avec</translation>

@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Неактыўныя каманды</translation>
 <translation id="2227179592712503583">Выдаліць прапанову</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Атрымайце ўсю захаваную інфармацыю</translation>
 <translation id="2230777942707397948">Пустое акно</translation>
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
 <translation id="2233735624724508540">Выберыце перыяд часу і націсніце "Выдаліць даныя".</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Не ўдаецца праверыць паролі на гэтай прыладзе</translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2415037988255164008">Аднавіць вокны?</translation>
-<translation id="2426805022920575512">Выбраць іншы ўліковы запіс</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Відэа, 1 відэа ў спісе}one{Відэа, # відэа ў спісе}few{Відэа, # відэа ў спісе}many{Відэа, # відэа ў спісе}other{Відэа, # відэа ў спісе}}</translation>
 <translation id="2433507940547922241">Выгляд</translation>
 <translation id="2449931042095204989">Калі сайт ці праграма Google па спасылках на іх запытваюць перадзагрузку старонак у прыватным рэжыме, Chrome шыфруе і перадзагружае старонкі праз серверы Google, не выкарыстоўваючы файлы cookie. Дзякуючы гэтаму перадзагружаны сайт не атрымлівае звестак пра вашу асобу.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
 <translation id="2996682533106928201">Націсніце, каб закрыць</translation>
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
-<translation id="3007318536447999974">Каб узаемадзейнічаць з Gemini голасам, дазвольце гэтаму сэрвісу выкарыстоўваць мікрафон. Кіраваць гэтым параметрам можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Налады рэжыму чытання закрыты</translation>
 <translation id="3024277805447899099">Прагледзець відарыс</translation>
 <translation id="3026955690410463085">Абагуліць разам са спасылкай</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6196315980958524839">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
 <translation id="6204781143409202534">Браўзер Chrome выявіў магчымы спам з дамена <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="6212567362666004597">Дадаць укладку ў групу</translation>
 <translation id="6225572914528673855">Адрасны радок</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">Бяспечна спампаваць файл нельга</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8580435650274205305">Трэба ўвесці тэрмін дзеяння</translation>
-<translation id="8582529315803410153">Тут знаходзяцца вашы ўкладкі з іншых прылад</translation>
 <translation id="8585103689515290060">Службы аўтазапаўнення</translation>
 <translation id="8586116786993312006">Націсніце, каб выдаліць даныя пра работу ў браўзеры Chrome</translation>
 <translation id="859046281437143747">Адсочвайце цану, выкарыстоўваючы кнопку "Дадатковыя параметры"</translation>

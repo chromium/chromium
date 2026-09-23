@@ -107,6 +107,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3072591112723064972">Make Chromium your default browser to launch links here instantly.</translation>
 <translation id="3115956258722352278">Make Chromium your default browser?</translation>
 <translation id="3180939591219927904">Turn on 'Lock Incognito tabs when you close Chromium'</translation>
+<translation id="3239426886813624481">To share your location with websites, tap on Settings to let Chromium use your location.</translation>
 <translation id="327628223428512207">Enter passphrase to save this password and get Chromium data on all your devices</translation>
 <translation id="328933489847748230">{count,plural, =1{Now showing 1 Chromium window}other{Now showing {count} Chromium windows}}</translation>
 <translation id="3344204225393848305">Set Chromium as default</translation>

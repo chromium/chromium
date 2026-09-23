@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Неактивни кратенки</translation>
 <translation id="2227179592712503583">Отстрани го предлогот</translation>
 <translation id="2227444325776770048">Продолжете како <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Добијте ги сите ваши зачувани податоци</translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
 <translation id="223356358902285214">Активност на веб и апликации</translation>
 <translation id="2233735624724508540">Изберете временска рамка, па допрете „Избриши ги податоците“</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Не може да се проверат лозинките на уредов</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2415037988255164008">Да се вратат прозорците?</translation>
-<translation id="2426805022920575512">Изберете друга сметка</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеа, 1 видео во список}one{Видеа, # видео во список}other{Видеа, # видеа во список}}</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2449931042095204989">Кога некој сајт или апликација на Google ќе ви побара приватно вчитување однапред на линковите на нејзината страница, Chrome ги шифрира и ги вчитува страниците однапред преку серверите на Google без колачиња. Вака се крие вашиот идентитет од однапред вчитаниот сајт.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Создајте лозинка</translation>
 <translation id="2996682533106928201">Допрете за да отфрлите</translation>
 <translation id="2996809686854298943">Потребен е URL</translation>
-<translation id="3007318536447999974">За да разговарате со Gemini, дајте му дозвола да го користи микрофонот. Mоже да управувате со ова во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Поставките за „Режим за читање“ се затворени</translation>
 <translation id="3024277805447899099">Прегледајте ја сликата</translation>
 <translation id="3026955690410463085">Вклучи линк</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6196315980958524839">Лозинките се зачувани во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6204781143409202534">Chrome откри можен спам од <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
 <translation id="6212567362666004597">Додајте картичка во групата</translation>
 <translation id="6225572914528673855">Лента за адреси</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">Датотеката не може да се преземе безбедно</translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
 <translation id="8580435650274205305">Датум на истекување, задолжително</translation>
-<translation id="8582529315803410153">Картичките од другите уреди ќе ги најдете тука</translation>
 <translation id="8585103689515290060">Услуги за автоматско пополнување</translation>
 <translation id="8586116786993312006">Допрете за да ги избришете податоците од прелистување во Chrome</translation>
 <translation id="859046281437143747">Следете ја цената преку копчето „Повеќе опции“</translation>

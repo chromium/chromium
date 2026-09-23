@@ -529,6 +529,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1401216725754314428">Finn ut mer om relaterte nettsteder på en ny fane</translation>
 <translation id="1402426911829176748">Kobler til enheten din</translation>
 <translation id="1405779994569073824">Kræsjet.</translation>
+<translation id="1406812885827747674">Tillat denne gangen</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="140723521119632973">Aktivering med mobiltelefon</translation>
@@ -989,7 +990,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1756963401828337401">Velg en skjerm du vil ta bilde av</translation>
 <translation id="17584710573359123">Se i Chrome Nettmarked</translation>
-<translation id="176013700366797492">Gå til Google Wallet for å kontrollere <ph name="BEGIN_LINK1" />data- og personverninnstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmåter<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort og billetter<ph name="END_LINK3" />, for eksempel stamkundekort og legitimasjon</translation>
 <translation id="1761402971842586829">Tilordningen for <ph name="BUTTON_NAME" /> er endret til <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Kontoene til <ph name="NAME" /></translation>
 <translation id="176272781006230109">handelsforslag</translation>
@@ -3009,7 +3009,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3284050785966252943">Autofyll forhåndsvisning av metadata</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" /> – visning nedenfra</translation>
 <translation id="3285329711156774325">Søkeferdigheter</translation>
-<translation id="3285500645985761267">Tillat relaterte nettsteder å se aktiviteten din i gruppen</translation>
 <translation id="328571385944182268">Vil du lagre passordene dine?</translation>
 <translation id="3285969135399641759">Lær deg en ny ferdighet</translation>
 <translation id="3289668031376215426">Automatisk stor forbokstav</translation>
@@ -3346,7 +3345,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3543296862747913985">Hva den gjør</translation>
 <translation id="3543298914473315872">Oppdateringsprosess</translation>
 <translation id="3543393733900874979">Oppdatering mislyktes (feil: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="3544058026430919413">Bedrifter kan definere grupper av nettsteder som kan bruke informasjonskapsler for å dele aktiviteten din i gruppen. Dette er av i Inkognito.</translation>
 <translation id="3544879808695557954">Brukernavn (valgfritt)</translation>
 <translation id="3547954654003013442">Innstillinger for proxy-tjener</translation>
 <translation id="3548162552723420559">Justerer skjermfargen slik at den passer til omgivelsene</translation>
@@ -4021,7 +4019,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4024768890073681126">Nettleseren administreres av forelderen din</translation>
 <translation id="4025039777635956441">Kutt lyden for det valgte nettstedet</translation>
 <translation id="402707738228916911">En <ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
-<translation id="4027569221211770437"><ph name="FOLDER_TITLE" />-mappen</translation>
 <translation id="4028467762035011525">Legg til inndatametoder</translation>
 <translation id="4028830198155575078">&amp;Flytt</translation>
 <translation id="4029024445166427442">Appoversikt-tasten + Shift + tilbaketasten</translation>
@@ -4495,7 +4492,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="440411460180511551">Hvis Chromium finner et av passordene dine i et offentlig databrudd, kan Google Passordlagring tilby å endre det for deg når du er logget på.</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokkert av forelderen din. Spør forelderen din om tillatelse til å bruke denne appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
-<translation id="4405224443901389797">Flytt til …</translation>
 <translation id="4405580203042711503">Ny fane nedenfor</translation>
 <translation id="4405781821077215583">Gjør elementer på skjermen, inkludert tekst, mindre eller større</translation>
 <translation id="4406308048672435032">Du kan gjøre denne fanen inaktiv eller laste inn listen på nytt for å se hele listen igjen</translation>
@@ -6038,7 +6034,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="5611474372949142946">Lukk fanene nedenfor</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
-<translation id="5614947000616625327">iCloud-nøkkelring</translation>
 <translation id="5616571005307953937">Eldste</translation>
 <translation id="5616726534702877126">Reservér størrelse</translation>
 <translation id="561698261642843490">Lukk Firefox</translation>
@@ -6961,7 +6956,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6347010704471250799">Vis varsel</translation>
 <translation id="634792071306410644">Ingen kan dele med deg før du gjør deg selv synlig</translation>
 <translation id="6348252528297699679">Du kan slå av posisjonen i Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">Bruk Google-kontoen din, eller opprett en ny</translation>
 <translation id="6348805481186204412">Lagring uten nett</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Administrer enhetene dine</translation>
@@ -7785,7 +7779,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="696942486482903620">Når du lagrer passord i Google-kontoen din, kan du bruke dem på denne enheten og alle andre enheter der du er logget på</translation>
 <translation id="6970480684834282392">Oppstartstype</translation>
 <translation id="6970543303783413625">Kan ikke importere passordene. Du kan bare importere opptil <ph name="COUNT" /> passord om gangen.</translation>
-<translation id="6970856801391541997">Skriv ut bestemte sider</translation>
 <translation id="6970861306198150268">Sørg for at du lagrer det nåværende passordet ditt for dette nettstedet</translation>
 <translation id="6971184043765343932">Bildet du har lastet opp</translation>
 <translation id="6971570759801670426">Rediger <ph name="CREDENTIAL_TYPE" /> for brukernavnet <ph name="USER_EMAIL" /></translation>
@@ -10230,7 +10223,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8849219423513870962">Avbryt fjerning av eSIM-profilen <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> av <ph name="CHECKING" /></translation>
-<translation id="8850251000316748990">Se flere …</translation>
 <translation id="885246833287407341">API-funksjonsargumenter</translation>
 <translation id="8853586775156634952">Dette kortet lagres kun på denne enheten</translation>
 <translation id="8855242995793521265">Funksjonen gjør ikke nettleseren eller enheten merkbart tregere.</translation>

@@ -107,6 +107,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="3072591112723064972">Nastavite Chromium kot privzeti brskalnik in povezave takoj odpirajte tukaj.</translation>
 <translation id="3115956258722352278">Želite nastaviti Chromium kot privzeti brskalnik?</translation>
 <translation id="3180939591219927904">Vklopite »Zaklepanje anonimnih zavihkov po zaprtju Chromiuma«</translation>
+<translation id="3239426886813624481">Če želite lokacijo deliti s spletnimi mesti, se dotaknite aplikacije Nastavitev in dovolite, da Chromium uporablja vašo lokacijo.</translation>
 <translation id="327628223428512207">Vnesite geslo, če želite shraniti to geslo in pridobiti podatke iz Chromiuma v vseh napravah</translation>
 <translation id="328933489847748230">{count,plural, =1{Prikazano je 1 okno Chromiuma}one{Prikazano je {count} okno Chromiuma}two{Prikazani sta {count} okni Chromiuma}few{Prikazana so {count} okna Chromiuma}other{Prikazanih je {count} oken Chromiuma}}</translation>
 <translation id="3344204225393848305">Nastavi Chromium kot privzeto možnost</translation>

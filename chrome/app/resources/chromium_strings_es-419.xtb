@@ -301,6 +301,7 @@
 <translation id="4251772536351901305">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chromium.</translation>
 <translation id="4269093074552541569">Salir de Chromium</translation>
 <translation id="4271805377592243930">Obtener ayuda con Chromium</translation>
+<translation id="4275788652681621337">Cerrar el panel lateral</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4285930937574705105">No se pudo completar la instalación debido a un error no identificado. Si Chromium se está ejecutando en este momento, ciérralo e intenta nuevamente.</translation>
 <translation id="4298125729853015961">Exportar contraseñas de Chromium</translation>
@@ -437,9 +438,9 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="5883558403894052917">Chromium detectó que estos elementos contienen software malicioso:</translation>
 <translation id="5889361821821684993">Chromium verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5896077214220653386">Gemini Enterprise en Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />: Acceso a la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
-<translation id="5939553720811388432">Preparemos tu Chromium</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5949225980829865667">Para acceder a este favorito y mucho más en todos tus dispositivos, accede a Chromium</translation>
 <translation id="5953657885167112863">Personaliza Chromium a tu gusto</translation>

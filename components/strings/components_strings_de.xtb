@@ -467,7 +467,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1757773103848038814">Dicktengleiche Schrift</translation>
 <translation id="1757935267918149452">Button „Google-Passwort ändern“ – aktivieren, um das Passwort für dein Google-Konto zu ändern</translation>
 <translation id="1759776526873274358">Bestätigungscodes, die Websites verwenden, um die Sicherheit zu erhöhen, automatisch ausfügen. Chrome kann diese Codes aus deinem Gmail-Konto abrufen. <ph name="BEGIN_LINK" />Weitere Informationen zu dieser Funktion<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">In Google Wallet kannst du <ph name="BEGIN_LINK1" />Daten- und Datenschutzeinstellungen<ph name="END_LINK1" /> anpassen oder <ph name="BEGIN_LINK2" />Zahlungsmethoden<ph name="END_LINK2" /> sowie <ph name="BEGIN_LINK3" />Karten/Tickets<ph name="END_LINK3" /> wie Kundenkarten und Ausweise verwalten</translation>
 <translation id="1763864636252898013">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Geräts als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Versuche, die Windows-Netzwerkdiagnose auszuführen.<ph name="END_LINK" /></translation>
 <translation id="1777422078676229054">Foto (Archiv)</translation>
@@ -777,7 +776,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2292556288342944218">Deine Internetverbindung ist gesperrt</translation>
 <translation id="2294150501457238325">Reisepass sicher hinzufügen</translation>
 <translation id="2295831393422400053">Aktiviere die Einstellung „Suchanfragen und das Surfen verbessern“, um „Formuliere für mich“ zu verwenden</translation>
-<translation id="2296244067976588032">Passkey • iCloud-Schlüsselbund</translation>
 <translation id="2296331629987861142">In Raten zahlen (es gelten bestimmte Voraussetzungen, Gebühren fallen an)</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301064673700597535">Qualifizierte Zertifikatsanweisungen</translation>
@@ -913,6 +911,7 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="2505063700931618106">Karteninformationen gespeichert</translation>
 <translation id="2505268675989099013">Konto schützen</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (Bedingungen gelten)</translation>
+<translation id="251033673027346551">In Google Wallet kannst du deine <ph name="BEGIN_LINK" />Daten- und Datenschutzeinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="2512101340618156538">Nicht zugelassen (Standardeinstellung)</translation>
 <translation id="2512413427717747692">Button „Google Chrome als Standardbrowser festlegen“ – drücke die Eingabetaste, um Chrome in den iOS-Einstellungen als Standardbrowser für das System festzulegen</translation>
 <translation id="2515629240566999685">Signal an deinem Standort prüfen</translation>
@@ -1305,6 +1304,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
 <translation id="3209071504641569648">Deine Anfragen, Seitentitel und URLs werden an Google gesendet und möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" />-Links über <ph name="HANDLER_HOSTNAME" /> öffnen</translation>
 <translation id="3212468046572043669">Download gestartet. Zum Ansehen: von oben ziehen und auf den Button „Zurück“ tippen</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
@@ -2085,6 +2085,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
 <translation id="4497010149473852018">Kundenkarten, deren Daten bei Berührung eingefügt werden. Tastatur ausgeblendet.</translation>
+<translation id="4497843134750481377">Angebote verwalten</translation>
 <translation id="4500587658229086076">Unsichere Inhalte</translation>
 <translation id="4501939680615452918">Suche nach freien Tischen in angesagten Restaurants</translation>
 <translation id="4503459574136856756">Schreib meine Biografie um, damit sie professioneller klingt</translation>
@@ -3749,6 +3750,7 @@ Weitere Details:
 <translation id="7347640536700429009">Der Name auf der Karte ist ungültig</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7353601530677266744">Befehlszeile</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" />-Links über <ph name="HANDLER_HOSTNAME" /> statt über <ph name="REPLACED_HANDLER_TITLE" /> öffnen</translation>
 <translation id="7359588939039777303">Werbung blockiert.</translation>
 <translation id="7362281996276843968">Diese Gruppe ist geschlossen</translation>
 <translation id="7363096869660964304">Du bist jedoch nicht unsichtbar. Der Inkognitomodus verhindert nicht, dass Informationen zu deinen Webaktivitäten von deinem Arbeitgeber, deinem Internetanbieter oder den von dir besuchten Websites erfasst werden.</translation>

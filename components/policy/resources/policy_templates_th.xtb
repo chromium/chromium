@@ -3128,6 +3128,13 @@ Web Worker สามารถสร้างได้โดยใช้ URL ข�
 <translation id="2953447815703785478">ระบุใบรับรองไคลเอ็นต์สำหรับทั้งอุปกรณ์ที่ต้องลงทะเบียนโดยใช้โปรโตคอลการจัดการอุปกรณ์
 
 รองรับตัวเลือกอัลกอริทึมคีย์ <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> ตั้งแต่ <ph name="PRODUCT_OS_NAME" /> เวอร์ชัน 132</translation>
+<translation id="2953620259874711778">นโยบายนี้เลิกใช้งานแล้วใน M156 โปรดใช้ <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> แทน
+
+หากต้องการคงลักษณะการทำงานปัจจุบันของการปิดใช้ <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> ให้กำหนดค่า <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> โดยตั้งค่า "url_pattern" เป็น "*" และตั้งค่า "blocked_types" เป็น ["contact_info", "identity_docs", "travel"]
+
+การตั้งค่านโยบายเป็น "จริง" หรือไม่ได้ตั้งค่าให้ผู้ใช้ควบคุมการป้อนที่อยู่อัตโนมัติใน UI ได้
+
+การตั้งค่านโยบายเป็น "เท็จ" หมายความว่าการป้อนข้อความอัตโนมัติจะไม่แนะนำหรือกรอกข้อมูลที่อยู่ และจะไม่บันทึกข้อมูลที่อยู่อื่นๆ ที่ผู้ใช้ส่งขณะท่องเว็บ</translation>
 <translation id="2957506574938329824">ไม่อนุญาตให้เว็บไซต์ใดๆ ขอสิทธิ์เข้าถึงอุปกรณ์บลูทูธผ่าน Web Bluetooth API</translation>
 <translation id="2957513448235202597">ประเภทบัญชีสำหรับการตรวจสอบสิทธิ์ <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">ส่งจุดเข้าใช้งาน Wi-Fi ไปยังเซิร์ฟเวอร์ทุกครั้งขณะค้นหาเขตเวลา</translation>
@@ -5785,19 +5792,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
 
       หากไม่ได้ตั้งค่านโยบายนี้หรือตั้งค่าเป็นเปิดใช้ การตรวจสอบการสกัดกั้น DNS จะทำงาน หากตั้งค่าอย่างชัดแจ้งว่าปิดใช้ การตรวจสอบจะไม่ทำงาน</translation>
 <translation id="4700190441681139987">ไม่อนุญาตให้เว็บไซต์ใดๆ เข้าถึงเซ็นเซอร์</translation>
-<translation id="4700450186549212780">กำหนดการตั้งค่าการเชื่อมต่อสำหรับ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ใน <ph name="PRODUCT_NAME" />
-
-หากต้องการกำหนดค่า <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ผู้ดูแลระบบต้องระบุอย่างใดอย่างหนึ่งต่อไปนี้
-* URL ของเว็บแอปพลิเคชัน <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) หรือ
-* พารามิเตอร์เดิมครบทั้ง 3 รายการ ได้แก่ <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> และ <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" /> การระบุชุดย่อยบางส่วนของพารามิเตอร์ทั้ง 3 รายการนี้โดยไม่มี URL จะทำให้นโยบายถูกปฏิเสธ
-
-หากกำหนดค่าทั้งพารามิเตอร์ <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> และพารามิเตอร์เดิม พารามิเตอร์ <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> จะมีความสำคัญเหนือกว่า
-
-หากตั้งค่านโยบายนี้ ระบบจะกำหนดค่า <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> สำหรับผู้ใช้ที่ลงชื่อเข้าใช้ด้วยบัญชีที่มีการจัดการหรือเบราว์เซอร์ที่มีการจัดการ
-
-หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะไม่กำหนดค่า <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />
-
-โปรดทราบว่านโยบายนี้ไม่ได้ควบคุมการผสานรวม <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> ทั่วไป ซึ่งควบคุมได้ด้วยนโยบาย <ph name="GEMINI_SETTINGS_POLICY_NAME" /></translation>
 <translation id="4703402283970867140">เปิดใช้รูปแบบการหรี่แสงอัจฉริยะเพื่อขยายเวลาจนกว่าหน้าจอจะหรี่แสง</translation>
 <translation id="4704958130749494760">ให้สิทธิ์เว็บไซต์ต่างๆ โดยอัตโนมัติในการเชื่อมต่อกับอุปกรณ์ซีเรียล USB</translation>
 <translation id="4705329890928008808">การตั้งค่านโยบายเป็น CopyCaCerts ทำให้ใบรับรอง CA ที่ติดตั้งโดย ONC ที่มี <ph name="WEB_TRUSTED_BIT" /> ทั้งหมดพร้อมใช้งานสำหรับแอป ARC
@@ -7508,7 +7502,6 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
 <translation id="5728154254076636808">เปิดใช้การสร้างสำเนาโรมมิ่งสำหรับข้อมูลโปรไฟล์ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">รหัสผ่าน Kerberos ตัวยึดตำแหน่ง <ph name="PASSWORD_PLACEHOLDER" /> นั้นแทนที่โดยรหัสผ่านการเข้าสู่ระบบ</translation>
 <translation id="5730610899971390601">ปฏิเสธคำขอจับคู่บลูทูธ "Just Works"</translation>
-<translation id="5731883586899464960">URL เว็บแอปพลิเคชันของอินสแตนซ์ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> สำหรับองค์กรนี้</translation>
 <translation id="5732972008943405952">นำเข้าข้อมูลแบบฟอร์มที่ป้อนอัตโนมัติจากเบราว์เซอร์เริ่มต้นเมื่อเรียกใช้ครั้งแรก</translation>
 <translation id="5733040281451845496">การตั้งค่านโยบายเป็น "เปิดใช้" หมายความว่าจะไม่มีการเริ่มการหน่วงเวลาการจัดการพลังงานและการจำกัดความยาวของเซสชันจนกว่ากิจกรรมแรกของผู้ใช้จะเกิดขึ้นในเซสชัน
 
@@ -13059,6 +13052,13 @@ https://chromeenterprise.google/policies/url-patterns
       หากตั้งค่านโยบายนี้เป็น "เท็จ" มีเพียงผู้ใช้ซึ่งอยู่ใน <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> เท่านั้นที่จะเข้าสู่ระบบได้
 
       หากตั้งค่านโยบายนี้เป็น "จริง" หรือไม่ได้กำหนดค่า ผู้ใช้ทั้งหมดจะเข้าสู่ระบบได้</translation>
+<translation id="963342674988073839">นโยบายนี้เลิกใช้งานแล้วใน M156 โปรดใช้ <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> แทน
+
+หากต้องการคงลักษณะการทำงานปัจจุบันของการปิดใช้ <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> ไว้ ให้กำหนดค่า <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> โดยตั้งค่า "url_pattern" เป็น "*" และตั้งค่า "blocked_types" เป็น ["payments"]
+
+การตั้งค่านโยบายเป็น "จริง" หรือไม่ได้ตั้งค่าหมายความว่าผู้ใช้จะควบคุมคำแนะนำการป้อนข้อความอัตโนมัติสำหรับบัตรเครดิตใน UI ได้
+
+การตั้งค่านโยบายเป็น "เท็จ" หมายความว่าการป้อนข้อความอัตโนมัติจะไม่แนะนำหรือกรอกข้อมูลบัตรเครดิต และจะไม่บันทึกข้อมูลบัตรเครดิตอื่นๆ ที่ผู้ใช้อาจส่งขณะท่องเว็บ</translation>
 <translation id="966425658642788645">ใช้ลักษณะการทำงานเริ่มต้น</translation>
 <translation id="971677226939413180">ไม่มีตัวเลือกการพิมพ์เป็นรูปภาพให้ผู้ใช้เลือก</translation>
 <translation id="974349541138387272">ระบุเทมเพลต URI ของรีโซลเวอร์ DNS-over-HTTPS ที่ต้องการ</translation>

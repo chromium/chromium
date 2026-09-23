@@ -305,6 +305,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4251772536351901305">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
 <translation id="4269093074552541569">Sign out of Chromium</translation>
 <translation id="4271805377592243930">Get help with Chromium</translation>
+<translation id="4275788652681621337">Close side panel</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4298125729853015961">Export passwords from Chromium</translation>
@@ -441,9 +442,9 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5889361821821684993">Chromium regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="5895138241574237353">Restart</translation>
+<translation id="5896077214220653386">Gemini Enterprise in Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5924017743176219022">Connecting to the Internet…</translation>
-<translation id="5939553720811388432">Let's get your Chromium ready</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5949225980829865667">To get this bookmark and more on all your devices, sign in to Chromium</translation>
 <translation id="5953657885167112863">Make Chromium yours</translation>

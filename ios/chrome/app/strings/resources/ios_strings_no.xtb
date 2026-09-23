@@ -1817,6 +1817,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
+<translation id="6749473226660745022">Bilder</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importerte {count} loggelement}other{Importerte {count} loggelementer}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} alternativ for påloggingsinformasjon er tilgjengelig over tastaturet.}other{{count} alternativer for påloggingsinformasjon er tilgjengelige over tastaturet.}}</translation>
 <translation id="6755200887046212842">Administrer kontoer</translation>
@@ -2501,6 +2502,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8879952635974818770">Personlig tilpasset innhold</translation>
 <translation id="8887595428614802520">Lukk alle faner og grupper</translation>
 <translation id="8888595487174963247">Fjern påminnelsen</translation>
+<translation id="8890516388109605451">Kilder</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="8900845556227858314">Nettleser-app</translation>
@@ -2541,6 +2543,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
 <translation id="9013605037177245304">Slå på varsler</translation>
 <translation id="9029650858822697271">Du ble logget av</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Bekreft sletting av nettlesingsdata</translation>
 <translation id="9035699147763101514">Basert på personlig tilpasset intelligens med Gemini. Administrer valgene dine i innstillingene.</translation>
 <translation id="9038526468059454274">Oppsummer med</translation>

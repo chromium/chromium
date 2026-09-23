@@ -303,6 +303,7 @@
 <translation id="4251772536351901305">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromiumin varoitukset.</translation>
 <translation id="4269093074552541569">Kirjaudu ulos Chromiumista</translation>
 <translation id="4271805377592243930">Ohjeita Chromiumin käyttöön</translation>
+<translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4285930937574705105">Asennus epäonnistui tuntemattoman virheen takia. Jos Chromium on tällä hetkellä käynnissä, sulje se ja yritä uudelleen.</translation>
 <translation id="4298125729853015961">Vie salasanoja Chromiumista</translation>
@@ -442,7 +443,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5896077214220653386">Gemini Enterprise Chromiumissa</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
-<translation id="5939553720811388432">Valmistellaan Chromium</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5949225980829865667">Kirjaudu Chromiumiin, niin voit käyttää tätä kirjanmerkkiä ja muuta sisältöä kaikilla laitteillasi</translation>
 <translation id="5953657885167112863">Tee Chromiumista näköisesi</translation>

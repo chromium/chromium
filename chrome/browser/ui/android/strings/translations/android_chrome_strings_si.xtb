@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">අක්‍රිය කෙටි මං</translation>
 <translation id="2227179592712503583">යෝජනාව ඉවත් කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
-<translation id="2230411774874187555">ඔබේ සුරකින ලද සියලු තතු ලබා ගන්න</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
 <translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="2233735624724508540">කාල රාමුවක් තෝරා ඉන්පසු දත්ත මකන්න තට්ටු කරන්න</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">මෙම උපාංගයෙහි මුරපද පරීක්ෂා කළ නොහැක</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
 <translation id="2415037988255164008">කවුළු ප්‍රතිසාධනය කරන්න ද?</translation>
-<translation id="2426805022920575512">වෙනත් ගිණුමක් තෝරා ගන්න</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{වීඩියෝ, ලැයිස්තුවේ 1 වීඩියෝවක්}one{වීඩියෝ, ලැයිස්තුවේ වීඩියෝ #ක්}other{වීඩියෝ, ලැයිස්තුවේ වීඩියෝ #ක්}}</translation>
 <translation id="2433507940547922241">පෙනුම</translation>
 <translation id="2449931042095204989">Google අඩවියක් හෝ යෙදුමක් ඔවුන්ගේ පිටුවේ සබැඳි පුද්ගලිකව පූර්ව පූරණය කිරීමට ඉල්ලා සිටින විට, Chrome කුකීස් නොමැතිව Google සේවාදායක හරහා පිටු සංකේතනය කර පූර්ව පූරණය කරයි. මෙය පූර්ව පූරණය කර ඇති අඩවියෙන් ඔබගේ අනන්‍යතාව සඟවයි.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">මුර-වැකිකඩ සාදන්න</translation>
 <translation id="2996682533106928201">ඉවත දැමීමට තට්ටු කරන්න</translation>
 <translation id="2996809686854298943">URL අවශ්‍යය</translation>
-<translation id="3007318536447999974">Gemini සමග කතා කිරීමට, එයට ඔබේ මයික්‍රෆෝනය භාවිත කිරීමට අවසර දෙන්න. ඔබට මෙය <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ ද කළමනාකරණය කළ හැක</translation>
 <translation id="3024215143424744261">කියවීමේ මාදිලියේ මනාප වසා ඇත</translation>
 <translation id="3024277805447899099">රූපය පෙරදසුන් කරන්න</translation>
 <translation id="3026955690410463085">සබැඳිය ඇතුළත් කරන්න</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6196315980958524839">මුරපද මෙම උපාංගයේ Google මුරපද කළමනාකරු තුළ සුරැකේ</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> වෙතින් අයාචිත වීමට හැකි දේ Chrome විසින් අනාවරණය කර ගන්නා ලදි.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> නොවේද?</translation>
 <translation id="6211386937064921208">මෙම පිටුව පෙරදසුන් කරමින්</translation>
 <translation id="6212567362666004597">සමූහයට පටිත්ත එක් කරන්න</translation>
 <translation id="6225572914528673855">ලිපින තීරුව</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">ගොනුව සුරක්ෂිතව බාගැනීමට නොහැකිය</translation>
 <translation id="8571213806525832805">පසුගිය සති 4</translation>
 <translation id="8580435650274205305">කල් ඉකුත් වීමේ දිනය, අවශ්‍යයි</translation>
-<translation id="8582529315803410153">ඔබ අනෙකුත් උපාංගවලින් ඔබේ පටිති මෙහි සොයා ගනියි</translation>
 <translation id="8585103689515290060">ස්වයං පිරවුම් සේවා</translation>
 <translation id="8586116786993312006">Chrome හි බ්‍රවුස් කිරීමේ දත්ත මැකීමට ටැප් කරන්න</translation>
 <translation id="859046281437143747">තවත් විකල්ප බොත්තමෙන් මිල ගණන් හඹා යන්න</translation>

@@ -305,7 +305,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2226826835915474236">Inaktiva genvägar</translation>
 <translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Få all din sparade information</translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
 <translation id="2233735624724508540">Välj en tidsperiod och tryck sedan på Radera data</translation>
@@ -359,7 +358,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2413014528833954543">Det går inte att kontrollera lösenord på den här enheten</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2415037988255164008">Vill du återställa fönster?</translation>
-<translation id="2426805022920575512">Välj ett annat konto</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videor, 1 video i listan}other{Videor, # videor i listan}}</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2449931042095204989">När en Google-webbplats eller -app frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
@@ -511,7 +509,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2996291259634659425">Skapa lösenfras</translation>
 <translation id="2996682533106928201">Tryck för att ignorera</translation>
 <translation id="2996809686854298943">En webbadress måste anges.</translation>
-<translation id="3007318536447999974">Om du vill prata med Gemini måste du ge den behörighet att använda din mikrofon. Du kan även hantera detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Inställningarna för läsläget har stängts</translation>
 <translation id="3024277805447899099">Förhandsgranska bild</translation>
 <translation id="3026955690410463085">Inkludera länk</translation>
@@ -1292,7 +1289,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6196315980958524839">Lösenorden sparas med Google Lösenordshantering på den här enheten</translation>
 <translation id="6204781143409202534">Chrome har upptäckt möjlig spam från <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
 <translation id="6212567362666004597">Lägg till fliken i gruppen</translation>
 <translation id="6225572914528673855">Adressfält</translation>
@@ -1951,7 +1947,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8580435650274205305">Sista giltighetsdatum, obligatoriskt</translation>
-<translation id="8582529315803410153">Flikar från andra enheter visas här</translation>
 <translation id="8585103689515290060">Autofylltjänster</translation>
 <translation id="8586116786993312006">Tryck för att radera webbinformation i Chrome</translation>
 <translation id="859046281437143747">Bevaka pris via knappen Flera alternativ</translation>

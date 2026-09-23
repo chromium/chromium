@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Монашырынны шрыфт</translation>
 <translation id="1757935267918149452">Кнопка "Змяніць пароль Google". Каб змяніць пароль Уліковага запісу Google, націсніце яе.</translation>
 <translation id="1759776526873274358">Аўтаматычна запаўняць коды спраўджання, якія сайты выкарыстоўваюць для павышэння бяспекі. Chrome можа атрымліваць гэтыя коды з Gmail. <ph name="BEGIN_LINK" />Даведацца больш пра гэту функцыю<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Каб кіраваць <ph name="BEGIN_LINK1" />наладамі даных і прыватнасці<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />спосабамі аплаты<ph name="END_LINK2" /> і <ph name="BEGIN_LINK3" />карткамі<ph name="END_LINK3" /> (напрыклад, карткамі лаяльнасці і пасведчаннямі асобы), перайдзіце ў Google Кашалёк</translation>
 <translation id="1763864636252898013">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: аперацыйная сістэма прылады не давярае сертыфікату бяспекі гэтага дамена. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку сеткі Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Фотапапера архіўнай якасці</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">Доступ да інтэрнэту заблакіраваны</translation>
 <translation id="2294150501457238325">Бяспечнае дадаванне пашпарта</translation>
 <translation id="2295831393422400053">Каб выкарыстоўваць дапамогу з напісаннем, уключыце наладу "Палепшыць пошук і прагляд"</translation>
-<translation id="2296244067976588032">Ключ доступу • iCloud Keychain</translation>
 <translation id="2296331629987861142">Лёгкая аплата ў растэрміноўку (пры адпаведнасці патрабаванням, прымяняюцца камісіі)</translation>
 <translation id="2300306941146563769">Не запампавана</translation>
 <translation id="2301064673700597535">Заявы пра ўхвалены сертыфікат</translation>
@@ -906,6 +904,7 @@
 <translation id="2493122313108999546">Памер зменены</translation>
 <translation id="249376477913017009">Паведамленне пра аўтазапаўненне з Gmail і іншых крыніц адкрыта</translation>
 <translation id="2495083838625180221">Аналізатар JSON</translation>
+<translation id="2495909791227061512">Падключыцца да прылад паблізу?</translation>
 <translation id="2496402116964818747">Наладзіць выкарыстанне адбітка пальца для ўводу пароляў можна ў раздзеле "<ph name="SETTINGS" />"</translation>
 <translation id="2498091847651709837">Сканіраваць новую картку</translation>
 <translation id="2501270939904835585">Сацініраваны этыкетачны матэрыял</translation>
@@ -914,6 +913,7 @@
 <translation id="2505063700931618106">Даныя карткі захаваны</translation>
 <translation id="2505268675989099013">Абараніць уліковы запіс</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (дзейнічаюць умовы)</translation>
+<translation id="251033673027346551">Каб кіраваць <ph name="BEGIN_LINK" />наладамі даных і прыватнасці<ph name="END_LINK" />, перайдзіце ў Google Кашалёк.</translation>
 <translation id="2512101340618156538">Забаронена (стандартна)</translation>
 <translation id="2512413427717747692">Кнопка "Зрабіць Chrome стандартным браўзерам". Каб зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS, націсніце Увод</translation>
 <translation id="2515629240566999685">Праверыць сігнал там, дзе вы знаходзіцеся.</translation>

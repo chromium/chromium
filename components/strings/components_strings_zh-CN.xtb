@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">等宽字体</translation>
 <translation id="1757935267918149452">“更改 Google 密码”按钮，激活它即可更改您的 Google 账号密码</translation>
 <translation id="1759776526873274358">自动填充网站用来提高安全性的验证码。Chrome 可以从您的 Gmail 中获取这些验证码。<ph name="BEGIN_LINK" />详细了解此功能<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">请前往 Google 钱包控制<ph name="BEGIN_LINK1" />数据和隐私偏好设置<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />支付方式<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />卡券<ph name="END_LINK3" />（例如会员卡和身份证件）</translation>
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相纸（存档用）</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">您被禁止访问互联网</translation>
 <translation id="2294150501457238325">安全地添加护照</translation>
 <translation id="2295831393422400053">开启“改善搜索和浏览体验”设置即可使用“帮我写”功能</translation>
-<translation id="2296244067976588032">通行密钥 • iCloud 钥匙串</translation>
 <translation id="2296331629987861142">轻松分期付款（需满足资格要求，并支付相关费用）</translation>
 <translation id="2300306941146563769">未上传</translation>
 <translation id="2301064673700597535">合格证书声明</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">卡信息已保存</translation>
 <translation id="2505268675989099013">保护账号</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" />（须遵守相关条款）</translation>
+<translation id="251033673027346551">请前往 Google 钱包，管理<ph name="BEGIN_LINK" />数据和隐私偏好设置<ph name="END_LINK" />。</translation>
 <translation id="2512101340618156538">不允许（默认）</translation>
 <translation id="2512413427717747692">“将 Chrome 设为默认浏览器”按钮，按下 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="2515629240566999685">检查所在区域的网络信号</translation>
@@ -1303,6 +1302,7 @@
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3209034400446768650">此网页可能会收取费用</translation>
 <translation id="3209071504641569648">为改进增强型自动填充功能，我们可能会将您的请求、网页标题和网址发送给 Google，并可能会对其进行审核</translation>
+<translation id="3211727636285361260">通过 <ph name="HANDLER_HOSTNAME" /> 打开<ph name="PROTOCOL" />链接</translation>
 <translation id="3212468046572043669">已开始下载。如需查看，请从顶部拖动，然后轻触返回按钮</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上的活动正被监控</translation>
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
@@ -2083,6 +2083,7 @@
 <translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
 <translation id="4493480324863638523">网址无效。必须是采用标准架构的网址，例如“http://example.com”或“https://example.com”。</translation>
 <translation id="4497010149473852018">会员卡列表已打开，轻触即可填充。键盘已隐藏。</translation>
+<translation id="4497843134750481377">管理优惠</translation>
 <translation id="4500587658229086076">不安全内容</translation>
 <translation id="4501939680615452918">看看热门餐厅有没有空位</translation>
 <translation id="4503459574136856756">改写我的个人简介，让它更专业</translation>
@@ -3746,6 +3747,7 @@
 <translation id="7347640536700429009">持卡人姓名无效</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353601530677266744">命令行</translation>
+<translation id="7358055687760675498">通过 <ph name="HANDLER_HOSTNAME" />（而不是 <ph name="REPLACED_HANDLER_TITLE" />）打开<ph name="PROTOCOL" />链接</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
 <translation id="7362281996276843968">此分组已关闭</translation>
 <translation id="7363096869660964304">但是，这并不意味着您能完全隐身。即使您进入无痕模式，您的雇主、互联网服务提供商和您访问的网站仍然能看到您的浏览活动。</translation>

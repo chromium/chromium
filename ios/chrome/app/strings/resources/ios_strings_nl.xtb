@@ -1817,6 +1817,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6732087373923685049">camera</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Check je accountgegevens</translation>
+<translation id="6749473226660745022">Foto's</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geschiedenisitem geïmporteerd}other{{count} geschiedenisitems geïmporteerd}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} optie voor inloggegevens beschikbaar boven je toetsenbord.}other{{count} opties voor inloggegevens beschikbaar boven je toetsenbord.}}</translation>
 <translation id="6755200887046212842">Accounts beheren</translation>
@@ -2501,6 +2502,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8879952635974818770">Gepersonaliseerde content</translation>
 <translation id="8887595428614802520">Alle tabbladen en groepen sluiten</translation>
 <translation id="8888595487174963247">Herinnering verwijderen</translation>
+<translation id="8890516388109605451">Bronnen</translation>
 <translation id="8893208530912252670">Video's</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="8900845556227858314">Browser-app</translation>
@@ -2541,6 +2543,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
 <translation id="9013605037177245304">Meldingen aanzetten</translation>
 <translation id="9029650858822697271">Je bent uitgelogd</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
 <translation id="9035699147763101514">Mogelijk gemaakt door Personal Intelligence met Gemini. Beheer je keuzes in de instellingen.</translation>
 <translation id="9038526468059454274">Vat het samen met</translation>

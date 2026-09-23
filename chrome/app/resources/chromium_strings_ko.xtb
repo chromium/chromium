@@ -304,6 +304,7 @@
 <translation id="4251772536351901305">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chromium 경고를 건너뛸 수 있습니다.</translation>
 <translation id="4269093074552541569">Chromium에서 로그아웃</translation>
 <translation id="4271805377592243930">Chromium 도움말 보기</translation>
+<translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4285930937574705105">확인되지 않은 오류로 설치에 실패했습니다. Chromium이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
 <translation id="4298125729853015961">Chromium에서 비밀번호 내보내기</translation>
@@ -440,9 +441,9 @@
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5889361821821684993">Chromium에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="5896077214220653386">Chromium의 Gemini Enterprise</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
-<translation id="5939553720811388432">Chromium을 사용할 준비가 되셨나요?</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5949225980829865667">모든 기기에서 이 북마크 등을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="5953657885167112863">나만의 Chromium 만들기</translation>

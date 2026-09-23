@@ -529,6 +529,7 @@
 <translation id="1401216725754314428">在新分頁中進一步瞭解新相關網站</translation>
 <translation id="1402426911829176748">正在連線至裝置</translation>
 <translation id="1405779994569073824">已停止運作。</translation>
+<translation id="1406812885827747674">這次允許</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用行動網路</translation>
@@ -618,6 +619,7 @@
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473223074251193484">設定網路共用設定</translation>
 <translation id="1473616112002966036">影片影格 (&amp;V)</translation>
+<translation id="1475224725276659152">在任何裝置上以「<ph name="EMAIL" />」身分登入，就能存取閱讀清單和其他資料</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477654881618305065">貴機構不允許你分享這項內容。如需協助，請與系統管理員聯絡。</translation>
 <translation id="1478340334823509079">詳細資料：<ph name="FILE_NAME" /></translation>
@@ -981,7 +983,6 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">選擇要擷取的畫面</translation>
 <translation id="17584710573359123">前往 Chrome 線上應用程式商店查看</translation>
-<translation id="176013700366797492">前往 Google 錢包控管<ph name="BEGIN_LINK1" />資料和隱私權偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方式<ph name="END_LINK2" />與會員卡和身分證件等<ph name="BEGIN_LINK3" />票證<ph name="END_LINK3" /></translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -1492,6 +1493,7 @@
 <translation id="2148248734299717598">關閉左側畫面</translation>
 <translation id="2148401732477136168">無法查詢已安裝的應用程式。</translation>
 <translation id="2148892889047469596">投放分頁</translation>
+<translation id="2149773378153994101">以「<ph name="EMAIL" />」身分登入，就能存取<ph name="DEVICE" />中的擴充功能和其他資料</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2150139952286079145">搜尋目的地</translation>
 <translation id="2150168665016482929">最小化(&amp;N)</translation>
@@ -2994,7 +2996,6 @@
 <translation id="3284050785966252943">自動填入中繼資料預覽</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" /> - 下方畫面</translation>
 <translation id="3285329711156774325">搜尋技能</translation>
-<translation id="3285500645985761267">允許相關網站查看你在群組中的活動</translation>
 <translation id="328571385944182268">要儲存密碼嗎？</translation>
 <translation id="3285969135399641759">學習新技能</translation>
 <translation id="3289668031376215426">自動大寫</translation>
@@ -3331,7 +3332,6 @@
 <translation id="3543296862747913985">作用</translation>
 <translation id="3543298914473315872">更新工具程序</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
-<translation id="3544058026430919413">公司可定義網站群組，指定哪些網站能夠使用 Cookie 分享你在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
 <translation id="3544879808695557954">使用者名稱 (選填)</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3548162552723420559">配合環境調整螢幕顏色</translation>
@@ -3924,6 +3924,7 @@
 <translation id="3954953195017194676">你最近並未擷取 WebRTC 事件記錄。</translation>
 <translation id="3955321697524543127">禁止網站連線至 USB 裝置</translation>
 <translation id="3957663711862465084">USB 設定</translation>
+<translation id="3958085090855822556">列印所選文字(&amp;P)...</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3958110062351175311">已允許在工具列中顯示要求</translation>
 <translation id="3958821725268247062">你已經安裝過「<ph name="APP_NAME" />」了</translation>
@@ -4006,7 +4007,6 @@
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4025039777635956441">關閉所選網站的音訊</translation>
 <translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />的操作說明</translation>
-<translation id="4027569221211770437">「<ph name="FOLDER_TITLE" />」資料夾</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4028830198155575078">移動(&amp;M)</translation>
 <translation id="4029024445166427442">啟動鍵 + Shift 鍵 + Backspace 鍵</translation>
@@ -4133,6 +4133,7 @@
 <translation id="4131283654370308898">允許在這個網站上執行 <ph name="EXTENSION_NAME" /></translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="413193092008917129">日常網路診斷項目</translation>
+<translation id="4132108564882155194">以「<ph name="EMAIL" />」身分登入，就能存取<ph name="DEVICE" />中的閱讀清單和其他資料</translation>
 <translation id="4132137475637520539">允許知道連結的使用者加入</translation>
 <translation id="4132364317545104286">重新命名 eSIM 設定檔</translation>
 <translation id="4132969033912447558">繼續下載 <ph name="FILE_NAME" /></translation>
@@ -4226,6 +4227,7 @@
 <translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器禁止存取這個資源。</translation>
 <translation id="4214192212360095377">立即關閉</translation>
+<translation id="421564716234835106">在任何裝置上以「<ph name="EMAIL" />」身分登入，就能存取擴充功能和其他資料</translation>
 <translation id="4216407171061541111">貴機構已關閉在 Google 帳戶中儲存分頁的功能</translation>
 <translation id="4216511743389425832">朗讀這頁內容</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -4445,6 +4447,7 @@
 <translation id="4379623957571212011">選擇圖片即可立即套用主題</translation>
 <translation id="4380055775103003110">如果這個問題持續發生，可以試著在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4380648069038809855">已開啟全螢幕模式</translation>
+<translation id="4380934846131873000">以「<ph name="EMAIL" />」身分登入，就能取得儲存在<ph name="DEVICE" />中的資訊和其他資料</translation>
 <translation id="4381902252848068865">禁止網站儲存資料</translation>
 <translation id="4381997246130185847">你可以從上次中斷的地方接著看，也能隨時建立新的分頁群組</translation>
 <translation id="4384312707950789900">加入慣用網路</translation>
@@ -4477,7 +4480,6 @@
 <translation id="440411460180511551">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
-<translation id="4405224443901389797">移至…</translation>
 <translation id="4405580203042711503">在下方新增分頁</translation>
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406308048672435032">你可以將這個分頁設為閒置，或重新整理以便再次查看完整清單</translation>
@@ -4737,6 +4739,7 @@
 <translation id="4617880081511131945">無法建立連線</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
+<translation id="4619910360235236556">列印所選文字(&amp;P)...</translation>
 <translation id="4620757807254334872">滑鼠</translation>
 <translation id="4620809267248568679">這項設定是由擴充功能執行。</translation>
 <translation id="4621866192918370652">你可以使用 Google 搜尋這個頁面，進一步瞭解相關實用資訊</translation>
@@ -6017,7 +6020,6 @@
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="5611474372949142946">關閉下方分頁</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
-<translation id="5614947000616625327">iCloud 鑰匙圈</translation>
 <translation id="5616571005307953937">最舊</translation>
 <translation id="5616726534702877126">預留大小</translation>
 <translation id="561698261642843490">關閉 Firefox</translation>
@@ -6120,6 +6122,7 @@
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5700836101007545240">你的管理員停用了新增連線功能</translation>
 <translation id="5701212929149679556">行動數據漫遊</translation>
+<translation id="5701500921291556452">以「<ph name="EMAIL" />」身分登入，就能存取<ph name="DEVICE" />中的密碼和其他資料</translation>
 <translation id="5701786609538182967">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="APP_NAME_4" />」和另外 1 個應用程式無法開啟支援的連結。</translation>
 <translation id="5702161882524398150">詢問上一個分頁的內容</translation>
 <translation id="5703716265115423771">調低音量</translation>
@@ -6198,6 +6201,7 @@
 <translation id="5776571780337000608">你可以在檔案瀏覽器或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="5777468213129569553">開啟 Chrome</translation>
 <translation id="5778491106820461378">你可以透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。你授予網站和應用程式的權限可能適用於所有帳戶。如果不想讓網站和應用程式存取你的帳戶資訊，請以訪客身分登入 <ph name="DEVICE_TYPE" />。</translation>
+<translation id="5779636902585836564">翻譯(&amp;T)</translation>
 <translation id="5780011244986845107">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的讀取權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="5780973441651030252">處理優先順序</translation>
 <translation id="5781120434102258025">將學校帳戶資料移到個人帳戶</translation>
@@ -6935,7 +6939,6 @@
 <translation id="6347010704471250799">顯示通知</translation>
 <translation id="634792071306410644">必須允許其他裝置偵測這部裝置，其他人才能與你分享內容</translation>
 <translation id="6348252528297699679">如要關閉定位功能，請依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">使用 Google 帳戶或建立新帳戶</translation>
 <translation id="6348805481186204412">離線儲存空間</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">管理你的裝置</translation>
@@ -7759,7 +7762,6 @@
 <translation id="696942486482903620">將密碼儲存到 Google 帳戶後，你可以在這部裝置和其他已登入帳戶的裝置上使用這些密碼</translation>
 <translation id="6970480684834282392">啟動類型</translation>
 <translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 組密碼。</translation>
-<translation id="6970856801391541997">列印特定網頁</translation>
 <translation id="6970861306198150268">請確認你儲存的是這個網站目前的密碼</translation>
 <translation id="6971184043765343932">你上傳的圖片</translation>
 <translation id="6971570759801670426">修改使用者名稱為 <ph name="USER_EMAIL" /> 的<ph name="CREDENTIAL_TYPE" /></translation>
@@ -8268,6 +8270,7 @@
 <translation id="7368927539449986686">編輯網站搜尋引擎</translation>
 <translation id="7370592524170198497">乙太網路 EAP：</translation>
 <translation id="7374376573160927383">管理 USB 裝置</translation>
+<translation id="7375506263741703384">管理員已禁止這項操作</translation>
 <translation id="7376124766545122644">無法使用這個連結，請確認連結的開頭是「http://」或「https://」，然後再試一次。</translation>
 <translation id="7376553024552204454">滑鼠游標移動時醒目顯示</translation>
 <translation id="7377250337652426186">如果要返回的頁數超過 1 頁以上，請點選並按住「返回」按鈕。</translation>
@@ -8288,6 +8291,7 @@
 <translation id="738322632977123193">無法上傳，請使用以下任一格式的圖片：.jpg、.gif、.png、.bmp、.tif 或 .webp</translation>
 <translation id="7384687527486377545">鍵盤自動重複</translation>
 <translation id="7384804382450832142">連線至 Microsoft OneDrive</translation>
+<translation id="7385713560829077068">在任何裝置上以「<ph name="EMAIL" />」身分登入，就能存取書籤和其他資料</translation>
 <translation id="7385854874724088939">準備列印時出現錯誤，請檢查你的印表機，然後再試一次。</translation>
 <translation id="7385870590821097913">按照另一部裝置顯示的步驟操作</translation>
 <translation id="7387107590792462040">正在安裝，請稍候</translation>
@@ -8476,6 +8480,7 @@
 <translation id="7517292544534877198">使用 Google 的預設方式加密 Google 帳戶中的密碼</translation>
 <translation id="7517959947270534934">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。</translation>
 <translation id="7518079994230200553">目前無法使用這個選項。</translation>
+<translation id="752021853309481824">在任何裝置上以「<ph name="EMAIL" />」身分登入，就能取得儲存的資訊和其他資料</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">顯示捷徑</translation>
 <translation id="7521430434164837205">Microsoft 365 檔案</translation>
@@ -8535,6 +8540,7 @@
 <translation id="7575272930307342804">瀏覽控制選項</translation>
 <translation id="757660455834887988">已允許 – <ph name="PERMISSION_DETAILS" />。請將攝影機連接到裝置。</translation>
 <translation id="7576690715254076113">自動分頁</translation>
+<translation id="7577535322483673900">複製「<ph name="SELECTION" />」的連結</translation>
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入確認碼。</translation>
 <translation id="757941033127302446">已登入</translation>
@@ -8747,6 +8753,7 @@
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充功能已變更這個頁面</translation>
 <translation id="7735558909644181051">中繼憑證</translation>
 <translation id="7736119438443237821">你即將移除這部裝置的密碼金鑰存取權</translation>
+<translation id="7737161071513018955">複製「<ph name="SELECTION" />」的連結</translation>
 <translation id="7737203573077018777">已收到<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />的操作說明</translation>
 <translation id="7737948071472253612">不得使用攝影機</translation>
 <translation id="77381465218432215">顯示重音標記和特殊字元</translation>
@@ -10188,6 +10195,8 @@
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>
+<translation id="8843160937959801189">以「<ph name="EMAIL" />」身分登入，就能存取<ph name="DEVICE" />中的書籤和其他資料</translation>
+<translation id="8844476858332168421">管理技能</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
 <translation id="8846239054091760429">單聲道音訊、啟動、即時字幕等</translation>
@@ -10196,7 +10205,6 @@
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 設定檔</translation>
 <translation id="8849262417389398097">第 <ph name="CHECKED" /> 個，共 <ph name="CHECKING" /> 個</translation>
-<translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
 <translation id="8853586775156634952">這張卡片只會儲存在這部裝置上</translation>
 <translation id="8855242995793521265">不會大幅降低瀏覽器或裝置運作速度。</translation>

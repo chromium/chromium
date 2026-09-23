@@ -53,6 +53,8 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="1965068424387304464">Consello de Chromium: Garda os contrasinais</translation>
 <translation id="1992653360331625459">Xa tes contrasinais para estas contas no teu xestor de contrasinais de Google. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
 <translation id="2006345422933397527">Chromium non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
+<translation id="2025935492422922097">Chromium procesa os títulos das páxinas ou URL nun espazo privado da nube</translation>
+<translation id="2027881372245801507">Ao desactivar as suxestións, non se controla o procesamento que fai Chromium dos títulos das páxinas e dos URL para outras funcións. Podes xestionar o acceso a estes datos na <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="2042889939382983733">Consulta o teu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
@@ -105,6 +107,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3072591112723064972">Define Chromium como navegador predeterminado para abrir as ligazóns aquí ao instante.</translation>
 <translation id="3115956258722352278">Queres que Chromium sexa o teu navegador predeterminado?</translation>
 <translation id="3180939591219927904">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
+<translation id="3239426886813624481">Toca en Configuración e permite que Chromium use a túa localización para poder compartila con sitios web.</translation>
 <translation id="327628223428512207">Pon a frase de acceso para gardar este contrasinal e acceder aos datos de Chromium en todos os teus dispositivos</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventá de Chromium}other{Mostrando {count} ventás de Chromium}}</translation>
 <translation id="3344204225393848305">Definir Chromium como navegador predeterminado</translation>
@@ -351,6 +354,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Inicia sesión neste sitio e en Chromium.</translation>
+<translation id="8697693743327341604">Se seleccionas ou ignoras unha suxestión, Chromium adaptarase para axudar a mostrarche suxestións máis relevantes no futuro.</translation>
 <translation id="869832267508702259">Define Chrome como navegador predeterminado para obter ideas de Gemini alí onde navegues</translation>
 <translation id="8698780336333802489">Importar a Chromium</translation>
 <translation id="8730503818204408000">Abre a configuración de Chromium para definir este navegador como predeterminado.</translation>

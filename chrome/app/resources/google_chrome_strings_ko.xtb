@@ -202,7 +202,6 @@
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2915996080311180594">나중에 다시 시작</translation>
-<translation id="2916983411556218750">Chrome을 사용할 준비가 되셨나요?</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 비밀번호 등을 사용할 수 있습니다.</translation>
@@ -550,6 +549,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6334815226785304306">Chrome을 기본 브라우저로 설정하고 태스크 바에 고정합니다.</translation>
 <translation id="63540178978900677">Chrome이 더 이상 기본 브라우저가 아닙니다. Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
+<translation id="6357670763064300993">Chrome의 Gemini Enterprise</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 내 읽기 목록 등을 사용할 수 있습니다.</translation>
 <translation id="6388799252195623474">이 문제 해결을 도와줘.</translation>

@@ -202,7 +202,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2885378588091291677">Task manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2915996080311180594">Restart later</translation>
-<translation id="2916983411556218750">Let's get your Chrome ready</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your passwords and more from <ph name="DEVICE" />.</translation>
@@ -551,6 +550,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
+<translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more on all your devices.</translation>
 <translation id="6388799252195623474">help me with this</translation>

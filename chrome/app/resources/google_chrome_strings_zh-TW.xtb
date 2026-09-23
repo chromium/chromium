@@ -196,7 +196,6 @@
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2915996080311180594">稍後再重新啟動</translation>
-<translation id="2916983411556218750">開始設定 Chrome</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="2945997411976714835">安裝錯誤：無法啟動安裝程式程序。</translation>
 <translation id="2959224682348913614">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能使用<ph name="DEVICE" />中的密碼和其他資料。</translation>
@@ -225,7 +224,7 @@
 <translation id="3112458742631356345">這不是其他人經常下載的檔案，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="3119573284443908657">這個封存檔案內含可能藏有惡意軟體的其他檔案，因此 Chrome 已禁止下載</translation>
 <translation id="3124332159330678621">根據自己的需求更新 Chrome 瀏覽器外觀</translation>
-<translation id="3125851611828811913">即使 Chrome 最小化，也能隨時隨地搜尋及提問。開啟之後，Chrome 會在背景執行。</translation>
+<translation id="3125851611828811913">即使 Chrome 最小化，也能立即搜尋及提問。開啟之後，Chrome 會在背景執行。</translation>
 <translation id="3130333203120345554">新搜尋</translation>
 <translation id="3135560418014806498">新增 Chrome 設定檔</translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
@@ -499,7 +498,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6018578474045062808">在手機上透過 Chrome 試用 Google 智慧鏡頭</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
-<translation id="6024930613143833266">隨時隨地都能使用 Chrome 搜尋</translation>
+<translation id="6024930613143833266">隨時用 Chrome 搜尋</translation>
 <translation id="6025087594896450715">Google Chrome 將於 <ph name="REMAINING_TIME" /> 後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604424701295382420">已固定！如果要再使用 Google 智慧鏡頭，只要點選工具列上的新按鈕即可</translation>
@@ -542,6 +541,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6334815226785304306">將 Google Chrome 設為預設瀏覽器，並固定到工作列</translation>
 <translation id="63540178978900677">Chrome 不再是預設瀏覽器。將 Chrome 設為預設瀏覽器？</translation>
+<translation id="6357670763064300993">Chrome 內建 Gemini Enterprise</translation>
 <translation id="6360449101159168105">當這個分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。你可以選擇一律不讓這個網站進入閒置狀態。</translation>
 <translation id="6362984640667950211">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取閱讀清單和其他資料。</translation>
 <translation id="6388799252195623474">幫幫我</translation>

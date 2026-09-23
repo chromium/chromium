@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">แบบอักษรที่มีความกว้างคงที่</translation>
 <translation id="1757935267918149452">ปุ่มเปลี่ยนรหัสผ่าน Google เปิดใช้งานเพื่อเปลี่ยนรหัสผ่านของบัญชี Google</translation>
 <translation id="1759776526873274358">ป้อนรหัสยืนยันที่เว็บไซต์ใช้โดยอัตโนมัติเพื่อเพิ่มความปลอดภัย Chrome รับรหัสเหล่านี้ได้จาก Gmail ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์นี้<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">ไปที่ Google Wallet เพื่อควบคุม<ph name="BEGIN_LINK1" />ค่ากำหนดข้อมูลและความเป็นส่วนตัว<ph name="END_LINK1" /> หรือจัดการ<ph name="BEGIN_LINK2" />วิธีการชำระเงิน<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />บัตร<ph name="END_LINK3" /> เช่น บัตรสะสมคะแนนและบัตรประจำตัว</translation>
 <translation id="1763864636252898013">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของอุปกรณ์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
 <translation id="1777422078676229054">รูปภาพ (Archival)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">การเข้าถึงอินเทอร์เน็ตของคุณถูกบล็อก</translation>
 <translation id="2294150501457238325">เพิ่มหนังสือเดินทางอย่างปลอดภัย</translation>
 <translation id="2295831393422400053">เปิดการตั้งค่า "ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น" เพื่อใช้ฟีเจอร์ช่วยฉันเขียน</translation>
-<translation id="2296244067976588032">พาสคีย์ • พวงกุญแจ iCloud</translation>
 <translation id="2296331629987861142">ผ่อนชำระได้ง่ายๆ (ขึ้นอยู่กับสิทธิ์และมีค่าธรรมเนียม)</translation>
 <translation id="2300306941146563769">ไม่ได้อัปโหลด</translation>
 <translation id="2301064673700597535">คำชี้แจงใบรับรองที่เข้าเกณฑ์</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">บันทึกข้อมูลบัตรแล้ว</translation>
 <translation id="2505268675989099013">ปกป้องบัญชี</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (เป็นไปตามข้อกำหนด)</translation>
+<translation id="251033673027346551">ไปที่ Google Wallet เพื่อจัดการ<ph name="BEGIN_LINK" />ค่ากำหนดข้อมูลและความเป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2512101340618156538">ไม่อนุญาต (ค่าเริ่มต้น)</translation>
 <translation id="2512413427717747692">ปุ่มตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น กด Enter เพื่อตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบในการตั้งค่า iOS</translation>
 <translation id="2515629240566999685">ตรวจสอบสัญญาณในพื้นที่ของคุณ</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3209034400446768650">อาจมีการเรียกเก็บเงินในหน้านี้</translation>
 <translation id="3209071504641569648">ระบบจะส่งคำขอ ชื่อหน้า และ URL ไปยัง Google และอาจมีการตรวจสอบเพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
+<translation id="3211727636285361260">เปิดลิงก์ <ph name="PROTOCOL" /> ผ่าน <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้ลากจากด้านบนแล้วแตะปุ่มย้อนกลับ</translation>
 <translation id="3212581601480735796">มีการตรวจสอบกิจกรรมที่คุณทำใน <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
@@ -2086,6 +2086,7 @@
 <translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
 <translation id="4493480324863638523">URL ไม่ถูกต้อง ต้องเป็น URL ที่มีรูปแบบมาตรฐาน เช่น http://example.com หรือ https://example.com</translation>
 <translation id="4497010149473852018">บัตรสะสมคะแนนที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะ แป้นพิมพ์ซ่อนอยู่</translation>
+<translation id="4497843134750481377">จัดการข้อเสนอ</translation>
 <translation id="4500587658229086076">เนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="4501939680615452918">ค้นหาโต๊ะว่างที่ร้านอาหารยอดนิยม</translation>
 <translation id="4503459574136856756">เขียนประวัติส่วนตัวของฉันใหม่ให้ดูเป็นมืออาชีพมากขึ้น</translation>
@@ -3750,6 +3751,7 @@
 <translation id="7347640536700429009">ชื่อบนบัตรไม่ถูกต้อง</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353601530677266744">บรรทัดคำสั่ง </translation>
+<translation id="7358055687760675498">เปิดลิงก์ <ph name="PROTOCOL" /> ผ่าน <ph name="HANDLER_HOSTNAME" /> แทน <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">บล็อกโฆษณา</translation>
 <translation id="7362281996276843968">กลุ่มนี้ปิดแล้ว</translation>
 <translation id="7363096869660964304">อย่างไรก็ตาม คนอื่นจะยังมองเห็นคุณ การเข้าสู่โหมดไม่ระบุตัวตนไม่ได้เป็นการซ่อนการท่องเว็บจากนายจ้างของคุณ ผู้ให้บริการอินเทอร์เน็ต หรือเว็บไซต์ที่คุณเข้าชม</translation>

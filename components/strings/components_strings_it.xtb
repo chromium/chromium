@@ -467,7 +467,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1757773103848038814">Carattere monospazio</translation>
 <translation id="1757935267918149452">Pulsante Cambia la password Google, attiva per cambiare la password del tuo Account Google</translation>
 <translation id="1759776526873274358">Compila automaticamente i codici di verifica usati dai siti per migliorare la tua sicurezza. Chrome può ottenere questi codici da Gmail. <ph name="BEGIN_LINK" />Scopri di più su questa funzionalità<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze relative a dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /> come carte fedeltà e documenti di identità</translation>
 <translation id="1763864636252898013">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del dispositivo. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che intercetta la connessione.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (archivio)</translation>
@@ -777,7 +776,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2292556288342944218">L'accesso a Internet è bloccato</translation>
 <translation id="2294150501457238325">Aggiungi il passaporto in modo sicuro</translation>
 <translation id="2295831393422400053">Attiva l'impostazione Migliora le ricerche e le attività di navigazione per usare Aiutami a scrivere</translation>
-<translation id="2296244067976588032">Passkey • Portachiavi iCloud</translation>
 <translation id="2296331629987861142">Paga in rate semplici (soggette a idoneità, si applicano commissioni)</translation>
 <translation id="2300306941146563769">Non caricato</translation>
 <translation id="2301064673700597535">Dichiarazioni certificati di qualificazione</translation>
@@ -913,6 +911,7 @@ Puoi rimuovere questo suggerimento da Chrome. La fonte originale non verrà elim
 <translation id="2505063700931618106">Dati della carta salvati</translation>
 <translation id="2505268675989099013">Proteggi account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (si applicano termini)</translation>
+<translation id="251033673027346551">Visita Google Wallet per gestire le <ph name="BEGIN_LINK" />preferenze relative a dati e privacy<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Autorizzazione negata (predefinito)</translation>
 <translation id="2512413427717747692">Imposta Chrome come pulsante del browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="2515629240566999685">Controllare il segnale nella tua area</translation>
@@ -1302,6 +1301,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3209034400446768650">La pagina potrebbe addebitare denaro</translation>
 <translation id="3209071504641569648">Le tue richieste, i Titoli delle pagine e gli URL vengono inviati a Google e potrebbero essere esaminati per migliorare la compilazione automatica avanzata</translation>
+<translation id="3211727636285361260">Apri i link di <ph name="PROTOCOL" /> con <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Download iniziato. Per visualizzarlo, trascina dall'alto e tocca il pulsante Indietro</translation>
 <translation id="3212581601480735796">La tua attività su <ph name="HOSTNAME" /> è monitorata</translation>
 <translation id="3215092763954878852">Impossibile usare WebAuthn</translation>
@@ -2084,6 +2084,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
 <translation id="4497010149473852018">Carte fedeltà che è possibile compilare tramite tocco. Tastiera nascosta.</translation>
+<translation id="4497843134750481377">Gestisci le offerte</translation>
 <translation id="4500587658229086076">contenuti non sicuri</translation>
 <translation id="4501939680615452918">Trova tavoli disponibili nei ristoranti di tendenza</translation>
 <translation id="4503459574136856756">Riscrivi la mia biografia per renderla più professionale</translation>
@@ -3747,6 +3748,7 @@ Ulteriori dettagli:
 <translation id="7347640536700429009">Il nome sulla carta non è valido</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353601530677266744">Riga di comando</translation>
+<translation id="7358055687760675498">Apri i link di <ph name="PROTOCOL" /> con <ph name="HANDLER_HOSTNAME" /> anziché con <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Annunci bloccati.</translation>
 <translation id="7362281996276843968">Questo gruppo è chiuso</translation>
 <translation id="7363096869660964304">Non sei completamente invisibile: in modalità Incognito, la navigazione non viene nascosta al tuo datore di lavoro, al provider di servizi internet o ai siti web che visiti.</translation>

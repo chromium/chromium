@@ -529,6 +529,7 @@
 <translation id="1401216725754314428">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="1402426911829176748">ଆପଣଙ୍କ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
+<translation id="1406812885827747674">ଏହି ଥର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1407069428457324124">ଡାର୍କ ଥିମ</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
@@ -619,6 +620,7 @@
 <translation id="1472675084647422956">ଅଧିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1473223074251193484">ଟିଥରିଂ କନଫିଗରେସନ ସେଟ କରନ୍ତୁ</translation>
 <translation id="1473616112002966036">&amp;ଭିଡିଓ ଫ୍ରେମ</translation>
+<translation id="1475224725276659152">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1476607407192946488">&amp;ଭାଷା ସେଟିଂ</translation>
 <translation id="1477654881618305065">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ ଏହି ବିଷୟବସ୍ତୁ ସେୟାର୍ କରିବାକୁ ଅନୁମତି ଦିଏ ନାହିଁ। ଯଦି ଆପଣ ସହାୟତା ଆବଶ୍ୟକ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="1478340334823509079">ବିବରଣୀ: <ph name="FILE_NAME" /></translation>
@@ -982,7 +984,6 @@
 <translation id="1755601632425835748">ଟେକ୍ସଟ୍‌ର ଆକାର</translation>
 <translation id="1756963401828337401">କେପଚର କରିବାକୁ ଏକ ସ୍କ୍ରିନ ବାଛନ୍ତୁ</translation>
 <translation id="17584710573359123">Chrome ୱେବ୍‌ ଷ୍ଟୋର୍‌ରେ ଦେଖନ୍ତୁ</translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ଡାଟା ଏବଂ ଗୋପନୀୟତା ପସନ୍ଦଗୁଡ଼ିକୁ<ph name="END_LINK1" /> ନିୟନ୍ତ୍ରଣ କରିବା କିମ୍ବା ଲୟାଲ୍ଟି କାର୍ଡ ଏବଂ IDଗୁଡ଼ିକ ପରି <ph name="BEGIN_LINK2" />ପେମେଣ୍ଟ ପଦ୍ଧତି<ph name="END_LINK2" /> ଏବଂ <ph name="BEGIN_LINK3" />ପାସଗୁଡ଼ିକୁ<ph name="END_LINK3" /> ପରିଚାଳନା କରିବା ପାଇଁ Google Walletକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" />କୁ ପୁଣି ମେପ କରାଯାଇଛି।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="176272781006230109">ସପିଂ ପାଇଁ ପରାମର୍ଶଗୁଡ଼ିକ</translation>
@@ -1493,6 +1494,7 @@
 <translation id="2148248734299717598">ବାମପଟ ଭ୍ୟୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2148401732477136168">ଇନଷ୍ଟଲ କରାଯାଇଥିବା ଆପ୍ଲିକେସନଗୁଡ଼ିକର କ୍ୱେରୀ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2148892889047469596">ଟାବ୍ କାଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2149973817440762519">ବୁକମାର୍କ୍ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
 <translation id="2150139952286079145">ଗନ୍ତବ୍ୟସ୍ଥଳ ଖୋଜନ୍ତୁ</translation>
 <translation id="2150168665016482929">ସର୍ବ&amp;ନିମ୍ନ କରନ୍ତୁ</translation>
@@ -2999,7 +3001,6 @@
 <translation id="3284050785966252943">ଅଟୋଫିଲ ମେଟାଡାଟା ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" /> - ନିମ୍ନ ଭ୍ୟୁ</translation>
 <translation id="3285329711156774325">ଦକ୍ଷତାଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
-<translation id="3285500645985761267">ଗୋଷ୍ଠୀରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବା ପାଇଁ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="328571385944182268">ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ୍ କରିବେ?</translation>
 <translation id="3285969135399641759">ଏକ ନୂଆ ଦକ୍ଷତା ଶିଖନ୍ତୁ</translation>
 <translation id="3289668031376215426">ସ୍ଵତଃ-କ୍ୟାପିଟାଲାଇଜେସନ୍</translation>
@@ -3336,7 +3337,6 @@
 <translation id="3543296862747913985">ଏହା କଣ କରେ</translation>
 <translation id="3543298914473315872">ଅପଡେଟର ପ୍ରକ୍ରିୟା</translation>
 <translation id="3543393733900874979">ଅପ୍‌ଡେଟ୍ ହେଲା ନାହିଁ (ତ୍ରୁଟି: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="3544058026430919413">ଏକ କମ୍ପାନୀ ସାଇଟଗୁଡ଼ିକର ଏକ ଗୋଷ୍ଠୀକୁ ପରିଭାଷିତ କରିପାରିବ ଯାହା ଗୋଷ୍ଠୀରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ସେୟାର କରିବା ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ। ଏହା ଇନକଗ୍ନିଟୋରେ ବନ୍ଦ ଅଛି।</translation>
 <translation id="3544879808695557954">ୟୁଜରନେମ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3547954654003013442">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌</translation>
 <translation id="3548162552723420559">ପରିବେଶ ସହ ମେଳ କରିବାକୁ ସ୍କ୍ରିନ୍‌ର ରଙ୍ଗ ଆଡ୍‌ଜଷ୍ଟ କରେ</translation>
@@ -3929,6 +3929,7 @@
 <translation id="3954953195017194676">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ କୌଣସି କ୍ୟାପଚର୍‌ କରାଯାଇଥିବା WebRTC ଇଭେଣ୍ଟ ଲଗ୍‌ ନାହିଁ।</translation>
 <translation id="3955321697524543127">USB ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="3957663711862465084">USB ସେଟିଂସ</translation>
+<translation id="3958085090855822556">&amp;ଟେକ୍ସଟ ଚୟନକୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ...</translation>
 <translation id="3958088479270651626">ବୁକ୍‌ମାର୍କ୍‌ସ ଏବଂ ସେଟିଂସ୍‌କୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3958110062351175311">ଟୁଲବାରରେ ଅନୁରୋଧଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="3958821725268247062">ପୂର୍ବରୁ <ph name="APP_NAME" /> ଇନଷ୍ଟଲ ଅଛି</translation>
@@ -4011,7 +4012,6 @@
 <translation id="4024768890073681126">ତୁମ ବ୍ରାଉଜର ତୁମର ବାପାମାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="4025039777635956441">ଚୟନ କରାଯାଇଥିବା ସାଇଟ୍ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> ନିର୍ଦ୍ଦେଶ ପ୍ରାପ୍ତ କରାଯାଇଛି</translation>
-<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ଫୋଲ୍ଡର</translation>
 <translation id="4028467762035011525">ଇନପୁଟ୍ ପଦ୍ଧତିଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4028830198155575078">&amp;ମୁଭ କରନ୍ତୁ</translation>
 <translation id="4029024445166427442">ଲଞ୍ଚର + Shift + Backspace</translation>
@@ -4138,6 +4138,7 @@
 <translation id="4131283654370308898">ଏହି ସାଇଟରେ <ph name="EXTENSION_NAME" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="413193092008917129">ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4132137475637520539">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତିଙ୍କୁ ଏଥିରେ ଯୋଗ ଦେବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="4132364317545104286">eSIM ପ୍ରୋଫାଇଲକୁ ଆଉ ଗୋଟିଏ ନାମ ଦିଅନ୍ତୁ</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -4231,6 +4232,7 @@
 <translation id="4213540068152645535">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବାରେ ସମସ୍ୟା ହେଉଛି</translation>
 <translation id="42137655013211669">ଏହି ରିସୋର୍ସକୁ ଆକ୍ସେସ୍‌ ସର୍ଭର୍‌ ଦ୍ୱାରା ନିଷିଦ୍ଧ କରାଯାଇଥିଲା।</translation>
 <translation id="4214192212360095377">ବର୍ତ୍ତମାନ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="421564716234835106">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4216407171061541111">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଟାବଗୁଡ଼ିକୁ ସେଭ କରିବା ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="4216511743389425832">ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ</translation>
 <translation id="4217571870635786043">ଶ୍ରୁତଲିଖନ</translation>
@@ -4450,6 +4452,7 @@
 <translation id="4379623957571212011">ଥିମ ତୁରନ୍ତ ଲାଗୁ କରିବାକୁ ଏକ ଇମେଜ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4380055775103003110">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
 <translation id="4380648069038809855">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କରାଗଲା</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4381902252848068865">ଡାଟା ସେଭ କରିବା ପାଇଁ ସାଇଟକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4381997246130185847">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଆରମ୍ଭ କରିପାରିବେ କିମ୍ବା ଯାତ୍ରା କରିବା ସମୟରେ ନୂଆ ଟାବ ଗ୍ରୁପ ତିଆରି କରିପାରିବେ</translation>
 <translation id="4384312707950789900">ଅଗ୍ରାଧିକାରରେ ଯୋଗ କରନ୍ତୁ</translation>
@@ -4482,7 +4485,6 @@
 <translation id="440411460180511551">ଯଦି Chromium ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଆପଣଙ୍କର ଗୋଟିଏ ପାସୱାର୍ଡ ପାଏ, ତେବେ ଆପଣ ସାଇନ ଇନ କରିଥିଲେ Google Password Manager ଆପଣଙ୍କ ପାଇଁ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଅଫର କରିପାରେ।</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ଆପଣଙ୍କ ବାପାମାଙ୍କ ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି। ଏହି ଆପ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦେବାକୁ ଆପଣଙ୍କ ବାପାମାଙ୍କୁ କୁହନ୍ତୁ।</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
-<translation id="4405224443901389797">ଏଥିକୁ ଘୁଞ୍ଚାନ୍ତୁ…</translation>
 <translation id="4405580203042711503">ନିମ୍ନରେ ନୂଆ ଟାବ</translation>
 <translation id="4405781821077215583">ଟେକ୍ସଟ ସମେତ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଛୋଟ କିମ୍ବା ବଡ଼ କରନ୍ତୁ</translation>
 <translation id="4406308048672435032">ସମ୍ପୂର୍ଣ୍ଣ ତାଲିକା ପୁଣି ଦେଖିବାକୁ ଆପଣ ଏହି ଟାବକୁ ନିଷ୍କ୍ରିୟ କରିପାରିବେ କିମ୍ବା ଏହାକୁ ରିଫ୍ରେସ କରିପାରିବେ</translation>
@@ -4745,6 +4747,7 @@
 <translation id="4617880081511131945">କନେକ୍ସନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4619564267100705184">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4619615317237390068">ଅନ୍ୟ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରୁ ଟାବ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="4619910360235236556">&amp;ଟେକ୍ସଟ ଚୟନକୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ...</translation>
 <translation id="4620757807254334872">ମାଉସ</translation>
 <translation id="4620809267248568679">ଏହି ସେଟିଂସ୍ ଏକ ଏକ୍ସଟେନ୍‌ସନ୍ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି।</translation>
 <translation id="4621866192918370652">ଅତିରିକ୍ତ ଉପଯୋଗୀ ସୂଚନା ପାଇବା ପାଇଁ ଆପଣ Google ମାଧ୍ୟମରେ ଏହି ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରିପାରିବେ</translation>
@@ -6026,7 +6029,6 @@
 <translation id="5611398002774823980">ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5611474372949142946">ନିମ୍ନରେ ଥିବା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5614553682702429503">ପାସ୍‌ୱର୍ଡ ସେଭ୍‍ କରିବେ?</translation>
-<translation id="5614947000616625327">iCloud କୀଚେନ</translation>
 <translation id="5616571005307953937">ସବୁଠାରୁ ପୁରୁଣା</translation>
 <translation id="5616726534702877126">ଆକାର ରିଜର୍ଭ କରନ୍ତୁ</translation>
 <translation id="561698261642843490">Firefox ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -6129,6 +6131,7 @@
 <translation id="5700761515355162635">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5700836101007545240">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ସଂଯୋଗ ଯୋଗ କରିବା ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5701212929149679556">ସେଲ୍ୟୁଲାର୍ ରୋମିଂ</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5701786609538182967">ସମାନ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଅନ୍ୟ ଆପଗୁଡ଼ିକ <ph name="APP_NAME" /> ଭାବେ ସେଟ ହୋଇଛି। ଏହା ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବାରୁ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ଏବଂ 1ଟି ଅନ୍ୟ ଆପକୁ ଅକ୍ଷମ କରିଦେବ।</translation>
 <translation id="5702161882524398150">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
 <translation id="5703716265115423771">ଭଲ୍ୟୁମ୍ କମାନ୍ତୁ</translation>
@@ -6207,6 +6210,7 @@
 <translation id="5776571780337000608">ଆପଣ ଏହି ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଫାଇଲ ବ୍ରାଉଜର କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରୁ ସମର୍ଥିତ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିପାରିବେ ଏବଂ ଏଡିଟ କରିପାରିବେ। କେଉଁ ଫାଇଲଗୁଡ଼ିକ ଡିଫଲ୍ଟ ଭାବେ ଏହି ଆପକୁ ଖୋଲିବ ତାହା ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଡିଭାଇସରେ ଡିଫଲ୍ଟ ଆପ୍ସ କିପରି ସେଟ କରିବେ ତାହା ଜାଣନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="5777468213129569553">Chrome ଖୋଲନ୍ତୁ</translation>
 <translation id="5778491106820461378">ଆପଣ <ph name="LINK_BEGIN" />ସେଟିଂସ<ph name="LINK_END" />ରୁ ସାଇନ୍-ଇନ୍ କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ। ୱେବସାଇଟ୍ ଏବଂ ଆପଗୁଡ଼ିକ ପାଇଁ ଆପଣ ଦେଇଥିବା ଅନୁମତିଗୁଡ଼ିକ ସମସ୍ତ ଆକାଉଣ୍ଟରେ ଲାଗୁ ହୋଇପାରେ। ଯଦି ଆପଣ ସାଇଟ୍ କିମ୍ବା ଆପଗୁଡ଼ିକ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ସୂଚନାକୁ ଆକ୍ସେସ୍ କରୁ ବୋଲି ଚାହୁଁନାହାଁନ୍ତି, ତେବେ ଆପଣ ଜଣେ ଅତିଥି ଭାବରେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ସାଇନ୍ ଇନ୍ କରିପାରିବେ।</translation>
+<translation id="5779636902585836564">&amp;ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="5780011244986845107">ଆପଣ ଚୟନ କରିଥିବା ଫୋଲ୍ଡର୍ ସମ୍ବେଦନଶୀଳ ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ଧାରଣ କରିଛି। ଆପଣ ସ୍ଥାୟୀରୂପେ "<ph name="APP_NAME" />"କୁ, ଏହି ଫୋଲ୍ଡର୍ ପଢ଼ିବା ଆକ୍ସେସ୍ ଦେବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି?</translation>
 <translation id="5780973441651030252">ପ୍ରକ୍ରିୟା ପ୍ରାଥମିକତା</translation>
 <translation id="5781120434102258025">ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -6944,7 +6948,6 @@
 <translation id="6347010704471250799">ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="634792071306410644">ଆପଣ ଯେପର୍ଯ୍ୟନ୍ତ ନିଜକୁ ଦୃଶ୍ୟମାନ କରିନାହାଁନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ କୌଣସି ବ୍ୟକ୍ତି ଆପଣଙ୍କ ସହ ସେୟାର କରିପାରିବେ ନାହିଁ</translation>
 <translation id="6348252528297699679">ଆପଣ ସେଟିଂସ&gt; ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା &gt; ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣ &gt; ଲୋକେସନ ଆକ୍ସେସରେ ଲୋକେସନକୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ଏକ ନୂଆ ଆକାଉଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6348805481186204412">ଅଫଲାଇନ ଷ୍ଟୋରେଜ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ଇନଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
 <translation id="6350745006329795504">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -7770,7 +7773,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="696942486482903620">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ, ଆପଣ ସେଗୁଡ଼ିକୁ ଏହି ଡିଭାଇସରେ ଏବଂ ଆପଣ ସାଇନ ଇନ କରିଥିବା ଅନ୍ୟ ଯେ କୌଣସି ଡିଭାଇସରେ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="6970480684834282392">ଷ୍ଟାର୍ଟ‍ଅପ୍‌ ପ୍ରକାର</translation>
 <translation id="6970543303783413625">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଏକାଥରକେ ଆପଣ କେବଳ <ph name="COUNT" />ଟି ପର୍ଯ୍ୟନ୍ତ ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରିପାରିବେ।</translation>
-<translation id="6970856801391541997">ନିର୍ଦ୍ଧିଷ୍ଟ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6970861306198150268">ଆପଣ ଏହି ସାଇଟ ପାଇଁ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ପାସୱାର୍ଡକୁ ସେଭ କରୁଛନ୍ତି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6971184043765343932">ଆପଣ ଅପଲୋଡ କରିଥିବା ଇମେଜ</translation>
 <translation id="6971570759801670426">ୟୁଜରନେମ ପାଇଁ <ph name="CREDENTIAL_TYPE" />କୁ ଏଡିଟ କରନ୍ତୁ: <ph name="USER_EMAIL" /></translation>
@@ -8279,6 +8281,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7368927539449986686">ସାଇଟ ସର୍ଚ୍ଚ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="7370592524170198497">ଇଥରନେଟ୍ EAP:</translation>
 <translation id="7374376573160927383">USB ଡିଭାଇସଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="7375506263741703384">ଆପଣଙ୍କ ଆଡମିନଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7376124766545122644">ଏହି ଲିଙ୍କକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ଆପଣଙ୍କ ଲିଙ୍କ 'http://' କିମ୍ବା 'https://' ସହ ଆରମ୍ଭ ହୋଇଛି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="7376553024552204454">ମାଉସ୍ କର୍‌ସର୍ ଚାଲୁଥିବା ବେଳେ ଏହାକୁ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="7377250337652426186">1ରୁ ଅଧିକ ପୃଷ୍ଠାକୁ ଫେରିବାକୁ ପଛକୁ ଫରନ୍ତୁ ବଟନକୁ କ୍ଲିକ କରି ଧରି ରଖନ୍ତୁ।</translation>
@@ -8299,6 +8302,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="738322632977123193">ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ଏହି ଫର୍ମାଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ଫର୍ମାଟର ଏକ ଇମେଜ ବ୍ୟବହାର କରନ୍ତୁ: .jpg, .gif, .png, .bmp, .tif କିମ୍ବା .webp</translation>
 <translation id="7384687527486377545">କୀବୋର୍ଡ ସ୍ୱତଃ-ପୁନରାବୃତ୍ତି</translation>
 <translation id="7384804382450832142">Microsoft OneDrive ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
+<translation id="7385713560829077068">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7385854874724088939">ମୁଦ୍ରଣ କରିବାକୁ ଚେଷ୍ଟା କରିବା ସମୟରେ କିଛି ଭୂଲ ହେଉଛି ।  ଦୟାକରି ଆପଣଙ୍କର ପ୍ରିଣ୍ଟର୍ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ ।</translation>
 <translation id="7385870590821097913">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରେ ଷ୍ଟେପଗୁଡ଼ିକୁ ଫଲୋ କରନ୍ତୁ</translation>
 <translation id="7387107590792462040">ଇନଷ୍ଟଲେସନ ଚାଲିଥିବା ବେଳେ ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -8487,6 +8491,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7517292544534877198">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇଁ Googleର ଡିଫଲ୍ଟ ଏନକ୍ରିପ୍ସନକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7517959947270534934">ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟ ଏବେ ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇପାରିବେ ନାହିଁ। Chrome ଅପଡେଟ କରି ତାଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସିଙ୍କ କରିବାକୁ ତାଙ୍କୁ କୁହନ୍ତୁ।</translation>
 <translation id="7518079994230200553">ବର୍ତ୍ତମାନ ଏହି ବିକଳ୍ପ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="752021853309481824">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7520766081042531487">ଇନକଗ୍ନିଟୋ ପୋର୍ଟାଲ୍: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ସର୍ଟକଟଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="7521430434164837205">Microsoft 365 ଫାଇଲଗୁଡ଼ିକ</translation>
@@ -8546,6 +8551,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7575272930307342804">ନାଭିଗେସନ ନିୟନ୍ତ୍ରଣ</translation>
 <translation id="757660455834887988">ଅନୁମତି ଦିଆଯାଇଛି – <ph name="PERMISSION_DETAILS" />। ଆପଣଙ୍କ ଡିଭାଇସ ସହ ଏକ କେମେରା କନେକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7576690715254076113">ସଙ୍କଳନ କରନ୍ତୁ</translation>
+<translation id="7577535322483673900">"<ph name="SELECTION" />"ର ଲିଙ୍କକୁ କପି କରନ୍ତୁ</translation>
 <translation id="7578137152457315135">ଟିପଚିହ୍ନ ସେଟିଂସ୍</translation>
 <translation id="7578692661782707876">ଦୟାକରି ଆପଣଙ୍କ ସୁନିଶ୍ଚିତକରଣ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="757941033127302446">ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି</translation>
@@ -8758,6 +8764,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7730683939467795481">ଏହି ପୃଷ୍ଠାକୁ "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ୍ ଦ୍ୱାରା ପରିବର୍ତ୍ତନ କରାଯାଇଥିଲା</translation>
 <translation id="7735558909644181051">ଇଣ୍ଟରମିଡିଏଟ ସାର୍ଟିଫିକେଟଗୁଡ଼ିକ</translation>
 <translation id="7736119438443237821">ଆପଣ ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସକୀଗୁଡ଼ିକୁ ଆକ୍ସେସ କାଢ଼ି ଦେବାକୁ ଯାଉଛନ୍ତି</translation>
+<translation id="7737161071513018955">“<ph name="SELECTION" />”ର ଲିଙ୍କ କପି କରନ୍ତୁ</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> ନିର୍ଦ୍ଦେଶ ପ୍ରାପ୍ତ କରାଯାଇଛି</translation>
 <translation id="7737948071472253612">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="77381465218432215">ଆକ୍ସେଣ୍ଟ ମାର୍କ ଏବଂ ବିଶେଷ କେରେକ୍ଟରଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
@@ -10198,6 +10205,8 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8841843049738266382">ଆଲାଉଲିଷ୍ଟରେ ଥିବା ଉପଯୋଗକର୍ତ୍ତାମାନଙ୍କୁ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8841884135319684422">ଟାସ୍କ ଶେଷ</translation>
 <translation id="8842594465773264717">ଏହି ଟିପଚିହ୍ନକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="8844476858332168421">ସ୍କିଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8846132060409673887">ଏହି କମ୍ପ୍ୟୁଟର୍‍‍ର ନିର୍ମାତା ଓ ମଡେଲ୍ ବିଷୟରେ ପଢ଼ନ୍ତୁ</translation>
 <translation id="8846239054091760429">ମନୋ ଅଡିଓ, ଷ୍ଟାର୍ଟଅପ, ଲାଇଭ କ୍ୟାପସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
@@ -10206,7 +10215,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8849001918648564819">ଲୁକ୍କାୟିତ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ନାମକ eSIM ପ୍ରୋଫାଇଲକୁ କାଢ଼ିଦେବାର ପ୍ରକ୍ରିୟାକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" />ର <ph name="CHECKED" /></translation>
-<translation id="8850251000316748990">ଅଧିକ ଦେଖନ୍ତୁ...</translation>
 <translation id="885246833287407341">API ଫଙ୍କ୍‌ସନ୍‌ର ତର୍କ</translation>
 <translation id="8853586775156634952">ଏହି କାର୍ଡ କେବଳ ଏହି ଡିଭାଇସ୍‌ରେ ସେଭ୍ କରାଯିବ</translation>
 <translation id="8855242995793521265">ଆପଣଙ୍କ ବ୍ରାଉଜର କିମ୍ବା ଡିଭାଇସକୁ ଯଥେଷ୍ଟ ସ୍ଲୋ କରେ ନାହିଁ।</translation>

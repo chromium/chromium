@@ -202,7 +202,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2888126860611144412">Um Chrome</translation>
 <translation id="2915996080311180594">Endurræsa seinna</translation>
-<translation id="2916983411556218750">Gerum Chrome klárt</translation>
 <translation id="2926952073016206995">Chrome verður að fá leyfi fyrir myndavél fyrir þetta vefsvæði</translation>
 <translation id="2945997411976714835">Uppsetningarvilla: Ekki tókst að ræsa ferli uppsetningarforrits.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig aðgangsorðin þín og fleira úr <ph name="DEVICE" />.</translation>
@@ -551,6 +550,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6326175484149238433">Fjarlægja úr Chrome</translation>
 <translation id="6334815226785304306">Gera Google Chrome að sjálfgefnum vafra og festa við forritastikuna</translation>
 <translation id="63540178978900677">Chrome er ekki lengur sjálfgefni vafrinn þinn. Gera Chrome að sjálfgefnum vafra?</translation>
+<translation id="6357670763064300993">Gemini Enterprise í Chrome</translation>
 <translation id="6360449101159168105">Meðan þessi flipi var óvirkur var losað um minni til að gera Chrome hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum.</translation>
 <translation id="6388799252195623474">hjálpa mér með þetta</translation>
@@ -761,6 +761,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8196526165798579689">Leita með Chrome Dev</translation>
 <translation id="8221491193165283816">Þú lokar yfirleitt á tilkynningar. Ef þú vilt leyfa þessu vefsvæði að birta þér tilkynningar skaltu smella hér.</translation>
 <translation id="8227493674161801700">Leita með Chrome Beta</translation>
+<translation id="8233224921566021881">Chrome þarf aðgang að staðarnetinu þínu til að finna og nota nálæg tæki</translation>
 <translation id="8253851811470049684">Opnaðu tengla í Chrome úr hvaða forriti sem er og hafðu vafrann aðgengilegan á forritastikunni</translation>
 <translation id="8255190535488645436">Google Chrome er að nota myndavélina þína og hljóðnema.</translation>
 <translation id="8260086374035800939">Ef Gemini í Chrome er opið verður hliðarglugginn áfram opinn þegar nýir flipar eru búnir til</translation>

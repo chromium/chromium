@@ -5776,19 +5776,6 @@ URL ярлыков должны быть уникальными.
 
       Если правило не настроено или включено, проводятся проверки на перехват DNS. Если правило отключено в явном виде, они не проводятся.</translation>
 <translation id="4700190441681139987">Не разрешать сайтам доступ к датчикам</translation>
-<translation id="4700450186549212780">Задает настройки подключения <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> в <ph name="PRODUCT_NAME" />.
-
-Чтобы настроить <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, администраторы должны указать одно из двух:
-* URL веб-приложения <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />); или
-* все три устаревших параметра: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> и <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Если указать менее трех из них и не добавить URL, правило будет отклонено.
-
-Если указаны и <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, и устаревшие параметры, приоритет будет у <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />.
-
-Если правило задано, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> настраивается для пользователей, которые вошли в систему с помощью управляемого аккаунта или браузера.
-
-Если правило не задано, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не настраивается.
-
-Примечание. Правило не управляет общей интеграцией <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Это делает <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="4703402283970867140">Включить умное затемнение, чтобы продлить время до затемнения экрана</translation>
 <translation id="4704958130749494760">Автоматически разрешать сайтам подключение к USB-устройствам с последовательным интерфейсом</translation>
 <translation id="4705329890928008808">Если для правила задано значение CopyCaCerts, ARC-приложениям будут доступны все сертификаты ЦС с <ph name="WEB_TRUSTED_BIT" />, установленные с помощью файлов ONC.
@@ -7525,7 +7512,6 @@ https://chromeenterprise.google/policies/url-patterns. Поддерживает�
 <translation id="5728154254076636808">Разрешить создание перемещаемых копий данных для профиля сервиса "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="5729308727912841256">Пароль Kerberos. На место тега <ph name="PASSWORD_PLACEHOLDER" /> будет подставлен пароль для входа.</translation>
 <translation id="5730610899971390601">Отклонять запросы на подключение по Bluetooth типа Just Works</translation>
-<translation id="5731883586899464960">URL веб-приложения экземпляра <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> для этой организации.</translation>
 <translation id="5732972008943405952">Импорт данных для автозаполнения форм из браузера по умолчанию при первом запуске</translation>
 <translation id="5733040281451845496">Если правило включено, время бездействия для параметров электропитания и продолжительность сеанса начинают отсчитываться после первого действия пользователя в системе.
 

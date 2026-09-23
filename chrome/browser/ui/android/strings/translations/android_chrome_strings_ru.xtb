@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Неактивные быстрые команды</translation>
 <translation id="2227179592712503583">Удалить подсказку</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Получите доступ ко всем сохраненным данным</translation>
 <translation id="2230777942707397948">Пустое окно</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
 <translation id="2233735624724508540">Выберите период и нажмите "Удалить данные".</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Не удалось проверить пароли на этом устройстве</translation>
 <translation id="2414886740292270097">Тёмная</translation>
 <translation id="2415037988255164008">Восстановить окна?</translation>
-<translation id="2426805022920575512">Сменить аккаунт</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видео, 1 видео в списке}one{Видео, # видео в списке}few{Видео, # видео в списке}many{Видео, # видео в списке}other{Видео, # видео в списке}}</translation>
 <translation id="2433507940547922241">Внешний вид</translation>
 <translation id="2449931042095204989">Когда один из сайтов или одно из приложений Google запрашивает анонимную предзагрузку страниц, Chrome шифрует и предварительно загружает страницы через серверы Google, не используя файлы cookie. Благодаря этому предзагруженный сайт не получает сведений о вашей личности.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
 <translation id="2996682533106928201">Нажмите, чтобы закрыть</translation>
 <translation id="2996809686854298943">Необходимо указать URL</translation>
-<translation id="3007318536447999974">Чтобы разговаривать с Gemini, разрешите ему использовать микрофон. Вы также можете сделать это в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Настройки режима чтения закрыты</translation>
 <translation id="3024277805447899099">Предпросмотр изображения</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6196315980958524839">Пароли сохраняются в Google Менеджере паролей на этом устройстве.</translation>
 <translation id="6204781143409202534">Браузер Chrome обнаружил возможный спам от домена <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6212567362666004597">Добавить вкладку в группу</translation>
 <translation id="6225572914528673855">Адресная строка</translation>
@@ -1455,7 +1451,7 @@
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787600234697426339">Достигнут лимит окон (<ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
-<translation id="679588508577699489">Сделайте Chrome браузером по умолчанию</translation>
+<translation id="679588508577699489">Сделать Chrome браузером по умолчанию</translation>
 <translation id="679845623837196966">Показывать список для чтения</translation>
 <translation id="679956319013005046">Чтобы выбрать другой сервис автозаполнения, сначала добавьте этот сервис в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Окно будет закрыто.</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8580435650274205305">Срок действия (обязательно)</translation>
-<translation id="8582529315803410153">Здесь вы найдете свои вкладки с других устройств</translation>
 <translation id="8585103689515290060">Сервисы автозаполнения</translation>
 <translation id="8586116786993312006">Нажмите, чтобы удалить данные о работе в браузере Chrome.</translation>
 <translation id="859046281437143747">Нажмите кнопку "Ещё" и выберите пункт "Отслеживание цен"</translation>

@@ -305,7 +305,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2226826835915474236">無効なショートカット</translation>
 <translation id="2227179592712503583">候補を削除</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> として続行</translation>
-<translation id="2230411774874187555">保存した情報をすべて取得</translation>
 <translation id="2230777942707397948">空のウィンドウ</translation>
 <translation id="223356358902285214">ウェブとアプリのアクティビティ</translation>
 <translation id="2233735624724508540">期間を選択して [データを削除] をタップ</translation>
@@ -359,7 +358,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2413014528833954543">このデバイスではパスワードを確認できません</translation>
 <translation id="2414886740292270097">ダーク</translation>
 <translation id="2415037988255164008">ウィンドウを復元しますか？</translation>
-<translation id="2426805022920575512">別のアカウントを選択</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{動画、リストの 1 件の動画}other{動画、リストの # 件の動画}}</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2449931042095204989">ページのリンクを非公開でプリロードするように求めるメッセージが Google サイトまたはアプリに表示された場合、Chrome は Cookie を使用せずに Google サーバーを経由してページを暗号化し、プリロードします。その結果、プリロードされたサイトでユーザーの ID が非表示になります。</translation>
@@ -511,7 +509,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2996291259634659425">パスフレーズの作成</translation>
 <translation id="2996682533106928201">タップすると閉じます</translation>
 <translation id="2996809686854298943">URLが必要です</translation>
-<translation id="3007318536447999974">Gemini に話しかけるには、マイクの使用を許可してください。これは [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でも管理できます</translation>
 <translation id="3024215143424744261">リーディング モードの設定を閉じました</translation>
 <translation id="3024277805447899099">プレビュー画像</translation>
 <translation id="3026955690410463085">リンクを含める</translation>
@@ -1291,7 +1288,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6196315980958524839">パスワードは、このデバイスの Google パスワード マネージャーに保存されます</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> から不正な疑いのある通知が送信されました。</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
 <translation id="6212567362666004597">タブをグループに追加</translation>
 <translation id="6225572914528673855">アドレスバー</translation>
@@ -1856,7 +1852,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="82296173028782770">検索語句「<ph name="SEARCH_QUERY" />」を編集します</translation>
 <translation id="8236097722223016103">ブックマークに追加</translation>
 <translation id="8236917170563564587">代わりにこのタブを共有</translation>
-<translation id="8243077599929149377">ユーザー名を追加</translation>
+<translation id="8243077599929149377">ユーザー名の追加</translation>
 <translation id="8244387390464017490">新しいタブページを編集</translation>
 <translation id="8244444485683708655">カメラの写真を添付</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
@@ -1950,7 +1946,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8580435650274205305">有効期限、必須です</translation>
-<translation id="8582529315803410153">他のデバイスで開いたタブがここに表示されます</translation>
 <translation id="8585103689515290060">自動入力サービス</translation>
 <translation id="8586116786993312006">タップすると、Chrome の閲覧データを削除できます</translation>
 <translation id="859046281437143747">[その他のオプション] から価格をトラッキングできます</translation>

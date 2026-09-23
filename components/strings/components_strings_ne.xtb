@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">मोनोस्पेस फन्ट</translation>
 <translation id="1757935267918149452">Google खाताको पासवर्ड बदल्ने बटन, आफ्नो Google खाताको पासवर्ड बदल्न यो बटन थिच्नुहोस्</translation>
 <translation id="1759776526873274358">साइटहरूले तपाईंको सुरक्षाको गुणस्तर सुधार गर्न प्रयोग गर्ने पुष्टि कोडहरू स्वतः भर्नुहोस्। Chrome ले तपाईंको Gmail बाट यी कोडहरू प्राप्त गर्न सक्छ। <ph name="BEGIN_LINK" />यो सुविधाका बारेमा थप जान्नुहोस्<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा तथा गोपनीयतासम्बन्धी प्राथमिकताहरू<ph name="END_LINK1" /> नियन्त्रण गर्न वा लोयल्टी कार्ड र ID जस्ता <ph name="BEGIN_LINK2" />भुक्तानी विधिहरू<ph name="END_LINK2" /> र <ph name="BEGIN_LINK3" />पासहरू<ph name="END_LINK3" /> व्यवस्थापन गर्न Google Wallet मा जानुहोस्</translation>
 <translation id="1763864636252898013">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई तपाईंको डिभाइसको अपरेटिङ सिस्टमले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1777422078676229054">फोटो (अर्काइभल)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">तपाईंको इन्टरनेट पहुँचमाथि रोक लगाइएको छ</translation>
 <translation id="2294150501457238325">राहदानी सुरक्षित तरिकाले हाल्नुहोस्</translation>
 <translation id="2295831393422400053">"मलाई लेख्न मद्दत गर्नुहोस्" सुविधा प्रयोग गर्न "खोज्ने तथा ब्राउज गर्ने प्रक्रिया अझ सरल बनाउनुहोस्" सेटिङ अन गर्नुहोस्</translation>
-<translation id="2296244067976588032">पासकी • iCloud Keychain</translation>
 <translation id="2296331629987861142">सजिलैसँग किस्ताबन्दीमा भुक्तानी गर्नुहोस् (योग्यताका मापदण्ड पूरा गर्नु पर्ने हुन्छ र शुल्क लाग्छ)</translation>
 <translation id="2300306941146563769">अपलोड नगरिएको</translation>
 <translation id="2301064673700597535">Qualified Certificate Statements</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">कार्डसम्बन्धी जानकारी सेभ गरिएको छ</translation>
 <translation id="2505268675989099013">खाता सेभ गर्नुहोस्</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (सर्तहरू लागू हुन्छन्)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />डेटा तथा गोपनीयतासम्बन्धी प्राथमिकताहरू<ph name="END_LINK" /> व्यवस्थापन गर्न Google Wallet मा जानुहोस्।</translation>
 <translation id="2512101340618156538">अनुमति दिइएको छैन (डिफल्ट)</translation>
 <translation id="2512413427717747692">Chrome लाई डिफल्ट ब्राउजर बटनका रूपमा सेट गर्नुहोस्, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
@@ -1302,6 +1301,7 @@
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
 <translation id="3209071504641569648">तपाईंका अनुरोध, पेजका शीर्षक र URL हरू Google मा पठाइन्छन् र अटोफिल गर्ने परिष्कृत सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि तिनको समीक्षा गरिन सक्छ</translation>
+<translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" /> मार्फत <ph name="PROTOCOL" /> का लिंकहरू खोल्नुहोस्</translation>
 <translation id="3212468046572043669">डाउनलोड सुरु गरिएको छ। डाउनलोड गरिएको कुरा हेर्न सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="3212581601480735796">तपाईंले <ph name="HOSTNAME" /> मा गर्ने क्रियाकलापमाथि निगरानी गरिँदै छ</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
@@ -2085,6 +2085,7 @@
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="4493480324863638523">अमान्य URL। अनिवार्य रूपमा मानक योजनाबमोजिमको URL हुनु पर्छ, जस्तै, http://example.com वा https://example.com।</translation>
 <translation id="4497010149473852018">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
+<translation id="4497843134750481377">अफरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4500587658229086076">असुरक्षित सामग्री</translation>
 <translation id="4501939680615452918">ट्रेन्डिङ रेस्टुरेन्टहरूमा उपलब्ध सिटहरू खोज्नुहोस्</translation>
 <translation id="4503459574136856756">मेरो बायो अझ व्यावसायिक पुनर्लेखन गर्नुहोस्</translation>
@@ -3748,6 +3749,7 @@
 <translation id="7347640536700429009">कार्डमा भएको नाम अवैध छ</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7353601530677266744">आदेश रेखा</translation>
+<translation id="7358055687760675498"><ph name="REPLACED_HANDLER_TITLE" /> को साटो <ph name="HANDLER_HOSTNAME" /> मार्फत <ph name="PROTOCOL" /> का लिंकहरू खोल्नुहोस्</translation>
 <translation id="7359588939039777303">विज्ञापनहरूमाथि रोक लगाइयो।</translation>
 <translation id="7362281996276843968">यो समूह बन्द गरिएको छ</translation>
 <translation id="7363096869660964304">तथापि, तपाईंले गर्नुभएका सबै क्रियाकलाप कसैले देख्न सक्दैन भन्ने हुँदैन। तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईं आफ्नो रोजगारदाता, इन्टरनेट सेवा प्रदायक वा आफूले प्रयोग गर्ने वेबसाइटहरूसँग आफ्नो ब्राउजिङ इतिहास लुकाउन सक्नुहुन्न।</translation>

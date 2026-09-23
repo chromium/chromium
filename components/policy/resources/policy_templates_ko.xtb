@@ -5860,19 +5860,6 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 
       정책이 설정되어 있지 않거나 사용 설정되어 있으면 DNS 가로채기 검사가 실행됩니다. 명시적으로 사용 중지되면 검사가 실행되지 않습니다.</translation>
 <translation id="4700190441681139987">모든 사이트에서 센서에 액세스하도록 허용 안함</translation>
-<translation id="4700450186549212780"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
-
-<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
-* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 정책이 거부됩니다.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
-
-이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
-
-정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
-
-이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="4703402283970867140">스마트 밝기 낮추기 모델을 사용하여 화면이 어두워질 때까지의 시간 연장</translation>
 <translation id="4704958130749494760">사이트에 USB 직렬 기기에 연결할 수 있는 권한을 자동으로 부여합니다.</translation>
 <translation id="4705329890928008808">정책을 CopyCaCerts로 설정하면 <ph name="WEB_TRUSTED_BIT" />를 포함하며 ONC가 설치된 모든 CA 인증서를 ARC 앱에 사용할 수 있습니다.
@@ -7632,7 +7619,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> 프로필 데이터 로밍 사본 생성을 사용 설정합니다.</translation>
 <translation id="5729308727912841256">Kerberos 비밀번호입니다. <ph name="PASSWORD_PLACEHOLDER" /> 자리표시자는 로그인 비밀번호로 교체됩니다.</translation>
 <translation id="5730610899971390601">'Just Works' 블루투스 페어링 요청 거부</translation>
-<translation id="5731883586899464960">이 조직의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 인스턴스 웹 애플리케이션 URL입니다.</translation>
 <translation id="5732972008943405952">처음 실행할 때 기본 브라우저에서 양식 자동 완성 데이터 가져오기</translation>
 <translation id="5733040281451845496">정책을 사용 설정하면 세션에서 첫 사용자 활동이 발생하기 전까지는 전원 관리 지연 및 세션 길이 제한이 시작되지 않습니다.
 

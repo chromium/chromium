@@ -112,6 +112,7 @@
 <translation id="132683371494960526">मुख्य फोल्डर बदलण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="132969855425874290">शोधा आणि भरा बंद करा</translation>
 <translation id="1333455942675373522">कीबोर्ड</translation>
+<translation id="1333669029961409292">"तुमचे पासवर्ड तपासणे" पूर्ण झाले आहे!</translation>
 <translation id="1334485477792811969">वेब सेवा</translation>
 <translation id="1335767868357998043">अ‍ॅड्रेस बारचे स्थान निवडा</translation>
 <translation id="1347468774581902829">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">नेव्हिगेशन वैशिष्ट्य वापरून टर्न बाय टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानी जाण्यासाठी दिशानिर्देश मिळवा</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
+<translation id="1644229815617955289">तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी तुमचा इतिहास, कुकी आणि आणखी बरेच काही व्यवस्थापित करा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="164673457281113247">{count,plural, =1{बुकमार्क सेव्ह केला आहे}other{बुकमार्क सेव्ह केले आहेत}}</translation>
 <translation id="1650979352027263879">तुमची स्वरूपासंबंधित प्राधान्ये काढून टाकली आहेत</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">कॉन्फिगरेशन प्रोफाइल उपलब्ध आहे</translation>
 <translation id="2244080985779413662">या वेबसाइटला फाइल डाउनलोड करायची आहे आणि ती तुमच्या Wallet मध्ये उघडायची आहे.</translation>
 <translation id="2245007488813216650">भाषांतर करत आहे…</translation>
+<translation id="2246445006133863463">यामुळे तुम्हाला तुमचा आवाज वापरून Gemini सोबत चॅट करता येते</translation>
 <translation id="2249119578464404734">स्क्रीनच्या सर्वात वरती, शोध आयकनवर टॅप करा</translation>
 <translation id="2251686759395008410">मेनू → इतिहास</translation>
 <translation id="2252378061043785266">ही साइट कधीही दाखवू नका</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">तुमच्या Google खाते <ph name="EMAIL" /> मधील पासवर्ड वापरणे आणि सेव्ह करणे सुरू ठेवा</translation>
 <translation id="3853873210696342070">इंपोर्ट करा</translation>
 <translation id="3854052088499589035">तुम्ही Level Up मध्ये प्रगती केल्यावर तुम्हाला अपडेट मिळतील</translation>
+<translation id="3854214753902617617">वर्धित सुरक्षित ब्राउझिंग एक्सप्लोर करा</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari सेटिंग्ज<ph name="END_BOLD" /> उघडा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="386224966259596343">तुम्ही पुढील वेळी सुसंबद्ध फॉर्म भरता, तेव्हा तुम्हाला ही माहिती Wallet मध्ये सेव्ह करण्याची संधी मिळेल.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">तुमचे पासवर्ड शेअर करा</translation>
 <translation id="4049419681095579435">पॅकेजचा आधीच माग ठेवला जात आहे</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="4052951214266508382">“Gemini” ला तुमचा मायक्रोफोन वापरण्याची अनुमती द्या</translation>
 <translation id="4054290211988862686">फाइल निवडा</translation>
 <translation id="4070132839822635162">साइन इन करू नका</translation>
 <translation id="4072473499345702662">लेव्हल अप वर जा</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">इव्‍हेंट</translation>
 <translation id="5749158352074143502">या टॅबसह पुढे सुरू ठेवा</translation>
 <translation id="5753021559215751319">पासवर्ड सेव्ह करा</translation>
+<translation id="5756200167514420691">वेब आणखी खाजगीरीत्या ब्राउझ करण्यासाठी गुप्त मोडमध्ये टॅब उघडा</translation>
 <translation id="5756525336488841345">बुकमार्क लपवा</translation>
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
 <translation id="57586589942790530">अवैध कार्ड क्रमांक</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">तुमच्या टॅबवर कमी झालेली किंमत पहा.</translation>
 <translation id="5988851877894965432">Chrome URL उघडा</translation>
 <translation id="599343768974649785">भडक मजकूर</translation>
+<translation id="6000893618966378846">"ब्राउझिंग डेटा हटवणे" पूर्ण झाले!</translation>
 <translation id="6004988584831654445">तुम्ही पूर्णपणे तयार आहात! नवीन टास्क आल्यावर सूचना मिळवा.</translation>
 <translation id="6006672969046233841">नवीन टॅब</translation>
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
@@ -1811,6 +1818,7 @@
 <translation id="6732087373923685049">कॅमेरा</translation>
 <translation id="6736243959894955139">पत्ता</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
+<translation id="6749473226660745022">फोटो</translation>
 <translation id="6750456911389438250">{count,plural, =1{इतिहासाचा {count} आयटम इंपोर्ट केला आहे}other{इतिहासाचे {count} आयटम इंपोर्ट केले आहेत}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{तुमच्या कीबोर्डच्या वरती क्रेडेंशियलचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती क्रेडेंशियलचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="6755200887046212842">खाती व्यवस्थापित करा</translation>
@@ -1976,6 +1984,7 @@
 <translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7312823817809783355">तुमच्या टास्क</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
+<translation id="7318555235645532245">"गुप्त मोड" पूर्ण झाला आहे!</translation>
 <translation id="7322186060879266048">{count,plural, =1{तुमच्या कीबोर्डच्या वरती {count} ऑटोफिल पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती {count} ऑटोफिल पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
@@ -2152,6 +2161,7 @@
 <translation id="7857520352710212030">साइट पिन केली आहे</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
 <translation id="7863211248337747225">ॲप मिळवा</translation>
+<translation id="7863990181930071932">स्थान अ‍ॅक्सेस बंद केला आहे</translation>
 <translation id="7865127013871431856">भाषांतराचे पर्याय</translation>
 <translation id="7866872729285243843">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची मिळवण्यासाठी, सेटिंग्जमध्ये "वाचन सूची" सुरू करा.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> वापरून फॉर्म ऑटोफिल करा</translation>
@@ -2460,6 +2470,7 @@
 <translation id="8786100550345425552">परवानग्या संपादित करा</translation>
 <translation id="878871978861915380">"किमतीचा माग ठेवणे" लपवा</translation>
 <translation id="8792626944327216835">मायक्रोफोन</translation>
+<translation id="8795809107245894196">तुमचे पासवर्ड सुरक्षित असल्याची खात्री करण्यासाठी पासवर्ड तपासणी वापरा</translation>
 <translation id="8796634520835503150">वाचन मोड उपलब्ध आहे</translation>
 <translation id="8803526663383843427">सुरू असल्यास</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>
@@ -2492,6 +2503,7 @@
 <translation id="8879952635974818770">पर्सनलाइझ केलेला आशय</translation>
 <translation id="8887595428614802520">सर्व टॅब आणि गट बंद करा</translation>
 <translation id="8888595487174963247">रिमाइंडर काढून टाका</translation>
+<translation id="8890516388109605451">स्रोत</translation>
 <translation id="8893208530912252670">व्हिडिओ</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टीम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="8900845556227858314">ब्राउझर अ‍ॅप</translation>
@@ -2532,6 +2544,7 @@
 <translation id="9012585441087414258">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण. एखाद्या पेजमध्ये काहीतरी संशयास्पद आढळल्यास, URLs आणि पेजच्या आशयाचे भाग हे Google सुरक्षित ब्राउझिंग ला पाठवले जातात.</translation>
 <translation id="9013605037177245304">नोटिफिकेशन सुरू करा</translation>
 <translation id="9029650858822697271">तुम्हाला साइन आउट केले गेले होते</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ब्राउझिंग डेटा हटवणे कन्फर्म करा</translation>
 <translation id="9035699147763101514">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. सेटिंग्जमध्ये तुमच्या निवडी व्यवस्थापित करा.</translation>
 <translation id="9038526468059454274">यासोबत सारांश द्या</translation>

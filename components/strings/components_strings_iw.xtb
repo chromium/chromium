@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">‏גופן Monospace</translation>
 <translation id="1757935267918149452">‏הכפתור לשינוי הסיסמה ל-Google, מפעילים אותו כדי לשנות את הסיסמה לחשבון Google</translation>
 <translation id="1759776526873274358">‏מילוי אוטומטי של קודי אימות שאתרים משתמשים בהם כדי לשפר את האבטחה שלך. ‫Chrome יכול לקבל את קודי האימות האלה מ-Gmail. <ph name="BEGIN_LINK" />מידע נוסף על התכונה הזו<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">‏כדי לשנות את <ph name="BEGIN_LINK1" />העדפות הנתונים והפרטיות<ph name="END_LINK1" /> או לנהל <ph name="BEGIN_LINK2" />אמצעי תשלום<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />כרטיסים<ph name="END_LINK3" /> כמו כרטיסי מועדון לקוחות ותעודות מזהות, צריך לעבור אל Google Wallet</translation>
 <translation id="1763864636252898013">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המכשיר. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">הגישה לאינטרנט חסומה</translation>
 <translation id="2294150501457238325">הוספת דרכון באופן מאובטח</translation>
 <translation id="2295831393422400053">הפעלת ההגדרה 'שיפור החיפושים והגלישה' לצורך שימוש בתכונה 'עזרה בכתיבה'</translation>
-<translation id="2296244067976588032">‏מפתח גישה • iCloud Keychain</translation>
 <translation id="2296331629987861142">משלמים בתשלומים נוחים (בכפוף לזכאות, בכפוף לעמלות)</translation>
 <translation id="2300306941146563769">לא הועלה</translation>
 <translation id="2301064673700597535">הצהרות על אישורים מתאימים</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">פרטי הכרטיס נשמרו</translation>
 <translation id="2505268675989099013">הגנה על החשבון</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (בכפוף לתנאים)</translation>
+<translation id="251033673027346551">‏כדי לנהל את <ph name="BEGIN_LINK" />העדפות הנתונים והפרטיות<ph name="END_LINK" />, עליך לעבור אל Google Wallet.</translation>
 <translation id="2512101340618156538">אין הרשאה (ברירת מחדל)</translation>
 <translation id="2512413427717747692">‏כפתור להגדרת Chrome כדפדפן ברירת המחדל, יש ללחוץ על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
 <translation id="2515629240566999685">לבדוק את האות באזור שלך</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3209034400446768650">כניסה לדף עשויה להיות כרוכה בתשלום</translation>
 <translation id="3209071504641569648">‏הבקשות שלך, כותרות הדפים וכתובות ה-URL נשלחות אל Google, ויכול להיות שייבדקו כדי לייעל את המילוי האוטומטי המשופר</translation>
+<translation id="3211727636285361260">לפתוח קישורי <ph name="PROTOCOL" /> באמצעות <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">ההורדה התחילה. כדי לראות אותה, צריך לגרור מלמעלה וללחוץ על הכפתור ה"קודם".</translation>
 <translation id="3212581601480735796">הפעילות שלך ב-<ph name="HOSTNAME" /> מנוטרת</translation>
 <translation id="3215092763954878852">‏לא ניתן להשתמש ב-WebAuthn</translation>
@@ -2087,6 +2087,7 @@
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
 <translation id="4493480324863638523">‏כתובת URL לא חוקית. הסכימה של כתובת ה-URL צריכה להיות רגילה, כלומר: http://example.com או https://example.com.</translation>
 <translation id="4497010149473852018">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע. המקלדת מוסתרת.</translation>
+<translation id="4497843134750481377">ניהול מבצעים</translation>
 <translation id="4500587658229086076">תוכן לא מאובטח</translation>
 <translation id="4501939680615452918">תחפש שולחן פנוי במסעדות פופולריות</translation>
 <translation id="4503459574136856756">תשכתב את המידע הביוגרפי שלי כך שיישמע מקצועי יותר</translation>
@@ -3754,6 +3755,7 @@ Del</translation>
 <translation id="7347640536700429009">השם שרשום על הכרטיס לא תקין</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7353601530677266744">שורת פקודה </translation>
+<translation id="7358055687760675498">לפתוח קישורי <ph name="PROTOCOL" /> באמצעות <ph name="HANDLER_HOSTNAME" /> במקום <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">מודעות חסומות.</translation>
 <translation id="7362281996276843968">הקבוצה הזו סגורה</translation>
 <translation id="7363096869660964304">עם זאת, עדיין אפשר לראות אותך. המעבר למצב אנונימי לא מסתיר את הגלישה שלך מהמעסיק, מספק האינטרנט או מהאתרים שאליהם נכנסת.</translation>

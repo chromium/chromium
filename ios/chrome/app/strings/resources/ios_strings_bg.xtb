@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Докоснете двукратно, за да промените главната папка.</translation>
 <translation id="132969855425874290">Затваряне на „Намиране и попълване“</translation>
 <translation id="1333455942675373522">Клавиатура</translation>
+<translation id="1333669029961409292">Проверката на паролите ви завърши!</translation>
 <translation id="1334485477792811969">Уеб услуги</translation>
 <translation id="1335767868357998043">Избиране на позиция на адресната лента</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">ММ/ГГ</translation>
 <translation id="1636234353664774105">Получавайте упътвания до дестинацията си с указания отсечка по отсечка, като използвате функцията за навигация</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
+<translation id="1644229815617955289">Управлявайте историята, „бисквитките“ и др., за да защитите поверителността си</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="164673457281113247">{count,plural, =1{Отметката е запазена}other{Отметките са запазени}}</translation>
 <translation id="1650979352027263879">Предпочитанията ви за облика са премахнати</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Налице е конфигурационен профил</translation>
 <translation id="2244080985779413662">Този уебсайт иска да изтегли файл и да го отвори в Wallet.</translation>
 <translation id="2245007488813216650">Превежда се…</translation>
+<translation id="2246445006133863463">Това ви дава възможност да разговаряте с Gemini, като използвате гласа си</translation>
 <translation id="2249119578464404734">Докоснете иконата за търсене в горната част на екрана.</translation>
 <translation id="2251686759395008410">„Меню → История“</translation>
 <translation id="2252378061043785266">Този сайт да не се показва никога</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Продължете да използвате и запазвате паролите в профила си в Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Импортиране</translation>
 <translation id="3854052088499589035">Ще получавате актуализации, когато напредвате в Level Up</translation>
+<translation id="3854214753902617617">Изпробване на подобрената защита от Безопасно сърфиране</translation>
 <translation id="3857113360369572832">Отворете <ph name="BEGIN_BOLD" />настройките на Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="386224966259596343">Ще имате възможност да запазите тази информация в Wallet следващия път, когато попълвате съответен формуляр.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Споделяне на паролите ви</translation>
 <translation id="4049419681095579435">Пратката вече се проследява</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
+<translation id="4052951214266508382">Разрешаване на Gemini да използва микрофона ви</translation>
 <translation id="4054290211988862686">Избор на файл</translation>
 <translation id="4070132839822635162">Без влизане в профила</translation>
 <translation id="4072473499345702662">Към Level Up</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">Събития</translation>
 <translation id="5749158352074143502">Продължаване с този раздел</translation>
 <translation id="5753021559215751319">Запазване на паролата</translation>
+<translation id="5756200167514420691">Отваряйте раздели в режим „инкогнито“, за да сърфирате частно в мрежата</translation>
 <translation id="5756525336488841345">Скриване на „Отметки“</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="57586589942790530">Невалиден номер на карта</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
 <translation id="599343768974649785">Текст с нецензурно съдържание</translation>
+<translation id="6000893618966378846">Изтриването на данните за сърфирането завърши!</translation>
 <translation id="6004988584831654445">Готово! Получавайте известия, когато пристигнат нови задачи.</translation>
 <translation id="6006672969046233841">Нов раздел</translation>
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">камера</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6746338529702829275">Преглед на данните за профила ви</translation>
+<translation id="6749473226660745022">Снимки</translation>
 <translation id="6750456911389438250">{count,plural, =1{Импортиран е {count} елемент от историята}other{Импортирани са {count} елемента от историята}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} опция за идентификационни данни е налице над клавиатурата ви.}other{{count} опции за идентификационни данни са налице над клавиатурата ви.}}</translation>
 <translation id="6755200887046212842">Управление на профилите</translation>
@@ -1975,6 +1983,7 @@
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7312823817809783355">Вашите задачи</translation>
 <translation id="7313347584264171202">Тук ще се показват разделите ви в режим „инкогнито“</translation>
+<translation id="7318555235645532245">Преминаването в режим „инкогнито“ завърши!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} опция за автоматично попълване е налице над клавиатурата ви.}other{{count} опции за автоматично попълване са налице над клавиатурата ви.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Изтеглено: <ph name="PERCENT" />%</translation>
@@ -2151,6 +2160,7 @@
 <translation id="7857520352710212030">Сайтът е фиксиран</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7863211248337747225">Инсталиране на приложението</translation>
+<translation id="7863990181930071932">Достъпът до местоположението е деактивиран</translation>
 <translation id="7865127013871431856">Опции за превод</translation>
 <translation id="7866872729285243843">За да имате достъп до списъка си за четене на всичките си устройства, включете съответната опция от настройките.</translation>
 <translation id="7874107544081154809">Автоматично попълване на <ph name="CELL_ACCESSIBILITY_LABEL" /> във формуляра</translation>
@@ -2459,6 +2469,7 @@
 <translation id="8786100550345425552">Редактиране на разрешенията</translation>
 <translation id="878871978861915380">Скриване на „Проследяване на цената“</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8795809107245894196">Използвайте функцията за проверка на паролите, за да се уверите, че паролите ви са надеждни</translation>
 <translation id="8796634520835503150">Режимът на четене е налице</translation>
 <translation id="8803526663383843427">Когато е включено</translation>
 <translation id="8803639129939845298">Сигурно</translation>
@@ -2491,6 +2502,7 @@
 <translation id="8879952635974818770">Персонализирано съдържание</translation>
 <translation id="8887595428614802520">Затваряне на всички раздели и групи</translation>
 <translation id="8888595487174963247">Премахване на напомнянето</translation>
+<translation id="8890516388109605451">Източници</translation>
 <translation id="8893208530912252670">Видеоклипове</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="8900845556227858314">Browser App</translation>
@@ -2531,6 +2543,7 @@
 <translation id="9012585441087414258">Защитава срещу сайтове, изтегляния и разширения, за които е известно, че са опасни. Ако дадена страница направи нещо подозрително, URL адресите и част от съдържанието ѝ се изпращат до Google Безопасно сърфиране.</translation>
 <translation id="9013605037177245304">Включване на известията</translation>
 <translation id="9029650858822697271">Излязохте от профила си</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Потвърждаване на изтриването на данните за сърфирането</translation>
 <translation id="9035699147763101514">Функцията е базирана на Personal Intelligence с Gemini. Можете да управлявате избора си в настройките.</translation>
 <translation id="9038526468059454274">Обобщете с</translation>

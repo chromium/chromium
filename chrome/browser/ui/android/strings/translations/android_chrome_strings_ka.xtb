@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">უმოქმედო მალსახმობები</translation>
 <translation id="2227179592712503583">შემოთავაზების ამოშლა</translation>
 <translation id="2227444325776770048">გაგრძელება, როგორც <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">მიიღეთ თქვენი ყველა შენახული ინფორმაცია</translation>
 <translation id="2230777942707397948">ცარიელი ფანჯარა</translation>
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
 <translation id="2233735624724508540">აირჩიეთ დროის მონაკვეთი და შეეხეთ მონაცემების წაშლას</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">ამ მოწყობილობაში პაროლების შემოწმება ვერ ხერხდება</translation>
 <translation id="2414886740292270097">მუქი</translation>
 <translation id="2415037988255164008">გსურთ ფანჯრების აღდგენა?</translation>
-<translation id="2426805022920575512">სხვა ანგარიშის არჩევა</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ვიდეოები, სიაშია 1 ვიდეო}other{ვიდეოები, სიაშია # ვიდეო}}</translation>
 <translation id="2433507940547922241">გაფორმება</translation>
 <translation id="2449931042095204989">როცა Google საიტი ან აპი ითხოვს თავის გვერდზე ბმულების წინასწარ ჩატვირთვას, Chrome დაშიფრავს და წინასწარ ჩატვირთავს გვერდებს Google სერვერების მეშვეობით, ქუქი-ჩანაწერების გარეშე. აღნიშნული დამალავს თქვენს ვინაობას წინასწარ ჩატვირთული საიტისგან.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">საიდუმლო ფრაზის შექმნა</translation>
 <translation id="2996682533106928201">შეეხეთ დასახურად</translation>
 <translation id="2996809686854298943">საჭიროა URL</translation>
-<translation id="3007318536447999974">Gemini-სთან სასაუბროდ მიეცით მას მიკროფონის გამოყენების ნებართვა. ამის მართვა <ph name="BEGIN_LINK" />პარამეტრებშიც<ph name="END_LINK" /> შეგიძლიათ</translation>
 <translation id="3024215143424744261">წაკითხვის რეჟიმის უპირატესი პარამეტრები დაიხურა</translation>
 <translation id="3024277805447899099">გადახედეთ სურათს</translation>
 <translation id="3026955690410463085">ბმულის დართვა</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
 <translation id="6196315980958524839">პაროლები ინახება Google პაროლების მმართველში მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="6204781143409202534">Chrome-მა აღმოაჩინა სავარაუდო სპამი <ph name="DOMAIN" />-დან.</translation>
-<translation id="6210748933810148297">არ ხართ <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">მიმდინარეობს ამ გვერდის გადახედვა</translation>
 <translation id="6212567362666004597">ჩანართის დამატება ჯგუფში</translation>
 <translation id="6225572914528673855">მისამართთა ზოლი</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">ფაილის დაცულად ჩამოტვირთვა ვერ ხერხდება</translation>
 <translation id="8571213806525832805">ბოლო 4 კვირა</translation>
 <translation id="8580435650274205305">მოქმედების ვადა (სავალდებულოა)</translation>
-<translation id="8582529315803410153">აქ იპოვით ჩანართებს თქვენი სხვა მოწყობილობებიდან</translation>
 <translation id="8585103689515290060">ავტომატური შევსების სერვისები</translation>
 <translation id="8586116786993312006">შეეხეთ Chrome-ში დათვალიერების მონაცემების წასაშლელად</translation>
 <translation id="859046281437143747">ადევნეთ თვალი ფასს „სხვა ვარიანტების“ ღილაკით</translation>

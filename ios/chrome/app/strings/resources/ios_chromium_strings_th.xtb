@@ -107,6 +107,7 @@
 <translation id="3072591112723064972">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อเปิดลิงก์ที่นี่ได้ทันที</translation>
 <translation id="3115956258722352278">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นใช่ไหม</translation>
 <translation id="3180939591219927904">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chromium"</translation>
+<translation id="3239426886813624481">หากต้องการแชร์ตำแหน่งกับเว็บไซต์ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium ใช้ตำแหน่งของคุณ</translation>
 <translation id="327628223428512207">ป้อนพาสเฟรสเพื่อบันทึกรหัสผ่านนี้และรับข้อมูล Chromium ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="328933489847748230">{count,plural, =1{กำลังแสดงหน้าต่าง Chromium 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chromium {count} หน้าต่าง}}</translation>
 <translation id="3344204225393848305">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>

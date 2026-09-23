@@ -1817,6 +1817,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
+<translation id="6749473226660745022">Zdjęcia</translation>
 <translation id="6750456911389438250">{count,plural, =1{Zaimportowano {count} element historii}few{Zaimportowano {count} elementy historii}many{Zaimportowano {count} elementów historii}other{Zaimportowano {count} elementu historii}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja danych logowania.}few{Nad klawiaturą dostępne są {count} opcje danych logowania.}many{Nad klawiaturą dostępnych jest {count} opcji danych logowania.}other{Nad klawiaturą dostępne jest {count} opcji danych logowania.}}</translation>
 <translation id="6755200887046212842">Zarządzaj kontami</translation>
@@ -2501,6 +2502,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8879952635974818770">Spersonalizowana treść</translation>
 <translation id="8887595428614802520">Zamknij wszystkie karty i grupy</translation>
 <translation id="8888595487174963247">Usuń przypomnienie</translation>
+<translation id="8890516388109605451">Źródła</translation>
 <translation id="8893208530912252670">Filmy</translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="8900845556227858314">Przeglądarka</translation>
@@ -2541,6 +2543,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="9012585441087414258">Chroni przed stronami, pobieranymi plikami i rozszerzeniami, o których wiadomo, że są niebezpieczne. Jeśli strona robi coś podejrzanego, adresy URL i fragmenty jej zawartości są wysyłane do usługi Bezpieczne przeglądanie Google.</translation>
 <translation id="9013605037177245304">Włącz powiadomienia</translation>
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Potwierdź usunięcie danych przeglądania</translation>
 <translation id="9035699147763101514">Technologia spersonalizowanej inteligencji w Gemini Możesz zarządzać swoimi wyborami w ustawieniach.</translation>
 <translation id="9038526468059454274">Podsumuj z pomocą</translation>

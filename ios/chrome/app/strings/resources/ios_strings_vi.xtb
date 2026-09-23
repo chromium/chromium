@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Nhấn đúp để thay đổi thư mục mẹ.</translation>
 <translation id="132969855425874290">Đóng tính năng tìm và điền</translation>
 <translation id="1333455942675373522">Bàn phím</translation>
+<translation id="1333669029961409292">"Kiểm tra mật khẩu" hoàn tất!</translation>
 <translation id="1334485477792811969">Dịch vụ web</translation>
 <translation id="1335767868357998043">Chọn vị trí thanh địa chỉ</translation>
 <translation id="1347468774581902829">Quản lý hoạt động</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">Sử dụng tính năng tìm đường để xem đường tới điểm đến theo từng chặng</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
+<translation id="1644229815617955289">Quản lý nhật ký, cookie và nhiều dữ liệu khác để bảo vệ quyền riêng tư của bạn</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="164673457281113247">{count,plural, =1{Đã lưu dấu trang}other{Đã lưu các dấu trang}}</translation>
 <translation id="1650979352027263879">Đã xoá các lựa chọn ưu tiên của bạn về giao diện</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Hồ sơ cấu hình có sẵn</translation>
 <translation id="2244080985779413662">Trang web này muốn tải một tệp xuống rồi mở tệp đó trong Wallet của bạn.</translation>
 <translation id="2245007488813216650">Đang dịch…</translation>
+<translation id="2246445006133863463">Tuỳ chọn này cho phép bạn trò chuyện với Gemini bằng giọng nói</translation>
 <translation id="2249119578464404734">Nhấn vào biểu tượng Tìm kiếm ở đầu màn hình</translation>
 <translation id="2251686759395008410">Trình đơn → Nhật ký</translation>
 <translation id="2252378061043785266">Không bao giờ hiển thị trang web này</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Tiếp tục sử dụng và lưu mật khẩu trong Tài khoản Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Nhập</translation>
 <translation id="3854052088499589035">Bạn sẽ nhận được thông tin cập nhật khi tiến bộ trong chương trình Level Up</translation>
+<translation id="3854214753902617617">Khám phá tính năng Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="3857113360369572832">Mở phần <ph name="BEGIN_BOLD" />Cài đặt Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="386224966259596343">Lần tới khi bạn điền vào biểu mẫu liên quan, bạn sẽ có thể lưu thông tin này vào Wallet.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Chia sẻ mật khẩu của bạn</translation>
 <translation id="4049419681095579435">Gói hàng đã được theo dõi rồi</translation>
 <translation id="4049507953662678203">Hãy đảm bảo rằng bạn có kết nối mạng và thử lại.</translation>
+<translation id="4052951214266508382">Cho phép "Gemini" sử dụng micrô của bạn</translation>
 <translation id="4054290211988862686">Chọn tệp</translation>
 <translation id="4070132839822635162">Không đăng nhập</translation>
 <translation id="4072473499345702662">Chuyển đến Level Up</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">Sự kiện</translation>
 <translation id="5749158352074143502">Tiếp tục duyệt xem thẻ này</translation>
 <translation id="5753021559215751319">Lưu mật khẩu</translation>
+<translation id="5756200167514420691">Mở thẻ ở Chế độ ẩn danh để duyệt web theo cách riêng tư hơn</translation>
 <translation id="5756525336488841345">Ẩn tuỳ chọn Dấu trang</translation>
 <translation id="5758631781033351321">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="57586589942790530">Số thẻ không hợp lệ</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">Xem các mặt hàng giảm giá trong thẻ của bạn.</translation>
 <translation id="5988851877894965432">Mở URL trong Chrome</translation>
 <translation id="599343768974649785">Văn bản phản cảm</translation>
+<translation id="6000893618966378846">"Xoá dữ liệu duyệt web" hoàn tất!</translation>
 <translation id="6004988584831654445">Bạn đã hoàn tất! Nhận thông báo khi có việc cần làm mới.</translation>
 <translation id="6006672969046233841">Thẻ mới</translation>
 <translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">camera</translation>
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
+<translation id="6749473226660745022">Ảnh</translation>
 <translation id="6750456911389438250">{count,plural, =1{Đã nhập {count} mục trong nhật ký}other{Đã nhập {count} mục trong nhật ký}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Có {count} lựa chọn về thông tin đăng nhập xuất hiện phía trên bàn phím.}other{Có {count} lựa chọn về thông tin đăng nhập xuất hiện phía trên bàn phím.}}</translation>
 <translation id="6755200887046212842">Quản lý tài khoản</translation>
@@ -1975,6 +1983,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7312823817809783355">Việc bạn cần làm</translation>
 <translation id="7313347584264171202">Bạn sẽ thấy các thẻ ẩn danh ở đây</translation>
+<translation id="7318555235645532245">"Chuyển sang ẩn danh" hoàn tất!</translation>
 <translation id="7322186060879266048">{count,plural, =1{Có {count} tuỳ chọn tự động điền trên bàn phím.}other{Có {count} tuỳ chọn tự động điền trên bàn phím.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Đã tải xuống <ph name="PERCENT" /> phần trăm</translation>
@@ -2151,6 +2160,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7857520352710212030">Đã ghim trang web</translation>
 <translation id="7859988229622350291">Không bao giờ dịch</translation>
 <translation id="7863211248337747225">Tải ứng dụng</translation>
+<translation id="7863990181930071932">Quyền truy cập thông tin vị trí bị tắt</translation>
 <translation id="7865127013871431856">Các lựa chọn Dịch</translation>
 <translation id="7866872729285243843">Để xem danh sách đọc trên mọi thiết bị của bạn, hãy bật "Danh sách đọc" trong phần cài đặt.</translation>
 <translation id="7874107544081154809">Tự động điền biểu mẫu bằng <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8786100550345425552">Chỉnh sửa quyền</translation>
 <translation id="878871978861915380">Ẩn "Theo dõi giá"</translation>
 <translation id="8792626944327216835">micrô</translation>
+<translation id="8795809107245894196">Sử dụng tính năng Kiểm tra mật khẩu để đảm bảo mật khẩu của bạn an toàn</translation>
 <translation id="8796634520835503150">Có chế độ đọc</translation>
 <translation id="8803526663383843427">Khi bật</translation>
 <translation id="8803639129939845298">Bảo mật</translation>
@@ -2491,6 +2502,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8879952635974818770">Nội dung được cá nhân hoá</translation>
 <translation id="8887595428614802520">Đóng mọi thẻ và nhóm</translation>
 <translation id="8888595487174963247">Xoá lời nhắc</translation>
+<translation id="8890516388109605451">Nguồn</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8900845556227858314">Ứng dụng trình duyệt</translation>
@@ -2531,6 +2543,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="9012585441087414258">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Nếu một trang có hoạt động đáng ngờ, thì URL và một phần nội dung của trang sẽ được gửi tới dịch vụ Duyệt web An toàn của Google.</translation>
 <translation id="9013605037177245304">Bật thông báo</translation>
 <translation id="9029650858822697271">Hệ thống đã đăng xuất bạn</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Xác nhận yêu cầu xoá dữ liệu duyệt web</translation>
 <translation id="9035699147763101514">Dựa trên Trí thông minh cá nhân của Gemini. Quản lý lựa chọn của bạn trong phần cài đặt.</translation>
 <translation id="9038526468059454274">Tóm tắt bằng</translation>

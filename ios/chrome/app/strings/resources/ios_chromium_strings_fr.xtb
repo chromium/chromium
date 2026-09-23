@@ -107,6 +107,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="3072591112723064972">Définissez Chromium comme navigateur par défaut pour ouvrir instantanément les liens ici.</translation>
 <translation id="3115956258722352278">Définir Chromium comme navigateur par défaut ?</translation>
 <translation id="3180939591219927904">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chromium"</translation>
+<translation id="3239426886813624481">Pour partager votre position avec des sites Web, appuyez sur "Réglages" pour autoriser Chrome à l'utiliser.</translation>
 <translation id="327628223428512207">Saisissez votre phrase secrète pour enregistrer ce mot de passe et accéder aux données Chromium sur tous vos appareils</translation>
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre Chromium actuellement affichée}one{{count} fenêtre Chromium actuellement affichée}other{{count} fenêtres Chromium actuellement affichées}}</translation>
 <translation id="3344204225393848305">Définir Chromium par défaut</translation>

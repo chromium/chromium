@@ -529,6 +529,7 @@
 <translation id="1401216725754314428">Даведацца больш пра звязаныя сайты ў новай укладцы</translation>
 <translation id="1402426911829176748">Ідзе падключэнне да вашай прылады</translation>
 <translation id="1405779994569073824">Збой.</translation>
+<translation id="1406812885827747674">Дазволіць толькі ў гэты раз</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="140723521119632973">Актывацыя SIM-карты ў мабільнай сетцы</translation>
@@ -982,7 +983,6 @@
 <translation id="1755601632425835748">Памер тэксту</translation>
 <translation id="1756963401828337401">Выберыце экран для здымка</translation>
 <translation id="17584710573359123">Прагледзець у Вэб-краме Chrome</translation>
-<translation id="176013700366797492">Каб кіраваць <ph name="BEGIN_LINK1" />наладамі даных і прыватнасці<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />спосабамі аплаты<ph name="END_LINK2" /> і <ph name="BEGIN_LINK3" />карткамі<ph name="END_LINK3" /> (напрыклад, карткамі лаяльнасці і пасведчаннямі асобы), перайдзіце ў Google Кашалёк</translation>
 <translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" перапрызначана для дзеяння "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960">Уліковыя запісы карыстальніка <ph name="NAME" /></translation>
 <translation id="176272781006230109">прапановы тавараў</translation>
@@ -2996,7 +2996,6 @@
 <translation id="3284050785966252943">Перадпрагляд метаданых аўтазапаўнення</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" /> – Выгляд знізу</translation>
 <translation id="3285329711156774325">Пошук навыкаў</translation>
-<translation id="3285500645985761267">Дазволіць звязаным сайтам доступ да звестак пра вашы дзеянні ў групе</translation>
 <translation id="328571385944182268">Захоўваць паролі?</translation>
 <translation id="3285969135399641759">Вучыцеся новаму</translation>
 <translation id="3289668031376215426">Аўтаматычны ўвод вялікіх літар</translation>
@@ -3333,7 +3332,6 @@
 <translation id="3543296862747913985">Што сэрвіс робіць</translation>
 <translation id="3543298914473315872">Працэс сродку абнаўлення</translation>
 <translation id="3543393733900874979">Збой абнаўлення (памылка: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="3544058026430919413">Кампанія можа вызначыць групу сайтаў, якім будзе дазволена выкарыстоўваць файлы cookie для перадачы адзін аднаму інфармацыі пра вашы дзеянні ў групе. У рэжыме інкогніта гэта функцыя не працуе.</translation>
 <translation id="3544879808695557954">Імя карыстальніка (неабавязкова)</translation>
 <translation id="3547954654003013442">Налады проксі-сервера</translation>
 <translation id="3548162552723420559">Дапасоўваць колер экрана да навакольнага асяроддзя</translation>
@@ -4010,7 +4008,6 @@
 <translation id="4024768890073681126">Браўзерам кіруюць бацькі</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
 <translation id="402707738228916911">Атрымана інструкцыя: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
-<translation id="4027569221211770437">Папка: <ph name="FOLDER_TITLE" /></translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4028830198155575078">П&amp;ерамясціць</translation>
 <translation id="4029024445166427442">Клавіша панэлі запуску + Shift + Backspace</translation>
@@ -4484,7 +4481,6 @@
 <translation id="440411460180511551">Калі Chromium выявіць, што адзін з вашых пароляў аказаўся сярод агульнадаступных даных у выніку ўцечкі, Менеджар пароляў Google прапануе вам змяніць яго, калі вы выканалі ўваход.</translation>
 <translation id="4404843640767531781">Бацькі заблакіравалі праграму "<ph name="APP_NAME" />" – запытайце ў іх дазвол на яе выкарыстанне.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
-<translation id="4405224443901389797">Перамясціць у…</translation>
 <translation id="4405580203042711503">Новая ўкладка ніжэй</translation>
 <translation id="4405781821077215583">Павялічвайце або памяншайце памер аб’ектаў на экране, у тым ліку тэксту</translation>
 <translation id="4406308048672435032">Вы можаце зрабіць гэту ўкладку неактыўнай або абнавіць, каб зноў убачыць увесь спіс</translation>
@@ -6029,7 +6025,6 @@
 <translation id="5611398002774823980">Захаваць ва ўліковым запісе</translation>
 <translation id="5611474372949142946">Закрыць укладкі ніжэй</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
-<translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="5616571005307953937">самыя старыя</translation>
 <translation id="5616726534702877126">Зарэзерваваць памер</translation>
 <translation id="561698261642843490">Закрыць Firefox</translation>
@@ -6952,7 +6947,6 @@
 <translation id="6347010704471250799">Паказваць апавяшчэнне</translation>
 <translation id="634792071306410644">Ніхто не зможа абагуліць з вамі змесціва, пакуль вы не станеце бачнымі</translation>
 <translation id="6348252528297699679">Для выключэння вызначэння месцазнаходжання неабходна перайсці ў раздзел "Налады &gt; Прыватнасць і бяспека &gt; Налады прыватнасці &gt; Доступ да месцазнаходжання". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">Выкарыстайце свой Уліковы запіс Google або стварыце новы</translation>
 <translation id="6348805481186204412">Пазасеткавае сховішча</translation>
 <translation id="6349101878882523185">Усталяваць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="6350745006329795504">Кіраванне прыладамі</translation>
@@ -7782,7 +7776,6 @@
 <translation id="696942486482903620">Калі вы захоўваеце паролі ва Уліковым запісе Google, вы можаце выкарыстоўваць іх на гэтай і любых іншых прыладах, на якіх вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="6970480684834282392">Тып запуску</translation>
 <translation id="6970543303783413625">Не ўдалося імпартаваць паролі. За адзін раз можна імпартаваць толькі наступную колькасць пароляў: <ph name="COUNT" />.</translation>
-<translation id="6970856801391541997">Друк канкрэтных старонак</translation>
 <translation id="6970861306198150268">Вы павінны захаваць бягучы пароль для гэтага сайта</translation>
 <translation id="6971184043765343932">Запампаваны вамі відарыс</translation>
 <translation id="6971570759801670426"><ph name="CREDENTIAL_TYPE" />: змяніць для карыстальніка <ph name="USER_EMAIL" /></translation>
@@ -10226,7 +10219,6 @@
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8849219423513870962">Скасаваць выдаленне профілю eSIM-карты "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> з <ph name="CHECKING" /></translation>
-<translation id="8850251000316748990">Яшчэ...</translation>
 <translation id="885246833287407341">Аргументы функцыі API</translation>
 <translation id="8853586775156634952">Гэта картка захаваецца толькі на гэту прыладу</translation>
 <translation id="8855242995793521265">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>

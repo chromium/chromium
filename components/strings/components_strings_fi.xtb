@@ -467,7 +467,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1757773103848038814">Monospace-fontti</translation>
 <translation id="1757935267918149452">Vaihda Google-salasana ‑painike, aktivoi vaihtaaksesi Google-tilin salasanan</translation>
 <translation id="1759776526873274358">Täytä automaattisesti vahvistuskoodit, joita sivustot käyttävät turvallisuuden parantamiseen. Chrome voi saada koodit Gmailista. <ph name="BEGIN_LINK" />Tutustu ominaisuuteen tarkemmin<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Jos haluat muuttaa <ph name="BEGIN_LINK1" />data- ja yksityisyysasetuksia<ph name="END_LINK1" /> tai ylläpitää <ph name="BEGIN_LINK2" />maksutapoja<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />kortteja<ph name="END_LINK3" />, kuten kanta-asiakaskortteja ja henkilötodistuksia, siirry Google Walletiin.</translation>
 <translation id="1763864636252898013">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; laitteesi käyttöjärjestelmä ei luota sen suojausvarmenteeseen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Kokeile Windowsin verkon diagnostiikkaa<ph name="END_LINK" /></translation>
 <translation id="1777422078676229054">Valokuva (arkistointi)</translation>
@@ -777,7 +776,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2292556288342944218">Internetyhteytesi on estetty</translation>
 <translation id="2294150501457238325">Lisää passi turvallisesti</translation>
 <translation id="2295831393422400053">Jos haluat käyttää Auta minua kirjoittamaan ‐ominaisuutta, laita Paranna hakuja ja selausta ‐asetus päälle</translation>
-<translation id="2296244067976588032">Avainkoodi • iCloud-avainnippu</translation>
 <translation id="2296331629987861142">Maksa helposti erissä (kelpoisuuden mukaan, lisämaksut mahdollisia)</translation>
 <translation id="2300306941146563769">Ei lähetetty</translation>
 <translation id="2301064673700597535">Hyväksytyt varmenteiden todisteet</translation>
@@ -913,6 +911,7 @@ Voit poistaa tämän ehdotuksen Chromesta. Alkuperäistä lähdettä ei poisteta
 <translation id="2505063700931618106">Kortin tiedot tallennettu</translation>
 <translation id="2505268675989099013">Suojaa tili</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (huomioi ehdot)</translation>
+<translation id="251033673027346551">Jos haluat muuttaa <ph name="BEGIN_LINK" />data- ja yksityisyysasetuksia<ph name="END_LINK" />, siirry Google Walletiin.</translation>
 <translation id="2512101340618156538">Ei sallittu (oletus)</translation>
 <translation id="2512413427717747692">Valitse Chrome oletusselaimeksi ‑painike, painamalla Enter voit valita Chromen järjestelmän oletusselaimeksi iOS-asetuksista</translation>
 <translation id="2515629240566999685">Tarkista alueesi mobiilisignaali.</translation>

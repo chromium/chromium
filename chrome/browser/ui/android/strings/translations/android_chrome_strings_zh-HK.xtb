@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">無效捷徑</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
-<translation id="2230411774874187555">取得所有已儲存的資料</translation>
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
 <translation id="2233735624724508540">選擇時間範圍，然後輕按 [刪除資料]</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">無法查看此裝置上的密碼</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2415037988255164008">要還原視窗嗎？</translation>
-<translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{影片，清單中有 1 段影片}other{影片，清單中有 # 段影片}}</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2449931042095204989">當 Google 網站或應用程式要求以私密方式預先載入頁面上的連結時，Chrome 會透過 Google 伺服器對該連結加密並預先載入頁面，且不會使用 Cookie。這樣可在預先載入網站中隱藏你的身分。</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">建立密碼短語</translation>
 <translation id="2996682533106928201">輕按即可關閉</translation>
 <translation id="2996809686854298943">請提供網址</translation>
-<translation id="3007318536447999974">如要與 Gemini 對話，請授予麥克風存取權。你亦可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理此選項。</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3024277805447899099">預覽圖片</translation>
 <translation id="3026955690410463085">加入連結</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196315980958524839">密碼會儲存至此裝置上的「Google 密碼管理工具」</translation>
 <translation id="6204781143409202534">Chrome 偵測到來自 <ph name="DOMAIN" /> 的潛在垃圾內容。</translation>
-<translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
 <translation id="6212567362666004597">將分頁加入群組</translation>
 <translation id="6225572914528673855">網址列</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8580435650274205305">需要輸入到期日</translation>
-<translation id="8582529315803410153">你在其他裝置上的分頁會在這裡顯示</translation>
 <translation id="8585103689515290060">自動填入服務</translation>
 <translation id="8586116786993312006">輕按以刪除 Chrome 中的瀏覽資料</translation>
 <translation id="859046281437143747">使用「更多選項」按鈕追蹤價格</translation>

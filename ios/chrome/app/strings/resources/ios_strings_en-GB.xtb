@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Double tap to change the parent folder.</translation>
 <translation id="132969855425874290">Close find and fill</translation>
 <translation id="1333455942675373522">Keyboard</translation>
+<translation id="1333669029961409292">'Check your passwords' completed!</translation>
 <translation id="1334485477792811969">Web services</translation>
 <translation id="1335767868357998043">Choose address bar position</translation>
 <translation id="1347468774581902829">Manage activity</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1644229815617955289">Manage your history, cookies and more to protect your privacy</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark saved}other{Bookmarks saved}}</translation>
 <translation id="1650979352027263879">Removed your appearance preferences</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Configuration profile available</translation>
 <translation id="2244080985779413662">This website wants to download a file and open it in your Wallet.</translation>
 <translation id="2245007488813216650">Translating…</translation>
+<translation id="2246445006133863463">This lets you chat with Gemini using your voice</translation>
 <translation id="2249119578464404734">At the top of the screen, tap the search icon</translation>
 <translation id="2251686759395008410">Menu → History</translation>
 <translation id="2252378061043785266">Never show this site</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Keep using and saving the passwords in your Google Account <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Import</translation>
 <translation id="3854052088499589035">You'll receive updates when you progress in Level Up</translation>
+<translation id="3854214753902617617">Explore Enhanced Safe Browsing</translation>
 <translation id="3857113360369572832">Open <ph name="BEGIN_BOLD" />Safari Settings<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="386224966259596343">You'll have the chance to save this info to Wallet the next time that you fill in a relevant form.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Share your passwords</translation>
 <translation id="4049419681095579435">Parcel already tracked</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
+<translation id="4052951214266508382">Allow 'Gemini' to use your microphone</translation>
 <translation id="4054290211988862686">Choose File</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
 <translation id="4072473499345702662">Go to Level Up</translation>
@@ -1481,6 +1486,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="574762237186762643">Events</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5753021559215751319">Save password</translation>
+<translation id="5756200167514420691">Open tabs in Incognito mode to browse the web more privately</translation>
 <translation id="5756525336488841345">Hide Bookmarks</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="57586589942790530">Invalid card number</translation>
@@ -1551,6 +1557,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5988097621740394599">See price drops on your tabs.</translation>
 <translation id="5988851877894965432">Open URLs in Chrome</translation>
 <translation id="599343768974649785">Explicit text</translation>
+<translation id="6000893618966378846">'Delete browsing data' completed!</translation>
 <translation id="6004988584831654445">You're ready to go! Get notified when new tasks arrive.</translation>
 <translation id="6006672969046233841">New tab</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
@@ -1810,6 +1817,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6732087373923685049">camera</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6746338529702829275">Review your account data</translation>
+<translation id="6749473226660745022">Photos</translation>
 <translation id="6750456911389438250">{count,plural, =1{Imported {count} history item}other{Imported {count} history items}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} option for credential available above your keyboard.}other{{count} options for credential available above your keyboard.}}</translation>
 <translation id="6755200887046212842">Manage Accounts</translation>
@@ -1975,6 +1983,7 @@ You can restart at any time.</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312823817809783355">Your tasks</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
+<translation id="7318555235645532245">'Go Incognito' completed!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} autofill option available above your keyboard.}other{{count} autofill options available above your keyboard.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
@@ -2151,6 +2160,7 @@ You can restart at any time.</translation>
 <translation id="7857520352710212030">Site pinned</translation>
 <translation id="7859988229622350291">Never translate</translation>
 <translation id="7863211248337747225">Get the app</translation>
+<translation id="7863990181930071932">Location access disabled</translation>
 <translation id="7865127013871431856">Translate options</translation>
 <translation id="7866872729285243843">To get your reading list on all your devices, turn on 'Reading list' in Settings.</translation>
 <translation id="7874107544081154809">Autofill form with <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ You can restart at any time.</translation>
 <translation id="8786100550345425552">Edit permissions</translation>
 <translation id="878871978861915380">Hide 'Price tracking'</translation>
 <translation id="8792626944327216835">microphone</translation>
+<translation id="8795809107245894196">Use Password Checkup to make sure that your passwords are secure</translation>
 <translation id="8796634520835503150">Reading mode available</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803639129939845298">Secure</translation>
@@ -2491,6 +2502,7 @@ You can restart at any time.</translation>
 <translation id="8879952635974818770">Personalised content</translation>
 <translation id="8887595428614802520">Close all tabs and groups</translation>
 <translation id="8888595487174963247">Remove Reminder</translation>
+<translation id="8890516388109605451">Sources</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8900845556227858314">Browser app</translation>
@@ -2531,6 +2543,7 @@ You can restart at any time.</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9013605037177245304">Turn on notifications</translation>
 <translation id="9029650858822697271">You were signed out</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
 <translation id="9035699147763101514">Powered by Personal Intelligence with Gemini. Manage your choices in settings.</translation>
 <translation id="9038526468059454274">Sum it up with</translation>

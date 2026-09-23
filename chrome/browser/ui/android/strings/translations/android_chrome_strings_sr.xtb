@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Неактивне пречице</translation>
 <translation id="2227179592712503583">Уклони предлог</translation>
 <translation id="2227444325776770048">Настави као <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Преузмите све сачуване информације</translation>
 <translation id="2230777942707397948">Празан прозор</translation>
 <translation id="223356358902285214">Активности на вебу и у апликацијама</translation>
 <translation id="2233735624724508540">Одаберите период, па додирните Избриши податке</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Провера лозинки на овом уређају није успела</translation>
 <translation id="2414886740292270097">Тамнa</translation>
 <translation id="2415037988255164008">Желите да вратите прозоре?</translation>
-<translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеи, 1 видео на листи}one{Видеи, # видео на листи}few{Видеи, # видеа на листи}other{Видеи, # видеа на листи}}</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2449931042095204989">Када Google сајт или апликација затражи да приватно предучитава линкове на страници, Chrome шифрује и предучитава странице преко Google сервера без колачића. На тај начин се ваш идентитет крије од предучитаног сајта.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Направите приступну фразу</translation>
 <translation id="2996682533106928201">Додирните да бисте одбацили</translation>
 <translation id="2996809686854298943">URL је обавезан</translation>
-<translation id="3007318536447999974">Да бисте разговарали са Gemini-јем, дајте му дозволу да користи микрофон. Тиме можете да управљате и у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Жељена подешавања режима читања су затворена</translation>
 <translation id="3024277805447899099">Прикажи слику</translation>
 <translation id="3026955690410463085">Уврстите линк</translation>
@@ -1291,7 +1288,6 @@ Google налог можда има друге облике историје п�
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6196315980958524839">Лозинке се чувају у Google менаџеру лозинки на овом уређају</translation>
 <translation id="6204781143409202534">Chrome је открио могући непожељан садржај са домена <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Нисте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед ове странице</translation>
 <translation id="6212567362666004597">Додај картицу у групу</translation>
 <translation id="6225572914528673855">Трака за адресу</translation>
@@ -1950,7 +1946,6 @@ Google налог можда има друге облике историје п�
 <translation id="8570677896027847510">Фајл не може да се безбедно преузме</translation>
 <translation id="8571213806525832805">Последње 4 недеље</translation>
 <translation id="8580435650274205305">Датум истека, обавезно</translation>
-<translation id="8582529315803410153">Овде ћете пронаћи картице са других уређаја</translation>
 <translation id="8585103689515290060">Услуге аутоматског попуњавања</translation>
 <translation id="8586116786993312006">Додирните да бисте избрисали податке прегледања у Chrome-у</translation>
 <translation id="859046281437143747">Пратите цену помоћу дугмета Још опција</translation>

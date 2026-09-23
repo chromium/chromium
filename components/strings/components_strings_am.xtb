@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace ቅርጸ-ቁምፊ</translation>
 <translation id="1757935267918149452">የGoogle የይለፍ ቃል አዝራርን ይቀይሩ፣ የGoogle መለያ የይለፍ ቃል ለመቀየር ያግብሩ</translation>
 <translation id="1759776526873274358">ደኅንነትዎን ለማሻሻል ጣቢያዎች የሚጠቀሙባቸውን ማረጋገጫ ኮዶች በራስ-ሙላ። Chrome እነዚህን ኮዶች ከእርስዎ Gmail ማግኘት ይችላል። <ph name="BEGIN_LINK" />ስለዚህ ባህሪ የበለጠ ይወቁ<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />የውሂብ እና የግላዊነት ምርጫዎችን<ph name="END_LINK1" /> ለመቆጣጠር ወይም እንደ የታማኝነት ካርዶች እና መታወቂያዎች ያሉ <ph name="BEGIN_LINK2" />የመክፈያ ዘዴዎችን<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />ይለፎችን<ph name="END_LINK3" /> ለማስተዳደር Google Wallet ይጎብኙ</translation>
 <translation id="1763864636252898013">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በመሣሪያዎ ስርዓተ ክወና የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />የWindows አውታረ መረብ መመርመሪያውን ለማሄድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="1777422078676229054">ፎቶ (በማህደር የሚቀመጥ)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">የእርስዎ የበየነመረብ መዳረሻ ታግዷል</translation>
 <translation id="2294150501457238325">ፓስፖርት ደኅንነቱ በተጠበቀ ሁኔታ ያክሉ</translation>
 <translation id="2295831393422400053">እንድጽፍ አግዘኝን ለመጠቀም ፍለጋዎችን እና የተሻለ አሰሳን ቅንብርን ያብሩ</translation>
-<translation id="2296244067976588032">የይለፍ ቁልፍ • iCloud Keychain</translation>
 <translation id="2296331629987861142">በቀላል ተከታታይ ክፍያዎች ይክፈሉ (ለብቁነት ተገዢ ነው፣ ክፍያዎች ተፈጻሚ ናቸው)</translation>
 <translation id="2300306941146563769">አልተሰቀለም</translation>
 <translation id="2301064673700597535">የተረጋገጡ የዕውቅና ማረጋገጫ መግለጫዎች</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">የካርድ መረጃ ተቀምጧል</translation>
 <translation id="2505268675989099013">መለያን ጠብቅ</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (ደንቦች ተፈጻሚ ናቸው)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />የውሂብ እና የግላዊነት ምርጫዎችን<ph name="END_LINK" /> ለማስተዳደር Google Walletን ይጎብኙ።</translation>
 <translation id="2512101340618156538">አልተፈቀደም (ነባሪ)</translation>
 <translation id="2512413427717747692">Chromeን እንደ ነባሪ አሳሽ አዝራር ያዋቅሩ፣ Chromeን በiOS ቅንብሮች ውስጥ የስርዓቱ ነባሪ አሳሽ ለማዋቀር አስገባን ይጫኑ</translation>
 <translation id="2515629240566999685">በእርስዎ አካባቢ ያለውን ሲግናል መፈተሽ</translation>
@@ -1304,6 +1303,7 @@
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3209034400446768650">ገፅ ገንዘብ ሊያስከፍል ይችል ይሆናል</translation>
 <translation id="3209071504641569648">የእርስዎ ጥያቄዎች፣ የገጽ ርዕሶች እና ዩአርኤሎች ወደ Google ይላካሉ እና የተሻሻለ ራስ-ሙላን ለማሻሻል ሊገመገሙ ይችላሉ</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" /> አገናኞችን በ<ph name="HANDLER_HOSTNAME" /> በኩል ይክፈቱ</translation>
 <translation id="3212468046572043669">ማውረድ ተጀምሯል። ለመመልከት ከላይ ይጎትቱ እና የተመለስ አዝራርን ይንኩ</translation>
 <translation id="3212581601480735796">በ<ph name="HOSTNAME" /> ላይ የእርስዎ እንቅስቃሴ ቁጥጥር እየተደረገበት ነው</translation>
 <translation id="3215092763954878852">WebAuthn ን መጠቀም አልተቻለም</translation>
@@ -2086,6 +2086,7 @@
 <translation id="449126573531210296">የሰመረውን የይለፍ ቃላት ከGoogle መለያዎች ጋር ይመስጥሩ</translation>
 <translation id="4493480324863638523">ልክ ያልሆነ ዩአርኤል። ደረጃውን የጠበቀ ቅርጸ አጻጻፍ ያለው ዩአርኤል መሆን አለበት፣ ለምሳሌ፦ http://example.com ወይም https://example.com.</translation>
 <translation id="4497010149473852018">የታማኝነት ካርዶች በንክኪ ለመሞላት ይገኛሉ። ቁልፍ ሰሌዳ ተደብቋል።</translation>
+<translation id="4497843134750481377">ቅናሾችን አስተዳድር</translation>
 <translation id="4500587658229086076">ደህንነቱ ያልተጠበቀ ይዘት</translation>
 <translation id="4501939680615452918">በመታየት ላይ ያሉ ምግብ ቤቶች ላይ ክፍት ቦታዎችን ፈልግ</translation>
 <translation id="4503459574136856756">የሕይወት ታሪኬን የበለጠ ሙያዊ እንዲመስል እንደገና ጻፍ</translation>
@@ -3750,6 +3751,7 @@
 <translation id="7347640536700429009">በካርዱ ላይ ያለው ስም ልክ ያልሆነ ነው</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7353601530677266744">የትእዛዝ መስመር</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" /> አገናኞችን ከ<ph name="REPLACED_HANDLER_TITLE" /> ይልቅ በ<ph name="HANDLER_HOSTNAME" /> በኩል ይክፈቱ</translation>
 <translation id="7359588939039777303">ማስታወቂያዎች ታግደዋል።</translation>
 <translation id="7362281996276843968">ይህ ቡድን ተዘግቷል</translation>
 <translation id="7363096869660964304">ይሁንና፣ እርስዎ የማይታዩ አይደሉም። ማንነት የማያሳውቅ ሁነታ መጠቀም የእርስዎን አሰሳ፣ የበይነመረብ አገልግሎት አቅራቢ ወይም የሚጎበኟቸው ድር ጣቢያዎች ከአሰሪዎ አይደብቃቸውም።</translation>

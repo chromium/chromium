@@ -112,6 +112,7 @@
 <translation id="132683371494960526">แตะ 2 ครั้งเพื่อเปลี่ยนโฟลเดอร์ระดับบนสุด</translation>
 <translation id="132969855425874290">ปิดการค้นหาและเติม</translation>
 <translation id="1333455942675373522">แป้นพิมพ์</translation>
+<translation id="1333669029961409292">"ตรวจสอบรหัสผ่าน" เสร็จสมบูรณ์แล้ว</translation>
 <translation id="1334485477792811969">เว็บเซอร์วิส</translation>
 <translation id="1335767868357998043">เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">ดด/ปป</translation>
 <translation id="1636234353664774105">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
+<translation id="1644229815617955289">จัดการประวัติการเข้าชม คุกกี้ และข้อมูลอื่นๆ เพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="164673457281113247">{count,plural, =1{บันทึกบุ๊กมาร์กแล้ว}other{บันทึกบุ๊กมาร์กแล้ว}}</translation>
 <translation id="1650979352027263879">นำค่ากำหนดลักษณะที่ปรากฏออกแล้ว</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">มีโปรไฟล์การกำหนดค่า</translation>
 <translation id="2244080985779413662">เว็บไซต์นี้ต้องการดาวน์โหลดไฟล์และเปิดไฟล์ใน Wallet</translation>
 <translation id="2245007488813216650">กำลังแปล…</translation>
+<translation id="2246445006133863463">สิทธิ์นี้จะทำให้คุณแชทกับ Gemini โดยใช้เสียงได้</translation>
 <translation id="2249119578464404734">แตะไอคอนค้นหาที่ด้านบนของหน้าจอ</translation>
 <translation id="2251686759395008410">เมนู → ประวัติการเข้าชม</translation>
 <translation id="2252378061043785266">ไม่ต้องแสดงเว็บไซต์นี้</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">ใช้และบันทึกรหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
 <translation id="3853873210696342070">นำเข้า</translation>
 <translation id="3854052088499589035">คุณจะได้รับข้อมูลอัปเดตเมื่อมีความคืบหน้าใน Level Up</translation>
+<translation id="3854214753902617617">สำรวจ Google Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="3857113360369572832">เปิด<ph name="BEGIN_BOLD" />การตั้งค่า Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="386224966259596343">คุณจะมีโอกาสบันทึกข้อมูลนี้ลงใน Wallet เมื่อกรอกแบบฟอร์มที่เกี่ยวข้องครั้งถัดไป</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">แชร์รหัสผ่าน</translation>
 <translation id="4049419681095579435">ติดตามพัสดุแล้ว</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
+<translation id="4052951214266508382">อนุญาตให้ "Gemini" ใช้ไมโครโฟน</translation>
 <translation id="4054290211988862686">เลือกไฟล์</translation>
 <translation id="4070132839822635162">ไม่ลงชื่อเข้าใช้</translation>
 <translation id="4072473499345702662">ไปที่ Level Up</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">กิจกรรม</translation>
 <translation id="5749158352074143502">ดำเนินการต่อโดยใช้แท็บนี้</translation>
 <translation id="5753021559215751319">บันทึกรหัสผ่าน</translation>
+<translation id="5756200167514420691">เปิดแท็บในโหมดไม่ระบุตัวตนเพื่อท่องเว็บอย่างเป็นส่วนตัวมากขึ้น</translation>
 <translation id="5756525336488841345">ซ่อน "บุ๊กมาร์ก"</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
 <translation id="57586589942790530">หมายเลขบัตรไม่ถูกต้อง</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">ดูการลดราคาในแท็บ</translation>
 <translation id="5988851877894965432">เปิด URL ใน Chrome</translation>
 <translation id="599343768974649785">ข้อความที่อาจไม่เหมาะสม</translation>
+<translation id="6000893618966378846">"ลบข้อมูลการท่องเว็บ" เสร็จสมบูรณ์แล้ว</translation>
 <translation id="6004988584831654445">เรียบร้อยแล้ว รับการแจ้งเตือนเมื่อมีงานใหม่</translation>
 <translation id="6006672969046233841">แท็บใหม่</translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
+<translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6750456911389438250">{count,plural, =1{นำเข้ารายการประวัติ {count} รายการแล้ว}other{นำเข้ารายการประวัติ {count} รายการแล้ว}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{ตัวเลือกข้อมูลเข้าสู่ระบบ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกข้อมูลเข้าสู่ระบบ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="6755200887046212842">จัดการบัญชี</translation>
@@ -1975,6 +1983,7 @@
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7312823817809783355">งานของคุณ</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
+<translation id="7318555235645532245">"เข้าสู่โหมดไม่ระบุตัวตน" เสร็จสมบูรณ์แล้ว</translation>
 <translation id="7322186060879266048">{count,plural, =1{ตัวเลือกป้อนข้อความอัตโนมัติ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกการป้อนข้อความอัตโนมัติ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
@@ -2151,6 +2160,7 @@
 <translation id="7857520352710212030">ปักหมุดเว็บไซต์แล้ว</translation>
 <translation id="7859988229622350291">ไม่ต้องแปล</translation>
 <translation id="7863211248337747225">ดาวน์โหลดแอป</translation>
+<translation id="7863990181930071932">ปิดใช้การเข้าถึงตำแหน่งแล้ว</translation>
 <translation id="7865127013871431856">ตัวเลือกแปลภาษา</translation>
 <translation id="7866872729285243843">หากต้องการรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง ให้เปิด "เรื่องรออ่าน" ในการตั้งค่า</translation>
 <translation id="7874107544081154809">ป้อนแบบฟอร์มอัตโนมัติด้วย <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@
 <translation id="8786100550345425552">สิทธิ์แก้ไข</translation>
 <translation id="878871978861915380">ซ่อน "การติดตามราคา"</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
+<translation id="8795809107245894196">ใช้การตรวจสอบรหัสผ่านเพื่อให้แน่ใจว่ารหัสผ่านของคุณปลอดภัย</translation>
 <translation id="8796634520835503150">โหมดการอ่านพร้อมใช้งาน</translation>
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>
@@ -2491,6 +2502,7 @@
 <translation id="8879952635974818770">เนื้อหาที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="8887595428614802520">ปิดแท็บและกลุ่มทั้งหมด</translation>
 <translation id="8888595487174963247">นำการช่วยเตือนออก</translation>
+<translation id="8890516388109605451">แหล่งที่มา</translation>
 <translation id="8893208530912252670">วิดีโอ</translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="8900845556227858314">แอปเบราว์เซอร์</translation>
@@ -2531,6 +2543,7 @@
 <translation id="9012585441087414258">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย หากหน้าเว็บทำสิ่งที่น่าสงสัย ระบบจะส่ง URL และเนื้อหาของหน้าเว็บบางส่วนไปยัง Google Safe Browsing</translation>
 <translation id="9013605037177245304">เปิดการแจ้งเตือน</translation>
 <translation id="9029650858822697271">คุณออกจากระบบแล้ว</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">ยืนยันการลบข้อมูลการท่องเว็บ</translation>
 <translation id="9035699147763101514">ขับเคลื่อนโดย Personal Intelligence จาก Gemini จัดการตัวเลือกได้ในการตั้งค่า</translation>
 <translation id="9038526468059454274">สรุปด้วย</translation>

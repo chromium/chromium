@@ -305,7 +305,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2226826835915474236">ऐसे शॉर्टकट जो काम नहीं करते</translation>
 <translation id="2227179592712503583">सुझाव हटाएं</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> के रूप में जारी रखें</translation>
-<translation id="2230411774874187555">सेव की गई पूरी जानकारी पाएं</translation>
 <translation id="2230777942707397948">खाली विंडो</translation>
 <translation id="223356358902285214">वेब और ऐप्लिकेशन गतिविधि</translation>
 <translation id="2233735624724508540">कोई समयावधि चुनें और फिर 'डेटा मिटाएं' पर टैप करें</translation>
@@ -359,7 +358,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2413014528833954543">इस डिवाइस पर पासवर्ड की जांच नहीं की जा सकी</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2415037988255164008">क्या विंडो को पहले जैसा करना है?</translation>
-<translation id="2426805022920575512">दूसरा खाता चुनें</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{वीडियो, सूची में 1 वीडियो है}one{वीडियो, सूची में # वीडियो है}other{वीडियो, सूची में # वीडियो हैं}}</translation>
 <translation id="2433507940547922241">दिखने का तरीका</translation>
 <translation id="2449931042095204989">जब कोई Google साइट या ऐप्लिकेशन अपने पेज पर, लिंक को निजी तौर पर पहले से लोड करने के लिए कहता है, तो Google के सर्वर की मदद से Chrome, पेजों को एन्क्रिप्ट करके पहले से लोड कर देता है. Chrome इसके लिए कुकी का इस्तेमाल नहीं करता. इससे, पहले से लोड की गई साइट से आपकी पहचान छिपी रहती है.</translation>
@@ -511,7 +509,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996682533106928201">खारिज करने के लिए टैप करें</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
-<translation id="3007318536447999974">Gemini से बोलकर बातचीत करने के लिए, उसे अपने डिवाइस का माइक्रोफ़ोन इस्तेमाल करने की अनुमति दें. इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर भी मैनेज किया जा सकता है</translation>
 <translation id="3024215143424744261">रीडिंग मोड की सेटिंग बंद की गईं</translation>
 <translation id="3024277805447899099">इमेज की झलक देखें</translation>
 <translation id="3026955690410463085">लिंक जोड़ें</translation>
@@ -1291,7 +1288,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6196315980958524839">पासवर्ड, इस डिवाइस पर Google Password Manager में सेव किए गए हैं</translation>
 <translation id="6204781143409202534">Chrome को यह पता चला है कि <ph name="DOMAIN" /> से स्पैम हो सकता है.</translation>
-<translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
 <translation id="6212567362666004597">टैब को ग्रुप में जोड़ें</translation>
 <translation id="6225572914528673855">पता बार</translation>
@@ -1950,7 +1946,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8570677896027847510">फ़ाइल सुरक्षित तरीके से डाउनलोड नहीं की जा सकी</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8580435650274205305">खत्म होने की तारीख डालना ज़रूरी है</translation>
-<translation id="8582529315803410153">आपको दूसरे डिवाइस पर खोले गए अपने टैब यहां दिखेंगे</translation>
 <translation id="8585103689515290060">जानकारी अपने-आप भरने वाली सेवाएं</translation>
 <translation id="8586116786993312006">Chrome में ब्राउज़िंग डेटा मिटाने के लिए टैप करें</translation>
 <translation id="859046281437143747">'ज़्यादा विकल्प' बटन से कीमत ट्रैक करें</translation>

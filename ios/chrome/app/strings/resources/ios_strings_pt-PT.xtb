@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta principal.</translation>
 <translation id="132969855425874290">Fechar Encontrar e preencher</translation>
 <translation id="1333455942675373522">Teclado</translation>
+<translation id="1333669029961409292">Ação "Verifique as suas palavras-passe" concluída!</translation>
 <translation id="1334485477792811969">Serviços Web</translation>
 <translation id="1335767868357998043">Escolha a posição da barra de endereço</translation>
 <translation id="1347468774581902829">Gerir atividade</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Receba direções para o seu destino com as orientações passo a passo da funcionalidade de navegação</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
+<translation id="1644229815617955289">Faça a gestão do seu histórico, cookies e muito mais para proteger a sua privacidade</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
 <translation id="1650979352027263879">Preferências de aspeto removidas</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Perfil de configuração disponível</translation>
 <translation id="2244080985779413662">Este Website quer transferir um ficheiro e abri-lo na sua Carteira.</translation>
 <translation id="2245007488813216650">A traduzir…</translation>
+<translation id="2246445006133863463">Esta definição permite-lhe conversar com o Gemini usando a sua voz</translation>
 <translation id="2249119578464404734">Na parte superior do ecrã, toque no ícone Pesquisar</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
 <translation id="2252378061043785266">Nunca mostrar este site</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Continue a usar e guardar as palavras-passe na sua Conta Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importar</translation>
 <translation id="3854052088499589035">Vai receber atualizações quando progredir no Level Up</translation>
+<translation id="3854214753902617617">Explorar Navegação segura melhorada</translation>
 <translation id="3857113360369572832">Abra as <ph name="BEGIN_BOLD" />Definições do Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Vai ter a oportunidade de guardar estas informações na Carteira da próxima vez que preencher um formulário relevante.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Partilhe as suas palavras-passe</translation>
 <translation id="4049419681095579435">Encomenda já acompanhada</translation>
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
+<translation id="4052951214266508382">Permita que o "Gemini" use o microfone</translation>
 <translation id="4054290211988862686">Escolher ficheiro</translation>
 <translation id="4070132839822635162">Não iniciar sessão</translation>
 <translation id="4072473499345702662">Aceder a Level Up</translation>
@@ -1481,6 +1486,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continue com este separador</translation>
 <translation id="5753021559215751319">Guardar palavra-passe</translation>
+<translation id="5756200167514420691">Abra separadores no modo de navegação anónima para navegar na Web com mais privacidade</translation>
 <translation id="5756525336488841345">Ocultar Marcadores</translation>
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
 <translation id="57586589942790530">Número de cartão inválido</translation>
@@ -1551,6 +1557,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5988097621740394599">Veja as descidas de preços nos seus separadores</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6000893618966378846">Ação "Eliminar dados de navegação" concluída!</translation>
 <translation id="6004988584831654445">Está tudo pronto! Receba notificações quando estiverem disponíveis novas tarefas.</translation>
 <translation id="6006672969046233841">Novo separador</translation>
 <translation id="6011308810877101166">Melhorar sugestões de pesquisa</translation>
@@ -1810,6 +1817,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6732087373923685049">câmara</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opção para a credencial disponível acima do teclado.}other{{count} opções para a credencial disponíveis acima do teclado.}}</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
@@ -1975,6 +1983,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7312823817809783355">As suas tarefas</translation>
 <translation id="7313347584264171202">Os seus separadores de navegação anónima serão apresentados aqui</translation>
+<translation id="7318555235645532245">Ação "Entrar no modo de navegação anónima" concluída.</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opção de preenchimento automático disponível acima do teclado.}other{{count} opções de preenchimento automático disponíveis acima do teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento transferido</translation>
@@ -2151,6 +2160,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7857520352710212030">Site afixado</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
 <translation id="7863211248337747225">Obter a app</translation>
+<translation id="7863990181930071932">Acesso à localização desativado</translation>
 <translation id="7865127013871431856">Opções de tradução</translation>
 <translation id="7866872729285243843">Para obter a sua Lista de leitura em todos os dispositivos, ative a "Lista de leitura" nas definições.</translation>
 <translation id="7874107544081154809">Preencher automaticamente o formulário com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8786100550345425552">Editar autorizações</translation>
 <translation id="878871978861915380">Ocultar "Acompanhamento de preço"</translation>
 <translation id="8792626944327216835">microfone</translation>
+<translation id="8795809107245894196">Use a Verificação de Palavra-passe para garantir que as suas palavras-passe estão seguras</translation>
 <translation id="8796634520835503150">Modo de leitura disponível</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8803639129939845298">Seguro</translation>
@@ -2491,6 +2502,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8879952635974818770">Conteúdo personalizado</translation>
 <translation id="8887595428614802520">Fechar todos os separadores e grupos</translation>
 <translation id="8888595487174963247">Remover lembrete</translation>
+<translation id="8890516388109605451">Fontes</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
 <translation id="8900845556227858314">App do navegador</translation>
@@ -2531,6 +2543,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>
 <translation id="9013605037177245304">Ativar notificações</translation>
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
 <translation id="9035699147763101514">Com tecnologia da Inteligência Personalizada com o Gemini. Faça a gestão das suas escolhas nas definições.</translation>
 <translation id="9038526468059454274">Resuma com o</translation>

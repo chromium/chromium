@@ -10,6 +10,7 @@
 
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
 <translation id="1083934481477628225">In-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium</translation>
+<translation id="109026165963220603">Kailangan ng Chromium ng access sa iyong lokal na network para makatuklas at makagamit ng mga kalapit na device</translation>
 <translation id="1090946077924227754">Para maghanap ng partikular na feature o extension ng Chromium, i-type ang shortcut nito sa address bar, kasunod ang iyong napiling keyboard key</translation>
 <translation id="1098493699368672217">Ipakita ang paghahanap gamit ang Chromium sa system tray at i-on ang keyboard shortcut</translation>
 <translation id="1104942323762546749">Gustong i-export ng Chromium ang iyong mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
@@ -305,6 +306,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4251772536351901305">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chromium.</translation>
 <translation id="4269093074552541569">Mag-sign Out sa Chromium</translation>
 <translation id="4271805377592243930">Humingi ng tulong sa Chromium</translation>
+<translation id="4275788652681621337">Isara ang panel sa gilid</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4285930937574705105">Nabigo ang pag-install dahil sa hindi natukoy na error. Kung kasalukuyang tumatakbo ang Chromium, pakisara ito at subukan ulit.</translation>
 <translation id="4298125729853015961">Mag-export ng Mga Password mula sa Chromium</translation>
@@ -441,9 +443,9 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="5883558403894052917">Napag-alaman ng Chromium na naglalaman ng malware ang mga item na ito:</translation>
 <translation id="5889361821821684993">Regular na nagsusuri ang Chromium para tiyaking may mga pinakaligtas na setting ang iyong browser. Ipapaalam namin sa iyo kung may anumang nangangailangan ng iyong pagsusuri.</translation>
 <translation id="5895138241574237353">I-restart</translation>
+<translation id="5896077214220653386">Gemini Enterprise sa Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network</translation>
 <translation id="5924017743176219022">Kumokonekta sa Internet...</translation>
-<translation id="5939553720811388432">Ihanda natin ang iyong Chromium</translation>
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5949225980829865667">Para makuha ang bookmark na ito at higit pa sa lahat ng iyong device, mag-sign in sa Chromium</translation>
 <translation id="5953657885167112863">I-personalize ang Chromium</translation>

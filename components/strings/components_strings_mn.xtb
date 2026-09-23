@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace фонт</translation>
 <translation id="1757935267918149452">Google-н нууц үгийг өөрчлөх товчлуур, Google Бүртгэлийн нууц үгээ өөрчлөхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="1759776526873274358">Таны аюулгүй байдлыг сайжруулахын тулд сайтуудын ашигладаг баталгаажуулах кодыг автоматаар бөглөнө. Chrome эдгээр кодыг таны Gmail-с авах боломжтой. <ph name="BEGIN_LINK" />Энэ онцлогийн талаар нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Өгөгдөл, нууцлалын сонголтыг<ph name="END_LINK1" /> хянах эсвэл лояалти карт, ID зэрэг <ph name="BEGIN_LINK2" />төлбөрийн хэрэгсэл<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />тасалбарыг<ph name="END_LINK3" /> удирдахын тулд Google Wallet-д зочилно уу</translation>
 <translation id="1763864636252898013">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг таны төхөөрөмжийн үйлдлийн систем дэмждэггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Гэрэл зураг (архивын)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">Таны интернэт холболтыг блоклосон байна</translation>
 <translation id="2294150501457238325">Паспортыг аюулгүй нэмэх</translation>
 <translation id="2295831393422400053">Надад бичихэд тусал онцлогийг ашиглахын тулд Хайлт болон үзэх явцыг сайжруулах тохиргоог асаана уу</translation>
-<translation id="2296244067976588032">Нэвтрэх түлхүүр • iCloud Keychain</translation>
 <translation id="2296331629987861142">Хялбархан хэсэгчлэн төлөх (зохих эрхтэй тохиолдолд, хураамжтай)</translation>
 <translation id="2300306941146563769">Байршуулаагүй</translation>
 <translation id="2301064673700597535">Шаардлага хангасан гэрчилгээний мэдэгдэл</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">Картын мэдээллийг хадгалсан</translation>
 <translation id="2505268675989099013">Бүртгэлийг хамгаалах</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (нөхцөл хэрэгжинэ)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />Өгөгдөл, нууцлалын сонголтыг<ph name="END_LINK" /> удирдахын тулд Google Wallet-д зочилно уу.</translation>
 <translation id="2512101340618156538">Зөвшөөрөөгүй (өгөгдмөл)</translation>
 <translation id="2512413427717747692">Chrome-г өгөгдмөл хөтчийн товчлуур болгон тохируулах, iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд Enter дээр дарна уу</translation>
 <translation id="2515629240566999685">Таны байгаа газрын дохиог шалгаж байна</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3209034400446768650">Хуудас төлбөр нэхэмжилж болзошгүй</translation>
 <translation id="3209071504641569648">Таны хүсэлт, хуудасны гарчиг, URL-г Google рүү илгээдэг бөгөөд сайжруулсан автомат бөглөлтийг сайжруулахын тулд хянаж магадгүй</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" />-н холбоосыг <ph name="HANDLER_HOSTNAME" />-р дамжуулан нээх</translation>
 <translation id="3212468046572043669">Татаж эхэллээ. Үүнийг харахын тулд дээрээс чирч, буцах товчинд хүрнэ үү</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> дээрх таны үйл ажиллагааг хянаж байна</translation>
 <translation id="3215092763954878852">WebAuthn-г ашиглаж чадсангүй</translation>
@@ -2088,6 +2088,7 @@
 <translation id="449126573531210296">Google Бүртгэлээрээ синк хийсэн нууц үгнүүдийг шифрлэх</translation>
 <translation id="4493480324863638523">Энэ URL хүчингүй байна. Энэ нь http://example.com эсвэл https://example.com зэрэг стандарт схемтэй URL байх ёстой.</translation>
 <translation id="4497010149473852018">Лояалти картуудыг хүрч бөглөх боломжтой. Гарыг нуусан.</translation>
+<translation id="4497843134750481377">Санал удирдах</translation>
 <translation id="4500587658229086076">аюултай контент</translation>
 <translation id="4501939680615452918">Тренд болж буй ресторануудаас сул ширээ хайна уу</translation>
 <translation id="4503459574136856756">Миний намтрыг илүү мэргэжлийн сонсогдохоор найруулан бичнэ үү</translation>
@@ -3750,6 +3751,7 @@
 <translation id="7347640536700429009">Карт дээрх нэр буруу байна</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7353601530677266744">Тушаалын мөр</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" />-н холбоосыг <ph name="REPLACED_HANDLER_TITLE" />-н оронд <ph name="HANDLER_HOSTNAME" />-р дамжуулан нээх</translation>
 <translation id="7359588939039777303">Зарыг блоклосон.</translation>
 <translation id="7362281996276843968">Энэ бүлэг хаалттай байна</translation>
 <translation id="7363096869660964304">Гэхдээ та харагдаж байгаа. Нууцлалтай горимд орсноор таны үзэлтийг ажил олгогч, интернэт үйлчилгээ нийлүүлэгч эсвэл зочилсон вебсайтаас тань нуухгүй.</translation>

@@ -467,7 +467,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1757773103848038814">Lygiaplotis šriftas</translation>
 <translation id="1757935267918149452">Mygtukas „Keisti „Google“ slaptažodį; suaktyvinkite, jei norite pakeisti „Google“ paskyros slaptažodį</translation>
 <translation id="1759776526873274358">Automatiškai užpildykite patvirtinimo kodus, kuriuos svetainės naudoja siekdamos pagerinti jūsų saugą. „Chrome“ gali gauti šiuos kodus iš jūsų „Gmail“. <ph name="BEGIN_LINK" />Sužinokite daugiau apie šią funkciją<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">„Google Wallet“ galite valdyti <ph name="BEGIN_LINK1" />duomenų ir privatumo nuostatas<ph name="END_LINK1" />, tvarkyti <ph name="BEGIN_LINK2" />mokėjimo metodus<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />korteles bei bilietus<ph name="END_LINK3" />, pvz., lojalumo korteles, asmens tapatybės dokumentus</translation>
 <translation id="1763864636252898013">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas įrenginio operacinei sistemai. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pabandykite paleisti „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotopopierius (archyvinis)</translation>
@@ -777,7 +776,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2292556288342944218">Interneto prieiga užblokuota</translation>
 <translation id="2294150501457238325">Saugiai pridėkite paso duomenis</translation>
 <translation id="2295831393422400053">Įjunkite nustatymą „Tobulinti paieškas ir naršymą“, kad galėtumėte naudoti funkciją „Padėkite man rašyti“</translation>
-<translation id="2296244067976588032">Prieigos raktas • „iCloud Keychain“</translation>
 <translation id="2296331629987861142">Mokėkite nedidelėmis dalimis (taikomi tinkamumo kriterijai ir mokesčiai)</translation>
 <translation id="2300306941146563769">Neįkelta</translation>
 <translation id="2301064673700597535">Kvalifikuotų sertifikatų pareiškimai</translation>
@@ -913,6 +911,7 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2505063700931618106">Kortelės informacija išsaugota</translation>
 <translation id="2505268675989099013">Apsaugoti paskyrą</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (yra sąlygų)</translation>
+<translation id="251033673027346551">Apsilankykite „Google Wallet“, kad galėtumėte tvarkyti <ph name="BEGIN_LINK" />duomenų ir privatumo nuostatas<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Neleidžiama (numatytasis nustatymas)</translation>
 <translation id="2512413427717747692">„Chrome“ nustatymo kaip numatytosios naršyklės režimas; paspauskite „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
 <translation id="2515629240566999685">Patikrinti signalo stiprumą savo srityje</translation>

@@ -305,7 +305,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Get all your saved info</translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2233735624724508540">Choose a time frame and then tap Delete data</translation>
@@ -359,7 +358,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2413014528833954543">Can't check passwords on this device</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2415037988255164008">Restore windows?</translation>
-<translation id="2426805022920575512">Choose another account</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 video in list}other{Videos, # videos in list}}</translation>
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2449931042095204989">When a Google site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
@@ -511,7 +509,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996682533106928201">Tap to dismiss</translation>
 <translation id="2996809686854298943">URL required</translation>
-<translation id="3007318536447999974">To talk to Gemini, give it permission to use your microphone. You can also manage this in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Reading mode preferences closed</translation>
 <translation id="3024277805447899099">Preview image</translation>
 <translation id="3026955690410463085">Include link</translation>
@@ -1291,7 +1288,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
 <translation id="6204781143409202534">Chrome detected possible spam from <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6212567362666004597">Add tab to group</translation>
 <translation id="6225572914528673855">Address bar</translation>
@@ -1950,7 +1946,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8580435650274205305">Expiry date required</translation>
-<translation id="8582529315803410153">You'll find your tabs from other devices here</translation>
 <translation id="8585103689515290060">Autofill services</translation>
 <translation id="8586116786993312006">Tap to delete browsing data in Chrome</translation>
 <translation id="859046281437143747">Track price from the 'More options' button</translation>

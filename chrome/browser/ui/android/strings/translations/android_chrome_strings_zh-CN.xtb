@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
-<translation id="2230411774874187555">获取所有已保存的信息</translation>
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2233735624724508540">选择时间范围，然后点按“删除数据”</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">无法在此设备上检查密码</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2415037988255164008">要恢复窗口吗？</translation>
-<translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{视频，列表中有 1 个视频}other{视频，列表中有 # 个视频}}</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2449931042095204989">当某个 Google 网站或应用请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">创建密码</translation>
 <translation id="2996682533106928201">点按即可忽略</translation>
 <translation id="2996809686854298943">必须提供网址</translation>
-<translation id="3007318536447999974">想与 Gemini 对话？请开启麦克风权限。您也可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行管理</translation>
 <translation id="3024215143424744261">已关闭阅读模式偏好设置</translation>
 <translation id="3024277805447899099">预览图片</translation>
 <translation id="3026955690410463085">包括链接</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196315980958524839">系统会将密码保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="6204781143409202534">Chrome 检测到 <ph name="DOMAIN" /> 可能发送了垃圾内容。</translation>
-<translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>
 <translation id="6212567362666004597">向分组添加标签页</translation>
 <translation id="6225572914528673855">地址栏</translation>
@@ -1948,7 +1944,6 @@
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8580435650274205305">失效日期（必填）</translation>
-<translation id="8582529315803410153">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8585103689515290060">自动填充服务</translation>
 <translation id="8586116786993312006">点按即可删除 Chrome 中的浏览数据</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>

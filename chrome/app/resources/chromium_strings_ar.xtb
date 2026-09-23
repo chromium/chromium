@@ -303,6 +303,7 @@
 <translation id="4251772536351901305">‏ستتلقّى تحذيرات بشأن المواقع الإلكترونية الخطيرة، بما فيها المواقع الإلكترونية التي لم يتعرّف عليها محرك بحث Google، من خلال تحليل قدر أكبر من البيانات الواردة من مواقع إلكترونية، مقارنةً بالحماية العادية. يمكنك اختيار تخطّي تحذيرات Chromium.</translation>
 <translation id="4269093074552541569">‏تسجيل الخروج من Chromium</translation>
 <translation id="4271805377592243930">‏الحصول على مساعدة في Chromium</translation>
+<translation id="4275788652681621337">إغلاق اللوحة الجانبية</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4285930937574705105">‏تعذّر إتمام عملية التثبيت بسبب خطأ غير محدد. إذا كان Chromium في حالة التشغيل حاليًا، يُرجى إغلاقه وإعادة المحاولة.</translation>
 <translation id="4298125729853015961">‏تصدير كلمات المرور من Chromium</translation>
@@ -439,9 +440,9 @@
 <translation id="5883558403894052917">‏رصد Chromium أنّ هذه العناصر تحتوي على برامج ضارة:</translation>
 <translation id="5889361821821684993">‏يتحقّق Chromium بانتظام من استخدام الإعدادات الأكثر أمانًا في متصفّحك. وسنُعلمك في حال كان عليك اتخاذ إجراء.</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
+<translation id="5896077214220653386">‏‫Gemini Enterprise في Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - تسجيل الدخول إلى الشبكة</translation>
 <translation id="5924017743176219022">جارٍ الاتصال بالإنترنت...</translation>
-<translation id="5939553720811388432">‏حان الوقت لإعداد Chromium</translation>
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5949225980829865667">‏يمكنك تسجيل الدخول إلى Chromium للحصول على هذه الإشارة وغيرها على جميع أجهزتك</translation>
 <translation id="5953657885167112863">‏تخصيص Chromium</translation>

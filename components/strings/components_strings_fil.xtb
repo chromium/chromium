@@ -467,7 +467,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1757773103848038814">Monospace Font</translation>
 <translation id="1757935267918149452">Button na Palitan ang password sa Google, i-activate para mapalitan ang password ng Google Account mo</translation>
 <translation id="1759776526873274358">I-autofill ang mga code sa pag-verify na ginagamit ng mga site para pahusayin ang iyong seguridad. Makukuha ng Chrome ang mga code na ito mula sa iyong Gmail. <ph name="BEGIN_LINK" />Matuto pa tungkol sa feature na ito<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Bisitahin ang Google Wallet para kontrolin ang <ph name="BEGIN_LINK1" />mga preference sa data at privacy<ph name="END_LINK1" /> o pamahalaan ang <ph name="BEGIN_LINK2" />mga paraan ng pagbabayad<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />mga pass<ph name="END_LINK3" /> tulad ng mga loyalty card at ID</translation>
 <translation id="1763864636252898013">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng operating system ng iyong device ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Subukang patakbuhin ang Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -777,7 +776,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2292556288342944218">Naka-block ang iyong access sa Internet</translation>
 <translation id="2294150501457238325">Secure na magdagdag ng passport</translation>
 <translation id="2295831393422400053">I-on ang setting na Mas Pahusayin ang Mga Paghahanap at Pag-browse para magamit ang Tulungan akong magsulat</translation>
-<translation id="2296244067976588032">Passkey • iCloud Keychain</translation>
 <translation id="2296331629987861142">Magbayad sa madadaling installment (napapailalim sa pagiging kwalipikado, may mga bayarin)</translation>
 <translation id="2300306941146563769">Hindi na-upload</translation>
 <translation id="2301064673700597535">Mga Statement ng Kwalipikadong Certificate</translation>
@@ -905,6 +903,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2493122313108999546">Na-resize</translation>
 <translation id="249376477913017009">Binuksan ang abiso sa autofill mula sa Gmail at higit pa</translation>
 <translation id="2495083838625180221">Pang-parse ng JSON</translation>
+<translation id="2495909791227061512">Kumonekta sa mga kalapit na device?</translation>
 <translation id="2496402116964818747">Puwede mong baguhin kung gagamitin mo ang iyong fingerprint para sa paglalagay ng mga password sa <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Mag-scan ng bagong card</translation>
 <translation id="2501270939904835585">Mga Label (Satin)</translation>
@@ -913,6 +912,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2505063700931618106">Na-save ang impormasyon ng card</translation>
 <translation id="2505268675989099013">Protektahan ang Account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (may mga nalalapat na tuntunin)</translation>
+<translation id="251033673027346551">Bisitahin ang Google Wallet para pamahalaan ang <ph name="BEGIN_LINK" />mga preference sa data at privacy<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Hindi pinapayagan (default)</translation>
 <translation id="2512413427717747692">Itakda ang Chrome bilang default na button ng browser, pindutin ang Enter para itakda ang Chrome bilang default na browser ng system sa mga setting ng iOS</translation>
 <translation id="2515629240566999685">Suriin ang signal sa iyong lugar</translation>
@@ -1305,6 +1305,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3209034400446768650">Puwedeng maningil ang page</translation>
 <translation id="3209071504641569648">Ipinapadala sa Google ang iyong mga request, pamagat ng page, at URL at posibleng suriin ang mga ito para mapaganda ang pinahusay na autofill</translation>
+<translation id="3211727636285361260">Buksan ang mga link ng <ph name="PROTOCOL" /> sa pamamagitan ng <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Nagsimula na ang pag-download. Para makita ito, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="3212581601480735796">Sinusubaybayan ang iyong aktibidad sa <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Hindi magamit ang WebAuthn</translation>
@@ -2087,6 +2088,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="449126573531210296">I-encrypt ang mga naka-sync na password gamit ang iyong Google Account</translation>
 <translation id="4493480324863638523">Di-wastong URL. Dapat ay isang URL na may karaniwang scheme, hal. http://example.com o https://example.com.</translation>
 <translation id="4497010149473852018">Mga loyalty card na available na mapunan kapag pinindot. Naka-hide ang keyboard.</translation>
+<translation id="4497843134750481377">Pamahalaan ang mga alok</translation>
 <translation id="4500587658229086076">hindi secure na content</translation>
 <translation id="4501939680615452918">Maghanap ng mga bakante sa mga trending na restaurant</translation>
 <translation id="4503459574136856756">I-rewrite ang aking bio para maging mas propesyonal ang tunog</translation>
@@ -3751,6 +3753,7 @@ Mga karagdagang detalye:
 <translation id="7347640536700429009">Invalid ang pangalan sa card</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353601530677266744">Command Line</translation>
+<translation id="7358055687760675498">Buksan ang mga link ng <ph name="PROTOCOL" /> sa pamamagitan ng <ph name="HANDLER_HOSTNAME" /> sa halip na <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Na-block ang mga ad.</translation>
 <translation id="7362281996276843968">Nakasara ang grupong ito</translation>
 <translation id="7363096869660964304">Gayunpaman, hindi ka invisible. Kahit mag-Incognito ka, hindi matatago ang iyong pagba-browse mula sa iyong employer, sa iyong internet service provider o sa mga website na binibisita mo.</translation>

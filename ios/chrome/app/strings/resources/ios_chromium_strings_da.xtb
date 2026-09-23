@@ -107,6 +107,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3072591112723064972">Gør Chromium til din standardbrowser, så du kan åbne links her med det samme.</translation>
 <translation id="3115956258722352278">Vil du gøre Chromium til din standardbrowser?</translation>
 <translation id="3180939591219927904">Aktivér "Lås inkognitofaner, når du lukker Chromium"</translation>
+<translation id="3239426886813624481">Hvis du vil dele din lokation med websites, skal du trykke på Indstillinger for at give Chromium tilladelse til at bruge din lokation.</translation>
 <translation id="327628223428512207">Angiv adgangssætningen for at gemme denne adgangskode og få Chromium-data på alle dine enheder</translation>
 <translation id="328933489847748230">{count,plural, =1{Der vises nu 1 Chromium-vindue}one{Der vises nu {count} Chromium-vindue}other{Der vises nu {count} Chromium-vinduer}}</translation>
 <translation id="3344204225393848305">Indstil Chromium som standard</translation>

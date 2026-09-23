@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">مونو اسپیس فونٹ</translation>
 <translation id="1757935267918149452">‏Google کا پاس ورڈ تبدیل کریں بٹن، اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کرنے کیلئے فعال کریں</translation>
 <translation id="1759776526873274358">‏توثیقی کوڈز کو آٹو فل کریں جنہیں سائٹس آپ کی سیکیورٹی بہتر بنانے کے لیے استعمال کرتی ہیں۔ ‫Chrome آپ کے Gmail سے یہ کوڈز حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />اس خصوصیت کے بارے میں مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">‏<ph name="BEGIN_LINK1" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK1" /> کو کنٹرول کرنے یا <ph name="BEGIN_LINK2" />ادائیگی کے طریقوں<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />پاسز<ph name="END_LINK3" /> جیسے لائلٹی کارڈز اور IDs کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں</translation>
 <translation id="1763864636252898013">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے آلہ کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1777422078676229054">تصویر (آرکائیول)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">انٹرنیٹ تک آپ کی رسائی مسدود ہے</translation>
 <translation id="2294150501457238325">پاسپورٹ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="2295831393422400053">لکھنے میں میری مدد کریں کا استعمال کرنے کے لیے تلاشوں اور براؤزنگ کو بہتر بنائیں کو آن کریں</translation>
-<translation id="2296244067976588032">‏پاس کی • iCloud Keychain</translation>
 <translation id="2296331629987861142">آسان قسطوں میں ادائیگی کریں (اہلیت کے ساتھ مشروط، فیس لاگو ہوتی ہے)</translation>
 <translation id="2300306941146563769">اپ لوڈ نہیں ہوا</translation>
 <translation id="2301064673700597535">اہل سرٹیفکیٹ کے اسٹیٹمنٹس</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">کارڈ کی معلومات محفوظ ہو گئی</translation>
 <translation id="2505268675989099013">اکاؤنٹ محفوظ کریں</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (شرائط لاگو ہیں)</translation>
+<translation id="251033673027346551">‏<ph name="BEGIN_LINK" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK" /> کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں۔</translation>
 <translation id="2512101340618156538">اجازت نہیں ہے (ڈیفالٹ)</translation>
 <translation id="2512413427717747692">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، iOS ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
 <translation id="2515629240566999685">آپ کے علاقہ میں سگنل چیک کیا جا رہا ہے</translation>
@@ -1306,6 +1305,7 @@
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3209034400446768650">صفحہ پیسے چارج کر سکتا ہے</translation>
 <translation id="3209071504641569648">‏آپ کی درخواستیں، صفحہ کے عنوانات اور URLs کو Google کو بھیجا جاتا ہے اور بہتر کردہ آٹو فل کو بہتر بنانے کے لیے ان کا جائزہ لیا جا سکتا ہے</translation>
+<translation id="3211727636285361260">‫<ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="3212468046572043669">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> پر آپ کی سرگرمی پر نظر رکھی جا رہی ہے</translation>
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
@@ -2088,6 +2088,7 @@
 <translation id="449126573531210296">‏مطابقت پذیر کردہ پاس ورڈز کو اپنے Google اکاؤنٹ کے ساتھ مرموز کریں</translation>
 <translation id="4493480324863638523">‏غلط URL۔ معیاری اسکیم والا URL ہونا ضروری ہے، جیسے http://example.com یا https://example.com۔</translation>
 <translation id="4497010149473852018">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں۔ کی بورڈ پوشیدہ ہے۔</translation>
+<translation id="4497843134750481377">پیشکشوں کا نظم کریں</translation>
 <translation id="4500587658229086076">غیر محفوظ مواد</translation>
 <translation id="4501939680615452918">رجحان ساز ریسٹورنٹس میں اوپننگز تلاش کریں</translation>
 <translation id="4503459574136856756">میری سوانح عمری کو مزید پیشہ ورانہ بنانے کے لیے دوبارہ لکھیں</translation>
@@ -3752,6 +3753,7 @@
 <translation id="7347640536700429009">کارڈ پر نام غلط ہے</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7353601530677266744">کمانڈ لائن</translation>
+<translation id="7358055687760675498">‫<ph name="REPLACED_HANDLER_TITLE" /> کے بجائے <ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="7359588939039777303">اشتہارات مسدود ہیں۔</translation>
 <translation id="7362281996276843968">یہ گروپ بند (کلوزڈ) ہے</translation>
 <translation id="7363096869660964304">تاہم، آپ غیر مرئی نہیں ہیں۔ پوشیدگی اختیار کرنا آپ کے آجر، آپ کے انٹرنیٹ سروس فراہم کنندہ یا آپ جو ویب سائٹس ملاحظہ کرتے ہیں ان سے آپ کی براؤزنگ کو نہیں چھپاتا ہے۔</translation>

@@ -112,6 +112,7 @@
 <translation id="132683371494960526">મૂળ ફોલ્ડર બદલવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="132969855425874290">'શોધો અને ભરો' સુવિધા બંધ કરો</translation>
 <translation id="1333455942675373522">કીબોર્ડ</translation>
+<translation id="1333669029961409292">"તમારા પાસવર્ડ ચેક કરો" પ્રક્રિયા પૂર્ણ થઈ!</translation>
 <translation id="1334485477792811969">વેબ સેવાઓ</translation>
 <translation id="1335767868357998043">ઍડ્રેસ બારની સ્થિતિ પસંદ કરો</translation>
 <translation id="1347468774581902829">પ્રવૃત્તિ મેનેજ કરો</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને વારા ફરતી માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
+<translation id="1644229815617955289">તમારી પ્રાઇવસીને સુરક્ષિત રાખવા માટે, તમારો ઇતિહાસ, કુકી અને બીજું ઘણું મેનેજ કરો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="164673457281113247">{count,plural, =1{બુકમાર્ક સાચવ્યું}one{બુકમાર્ક સાચવ્યું}other{બુકમાર્ક સાચવ્યા}}</translation>
 <translation id="1650979352027263879">તમારી દેખાવ સંબંધિત પસંદગીઓ કાઢી નાખી</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">કન્ફિગ્યુરેશન પ્રોફાઇલ ઉપલબ્ધ છે</translation>
 <translation id="2244080985779413662">આ વેબસાઇટ ફાઇલ ડાઉનલોડ કરવા અને તેને તમારા Walletમાં ખોલવા માગે છે.</translation>
 <translation id="2245007488813216650">અનુવાદ કરી રહ્યાં છીએ…</translation>
+<translation id="2246445006133863463">આ તમને તમારા વૉઇસનો ઉપયોગ કરીને Gemini સાથે ચૅટ કરવાની સુવિધા આપે છે</translation>
 <translation id="2249119578464404734">સ્ક્રીનની સૌથી ઉપર, 'શોધો' આઇકન પર ટૅપ કરો</translation>
 <translation id="2251686759395008410">મેનૂ → ઇતિહાસ</translation>
 <translation id="2252378061043785266">આ સાઇટ ક્યારેય બતાવશો નહીં</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">તમારા Google એકાઉન્ટ <ph name="EMAIL" />માં પાસવર્ડનો ઉપયોગ કરવાનું અને તેને સાચવવાનું ચાલુ રાખો</translation>
 <translation id="3853873210696342070">આયાત કરો</translation>
 <translation id="3854052088499589035">જ્યારે તમે Level Upમાં પ્રગતિ કરશો, ત્યારે તમને અપડેટ મળશે</translation>
+<translation id="3854214753902617617">Safe Browsingમાં વધારેલી સુરક્ષા વિશે શોધખોળ કરો</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safariના સેટિંગ<ph name="END_BOLD" /> ખોલો</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="386224966259596343">આગલી વખતે જ્યારે તમે સંબંધિત ફોર્મ ભરો, ત્યારે તમને આ માહિતી Walletમાં સાચવવાની તક મળશે.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">તમારા પાસવર્ડ શેર કરો</translation>
 <translation id="4049419681095579435">પૅકેજને પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
+<translation id="4052951214266508382">“Gemini”ને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="4054290211988862686">ફાઇલ પસંદ કરો</translation>
 <translation id="4070132839822635162">સાઇન ઇન કરશો નહીં</translation>
 <translation id="4072473499345702662">લેવલ અપ સુવિધા પર જાઓ</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">ઇવેન્ટ</translation>
 <translation id="5749158352074143502">આ ટૅબ સાથે આગળ ચાલુ રાખો</translation>
 <translation id="5753021559215751319">પાસવર્ડ સાચવો</translation>
+<translation id="5756200167514420691">વેબને વધુ ખાનગી રીતે બ્રાઉઝ કરવા માટે, છૂપા મોડમાં ટૅબ ખોલો</translation>
 <translation id="5756525336488841345">બુકમાર્ક છુપાવો</translation>
 <translation id="5758631781033351321">તમને તમારી વાંચન સૂચિ અહીં મળશે</translation>
 <translation id="57586589942790530">અમાન્ય કાર્ડ નંબર</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ.</translation>
 <translation id="5988851877894965432">URLsને Chromeમાં ખોલો</translation>
 <translation id="599343768974649785">અયોગ્ય ટેક્સ્ટ</translation>
+<translation id="6000893618966378846">"બ્રાઉઝિંગ ડેટા ડિલીટ કરો" પ્રક્રિયા પૂર્ણ થઈ!</translation>
 <translation id="6004988584831654445">તમે તૈયાર છો! નવા કાર્યો આવે ત્યારે નોટિફિકેશન મેળવો.</translation>
 <translation id="6006672969046233841">નવું ટૅબ</translation>
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">કૅમેરા</translation>
 <translation id="6736243959894955139">સરનામું</translation>
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
+<translation id="6749473226660745022">ફોટા</translation>
 <translation id="6750456911389438250">{count,plural, =1{ઇતિહાસની {count} આઇટમની આયાત કરી}one{ઇતિહાસની {count} આઇટમની આયાત કરી}other{ઇતિહાસની {count} આઇટમની આયાત કરી}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર લૉગ ઇન વિગત માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
@@ -1975,6 +1983,7 @@
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7312823817809783355">તમારા કાર્યો</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
+<translation id="7318555235645532245">"છૂપા મોડમાં જાઓ" પ્રક્રિયા પૂર્ણ થઈ!</translation>
 <translation id="7322186060879266048">{count,plural, =1{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેનો {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેનો {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેના {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
@@ -2151,6 +2160,7 @@
 <translation id="7857520352710212030">સાઇટ પિન કરી</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7863211248337747225">ઍપ મેળવો</translation>
+<translation id="7863990181930071932">લોકેશનનો ઍક્સેસ બંધ કર્યો</translation>
 <translation id="7865127013871431856">Google Translateના વિકલ્પો</translation>
 <translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> વડે ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
@@ -2459,6 +2469,7 @@
 <translation id="8786100550345425552">પરવાનગીઓમાં ફેરફાર કરો</translation>
 <translation id="878871978861915380">"કિંમતને ટ્રૅક કરવું" છુપાવો</translation>
 <translation id="8792626944327216835">માઇક્રોફોન</translation>
+<translation id="8795809107245894196">તમારા પાસવર્ડ સુરક્ષિત છે તેની ખાતરી કરવા માટે, પાસવર્ડની તપાસનો ઉપયોગ કરો</translation>
 <translation id="8796634520835503150">વાંચન મોડ ઉપલબ્ધ છે</translation>
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>
@@ -2491,6 +2502,7 @@
 <translation id="8879952635974818770">મનગમતું બનાવેલું કન્ટેન્ટ</translation>
 <translation id="8887595428614802520">બધા ટૅબ અને ગ્રૂપ બંધ કરો</translation>
 <translation id="8888595487174963247">રિમાઇન્ડર કાઢી નાખો</translation>
+<translation id="8890516388109605451">સ્રોતો</translation>
 <translation id="8893208530912252670">વીડિયો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8900845556227858314">બ્રાઉઝર ઍપ</translation>
@@ -2531,6 +2543,7 @@
 <translation id="9012585441087414258">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રક્ષણ આપે છે. જો કોઈ પેજ કંઈપણ શંકાસ્પદ કરે છે, તો URL અને પેજ કન્ટેન્ટના બિટ Google Safe Browsingને મોકલવામાં આવે છે.</translation>
 <translation id="9013605037177245304">નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="9029650858822697271">તમને સાઇન આઉટ કરવામાં આવ્યા</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">બ્રાઉઝિંગ ડેટા ડિલીટ કરવાનું કન્ફર્મ કરો</translation>
 <translation id="9035699147763101514">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. સેટિંગમાં તમારી પસંદગીઓ મેનેજ કરો.</translation>
 <translation id="9038526468059454274">આની સાથે સરવાળો કરો</translation>

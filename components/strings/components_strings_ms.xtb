@@ -467,7 +467,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1757773103848038814">Fon Monospace</translation>
 <translation id="1757935267918149452">Butang tukar kata laluan Google, aktifkan untuk menukar kata laluan Google Account anda</translation>
 <translation id="1759776526873274358">Buat autolengkap kod pengesahan yang digunakan oleh laman untuk meningkatkan keselamatan anda. Chrome boleh mendapatkan kod ini daripada Gmail anda. <ph name="BEGIN_LINK" />Ketahui perihal ciri ini dengan lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Lawati Google Wallet untuk mengawal <ph name="BEGIN_LINK1" />pilihan data dan privasi<ph name="END_LINK1" /> atau mengurus <ph name="BEGIN_LINK2" />kaedah pembayaran<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />pas<ph name="END_LINK3" /> seperti kad kesetiaan dan ID</translation>
 <translation id="1763864636252898013">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh sistem pengendalian peranti anda. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Cuba jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (Arkib)</translation>
@@ -777,7 +776,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2292556288342944218">Akses Internet anda disekat</translation>
 <translation id="2294150501457238325">Tambahkan pasport dengan selamat</translation>
 <translation id="2295831393422400053">Hidupkan tetapan Jadikan Carian dan Penyemakan Imbas Lebih Baik untuk menggunakan Bantu saya tulis</translation>
-<translation id="2296244067976588032">Kunci laluan • iCloud Keychain</translation>
 <translation id="2296331629987861142">Bayar dalam ansuran mudah (tertakluk pada kelayakan, yuran dikenakan)</translation>
 <translation id="2300306941146563769">Tidak dimuat naik</translation>
 <translation id="2301064673700597535">Penyata Sijil Kelayakan</translation>
@@ -914,6 +912,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2505063700931618106">Maklumat kad telah disimpan</translation>
 <translation id="2505268675989099013">Lindungi Akaun</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (syarat dikenakan)</translation>
+<translation id="251033673027346551">Lawati Google Wallet untuk mengurus <ph name="BEGIN_LINK" />pilihan data dan privasi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tidak dibenarkan (lalai)</translation>
 <translation id="2512413427717747692">Tetapkan Chrome sebagai butang penyemak imbas lalai, tekan Enter untuk menetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
 <translation id="2515629240566999685">Semak isyarat di kawasan anda</translation>

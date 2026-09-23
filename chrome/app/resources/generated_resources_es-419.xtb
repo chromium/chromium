@@ -529,6 +529,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
 <translation id="1402426911829176748">Estableciendo conexión con el dispositivo</translation>
 <translation id="1405779994569073824">Falló</translation>
+<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación del teléfono celular</translation>
@@ -618,6 +619,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1472675084647422956">Mostrar más</translation>
 <translation id="1473223074251193484">Establecer la configuración de la conexión mediante dispositivo móvil</translation>
 <translation id="1473616112002966036">&amp;Fotograma</translation>
+<translation id="1475224725276659152">Para obtener tu lista de lectura y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Configuración de idiomas</translation>
 <translation id="1477654881618305065">Tu organización no te permite compartir este contenido. Si necesitas ayuda, comunícate con tu administrador.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
@@ -981,7 +983,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1756963401828337401">Elige una pantalla para capturar</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
-<translation id="176013700366797492">Visita la Billetera de Google para controlar las <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o administrar las <ph name="BEGIN_LINK2" />formas de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" />, como las tarjetas de lealtad y los documentos de identidad</translation>
 <translation id="1761402971842586829">Se reasignó <ph name="BUTTON_NAME" /> a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugerencias de compras</translation>
@@ -1492,6 +1493,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2148248734299717598">Cerrar vista izquierda</translation>
 <translation id="2148401732477136168">No se pudieron consultar las aplicaciones instaladas.</translation>
 <translation id="2148892889047469596">Transmitir pestaña</translation>
+<translation id="2149773378153994101">Para obtener tus extensiones y más de <ph name="DEVICE" />, accede como <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Buscar destinos</translation>
 <translation id="2150168665016482929">Mi&amp;nimizar</translation>
@@ -2997,7 +2999,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3284050785966252943">Autocompletar vista previa de metadatos</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" /> - Vista inferior</translation>
 <translation id="3285329711156774325">Buscar habilidades</translation>
-<translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
 <translation id="3285969135399641759">Aprender una nueva destreza</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
@@ -3334,7 +3335,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3543296862747913985">¿Qué hace?</translation>
 <translation id="3543298914473315872">Proceso del actualizador</translation>
 <translation id="3543393733900874979">Error de actualización (error: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="3544058026430919413">Una empresa puede definir un grupo de sitios que pueden usar cookies para compartir tu actividad en el grupo. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="3544879808695557954">Nombre de usuario (opcional)</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3548162552723420559">Ajusta el color de la pantalla para adaptarlo al entorno</translation>
@@ -3928,6 +3928,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3954953195017194676">No capturaste ningún registro de acontecimientos de WebRTC recientemente.</translation>
 <translation id="3955321697524543127">No permitir que los sitios se conecten a dispositivos USB</translation>
 <translation id="3957663711862465084">Configuración de USB</translation>
+<translation id="3958085090855822556">Im&amp;primir selección de texto…</translation>
 <translation id="3958088479270651626">Importar favoritos y configuración</translation>
 <translation id="3958110062351175311">Puede mostrar solicitudes en la barra de herramientas</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> ya se instaló.</translation>
@@ -4010,7 +4011,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4024768890073681126">Tu madre o padre administra el navegador</translation>
 <translation id="4025039777635956441">Silenciar el sitio seleccionado</translation>
 <translation id="402707738228916911">Instrucciones <ph name="AUTHORIZE_INSTRUCTION_NAME" /> recibidas</translation>
-<translation id="4027569221211770437">Carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4028830198155575078">&amp;Mover</translation>
 <translation id="4029024445166427442">Selector + Mayúsculas + retroceso</translation>
@@ -4089,7 +4089,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4089235344645910861">Se guardó la configuración y comenzó la sincronización.</translation>
 <translation id="4089817585533500276">Mayúsculas + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Habilitar el acceso verificado</translation>
-<translation id="4092709865241032354">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario en este sitio</translation>
+<translation id="4092709865241032354">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario para este sitio</translation>
 <translation id="4093173301198419723">Debe tener letras mayúsculas, letras minúsculas, números y símbolos</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
 <translation id="4094647278880271855">Usas una variable de entorno no compatible: <ph name="BAD_VAR" />. Se verán afectadas la estabilidad y la seguridad.</translation>
@@ -4137,6 +4137,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4131283654370308898">Permitir <ph name="EXTENSION_NAME" /> en este sitio</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="413193092008917129">Rutinas de diagnóstico de red</translation>
+<translation id="4132108564882155194">Para obtener tu lista de lectura y más de <ph name="DEVICE" />, accede como <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Permite que se una cualquier persona que tenga el vínculo</translation>
 <translation id="4132364317545104286">Cambiar el nombre de perfil de eSIM</translation>
 <translation id="4132969033912447558">Reanudar <ph name="FILE_NAME" /></translation>
@@ -4230,6 +4231,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4213540068152645535">Problemas para cambiar la contraseña</translation>
 <translation id="42137655013211669">El servidor prohibió el acceso a este recurso.</translation>
 <translation id="4214192212360095377">Desactivar ahora</translation>
+<translation id="421564716234835106">Para obtener tus extensiones y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Tu organización desactivó el guardado de pestañas en tu Cuenta de Google</translation>
 <translation id="4216511743389425832">Escuchar esta página</translation>
 <translation id="4217571870635786043">Dictado</translation>
@@ -4449,6 +4451,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4379623957571212011">Selecciona una imagen para aplicar el tema de forma instantánea</translation>
 <translation id="4380055775103003110">Si el problema persiste, prueba otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Accediste a la pantalla completa</translation>
+<translation id="4380934846131873000">Para obtener tu información guardada y más de <ph name="DEVICE" />, accede como <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">No permitir que el sitio guarde datos</translation>
 <translation id="4381997246130185847">Puedes continuar donde dejaste o crear nuevos grupos de pestañas estés donde estés</translation>
 <translation id="4384312707950789900">Agregar a redes preferidas</translation>
@@ -4481,7 +4484,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="440411460180511551">Si Chromium encuentra una de tus contraseñas en una violación de seguridad de datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla cuando accedas.</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
-<translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405580203042711503">Nueva pestaña abajo</translation>
 <translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
@@ -4744,6 +4746,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4617880081511131945">No se puede establecer la conexión</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
+<translation id="4619910360235236556">Im&amp;primir selección de texto…</translation>
 <translation id="4620757807254334872">mouse</translation>
 <translation id="4620809267248568679">Una extensión administra esta configuración.</translation>
 <translation id="4621866192918370652">Puedes buscar esta página con Google para obtener más información útil</translation>
@@ -6026,7 +6029,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5611474372949142946">Cerrar las pestañas de abajo</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
-<translation id="5614947000616625327">Llavero de iCloud</translation>
 <translation id="5616571005307953937">Más antiguos</translation>
 <translation id="5616726534702877126">Reservar espacio</translation>
 <translation id="561698261642843490">Cerrar Firefox</translation>
@@ -6131,6 +6133,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5700836101007545240">Tu administrador inhabilitó la opción Agregar conexión</translation>
 <translation id="5701212929149679556">Roaming con red móvil</translation>
+<translation id="5701500921291556452">Para obtener tus contraseñas y más de <ph name="DEVICE" />, accede como <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> y 1 app más abran los vínculos compatibles.</translation>
 <translation id="5702161882524398150">Preguntar sobre la pestaña anterior</translation>
 <translation id="5703716265115423771">bajar volumen</translation>
@@ -6209,6 +6212,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5776571780337000608">Puedes abrir y editar los archivos compatibles con esta app desde el navegador de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Abrir Chrome</translation>
 <translation id="5778491106820461378">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o apps accedan a la información de la cuenta, puedes acceder a tu <ph name="DEVICE_TYPE" /> como invitado.</translation>
+<translation id="5779636902585836564">&amp;Traducir</translation>
 <translation id="5780011244986845107">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781120434102258025">Transfiere los datos de tu cuenta de institución educativa a tu cuenta personal</translation>
@@ -6947,7 +6951,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6347010704471250799">Mostrar notificación</translation>
 <translation id="634792071306410644">Nadie puede compartir contenido contigo hasta que actives la visibilidad</translation>
 <translation id="6348252528297699679">Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">Usa tu Cuenta de Google o crea una nueva</translation>
 <translation id="6348805481186204412">Almacenamiento sin conexión</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Administra tus dispositivos</translation>
@@ -7771,7 +7774,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="696942486482903620">Cuando guardas contraseñas en tu Cuenta de Google, puedes usarlas en este dispositivo y en cualquier otro en el que hayas accedido.</translation>
 <translation id="6970480684834282392">Tipo de inicio</translation>
 <translation id="6970543303783413625">No se pudieron importar las contraseñas. Solo puedes importar hasta <ph name="COUNT" /> contraseñas a la vez.</translation>
-<translation id="6970856801391541997">Imprimir páginas específicas</translation>
 <translation id="6970861306198150268">Asegúrate de guardar la contraseña actual para este sitio</translation>
 <translation id="6971184043765343932">La imagen que subiste</translation>
 <translation id="6971570759801670426">Editar <ph name="CREDENTIAL_TYPE" /> para el nombre de usuario: <ph name="USER_EMAIL" /></translation>
@@ -8281,6 +8283,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7368927539449986686">Edita las búsquedas en el sitio</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
+<translation id="7375506263741703384">Bloqueada por tu administrador</translation>
 <translation id="7376124766545122644">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que el vínculo comience con "http://" o "https://".</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
 <translation id="7377250337652426186">Para retroceder más de 1 página, mantén presionado el botón Atrás.</translation>
@@ -8301,6 +8304,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="738322632977123193">No se puede subir. Usa una imagen que tenga uno de estos formatos: .jpg, .gif, .png, .bmp, .tif o .webp</translation>
 <translation id="7384687527486377545">Repetición automática del teclado</translation>
 <translation id="7384804382450832142">Conéctala con Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Para ver tus favoritos y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Algo falló al intentar imprimir. Comprueba tu impresora e inténtalo nuevamente.</translation>
 <translation id="7385870590821097913">Sigue los pasos en el otro dispositivo</translation>
 <translation id="7387107590792462040">Espera mientras la instalación está en curso</translation>
@@ -8489,6 +8493,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7517292544534877198">Usar la encriptación predeterminada de Google para las contraseñas en tu Cuenta de Google</translation>
 <translation id="7517959947270534934">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chrome y sincronice sus contraseñas.</translation>
 <translation id="7518079994230200553">Esta opción no está disponible en este momento.</translation>
+<translation id="752021853309481824">Para obtener tu información guardada y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal en modo incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar los accesos directos</translation>
 <translation id="7521430434164837205">Archivos de Microsoft 365</translation>
@@ -8548,6 +8553,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7575272930307342804">Controles de navegación</translation>
 <translation id="757660455834887988">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Conecta una cámara a tu dispositivo.</translation>
 <translation id="7576690715254076113">Intercalar</translation>
+<translation id="7577535322483673900">Copiar vínculo a "<ph name="SELECTION" />"</translation>
 <translation id="7578137152457315135">Configuración de la huella dactilar</translation>
 <translation id="7578692661782707876">Ingresa tu código de confirmación.</translation>
 <translation id="757941033127302446">Accediste a tu cuenta</translation>
@@ -8760,6 +8766,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
 <translation id="7735558909644181051">Certificados intermedios</translation>
 <translation id="7736119438443237821">Estás a punto de quitar el acceso a tus llaves de acceso en este dispositivo</translation>
+<translation id="7737161071513018955">Copiar vínculo a "<ph name="SELECTION" />"</translation>
 <translation id="7737203573077018777">Instrucciones <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recibidas</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
 <translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
@@ -10201,6 +10208,8 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8841843049738266382">Leer y cambiar la lista de usuarios permitidos</translation>
 <translation id="8841884135319684422">Finalizar tarea</translation>
 <translation id="8842594465773264717">Borrar esta huella dactilar</translation>
+<translation id="8843160937959801189">Para obtener tus favoritos y más de <ph name="DEVICE" />, accede como <ph name="EMAIL" /></translation>
+<translation id="8844476858332168421">Administrar habilidades</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8846132060409673887">Leer el fabricante y el modelo de esta computadora</translation>
 <translation id="8846239054091760429">Audio mono, startup, Subtitulado instantáneo y más</translation>
@@ -10209,7 +10218,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8849219423513870962">Cancelar la eliminación del perfil de eSIM <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>
-<translation id="8850251000316748990">Ver más…</translation>
 <translation id="885246833287407341">Argumentos de la función de la API</translation>
 <translation id="8853586775156634952">Esta tarjeta solo se guardará en este dispositivo</translation>
 <translation id="8855242995793521265">No ralentiza mucho tu navegador ni dispositivo.</translation>

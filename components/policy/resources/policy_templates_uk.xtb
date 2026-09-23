@@ -5817,19 +5817,6 @@ WebSQL було вилучено у версії M112.</translation>
 
       Якщо це правило не налаштовано або ввімкнено, перевірки перехоплення системи DNS виконуються. Якщо його вимкнено, перевірки не відбуваються.</translation>
 <translation id="4700190441681139987">Заборонити всім сайтам доступ до датчиків</translation>
-<translation id="4700450186549212780">Це правило дає змогу налаштувати параметри підключення <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> у <ph name="PRODUCT_NAME" />.
-
-Щоб налаштувати <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, адміністратори мають указати:
-* URL-адресу вебдодатка <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />); АБО
-* усі три застарілі параметри разом: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> і <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Якщо вказати лише деякі із цих трьох параметрів без URL-адреси, правило буде відхилено.
-
-Якщо налаштувати і параметр <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, і застарілі параметри, пріоритет матиме параметр <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />.
-
-Якщо налаштувати це правило, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> буде ввімкнено для користувачів, які ввійшли в керований обліковий запис або керований вебпереглядач.
-
-Якщо це правило не налаштувати, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не буде ввімкнено.
-
-Зверніть увагу, що це правило не керує загальною інтеграцією <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, яка регулюється правилом <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="4703402283970867140">Увімкнути модель розумного затемнення, щоб збільшити час активності екрана</translation>
 <translation id="4704958130749494760">Автоматично дозволяти сайтам підключатися до USB-пристроїв із послідовним інтерфейсом</translation>
 <translation id="4705329890928008808">Якщо для цього правила вибрано значення CopyCaCerts, додатки ARC матимуть доступ до всіх сертифікатів центру сертифікації з <ph name="WEB_TRUSTED_BIT" />, які встановлено через файли ONC.
@@ -7559,7 +7546,6 @@ https://chromeenterprise.google/policies/url-patterns. Підтримуєтьс�
 <translation id="5728154254076636808">Увімкнути створення роумінгових копій до даних профілю <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Пароль Kerberos. Заповнювач <ph name="PASSWORD_PLACEHOLDER" /> буде замінено паролем для входу.</translation>
 <translation id="5730610899971390601">Відхиляти запити на створення пари Bluetooth без підтвердження</translation>
-<translation id="5731883586899464960">URL-адреса вебдодатка екземпляра <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> для цієї організації.</translation>
 <translation id="5732972008943405952">Імпортувати дані автозаповнення форм із веб-переглядача за умовчанням під час першого запуску</translation>
 <translation id="5733040281451845496">Якщо ввімкнути це правило, затримки керування живленням і обмеження тривалості сеансу запускаються лише тоді, коли користувач виконує першу дію в сеансі.
 

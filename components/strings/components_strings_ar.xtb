@@ -295,7 +295,7 @@
 <translation id="1473495410389165587">يجب إدخال 3 كلمات أو أكثر للحصول على مساعدة في الكتابة.</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1476595624592550506">عليك تغيير كلمة مرورك</translation>
-<translation id="1481450969185702334">البحث عن الاقتراحات وتعبئتها</translation>
+<translation id="1481450969185702334">البحث عن المعلومات وتعبئتها</translation>
 <translation id="1482372785911828880">رقيق للغاية</translation>
 <translation id="1483493594462132177">إرسال</translation>
 <translation id="1484449009683144042">‏هذه أداة تجريبية للمساعدة في الكتابة باستخدام الذكاء الاصطناعي (AI) وقد توفّر اقتراحات غير دقيقة في بعض الأحيان.
@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">‏خط Monospace</translation>
 <translation id="1757935267918149452">‏زر تغيير كلمة مرور Google: انقر على هذا الزر لتغيير كلمة مرور حسابك على Google.</translation>
 <translation id="1759776526873274358">‏تملأ هذه الميزة تلقائيًا رموز التحقّق التي تستخدمها المواقع الإلكترونية لتحسين مستوى الأمان. ويمكن لمتصفّح Chrome الحصول على هذه الرموز من حسابك على Gmail. <ph name="BEGIN_LINK" />مزيد من المعلومات حول هذه الميزة<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">‏يمكنك الانتقال إلى "محفظة Google" للتحكّم في <ph name="BEGIN_LINK1" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK1" /> أو إدارة <ph name="BEGIN_LINK2" />طُرق الدفع<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />البطاقات<ph name="END_LINK3" /> مثل بطاقات الولاء ومستندات تعريف الهوية</translation>
 <translation id="1763864636252898013">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من خلال نظام تشغيل جهازك. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />تجربة تشغيل بيانات التشخيص لشبكة Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">تصوير (أرشفة)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">تم حظر دخولك إلى الإنترنت</translation>
 <translation id="2294150501457238325">إضافة بيانات جواز السفر بأمان</translation>
 <translation id="2295831393422400053">يجب تفعيل إعداد "تحسين عمليات البحث والتصفُّح" لاستخدام ميزة "مساعدة في الكتابة".</translation>
-<translation id="2296244067976588032">‏مفتاح المرور • سلسلة مفاتيح iCloud</translation>
 <translation id="2296331629987861142">يمكنك التسديد على أقساط سهلة الدفع (وفقًا للأهلية ومع تطبيق رسوم)</translation>
 <translation id="2300306941146563769">لم يتم التحميل</translation>
 <translation id="2301064673700597535">بيانات الشهادات المؤهلة</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">تم حفظ معلومات البطاقة</translation>
 <translation id="2505268675989099013">حماية الحساب</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (تنطبق الأحكام)</translation>
+<translation id="251033673027346551">‏يُرجى الانتقال إلى "محفظة Google" لإدارة <ph name="BEGIN_LINK" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">غير مسموح به (الإعداد التلقائي)</translation>
 <translation id="2512413427717747692">‏زر ضبط Chrome كمتصفِّح تلقائي، انقر على مفتاح Enter لضبط Chrome كمتصفِّح تلقائي للنظام في إعدادات iOS</translation>
 <translation id="2515629240566999685">التحقّق من اتصال الإنترنت في منطقتك</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3209034400446768650">إمكانية تحصيل الصفحة للرسوم</translation>
 <translation id="3209071504641569648">‏يتم إرسال طلباتك وعناوين الصفحات وعناوين URL إلى Google، وقد تتم مراجعتها لتحسين ميزة "الملء التلقائي المحسّن"</translation>
+<translation id="3211727636285361260">فتح روابط <ph name="PROTOCOL" /> من خلال <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">بدأت عملية التنزيل. يمكنك السحب من أعلى الشاشة والنقر على زرّ الرجوع للاطّلاع عليها</translation>
 <translation id="3212581601480735796">تتم مراقبة نشاطك على <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">‏تعذّر استخدام WebAuthn</translation>
@@ -2087,6 +2087,7 @@
 <translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
 <translation id="4493480324863638523">‏عنوان URL غير صحيح. يجب أن يحتوي عنوان URL على نظام عادي، مثل http://example.com أو https://example.com.</translation>
 <translation id="4497010149473852018">تم فتح قائمة بطاقات الولاء التي يمكن ملء بياناتها باللمس. لوحة المفاتيح مخفية.</translation>
+<translation id="4497843134750481377">إدارة العروض</translation>
 <translation id="4500587658229086076">المحتوى غير الآمن</translation>
 <translation id="4501939680615452918">أريد البحث عن طاولات متاحة في مطاعم رائجة</translation>
 <translation id="4503459574136856756">أعِد كتابة سيرتي الذاتية لتصبح أكثر احترافية</translation>
@@ -3751,6 +3752,7 @@
 <translation id="7347640536700429009">الاسم المكتوب على البطاقة غير صالح</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7353601530677266744">سطر الأوامر</translation>
+<translation id="7358055687760675498">فتح روابط <ph name="PROTOCOL" /> من خلال <ph name="HANDLER_HOSTNAME" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">تم حظر الإعلانات.</translation>
 <translation id="7362281996276843968">هذه المجموعة مغلقة</translation>
 <translation id="7363096869660964304">على الرغم من أنّ نشاطك غير مرئي، إلا أنّ وضع التصفُّح المتخفي لا يخفي بيانات تصفُّحك عن صاحب العمل أو مزوّد خدمة الإنترنت أو المواقع الإلكترونية التي تزورها.</translation>

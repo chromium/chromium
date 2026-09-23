@@ -105,6 +105,7 @@
 <translation id="3072591112723064972">‏כדי שקישורים יפתחו ישירות ב-Chromium, צריך להגדיר אותו כדפדפן ברירת המחדל.</translation>
 <translation id="3115956258722352278">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="3180939591219927904">‏מפעילים את האפשרות "נעילת הכרטיסיות הפרטיות כשסוגרים את Chromium"</translation>
+<translation id="3239426886813624481">‏כדי לשתף את המיקום שלך עם אתרים, צריך ללחוץ על "הגדרות" ולאפשר ל-Chromium להשתמש במיקום.</translation>
 <translation id="327628223428512207">‏כדי לשמור את הסיסמה הזו ולקבל את הנתונים של Chromium בכל המכשירים, צריך להקליד את ביטוי הסיסמה</translation>
 <translation id="328933489847748230">{count,plural, =1{‏כרגע מוצג חלון Chromium אחד}one{‏כרגע מוצגים {count} חלונות Chromium}two{‏כרגע מוצגים {count} חלונות Chromium}other{‏כרגע מוצגים {count} חלונות Chromium}}</translation>
 <translation id="3344204225393848305">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>

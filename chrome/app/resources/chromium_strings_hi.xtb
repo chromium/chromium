@@ -302,6 +302,7 @@
 <translation id="4251772536351901305">यह सुविधा स्टैंडर्ड सुरक्षा मोड की तुलना में ज़्यादा डेटा का विश्लेषण करके, आपको ऐसी खतरनाक साइटों के बारे में चेतावनी देती है जिनके बारे में Google को पहले से नहीं पता था. Chromium की चेतावनियों को अनदेखा किया जा सकता है.</translation>
 <translation id="4269093074552541569">Chromium से साइन आउट करें</translation>
 <translation id="4271805377592243930">क्रोमियम के लिए सहायता पाएं</translation>
+<translation id="4275788652681621337">साइड पैनल बंद करें</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="4285930937574705105">अनिर्दिष्ट कारण से इंस्‍टॉलेशन विफल हुआ. अगर Google Chrome अभी खुला हुआ है, तो कृपया उसे बंद करें और फिर से प्रयास करें.</translation>
 <translation id="4298125729853015961">Chromium से पासवर्ड एक्सपोर्ट करें</translation>
@@ -441,7 +442,6 @@
 <translation id="5896077214220653386">Chromium में Gemini Enterprise</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - नेटवर्क में साइन इन करें</translation>
 <translation id="5924017743176219022">इंटरनेट से कनेक्ट हो रहा है…</translation>
-<translation id="5939553720811388432">Chromium को सेट अप करें</translation>
 <translation id="5941711191222866238">छोटा करें</translation>
 <translation id="5949225980829865667">अपने सभी डिवाइसों पर यह बुकमार्क और अन्य चीज़ों का ऐक्सेस पाने के लिए, Chromium में साइन इन करें</translation>
 <translation id="5953657885167112863">Chromium को अपनी पसंद के मुताबिक बनाएं</translation>

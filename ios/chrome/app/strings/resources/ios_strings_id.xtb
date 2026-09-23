@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Ketuk dua kali untuk mengubah folder induk.</translation>
 <translation id="132969855425874290">Tutup temukan dan isi</translation>
 <translation id="1333455942675373522">Keyboard</translation>
+<translation id="1333669029961409292">"Periksa sandi Anda" selesai.</translation>
 <translation id="1334485477792811969">Layanan web</translation>
 <translation id="1335767868357998043">Pilih Posisi Kolom URL</translation>
 <translation id="1347468774581902829">Kelola aktivitas</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">BB/TT</translation>
 <translation id="1636234353664774105">Dapatkan rute ke tujuan dengan panduan belokan demi belokan menggunakan fitur navigasi</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1644229815617955289">Kelola histori, cookie, dan lainnya untuk melindungi privasi Anda</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark disimpan}other{Bookmark disimpan}}</translation>
 <translation id="1650979352027263879">Preferensi tampilan Anda dihapus</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
 <translation id="2244080985779413662">Situs ini ingin mendownload file dan membukanya di Wallet Anda.</translation>
 <translation id="2245007488813216650">Menerjemahkan…</translation>
+<translation id="2246445006133863463">Izin ini memungkinkan Anda melakukan percakapan dengan Gemini menggunakan suara</translation>
 <translation id="2249119578464404734">Di bagian atas layar, ketuk ikon Penelusuran</translation>
 <translation id="2251686759395008410">Menu → Histori</translation>
 <translation id="2252378061043785266">Jangan Pernah Tampilkan Situs Ini</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Tetap gunakan dan simpan sandi di Akun Google Anda <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Impor</translation>
 <translation id="3854052088499589035">Anda akan menerima info terbaru saat Anda membuat progres di Level Up</translation>
+<translation id="3854214753902617617">Pelajari Safe Browsing yang Disempurnakan</translation>
 <translation id="3857113360369572832">Buka <ph name="BEGIN_BOLD" />Setelan Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan memiliki kesempatan untuk menyimpan info ini ke Wallet saat Anda mengisi formulir terkait lagi.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Bagikan Sandi Anda</translation>
 <translation id="4049419681095579435">Paket sudah dilacak</translation>
 <translation id="4049507953662678203">Pastikan Anda memiliki koneksi jaringan dan coba lagi.</translation>
+<translation id="4052951214266508382">Izinkan “Gemini” menggunakan mikrofon</translation>
 <translation id="4054290211988862686">Pilih File</translation>
 <translation id="4070132839822635162">Jangan login</translation>
 <translation id="4072473499345702662">Buka Level Up</translation>
@@ -1481,6 +1486,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="574762237186762643">Acara</translation>
 <translation id="5749158352074143502">Lanjutkan dengan tab ini</translation>
 <translation id="5753021559215751319">Simpan sandi</translation>
+<translation id="5756200167514420691">Buka tab dalam mode Samaran untuk menjelajahi web secara lebih pribadi</translation>
 <translation id="5756525336488841345">Sembunyikan Bookmark</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="57586589942790530">Nomor kartu tidak valid</translation>
@@ -1551,6 +1557,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5988097621740394599">Lihat diskon di tab.</translation>
 <translation id="5988851877894965432">Buka URL di Chrome</translation>
 <translation id="599343768974649785">Teks Eksplisit</translation>
+<translation id="6000893618966378846">"Hapus data penjelajahan" selesai.</translation>
 <translation id="6004988584831654445">Selesai. Dapatkan notifikasi saat ada tugas baru.</translation>
 <translation id="6006672969046233841">Tab Baru</translation>
 <translation id="6011308810877101166">Tingkatkan saran penelusuran</translation>
@@ -1810,6 +1817,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
+<translation id="6749473226660745022">Foto</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item histori diimpor}other{{count} item histori diimpor}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opsi untuk kredensial tersedia di atas keyboard Anda.}other{{count} opsi untuk kredensial tersedia di atas keyboard Anda.}}</translation>
 <translation id="6755200887046212842">Kelola Akun</translation>
@@ -1975,6 +1983,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7312823817809783355">Tugas Anda</translation>
 <translation id="7313347584264171202">Tab Samaran Anda akan ditampilkan di sini</translation>
+<translation id="7318555235645532245">"Gunakan Mode Samaran" selesai.</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opsi isi otomatis tersedia di atas keyboard Anda.}other{{count} opsi isi otomatis tersedia di atas keyboard Anda.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
@@ -2151,6 +2160,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7857520352710212030">Situs disematkan</translation>
 <translation id="7859988229622350291">Jangan pernah terjemahkan</translation>
 <translation id="7863211248337747225">Dapatkan aplikasi</translation>
+<translation id="7863990181930071932">Akses Lokasi Dinonaktifkan</translation>
 <translation id="7865127013871431856">Opsi Terjemahan</translation>
 <translation id="7866872729285243843">Untuk mendapatkan daftar bacaan di semua perangkat, aktifkan "Daftar Bacaan" di setelan.</translation>
 <translation id="7874107544081154809">Isi otomatis formulir dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8786100550345425552">Edit izin</translation>
 <translation id="878871978861915380">Sembunyikan "Pemantauan harga"</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8795809107245894196">Gunakan Pemeriksaan Sandi untuk memastikan sandi Anda aman</translation>
 <translation id="8796634520835503150">Mode baca tersedia</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8803639129939845298">Aman</translation>
@@ -2491,6 +2502,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8879952635974818770">Konten yang dipersonalisasi</translation>
 <translation id="8887595428614802520">Tutup Semua Tab dan Grup</translation>
 <translation id="8888595487174963247">Hapus Pengingat</translation>
+<translation id="8890516388109605451">Sumber</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8900845556227858314">Aplikasi Browser</translation>
@@ -2531,6 +2543,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="9012585441087414258">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Jika halaman melakukan hal yang mencurigakan, URL dan contoh kecil konten halaman akan dikirim ke Google Safe Browsing.</translation>
 <translation id="9013605037177245304">Aktifkan Notifikasi</translation>
 <translation id="9029650858822697271">Anda telah logout</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
 <translation id="9035699147763101514">Didukung oleh Kecerdasan Personal dengan Gemini. Kelola pilihan Anda di setelan.</translation>
 <translation id="9038526468059454274">Buat ringkasan dengan</translation>

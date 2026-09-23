@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace फॉंट</translation>
 <translation id="1757935267918149452">Google पासवर्ड बदला बटण, तुमचा Google खाते पासवर्ड बदलण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="1759776526873274358">तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी साइट वापरत असलेले पडताळणी कोड ऑटोफिल करा. Chrome हे कोड तुमच्या Gmail मधून मिळवू शकते. <ph name="BEGIN_LINK" />या वैशिष्ट्याबद्दल अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK1" /> नियंत्रित करण्यासाठी किंवा लॉयल्टी कार्ड व आयडी यांसारख्या <ph name="BEGIN_LINK2" />पेमेंट पद्धती<ph name="END_LINK2" /> आणि <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या</translation>
 <translation id="1763864636252898013">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट तुम्हाला डिव्हाइसच्या ऑपरेटिंग सिस्टमद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">तुमचा इंटरनेट ॲक्सेस ब्लॉक केला आहे</translation>
 <translation id="2294150501457238325">पासपोर्ट सुरक्षितपणे जोडा</translation>
 <translation id="2295831393422400053">मला लिहिण्यात मदत करा वापरण्यासाठी शोधा व ब्राउझिंगमध्ये सुधारणा करा सेटिंग सुरू करा</translation>
-<translation id="2296244067976588032">पासकी • iCloud Keychain</translation>
 <translation id="2296331629987861142">सुलभ हप्त्यांमध्ये पेमेंट करा (पात्रतेच्या अधीन आहे, शुल्क लागू)</translation>
 <translation id="2300306941146563769">अपलोड केला नाही</translation>
 <translation id="2301064673700597535">पात्र सर्टिफिकेट स्टेटमेंट</translation>
@@ -905,6 +903,7 @@
 <translation id="2493122313108999546">आकार बदलला</translation>
 <translation id="249376477913017009">Gmail आणि इतर ठिकाणांहून ऑटोफिल करण्याची सूचना उघडली आहे</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
+<translation id="2495909791227061512">जवळपासच्या डिव्हाइसशी कनेक्ट करायचे आहे का?</translation>
 <translation id="2496402116964818747">पासवर्ड भरण्यासाठी तुमचे फिंगरप्रिंट वापरायचे की नाही हे तुम्ही <ph name="SETTINGS" /> मध्ये बदलू शकता</translation>
 <translation id="2498091847651709837">नवीन कार्ड स्कॅन करा</translation>
 <translation id="2501270939904835585">लेबल (सॅटिन)</translation>
@@ -913,6 +912,7 @@
 <translation id="2505063700931618106">कार्डशी संबंधित माहिती सेव्ह केली</translation>
 <translation id="2505268675989099013">खात्याचे संरक्षण करा</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (अटी लागू)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या.</translation>
 <translation id="2512101340618156538">अनुमती नाही (डीफॉल्ट)</translation>
 <translation id="2512413427717747692">Chrome ला डीफॉल्ट ब्राउझर बटण म्हणून सेट करा, iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2515629240566999685">आपल्या क्षेत्रातील सिग्नल तपासणे</translation>
@@ -1305,6 +1305,7 @@
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3209034400446768650">पेज कदाचित शुल्क आकारू शकते</translation>
 <translation id="3209071504641569648">तुमच्या विनंत्या, पेजची शीर्षके आणि URLs या गोष्टी Google कडे पाठवल्या जातात व वर्धित ऑटोफिलमध्ये सुधारणा करण्यासाठी त्यांचे पुनरावलोकन केले जाऊ शकते</translation>
+<translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" /> द्वारे <ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="3212468046572043669">डाउनलोड करणे सुरू झाले. ते पाहण्यासाठी, वरून ड्रॅग करा आणि मागे जा बटणाला स्पर्श करा</translation>
 <translation id="3212581601480735796">तुमच्या <ph name="HOSTNAME" /> वरील अ‍ॅक्टिव्हिटीचे परीक्षण केले जात आहे</translation>
 <translation id="3215092763954878852">WebAuthn वापरता आले नाही</translation>
@@ -2086,6 +2087,7 @@
 <translation id="449126573531210296">तुमचे Google खाते वापरून सिंक केलेले पासवर्ड एंक्रिप्ट करा</translation>
 <translation id="4493480324863638523">चुकीची URL. URL चा एक ठरावीक फॉरमॅट असणे आवश्यक आहे, उदा. http://example.com or https://example.com.</translation>
 <translation id="4497010149473852018">स्पर्श करून भरण्यासाठी लॉयल्‍टी कार्ड उपलब्ध आहेत. कीबोर्ड लपवलेला आहे.</translation>
+<translation id="4497843134750481377">ऑफर व्यवस्थापित करा</translation>
 <translation id="4500587658229086076">असुरक्षित आशय</translation>
 <translation id="4501939680615452918">ट्रेंडिंग रेस्टॉरंटमध्ये जागा शोध</translation>
 <translation id="4503459574136856756">माझा बायो अधिक व्यावसायिक वाटण्यासाठी पुन्हा लिहा</translation>
@@ -3751,6 +3753,7 @@
 <translation id="7347640536700429009">कार्डवरील नाव चुकीचे आहे</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353601530677266744">कमांड लाइन</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" /> लिंक <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी <ph name="HANDLER_HOSTNAME" /> द्वारे उघडा</translation>
 <translation id="7359588939039777303">जाहिराती ब्लॉक केल्या.</translation>
 <translation id="7362281996276843968">हा गट बंद केला आहे</translation>
 <translation id="7363096869660964304">मात्र, तुम्ही अदृश्य नाही. गुप्त मोडमध्ये तुमचे ब्राउझिंग हे तुमचा नियोक्ता, तुमचा इंटरनेट सेवा पुरवठादार किंवा तुम्ही भेट देता त्या वेबसाइटपासून लपत नाही.</translation>

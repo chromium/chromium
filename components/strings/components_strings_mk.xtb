@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Фонт Monospace</translation>
 <translation id="1757935267918149452">Копче за промена на лозинката на Google, активирајте го за да ја промените лозинката за сметката на Google</translation>
 <translation id="1759776526873274358">Автоматско пополнување на кодовите за потврда што ги користат сајтовите за да ја подобрат вашата безбедност. Chrome може да ги добива кодовиве од вашата Gmail. <ph name="BEGIN_LINK" />Дознајте повеќе за функцијава<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Одете во Google Wallet за да ги контролирате <ph name="BEGIN_LINK1" />поставките за податоци и приватност<ph name="END_LINK1" /> или да управувате со <ph name="BEGIN_LINK2" />начините на плаќање<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />пропусниците<ph name="END_LINK3" /> како картички за лојалност и документи за идентификација</translation>
 <translation id="1763864636252898013">Серверот не може да докаже дека е <ph name="DOMAIN" />; oперативниот систем на уредот не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата на Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Фотографија (архивска)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">Вашиот пристап на интернет е блокиран</translation>
 <translation id="2294150501457238325">Додајте пасош безбедно</translation>
 <translation id="2295831393422400053">Вклучете ја поставката „Подобрување на пребарувањата и прелистувањата“ за да користите „Помогни ми да напишам“</translation>
-<translation id="2296244067976588032">Криптографски клуч • iCloud Keychain</translation>
 <translation id="2296331629987861142">Практично плаќање на рати (зависи од подобност, се плаќаат надоместоци)</translation>
 <translation id="2300306941146563769">Не е прикачен</translation>
 <translation id="2301064673700597535">Qualified Certificate Statements</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">Податоците за картичката се зачувани</translation>
 <translation id="2505268675989099013">Заштити ја сметката</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (важат одредени „Услови“)</translation>
+<translation id="251033673027346551">Одете во Google Wallet за да управувате со <ph name="BEGIN_LINK" />поставките за податоци и приватност<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Не е дозволено (стандардно)</translation>
 <translation id="2512413427717747692">Копче за поставување на Chrome како стандарден прелистувач, притиснете Enter за да го поставите Chrome како стандарден прелистувач на системот во поставките за iOS</translation>
 <translation id="2515629240566999685">Да го проверите сигналот во вашата област</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3209034400446768650">Страницата може да наплаќа</translation>
 <translation id="3209071504641569648">Вашите барања, наслови на страници и URL-адреси се испраќаат до Google и може да се прегледуваат за да се подобри „Подобрено автоматско пополнување“</translation>
+<translation id="3211727636285361260">ги отвора линковите од <ph name="PROTOCOL" /> преку <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Преземањето започна. За да го видите, повлечете одозгора и допрете го копчето за назад</translation>
 <translation id="3212581601480735796">Вашата активност на <ph name="HOSTNAME" /> се набљудува</translation>
 <translation id="3215092763954878852">Не може да се користи WebAuthn</translation>
@@ -2087,6 +2087,7 @@
 <translation id="449126573531210296">Шифрирај синхронизирани лозинки со сметката на Google</translation>
 <translation id="4493480324863638523">Неважечка URL-адреса. Мора да биде URL-адреса со стандардна шема, на пример, http://example.com или https://example.com.</translation>
 <translation id="4497010149473852018">Картичките за лојалност се достапни за пополнување на допир. Тастатурата е скриена.</translation>
+<translation id="4497843134750481377">Управувајте со понудите</translation>
 <translation id="4500587658229086076">небезбедни содржини</translation>
 <translation id="4501939680615452918">Побарај слободни места во рестораните во тренд</translation>
 <translation id="4503459574136856756">Преработи ја мојата биографија за да звучи попрофесионално</translation>
@@ -3750,6 +3751,7 @@
 <translation id="7347640536700429009">Името на картичката е неважечко</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7353601530677266744">Командна линија</translation>
+<translation id="7358055687760675498">да ги отвора линковите од <ph name="PROTOCOL" /> преку <ph name="HANDLER_HOSTNAME" /> наместо преку <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Рекламите се блокирани.</translation>
 <translation id="7362281996276843968">Групава е затворена</translation>
 <translation id="7363096869660964304">Сепак, не сте невидливи. Режимот „Инкогнито“ не го сокрива вашето прелистување од работодавецот, интернет-операторот, ниту од веб-сајтовите што ги посетувате.</translation>

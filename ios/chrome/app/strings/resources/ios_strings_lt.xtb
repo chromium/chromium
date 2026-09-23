@@ -1817,6 +1817,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6732087373923685049">fotoaparatas</translation>
 <translation id="6736243959894955139">Adresas</translation>
 <translation id="6746338529702829275">Peržiūrėkite paskyros duomenis</translation>
+<translation id="6749473226660745022">Nuotraukos</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importuotas {count} istorijos elementas}one{Importuotas {count} istorijos elementas}few{Importuoti {count} istorijos elementai}many{Importuota {count} istorijos elemento}other{Importuota {count} istorijos elementų}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Virš klaviatūros pasiekiama {count} prisijungimo duomenų parinktis.}one{Virš klaviatūros pasiekiama {count} prisijungimo duomenų parinktis.}few{Virš klaviatūros pasiekiamos {count} prisijungimo duomenų parinktys.}many{Virš klaviatūros pasiekiama {count} prisijungimo duomenų parinkties.}other{Virš klaviatūros pasiekiama {count} prisijungimo duomenų parinkčių.}}</translation>
 <translation id="6755200887046212842">Tvarkyti paskyras</translation>
@@ -2501,6 +2502,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8879952635974818770">Suasmenintas turinys</translation>
 <translation id="8887595428614802520">Uždaryti visus skirtukus ir grupes</translation>
 <translation id="8888595487174963247">Pašalinti priminimą</translation>
+<translation id="8890516388109605451">Šaltiniai</translation>
 <translation id="8893208530912252670">Vaizdo įrašai</translation>
 <translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>
 <translation id="8900845556227858314">Naršyklės programa</translation>
@@ -2541,6 +2543,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>
 <translation id="9013605037177245304">Įjungti pranešimus</translation>
 <translation id="9029650858822697271">Buvote atjungti</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Patvirtinti naršymo duomenų ištrynimą</translation>
 <translation id="9035699147763101514">Teikia Asmeninis intelektas su „Gemini“. Tvarkykite pasirinkimus nustatymuose.</translation>
 <translation id="9038526468059454274">Apibendrinkite naudodami</translation>

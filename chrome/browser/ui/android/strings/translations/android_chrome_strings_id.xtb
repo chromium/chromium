@@ -305,7 +305,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2226826835915474236">Pintasan yang tidak aktif</translation>
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="2227444325776770048">Lanjutkan sebagai <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Dapatkan semua info tersimpan Anda</translation>
 <translation id="2230777942707397948">Jendela kosong</translation>
 <translation id="223356358902285214">Aktivitas Web &amp; Aplikasi</translation>
 <translation id="2233735624724508540">Pilih rentang waktu, lalu ketuk Hapus data</translation>
@@ -359,7 +358,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2413014528833954543">Tidak dapat memeriksa sandi di perangkat ini</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2415037988255164008">Pulihkan jendela?</translation>
-<translation id="2426805022920575512">Pilih akun lain</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video dalam daftar}other{Video, # video dalam daftar}}</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2449931042095204989">Saat situs atau aplikasi Google meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan mengenkripsi dan melakukan pramuat halaman melalui server Google tanpa cookie. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat.</translation>
@@ -511,7 +509,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2996291259634659425">Buat frasa sandi</translation>
 <translation id="2996682533106928201">Ketuk untuk menutup</translation>
 <translation id="2996809686854298943">Perlu URL</translation>
-<translation id="3007318536447999974">Untuk berbicara dengan Gemini, izinkan Gemini menggunakan mikrofon. Anda juga dapat mengelola izin ini di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Preferensi Mode baca ditutup</translation>
 <translation id="3024277805447899099">Lihat pratinjau gambar</translation>
 <translation id="3026955690410463085">Sertakan link</translation>
@@ -1291,7 +1288,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196315980958524839">Sandi disimpan ke Pengelola Sandi Google di perangkat ini</translation>
 <translation id="6204781143409202534">Chrome mendeteksi kemungkinan spam dari <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Melihat pratinjau halaman ini</translation>
 <translation id="6212567362666004597">Tambahkan tab ke grup</translation>
 <translation id="6225572914528673855">Kolom URL</translation>
@@ -1950,7 +1946,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8570677896027847510">File tidak dapat didownload dengan aman</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8580435650274205305">Tanggal habis masa berlaku, wajib diisi</translation>
-<translation id="8582529315803410153">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
 <translation id="8585103689515290060">Layanan isi otomatis</translation>
 <translation id="8586116786993312006">Ketuk untuk menghapus data penjelajahan di Chrome</translation>
 <translation id="859046281437143747">Pantau harga dari tombol opsi Lainnya</translation>
@@ -2054,7 +2049,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9015111999662965458">Untuk memastikan perangkat ini dapat digunakan dengan aman, organisasi Anda mungkin perlu melihat informasi tentang sistem operasi, browser, setelan, dan software apa yang diinstal di perangkat</translation>
 <translation id="9019199799064251516">Lanjutkan tanpa kunci profil mobil?</translation>
 <translation id="9022774213089566801">Sering dikunjungi</translation>
-<translation id="9024318700713112071">Setel Chrome sebagai browser default</translation>
+<translation id="9024318700713112071">Setel Chrome sebagai browser default Anda</translation>
 <translation id="9027728231343310283">Urungkan <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Pindahkan ke\u2026</translation>
 <translation id="904146253922032365">Sentuh lama untuk menampilkan tab secara vertikal</translation>

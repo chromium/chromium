@@ -305,7 +305,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2226826835915474236">Atalhos inativos</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Aceda a todas as suas informações guardadas</translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade da Web e de apps</translation>
 <translation id="2233735624724508540">Escolha um período e, de seguida, toque em Eliminar dados</translation>
@@ -359,7 +358,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2413014528833954543">Não é possível verificar as palavras-passe neste dispositivo</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2415037988255164008">Restaurar as janelas?</translation>
-<translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeos, 1 vídeo na lista}other{Vídeos, # vídeos na lista}}</translation>
 <translation id="2433507940547922241">Aspeto</translation>
 <translation id="2449931042095204989">Quando um site ou uma app Google pede para pré-carregar links de forma privada na respetiva página, o Chrome encripta e pré-carrega as páginas através dos servidores da Google sem cookies. Isto oculta a sua identidade no site pré-carregado.</translation>
@@ -511,7 +509,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2996291259634659425">Criar frase de acesso</translation>
 <translation id="2996682533106928201">Toque para ignorar</translation>
 <translation id="2996809686854298943">URL obrigatório</translation>
-<translation id="3007318536447999974">Para falar com o Gemini, dê-lhe autorização para usar o seu microfone. Também pode gerir esta opção nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Preferências do Modo de leitura fechadas</translation>
 <translation id="3024277805447899099">Pré-visualizar imagem</translation>
 <translation id="3026955690410463085">Incluir link</translation>
@@ -1291,7 +1288,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6196315980958524839">As palavras-passe são guardadas no Gestor de Palavras-passe da Google neste dispositivo</translation>
 <translation id="6204781143409202534">O Chrome detetou um possível spam de <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>
 <translation id="6211386937064921208">A pré-visualizar esta página…</translation>
 <translation id="6212567362666004597">Adicionar separador a grupo</translation>
 <translation id="6225572914528673855">Barra de endereço</translation>
@@ -1950,7 +1946,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8570677896027847510">Não é possível transferir o ficheiro em segurança</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8580435650274205305">Data de validade, obrigatória</translation>
-<translation id="8582529315803410153">Os seus separadores de outros dispositivos serão apresentados aqui</translation>
 <translation id="8585103689515290060">Serviços de preenchimento automático</translation>
 <translation id="8586116786993312006">Toque para eliminar os dados de navegação no Chrome</translation>
 <translation id="859046281437143747">Monitorize o preço a partir do botão Mais opções</translation>

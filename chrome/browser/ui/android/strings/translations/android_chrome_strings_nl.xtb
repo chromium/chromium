@@ -305,7 +305,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2226826835915474236">Inactieve snelkoppelingen</translation>
 <translation id="2227179592712503583">Suggestie verwijderen</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Al je opgeslagen informatie krijgen</translation>
 <translation id="2230777942707397948">Leeg venster</translation>
 <translation id="223356358902285214">Web- en app-activiteit</translation>
 <translation id="2233735624724508540">Kies een periode en tik op Gegevens verwijderen</translation>
@@ -359,7 +358,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2413014528833954543">Kan wachtwoorden op dit apparaat niet checken</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2415037988255164008">Vensters herstellen?</translation>
-<translation id="2426805022920575512">Een ander account kiezen</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video's, 1 video in lijst}other{Video's, # video's in lijst}}</translation>
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2449931042095204989">Als een Google-site of -app vraagt om links op de eigen pagina privé vooraf te laden, versleutelt en laadt Chrome de pagina's vooraf via Google-servers zonder cookies. Hierdoor wordt je identiteit voor de vooraf geladen site verborgen.</translation>
@@ -511,7 +509,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2996291259634659425">Wachtwoordzin maken</translation>
 <translation id="2996682533106928201">Tik om te sluiten</translation>
 <translation id="2996809686854298943">URL vereist</translation>
-<translation id="3007318536447999974">Als je met Gemini wilt praten, geef je Gemini toestemming om je microfoon te gebruiken. Je kunt dit ook beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Voorkeuren voor de leesmodus gesloten</translation>
 <translation id="3024277805447899099">Voorbeeld van afbeelding</translation>
 <translation id="3026955690410463085">Link toevoegen</translation>
@@ -1291,7 +1288,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6196315980958524839">Wachtwoorden worden opgeslagen in Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="6204781143409202534">Chrome heeft mogelijk spam van <ph name="DOMAIN" /> gevonden.</translation>
-<translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
 <translation id="6212567362666004597">Tabblad toevoegen aan groep</translation>
 <translation id="6225572914528673855">Adresbalk</translation>
@@ -1950,7 +1946,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8580435650274205305">Vervaldatum, vereist</translation>
-<translation id="8582529315803410153">Hier vind je je tabbladen van andere apparaten</translation>
 <translation id="8585103689515290060">Services voor automatisch invullen</translation>
 <translation id="8586116786993312006">Tik om browsegegevens in Chrome te verwijderen</translation>
 <translation id="859046281437143747">Volg de prijs via de knop Meer opties</translation>

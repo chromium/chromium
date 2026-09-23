@@ -468,7 +468,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1757935267918149452">Tombol Ubah sandi Google, aktifkan untuk mengubah sandi Akun Google Anda</translation>
 <translation id="1759776526873274358">Isi otomatis kode verifikasi yang digunakan situs untuk meningkatkan keamanan Anda. Chrome dapat memperoleh kode ini dari Gmail Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut fitur ini<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Buka Google Wallet untuk mengontrol <ph name="BEGIN_LINK1" />preferensi data dan privasi<ph name="END_LINK1" /> atau mengelola <ph name="BEGIN_LINK2" />metode pembayaran<ph name="END_LINK2" /> serta <ph name="BEGIN_LINK3" />kartu pas<ph name="END_LINK3" /> seperti kartu loyalitas dan tanda pengenal</translation>
 <translation id="1763864636252898013">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh sistem operasi perangkat Anda. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Jaringan Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (Arsip)</translation>
@@ -778,7 +777,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2292556288342944218">Akses Internet Anda diblokir</translation>
 <translation id="2294150501457238325">Tambahkan paspor dengan aman</translation>
 <translation id="2295831393422400053">Aktifkan setelan Jadikan Penelusuran dan Penjelajahan Lebih Baik untuk menggunakan fitur Bantu tulis</translation>
-<translation id="2296244067976588032">Kunci sandi • Rantai Kunci iCloud</translation>
 <translation id="2296331629987861142">Bayar dengan cicilan mudah (tergantung kelayakan, biaya berlaku)</translation>
 <translation id="2300306941146563769">Tidak diupload</translation>
 <translation id="2301064673700597535">Pernyataan Sertifikat Lolos Kualifikasi</translation>
@@ -914,6 +912,7 @@ Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus.
 <translation id="2505063700931618106">Info kartu disimpan</translation>
 <translation id="2505268675989099013">Lindungi Akun</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (persyaratan berlaku)</translation>
+<translation id="251033673027346551">Buka Google Wallet untuk mengelola <ph name="BEGIN_LINK" />preferensi data dan privasi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tidak diizinkan (default)</translation>
 <translation id="2512413427717747692">Tombol Setel Chrome sebagai browser default, tekan Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="2515629240566999685">Periksa sinyal di area Anda</translation>
@@ -1306,6 +1305,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3209034400446768650">Halaman mungkin dikenai biaya</translation>
 <translation id="3209071504641569648">Permintaan, judul halaman, dan URL Anda dikirim ke Google dan dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan</translation>
+<translation id="3211727636285361260">Buka link <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Download dimulai. Untuk melihatnya, tarik dari bagian atas layar dan sentuh tombol kembali</translation>
 <translation id="3212581601480735796">Aktivitas Anda di <ph name="HOSTNAME" /> sedang dipantau</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
@@ -2087,6 +2087,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="449126573531210296">Enkripsikan sandi yang disinkronkan dengan Akun Google Anda</translation>
 <translation id="4493480324863638523">URL tidak valid. Harus berupa URL dengan skema standar, misalnya http://example.com atau https://example.com.</translation>
 <translation id="4497010149473852018">Kartu loyalitas yang tersedia untuk diisi dengan gestur sentuh. Keyboard disembunyikan.</translation>
+<translation id="4497843134750481377">Kelola penawaran</translation>
 <translation id="4500587658229086076">konten tidak aman</translation>
 <translation id="4501939680615452918">Cari meja kosong di restoran yang sedang trending</translation>
 <translation id="4503459574136856756">Tulis ulang bio saya agar terkesan lebih profesional</translation>
@@ -3749,6 +3750,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7347640536700429009">Nama pada kartu tidak valid</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
+<translation id="7358055687760675498">Buka link <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" />, bukan <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Iklan diblokir.</translation>
 <translation id="7362281996276843968">Grup ini ditutup</translation>
 <translation id="7363096869660964304">Namun, Anda masih dapat terlihat. Menggunakan mode Samaran tidak menyembunyikan penjelajahan Anda dari atasan, internet service provider, atau situs yang Anda buka.</translation>

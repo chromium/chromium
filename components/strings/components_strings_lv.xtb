@@ -467,7 +467,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1757773103848038814">Vienplatuma fonts</translation>
 <translation id="1757935267918149452">Poga “Mainīt Google paroli”. Aktivizējiet, lai mainītu sava Google konta paroli.</translation>
 <translation id="1759776526873274358">Automātiski aizpildīt verifikācijas kodus, ko vietnes izmanto, lai uzlabotu jūsu drošību. Chrome var iegūt šos kodus no jūsu Gmail konta. <ph name="BEGIN_LINK" />Uzzināt vairāk par šo funkciju<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK1" />datu un konfidencialitātes preferences<ph name="END_LINK1" /> vai <ph name="BEGIN_LINK2" />maksājumu veidus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />kartes<ph name="END_LINK3" />, piemēram, lojalitātes kartes un identifikācijas dokumentus.</translation>
 <translation id="1763864636252898013">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu ierīces operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Mēģiniet palaist Windows tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotopapīrs (arhīva)</translation>
@@ -777,7 +776,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2292556288342944218">Piekļuve internetam ir bloķēta</translation>
 <translation id="2294150501457238325">Pases droša pievienošana</translation>
 <translation id="2295831393422400053">Ieslēdziet iestatījumu “Uzlabot meklēšanu un pārlūkošanu”, lai izmantotu funkciju “Palīdzība rakstīšanā”.</translation>
-<translation id="2296244067976588032">Piekļuves atslēga • iCloud Keychain</translation>
 <translation id="2296331629987861142">Veiciet vienkāršus nomaksas maksājumus (tiek pārbaudīta piemērotība; tiek piemērotas maksas)</translation>
 <translation id="2300306941146563769">Nav augšupielādēts</translation>
 <translation id="2301064673700597535">Paziņojumi par kvalificētiem sertifikātiem</translation>
@@ -913,6 +911,7 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2505063700931618106">Kartes informācija ir saglabāta</translation>
 <translation id="2505268675989099013">Aizsargāt kontu</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (ir spēkā noteikumi)</translation>
+<translation id="251033673027346551">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK" />datu un konfidencialitātes preferences<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Atļauja nav piešķirta (noklusējums)</translation>
 <translation id="2512413427717747692">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; nospiediet taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
 <translation id="2515629240566999685">Pārbaudiet signālu savā apkaimē.</translation>
@@ -1305,6 +1304,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3209034400446768650">Lapā var tikt iekasēta nauda</translation>
 <translation id="3209071504641569648">Jūsu pieprasījumi, lapu nosaukumi un vietrāži URL tiek nosūtīti uzņēmumam Google un var tikt pārskatīti, lai padarītu precīzāku uzlaboto automātisko aizpildi.</translation>
+<translation id="3211727636285361260">Atvērt <ph name="PROTOCOL" /> saites, izmantojot <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Lejupielāde ir sākta. Lai to skatītu, velciet no augšdaļas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="3212581601480735796">Jūsu veiktās darbības pakalpojumā <ph name="HOSTNAME" /> tiek uzraudzītas</translation>
 <translation id="3215092763954878852">Neizdevās izmantot WebAuthn</translation>
@@ -2085,6 +2085,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
 <translation id="4493480324863638523">Nederīgs URL. Vietrādim URL ir jābūt ar standarta shēmu, piemēram, “http://example.com” vai “https://example.com”.</translation>
 <translation id="4497010149473852018">Lojalitātes kartes, kas pieejamas aizpildīšanai pieskaroties. Tastatūra ir paslēpta.</translation>
+<translation id="4497843134750481377">Pārvaldīt piedāvājumus</translation>
 <translation id="4500587658229086076">nedrošs saturs</translation>
 <translation id="4501939680615452918">Meklē brīvas vietas populāros restorānos</translation>
 <translation id="4503459574136856756">Pārraksti manu biogrāfiju, lai tā izklausītos profesionālāk.</translation>
@@ -3749,6 +3750,7 @@ Papildu informācija:
 <translation id="7347640536700429009">Uz kartes redzamais vārds un uzvārds nav derīgs</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7353601530677266744">Komandrinda</translation>
+<translation id="7358055687760675498">Atvērt <ph name="PROTOCOL" /> saites, izmantojot <ph name="HANDLER_HOSTNAME" />, nevis <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Reklāmu rādīšana ir bloķēta.</translation>
 <translation id="7362281996276843968">Šī grupa ir slēgta</translation>
 <translation id="7363096869660964304">Tomēr jūs neesat neredzams. Izmantojot inkognito režīmu, jūsu pārlūkošanas darbības netiek slēptas no jūsu darba devēja, interneta pakalpojumu sniedzēja vai apmeklētajām vietnēm.</translation>

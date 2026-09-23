@@ -107,6 +107,7 @@
 <translation id="3072591112723064972">‏يمكنك ضبط Chromium كمتصفّح تلقائي لفتح الروابط هنا على الفور.</translation>
 <translation id="3115956258722352278">‏هل تريد أن يكون Chromium المتصفِّح التلقائي؟</translation>
 <translation id="3180939591219927904">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chromium"</translation>
+<translation id="3239426886813624481">‏لمشاركة موقعك الجغرافي مع المواقع الإلكترونية، يمكنك النقر على "الإعدادات" للسماح لمتصفّح Chromium باستخدام موقعك الجغرافي.</translation>
 <translation id="327628223428512207">‏يُرجى إدخال عبارة المرور لحفظ كلمة المرور هذه ومزامنة بيانات Chromium على جميع أجهزتك</translation>
 <translation id="328933489847748230">{count,plural, =1{‏يتم الآن عرض نافذة واحدة في Chromium.}zero{‏يتم الآن عرض {count} نافذة في Chromium.}two{‏يتم الآن عرض نافذتَين ({count}) في Chromium.}few{‏يتم الآن عرض {count} نوافذ في Chromium.}many{‏يتم الآن عرض {count} نافذة في Chromium.}other{‏يتم الآن عرض {count} نافذة في Chromium.}}</translation>
 <translation id="3344204225393848305">‏ضبط Chromium كمتصفّح تلقائي</translation>

@@ -305,7 +305,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2226826835915474236">Neaktivní zkratky</translation>
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="2227444325776770048">Pokračovat jako <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Získejte všechny uložené informace</translation>
 <translation id="2230777942707397948">Prázdné okno</translation>
 <translation id="223356358902285214">Aktivita na webu a v aplikacích</translation>
 <translation id="2233735624724508540">Vyberte časové období a pak klepněte na Vymazat data</translation>
@@ -359,7 +358,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2413014528833954543">Hesla na tomhle zařízení nejde zkontrolovat</translation>
 <translation id="2414886740292270097">Tmavá</translation>
 <translation id="2415037988255164008">Obnovit okna?</translation>
-<translation id="2426805022920575512">Vybrat jiný účet</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videa, 1 video v seznamu}few{Videa, # videa v seznamu}many{Videa, # videa v seznamu}other{Videa, # videí v seznamu}}</translation>
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2449931042095204989">Když web nebo aplikace Google požádá o soukromé předběžné načtení odkazů na stránce, Chrome stránky zašifruje a předběžně načte prostřednictvím serverů Google bez souborů cookie. To před předběžně načítaným webem skryje vaši identitu.</translation>
@@ -511,7 +509,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
 <translation id="2996682533106928201">Klepnutím zavřete</translation>
 <translation id="2996809686854298943">Je požadována adresa URL</translation>
-<translation id="3007318536447999974">Pokud s Gemini chcete mluvit, povolte k tomu používat mikrofon. Můžete to spravovat taky v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Nastavení režimu čtení je zavřené</translation>
 <translation id="3024277805447899099">Zobrazit náhled obrázku</translation>
 <translation id="3026955690410463085">Zahrnout odkaz</translation>
@@ -1291,7 +1288,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení</translation>
 <translation id="6204781143409202534">Chrome zjistil možný spam z domény <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6212567362666004597">Přidat kartu do skupiny</translation>
 <translation id="6225572914528673855">Adresní řádek</translation>
@@ -1950,7 +1946,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8570677896027847510">Soubor nelze bezpečně stáhnout</translation>
 <translation id="8571213806525832805">Poslední 4 týdny</translation>
 <translation id="8580435650274205305">Datum konce platnosti je povinné</translation>
-<translation id="8582529315803410153">Tady najdete své karty z jiných zařízení</translation>
 <translation id="8585103689515290060">Služby automatického vyplňování</translation>
 <translation id="8586116786993312006">Klepnutím vymažete údaje o prohlížení v Chromu</translation>
 <translation id="859046281437143747">Pomocí nabídky Další možnosti lze sledovat cenu</translation>

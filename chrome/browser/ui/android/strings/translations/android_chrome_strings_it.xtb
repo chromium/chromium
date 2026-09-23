@@ -305,7 +305,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2226826835915474236">Scorciatoie non attive</translation>
 <translation id="2227179592712503583">Rimuovi suggerimento</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Visualizza tutte le informazioni salvate</translation>
 <translation id="2230777942707397948">Finestra vuota</translation>
 <translation id="223356358902285214">Attività web e app</translation>
 <translation id="2233735624724508540">Scegli un periodo di tempo, quindi tocca Elimina dati</translation>
@@ -359,7 +358,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2413014528833954543">Impossibile controllare le password su questo dispositivo</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2415037988255164008">Ripristinare le finestre?</translation>
-<translation id="2426805022920575512">Scegli un altro account</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video nell'elenco}other{Video, # video nell'elenco}}</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2449931042095204989">Quando un sito o un'app Google richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
@@ -511,7 +509,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2996291259634659425">Crea passphrase</translation>
 <translation id="2996682533106928201">Tocca per ignorare</translation>
 <translation id="2996809686854298943">URL obbligatorio</translation>
-<translation id="3007318536447999974">Per parlare con Gemini, consenti l'accesso al microfono. Puoi gestire questa opzione anche nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Preferenze della modalità Lettura chiuse</translation>
 <translation id="3024277805447899099">Anteprima immagine</translation>
 <translation id="3026955690410463085">Includi link</translation>
@@ -1291,7 +1288,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6196315980958524839">Le password vengono salvate in Gestore delle password di Google su questo dispositivo</translation>
 <translation id="6204781143409202534">Chrome ha rilevato possibile spam da <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Non sei <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizzazione dell'anteprima della pagina</translation>
 <translation id="6212567362666004597">Aggiungi scheda a gruppo</translation>
 <translation id="6225572914528673855">Barra degli indirizzi</translation>
@@ -1950,7 +1946,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8570677896027847510">Impossibile scaricare il file in modo sicuro</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
 <translation id="8580435650274205305">Data di scadenza (obbligatoria)</translation>
-<translation id="8582529315803410153">Qui troverai le tue schede aperte su altri dispositivi</translation>
 <translation id="8585103689515290060">Servizi di compilazione automatica</translation>
 <translation id="8586116786993312006">Tocca per eliminare i dati di navigazione in Chrome</translation>
 <translation id="859046281437143747">Monitora il prezzo dal pulsante Altre opzioni</translation>

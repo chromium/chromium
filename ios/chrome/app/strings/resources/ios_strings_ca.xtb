@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Feu doble toc per canviar la carpeta principal.</translation>
 <translation id="132969855425874290">Tanca Cerca i emplena</translation>
 <translation id="1333455942675373522">Teclat</translation>
+<translation id="1333669029961409292">S'ha completat l'acció Comprova les contrasenyes.</translation>
 <translation id="1334485477792811969">Serveis web</translation>
 <translation id="1335767868357998043">Tria la posició de la barra d'adreces</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtén indicacions fins a la teva destinació amb instruccions pas a pas amb la funció de navegació</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
+<translation id="1644229815617955289">Gestiona l'historial, les galetes i més per protegir la teva privadesa</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat les adreces d'interès}}</translation>
 <translation id="1650979352027263879">S'han suprimit les teves preferències d'aparença</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Perfil de configuració disponible</translation>
 <translation id="2244080985779413662">Aquest lloc web vol baixar un fitxer i obrir-lo a Wallet.</translation>
 <translation id="2245007488813216650">S'està traduint…</translation>
+<translation id="2246445006133863463">Et permet xatejar amb Gemini amb la veu</translation>
 <translation id="2249119578464404734">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252378061043785266">No mostris mai aquest lloc web</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Continua utilitzant i desant les contrasenyes al teu Compte de Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importa</translation>
 <translation id="3854052088499589035">Rebràs notificacions quan progressis a Level Up</translation>
+<translation id="3854214753902617617">Explora Navegació segura millorada</translation>
 <translation id="3857113360369572832">Obre la <ph name="BEGIN_BOLD" />configuració de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="386224966259596343">Tindràs l'oportunitat de desar aquesta informació a Wallet la propera vegada que emplenis un formulari rellevant.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Comparteix les teves contrasenyes</translation>
 <translation id="4049419681095579435">El paquet ja se segueix</translation>
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió de xarxa i torneu-ho a provar.</translation>
+<translation id="4052951214266508382">Permet que Gemini utilitzi el micròfon</translation>
 <translation id="4054290211988862686">Tria un fitxer</translation>
 <translation id="4070132839822635162">No iniciïs la sessió</translation>
 <translation id="4072473499345702662">Ves a Puja de nivell</translation>
@@ -1481,6 +1486,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="574762237186762643">Esdeveniments</translation>
 <translation id="5749158352074143502">Continua navegant des d'aquesta pestanya</translation>
 <translation id="5753021559215751319">Desa la contrasenya</translation>
+<translation id="5756200167514420691">Obre pestanyes en mode d'incògnit per navegar pel web d'una manera més privada</translation>
 <translation id="5756525336488841345">Amaga l'opció Adreces d'interès</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
 <translation id="57586589942790530">El número de targeta no és vàlid</translation>
@@ -1551,6 +1557,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
 <translation id="599343768974649785">Text explícit</translation>
+<translation id="6000893618966378846">S'ha completat l'acció "Suprimeix les dades de navegació".</translation>
 <translation id="6004988584831654445">Ja estàs a punt! Rep notificacions quan arribin tasques noves.</translation>
 <translation id="6006672969046233841">Pestanya nova</translation>
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
@@ -1810,6 +1817,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6736243959894955139">Adreça</translation>
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6750456911389438250">{count,plural, =1{S'ha importat {count} element de l'historial}other{S'han importat {count} elements de l'historial}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Hi ha {count} opció de credencial disponible a sobre del teclat.}other{Hi ha {count} opcions de credencial disponibles a sobre del teclat.}}</translation>
 <translation id="6755200887046212842">Gestiona els comptes</translation>
@@ -1975,6 +1983,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7312823817809783355">Les teves tasques</translation>
 <translation id="7313347584264171202">Trobaràs les pestanyes d'incògnit aquí</translation>
+<translation id="7318555235645532245">S'ha completat "Entra al mode d'incògnit".</translation>
 <translation id="7322186060879266048">{count,plural, =1{Hi ha {count} opció d'emplenament automàtic disponible a sobre del teclat.}other{Hi ha {count} opcions d'emplenament automàtic disponibles a sobre del teclat.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> per cent baixat</translation>
@@ -2151,6 +2160,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7857520352710212030">El lloc web s'ha fixat</translation>
 <translation id="7859988229622350291">No tradueixis mai</translation>
 <translation id="7863211248337747225">Baixa l'aplicació</translation>
+<translation id="7863990181930071932">Accés a la ubicació desactivat</translation>
 <translation id="7865127013871431856">Opcions del Traductor</translation>
 <translation id="7866872729285243843">Per accedir a la llista de lectura des de tots els dispositius, activa l'opció Llista de lectura a la configuració.</translation>
 <translation id="7874107544081154809">Emplena automàticament el formulari amb <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8786100550345425552">Edita els permisos</translation>
 <translation id="878871978861915380">Amaga l'opció Seguiment de preus</translation>
 <translation id="8792626944327216835">micròfon</translation>
+<translation id="8795809107245894196">Utilitza la funció Comprovació de contrasenya per assegurar-te que les teves contrasenyes siguin segures</translation>
 <translation id="8796634520835503150">El mode de lectura està disponible</translation>
 <translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8803639129939845298">Segur</translation>
@@ -2491,6 +2502,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8879952635974818770">Contingut personalitzat</translation>
 <translation id="8887595428614802520">Tanca totes les pestanyes i tots els grups</translation>
 <translation id="8888595487174963247">Suprimeix el recordatori</translation>
+<translation id="8890516388109605451">Fonts</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8900845556227858314">Aplicació de navegador</translation>
@@ -2531,6 +2543,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
 <translation id="9013605037177245304">Activa les notificacions</translation>
 <translation id="9029650858822697271">S'ha tancat la teva sessió</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirma si vols suprimir les dades de navegació</translation>
 <translation id="9035699147763101514">Amb la tecnologia d'Intel·ligència personal de Gemini. Gestiona les teves opcions a la configuració.</translation>
 <translation id="9038526468059454274">Resumeix-ho amb</translation>

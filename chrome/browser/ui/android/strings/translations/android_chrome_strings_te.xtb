@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">ఇన్‌యాక్టివ్ షార్ట్‌కట్‌లు</translation>
 <translation id="2227179592712503583">సూచనను తీసివేయండి</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించండి</translation>
-<translation id="2230411774874187555">మీరు సేవ్ చేసిన మొత్తం సమాచారాన్ని పొందండి</translation>
 <translation id="2230777942707397948">ఖాళీ విండో</translation>
 <translation id="223356358902285214">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
 <translation id="2233735624724508540">సమయ వ్యవధిని ఎంచుకుని, ఆపై 'డేటాను తొలగించండి' అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">ఈ పరికరంలో పాస్‌వర్డ్‌లను చెక్ చేయలేరు</translation>
 <translation id="2414886740292270097">ముదురు</translation>
 <translation id="2415037988255164008">విండోలను రీస్టోర్ చేయాలా?</translation>
-<translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{వీడియోలు, లిస్ట్‌లో 1 వీడియో ఉంది}other{వీడియోలు, లిస్ట్‌లో # వీడియోలు ఉన్నాయి}}</translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
 <translation id="2449931042095204989">Google సైట్ లేదా యాప్ వారి పేజీలోని లింక్‌లను ప్రైవేట్‌గా ప్రీ - లోడ్ చేయమని అడిగినప్పుడు, Chrome కుక్కీలు లేకుండా Google సర్వర్‌ల ద్వారా పేజీలను ఎన్‌క్రిప్ట్ చేస్తుంది, ప్రీ - లోడ్ చేస్తుంది. ఇది ప్రీ - లోడ్ చేయబడిన సైట్ నుండి మీ గుర్తింపును దాచిపెడుతుంది.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="2996682533106928201">విస్మరించడానికి ట్యాప్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
-<translation id="3007318536447999974">Geminiతో మాట్లాడటానికి, మీ మైక్రోఫోన్‌ను ఉపయోగించేందుకు దానికి అనుమతి ఇవ్వండి. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా మేనేజ్ చేయవచ్చు</translation>
 <translation id="3024215143424744261">రీడింగ్ మోడ్ ప్రాధాన్యతలు మూసివేయబడ్డాయి</translation>
 <translation id="3024277805447899099">ఇమేజ్‌ను ప్రివ్యూ చేయండి</translation>
 <translation id="3026955690410463085">లింక్‌ను చేర్చండి</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6196315980958524839">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> నుండి వచ్చే నోటిఫికేషన్ స్పామ్ అయ్యే అవకాశమున్నట్లు Chrome గుర్తించింది.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> కాదా?</translation>
 <translation id="6211386937064921208">ఈ పేజీని ప్రివ్యూ చేస్తోంది</translation>
 <translation id="6212567362666004597">ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి</translation>
 <translation id="6225572914528673855">అడ్రస్ బార్</translation>
@@ -1948,7 +1944,6 @@
 <translation id="8570677896027847510">ఫైల్‌ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యపడదు</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8580435650274205305">గడువు ముగింపు తేదీ, అవసరం</translation>
-<translation id="8582529315803410153">ఇతర పరికరాలలో ఉన్న మీ ట్యాబ్‌లను మీరు ఇక్కడ చూడవచ్చు</translation>
 <translation id="8585103689515290060">ఆటోఫిల్ సర్వీసులు</translation>
 <translation id="8586116786993312006">Chromeలో బ్రౌజింగ్ డేటాను తొలగించడానికి ట్యాప్ చేయండి</translation>
 <translation id="859046281437143747">'మరిన్ని ఆప్షన్‌లు' బటన్ ఉపయోగించి ధరను ట్రాక్ చేయండి</translation>

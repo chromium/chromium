@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">इनॲक्टिव्ह शॉर्टकट</translation>
 <translation id="2227179592712503583">सूचना काढून टाका</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> म्हणून सुरू ठेवा</translation>
-<translation id="2230411774874187555">तुमची सर्व सेव्ह केलेली माहिती मिळवा</translation>
 <translation id="2230777942707397948">रिकामी विंडो</translation>
 <translation id="223356358902285214">वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी</translation>
 <translation id="2233735624724508540">कालावधी निवडा आणि त्यानंतर डेटा हटवा यावर टॅप करा</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">या डिव्हाइसवर पासवर्ड तपासू शकत नाही</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2415037988255164008">विंडो रिस्टोअर करायच्या आहेत का?</translation>
-<translation id="2426805022920575512">दुसरे खाते निवडा</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{व्हिडिओ, सूचीमध्ये १ व्हिडिओ आहे}other{व्हिडिओ, सूचीमध्ये # व्हिडिओ आहेत}}</translation>
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2449931042095204989">Google साइट किंवा अ‍ॅपद्वारे त्याच्या पेजवरील लिंक खाजगीरीत्या प्रीलोड करण्याची विनंती केली गेल्यास, Chrome हे कुकीशिवाय Google सर्व्हरद्वारे पेज एन्क्रिप्ट आणि प्रीलोड करते. यामुळे, प्रीलोड केलेल्या साइटपासून तुमची ओळख लपवली जाते.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="2996682533106928201">डिसमिस करण्यासाठी टॅप करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
-<translation id="3007318536447999974">Gemini शी बोलण्यासाठी, त्याला तुमचा मायक्रोफोन वापरण्याची परवानगी द्या. तुम्ही हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील व्यवस्थापित करू शकता</translation>
 <translation id="3024215143424744261">वाचन मोड प्राधान्ये बंद केली आहेत</translation>
 <translation id="3024277805447899099">पूर्वावलोकन इमेज</translation>
 <translation id="3026955690410463085">लिंकचा समावेश करा</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6196315980958524839">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये या डिव्हाइसवर सेव्ह केले जातात</translation>
 <translation id="6204781143409202534">Chrome ने <ph name="DOMAIN" /> कडील संभाव्य स्पॅम डिटेक्ट केले आहे.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
 <translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>
 <translation id="6225572914528673855">ॲड्रेस बार</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8580435650274205305">एक्स्पायरीची तारीख आवश्यक आहे</translation>
-<translation id="8582529315803410153">तुमच्या इतर डिव्हाइसमधील टॅब तुम्हाला इथे सापडतील</translation>
 <translation id="8585103689515290060">ऑटोफिल सेवा</translation>
 <translation id="8586116786993312006">Chrome मधील ब्राउझिंग डेटा हटवण्यासाठी टॅप करा</translation>
 <translation id="859046281437143747">आणखी पर्याय बटणावरून किमतीचा माग ठेवा</translation>

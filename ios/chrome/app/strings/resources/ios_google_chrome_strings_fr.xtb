@@ -256,7 +256,7 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="6820553595690137150">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
-<translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
+<translation id="6838525730752203626">Utilisez Chrome par défaut</translation>
 <translation id="6864705365700484754">Appuyez ici pour exploiter tout le potentiel de Chrome sur votre iPhone.</translation>
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome à enregistrer<ph name="END_LINK" /> dans votre compte Google.
 
@@ -270,6 +270,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7061455974939528301">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>
 <translation id="7095110968493193530">Dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
+<translation id="7135936755418321901">Pour partager votre position avec des sites Web, appuyez sur "Réglages" pour autoriser Chrome à l'utiliser.</translation>
 <translation id="7145599899567697473">Enregistrez et remplissez automatiquement les mots de passe dans Chrome</translation>
 <translation id="7161390184744336561">La version de Google Chrome est obsolète</translation>
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de QR code Google Chrome</translation>

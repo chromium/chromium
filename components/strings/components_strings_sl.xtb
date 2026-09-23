@@ -467,7 +467,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1757773103848038814">Pisava s stalno širino</translation>
 <translation id="1757935267918149452">Gumb za spreminjanje gesla za Google, aktivirajte, če želite spremeniti geslo za račun Google</translation>
 <translation id="1759776526873274358">Samodejno izpolnjevanje kod za preverjanje, ki jih spletna mesta uporabljajo za izboljšanje vaše varnosti. Chrome lahko te kode pridobi iz vašega Gmaila. <ph name="BEGIN_LINK" />Preberite več o tej funkciji<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Obiščite Google Denarnico, kjer lahko upravljate <ph name="BEGIN_LINK1" />nastavitve podatkov in zasebnosti<ph name="END_LINK1" /> ali upravljate <ph name="BEGIN_LINK2" />plačilna sredstva<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />kartice<ph name="END_LINK3" />, kot so kartice zvestobe in osebni dokumenti.</translation>
 <translation id="1763864636252898013">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; operacijski sistem vaše naprave ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje Omrežna diagnostika Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -777,7 +776,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2292556288342944218">Internetni dostop je blokiran</translation>
 <translation id="2294150501457238325">Varno dodajte potni list</translation>
 <translation id="2295831393422400053">Vklopite nastavitev »Izboljšanje iskanja in brskanja«, če želite uporabljati funkcijo »Pomoč pri pisanju«</translation>
-<translation id="2296244067976588032">Ključ za dostop • iCloud Keychain</translation>
 <translation id="2296331629987861142">Plačujte v preprostih obrokih (odvisno od primernosti, zaračunajo se stroški)</translation>
 <translation id="2300306941146563769">Ni naloženo</translation>
 <translation id="2301064673700597535">Izjave o kvalificiranih potrdilih</translation>
@@ -913,6 +911,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2505063700931618106">Podatki o kartici so shranjeni</translation>
 <translation id="2505268675989099013">Zaščita računa</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (veljajo pogoji)</translation>
+<translation id="251033673027346551">Obiščite Google Denarnico, če želite upravljati <ph name="BEGIN_LINK" />nastavitve podatkov in zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ni dovoljeno (privzeto)</translation>
 <translation id="2512413427717747692">Gumb za nastavite Chroma kot privzeti brskalnik, pritisnite tipko Enter, če želite nastaviti Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS.</translation>
 <translation id="2515629240566999685">preveriti signal na svojem območju</translation>
@@ -1305,6 +1304,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
 <translation id="3209034400446768650">Stran morda zaračunava</translation>
 <translation id="3209071504641569648">Vaše zahteve, naslovi strani in URL-ji se pošiljajo Googlu in bodo morda pregledani za izboljšanje funkcije izboljšanega samodejnega izpolnjevanja</translation>
+<translation id="3211727636285361260">Odpirati <ph name="PROTOCOL" /> prek <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Prenos se je začel. Če si ga želite ogledati, povlecite z vrha in se dotaknite gumba za nazaj</translation>
 <translation id="3212581601480735796">Vaša dejavnost v gostitelju <ph name="HOSTNAME" /> je nadzorovana</translation>
 <translation id="3215092763954878852">Ni bilo mogoče uporabiti WebAuthn</translation>
@@ -2087,6 +2087,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="449126573531210296">Šifriranje sinhroniziranih gesel z računom Google</translation>
 <translation id="4493480324863638523">Neveljaven URL. Mora biti URL s standardno shemo, kot je http://primer.com ali https://primer.com.</translation>
 <translation id="4497010149473852018">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom. Tipkovnica je skrita.</translation>
+<translation id="4497843134750481377">Upravljajte ponudbe</translation>
 <translation id="4500587658229086076">vsebina, ki ni varna</translation>
 <translation id="4501939680615452918">Poišči proste mize v priljubljenih restavracijah</translation>
 <translation id="4503459574136856756">Preoblikuj moj življenjepis, da bo zvenel bolj strokovno</translation>
@@ -3751,6 +3752,7 @@ Dodatne podrobnosti:
 <translation id="7347640536700429009">Ime na kartici ni veljavno</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7353601530677266744">Ukazna vrstica</translation>
+<translation id="7358055687760675498">Odpirati povezave <ph name="PROTOCOL" /> prek <ph name="HANDLER_HOSTNAME" /> namesto <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Oglasi blokirani.</translation>
 <translation id="7362281996276843968">Ta skupina je zaprta</translation>
 <translation id="7363096869660964304">Kljub temu pa niste nevidni. Z uporabo anonimnega načina svojega brskanja ne skrijete pred delodajalcem, ponudnikom internetnih storitev ali spletnimi mesti, ki jih obiščete.</translation>

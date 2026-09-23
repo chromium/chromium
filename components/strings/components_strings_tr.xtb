@@ -467,7 +467,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1757773103848038814">Sabit Aralıklı Yazı Tipi</translation>
 <translation id="1757935267918149452">Google şifresini değiştir düğmesi, Google Hesabınızın şifresini değiştirmek için etkinleştirin</translation>
 <translation id="1759776526873274358">Sitelerin güvenliğinizi artırmak için kullandığı doğrulama kodlarını otomatik doldurur. Chrome, bu kodları Gmail'inizden alabilir. <ph name="BEGIN_LINK" />Bu özellik hakkında daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Veri ve gizlilik tercihlerini<ph name="END_LINK1" /> kontrol etmek veya <ph name="BEGIN_LINK2" />ödeme yöntemlerini<ph name="END_LINK2" /> ve bağlılık kartları ile kimlikler gibi <ph name="BEGIN_LINK3" />kartları<ph name="END_LINK3" /> yönetmek için Google Cüzdan'ı ziyaret edin.</translation>
 <translation id="1763864636252898013">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. cihazınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotoğraf (Arşiv)</translation>
@@ -777,7 +776,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2292556288342944218">İnternet erişiminiz engellendi</translation>
 <translation id="2294150501457238325">Pasaportu güvenli şekilde ekleyin</translation>
 <translation id="2295831393422400053">Yazmama yardım et özelliğini kullanmak için Aramaları ve Göz Atmayı Daha İyi Yap ayarını açın</translation>
-<translation id="2296244067976588032">Geçiş anahtarı • iCloud Anahtar Zinciri</translation>
 <translation id="2296331629987861142">Taksitle kolayca ödeyin (Uygunluk koşullarına tabidir; ilgili ücretler alınır.)</translation>
 <translation id="2300306941146563769">Yüklenmeyenler</translation>
 <translation id="2301064673700597535">Nitelikli Sertifika Beyanları</translation>
@@ -913,6 +911,7 @@ Bu öneriyi Chrome'dan kaldırabilirsiniz. Orijinal kaynağınız silinmez. <ph 
 <translation id="2505063700931618106">Kart bilgileri kaydedildi</translation>
 <translation id="2505268675989099013">Hesabı Koru</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (şartlar geçerlidir)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />Veri ve gizlilik tercihlerini<ph name="END_LINK" /> yönetmek için Google Cüzdan'ı ziyaret edin.</translation>
 <translation id="2512101340618156538">İzin verilmiyor (varsayılan)</translation>
 <translation id="2512413427717747692">Chrome'u varsayılan tarayıcı olarak ayarlama düğmesi, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için Enter'a basın</translation>
 <translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol edin</translation>
@@ -1305,6 +1304,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
 <translation id="3209071504641569648">İstekleriniz, sayfa başlıklarınız ve URL'leriniz Google'a gönderilerek gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir.</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" /> bağlantılarını <ph name="HANDLER_HOSTNAME" /> üzerinden açma</translation>
 <translation id="3212468046572043669">İndirme başladı. Görmek için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> sitesinde etkinliğiniz izleniyor</translation>
 <translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
@@ -2087,6 +2087,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="449126573531210296">Senkronize edilen şifreleri Google Hesabınızla şifreleyin</translation>
 <translation id="4493480324863638523">Geçersiz URL. Standart şemaya sahip bir URL olmalıdır. Ör. http://example.com veya https://example.com.</translation>
 <translation id="4497010149473852018">Dokunarak doldurulabilen bağlılık kartları. Klavye gizli.</translation>
+<translation id="4497843134750481377">Teklifleri yönet</translation>
 <translation id="4500587658229086076">güvenli olmayan içerik</translation>
 <translation id="4501939680615452918">Popüler restoranlarda boş masa ara</translation>
 <translation id="4503459574136856756">Biyografimi daha profesyonel bir üslup kullanacak şekilde yeniden yaz</translation>
@@ -3751,6 +3752,7 @@ Ek ayrıntılar:
 <translation id="7347640536700429009">Kart üzerindeki ad geçersiz</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7353601530677266744">Komut Satırı</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" /> bağlantılarını <ph name="REPLACED_HANDLER_TITLE" /> yerine <ph name="HANDLER_HOSTNAME" /> üzerinden açma</translation>
 <translation id="7359588939039777303">Reklamlar engellendi.</translation>
 <translation id="7362281996276843968">Bu grup kapalı</translation>
 <translation id="7363096869660964304">Ancak görünmez olmazsınız. Gizli moda geçmek göz atma etkinliğinizi işvereninizden, İnternet servis sağlayıcınızdan veya ziyaret ettiğiniz web sitelerinden gizlemez.</translation>

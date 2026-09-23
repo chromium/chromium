@@ -467,7 +467,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1757773103848038814">Jämnbred font</translation>
 <translation id="1757935267918149452">Knappen Byt lösenord till Google: aktivera om du vill byta lösenord till Google-kontot</translation>
 <translation id="1759776526873274358">Autofyll verifieringskoder som webbplatser använder för att skydda dig. Chrome kan hämta dessa koder från din Gmail. <ph name="BEGIN_LINK" />Läs mer om den här funktionen.<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Besök Google Wallet för att styra <ph name="BEGIN_LINK1" />data- och integritetsinställningar<ph name="END_LINK1" /> eller hantera <ph name="BEGIN_LINK2" />betalningsmetoder<ph name="END_LINK2" /> och <ph name="BEGIN_LINK3" />värdekort<ph name="END_LINK3" /> som stamkundskort och id:n</translation>
 <translation id="1763864636252898013">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom enhetens operativsystem inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Testa att köra nätverksdiagnostik för Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
@@ -777,7 +776,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2292556288342944218">Internetanslutningen har blockerats</translation>
 <translation id="2294150501457238325">Lägg till ett pass på ett säkert sätt</translation>
 <translation id="2295831393422400053">Aktivera inställningen Förbättra sökningar och surfandet om du vill använda Hjälp mig skriva</translation>
-<translation id="2296244067976588032">Nyckel • iCloud-nyckelring</translation>
 <translation id="2296331629987861142">Enkla avbetalningar (omfattas av kvalifikationskrav, avgifter tillkommer)</translation>
 <translation id="2300306941146563769">Inte uppladdad</translation>
 <translation id="2301064673700597535">Qualified Certificate Statements</translation>
@@ -905,6 +903,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2493122313108999546">Storleken har ändrats</translation>
 <translation id="249376477913017009">Meddelande om autofyll från Gmail med mera har öppnats</translation>
 <translation id="2495083838625180221">JSON-analysator</translation>
+<translation id="2495909791227061512">Vill du ansluta till enheter i närheten?</translation>
 <translation id="2496402116964818747">Du kan ändra om du vill använda fingeravtrycket för att fylla i lösenord eller inte i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Läs in ett nytt kort</translation>
 <translation id="2501270939904835585">Etiketter (satäng)</translation>
@@ -913,6 +912,7 @@ Du kan ta bort det här förslaget från Chrome. Den ursprungliga källan radera
 <translation id="2505063700931618106">Kortuppgifterna har sparats</translation>
 <translation id="2505268675989099013">Skydda kontot</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (villkor gäller)</translation>
+<translation id="251033673027346551">Besök Google Wallet för att hantera <ph name="BEGIN_LINK" />data- och integritetsinställningar<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Tillåts inte (standard)</translation>
 <translation id="2512413427717747692">Knappen Ställ in Chrome som standardwebbläsare: tryck på Retur om du vill ställa in Chrome som standardwebbläsare i systeminställningarna för iOS</translation>
 <translation id="2515629240566999685">kontrollera mottagningen i området</translation>
@@ -1305,6 +1305,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3209034400446768650">Sidan kan vara avgiftsbelagd</translation>
 <translation id="3209071504641569648">Dina begäranden, sidrubriker och webbadresser skickas till Google och kan granskas för att göra förbättrad autofyll ännu bättre.</translation>
+<translation id="3211727636285361260">Öppna <ph name="PROTOCOL" />-länkar via <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Nedladdningen har påbörjats. Dra från toppen och tryck på bakåtknappen för att se den</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> övervakas</translation>
 <translation id="3215092763954878852">Det gick inte att använda WebAuthn</translation>
@@ -2087,6 +2088,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
 <translation id="4493480324863638523">Ogiltig webbadress. Måste vara en webbadress med ett standardprotokoll, t.ex. http://example.com eller https://example.com.</translation>
 <translation id="4497010149473852018">Tillgängliga stamkundskort vars uppgifter kan fyllas i med ett tryck. Tangentbordet är dolt.</translation>
+<translation id="4497843134750481377">Hantera erbjudanden</translation>
 <translation id="4500587658229086076">osäkert innehåll</translation>
 <translation id="4501939680615452918">Leta efter lediga bord på populära restauranger</translation>
 <translation id="4503459574136856756">Skriv om min biografi så att den låter mer professionell</translation>
@@ -3751,6 +3753,7 @@ Mer information.
 <translation id="7347640536700429009">Namnet på kortet är ogiltigt</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7353601530677266744">Kommandorad</translation>
+<translation id="7358055687760675498">Öppna <ph name="PROTOCOL" />-länkar via <ph name="HANDLER_HOSTNAME" /> i stället för <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Annonser blockeras.</translation>
 <translation id="7362281996276843968">Den här gruppen är stängd</translation>
 <translation id="7363096869660964304">Men du är inte osynlig. Inkognitoläget döljer inte webbhistoriken för din arbetsgivare, internetleverantören eller webbplatserna du besöker.</translation>

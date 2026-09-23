@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace ફૉન્ટ</translation>
 <translation id="1757935267918149452">'Google પાસવર્ડ બદલો' બટન, તમારા Google એકાઉન્ટનો પાસવર્ડ બદલવા માટે સક્રિય કરો</translation>
 <translation id="1759776526873274358">તમારી સુરક્ષા બહેતર બનાવવા માટે સાઇટ ચકાસણી કોડનો ઉપયોગ કરે છે, તેને ઑટોમૅટિક રીતે ભરો. Chrome તમારા Gmailમાંથી આ કોડ મેળવી શકે છે. <ph name="BEGIN_LINK" />આ સુવિધા વિશે વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ડેટા અને પ્રાઇવસી સંબંધિત પસંદગીઓ<ph name="END_LINK1" />ને નિયંત્રિત કરવા અથવા <ph name="BEGIN_LINK2" />ચુકવણી પદ્ધતિઓ<ph name="END_LINK2" /> અને લૉયલ્ટિ કાર્ડ તથા IDs જેવા <ph name="BEGIN_LINK3" />પાસ<ph name="END_LINK3" />ને મેનેજ કરવા માટે Google Walletની મુલાકાત લો</translation>
 <translation id="1763864636252898013">આ સર્વર સાબિત કરી શક્યું નથી કે એ <ph name="DOMAIN" /> છે; એનું સુરક્ષા પ્રમાણપત્ર તમારા ડિવાઇસની ઑપરેટિંગ સિસ્ટમ દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">ફોટો (આર્કાઇવલ)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">તમારી ઇન્ટરનેટ ઍક્સેસ અવરોધિત છે</translation>
 <translation id="2294150501457238325">પાસપોર્ટની માહિતી સુરક્ષિત રીતે ઉમેરો</translation>
 <translation id="2295831393422400053">'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરવા માટે, 'શોધ અને બ્રાઉઝિંગ બહેતર બનાવો' સેટિંગ ચાલુ કરો</translation>
-<translation id="2296244067976588032">પાસકી • iCloud કીચેન</translation>
 <translation id="2296331629987861142">સરળ હપ્તાઓમાં ચુકવણી કરો (યોગ્યતાને આધીન, શુલ્ક લાગુ થશે)</translation>
 <translation id="2300306941146563769">અપલોડ કર્યો નથી</translation>
 <translation id="2301064673700597535">ક્વૉલિફાઇડ સર્ટિફિકેટ સ્ટેટમેન્ટ</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">કાર્ડની માહિતી સાચવવામાં આવી</translation>
 <translation id="2505268675989099013">એકાઉન્ટ સુરક્ષિત કરો</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (શરતો લાગુ)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />ડેટા અને પ્રાઇવસી સંબંધિત પસંદગીઓ<ph name="END_LINK" /> મેનેજ કરવા માટે Google Walletની મુલાકાત લો.</translation>
 <translation id="2512101340618156538">કોઈ મંજૂરી નથી (ડિફૉલ્ટ)</translation>
 <translation id="2512413427717747692">'Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો' બટન, iOS સેટિંગમાં Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે Enter કી દબાવો</translation>
 <translation id="2515629240566999685">તમારા વિસ્તારમાં સિગ્નલ તપાસીને</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3209034400446768650">પેજ કદાચ નાણાં વસૂલી શકે છે</translation>
 <translation id="3209071504641569648">તમારી વિનંતીઓ, પેજના શીર્ષકો અને URLs Googleને મોકલવામાં આવે છે અને ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને બહેતર બનાવવા માટે તેનો રિવ્યૂ કરવામાં આવી શકે છે</translation>
+<translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" /> મારફતે <ph name="PROTOCOL" /> લિંક ખોલો</translation>
 <translation id="3212468046572043669">ડાઉનલોડ શરૂ થયું. તેને જોવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> પરની તમારી પ્રવૃત્તિનું નિરીક્ષણ કરવામાં આવી રહ્યું છે</translation>
 <translation id="3215092763954878852">WebAuthnનો ઉપયોગ કરી શક્યાં નથી</translation>
@@ -2087,6 +2087,7 @@
 <translation id="449126573531210296">તમારા Google એકાઉન્ટ સાથે સિંક કરેલા પાસવર્ડ એન્ક્રિપ્ટ કરો</translation>
 <translation id="4493480324863638523">અમાન્ય URL. કોઈ માનક સ્કીમ ધરાવતું URL હોવું આવશ્યક છે, દા.ત. http://example.com અથવા https://example.com.</translation>
 <translation id="4497010149473852018">ટચ કરીને ભરવા માટે લૉયલ્ટિ કાર્ડ ઉપલબ્ધ છે. કીબોર્ડ છુપાવેલું છે.</translation>
+<translation id="4497843134750481377">ઑફરો મેનેજ કરો</translation>
 <translation id="4500587658229086076">અસુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="4501939680615452918">વલણમાં હોય તેવી રેસ્ટોરન્ટમાં ઉપલબ્ધતા જુઓ</translation>
 <translation id="4503459574136856756">વધુ વ્યાવસાયિક લાગવા માટે મારો જીવન પરિચય ફરીથી લખો</translation>
@@ -3751,6 +3752,7 @@
 <translation id="7347640536700429009">કાર્ડ પરનું નામ અમાન્ય છે</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7353601530677266744">આદેશ પંક્તિ</translation>
+<translation id="7358055687760675498"><ph name="REPLACED_HANDLER_TITLE" />ને બદલે <ph name="HANDLER_HOSTNAME" /> મારફતે <ph name="PROTOCOL" /> લિંક ખોલો</translation>
 <translation id="7359588939039777303">જાહેરાતો અવરોધિત કરી.</translation>
 <translation id="7362281996276843968">આ ગ્રૂપ બંધ છે</translation>
 <translation id="7363096869660964304">જોકે, તમે અદૃશ્ય નથી. છૂપા મોડમાં જવું તમારા નિયોક્તા, તમારા ઇન્ટરનેટ સેવા પ્રદાતા અથવા તમે મુલાકાત લો છો તે વેબસાઇટથી તમારા બ્રાઉઝિંગને છુપાવતું નથી.</translation>

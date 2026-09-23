@@ -300,6 +300,7 @@
 <translation id="4251772536351901305">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chromium.</translation>
 <translation id="4269093074552541569">Wyloguj z Chromium</translation>
 <translation id="4271805377592243930">Pomoc do Chromium</translation>
+<translation id="4275788652681621337">Zamknij panel boczny</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
 <translation id="4298125729853015961">Eksportuj hasła z Chromium</translation>
@@ -439,7 +440,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5896077214220653386">Gemini Enterprise w Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – logowanie do sieci</translation>
 <translation id="5924017743176219022">Łączę z internetem…</translation>
-<translation id="5939553720811388432">Przygotujmy Chromium</translation>
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5949225980829865667">Aby mieć dostęp do tej zakładki i innych funkcji na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="5953657885167112863">Dostosuj Chromium do swoich potrzeb</translation>

@@ -529,6 +529,7 @@
 <translation id="1401216725754314428">Открыть сведения о связанных сайтах в новой вкладке</translation>
 <translation id="1402426911829176748">Подключение…</translation>
 <translation id="1405779994569073824">Произошел сбой</translation>
+<translation id="1406812885827747674">Разрешить в этот раз</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="140723521119632973">Активация мобильной сети</translation>
@@ -982,7 +983,6 @@
 <translation id="1755601632425835748">Размер шрифта</translation>
 <translation id="1756963401828337401">Выберите экран, снимок которого сделать</translation>
 <translation id="17584710573359123">Перейти в Интернет-магазин Chrome</translation>
-<translation id="176013700366797492">В Google Кошельке можно управлять <ph name="BEGIN_LINK1" />данными и настройками конфиденциальности<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />способами оплаты<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />картами и билетами<ph name="END_LINK3" />, например картами постоянного клиента и удостоверениями личности.</translation>
 <translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" переназначена для действия "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> – аккаунты</translation>
 <translation id="176272781006230109">рекомендуемые товары</translation>
@@ -2999,7 +2999,6 @@
 <translation id="3284050785966252943">Просмотр метаданных автозаполнения</translation>
 <translation id="3285218179623157680"><ph name="WINDOW_TITLE" />: нижнее окно</translation>
 <translation id="3285329711156774325">Поиск специализированных действий</translation>
-<translation id="3285500645985761267">Разрешить связанным сайтам отслеживать действия внутри группы</translation>
 <translation id="328571385944182268">Сохранить пароли?</translation>
 <translation id="3285969135399641759">Освоить новый навык</translation>
 <translation id="3289668031376215426">Автоподстановка заглавных</translation>
@@ -3336,7 +3335,6 @@
 <translation id="3543296862747913985">Описание</translation>
 <translation id="3543298914473315872">Процесс обновления</translation>
 <translation id="3543393733900874979">Не удалось выполнить обновление (ошибка <ph name="ERROR_NUMBER" />).</translation>
-<translation id="3544058026430919413">Компания может определить группу сайтов, которым разрешено использовать файлы cookie для передачи друг другу информации о действиях пользователя. В режиме инкогнито эта функция не работает.</translation>
 <translation id="3544879808695557954">Имя пользователя (необязательно)</translation>
 <translation id="3547954654003013442">Настройки прокси-сервера</translation>
 <translation id="3548162552723420559">Цвет экрана будет меняться в зависимости от окружения</translation>
@@ -4013,7 +4011,6 @@
 <translation id="4024768890073681126">Этим браузером управляет родитель</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
 <translation id="402707738228916911">Получена инструкция: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
-<translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4028467762035011525">Добавить способы ввода</translation>
 <translation id="4028830198155575078">&amp;Переместить</translation>
 <translation id="4029024445166427442">Клавиша панели запуска + Shift + Backspace</translation>
@@ -4487,7 +4484,6 @@
 <translation id="440411460180511551">Если Chromium обнаружит, что один из ваших паролей оказался в общем доступе из-за утечки данных, Google Менеджер паролей может предложить изменить его. Для этого потребуется войти в аккаунт.</translation>
 <translation id="4404843640767531781">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение родителя.</translation>
 <translation id="4405117686468554883">*.JPEG, *.JPG, *.PNG</translation>
-<translation id="4405224443901389797">Переместить в…</translation>
 <translation id="4405580203042711503">Новая вкладка ниже</translation>
 <translation id="4405781821077215583">Увеличивайте или уменьшайте размер текста и элементов на экране</translation>
 <translation id="4406308048672435032">Вы можете сделать вкладку неактивной или обновить ее, чтобы снова увидеть полный список</translation>
@@ -6032,7 +6028,6 @@
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="5611474372949142946">Закрыть вкладки ниже</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
-<translation id="5614947000616625327">Связка ключей iCloud</translation>
 <translation id="5616571005307953937">Самые старые</translation>
 <translation id="5616726534702877126">Зарезервировать место</translation>
 <translation id="561698261642843490">Закройте Firefox</translation>
@@ -6955,7 +6950,6 @@
 <translation id="6347010704471250799">Показывать уведомление</translation>
 <translation id="634792071306410644">Никто не может обмениваться с вами контентом, пока вы не разрешите другим устройствам обнаруживать ваше</translation>
 <translation id="6348252528297699679">Чтобы отключить определение местоположения, откройте "Настройки &gt; Конфиденциальность и безопасность &gt; Настройки конфиденциальности &gt; Данные о местоположении". <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="6348655410494610085">Войдите в аккаунт Google или создайте новый.</translation>
 <translation id="6348805481186204412">Офлайн-хранилище</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6350745006329795504">Управление устройствами</translation>
@@ -7785,7 +7779,6 @@
 <translation id="696942486482903620">Пароли, сохраненные в аккаунте Google, можно будет использовать как на этом, так и на других устройствах, на которых вы вошли в него.</translation>
 <translation id="6970480684834282392">Тип запуска</translation>
 <translation id="6970543303783413625">Не удалось выполнить импорт. Максимальное число паролей, которые можно импортировать за один раз: <ph name="COUNT" />.</translation>
-<translation id="6970856801391541997">Печать выбранных страниц</translation>
 <translation id="6970861306198150268">Убедитесь, что вы сохраняете текущий пароль для этого сайта.</translation>
 <translation id="6971184043765343932">Загруженное изображение</translation>
 <translation id="6971570759801670426">Изменить <ph name="CREDENTIAL_TYPE" /> для пользователя <ph name="USER_EMAIL" /></translation>
@@ -10229,7 +10222,6 @@
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8849219423513870962">Отменить удаление профиля eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> из <ph name="CHECKING" /></translation>
-<translation id="8850251000316748990">Ещё...</translation>
 <translation id="885246833287407341">Аргументы функций API</translation>
 <translation id="8853586775156634952">Карта будет сохранена только на этом устройстве.</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>

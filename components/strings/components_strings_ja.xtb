@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace フォント</translation>
 <translation id="1757935267918149452">[Google のパスワードを変更] ボタンです。実行すると、Google アカウントのパスワードを変更できます</translation>
 <translation id="1759776526873274358">セキュリティ向上のためにサイトが使用する確認コードを自動入力します。このコードはお使いの Gmail から取得されます。<ph name="BEGIN_LINK" />この機能の詳細<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />データとプライバシーの設定<ph name="END_LINK1" />を管理したり、<ph name="BEGIN_LINK2" />お支払い方法<ph name="END_LINK2" />やポイントカード、身分証明書などの<ph name="BEGIN_LINK3" />パス<ph name="END_LINK3" />を管理したりするには、Google ウォレットにアクセスしてください</translation>
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">写真（アーカイバル）</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">インターネット アクセスがブロックされています</translation>
 <translation id="2294150501457238325">パスポートを安全に追加</translation>
 <translation id="2295831393422400053">文書作成サポートを使用するには、[検索とブラウジングを改善する] 設定をオンにしてください</translation>
-<translation id="2296244067976588032">パスキー • iCloud キーチェーン</translation>
 <translation id="2296331629987861142">簡単な分割払いで支払いを行います（利用条件があり、手数料がかかります）</translation>
 <translation id="2300306941146563769">アップロードされていません</translation>
 <translation id="2301064673700597535">適格証明書の宣言</translation>
@@ -905,6 +903,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2493122313108999546">サイズを変更しました</translation>
 <translation id="249376477913017009">Gmail などからの自動入力に関する通知が表示されました</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
+<translation id="2495909791227061512">付近のデバイスに接続しますか？</translation>
 <translation id="2496402116964818747">パスワード入力で指紋認証を使用するかどうかは [<ph name="SETTINGS" />] で変更できます</translation>
 <translation id="2498091847651709837">新しいカードをスキャン</translation>
 <translation id="2501270939904835585">ラベル（サテン）</translation>
@@ -913,6 +912,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2505063700931618106">カード情報を保存しました</translation>
 <translation id="2505268675989099013">アカウントを保護</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" />（利用規約が適用されます）</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />データとプライバシーの設定<ph name="END_LINK" />を管理するには、Google ウォレットにアクセスしてください。</translation>
 <translation id="2512101340618156538">ブロック（デフォルト）</translation>
 <translation id="2512413427717747692">Chrome を既定のブラウザに設定するボタンです。Enter キーを押すと iOS 設定で Chrome をシステムの既定のブラウザに設定できます</translation>
 <translation id="2515629240566999685">電波状況を確認する</translation>
@@ -1305,6 +1305,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
 <translation id="3209071504641569648">リクエスト、ページのタイトル、URL は Google に送信され、高精度の自動入力の改善に向けて確認される場合があります</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" />のリンクを <ph name="HANDLER_HOSTNAME" /> で開く</translation>
 <translation id="3212468046572043669">ダウンロードを開始しました。表示するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> でのアクティビティは監視されています</translation>
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
@@ -2087,6 +2088,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
 <translation id="4497010149473852018">タップ操作で入力できるポイントカードが表示されています。キーボードは非表示です。</translation>
+<translation id="4497843134750481377">クーポンを管理</translation>
 <translation id="4500587658229086076">安全でないコンテンツ</translation>
 <translation id="4501939680615452918">話題のレストランの空席状況を調べて</translation>
 <translation id="4503459574136856756">私のプロフィールをよりプロフェッショナルなトーンに書き換えて</translation>
@@ -3751,6 +3753,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7347640536700429009">カードの名義が無効です</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" />のリンクを <ph name="REPLACED_HANDLER_TITLE" /> ではなく <ph name="HANDLER_HOSTNAME" /> で開く</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>
 <translation id="7362281996276843968">このグループは非公開です</translation>
 <translation id="7363096869660964304">あらゆる場所に記録が一切残らないわけではありません。シークレット モードを使っても、雇用主、インターネット サービス プロバイダ、訪問先のウェブサイトに閲覧内容が知られる可能性はあります。</translation>

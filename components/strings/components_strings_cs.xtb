@@ -467,7 +467,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1757773103848038814">Písmo s pevnou šířkou</translation>
 <translation id="1757935267918149452">Tlačítko Změnit heslo Google, aktivací změníte heslo svého účtu Google</translation>
 <translation id="1759776526873274358">Automaticky vyplňovat ověřovací kódy, které weby používají k lepšímu zabezpečení. Chrome může tyhle kódy načítat z Gmailu. <ph name="BEGIN_LINK" />Další informace o této funkci<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Pokud chcete spravovat <ph name="BEGIN_LINK1" />předvolby dat a ochrany soukromí<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />platební metody<ph name="END_LINK2" /> nebo <ph name="BEGIN_LINK3" />karty<ph name="END_LINK3" />, jako jsou věrnostní karty a průkazy totožnosti, přejděte do Peněženky Google.</translation>
 <translation id="1763864636252898013">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Operační systém vašeho zařízení nedůvěřuje jeho bezpečnostnímu certifikátu. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Zkuste spustit Diagnostiku sítě systému Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotografie (archivační)</translation>
@@ -777,7 +776,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2292556288342944218">Vaše připojení k internetu je blokováno</translation>
 <translation id="2294150501457238325">Bezpečné přidání pasu</translation>
 <translation id="2295831393422400053">Pokud chcete používat funkci Pomozte mi s psaním, zapněte možnost Zlepšit vyhledávání a procházení</translation>
-<translation id="2296244067976588032">Přístupový klíč • Klíčenka iCloud</translation>
 <translation id="2296331629987861142">Plaťte v jednoduchých splátkách (platí podmínky způsobilosti, jsou účtovány poplatky)</translation>
 <translation id="2300306941146563769">Nenahráno</translation>
 <translation id="2301064673700597535">Prohlášení o kvalifikovaném osvědčení</translation>
@@ -905,6 +903,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2493122313108999546">Změněna velikost</translation>
 <translation id="249376477913017009">Oznámení o automatickém vyplňování z Gmailu a dalších služeb je otevřené</translation>
 <translation id="2495083838625180221">Analyzátor souborů JSON</translation>
+<translation id="2495909791227061512">Připojit k zařízením v okolí?</translation>
 <translation id="2496402116964818747">Používání otisku prstu k vyplňování hesel můžete změnit v <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Naskenovat novou kartu</translation>
 <translation id="2501270939904835585">Štítky (saténové)</translation>
@@ -913,6 +912,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2505063700931618106">Informace o kartě byly uloženy</translation>
 <translation id="2505268675989099013">Ochránit účet</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (platí podmínky)</translation>
+<translation id="251033673027346551">Pokud chcete spravovat <ph name="BEGIN_LINK" />předvolby dat a ochrany soukromí<ph name="END_LINK" />, přejděte do Peněženky Google.</translation>
 <translation id="2512101340618156538">Nepovoleno (výchozí)</translation>
 <translation id="2512413427717747692">Tlačítko nastavení Chromu jako výchozího prohlížeče: Stisknutím klávesy Enter nastavíte Chrome jako výchozí prohlížeč v nastavení iOS</translation>
 <translation id="2515629240566999685">Zkontrolovat, zda máte dostatečně silný signál</translation>
@@ -1302,6 +1302,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3209034400446768650">Stránka může účtovat poplatky</translation>
 <translation id="3209071504641569648">Vaše žádosti, názvy stránek a adresy URL se odesílají do Googlu a mohou být kontrolovány za účelem zdokonalování vylepšeného automatického vyplňování</translation>
+<translation id="3211727636285361260">Otevírat odkazy <ph name="PROTOCOL" /> v aplikaci <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Bylo zahájeno stahování. Zobrazíte ho tak, že přejedete shora dolů a klepnete na tlačítko Zpět</translation>
 <translation id="3212581601480735796">Vaše aktivita na webu <ph name="HOSTNAME" /> je sledována</translation>
 <translation id="3215092763954878852">Ověření WebAuthn nebylo možné použít</translation>
@@ -2083,6 +2084,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
 <translation id="4493480324863638523">Neplatná adresa URL. Je třeba použít adresu URL se standardním protokolem, např. http://example.com nebo https://example.com.</translation>
 <translation id="4497010149473852018">Věrnostní karty dostupné k vyplnění dotykem. Klávesnice je skrytá.</translation>
+<translation id="4497843134750481377">Správa nabídek</translation>
 <translation id="4500587658229086076">nezabezpečený obsah</translation>
 <translation id="4501939680615452918">Najdi mi volná místa v oblíbených restauracích</translation>
 <translation id="4503459574136856756">Přepiš můj životopis, aby zněl profesionálněji</translation>
@@ -3745,6 +3747,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7347640536700429009">Jméno na kartě je neplatné</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353601530677266744">Příkazový řádek</translation>
+<translation id="7358055687760675498">Otevírat odkazy <ph name="PROTOCOL" /> v aplikaci <ph name="HANDLER_HOSTNAME" /> místo <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Byly zablokovány reklamy.</translation>
 <translation id="7362281996276843968">Tato skupina je uzavřená</translation>
 <translation id="7363096869660964304">To neznamená, že jste neviditelní. Anonymní režim neskryje vaši aktivitu před vaším zaměstnavatelem, poskytovatelem internetových služeb ani webovými stránkami, které navštívíte.</translation>

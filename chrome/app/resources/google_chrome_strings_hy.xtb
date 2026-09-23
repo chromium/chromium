@@ -200,7 +200,6 @@
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">Chrome-ի մասին</translation>
 <translation id="2915996080311180594">Վերագործարկել ավելի ուշ</translation>
-<translation id="2916983411556218750">Եկեք կարգավորենք ձեր Chrome-ը</translation>
 <translation id="2926952073016206995">Այս կայքի համար Chrome-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="2945997411976714835">Տեղադրման սխալ. չհաջողվեց սկսել տեղադրումը։</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chrome <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ձեզ նաև հասանելի կլինեն գաղտնաբառերը և այլ տվյալներ <ph name="DEVICE" />։</translation>
@@ -548,6 +547,7 @@ Google Chrome-ը չի կարողանում վերականգնել ձեր կար�
 <translation id="6326175484149238433">Հեռացնել Chrome-ից</translation>
 <translation id="6334815226785304306">Դարձնել Google Chrome-ը կանխադրված դիտարկիչ և ամրացնել խնդրագոտում</translation>
 <translation id="63540178978900677">Chrome-ն այլևս ձեր կանխադրված դիտարկիչը չէ։ Դարձնե՞լ Chrome-ը կանխադրված դիտարկիչ։</translation>
+<translation id="6357670763064300993">Gemini Enterprise-ը Chrome-ում</translation>
 <translation id="6360449101159168105">Մինչ այս ներդիրն ակտիվ չէր, Chrome-ի աշխատանքի արագությունը պահպանելու համար տարածք է ազատվել։ Դուք կարող եք ընտրել, որ այս կայքը միշտ ակտիվ մնա։</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chrome <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ձեր ընթերցանության ցանկը և այլ տվյալները նույնպես հասանելի կլինեն ձեր բոլոր սարքերում։</translation>
 <translation id="6388799252195623474">ինձ օգնություն է անհրաժեշտ</translation>

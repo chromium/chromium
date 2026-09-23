@@ -467,7 +467,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1757773103848038814">Monospace-skrifttype</translation>
 <translation id="1757935267918149452">Knappen «Bytt Google-passord» – aktiver for å endre passordet for Google-kontoen din</translation>
 <translation id="1759776526873274358">Autofyll bekreftelseskoder som nettsteder bruker for å øke sikkerheten. Chrome kan hente disse kodene fra Gmail-kontoen din. <ph name="BEGIN_LINK" />Finn ut mer om denne funksjonen<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Gå til Google Wallet for å kontrollere <ph name="BEGIN_LINK1" />data- og personverninnstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmåter<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort og billetter<ph name="END_LINK3" />, for eksempel stamkundekort og legitimasjon</translation>
 <translation id="1763864636252898013">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av enhetens operativsystem. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prøv å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
@@ -777,7 +776,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2292556288342944218">Internett-tilgangen din er blokkert</translation>
 <translation id="2294150501457238325">Legg til passet på en sikker måte</translation>
 <translation id="2295831393422400053">Slå på innstillingen Gjør søk og surfing bedre for å bruke Hjelp meg å skrive</translation>
-<translation id="2296244067976588032">Passnøkkel • iCloud-nøkkelring</translation>
 <translation id="2296331629987861142">Betal i rimelige avdrag (forutsetter at du er kvalifisert; gebyrer påløper)</translation>
 <translation id="2300306941146563769">Ikke lastet opp</translation>
 <translation id="2301064673700597535">Kvalifiserte sertifikaterklæringer</translation>
@@ -913,6 +911,7 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2505063700931618106">Kortinformasjonen er lagret</translation>
 <translation id="2505268675989099013">Beskytt kontoen</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (vilkår gjelder)</translation>
+<translation id="251033673027346551">Gå til Google Wallet for å administrere <ph name="BEGIN_LINK" />data- og personverninnstillinger<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ikke tillatt (standard)</translation>
 <translation id="2512413427717747692">Knappen «Angi Chrome som standardnettleser» – trykk på Enter for å angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
 <translation id="2515629240566999685">Sjekk signalet i området ditt</translation>

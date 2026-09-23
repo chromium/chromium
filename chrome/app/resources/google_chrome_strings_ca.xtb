@@ -198,7 +198,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="2885378588091291677">Gestor de tasques</translation>
 <translation id="2888126860611144412">Sobre Chrome</translation>
 <translation id="2915996080311180594">Reinicia més tard</translation>
-<translation id="2916983411556218750">Preparem Chrome</translation>
 <translation id="2926952073016206995">Chrome necessita permís d'accés a la càmera per a aquest lloc web</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs les contrasenyes i altres dades de <ph name="DEVICE" />.</translation>
@@ -543,6 +542,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
 <translation id="6334815226785304306">Fes que Google Chrome sigui el navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="63540178978900677">Chrome ja no és el teu navegador predeterminat. Vols establir Chrome com a navegador predeterminat?</translation>
+<translation id="6357670763064300993">Gemini Enterprise a Chrome</translation>
 <translation id="6360449101159168105">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chrome funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs la llista de lectura i altres dades en tots els teus dispositius.</translation>
 <translation id="6388799252195623474">ajuda'm amb això</translation>
@@ -754,6 +754,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8196526165798579689">Cerca amb Chrome Dev</translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8227493674161801700">Cerca amb Chrome Beta</translation>
+<translation id="8233224921566021881">Chrome necessita accés a la teva xarxa local per descobrir i utilitzar dispositius propers</translation>
 <translation id="8253851811470049684">Obre enllaços a Chrome des de qualsevol aplicació i mantén el navegador accessible a la barra de tasques</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
 <translation id="8260086374035800939">Si Gemini a Chrome està obert, el tauler lateral es manté obert quan es creen pestanyes noves</translation>

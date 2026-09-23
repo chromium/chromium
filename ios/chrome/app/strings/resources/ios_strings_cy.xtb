@@ -1817,6 +1817,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6732087373923685049">camera</translation>
 <translation id="6736243959894955139">Cyfeiriad</translation>
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
+<translation id="6749473226660745022">Lluniau</translation>
 <translation id="6750456911389438250">{count,plural, =1{Wedi mewnforio {count} eitem hanes}zero{Wedi mewnforio {count} eitemau hanes}two{Wedi mewnforio {count} eitem hanes}few{Wedi mewnforio {count} eitem hanes}many{Wedi mewnforio {count} eitem hanes}other{Wedi mewnforio {count} eitem hanes}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}zero{Mae {count} opsiynau ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}two{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}few{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}many{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}other{Mae {count} opsiwn ar gyfer dogfen adnabod ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="6755200887046212842">Rheoli Cyfrifon</translation>
@@ -2501,6 +2502,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8879952635974818770">Cynnwys personol</translation>
 <translation id="8887595428614802520">Cau Pob Tab a Grŵp</translation>
 <translation id="8888595487174963247">Tynnu'r Atgoffwr</translation>
+<translation id="8890516388109605451">Ffynonellau</translation>
 <translation id="8893208530912252670">Fideos</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8900845556227858314">Ap Pori</translation>
@@ -2541,6 +2543,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9012585441087414258">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Os yw tudalen yn gwneud rhywbeth amheus, anfonir cyfeiriadau URL a darnau o gynnwys tudalen i Bori'n Ddiogel gyda Google.</translation>
 <translation id="9013605037177245304">Troi Hysbysiadau Ymlaen</translation>
 <translation id="9029650858822697271">Cawsoch eich allgofnodi</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Cadarnhau dileu data pori</translation>
 <translation id="9035699147763101514">Pwerir gan Ddeallusrwydd Personol gyda Gemini. Rheoli eich dewisiadau yn y gosodiadau.</translation>
 <translation id="9038526468059454274">Crynhoi gyda</translation>

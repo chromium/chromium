@@ -467,7 +467,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1757773103848038814">Enkelspasielettertipe</translation>
 <translation id="1757935267918149452">Knoppie om Google-wagwoord te verander; aktiveer om jou Google-rekeningwagwoord te verander</translation>
 <translation id="1759776526873274358">Vul verifikasiekodes wat werwe gebruik om jou sekuriteit te verbeter, outomaties in. Chrome kan hierdie kodes uit jou Gmail kry. <ph name="BEGIN_LINK" />Kry meer inligting oor hierdie kenmerk<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Besoek Google Wallet om <ph name="BEGIN_LINK1" />data- en privaatheidvoorkeure<ph name="END_LINK1" /> te beheer of <ph name="BEGIN_LINK2" />betaalmetodes<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />passe<ph name="END_LINK3" />, soos lojaliteitskaarte en ID’s, te bestuur</translation>
 <translation id="1763864636252898013">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur jou toestel se bedryfstelsel vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Probeer Windows Network Diagnostics uitvoer<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (argivalies)</translation>
@@ -777,7 +776,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2292556288342944218">Jou internettoegang is geblokkeer</translation>
 <translation id="2294150501457238325">Voeg paspoort veilig by</translation>
 <translation id="2295831393422400053">Skakel die “Maak soektogte en blaai-ervaring beter”-instelling aan om Help my skryf te gebruik</translation>
-<translation id="2296244067976588032">Toegangsleutel • iCloud Keychain</translation>
 <translation id="2296331629987861142">Betaal in maklike paaiemente (onderworpe aan geskiktheid, fooie geld)</translation>
 <translation id="2300306941146563769">Nie opgelaai nie</translation>
 <translation id="2301064673700597535">Gekwalifiseerde sertifikaatstate</translation>
@@ -913,6 +911,7 @@ Jy kan hierdie voorstel uit Chrome verwyder. Jou oorspronklike bron sal nie uitg
 <translation id="2505063700931618106">Kaartinligting is gestoor</translation>
 <translation id="2505268675989099013">Beskerm rekening</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (bepalings geld)</translation>
+<translation id="251033673027346551">Besoek Google Wallet om <ph name="BEGIN_LINK" />data- en privaatheidvoorkeure<ph name="END_LINK" /> te bestuur.</translation>
 <translation id="2512101340618156538">Nie toegelaat nie (verstek)</translation>
 <translation id="2512413427717747692">Stel Chrome as verstekblaaierknoppie; druk Enter om Chrome in iOS-instellings as die stelsel se verstekblaaier te stel</translation>
 <translation id="2515629240566999685">Die sein in jou omgewing nagaan</translation>
@@ -1305,6 +1304,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3209034400446768650">Bladsy kan geld hef</translation>
 <translation id="3209071504641569648">Jou versoeke, bladsytitels en URL’e word na Google toe gestuur en kan hersien word om Gevorderde Outovul te verbeter</translation>
+<translation id="3211727636285361260">Maak <ph name="PROTOCOL" />-skakels deur <ph name="HANDLER_HOSTNAME" /> oop</translation>
 <translation id="3212468046572043669">Aflaai het begin. Sleep van bo af en raak die terugknoppie om dit te sien</translation>
 <translation id="3212581601480735796">Jou aktiwiteit op <ph name="HOSTNAME" /> word gemonitor</translation>
 <translation id="3215092763954878852">Kon nie in WebAuthn gebruik nie</translation>
@@ -2087,6 +2087,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
 <translation id="4493480324863638523">Ongeldige URL. Moet 'n URL met 'n standaardskema wees, byvoorbeeld, http://example.com of https://example.com.</translation>
 <translation id="4497010149473852018">Lojaliteitskaarte is beskikbaar om met aanraking in te vul. Sleutelbord is versteek.</translation>
+<translation id="4497843134750481377">Bestuur aanbiedings</translation>
 <translation id="4500587658229086076">onveilige inhoud</translation>
 <translation id="4501939680615452918">Kyk vir beskikbare plekke by gewilde restaurante</translation>
 <translation id="4503459574136856756">Herskryf my biografie om meer professioneel te klink</translation>
@@ -3750,6 +3751,7 @@ Bykomende besonderhede:
 <translation id="7347640536700429009">Naam op kaart is ongeldig</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7353601530677266744">Bevellyn</translation>
+<translation id="7358055687760675498">Maak <ph name="PROTOCOL" />-skakels deur <ph name="HANDLER_HOSTNAME" /> pleks van <ph name="REPLACED_HANDLER_TITLE" /> oop</translation>
 <translation id="7359588939039777303">Advertensies is geblokkeer.</translation>
 <translation id="7362281996276843968">Hierdie groep is toegemaak</translation>
 <translation id="7363096869660964304">Jy is egter nie onsigbaar nie. As jy Incognito is, versteek dit nie jou blaaihandelinge vir jou werkgewer, jou internetdiensverskaffer of die webwerwe wat jy besoek nie.</translation>

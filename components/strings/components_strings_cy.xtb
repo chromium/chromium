@@ -467,7 +467,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1757773103848038814">Ffont Lled Sefydlog</translation>
 <translation id="1757935267918149452">Botwm newid cyfrinair Google, gweithredwch i newid cyfrinair eich Cyfrif Google</translation>
 <translation id="1759776526873274358">Awtolenwi codau dilysu y mae gwefannau'n eu defnyddio i wella'ch diogelwch. Gall Chrome gael y codau hyn o'ch Gmail. <ph name="BEGIN_LINK" />Dysgu rhagor am y nodwedd hon<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Ewch i Google Wallet i reoli <ph name="BEGIN_LINK1" />data a dewisiadau preifatrwydd<ph name="END_LINK1" /> neu reoli <ph name="BEGIN_LINK2" />dulliau talu<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />thocynnau<ph name="END_LINK3" /> megis cardiau teyrngarwch a dulliau adnabod</translation>
 <translation id="1763864636252898013">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw system weithredu eich dyfais yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rhowch gynnig ar redeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Llun (Archifal)</translation>
@@ -616,7 +615,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2045871135676061132">Amlen Personal</translation>
 <translation id="2048261947532620704">Wrthi'n cyfieithu'r dudalen</translation>
 <translation id="2055016614992422886">Sgwrs</translation>
-<translation id="2057654338925604102">Parth darparydd rhwydwaith</translation>
+<translation id="2057654338925604102">Parth y cludwr</translation>
 <translation id="2058468041496756763">Gallwch newid eich peiriant chwilio ar unrhyw adeg yng ngosodiadau Chrome. Os na welwch eich peiriant chwilio dewisol, gallwch berfformio chwiliad o'u gwefan. Fe welwch ef wedi'i restru fel peiriant chwilio yr ymwelwyd ag ef yn ddiweddar yng ngosodiadau Chrome, a gallwch ei wneud yn beiriant chwilio diofyn.</translation>
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2059202684901022309">22 x 34 modfedd</translation>
@@ -777,7 +776,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2292556288342944218">Mae eich mynediad i'r Rhyngrwyd wedi'i rwystro</translation>
 <translation id="2294150501457238325">Ychwanegu pasbort yn ddiogel</translation>
 <translation id="2295831393422400053">Trowch y gosodiad Gwneud Chwiliadau a Phori'n Well ymlaen i ddefnyddio Helpu fi i ysgrifennu</translation>
-<translation id="2296244067976588032">Cod pas • iCloud Keychain</translation>
 <translation id="2296331629987861142">Talu mewn rhandaliadau hawdd (yn amodol ar gymhwysedd, mae ffioedd yn berthnasol)</translation>
 <translation id="2300306941146563769">Ni uwchlwythwyd</translation>
 <translation id="2301064673700597535">Datganiadau Tystysgrif Cymwys</translation>
@@ -913,6 +911,7 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2505063700931618106">Gwybodaeth cerdyn wedi'i chadw</translation>
 <translation id="2505268675989099013">Diogelwch Cyfrif</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (mae telerau'n berthnasol)</translation>
+<translation id="251033673027346551">Ewch i Google Wallet i reoli <ph name="BEGIN_LINK" />data a dewisiadau preifatrwydd<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ni chaniateir (diofyn)</translation>
 <translation id="2512413427717747692">Gosod Chrome fel botwm porwr diofyn, pwyso Enter i osod Chrome fel porwr diofyn y system yng ngosodiadau iOS</translation>
 <translation id="2515629240566999685">Wrthi'n gwirio'r signal yn eich ardal</translation>
@@ -2546,7 +2545,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5263202631354741256">Dull adnabod</translation>
 <translation id="5263867360296733198">Mae angen adolygiad cyn uwchlwytho</translation>
 <translation id="5266128565379329178">Rhwymo i'r brig</translation>
-<translation id="5268746892698450173">Enw'r darparydd rhwydwaith</translation>
+<translation id="5268746892698450173">Enw'r cludwr</translation>
 <translation id="5269225904387178860">Pedwar twll ar y gwaelod</translation>
 <translation id="5271381225185906340">Nid yw "<ph name="DATA_CONTROLS_ATTRIBUTE" />" yn amod a gefnogir ar gyfer "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Pwyleg</translation>

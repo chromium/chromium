@@ -1817,6 +1817,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6736243959894955139">Manzil</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
+<translation id="6749473226660745022">Suratlar</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ta tarix qaydi import qilindi}other{{count} ta tarix qaydi import qilindi}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} ta hisob maʼlumotlari varianti klaviatura ustida chiqadi.}other{{count} ta hisob maʼlumotlari varianti klaviatura ustida chiqadi.}}</translation>
 <translation id="6755200887046212842">Hisoblarni boshqarish</translation>
@@ -2501,6 +2502,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8879952635974818770">Moslangan kontent</translation>
 <translation id="8887595428614802520">Barcha varaq va guruhlarni yopish</translation>
 <translation id="8888595487174963247">Eslatmani olib tashlash</translation>
+<translation id="8890516388109605451">Manbalar</translation>
 <translation id="8893208530912252670">Videolar</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8900845556227858314">Brauzer ilovasi</translation>
@@ -2541,6 +2543,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="9012585441087414258">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Agar sahifa shubhali biror ish qilsa, URL manzillari va sahifa kontentining bitlari Google Saytlarni xavfsiz kezish xizmatiga yuboriladi.</translation>
 <translation id="9013605037177245304">Bildirishnomalarni yoqish</translation>
 <translation id="9029650858822697271">Hisobingizdan chiqasiz</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Brauzer maʼlumotlarini oʻchirishni tasdiqlash</translation>
 <translation id="9035699147763101514">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Tanlovlarni sozlamalar orqali boshqaring.</translation>
 <translation id="9038526468059454274">Qisqacha mazmunini bilib oling</translation>

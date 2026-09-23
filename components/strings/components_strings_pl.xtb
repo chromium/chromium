@@ -467,7 +467,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1757773103848038814">Czcionka o stałej szerokości</translation>
 <translation id="1757935267918149452">Przycisk Zmień hasło do Google; aktywuj, aby zmienić hasło do konta Google</translation>
 <translation id="1759776526873274358">Autouzupełnianie kodów weryfikacyjnych używanych przez witryny w celu poprawy bezpieczeństwa. Chrome może pobierać te kody z Gmaila. <ph name="BEGIN_LINK" />Dowiedz się więcej o tej funkcji<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Otwórz Portfel Google, aby kontrolować <ph name="BEGIN_LINK1" />preferencje dotyczące danych i prywatności<ph name="END_LINK1" /> lub zarządzać <ph name="BEGIN_LINK2" />formami płatności<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />kartami<ph name="END_LINK3" />, takimi jak karty lojalnościowe i dokumenty tożsamości</translation>
 <translation id="1763864636252898013">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego urządzenia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Zdjęcie (archiwalne)</translation>
@@ -777,7 +776,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2292556288342944218">Masz zablokowany dostęp do internetu</translation>
 <translation id="2294150501457238325">Bezpiecznie dodaj paszport</translation>
 <translation id="2295831393422400053">Aby korzystać z funkcji Pomóż mi napisać, włącz ustawienie Ulepsz wyszukiwanie i przeglądanie</translation>
-<translation id="2296244067976588032">Klucz dostępu • Pęk kluczy iCloud</translation>
 <translation id="2296331629987861142">Płać w niewielkich ratach (jeśli spełniasz wymagania; obowiązują opłaty)</translation>
 <translation id="2300306941146563769">Nieprzesłany</translation>
 <translation id="2301064673700597535">Kwalifikowane oświadczenia o certyfikatach</translation>
@@ -913,6 +911,7 @@ Możesz usunąć tę sugestię z Chrome. Oryginalne źródło nie zostanie usun
 <translation id="2505063700931618106">Dane karty zostały zapisane</translation>
 <translation id="2505268675989099013">Chroń konto</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (obowiązują warunki)</translation>
+<translation id="251033673027346551">Otwórz Portfel Google, aby zarządzać <ph name="BEGIN_LINK" />preferencjami dotyczącymi danych i prywatności<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nie zezwolono (domyślnie)</translation>
 <translation id="2512413427717747692">Przycisk ustawiania Chrome jako przeglądarki domyślnej. Naciśnij Enter, aby ustawić Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
 <translation id="2515629240566999685">Sprawdź sygnał w swojej okolicy</translation>

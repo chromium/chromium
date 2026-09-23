@@ -111,6 +111,7 @@
 <translation id="1323735185997015385">מחיקה</translation>
 <translation id="132683371494960526">יש ללחוץ פעמיים כדי לשנות את תיקיית האב.</translation>
 <translation id="1333455942675373522">מקלדת</translation>
+<translation id="1333669029961409292">המשימה "בדיקת הסיסמאות" הושלמה.</translation>
 <translation id="1334485477792811969">שירותי אינטרנט</translation>
 <translation id="1335767868357998043">בחירת המיקום של סרגל הכתובות</translation>
 <translation id="1347468774581902829">ניהול פעילות</translation>
@@ -217,6 +218,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
+<translation id="1644229815617955289">‏כדי להגן על הפרטיות שלך, אפשר לנהל את ההיסטוריה, קובצי ה-cookie ועוד</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="164673457281113247">{count,plural, =1{הסימנייה נשמרה}one{סימניות נשמרו}two{סימניות נשמרו}other{סימניות נשמרו}}</translation>
 <translation id="1650979352027263879">העדפות העיצוב הוסרו</translation>
@@ -404,6 +406,7 @@
 <translation id="2240256190924001613">יש פרופיל של הגדרות אישיות</translation>
 <translation id="2244080985779413662">‏האתר הזה מבקש להוריד קובץ ולפתוח אותו ב-Wallet.</translation>
 <translation id="2245007488813216650">בתהליך תרגום…</translation>
+<translation id="2246445006133863463">‏ההרשאה הזו מאפשרת לך לדבר עם Gemini</translation>
 <translation id="2249119578464404734">בחלק העליון של המסך, לוחצים על סמל החיפוש</translation>
 <translation id="2251686759395008410">תפריט ← היסטוריה</translation>
 <translation id="2252378061043785266">אני לא רוצה לראות את האתר הזה שוב</translation>
@@ -872,6 +875,7 @@
 <translation id="3853162385423733133">‏המשך השימוש בסיסמאות ושמירה שלהן בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">ייבוא</translation>
 <translation id="3854052088499589035">‏יישלחו אליך עדכונים על התקדמות ב-Level Up</translation>
+<translation id="3854214753902617617">מידע על הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="3857113360369572832">‏פותחים את <ph name="BEGIN_BOLD" />הגדרות Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="386224966259596343">‏יש אפשרות לשמור את הפרטים האלה ב-Wallet בפעם הבאה שממלאים טופס רלוונטי.</translation>
@@ -942,6 +946,7 @@
 <translation id="4047337302138771011">שיתוף הסיסמאות</translation>
 <translation id="4049419681095579435">החבילה כבר נוספה למעקב</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
+<translation id="4052951214266508382">‏מתן הרשאה ל-"Gemini" להשתמש במיקרופון</translation>
 <translation id="4054290211988862686">בחירת קובץ</translation>
 <translation id="4070132839822635162">אני לא רוצה להיכנס</translation>
 <translation id="4072473499345702662">לשלב הבא</translation>
@@ -1473,6 +1478,7 @@
 <translation id="574762237186762643">אירועים</translation>
 <translation id="5749158352074143502">המשך הגלישה בכרטיסייה הזו</translation>
 <translation id="5753021559215751319">שמירת הסיסמה</translation>
+<translation id="5756200167514420691">כדי לגלוש באינטרנט עם יותר פרטיות, אפשר לפתוח כרטיסיות במצב פרטי</translation>
 <translation id="5756525336488841345">הסתרת הסימניות</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
 <translation id="57586589942790530">מספר כרטיס לא חוקי</translation>
@@ -1543,6 +1549,7 @@
 <translation id="5988097621740394599">יוצגו הנחות בכרטיסיות.</translation>
 <translation id="5988851877894965432">‏פתיחת כתובות URL ב-Chrome</translation>
 <translation id="599343768974649785">טקסט מפורש</translation>
+<translation id="6000893618966378846">הפעולה "מחיקת נתוני הגלישה" הושלמה.</translation>
 <translation id="6004988584831654445">הכול מוכן! רוצה לקבל התראה כשמגיעות משימות חדשות?</translation>
 <translation id="6006672969046233841">כרטיסייה חדשה</translation>
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
@@ -1802,6 +1809,7 @@
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6736243959894955139">כתובת</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
+<translation id="6749473226660745022">תמונות</translation>
 <translation id="6750456911389438250">{count,plural, =1{יובא פריט אחד ({count}) בהיסטוריה}one{יובאו {count} פריטים בהיסטוריה}two{יובאו {count} פריטים בהיסטוריה}other{יובאו {count} פריטים בהיסטוריה}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{אפשרות אחת {count}של פרטי כניסה זמינה מעל המקלדת.}one{‫{count} אפשרויות פרטי כניסה זמינות מעל המקלדת.}two{‫{count} אפשרויות פרטי כניסה זמינות מעל המקלדת.}other{‫{count} אפשרויות פרטי כניסה זמינות מעל המקלדת.}}</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
@@ -1967,6 +1975,7 @@
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7312823817809783355">המשימות שלך</translation>
 <translation id="7313347584264171202">הכרטיסיות במצב אנונימי זמינות כאן</translation>
+<translation id="7318555235645532245">המשימה "מעבר למצב פרטי" הושלמה.</translation>
 <translation id="7322186060879266048">{count,plural, =1{אפשרות אחת ({count}) למילוי אוטומטי זמינה מעל המקלדת.}one{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}two{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}other{‫{count} אפשרויות למילוי אוטומטי זמינות מעל המקלדת.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
@@ -2143,6 +2152,7 @@
 <translation id="7857520352710212030">האתר הוצמד</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7863211248337747225">להורדת האפליקציה</translation>
+<translation id="7863990181930071932">הגישה למיקום מושבתת</translation>
 <translation id="7865127013871431856">אפשרויות תרגום</translation>
 <translation id="7866872729285243843">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, עליך להפעיל את האפשרות 'רשימת קריאה' בהגדרות.</translation>
 <translation id="7874107544081154809">מילוי אוטומטי של הטופס באמצעות <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2451,6 +2461,7 @@
 <translation id="8786100550345425552">עריכת ההרשאות</translation>
 <translation id="878871978861915380">הסתרת האפשרות "מעקב מחירים"</translation>
 <translation id="8792626944327216835">מיקרופון</translation>
+<translation id="8795809107245894196">כדי לוודא שהסיסמאות שלך מאובטחות, אפשר להשתמש בבדיקת הסיסמאות</translation>
 <translation id="8796634520835503150">מצב הקריאה זמין</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>
 <translation id="8803639129939845298">מאובטח</translation>
@@ -2483,6 +2494,7 @@
 <translation id="8879952635974818770">תוכן מותאם אישית</translation>
 <translation id="8887595428614802520">סגירה של כל הכרטיסיות והקבוצות</translation>
 <translation id="8888595487174963247">הסרת תזכורת</translation>
+<translation id="8890516388109605451">מקורות</translation>
 <translation id="8893208530912252670">סרטונים</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8900845556227858314">אפליקציית דפדפן</translation>
@@ -2523,6 +2535,7 @@
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
 <translation id="9013605037177245304">הפעלת ההתראות</translation>
 <translation id="9029650858822697271">המערכת הוציאה אותך מהחשבון</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">אישור המחיקה של נתוני הגלישה</translation>
 <translation id="9035699147763101514">‏מופעל על ידי AI מותאם אישית עם Gemini. אפשר לנהל את הבחירות שלך בהגדרות.</translation>
 <translation id="9038526468059454274">סיכום באמצעות</translation>

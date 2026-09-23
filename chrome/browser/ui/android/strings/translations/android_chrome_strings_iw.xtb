@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">קיצורי דרך לא פעילים</translation>
 <translation id="2227179592712503583">הסרת ההצעה</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">רוצה את כל המידע השמור שלך?</translation>
 <translation id="2230777942707397948">חלון ריק</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
 <translation id="2233735624724508540">בוחרים מסגרת זמן ואז לוחצים על "מחיקת הנתונים"</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">לא ניתן לבדוק את הסיסמאות במכשיר הזה</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2415037988255164008">לשחזר את החלונות?</translation>
-<translation id="2426805022920575512">בחירת חשבון אחר</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{סרטונים, סרטון אחד ברשימה}one{סרטונים, # סרטונים ברשימה}two{סרטונים, # סרטונים ברשימה}other{סרטונים, # סרטונים ברשימה}}</translation>
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2449931042095204989">‏כשאתר או אפליקציה של Google מבקשים לטעון מראש קישורים שמופיעים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">יצירת ביטוי סיסמה</translation>
 <translation id="2996682533106928201">כדי לסגור, אפשר ללחוץ כאן</translation>
 <translation id="2996809686854298943">דרושה כתובת אתר</translation>
-<translation id="3007318536447999974">‏כדי לדבר עם Gemini, צריך לתת לו גישה למיקרופון. אפשר גם לעשות את זה ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">העדפות מצב הקריאה נסגרו</translation>
 <translation id="3024277805447899099">תצוגה מקדימה של התמונה</translation>
 <translation id="3026955690410463085">הכללת הקישור</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6196315980958524839">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="6204781143409202534">‏‫Chrome זיהה משהו שנראה כמו ספאם מהכתובת <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6212567362666004597">הוספת הכרטיסייה לקבוצה</translation>
 <translation id="6225572914528673855">סרגל הכתובות</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
 <translation id="8580435650274205305">צריך לציין את תאריך התפוגה</translation>
-<translation id="8582529315803410153">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
 <translation id="8585103689515290060">שירותי מילוי אוטומטי</translation>
 <translation id="8586116786993312006">‏כדי למחוק את נתוני הגלישה ב-Chrome, אפשר ללחוץ כאן</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות כפתור האפשרויות הנוספות</translation>

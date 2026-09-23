@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace ফন্ট</translation>
 <translation id="1757935267918149452">'Google পাসওয়ার্ড পরিবর্তন করুন' বোতাম, আপনার Google অ্যাকাউন্ট পাসওয়ার্ড পরিবর্তন করতে এটি চালু করুন</translation>
 <translation id="1759776526873274358">আপনার সুরক্ষা উন্নত করতে সাইটগুলি অটোফিল যাচাইকরণ কোড ব্যবহার করে। আপনার Gmail থেকে Chrome এইসব কোড পেতে পারে। <ph name="BEGIN_LINK" />এই ফিচার সম্বন্ধে আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ডেটা ও গোপনীয়তা সংক্রান্ত পছন্দ<ph name="END_LINK1" /> কন্ট্রোল করতে অথবা লয়ালটি কার্ড ও আইডির মতো <ph name="BEGIN_LINK2" />পেমেন্ট পদ্ধতি<ph name="END_LINK2" /> ও <ph name="BEGIN_LINK3" />পাস<ph name="END_LINK3" /> ম্যানেজ করতে Google Wallet দেখুন</translation>
 <translation id="1763864636252898013">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটটি আপনার ডিভােইসের নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows নেটওয়ার্ক ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1777422078676229054">ফটো (আর্কাইভাল)</translation>
@@ -778,7 +777,6 @@
 <translation id="2292556288342944218">আপনার ইন্টারনেট অ্যাক্সেস অবরুদ্ধ করা হয়েছে</translation>
 <translation id="2294150501457238325">পাসপোর্ট নিরাপদে যোগ করুন</translation>
 <translation id="2295831393422400053">'আমাকে লিখতে সাহায্য করো' ফিচার ব্যবহার করতে 'সার্চ এবং নেভিগেশন আরও ভালো করুন' সেটিং চালু করুন</translation>
-<translation id="2296244067976588032">পাসকী • iCloud Keychain</translation>
 <translation id="2296331629987861142">সহজ ইনস্টলমেন্টে পেমেন্ট করুন (যোগ্যতা সাপেক্ষ, ফি প্রযোজ্য)</translation>
 <translation id="2300306941146563769">আপলোড করা হয়নি</translation>
 <translation id="2301064673700597535">কোয়ালিফায়েড সার্টিফিকেট স্টেটমেন্ট</translation>
@@ -914,6 +912,7 @@
 <translation id="2505063700931618106">কার্ডের তথ্য সেভ করা হয়েছে</translation>
 <translation id="2505268675989099013">অ্যাকাউন্ট সুরক্ষিত রাখা</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (শর্তাবলী প্রযোজ্য)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />ডেটা ও গোপনীয়তা সংক্রান্ত পছন্দ<ph name="END_LINK" /> ম্যানেজ করতে Google Wallet-এ যান।</translation>
 <translation id="2512101340618156538">অনুমতি নেই (ডিফল্ট)</translation>
 <translation id="2512413427717747692">Chrome-কে ডিফল্ট ব্রাউজার বোতাম হিসেবে সেট করুন, iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে Enter কী প্রেস করুন</translation>
 <translation id="2515629240566999685">আপনার এলাকায় সংকেত পরীক্ষা করে দেখুন</translation>
@@ -1306,6 +1305,7 @@
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3209034400446768650">পৃষ্ঠাটির মাধ্যমে টাকা চার্জ করা হতে পারে</translation>
 <translation id="3209071504641569648">'উন্নত অটোফিল' ফিচারকে উন্নত করতে, আপনার অনুরোধ, পৃষ্ঠার টাইটেল ও URL-কে Google-এ পাঠানো হয় এবং এগুলি পর্যালোচনা করা হতে পারে</translation>
+<translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" />-এর মাধ্যমে <ph name="PROTOCOL" /> লিঙ্ক খুলুন</translation>
 <translation id="3212468046572043669">ডাউনলোড শুরু হয়েছে। সেটি দেখতে উপর থেকে টেনে আনুন এবং ফিরে যাওয়ার বোতাম টাচ করুন</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />-এ আপনার অ্যাক্টিভিটি মনিটর করা হচ্ছে</translation>
 <translation id="3215092763954878852">WebAuthn ব্যবহার করা যায়নি</translation>
@@ -2088,6 +2088,7 @@
 <translation id="449126573531210296">আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা পাসওয়ার্ডগুলি এনক্রিপ্ট করুন</translation>
 <translation id="4493480324863638523">ইউআরএলটি সঠিক নয়। অবশ্যই স্ট্যান্ডার্ড স্কিম সহ ইউআরএল হতে হবে, যেমন http://example.com বা https://example.com.</translation>
 <translation id="4497010149473852018">টাচ করে পূরণ করার জন্য লয়ালটি কার্ড উপলভ্য আছে। কীবোর্ড লুকানো রয়েছে।</translation>
+<translation id="4497843134750481377">অফার ম্যানেজ করুন</translation>
 <translation id="4500587658229086076">নিরাপদ নয় এমন কন্টেন্ট</translation>
 <translation id="4501939680615452918">ট্রেন্ড করা রেস্তোরাঁয় রিজার্ভেশন স্লট খোঁজো</translation>
 <translation id="4503459574136856756">আরও পেশাদার করে তুলতে আমার বায়ো আবার লেখো</translation>
@@ -3751,6 +3752,7 @@
 <translation id="7347640536700429009">কার্ডের উপরে থাকা নামটি ভুল</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7353601530677266744">কম্যান্ড লাইন</translation>
+<translation id="7358055687760675498"><ph name="REPLACED_HANDLER_TITLE" />-এর পরিবর্তে <ph name="HANDLER_HOSTNAME" />-এর মাধ্যমে <ph name="PROTOCOL" /> লিঙ্ক খুলুন</translation>
 <translation id="7359588939039777303">বিজ্ঞাপন ব্লক করা হয়েছে।</translation>
 <translation id="7362281996276843968">এই গ্রুপ বন্ধ আছে</translation>
 <translation id="7363096869660964304">তবে, আপনি অদৃশ্য থাকবেন না। ছদ্মবেশী মোড ব্যবহার করলেও আপনার ব্রাউজিং ইতিহাস নিয়োগকর্তা, ইন্টারনেট পরিষেবা প্রদানকারী বা আপনার দেখা ওয়েবসাইটের থেকে লুকানো যাবে না।</translation>

@@ -305,7 +305,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2226826835915474236">Inaktive Kürzel</translation>
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="2227444325776770048">Als <ph name="USER_FULL_NAME" /> fortfahren</translation>
-<translation id="2230411774874187555">Alle gespeicherten Informationen abrufen</translation>
 <translation id="2230777942707397948">Leeres Fenster</translation>
 <translation id="223356358902285214">Web- &amp; App-Aktivitäten</translation>
 <translation id="2233735624724508540">Wähle einen Zeitraum aus und tippe dann auf „Daten löschen“</translation>
@@ -359,7 +358,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2413014528833954543">Passwörter können auf diesem Gerät nicht geprüft werden</translation>
 <translation id="2414886740292270097">Dunkel</translation>
 <translation id="2415037988255164008">Fenster wiederherstellen?</translation>
-<translation id="2426805022920575512">Anderes Konto auswählen</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 Video in der Liste}other{Videos, # Videos in der Liste}}</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2449931042095204989">Wenn eine Google-Website oder ‑App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
@@ -511,7 +509,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996682533106928201">Zum Schließen tippen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
-<translation id="3007318536447999974">Wenn du mit Gemini sprechen möchtest, benötigt Gemini Zugriff auf dein Mikrofon. Du kannst dies auch <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="3024215143424744261">Einstellungen für den Lesemodus sind geschlossen</translation>
 <translation id="3024277805447899099">Bildvorschau</translation>
 <translation id="3026955690410463085">Link hinzufügen</translation>
@@ -1291,7 +1288,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196315980958524839">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert</translation>
 <translation id="6204781143409202534">Chrome hat möglicherweise Spam von <ph name="DOMAIN" /> erkannt.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht deine E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6212567362666004597">Tab zu Gruppe hinzufügen</translation>
 <translation id="6225572914528673855">Adressleiste</translation>
@@ -1950,7 +1946,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8580435650274205305">Ablaufdatum, erforderlich</translation>
-<translation id="8582529315803410153">Hier werden deine Tabs von anderen Geräten angezeigt</translation>
 <translation id="8585103689515290060">Autofill-Services</translation>
 <translation id="8586116786993312006">Hier tippen, um Browserdaten in Chrome zu löschen</translation>
 <translation id="859046281437143747">Über den Button „Weitere Optionen“ kannst du den Preis beobachten</translation>

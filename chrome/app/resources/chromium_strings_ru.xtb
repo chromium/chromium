@@ -300,6 +300,7 @@
 <translation id="4251772536351901305">Предупреждает об опасных сайтах, даже если раньше они были неизвестны Google. При этом анализируется больше данных по сравнению со стандартной защитой. Вы можете пропускать такие уведомления Chromium.</translation>
 <translation id="4269093074552541569">Выйти из Chromium</translation>
 <translation id="4271805377592243930">Справка Chromium</translation>
+<translation id="4275788652681621337">Закрыть боковую панель</translation>
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4285930937574705105">Установка не удалась из-за неизвестной ошибки. Если Chromium продолжает работать, закройте его и повторите попытку.</translation>
 <translation id="4298125729853015961">Экспорт паролей из Chromium</translation>
@@ -439,7 +440,6 @@
 <translation id="5896077214220653386">Gemini Enterprise в Chromium</translation>
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
 <translation id="5924017743176219022">Подключение к интернету…</translation>
-<translation id="5939553720811388432">Давайте настроим Chromium</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5949225980829865667">Чтобы эта закладка и другие данные были доступны на всех ваших устройствах, войдите в Chromium.</translation>
 <translation id="5953657885167112863">Настройте Chromium под себя</translation>

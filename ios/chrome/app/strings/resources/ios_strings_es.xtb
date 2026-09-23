@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Toca dos veces para cambiar la carpeta principal.</translation>
 <translation id="132969855425874290">Cerrar Buscar y rellenar</translation>
 <translation id="1333455942675373522">Teclado</translation>
+<translation id="1333669029961409292">"Comprueba tus contraseñas" completado</translation>
 <translation id="1334485477792811969">Servicios web</translation>
 <translation id="1335767868357998043">Elige la posición de la barra de direcciones</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Obtén indicaciones para llegar a tu destino con guías detalladas usando la función de navegación</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
+<translation id="1644229815617955289">Gestiona tu historial, tus cookies y otros elementos para proteger tu privacidad</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
 <translation id="1650979352027263879">Se han eliminado tus preferencias de aspecto</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Perfil de configuración disponible</translation>
 <translation id="2244080985779413662">Este sitio web quiere descargar un archivo y abrirlo en tu Wallet.</translation>
 <translation id="2245007488813216650">Traduciendo…</translation>
+<translation id="2246445006133863463">Esto te permite hablar con Gemini usando la voz</translation>
 <translation id="2249119578464404734">En la parte superior de la pantalla, toca el icono de búsqueda</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2252378061043785266">No mostrar nunca este sitio</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Sigue usando y guardando las contraseñas en tu cuenta de Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importar</translation>
 <translation id="3854052088499589035">Recibirás novedades cuando avances en Level Up</translation>
+<translation id="3854214753902617617">Descubre Navegación segura mejorada</translation>
 <translation id="3857113360369572832">Abre la <ph name="BEGIN_BOLD" />configuración de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="386224966259596343">Tendrás la oportunidad de guardar esta información en Wallet la próxima vez que rellenes un formulario pertinente.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Compartir tus contraseñas</translation>
 <translation id="4049419681095579435">Ya se está siguiendo el paquete</translation>
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
+<translation id="4052951214266508382">Permite que Gemini use tu micrófono</translation>
 <translation id="4054290211988862686">Elegir archivo</translation>
 <translation id="4070132839822635162">No iniciar sesión</translation>
 <translation id="4072473499345702662">Ir a Subir de nivel</translation>
@@ -1481,6 +1486,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continuar en esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
+<translation id="5756200167514420691">Abre pestañas en modo Incógnito para navegar por la Web de forma más privada</translation>
 <translation id="5756525336488841345">Ocultar Marcadores</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="57586589942790530">Número de tarjeta no válido</translation>
@@ -1551,6 +1557,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5988097621740394599">Consulta las bajadas de precio en tus pestañas.</translation>
 <translation id="5988851877894965432">Abrir URLs en Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6000893618966378846">"Eliminar datos de navegación" completado</translation>
 <translation id="6004988584831654445">¡Todo listo! Recibe notificaciones cuando haya nuevas tareas.</translation>
 <translation id="6006672969046233841">Nueva pestaña</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
@@ -1810,6 +1817,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento del historial importado}other{{count} elementos del historial importados}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opción de credencial disponible encima de tu teclado.}other{{count} opciones de credencial disponibles encima de tu teclado.}}</translation>
 <translation id="6755200887046212842">Gestionar cuentas</translation>
@@ -1975,6 +1983,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7312823817809783355">Tus tareas</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
+<translation id="7318555235645532245">"Navegar de incógnito" completado</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opción de Autocompletar disponible encima del teclado.}other{{count} opciones de Autocompletar disponibles encima del teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
@@ -2151,6 +2160,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7857520352710212030">Sitio fijado</translation>
 <translation id="7859988229622350291">No traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
+<translation id="7863990181930071932">Acceso a la ubicación inhabilitado</translation>
 <translation id="7865127013871431856">Opciones del Traductor</translation>
 <translation id="7866872729285243843">Para ver la lista de lectura en todos tus dispositivos, activa Lista de lectura en la configuración.</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8786100550345425552">Editar permisos</translation>
 <translation id="878871978861915380">Ocultar Seguimiento de precios</translation>
 <translation id="8792626944327216835">micrófono</translation>
+<translation id="8795809107245894196">Usa Revisión de contraseñas para asegurarte de que tus contraseñas sean seguras</translation>
 <translation id="8796634520835503150">Modo Lectura disponible</translation>
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8803639129939845298">Es seguro</translation>
@@ -2491,6 +2502,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8879952635974818770">Contenido personalizado</translation>
 <translation id="8887595428614802520">Cerrar todas las pestañas y grupos</translation>
 <translation id="8888595487174963247">Eliminar recordatorio</translation>
+<translation id="8890516388109605451">Fuentes</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y algún contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
 <translation id="8900845556227858314">Aplicación de navegador</translation>
@@ -2531,6 +2543,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9012585441087414258">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Si una página hace algo sospechoso, las URLs y los fragmentos de contenido de la página se envían a Navegación segura de Google.</translation>
 <translation id="9013605037177245304">Activar notificaciones</translation>
 <translation id="9029650858822697271">Se ha cerrado tu sesión</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmar eliminación de datos de navegación</translation>
 <translation id="9035699147763101514">Con Inteligencia personalizada de Gemini. Gestiona tus opciones en los ajustes.</translation>
 <translation id="9038526468059454274">Resúmelo con</translation>

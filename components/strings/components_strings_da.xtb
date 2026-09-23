@@ -467,7 +467,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1757773103848038814">Skrifttype med enkelt tegnafstand</translation>
 <translation id="1757935267918149452">Knappen Skift Google-adgangskode, aktivér for at ændre adgangskoden til din Google-konto</translation>
 <translation id="1759776526873274358">Autofyld verificeringskoder, som websites bruger til at forbedre din sikkerhed. Chrome kan få disse koder fra din Gmail. <ph name="BEGIN_LINK" />Få flere oplysninger om denne funktion<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Gå til Google Wallet for at styre <ph name="BEGIN_LINK1" />data- og privatlivsindstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmetoder<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort<ph name="END_LINK3" /> som f.eks. loyalitetskort og id'er</translation>
 <translation id="1763864636252898013">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da operativsystemet på din enhed ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prøv at køre Windows Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
@@ -777,7 +776,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2292556288342944218">Din internetadgang er blokeret</translation>
 <translation id="2294150501457238325">Tilføj et pas på sikker vis</translation>
 <translation id="2295831393422400053">Aktivér indstillingen Gør søgninger og browsing endnu bedre for at bruge Hjælp mig med at skrive</translation>
-<translation id="2296244067976588032">Adgangsnøgle • iCloud-nøglering</translation>
 <translation id="2296331629987861142">Betal i rater (med forbehold for kvalificering, gebyrer pålægges)</translation>
 <translation id="2300306941146563769">Ikke uploadet</translation>
 <translation id="2301064673700597535">Kvalificerede certifikaterklæringer</translation>
@@ -913,6 +911,7 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2505063700931618106">Kortoplysningerne er gemt</translation>
 <translation id="2505268675989099013">Beskyt konto</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (vilkår er gældende)</translation>
+<translation id="251033673027346551">Gå til Google Wallet for at administrere <ph name="BEGIN_LINK" />data- og privatlivsindstillinger<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ikke tilladt (standard)</translation>
 <translation id="2512413427717747692">Knappen Angiv Chrome som standardbrowser, tryk på Enter for at angive Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
 <translation id="2515629240566999685">Tjekke signalet i dit område</translation>
@@ -1305,6 +1304,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3209034400446768650">Siden kan opkræve betaling</translation>
 <translation id="3209071504641569648">Dine anmodninger, sidetitler og webadresser sendes til Google og gennemgås muligvis for at gøre forbedret autofyld endnu bedre</translation>
+<translation id="3211727636285361260">Åbn links til <ph name="PROTOCOL" /> via <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Downloaden er påbegyndt. Du kan se den ved at trække fra toppen og trykke på knappen Tilbage</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> overvåges</translation>
 <translation id="3215092763954878852">WebAuthn kunne ikke anvendes</translation>
@@ -2087,6 +2087,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="449126573531210296">Kryptér synkroniserede adgangskoder med din Google-konto</translation>
 <translation id="4493480324863638523">Webadressen er ugyldig. Webadressen skal indeholde et standardskema, f.eks. http://eksempel.dk eller https://eksempel.dk.</translation>
 <translation id="4497010149473852018">Loyalitetskort, der kan udfyldes ved berøring. Tastaturet er skjult.</translation>
+<translation id="4497843134750481377">Administrer tilbud</translation>
 <translation id="4500587658229086076">usikkert indhold</translation>
 <translation id="4501939680615452918">Se, om der er ledige borde på populære restauranter</translation>
 <translation id="4503459574136856756">Omskriv min biografi, så den lyder mere professionel</translation>
@@ -3751,6 +3752,7 @@ Yderligere oplysninger:
 <translation id="7347640536700429009">Navnet på kortet er ugyldigt</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7353601530677266744">Kommandolinje</translation>
+<translation id="7358055687760675498">Åbn links til <ph name="PROTOCOL" /> via <ph name="HANDLER_HOSTNAME" /> i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Annoncer er blokeret.</translation>
 <translation id="7362281996276843968">Denne gruppe er lukket</translation>
 <translation id="7363096869660964304">Du er dog ikke usynlig. Inkognitotilstand skjuler ikke din browserhistorik over for din arbejdsgiver, din internetudbyder eller de websites, du besøger.</translation>
@@ -4543,7 +4545,7 @@ Yderligere oplysninger:
 <translation id="8706806585855470492">Du kan dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="8708134712139312373">Websitet kan anmode om tilladelse til at oprette forbindelse til Bluetooth-enheder</translation>
 <translation id="8710842507289500830">Skriftstil</translation>
-<translation id="8712637175834984815">Forstået</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8715198179991802709">Chrome har lige rapporteret et website, du forsøgte at besøge. Hjælp os med at forbedre disse advarsler ved at deltage i en undersøgelse. Det tager kun 1 minut.</translation>
 <translation id="8716983145825913456">Gem køretøjet på en sikker måde</translation>
 <translation id="8717177139469452440">Gem passet sikkert i Google Wallet</translation>

@@ -200,7 +200,6 @@
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2915996080311180594">পরে একবার রিস্টার্ট করে নিন</translation>
-<translation id="2916983411556218750">আসুন, আপনার Chrome রেডি করা যাক</translation>
 <translation id="2926952073016206995">এই সাইটের জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="2945997411976714835">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার প্রসেস শুরু করা যায়নি।</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে আপনার পাসওয়ার্ড ও আরও অনেক কিছু পাবেন।</translation>
@@ -547,6 +546,7 @@
 <translation id="6326175484149238433">Chrome থেকে সরান</translation>
 <translation id="6334815226785304306">Google Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে টাস্কবারে পিন করুন</translation>
 <translation id="63540178978900677">Chrome আর আপনার ডিফল্ট ব্রাউজার নেই। Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
+<translation id="6357670763064300993">Chrome-এ Gemini Enterprise</translation>
 <translation id="6360449101159168105">Chrome যাতে দ্রুত কাজ করে সেই জন্য এই ট্যাব বন্ধ থাকাকালীন মেমরি খালি করা হয়েছে। এই সাইটটি অ্যাক্টিভ রাখার বিকল্প সব সময় বেছে নিতে পারবেন।</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে পড়ার তালিকা ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="6388799252195623474">এই বিষয়ে আমাকে সাহায্য করো</translation>

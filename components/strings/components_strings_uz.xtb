@@ -466,7 +466,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1757773103848038814">Monospace shrifti</translation>
 <translation id="1757935267918149452">Google parolini oʻzgartirish tugmasi, Google hisobingiz parolini oʻzgartirish uchun faollashtiring</translation>
 <translation id="1759776526873274358">Xavfsizligingizni taʼminlash uchun saytlar yuboradigan tasdiq kodlarini avtomatik kiritish. Chrome bu kodlarni bevosita Gmail hisobingizdan olishi mumkin. <ph name="BEGIN_LINK" />Bu funksiya haqida batafsil<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Maʼlumotlar va maxfiylik sozlamalarini<ph name="END_LINK1" /> sozlash yoki <ph name="BEGIN_LINK2" />toʻlov usullari<ph name="END_LINK2" /> hamda sodiqlik kartalari va ID hujjatlar kabi <ph name="BEGIN_LINK3" />kartalarni<ph name="END_LINK3" /> boshqarish uchun Google Wallet ilovasiga kiring</translation>
 <translation id="1763864636252898013">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati qurilmangizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotoqogʻoz (arxiv</translation>
@@ -776,7 +775,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2292556288342944218">Internet taqiqlab qo‘yilgan</translation>
 <translation id="2294150501457238325">Pasportni xavfsiz kiriting</translation>
 <translation id="2295831393422400053">Yozishda yordam olish uchun Sahifalarni kezish va qidiruvni yaxshilash sozlamasini yoqing</translation>
-<translation id="2296244067976588032">Kirish kaliti • iCloud Keychain</translation>
 <translation id="2296331629987861142">Toʻlovni boʻlib-boʻlib toʻlang – bu oson (muvofiqlik talablariga koʻra komissiya olinadi)</translation>
 <translation id="2300306941146563769">Yuklanmagan</translation>
 <translation id="2301064673700597535">Muvofiq seertifikat bayonotlari</translation>
@@ -913,6 +911,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2505063700931618106">Karta maʼlumotlari saqlandi</translation>
 <translation id="2505268675989099013">Hisobni himoyalash</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (shartlar amal qiladi.)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />Maʼlumotlar va maxfiylik sozlamalarini<ph name="END_LINK" /> boshqarish uchun Google Walletga kiring.</translation>
 <translation id="2512101340618156538">Ruxsat berilmagan (standart)</translation>
 <translation id="2512413427717747692">Chrome brauzerini asosiy brauzer tugmasi sifatida sozlash, iOS sozlamalari orqali Chrome brauzerini tizimning asosiy brauzeri sifatida sozlash uchun Enter tugmasini bosing.</translation>
 <translation id="2515629240566999685">Mobil aloqa signalini tekshirish</translation>

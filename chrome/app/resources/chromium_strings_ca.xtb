@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1083934481477628225">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium</translation>
+<translation id="109026165963220603">Chromium necessita accés a la teva xarxa local per descobrir i utilitzar dispositius propers</translation>
 <translation id="1090946077924227754">Per cercar una funció o una extensió específiques de Chromium, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="1098493699368672217">Mostra la cerca amb Chromium a la safata del sistema i activa les tecles de drecera</translation>
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
@@ -303,6 +304,7 @@
 <translation id="4251772536351901305">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chromium.</translation>
 <translation id="4269093074552541569">Tanca la sessió de Chromium</translation>
 <translation id="4271805377592243930">Obtén ajuda per a Chromium</translation>
+<translation id="4275788652681621337">Tanca el tauler lateral</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4285930937574705105">S'ha produït un error no especificat durant la instal·lació. Si Chromium s'està executant en aquests moments, tanqueu-lo i torneu-ho a provar.</translation>
 <translation id="4298125729853015961">Exporta les contrasenyes de Chromium</translation>
@@ -439,9 +441,9 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5883558403894052917">Chromium ha detectat que aquests elements contenen programari maliciós:</translation>
 <translation id="5889361821821684993">Chromium comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5896077214220653386">Gemini Enterprise a Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa</translation>
 <translation id="5924017743176219022">S'està connectant a Internet...</translation>
-<translation id="5939553720811388432">Preparem Chromium</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5949225980829865667">Per obtenir aquesta adreça d'interès i més en tots els dispositius, inicia la sessió a Chromium</translation>
 <translation id="5953657885167112863">Personalitza Chromium al teu gust</translation>

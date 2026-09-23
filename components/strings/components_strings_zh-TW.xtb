@@ -466,7 +466,6 @@
 <translation id="1757773103848038814">等寬字型</translation>
 <translation id="1757935267918149452">「變更 Google 密碼」按鈕，啟動後即可變更 Google 帳戶密碼</translation>
 <translation id="1759776526873274358">自動填入驗證碼，供網站用來提升安全性。Chrome 可從 Gmail 取得這些驗證碼。<ph name="BEGIN_LINK" />進一步瞭解這項功能<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">前往 Google 錢包控管<ph name="BEGIN_LINK1" />資料和隱私權偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方式<ph name="END_LINK2" />與會員卡和身分證件等<ph name="BEGIN_LINK3" />票證<ph name="END_LINK3" /></translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證未取得你裝置作業系統的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網路診斷<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相紙 (典藏用)</translation>
@@ -776,7 +775,6 @@
 <translation id="2292556288342944218">您的網際網路存取權遭到封鎖</translation>
 <translation id="2294150501457238325">安全新增護照</translation>
 <translation id="2295831393422400053">開啟「改善搜尋和瀏覽體驗」即可使用「幫我寫」功能</translation>
-<translation id="2296244067976588032">密碼金鑰 • iCloud 鑰匙圈</translation>
 <translation id="2296331629987861142">輕鬆分期付款 (須符合資格並支付手續費)</translation>
 <translation id="2300306941146563769">未上傳</translation>
 <translation id="2301064673700597535">合格憑證聲明</translation>
@@ -912,6 +910,7 @@
 <translation id="2505063700931618106">已儲存卡片資訊</translation>
 <translation id="2505268675989099013">保護帳戶</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (適用相關條款)</translation>
+<translation id="251033673027346551">前往 Google 錢包管理<ph name="BEGIN_LINK" />資料和隱私權偏好設定<ph name="END_LINK" />。</translation>
 <translation id="2512101340618156538">不允許 (預設)</translation>
 <translation id="2512413427717747692">將 Chrome 設為預設瀏覽器的按鈕，按下 Enter 鍵即可在 iOS 設定中將 Chrome 設為系統的預設瀏覽器</translation>
 <translation id="2515629240566999685">檢查所在位置的網路訊號</translation>
@@ -1303,6 +1302,7 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
 <translation id="3209071504641569648">你的要求、網頁標題和網址傳送給 Google，並可能交由人工審查，以改進強化版自動填入功能</translation>
+<translation id="3211727636285361260">透過 <ph name="HANDLER_HOSTNAME" /> 開啟<ph name="PROTOCOL" />連結</translation>
 <translation id="3212468046572043669">目前已開始下載。如要查看，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="3212581601480735796">你在 <ph name="HOSTNAME" /> 上進行的活動正遭到監控</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
@@ -1430,7 +1430,7 @@
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3434025015623587566">Google 密碼管理工具需要更多存取權</translation>
 <translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案供系統管理員查看。</translation>
-<translation id="3435267628744367511">在表單連按兩下 Ctrl，即可尋找並填入資訊，免切換分頁</translation>
+<translation id="3435267628744367511">在表單連按兩下 Ctrl 鍵，即可尋找並填入資訊，不必切換分頁</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3436125638121079308">是否要自動分享相關分頁，在此對話中取得更實用的回覆？</translation>
@@ -2085,6 +2085,7 @@
 <translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4497010149473852018">會員卡已顯示在畫面上，輕觸即可填入。鍵盤已隱藏。</translation>
+<translation id="4497843134750481377">管理優惠</translation>
 <translation id="4500587658229086076">不安全的內容</translation>
 <translation id="4501939680615452918">尋找熱門餐廳的可預約時段</translation>
 <translation id="4503459574136856756">改寫我的簡介，讓內容聽起來更具專業感</translation>
@@ -2907,7 +2908,7 @@
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">已儲存卡片</translation>
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
-<translation id="5887791684215121787">在表單連按兩下 ⌘，即可尋找並填入資訊，免切換分頁</translation>
+<translation id="5887791684215121787">在表單連按兩下 ⌘ 鍵，即可尋找並填入資訊，不必切換分頁</translation>
 <translation id="5889251770650310375">如要取得其他裝置上的歷史記錄，請驗證身分並同步處理歷史記錄和分頁。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
@@ -3749,6 +3750,7 @@
 <translation id="7347640536700429009">卡片上的姓名無效</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353601530677266744">命令列</translation>
+<translation id="7358055687760675498">透過 <ph name="HANDLER_HOSTNAME" /> (而非 <ph name="REPLACED_HANDLER_TITLE" />) 開啟<ph name="PROTOCOL" />連結</translation>
 <translation id="7359588939039777303">已封鎖廣告。</translation>
 <translation id="7362281996276843968">這個群組已關閉</translation>
 <translation id="7363096869660964304">不過，這並不代表你的瀏覽記錄會完全不留痕跡。你使用無痕模式時，你的雇主、網際網路服務供應商和你所造訪的網站仍然可以追蹤你的瀏覽記錄。</translation>

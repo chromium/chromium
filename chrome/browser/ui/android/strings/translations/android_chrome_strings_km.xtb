@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">ផ្លូវកាត់​អសកម្ម</translation>
 <translation id="2227179592712503583">លុប​ការណែនាំ</translation>
 <translation id="2227444325776770048">បន្តជា <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">យក​ព័ត៌មាន​ទាំងអស់​ដែលអ្នក​បានរក្សាទុក</translation>
 <translation id="2230777942707397948">វិនដូទទេ</translation>
 <translation id="223356358902285214">សកម្មភាពកម្មវិធី និងគេហទំព័រ</translation>
 <translation id="2233735624724508540">ជ្រើសរើស​រយៈពេល បន្ទាប់មក​ចុច "លុប​ទិន្នន័យ"</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">មិនអាច​ពិនិត្យមើល​ពាក្យ​សម្ងាត់​នៅលើ​ឧបករណ៍នេះ​បានទេ</translation>
 <translation id="2414886740292270097">ងងឹត</translation>
 <translation id="2415037988255164008">ស្ដារវិនដូឬ?</translation>
-<translation id="2426805022920575512">ជ្រើសរើស​គណនី​ផ្សេងទៀត</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{វីដេអូ, វីដេអូ 1 នៅក្នុង​បញ្ជី}other{វីដេអូ, វីដេអូ # នៅក្នុង​បញ្ជី}}</translation>
 <translation id="2433507940547922241">ការបង្ហាញខ្លួន</translation>
 <translation id="2449931042095204989">នៅពេល​កម្មវិធី ឬ​គេហទំព័រ Google ស្នើសុំផ្ទុកតំណជាមុន​ជាលក្ខណៈឯកជន​នៅលើទំព័ររបស់ខ្លួន Chrome អ៊ីនគ្រីប និងផ្ទុកទំព័រ​ជាមុន​តាមរយៈ​ម៉ាស៊ីនមេ Google ដោយមិនប្រើ​ខូគី។ ការធ្វើបែបនេះ​លាក់អត្តសញ្ញាណ​របស់អ្នកពីគេហទំព័រ​ដែលបានផ្ទុក​ជាមុន។</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">បង្កើតឃ្លាសម្ងាត់</translation>
 <translation id="2996682533106928201">ចុចដើម្បី​ច្រានចោល</translation>
 <translation id="2996809686854298943">តម្រូវឲ្យមាន URL</translation>
-<translation id="3007318536447999974">ដើម្បី​និយាយ​ជាមួយ Gemini សូម​ផ្ដល់ការអនុញ្ញាត​ឱ្យវាប្រើ​មីក្រូហ្វូន​របស់អ្នក។ អ្នកក៏អាចគ្រប់គ្រងការអនុញ្ញាតនេះនៅក្នុង <ph name="BEGIN_LINK" />"ការកំណត់"<ph name="END_LINK" /> ផងដែរ</translation>
 <translation id="3024215143424744261">បានបិទ​ចំណូលចិត្ត​មុខងារអាន</translation>
 <translation id="3024277805447899099">មើលរូបភាពសាកល្បង</translation>
 <translation id="3026955690410463085">រួមបញ្ចូល​តំណ</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
 <translation id="6196315980958524839">ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងកម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google នៅលើឧបករណ៍នេះ</translation>
 <translation id="6204781143409202534">Chrome បាន​រកឃើញ​ថាអាចមាន​សារឥតបានការ​ពី <ph name="DOMAIN" />។</translation>
-<translation id="6210748933810148297">មិនមែន <ph name="EMAIL" /> ទេ?</translation>
 <translation id="6211386937064921208">កំពុងមើល​ទំព័រនេះ​សាកល្បង</translation>
 <translation id="6212567362666004597">បញ្ចូល​ផ្ទាំង​ទៅក្រុម</translation>
 <translation id="6225572914528673855">របារអាសយដ្ឋាន</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">មិនអាចទាញយកឯកសារដោយសុវត្ថិភាពបានទេ</translation>
 <translation id="8571213806525832805">4 សប្តាហ៍មុន</translation>
 <translation id="8580435650274205305">កាលបរិច្ឆេទ​ផុតកំណត់ (តម្រូវឲ្យមាន)</translation>
-<translation id="8582529315803410153">អ្នក​នឹង​ឃើញ​ផ្ទាំង​របស់អ្នក​ពី​ឧបករណ៍​ផ្សេងទៀត​នៅទីនេះ</translation>
 <translation id="8585103689515290060">សេវាកម្មបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="8586116786993312006">ចុចដើម្បីលុប​ទិន្នន័យរុករក​នៅក្នុង Chrome</translation>
 <translation id="859046281437143747">តាមដានតម្លៃពីប៊ូតុងជម្រើសច្រើនទៀត</translation>

@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Ոչ ակտիվ դյուրանցումներ</translation>
 <translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Ստացեք ձեր բոլոր պահված տեղեկությունները</translation>
 <translation id="2230777942707397948">Դատարկ պատուհան</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2233735624724508540">Ընտրեք ժամանակահատված և հպեք «Ջնջել տվյալները»</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Հնարավոր չէ ստուգել գաղտնաբառեր այս սարքում</translation>
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2415037988255164008">Վերականգնե՞լ պատուհանները</translation>
-<translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Տեսանյութեր, 1 տեսանյութ ցանկում}one{Տեսանյութեր, # տեսանյութ ցանկում}other{Տեսանյութեր, # տեսանյութ ցանկում}}</translation>
 <translation id="2433507940547922241">Արտաքին տեսք</translation>
 <translation id="2449931042095204989">Երբ որևէ կայք կամ հավելված հայցում է էջերի անանուն նախաբեռնում իր էջում առկա հղումների միջոցով, Chrome-ը գաղտնագրում և նախապես բեռնում է էջերը Google-ի սերվերների միջոցով առանց քուքիների։ Այդպիսով ձեր ինքնության մասին տվյալները չեն փոխանցվում։</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
 <translation id="2996682533106928201">Փակելու համար հպեք</translation>
 <translation id="2996809686854298943">Պահանջվում է URL-ը</translation>
-<translation id="3007318536447999974">Gemini-ի հետ խոսելու համար տրամադրեք ձեր խոսափողի օգտագործման թույլտվություն։ Սա կարող եք կառավարել նաև <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Ընթերցման ռեժիմի կարգավորումները փակված են</translation>
 <translation id="3024277805447899099">Նախադիտել պատկերը</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6196315980958524839">Գաղտնաբառերը պահվում են այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
 <translation id="6204781143409202534">Chrome-ը հնարավոր սպամ է հայտնաբերել <ph name="DOMAIN" /> տիրույթից։</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>
 <translation id="6212567362666004597">Ավելացնել ներդիր խմբում</translation>
 <translation id="6225572914528673855">Հասցեագոտի</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">Ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
 <translation id="8580435650274205305">Վավերականության ժամկետ, պարտադիր է</translation>
-<translation id="8582529315803410153">Այստեղ դուք կգտնեք ձեր ներդիրները մյուս սարքերից</translation>
 <translation id="8585103689515290060">Ինքնալրացման ծառայություններ</translation>
 <translation id="8586116786993312006">Հպեք՝ Chrome-ում այցելությունների պատմությունը ջնջելու համար</translation>
 <translation id="859046281437143747">Հետևել գներին «Այլ ընտրանքներ» կոճակի օգնությամբ</translation>

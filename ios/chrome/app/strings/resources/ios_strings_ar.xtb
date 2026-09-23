@@ -112,6 +112,7 @@
 <translation id="132683371494960526">انقر مرّتين لتغيير المجلد الرئيسي.</translation>
 <translation id="132969855425874290">إغلاق ميزة "البحث عن المعلومات وتعبئتها"</translation>
 <translation id="1333455942675373522">لوحة المفاتيح</translation>
+<translation id="1333669029961409292">اكتملت مَهمة "التحقّق من كلمات المرور".</translation>
 <translation id="1334485477792811969">خدمات ويب</translation>
 <translation id="1335767868357998043">اختيار موضع شريط العناوين</translation>
 <translation id="1347468774581902829">إدارة النشاط</translation>
@@ -159,7 +160,7 @@
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تم التغيير</translation>
-<translation id="1481450969185702334">البحث عن الاقتراحات وتعبئتها</translation>
+<translation id="1481450969185702334">البحث عن المعلومات وتعبئتها</translation>
 <translation id="1483493594462132177">إرسال</translation>
 <translation id="1486096554574027028">بحث عن كلمات المرور</translation>
 <translation id="1486593497476255523">اكتملت مهمة مجموعات علامات التبويب.</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">احصل على الاتجاهات إلى وجهتك مع إرشادات مفصّلة عن الاتّجاهات باستخدام ميزة التنقُّل</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
+<translation id="1644229815617955289">يمكنك إدارة السجلّ وملفات تعريف الارتباط وغير ذلك لحماية خصوصيتك</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="164673457281113247">{count,plural, =1{تم حفظ الإشارة المرجعية.}zero{تم حفظ الإشارات المرجعية.}two{تم حفظ الإشارتَين المرجعيتَين.}few{تم حفظ الإشارات المرجعية.}many{تم حفظ الإشارات المرجعية.}other{تم حفظ الإشارات المرجعية.}}</translation>
 <translation id="1650979352027263879">تمت إزالة الإعدادات المفضّلة للمظهر</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">ملف تحميل الإعدادات متوفِّر</translation>
 <translation id="2244080985779413662">‏"يطلب هذا الموقع الإلكتروني تنزيل ملف وفتحه في تطبيق Apple Wallet" ‏(This website wants to download a file and open it in your Wallet).</translation>
 <translation id="2245007488813216650">جارٍ الترجمة…</translation>
+<translation id="2246445006133863463">‏يتيح لك هذا الخيار التحدّث مع Gemini باستخدام صوتك</translation>
 <translation id="2249119578464404734">انقر على الرمز "بحث" في أعلى الشاشة</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
 <translation id="2252378061043785266">عدم عرض هذا الموقع الإلكتروني مطلقًا</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">‏يُرجى مواصلة استخدام كلمات المرور وحفظها في حسابك على Google: <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">استيراد</translation>
 <translation id="3854052088499589035">‏ستصلك إشعارات عند تقدّمك في برنامج Level Up</translation>
+<translation id="3854214753902617617">استكشاف ميزة "الحماية المحسّنة للتصفّح الآمن"</translation>
 <translation id="3857113360369572832">‏افتح <ph name="BEGIN_BOLD" />إعدادات Safari‏<ph name="END_BOLD" /> (Safari Settings)</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="386224966259596343">‏ستتاح لك فرصة حفظ هذه المعلومات في "محفظة Google" عند ملء نموذج ذي صلة في المرة القادمة.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">مشاركة كلمات المرور</translation>
 <translation id="4049419681095579435">يتمّ حاليًا تتبّع الطرد</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
+<translation id="4052951214266508382">‏السماح لـ Gemini باستخدام الميكروفون</translation>
 <translation id="4054290211988862686">اختيار ملفّ</translation>
 <translation id="4070132839822635162">عدم تسجيل الدخول</translation>
 <translation id="4072473499345702662">‏الانتقال إلى ميزة Level Up</translation>
@@ -1479,6 +1484,7 @@
 <translation id="574762237186762643">الأحداث</translation>
 <translation id="5749158352074143502">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="5753021559215751319">حفظ كلمة المرور</translation>
+<translation id="5756200167514420691">يمكنك فتح علامات التبويب في وضع التصفّح المتخفي لتصفُّح الويب بخصوصية تامة</translation>
 <translation id="5756525336488841345">إخفاء "الإشارات المرجعية"</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
 <translation id="57586589942790530">رقم البطاقة غير صالح</translation>
@@ -1549,6 +1555,7 @@
 <translation id="5988097621740394599">يمكنك الاطّلاع على الأسعار المخفَّضة في علامات التبويب.</translation>
 <translation id="5988851877894965432">‏فتح عناوين URL في Chrome</translation>
 <translation id="599343768974649785">نص فاضح</translation>
+<translation id="6000893618966378846">اكتملت مَهمة "حذف بيانات التصفّح".</translation>
 <translation id="6004988584831654445">اكتملت عملية الإعداد، ويمكنك تلقّي إشعارات عند وصول مهام جديدة.</translation>
 <translation id="6006672969046233841">علامة تبويب جديدة</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
@@ -1808,6 +1815,7 @@
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6736243959894955139">العنوان</translation>
 <translation id="6746338529702829275">مراجعة بيانات حسابك</translation>
+<translation id="6749473226660745022">الصور</translation>
 <translation id="6750456911389438250">{count,plural, =1{تم استيراد عنصر واحد ({count}) من السجلّ}zero{تم استيراد {count} عنصر من السجلّ}two{تم استيراد عنصرَين ({count}) من السجلّ}few{تم استيراد {count} عناصر من السجلّ}many{تم استيراد {count} عنصرًا من السجلّ}other{تم استيراد {count} عنصر من السجلّ}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{يتوفّر خيار واحد ({count}) لبيانات الاعتماد أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار لبيانات الاعتماد أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) لبيانات الاعتماد أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات لبيانات الاعتماد أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا لبيانات الاعتماد أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار لبيانات الاعتماد أعلى لوحة المفاتيح.}}</translation>
 <translation id="6755200887046212842">إدارة الحسابات</translation>
@@ -1973,6 +1981,7 @@
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7312823817809783355">مهامك</translation>
 <translation id="7313347584264171202">ستظهر لك علامات تبويب في وضع التصفّح المتخفي هنا</translation>
+<translation id="7318555235645532245">اكتملت مَهمة "الانتقال إلى وضع التصفّح المتخفّي".</translation>
 <translation id="7322186060879266048">{count,plural, =1{يتوفّر خيار واحد ({count}) للملء التلقائي أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار للملء التلقائي أعلى لوحة المفاتيح.}two{يتوفّر خيارَين ({count}) للملء التلقائي أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات للملء التلقائي أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا للملء التلقائي أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار للملء التلقائي أعلى لوحة المفاتيح.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
@@ -2149,6 +2158,7 @@
 <translation id="7857520352710212030">تم تثبيت الموقع الإلكتروني</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
 <translation id="7863211248337747225">تنزيل التطبيق</translation>
+<translation id="7863990181930071932">تم إيقاف إذن الوصول إلى الموقع الجغرافي</translation>
 <translation id="7865127013871431856">خيارات الترجمة</translation>
 <translation id="7866872729285243843">يجب تفعيل ميزة "قائمة القراءة" من خلال الإعدادات لعرض هذه القائمة على جميع أجهزتك.</translation>
 <translation id="7874107544081154809">الملء التلقائي للنموذج باستخدام <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2458,6 +2468,7 @@
 <translation id="8786100550345425552">تعديل الأذونات</translation>
 <translation id="878871978861915380">إخفاء ميزة "تتبُّع الأسعار"</translation>
 <translation id="8792626944327216835">الميكروفون</translation>
+<translation id="8795809107245894196">يمكنك استخدام ميزة "التحقق من كلمات المرور" للتأكّد من أنّ كلمات مرورك آمنة</translation>
 <translation id="8796634520835503150">ميزة "وضع القراءة" متاحة</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8803639129939845298">آمن</translation>
@@ -2490,6 +2501,7 @@
 <translation id="8879952635974818770">محتوى مخصّص</translation>
 <translation id="8887595428614802520">إغلاق كل علامات التبويب والمجموعات</translation>
 <translation id="8888595487174963247">إزالة التذكير</translation>
+<translation id="8890516388109605451">المصادر</translation>
 <translation id="8893208530912252670">الفيديوهات</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8900845556227858314">تطبيق المتصفّح</translation>
@@ -2530,6 +2542,7 @@
 <translation id="9012585441087414258">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيّن أنها ضارة. فإذا تم رصد نشاط مريب في إحدى الصفحات، يتم إرسال عناوين URL وأجزاء من محتوى الصفحة إلى ميزة "التصفّح الآمن من Google".</translation>
 <translation id="9013605037177245304">تفعيل الإشعارات</translation>
 <translation id="9029650858822697271">تم تسجيل خروجك من الحساب</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">تأكيد حذف بيانات التصفّح</translation>
 <translation id="9035699147763101514">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini. ويمكنك إدارة اختياراتك في الإعدادات.</translation>
 <translation id="9038526468059454274">الملخص بانتظارك مع</translation>

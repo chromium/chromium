@@ -270,6 +270,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7061455974939528301">Chrome アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
+<translation id="7135936755418321901">ウェブサイトと位置情報を共有するには、[設定] をタップして位置情報の使用を Chrome に許可してください。</translation>
 <translation id="7145599899567697473">Chrome でパスワードを保存して自動入力</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
@@ -357,7 +358,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Chrome で検出されたプライバシーやセキュリティの問題についてのアラートです。</translation>
 <translation id="855027533751209304">Chrome のヒント: 見たものをそのまま検索</translation>
-<translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
+<translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリでリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="8589791109349384456">提案をオフにしても、他の機能での Chrome によるページのタイトルと URL の処理は制御されません。このデータへのアクセスは、<ph name="BEGIN_LINK" />同期設定<ph name="END_LINK" />で管理できます。</translation>
 <translation id="8603022514504485810">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="8610372330814566250">Safari のパスワード、履歴、ブックマーク、クレジット カードを Chrome で使用できます</translation>

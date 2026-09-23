@@ -198,7 +198,6 @@
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
 <translation id="2915996080311180594">暂不重启</translation>
-<translation id="2916983411556218750">立即开始设置您的 Chrome</translation>
 <translation id="2926952073016206995">Chrome 需要为此网站授予摄像头权限</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的密码等信息。</translation>
@@ -237,7 +236,7 @@
 <translation id="318555301233810762"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在自己的所有设备上获取书签等信息。</translation>
 <translation id="319199214552513804">若要在您的所有计算机上使用此扩展程序等，请登录 Chrome</translation>
 <translation id="3196187562065225381">由于该文件具有危险性，Chrome 阻止了这次下载</translation>
-<translation id="3222857603094643834">使用 Google 智能镜头搜索此页面中的任何内容</translation>
+<translation id="3222857603094643834">您可通过 Google 智能镜头搜索此页面上的任何内容</translation>
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="3242123554343253302">添加 Chrome 个人资料</translation>
 <translation id="3242486428260808857">网购更尽兴，尽在 <ph name="DEVICE_TYPE" /> 版 Chrome 应用</translation>
@@ -347,7 +346,7 @@
 <translation id="4329315893554541805">若要获得个性化体验和其他功能，请在“网络与应用活动记录”和关联的 Google 服务中包含 Chrome</translation>
 <translation id="4334241893986177674">搜索此屏幕截图</translation>
 <translation id="4343195214584226067">“<ph name="EXTENSION_NAME" />”已添加到 Chrome</translation>
-<translation id="4344128547036991536">当您打开 Google 智能镜头时，系统会自动将网页标题、网址和内容（包括 PDF 文件）发送给 Google。<ph name="LEARN_MORE" /></translation>
+<translation id="4344128547036991536">打开 Google 智能镜头后，系统会自动将网页标题、网址和内容（包括 PDF 文件）发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chrome</translation>
 <translation id="436060642166082913">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号</translation>
 <translation id="4367027658822022112">您可以固定 Google 智能镜头以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
@@ -543,6 +542,7 @@
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6334815226785304306">将 Google Chrome 设为默认浏览器并固定到任务栏</translation>
 <translation id="63540178978900677">Chrome 不再是默认浏览器。要将 Chrome 设为默认浏览器吗？</translation>
+<translation id="6357670763064300993">Chrome 中的 Gemini Enterprise</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在所有设备上获取阅读清单等内容。</translation>
 <translation id="6388799252195623474">帮我解决这个问题</translation>

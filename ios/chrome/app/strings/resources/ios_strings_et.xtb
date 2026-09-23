@@ -1817,6 +1817,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6732087373923685049">kaamera</translation>
 <translation id="6736243959894955139">Aadress</translation>
 <translation id="6746338529702829275">Konto andmete ülevaatamine</translation>
+<translation id="6749473226660745022">Fotod</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ajalooüksus imporditi}other{{count} ajalooüksust imporditi}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Klaviatuuri kohal on mandaadi jaoks saadaval {count} valik.}other{Klaviatuuri kohal on mandaadi jaoks saadaval {count} valikut.}}</translation>
 <translation id="6755200887046212842">Kontode haldamine</translation>
@@ -2501,6 +2502,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8879952635974818770">Isikupärastatud sisu</translation>
 <translation id="8887595428614802520">Sule kõik vahelehed ja grupid</translation>
 <translation id="8888595487174963247">Eemalda meeldetuletus</translation>
+<translation id="8890516388109605451">Allikad</translation>
 <translation id="8893208530912252670">Videod</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>
 <translation id="8900845556227858314">Brauserirakendus</translation>
@@ -2541,6 +2543,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
 <translation id="9013605037177245304">Märguannete sisselülitamine</translation>
 <translation id="9029650858822697271">Teid logiti välja</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Kinnita sirvimisandmete kustutamine</translation>
 <translation id="9035699147763101514">Toimib Gemini Personal Intelligence'i abil. Hallake oma valikuid seadetes.</translation>
 <translation id="9038526468059454274">Kokkuvõtte tegemine teenusega</translation>

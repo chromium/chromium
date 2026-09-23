@@ -467,7 +467,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1757773103848038814">Fonti me hapësirë fikse</translation>
 <translation id="1757935267918149452">Butoni "Ndrysho fjalëkalimin e Google". Aktivizoje për të ndryshuar fjalëkalimin e "Llogarisë sate të Google"</translation>
 <translation id="1759776526873274358">Plotëso automatikisht kodet e verifikimit që përdorin sajtet për të përmirësuar sigurinë tënde. Chrome mund t'i marrë këto kode nga Gmail. <ph name="BEGIN_LINK" />Mëso më shumë rreth kësaj veçorie<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Vizito "Portofolin e Google" për të kontrolluar <ph name="BEGIN_LINK1" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK1" /> ose për të menaxhuar <ph name="BEGIN_LINK2" />mënyrat e pagesës<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />dokumentet dixhitale<ph name="END_LINK3" /> si kartat e besnikërisë dhe dokumentet e identifikimit</translation>
 <translation id="1763864636252898013">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chromium. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po kap lidhjen tënde.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Provo të ekzekutosh diagnostikimin e rrjetit të Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotografi (arkivore)</translation>
@@ -777,7 +776,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2292556288342944218">Qasja jote në internet është bllokuar</translation>
 <translation id="2294150501457238325">Shto pasaportën në mënyrë të sigurt</translation>
 <translation id="2295831393422400053">Aktivizo cilësimin "Përmirëso kërkimet dhe shfletimin" për të përdorur "Më ndihmo të shkruaj"</translation>
-<translation id="2296244067976588032">Çelësi i kalimit • iCloud Keychain</translation>
 <translation id="2296331629987861142">Paguaj në këste të lehta (subjekt i kualifikueshmërisë; zbatohen tarifa)</translation>
 <translation id="2300306941146563769">Pa ngarkuar</translation>
 <translation id="2301064673700597535">Deklaratat e certifikatave të kualifikuara</translation>
@@ -913,6 +911,7 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2505063700931618106">Informacionet e kartës u ruajtën</translation>
 <translation id="2505268675989099013">Mbroje llogarinë</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (zbatohen kushtet)</translation>
+<translation id="251033673027346551">Vizito "Portofolin e Google" për të menaxhuar <ph name="BEGIN_LINK" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nuk lejohet (e parazgjedhur)</translation>
 <translation id="2512413427717747692">Cakto Chrome si butonin e shfletuesit të parazgjedhur; shtyp "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="2515629240566999685">Të kontrollosh sinjalin në zonën tënde</translation>
@@ -1305,6 +1304,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
 <translation id="3209071504641569648">Kërkesat, titujt e faqeve dhe URL-të e tua dërgohen te Google dhe mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar</translation>
+<translation id="3211727636285361260">Hap lidhjet e <ph name="PROTOCOL" /> nëpërmjet <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Shkarkimi filloi. Për ta shikuar, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="3212581601480735796">Aktiviteti yt në <ph name="HOSTNAME" /> po monitorohet</translation>
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
@@ -2087,6 +2087,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="4493480324863638523">URL e pavlefshme. Duhet të jetë URL me një skemë standarde, p.sh. http://shembull.com ose https://shembull.com.</translation>
 <translation id="4497010149473852018">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje. Tastiera është e fshehur.</translation>
+<translation id="4497843134750481377">Menaxho ofertat</translation>
 <translation id="4500587658229086076">përmbajtja e pasigurt</translation>
 <translation id="4501939680615452918">Shiko për vende të lira në restorantet në tendencë</translation>
 <translation id="4503459574136856756">Rishkruaj biografinë time që të duket më profesionale</translation>
@@ -3749,6 +3750,7 @@ Detaje shtesë:
 <translation id="7347640536700429009">Emri në kartë është i pavlefshëm</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353601530677266744">Linja e komandave</translation>
+<translation id="7358055687760675498">Hap lidhjet e <ph name="PROTOCOL" /> nëpërmjet <ph name="HANDLER_HOSTNAME" /> në vend të <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Reklamat janë të bllokuara.</translation>
 <translation id="7362281996276843968">Ky grup është i mbyllur</translation>
 <translation id="7363096869660964304">Sidoqoftë, ti nuk je i padukshëm. Kalimi në modalitetin "e fshehtë" nuk e fsheh shfletimin tënd nga punëdhënësi yt, ofruesi i shërbimit të internetit apo uebsajtet që viziton.</translation>

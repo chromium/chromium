@@ -198,7 +198,6 @@
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2888126860611144412">Про Chrome</translation>
 <translation id="2915996080311180594">Перезапустити пізніше</translation>
-<translation id="2916983411556218750">Налаштуйте Chrome</translation>
 <translation id="2926952073016206995">Веб-переглядачу Chrome потрібен доступ до камери для цього сайту</translation>
 <translation id="2945997411976714835">Сталася помилка. Не вдалося розпочати встановлення.</translation>
 <translation id="2959224682348913614">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />. Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />. Крім того, ви отримаєте доступ до паролів і інших даних із такого пристрою: <ph name="DEVICE" />.</translation>
@@ -543,6 +542,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6326175484149238433">Видалити з Chrome</translation>
 <translation id="6334815226785304306">Зробити Google Chrome вебпереглядачем за умовчанням і закріпити його на панелі завдань</translation>
 <translation id="63540178978900677">Chrome більше не є вебпереглядачем за умовчанням. Зробити Chrome вебпереглядачем за умовчанням?</translation>
+<translation id="6357670763064300993">Gemini Enterprise у Chrome</translation>
 <translation id="6360449101159168105">Коли ця вкладка була неактивною, система звільнила оперативну пам’ять, щоб прискорити роботу Chrome. Ви можете назавжди вимкнути перехід у неактивний режим для цього сайту.</translation>
 <translation id="6362984640667950211">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />. Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />. Ви також отримаєте доступ до списку читання й інших даних на всіх своїх пристроях.</translation>
 <translation id="6388799252195623474">допоможи мені із цим</translation>

@@ -467,7 +467,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1757773103848038814">Püsisammuga font</translation>
 <translation id="1757935267918149452">Nupp Muuda Google'i parooli, aktiveerige nupp oma Google'i konto parooli muutmiseks</translation>
 <translation id="1759776526873274358">Kinnituskoodide automsuurendamiseksaatne täitmine saitidel, mis kasutavad neid teie turvalisuse . Chrome saab need koodid teie Gmailist. <ph name="BEGIN_LINK" />Lisateave selle funktsiooni kohta<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Külastage Google Walletit, et hallata <ph name="BEGIN_LINK1" />andmeid ja privaatsuseelistusi<ph name="END_LINK1" /> või <ph name="BEGIN_LINK2" />makseviise<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />pääsmeid<ph name="END_LINK3" />, näiteks kliendikaarte ja isikutunnistusi.</translation>
 <translation id="1763864636252898013">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, seadme operatsioonisüsteem ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proovige käitada Windowsi võrgudiagnostika tööriista<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arhiivimine)</translation>
@@ -777,7 +776,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2292556288342944218">Teie juurdepääs Internetile on blokeeritud</translation>
 <translation id="2294150501457238325">Passi turvaliselt lisamine</translation>
 <translation id="2295831393422400053">Funktsiooni „Aita mul kirjutada“ kasutamiseks lülitage seade „Otsingute ja sirvimise paremaks muutmine“ sisse</translation>
-<translation id="2296244067976588032">Pääsuvõti • iCloud Keychain</translation>
 <translation id="2296331629987861142">Maksate hõlpsalt järelmaksetega (oleneb sobilikkusest, rakenduvad tasud)</translation>
 <translation id="2300306941146563769">Üles laadimata</translation>
 <translation id="2301064673700597535">Kvalifitseeritud sertifikaatide väljavõtted</translation>
@@ -913,6 +911,7 @@ Saate selle soovituse Chrome’ist eemaldada. Teie algset allikat ei kustutata. 
 <translation id="2505063700931618106">Kaardi teave on salvestatud</translation>
 <translation id="2505268675989099013">Konto kaitsmine</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (kehtivad tingimused)</translation>
+<translation id="251033673027346551">Külastage Google Walletit, et hallata <ph name="BEGIN_LINK" />andmeid ja privaatsuseelistusi<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Pole lubatud (vaikeseade)</translation>
 <translation id="2512413427717747692">Chrome'i vaikebrauseriks määramise nupp. Vajutage sisestusklahvi, et määrata Chrome iOS-i seadetes süsteemi vaikebrauseriks</translation>
 <translation id="2515629240566999685">Kontrollige oma piirkonna signaali</translation>

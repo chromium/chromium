@@ -112,6 +112,7 @@
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
 <translation id="132969855425874290">关闭“查找并填充”</translation>
 <translation id="1333455942675373522">键盘</translation>
+<translation id="1333669029961409292">“检查您的密码”任务已完成！</translation>
 <translation id="1334485477792811969">Web 服务</translation>
 <translation id="1335767868357998043">选择地址栏位置</translation>
 <translation id="1347468774581902829">管理我的活动记录</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
 <translation id="1641113438599504367">安全浏览</translation>
+<translation id="1644229815617955289">管理您的历史记录、Cookie 等，保护您的隐私</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
 <translation id="1650979352027263879">已移除外观偏好设置</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">有可用的配置文件</translation>
 <translation id="2244080985779413662">此网站想下载文件并在“钱包”中打开该文件。</translation>
 <translation id="2245007488813216650">正在翻译…</translation>
+<translation id="2246445006133863463">授予这项权限后，您便可用语音与 Gemini 对话</translation>
 <translation id="2249119578464404734">点按屏幕顶部的“搜索”图标</translation>
 <translation id="2251686759395008410">菜单 → 历史记录</translation>
 <translation id="2252378061043785266">永不显示此网站</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">继续使用 Google 账号 <ph name="EMAIL" /> 中的密码和将密码保存到其中</translation>
 <translation id="3853873210696342070">导入</translation>
 <translation id="3854052088499589035">您会在 Level Up 进度更新时收到通知</translation>
+<translation id="3854214753902617617">探索增强型安全浏览</translation>
 <translation id="3857113360369572832">打开 <ph name="BEGIN_BOLD" />Safari 设置<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="386224966259596343">下次您填写相关表单时，可选择将此信息保存到 Google 钱包。</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">分享您的密码</translation>
 <translation id="4049419681095579435">已在跟踪此包裹</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
+<translation id="4052951214266508382">允许“Gemini”使用麦克风</translation>
 <translation id="4054290211988862686">选择文件</translation>
 <translation id="4070132839822635162">不登录</translation>
 <translation id="4072473499345702662">前往“进阶”</translation>
@@ -1481,6 +1486,7 @@
 <translation id="574762237186762643">活动</translation>
 <translation id="5749158352074143502">继续使用此标签页</translation>
 <translation id="5753021559215751319">保存密码</translation>
+<translation id="5756200167514420691">在无痕模式下打开标签页，以更私密的方式浏览网页</translation>
 <translation id="5756525336488841345">隐藏“书签”</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="57586589942790530">卡号无效</translation>
@@ -1551,6 +1557,7 @@
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
 <translation id="599343768974649785">明确文本</translation>
+<translation id="6000893618966378846">“删除浏览数据”任务已完成！</translation>
 <translation id="6004988584831654445">大功告成！有新任务时，第一时间收到通知。</translation>
 <translation id="6006672969046233841">打开新的标签页</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
@@ -1810,6 +1817,7 @@
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
+<translation id="6749473226660745022">照片</translation>
 <translation id="6750456911389438250">{count,plural, =1{已导入 {count} 项历史记录}other{已导入 {count} 项历史记录}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{键盘上方显示了 {count} 个凭证选项。}other{键盘上方显示了 {count} 个凭证选项。}}</translation>
 <translation id="6755200887046212842">管理账号</translation>
@@ -1975,6 +1983,7 @@
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7312823817809783355">您的任务</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
+<translation id="7318555235645532245">“进入无痕模式”任务已完成！</translation>
 <translation id="7322186060879266048">{count,plural, =1{键盘上方显示了 {count} 个自动填充选项。}other{键盘上方显示了 {count} 个自动填充选项。}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
@@ -2151,6 +2160,7 @@
 <translation id="7857520352710212030">网站已固定</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7863211248337747225">下载应用</translation>
+<translation id="7863990181930071932">位置信息使用权已停用</translation>
 <translation id="7865127013871431856">翻译选项</translation>
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7874107544081154809">使用<ph name="CELL_ACCESSIBILITY_LABEL" />自动填充表单</translation>
@@ -2459,6 +2469,7 @@
 <translation id="8786100550345425552">修改权限</translation>
 <translation id="878871978861915380">隐藏“价格跟踪”</translation>
 <translation id="8792626944327216835">麦克风</translation>
+<translation id="8795809107245894196">使用密码安全检查功能，确保密码安全</translation>
 <translation id="8796634520835503150">阅读模式可用</translation>
 <translation id="8803526663383843427">开启时</translation>
 <translation id="8803639129939845298">安全</translation>
@@ -2491,6 +2502,7 @@
 <translation id="8879952635974818770">个性化内容</translation>
 <translation id="8887595428614802520">关闭所有标签页和分组</translation>
 <translation id="8888595487174963247">移除提醒</translation>
+<translation id="8890516388109605451">来源</translation>
 <translation id="8893208530912252670">视频</translation>
 <translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8900845556227858314">浏览器应用</translation>
@@ -2531,6 +2543,7 @@
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
 <translation id="9013605037177245304">开启通知</translation>
 <translation id="9029650858822697271">您已退出账号</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">确认删除浏览数据</translation>
 <translation id="9035699147763101514">由 Gemini 中的个性化智能服务提供支持。您可以在设置中管理自己的选择。</translation>
 <translation id="9038526468059454274">轻松总结，尽在</translation>

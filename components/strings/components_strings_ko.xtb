@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">고정폭 글꼴</translation>
 <translation id="1757935267918149452">Google 비밀번호 변경 버튼, Google 계정 비밀번호를 변경하려면 활성화하세요.</translation>
 <translation id="1759776526873274358">사이트에서 보안 강화를 위해 사용하는 인증 코드를 자동 완성합니다. Chrome이 Gmail에서 이 코드를 가져올 수 있습니다. <ph name="BEGIN_LINK" />이 기능에 대해 자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Google 월렛으로 이동하여 <ph name="BEGIN_LINK1" />데이터 및 개인 정보 보호 환경설정<ph name="END_LINK1" />을 제어하거나 포인트 카드, 신분증 같은 <ph name="BEGIN_LINK3" />패스<ph name="END_LINK3" />와 <ph name="BEGIN_LINK2" />결제 수단<ph name="END_LINK2" />을 관리하세요.</translation>
 <translation id="1763864636252898013">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 기기의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="1777422078676229054">사진(보관용)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">인터넷 액세스가 차단됨</translation>
 <translation id="2294150501457238325">안전하게 여권 추가</translation>
 <translation id="2295831393422400053">작성 지원 기능을 사용하려면 검색 및 탐색 기능 개선 설정을 사용 설정하세요</translation>
-<translation id="2296244067976588032">패스키 • iCloud 키체인</translation>
 <translation id="2296331629987861142">간편한 할부 결제(자격 요건에 따라 다르며 수수료 적용)</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2301064673700597535">자격 인증서</translation>
@@ -913,6 +911,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2505063700931618106">카드 정보 저장됨</translation>
 <translation id="2505268675989099013">계정 보호</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" />(약관 적용됨)</translation>
+<translation id="251033673027346551">Google 월렛으로 이동하여 <ph name="BEGIN_LINK" />데이터 및 개인 정보 보호 환경설정<ph name="END_LINK" />을 관리하세요.</translation>
 <translation id="2512101340618156538">허용 안함(기본값)</translation>
 <translation id="2512413427717747692">Chrome을 기본 브라우저로 설정하는 버튼, Enter 키를 눌러 iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="2515629240566999685">현재 지역의 신호 확인</translation>
@@ -1305,6 +1304,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3209034400446768650">페이지에서 요금을 청구할 수 있음</translation>
 <translation id="3209071504641569648">요청, 페이지 제목, URL이 Google로 전송되며 향상된 자동 완성을 개선하기 위해 검토될 수 있습니다.</translation>
+<translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="3212468046572043669">다운로드가 시작되었습니다. 확인하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />에서의 활동이 모니터링되고 있음</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
@@ -2087,6 +2087,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
 <translation id="4493480324863638523">잘못된 URL입니다. URL에는 표준 스키마가 있어야 합니다(예: http://example.com 또는 https://example.com).</translation>
 <translation id="4497010149473852018">터치하여 입력할 수 있는 포인트 카드입니다. 키보드가 숨겨졌습니다.</translation>
+<translation id="4497843134750481377">혜택 관리</translation>
 <translation id="4500587658229086076">안전하지 않은 콘텐츠</translation>
 <translation id="4501939680615452918">인기 음식점의 예약 가능 여부를 확인해 줘</translation>
 <translation id="4503459574136856756">더 전문적인 어조로 자기소개를 다시 작성해 줘.</translation>
@@ -3751,6 +3752,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7347640536700429009">카드에 기재된 이름이 잘못되었습니다.</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7353601530677266744">명령줄</translation>
+<translation id="7358055687760675498"><ph name="REPLACED_HANDLER_TITLE" /> 대신 <ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>
 <translation id="7362281996276843968">그룹이 닫혔습니다</translation>
 <translation id="7363096869660964304">하지만 흔적이 아예 남지 않는 것은 아닙니다. 시크릿 모드로 탐색해도 회사, 인터넷 서비스 제공업체 또는 방문한 웹사이트에 저장된 흔적까지 없앨 수는 없습니다.</translation>

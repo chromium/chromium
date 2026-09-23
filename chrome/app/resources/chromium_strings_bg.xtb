@@ -301,6 +301,7 @@
 <translation id="4251772536351901305">Предупреждава ви за опасни сайтове, включително такива, които не са били известни на Google, като анализира повече данни от сайтовете в сравнение със стандартната защита. Можете да пропуснете предупрежденията от Chromium.</translation>
 <translation id="4269093074552541569">Изход от Chromium</translation>
 <translation id="4271805377592243930">Получаване на помощ за Chromium</translation>
+<translation id="4275788652681621337">Затваряне на страничния панел</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4285930937574705105">Инсталирането не бе успешно поради неизвестна грешка. Ако Chromium понастоящем се изпълнява, моля, затворете го и опитайте отново.</translation>
 <translation id="4298125729853015961">Експортиране на паролите от Chromium</translation>
@@ -437,9 +438,9 @@
 <translation id="5883558403894052917">Chromium установи, че следните елементи съдържат злонамерен софтуер:</translation>
 <translation id="5889361821821684993">Браузърът Chromium редовно проверява дали настройките му са най-безопасните. Ще ви уведомим, ако е необходим преглед от ваша страна.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
+<translation id="5896077214220653386">Gemini Enterprise в Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5924017743176219022">Установява се връзка с интернет...</translation>
-<translation id="5939553720811388432">Нека подготвим Chromium за вас</translation>
 <translation id="5941711191222866238">Намаляване</translation>
 <translation id="5949225980829865667">Влезте в профила си в Chromium, за да получите тази отметка и още много други неща на всичките си устройства</translation>
 <translation id="5953657885167112863">Персонализирайте Chromium по собствен вкус</translation>

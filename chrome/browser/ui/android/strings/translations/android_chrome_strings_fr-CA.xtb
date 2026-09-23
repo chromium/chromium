@@ -305,7 +305,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2226826835915474236">Raccourcis inactifs</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2227444325776770048">Continuer comme <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Obtenir toutes vos informations enregistrées</translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="223356358902285214">Activité sur le Web et dans les applis</translation>
 <translation id="2233735624724508540">Choisissez une période, puis touchez Supprimer les données.</translation>
@@ -359,7 +358,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2413014528833954543">Impossible de vérifier les mots de passe sur cet appareil</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2415037988255164008">Restaurer les fenêtres?</translation>
-<translation id="2426805022920575512">Choisir un autre compte</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vidéos, 1 vidéo dans la liste}one{Vidéos, # vidéo dans la liste}other{Vidéos, # vidéos dans la liste}}</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2449931042095204989">Lorsqu'un site ou une appli Google demande de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par le biais des serveurs de Google sans témoins. Cela permet de masquer votre identité auprès du site préchargé.</translation>
@@ -511,7 +509,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2996291259634659425">Créer une phrase de passe</translation>
 <translation id="2996682533106928201">Touchez pour ignorer</translation>
 <translation id="2996809686854298943">URL requise</translation>
-<translation id="3007318536447999974">Pour parler à Gemini, autorisez-le à utiliser votre microphone. Vous pouvez aussi gérer cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Préférences du mode Lecture fermées</translation>
 <translation id="3024277805447899099">Voir un aperçu de l'image</translation>
 <translation id="3026955690410463085">Ajouter le lien</translation>
@@ -1291,7 +1288,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="6204781143409202534">Chrome a détecté du contenu indésirable provenant de <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
 <translation id="6212567362666004597">Ajouter cet onglet au groupe</translation>
 <translation id="6225572914528673855">Barre d'adresse</translation>
@@ -1950,7 +1946,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8570677896027847510">Impossible de télécharger le fichier en toute sécurité</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8580435650274205305">Date d'expiration, requise</translation>
-<translation id="8582529315803410153">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
 <translation id="8585103689515290060">Services de remplissage automatique</translation>
 <translation id="8586116786993312006">Touchez pour supprimer les données de navigation dans Chrome</translation>
 <translation id="859046281437143747">Suivez le prix à partir du bouton Plus d'options</translation>

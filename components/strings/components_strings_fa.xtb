@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">قلم تک‌فاصله</translation>
 <translation id="1757935267918149452">‏دکمه تغییر گذرواژه Google؛ برای تغییر گذرواژه «حساب Google»، آن را فعال کنید</translation>
 <translation id="1759776526873274358">‏تکمیل خودکار کدهای درستی‌سنجی‌ای که سایت‌ها برای بهبود امنیت شما استفاده می‌کنند. Chrome می‌تواند این کدها را از Gmail شما دریافت کند. <ph name="BEGIN_LINK" />درباره این ویژگی بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">‏برای کنترل <ph name="BEGIN_LINK1" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK1" /> یا مدیریت <ph name="BEGIN_LINK2" />روش‌های پرداخت<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />مجوزها<ph name="END_LINK3" /> مثل کارت‌های وفاداری و مدارک شناسایی، از «کیف پول Google» بازدید کنید.</translation>
 <translation id="1763864636252898013">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل دستگاه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows Network Diagnostics را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
@@ -550,6 +549,7 @@
 <translation id="1924727005275031552">جدید</translation>
 <translation id="1927930548546198515">‏‫Chrome نحوه استفاده شما از این ویژگی را ثبت می‌کند، مثلاً درخواست‌های شما و رفتارتان هنگام پذیرفتن یا نادیده گرفتن پیشنهادها</translation>
 <translation id="1932098463447129402">نه قبل از</translation>
+<translation id="1932629105611536854">کد پستی تحویل</translation>
 <translation id="1935353813610900265">ارسال بازخورد درباره جستجوی سابقه با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
 <translation id="1938580037092872316">افزودن اطلاعات جدید به نشانی ذخیره‌شده</translation>
@@ -615,6 +615,7 @@
 <translation id="2045871135676061132">پاکت شخصی</translation>
 <translation id="2048261947532620704">درحال ترجمه صفحه</translation>
 <translation id="2055016614992422886">مکالمه</translation>
+<translation id="2057654338925604102">دامنه شرکت حمل‌ونقل</translation>
 <translation id="2058468041496756763">‏هر زمان که بخواهید می‌توانید موتور جستجوی خود را در تنظیمات Chrome تغییر دهید. اگر موتور جستجوی ترجیحی‌تان را نمی‌بینید، می‌توانید ازطریق سایت آن، یک جستجو انجام دهید. آن را به‌عنوان موتور جستجوی اخیراً بازدیدشده در تنظیمات Chrome خواهید دید و می‌توانید آن را به‌عنوان پیش‌فرض تنظیم کنید.</translation>
 <translation id="2059166748188874810">شهرداری</translation>
 <translation id="2059202684901022309">۳۴ × ۲۲ اینچ</translation>
@@ -776,7 +777,6 @@
 <translation id="2292556288342944218">دسترسی شما به اینترنت مسدود است</translation>
 <translation id="2294150501457238325">افزودن امن گذرنامه</translation>
 <translation id="2295831393422400053">برای استفاده از «کمک به نوشتن»، تنظیم «بهبود جستجوها و مرور» را روشن کنید</translation>
-<translation id="2296244067976588032">‏گذرکلید • iCloud Keychain</translation>
 <translation id="2296331629987861142">با اقساط آسان پرداخت کنید (مشروط به واجدشرایط بودن، کارمزد اعمال می‌شود)</translation>
 <translation id="2300306941146563769">بارگذاری نشد</translation>
 <translation id="2301064673700597535">بیانیه‌های گواهی واجدشرایط</translation>
@@ -912,6 +912,7 @@
 <translation id="2505063700931618106">اطلاعات کارت ذخیره شد</translation>
 <translation id="2505268675989099013">محافظت از حساب</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (شرایط اعمال می‌شود)</translation>
+<translation id="251033673027346551">‏برای مدیریت <ph name="BEGIN_LINK" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK" />، از «کیف پول Google» بازدید کنید.</translation>
 <translation id="2512101340618156538">مجاز نیست (پیش‌فرض)</translation>
 <translation id="2512413427717747692">‏Chrome را به‌عنوان دکمه مرورگر پیش‌فرض تنظیم کنید. برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید ورود را فشار دهید</translation>
 <translation id="2515629240566999685">بررسی سیگنال در منطقه‌تان</translation>
@@ -1304,6 +1305,7 @@
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3209034400446768650">ممکن است این صفحه از شما هزینه کسر کند</translation>
 <translation id="3209071504641569648">‏درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب به Google ارسال می‌شود و ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شود</translation>
+<translation id="3211727636285361260">باز کردن <ph name="PROTOCOL" /> پیوندها ازطریق <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">بارگیری شروع شد. برای دیدن بارگیری، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="3212581601480735796">بر فعالیت شما در <ph name="HOSTNAME" /> نظارت می‌شود</translation>
 <translation id="3215092763954878852">‏استفاده از WebAuthn ممکن نشد</translation>
@@ -1611,6 +1613,7 @@
 <translation id="3715597595485130451">‏متصل شدن به Wi-Fi</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />بررسی پروکسی، دیوار آتش و پیکربندی DNS<ph name="END_LINK" /></translation>
 <translation id="3723316892512143176">Iban</translation>
+<translation id="3724078054554953078">تاریخ ارسال</translation>
 <translation id="372429172604983730">برنامه‌هایی که می‌توانند موجب این خطا شوند شامل ضدویروس‌ها، دیوار آتش و نرم‌افزار فیلتر کردن وب یا پراکسی هستند.</translation>
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع ارائه جدید در «اسلایدنگار Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3727309136762649052">فضای نام</translation>
@@ -2085,6 +2088,7 @@
 <translation id="449126573531210296">‏رمزگذاری گذرواژه‌های همگام‌سازی‌شده با «حساب Google» شما</translation>
 <translation id="4493480324863638523">‏نشانی وب نامعتبر است. باید نشانی وبی با طرحی استاندارد مانند http://example.com یا https://example.com باشد.</translation>
 <translation id="4497010149473852018">کارت‌های وفاداری دردسترس که با لمس کردن تکمیل می‌شود. صفحه‌کلید پنهان است.</translation>
+<translation id="4497843134750481377">مدیریت پیشنهادها</translation>
 <translation id="4500587658229086076">محتوای ناامن</translation>
 <translation id="4501939680615452918">در رستوران‌های پرطرفدار به‌دنبال جای خالی بگردید</translation>
 <translation id="4503459574136856756">زندگی‌نامه من را بازنویسی کنید تا حرفه‌ای‌تر به نظر برسد</translation>
@@ -2539,8 +2543,10 @@
 <translation id="5258473597674772367">گروه زبانه «<ph name="GROUP_NAME" />» دیگر دردسترس نیست</translation>
 <translation id="5260842098960755113">رشته بسته شد</translation>
 <translation id="5262342527470539728">اطلاعات شما در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود</translation>
+<translation id="5263202631354741256">شناسه</translation>
 <translation id="5263867360296733198">قبل‌از بارگذاری باید بررسی شود</translation>
 <translation id="5266128565379329178">به‌هم چسباندن از بالا</translation>
+<translation id="5268746892698450173">نام شرکت حمل‌ونقل</translation>
 <translation id="5269225904387178860">چهار سوراخ در پایین</translation>
 <translation id="5271381225185906340">‫«<ph name="DATA_CONTROLS_ATTRIBUTE" />» وضعیت پشتیبانی شده‌ای برای «<ph name="DATA_CONTROLS_RESTRICTION" />» نیست</translation>
 <translation id="527191520368130807">لهستانی</translation>
@@ -2858,6 +2864,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
 <translation id="5794065675298686371">روشن کردن اعلان‌های پیگیری قیمت</translation>
+<translation id="5794093550048860249">شماره ردگیری</translation>
 <translation id="5796050750059455142">‏روشن کردن «<ph name="BEGIN_LINK" />ویژگی‌های هوشمند در سایر محصولات Google<ph name="LINK_END" />»</translation>
 <translation id="5797984091151707075">توسط خط‌مشی سرپرست مسدود شده است</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
@@ -3746,6 +3753,7 @@
 <translation id="7347640536700429009">نام روی کارت معتبر نیست</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353601530677266744">خط فرمان</translation>
+<translation id="7358055687760675498">باز کردن <ph name="PROTOCOL" /> پیوندها ازطریق <ph name="HANDLER_HOSTNAME" /> به‌جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">آگهی‌ها مسدود شدند.</translation>
 <translation id="7362281996276843968">این گروه بسته شد</translation>
 <translation id="7363096869660964304">اما، شما نامرئی نمی‌شوید. بااستفاده از «حالت ناشناس»، مرورتان از چشمان کارفرمای شما، فراهم‌ساز خدمات اینترنتی یا وب‌سایت‌هایی که بازدید می‌کنید پنهان نمی‌ماند.</translation>
@@ -4024,6 +4032,7 @@
 <translation id="7765158879357617694">حرکت دادن</translation>
 <translation id="7766518757692125295">«اسکیرت»</translation>
 <translation id="776749070095465053">پارچه</translation>
+<translation id="7772659560036894129">نام محصولات</translation>
 <translation id="7773005668374414287">ترتیب یکسان، روبه‌بالا</translation>
 <translation id="7779418012194492374">لغو دسترسی برای <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">دیروز</translation>
@@ -4215,6 +4224,7 @@
 <translation id="8118506371121007279">ارائه بازخورد</translation>
 <translation id="812020627659652807">حذف کردن فایل‌ها اکنون</translation>
 <translation id="8120720167840853945">این خط‌مشی رفتار پیش‌فرض سایر خط‌مشی‌ها را کنترل نمی‌کند.</translation>
+<translation id="8120827570827570666">دامنه فروشنده</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» به‌درستی در رایانه یا شبکه‌تان پیکربندی نشد. از سرپرست فناوری اطلاعات خود بخواهید این مشکل را حل کند.</translation>
 <translation id="8130113808541743942">بردن به…</translation>
 <translation id="813024282736408069">روشن کردن کارت مجازی برای تکمیل خودکار</translation>
@@ -4326,6 +4336,7 @@
 <translation id="830868413617744215">بتا</translation>
 <translation id="8310477433309274098">‏بدون کارمزد، با نرخ درصدی سالانه ‎٪۰</translation>
 <translation id="8312841338723044391">زنده</translation>
+<translation id="8314036873065514376">نام فروشنده</translation>
 <translation id="8316555157357957253">هم‌اکنون درحال استفاده است</translation>
 <translation id="8319414634934645341">کاربرد کلید توسعه یافته</translation>
 <translation id="831997045666694187">شب</translation>

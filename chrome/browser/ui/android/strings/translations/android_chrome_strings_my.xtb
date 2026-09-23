@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">မသုံးသော ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="2227179592712503583">အကြံပြုချက် ဖယ်ရှားရန်</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
-<translation id="2230411774874187555">သိမ်းထားသော အချက်အလက်အားလုံး ရယူခြင်း</translation>
 <translation id="2230777942707397948">ဝင်းဒိုးအလွတ်</translation>
 <translation id="223356358902285214">ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်</translation>
 <translation id="2233735624724508540">အချိန်ကာလတစ်ခုကို ရွေးပြီးနောက် ‘ဒေတာဖျက်ရန်’ ကို တို့ပါ</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">ဤစက်တွင် စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2415037988255164008">ဝင်းဒိုး ပြန်ယူမလား</translation>
-<translation id="2426805022920575512">အခြားအကောင့် ရွေးရန်</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ဗီဒီယိုများ၊ စာရင်းရှိ ဗီဒီယို ၁ ခု}other{ဗီဒီယိုများ၊ စာရင်းရှိ ဗီဒီယို # ခု}}</translation>
 <translation id="2433507940547922241">ပုံပန်း</translation>
 <translation id="2449931042095204989">Google ဝဘ်ဆိုက် (သို့) အက်ပ်က ၎င်း၏စာမျက်နှာရှိ လင့်ခ်များကို သီးသန့်ကြိုဖွင့်ရန် တောင်းဆိုသောအခါ Chrome သည် Google ဆာဗာများမှတစ်ဆင့် ကွတ်ကီးများမပါဘဲ စာမျက်နှာများကို အသွင်ဝှက်ပြီး ကြိုဖွင့်သည်။ ၎င်းက ကြိုဖွင့်ထားသော ဝဘ်ဆိုက်မှ သင့်အထောက်အထားကို ဖျောက်ပေးသည်။</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">စကားဝှက်ဖန်တီးပါ</translation>
 <translation id="2996682533106928201">ပယ်ရန် တို့ပါ</translation>
 <translation id="2996809686854298943">URL လိုအပ်သည်။</translation>
-<translation id="3007318536447999974">Gemini နှင့် စကားပြောရန် သင့်မိုက်ခရိုဖုန်း အသုံးပြုခွင့် ပေးပါ။ ၎င်းကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း စီမံနိုင်သည်</translation>
 <translation id="3024215143424744261">စာဖတ်မုဒ် သတ်မှတ်ချက်များ ပိတ်ထားသည်</translation>
 <translation id="3024277805447899099">ပုံကို အစမ်းကြည့်ရန်</translation>
 <translation id="3026955690410463085">လင့်ခ်ထည့်သွင်းပါ</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6196315980958524839">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်</translation>
 <translation id="6204781143409202534">Chrome သည် <ph name="DOMAIN" /> မှ စပမ်းဖြစ်နိုင်သည်ကို တွေ့ရှိသည်။</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> မဟုတ်ဘူးလား။</translation>
 <translation id="6211386937064921208">ဤစာမျက်နှာကို အစမ်းကြည့်ရှုနေသည်</translation>
 <translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>
 <translation id="6225572914528673855">လိပ်စာဘား</translation>
@@ -1949,7 +1945,6 @@
 <translation id="8570677896027847510">ဖိုင်ကို လုံခြုံစွာ ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>
 <translation id="8580435650274205305">သက်တမ်းကုန်ဆုံးရက်၊ လိုအပ်သည်</translation>
-<translation id="8582529315803410153">အခြားစက်များမှ သင့်တဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="8585103689515290060">အော်တိုဖြည့် ဝန်ဆောင်မှုများ</translation>
 <translation id="8586116786993312006">Chrome ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ရန် တို့ပါ</translation>
 <translation id="859046281437143747">‘နောက်ထပ်’ ရွေးစရာများခလုတ်မှနေ၍ ဈေးနှုန်းကို စောင့်ကြည့်နိုင်သည်</translation>

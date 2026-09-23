@@ -467,7 +467,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1757773103848038814">Monospace-lettertype</translation>
 <translation id="1757935267918149452">Knop Google-wachtwoord wijzigen. Activeer deze om het wachtwoord van je Google-account te wijzigen.</translation>
 <translation id="1759776526873274358">Verificatiecodes automatisch invullen die sites gebruiken om je beveiliging te verbeteren. Chrome kan deze codes uit je Gmail halen. <ph name="BEGIN_LINK" />Meer informatie over deze functie<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Ga naar Google Wallet om <ph name="BEGIN_LINK1" />voorkeuren voor gegevens en privacy<ph name="END_LINK1" /> te beheren of <ph name="BEGIN_LINK2" />betaalmethoden<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />kaarten<ph name="END_LINK3" /> zoals klantenkaarten en ID's te beheren</translation>
 <translation id="1763864636252898013">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door het besturingssysteem van je apparaat. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Voer Windows Netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (archief)</translation>
@@ -777,7 +776,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2292556288342944218">Je toegang tot internet wordt geblokkeerd</translation>
 <translation id="2294150501457238325">Paspoort beveiligd toevoegen</translation>
 <translation id="2295831393422400053">Zet de instelling Zoekopdrachten en browsefunctionaliteit verbeteren aan om Help me met schrijven te gebruiken</translation>
-<translation id="2296244067976588032">Toegangssleutel • iCloud-sleutelhanger</translation>
 <translation id="2296331629987861142">Betaling in termijnen met betaalbare bedragen (als je hiervoor in aanmerking komt, er worden kosten in rekening gebracht)</translation>
 <translation id="2300306941146563769">Niet geüpload</translation>
 <translation id="2301064673700597535">Gekwalificeerde certificaatverklaringen</translation>
@@ -913,6 +911,7 @@ Je kunt deze suggestie verwijderen uit Chrome. Je oorspronkelijke bron wordt nie
 <translation id="2505063700931618106">Kaartgegevens opgeslagen</translation>
 <translation id="2505268675989099013">Account beschermen</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (er zijn voorwaarden van toepassing)</translation>
+<translation id="251033673027346551">Ga naar Google Wallet om <ph name="BEGIN_LINK" />voorkeuren voor gegevens en privacy<ph name="END_LINK" /> te beheren.</translation>
 <translation id="2512101340618156538">Niet toegestaan (standaard)</translation>
 <translation id="2512413427717747692">Knop Chrome instellen als standaardbrowser, druk op Enter om Chrome in te stellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
 <translation id="2515629240566999685">Check of je bereik hebt in je omgeving</translation>

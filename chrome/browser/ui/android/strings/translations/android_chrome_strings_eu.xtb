@@ -305,7 +305,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2226826835915474236">Lasterbide inaktiboak</translation>
 <translation id="2227179592712503583">Kendu iradokizuna</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
-<translation id="2230411774874187555">Lortu gordetako informazio guztia</translation>
 <translation id="2230777942707397948">Leiho hutsa</translation>
 <translation id="223356358902285214">Sareko eta aplikazioetako jarduerak</translation>
 <translation id="2233735624724508540">Aukeratu denbora tarte bat eta sakatu Ezabatu datuak</translation>
@@ -359,7 +358,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2413014528833954543">Ezin dira egiaztatu pasahitzak gailu honetan</translation>
 <translation id="2414886740292270097">Iluna</translation>
 <translation id="2415037988255164008">Leihoak leheneratu nahi dituzu?</translation>
-<translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Bideoak, 1 bideo zerrendan}other{Bideoak, # bideo zerrendan}}</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2449931042095204989">Google-ren webgune edo aplikazio batek orriko estekak modu pribatuan aurrez kargatzeko eskatzen duenean, Chrome-k Google-ren zerbitzarien bidez enkriptatzen eta aurrez kargatzen ditu orri horiek, cookierik gabe. Horrela, zure identitatea ezkutatzen zaio aurrez kargatutako webguneari.</translation>
@@ -511,7 +509,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2996291259634659425">Sortu pasaesaldia</translation>
 <translation id="2996682533106928201">Baztertzeko, sakatu hau</translation>
 <translation id="2996809686854298943">URLa nahitaezkoa da</translation>
-<translation id="3007318536447999974">Gemini-rekin hitz egiteko, eman iezaiozu mikrofonoa erabiltzeko baimena. <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean ere kudea dezakezu hori.</translation>
 <translation id="3024215143424744261">Irakurtzeko modua, hobespenak itxita daude</translation>
 <translation id="3024277805447899099">Aurrebista-irudia</translation>
 <translation id="3026955690410463085">Gehitu esteka</translation>
@@ -1291,7 +1288,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6196315980958524839">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan</translation>
 <translation id="6204781143409202534">Chrome-k <ph name="DOMAIN" /> domeinuaren spam posiblea hauteman du.</translation>
-<translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
 <translation id="6212567362666004597">Gehitu fitxa taldean</translation>
 <translation id="6225572914528673855">Helbide-barra</translation>
@@ -1950,7 +1946,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8570677896027847510">Ezin da segurtasunez deskargatu fitxategia</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
 <translation id="8580435650274205305">Iraungitze-data, nahitaezkoa</translation>
-<translation id="8582529315803410153">Beste gailuetan erabilitako fitxak aurkituko dituzu hemen</translation>
 <translation id="8585103689515290060">Automatikoki betetzeko zerbitzuak</translation>
 <translation id="8586116786993312006">Sakatu hau Chrome-ko arakatze-datuak ezabatzeko</translation>
 <translation id="859046281437143747">Erabili Aukera gehiago botoia prezioaren jarraipena egiten hasteko</translation>

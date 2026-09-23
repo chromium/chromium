@@ -201,7 +201,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2885378588091291677">Gestionnaire de tâches</translation>
 <translation id="2888126860611144412">À propos de Chrome</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
-<translation id="2916983411556218750">Préparons Chrome</translation>
 <translation id="2926952073016206995">Chrome a besoin de l'autorisation d'accéder à la caméra pour ce site</translation>
 <translation id="2945997411976714835">Erreur d'installation : échec de démarrage du processus d'installation.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> est déjà connecté. Pour séparer votre navigation, connectez-vous à Chrome avec votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à vos mots de passe et à d'autres données de <ph name="DEVICE" />.</translation>
@@ -550,6 +549,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6334815226785304306">Définir Google Chrome comme navigateur par défaut et l'épingler à la barre des tâches</translation>
 <translation id="63540178978900677">Chrome n'est plus votre navigateur par défaut. Définir Chrome comme navigateur par défaut ?</translation>
+<translation id="6357670763064300993">Gemini Enterprise dans Chrome</translation>
 <translation id="6360449101159168105">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chrome. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> est déjà connecté(e). Pour séparer votre navigation, connectez-vous à Chrome avec votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils.</translation>
 <translation id="6388799252195623474">aide-moi avec ça</translation>

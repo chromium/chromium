@@ -305,7 +305,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2226826835915474236">Ei-aktiiviset pikakomennot</translation>
 <translation id="2227179592712503583">Poista ehdotus</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Saat kaikki tallennetut tiedot</translation>
 <translation id="2230777942707397948">Tyhjä ikkuna</translation>
 <translation id="223356358902285214">Verkko- ja sovellustoiminta</translation>
 <translation id="2233735624724508540">Valitse aikaväli ja napauta sitten Poista data</translation>
@@ -359,7 +358,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2413014528833954543">Laitteella olevien salasanojen tarkistaminen ei onnistu</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2415037988255164008">Palautetaanko ikkunat?</translation>
-<translation id="2426805022920575512">Valitse toinen tili</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videot, 1 video listassa}other{Videot, # videota listassa}}</translation>
 <translation id="2433507940547922241">Ulkoasu</translation>
 <translation id="2449931042095204989">Kun Googlen sivusto tai sovellus pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome salaa ja esilataa sivut Googlen palvelimien kautta ilman evästeitä. Henkilöllisyytesi piilotetaan esiladatulta sivustolta.</translation>
@@ -511,7 +509,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2996291259634659425">Luo tunnuslause</translation>
 <translation id="2996682533106928201">Hylkää napauttamalla</translation>
 <translation id="2996809686854298943">URL-osoite vaaditaan</translation>
-<translation id="3007318536447999974">Jos haluat puhua Geminille, anna sille lupa käyttää mikrofonia. Voit muuttaa lupia myös <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Lukutilan asetukset suljettu</translation>
 <translation id="3024277805447899099">Esikatsele kuvaa</translation>
 <translation id="3026955690410463085">Sisällytä linkki</translation>
@@ -1291,7 +1288,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6196315980958524839">Salasanat tallennetaan Google Salasanoihin tällä laitteella</translation>
 <translation id="6204781143409202534">Chrome havaitsi mahdollisen roskapostin osoitteesta <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
 <translation id="6212567362666004597">Lisää välilehti ryhmään</translation>
 <translation id="6225572914528673855">Osoitepalkki</translation>
@@ -1950,7 +1946,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8570677896027847510">Tiedostoa ei voi ladata turvallisesti</translation>
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>
 <translation id="8580435650274205305">Viimeinen voimassaolopäivä, pakollinen</translation>
-<translation id="8582529315803410153">Näet täällä muiden laitteiden välilehdet</translation>
 <translation id="8585103689515290060">Automaattisen täytön palvelut</translation>
 <translation id="8586116786993312006">Poista selausdata Chromesta napauttamalla</translation>
 <translation id="859046281437143747">Seuraa hintaa Lisäasetukset-painikkeen kautta</translation>

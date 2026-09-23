@@ -305,7 +305,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2226826835915474236">비활성 바로가기</translation>
 <translation id="2227179592712503583">추천 삭제</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />(으)로 계속</translation>
-<translation id="2230411774874187555">저장된 모든 정보 가져오기</translation>
 <translation id="2230777942707397948">빈 창</translation>
 <translation id="223356358902285214">웹 및 앱 활동</translation>
 <translation id="2233735624724508540">기간을 선택한 후 데이터 삭제를 탭합니다.</translation>
@@ -359,7 +358,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2413014528833954543">이 기기에서 비밀번호를 확인할 수 없음</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2415037988255164008">창을 복원하시겠습니까?</translation>
-<translation id="2426805022920575512">다른 계정 선택</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{동영상, 목록에 있는 동영상 1개}other{동영상, 목록에 있는 동영상 #개}}</translation>
 <translation id="2433507940547922241">디자인</translation>
 <translation id="2449931042095204989">Google 사이트 또는 앱에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
@@ -511,7 +509,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996682533106928201">닫으려면 탭하세요</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
-<translation id="3007318536447999974">Gemini와 대화하려면 Gemini에 마이크 사용 권한을 부여하세요. 이 옵션은 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서도 관리할 수 있습니다.</translation>
 <translation id="3024215143424744261">읽기 모드 환경설정 닫힘</translation>
 <translation id="3024277805447899099">이미지 미리보기</translation>
 <translation id="3026955690410463085">링크 포함</translation>
@@ -1291,7 +1288,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="6204781143409202534">Chrome에서 <ph name="DOMAIN" />의 스팸 가능성이 감지되었습니다.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6212567362666004597">그룹에 탭 추가</translation>
 <translation id="6225572914528673855">주소 표시줄</translation>
@@ -1950,7 +1946,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8570677896027847510">파일을 안전하게 다운로드할 수 없음</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8580435650274205305">만료일을 입력해야 합니다.</translation>
-<translation id="8582529315803410153">여기에서 다른 기기의 탭을 확인할 수 있습니다</translation>
 <translation id="8585103689515290060">자동 완성 서비스</translation>
 <translation id="8586116786993312006">탭하여 Chrome에서 인터넷 사용 기록 삭제</translation>
 <translation id="859046281437143747">옵션 더보기 버튼으로 가격을 추적하세요</translation>

@@ -303,6 +303,7 @@
 <translation id="4251772536351901305">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chromium figyelmeztetéseinek kihagyását.</translation>
 <translation id="4269093074552541569">Kijelentkezés a Chromiumból</translation>
 <translation id="4271805377592243930">Segítség a Chromium használatával kapcsolatban</translation>
+<translation id="4275788652681621337">Oldalsó panel bezárása</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4285930937574705105">A telepítés váratlan hiba miatt nem sikerült. Ha a Chromium jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4298125729853015961">Jelszavak exportálása a Chromiumból</translation>
@@ -439,9 +440,9 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
 <translation id="5889361821821684993">A Chromium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5896077214220653386">Gemini Enterprise a Chromiumban</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
-<translation id="5939553720811388432">A Chromium előkészítése</translation>
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5949225980829865667">Ha az összes eszközén szeretne hozzáférni ehhez a könyvjelzőhöz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="5953657885167112863">Tegye személyessé a Chromiumot</translation>

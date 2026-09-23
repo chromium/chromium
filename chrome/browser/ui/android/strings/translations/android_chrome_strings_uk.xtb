@@ -305,7 +305,6 @@
 <translation id="2226826835915474236">Неактивні швидкі команди</translation>
 <translation id="2227179592712503583">Видалити пропозицію</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Отримайте доступ до всієї збереженої інформації</translation>
 <translation id="2230777942707397948">Порожнє вікно</translation>
 <translation id="223356358902285214">Історія додатків і вебпошуку</translation>
 <translation id="2233735624724508540">Виберіть період і натисніть "Видалити дані"</translation>
@@ -359,7 +358,6 @@
 <translation id="2413014528833954543">Не вдалося перевірити паролі на цьому пристрої</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2415037988255164008">Відновити вікна?</translation>
-<translation id="2426805022920575512">Вибрати інший обліковий запис</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Відео (1 відео в списку)}one{Відео (# відео в списку)}few{Відео (# відео в списку)}many{Відео (# відео в списку)}other{Відео (# відео в списку)}}</translation>
 <translation id="2433507940547922241">Стиль і тема</translation>
 <translation id="2449931042095204989">Коли сайт або додаток Google надсилає запит на приватне попереднє завантаження посилань на своїй сторінці, Chrome шифрує і попередньо завантажує сторінки через сервери Google без файлів cookie. Таким чином вашу особу не можна визначити через попередньо завантажений сайт.</translation>
@@ -511,7 +509,6 @@
 <translation id="2996291259634659425">Створити парольну фразу</translation>
 <translation id="2996682533106928201">Торкніться, щоб закрити підказку</translation>
 <translation id="2996809686854298943">Потрібна URL-адреса</translation>
-<translation id="3007318536447999974">Щоб поговорити з Gemini, надайте сервісу дозвіл використовувати ваш мікрофон. Цей параметр також можна змінити в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Параметри режиму читання закрито</translation>
 <translation id="3024277805447899099">Переглянути зображення</translation>
 <translation id="3026955690410463085">Додати посилання</translation>
@@ -1291,7 +1288,6 @@
 <translation id="6193448654517602979">Виберіть вкладки</translation>
 <translation id="6196315980958524839">Паролі збережено в Менеджері паролів Google на цьому пристрої</translation>
 <translation id="6204781143409202534">Вебпереглядач Chrome виявив можливий спам із домену <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Не <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Попередній перегляд цієї сторінки</translation>
 <translation id="6212567362666004597">Додати вкладку в групу</translation>
 <translation id="6225572914528673855">Адресний рядок</translation>
@@ -1950,7 +1946,6 @@
 <translation id="8570677896027847510">Не можна безпечно завантажити файл</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8580435650274205305">Термін дії, обов’язкове поле</translation>
-<translation id="8582529315803410153">Тут відображатимуться вкладки, які ви відкрили на інших пристроях</translation>
 <translation id="8585103689515290060">Сервіси автозаповнення</translation>
 <translation id="8586116786993312006">Натисніть, щоб видалити дані вебперегляду в Chrome</translation>
 <translation id="859046281437143747">Відстежувати ціну через кнопку "Більше опцій"</translation>

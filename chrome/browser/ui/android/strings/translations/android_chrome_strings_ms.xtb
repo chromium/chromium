@@ -305,7 +305,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2226826835915474236">Pintasan tidak aktif</translation>
 <translation id="2227179592712503583">Alih keluar cadangan</translation>
 <translation id="2227444325776770048">Teruskan sebagai <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Dapatkan semua maklumat anda yang disimpan</translation>
 <translation id="2230777942707397948">Tetingkap kosong</translation>
 <translation id="223356358902285214">Aktiviti Web &amp; Apl</translation>
 <translation id="2233735624724508540">Pilih tempoh masa, kemudian ketik Padamkan data</translation>
@@ -359,7 +358,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2413014528833954543">Kata laluan pada peranti ini tidak dapat disemak</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2415037988255164008">Pulihkan tetingkap?</translation>
-<translation id="2426805022920575512">Pilih akaun lain</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video dalam senarai}other{Video, # video dalam senarai}}</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2449931042095204989">Apabila laman atau apl Google meminta pramuat pautan secara peribadi pada halaman mereka, Chrome menyulitkan dan mempramuatkan halaman melalui pelayan Google tanpa kuki. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuatkan.</translation>
@@ -511,7 +509,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
 <translation id="2996682533106928201">Ketik untuk mengetepikan</translation>
 <translation id="2996809686854298943">URL yang diperlukan</translation>
-<translation id="3007318536447999974">Untuk bercakap dengan Gemini, beri Gemini kebenaran untuk menggunakan mikrofon anda. Anda juga boleh mengurus pilihan ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /></translation>
 <translation id="3024215143424744261">Pilihan mod membaca ditutup</translation>
 <translation id="3024277805447899099">Pratonton imej</translation>
 <translation id="3026955690410463085">Sertakan pautan</translation>
@@ -1291,7 +1288,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196315980958524839">Kata laluan disimpan pada Google Password Manager pada peranti ini</translation>
 <translation id="6204781143409202534">Chrome mengesan kemungkinan spam daripada <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
 <translation id="6212567362666004597">Tambahkan tab pada kumpulan</translation>
 <translation id="6225572914528673855">Bar alamat</translation>
@@ -1950,7 +1946,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8570677896027847510">Fail tidak dapat dimuat turun dengan selamat</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8580435650274205305">Tarikh tamat tempoh, diperlukan</translation>
-<translation id="8582529315803410153">Anda dapat menemukan tab anda daripada peranti lain di sini</translation>
 <translation id="8585103689515290060">Perkhidmatan autolengkap</translation>
 <translation id="8586116786993312006">Ketik untuk memadamkan data semakan imbas dalam Chrome</translation>
 <translation id="859046281437143747">Jejaki harga daripada butang Lagi pilihan</translation>

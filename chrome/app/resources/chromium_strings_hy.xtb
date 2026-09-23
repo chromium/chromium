@@ -305,6 +305,7 @@
 <translation id="4251772536351901305">Զգուշացնում է ձեզ վտանգավոր, այդ թվում՝ Google-ին նախկինում անհայտ կայքերի մասին, քանի որ ավելի շատ տվյալներ է վերլուծում կայքերում՝ համեմատած ստանդարտ պաշտպանության հետ։ Դուք կարող եք բաց թողնել Chromium-ի նախազգուշացումները։</translation>
 <translation id="4269093074552541569">Դուրս գալ Chromium-ից</translation>
 <translation id="4271805377592243930">Chromium-ի օգնության էջ</translation>
+<translation id="4275788652681621337">Փակել կողային վահանակը</translation>
 <translation id="4281844954008187215">Օգտագործման պայմաններ</translation>
 <translation id="4285930937574705105">Անհայտ սխալի պատճառով տեղադրումը չհաջողվեց: Եթե Chromium-ը բաց է, փակեք այն և կրկին փորձեք:</translation>
 <translation id="4298125729853015961">Արտահանեք գաղտնաբառերը Chromium-ից</translation>
@@ -441,9 +442,9 @@
 <translation id="5883558403894052917">Chromium-ը այս տարրերում վնասագիր է հայտնաբերել՝</translation>
 <translation id="5889361821821684993">Chromium-ը պարբերաբար ստուգում է իրականացնում՝ համոզվելու, որ ձեր դիտարկիչն ամենաանվտանգ կարգավորումներն ունի։ Մենք ձեզ կտեղեկացնենք, եթե որևէ բան փոխելու անհրաժեշտություն լինի։</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
+<translation id="5896077214220653386">Gemini Enterprise-ը Chromium-ում</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Ցանցի մուտք</translation>
 <translation id="5924017743176219022">Միացում համացանցին…</translation>
-<translation id="5939553720811388432">Եկեք կարգավորենք ձեր Chromium-ը</translation>
 <translation id="5941711191222866238">Նվազեցնել</translation>
 <translation id="5949225980829865667">Որպեսզի այս էջանիշը և այլ տվյալներ հասանելի լինեն ձեր բոլոր սարքերում, մուտք գործեք Chromium</translation>
 <translation id="5953657885167112863">Հարմարեցրեք Chromium-ը</translation>

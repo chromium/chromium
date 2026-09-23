@@ -10,6 +10,7 @@
 
 Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingum verða ekki vistaðar.</translation>
 <translation id="1083934481477628225">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chromium</translation>
+<translation id="109026165963220603">Chromium þarf aðgang að staðarnetinu þínu til að finna og nota nálæg tæki</translation>
 <translation id="1090946077924227754">Til að leita að tilteknum eiginleika eða viðbót Chromium skaltu slá flýtileiðina inn í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="1098493699368672217">Sýna leit með Chromium í kerfisbakka og kveikja á flýtilykli</translation>
 <translation id="1104942323762546749">Chromium vill flytja út aðgangsorðin þín. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
@@ -305,6 +306,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4251772536351901305">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chromium-viðvörunum.</translation>
 <translation id="4269093074552541569">Skrá út af Chromium</translation>
 <translation id="4271805377592243930">Fá hjálp með Chromium</translation>
+<translation id="4275788652681621337">Loka hliðarglugga</translation>
 <translation id="4281844954008187215">Þjónustuskilmálar</translation>
 <translation id="4285930937574705105">Uppsetning mistókst vegna ótilgreindrar villu. Ef Chromium er í gangi eins og er skaltu loka því og reyna aftur.</translation>
 <translation id="4298125729853015961">Flytja aðgangsorð út úr Chromium</translation>
@@ -441,9 +443,9 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5883558403894052917">Chromium komst að því að eftirfarandi atriði innihalda spilliforrit:</translation>
 <translation id="5889361821821684993">Chromium athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
+<translation id="5896077214220653386">Gemini Enterprise í Chromium</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – innskráning á net</translation>
 <translation id="5924017743176219022">Tengist internetinu…</translation>
-<translation id="5939553720811388432">Gerum Chromium klárt</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5949225980829865667">Skráðu þig inn í Chromium til að fá þetta bókamerki og fleiri í öllum tækjunum þínum</translation>
 <translation id="5953657885167112863">Gerðu Chromium-vafrann að þínum</translation>

@@ -112,6 +112,7 @@
 <translation id="132683371494960526">상위 폴더를 변경하려면 두 번 탭하세요.</translation>
 <translation id="132969855425874290">찾기 및 채우기 닫기</translation>
 <translation id="1333455942675373522">키보드</translation>
+<translation id="1333669029961409292">'비밀번호 확인'이 완료되었습니다</translation>
 <translation id="1334485477792811969">웹 서비스</translation>
 <translation id="1335767868357998043">주소 표시줄 위치 선택</translation>
 <translation id="1347468774581902829">활동 관리</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">내비게이션 기능을 사용하여 세부 경로 안내를 통해 목적지로 가는 경로 찾기</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
+<translation id="1644229815617955289">방문 기록, 쿠키 등을 관리하여 개인 정보를 보호하세요.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="164673457281113247">{count,plural, =1{북마크 저장됨}other{북마크 저장됨}}</translation>
 <translation id="1650979352027263879">모양 환경설정이 삭제되었습니다.</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">구성 프로필 이용 가능</translation>
 <translation id="2244080985779413662">웹사이트에서 파일을 다운로드하여 월렛에서 열려고 합니다.</translation>
 <translation id="2245007488813216650">번역 중…</translation>
+<translation id="2246445006133863463">허용하면 음성으로 Gemini와 채팅할 수 있습니다.</translation>
 <translation id="2249119578464404734">화면 상단에서 검색 아이콘을 탭합니다.</translation>
 <translation id="2251686759395008410">메뉴 → 방문 기록</translation>
 <translation id="2252378061043785266">이 사이트 표시 안 함</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Google 계정(<ph name="EMAIL" />)의 비밀번호를 계속 사용하고 저장하세요.</translation>
 <translation id="3853873210696342070">가져오기</translation>
 <translation id="3854052088499589035">Level Up에서 진행 상황이 있을 때 업데이트를 받습니다</translation>
+<translation id="3854214753902617617">향상된 세이프 브라우징 살펴보기</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari 설정<ph name="END_BOLD" />을 엽니다.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="386224966259596343">다음에 관련 양식을 작성할 때 이 정보를 월렛에 저장할 수 있습니다.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">비밀번호 공유</translation>
 <translation id="4049419681095579435">이미 배송 추적됨</translation>
 <translation id="4049507953662678203">네트워크에 연결되었는지 확인한 후 다시 시도해 주세요.</translation>
+<translation id="4052951214266508382">'Gemini'가 마이크를 사용하도록 허용</translation>
 <translation id="4054290211988862686">파일 선택</translation>
 <translation id="4070132839822635162">로그인하지 않음</translation>
 <translation id="4072473499345702662">Level Up으로 이동</translation>
@@ -1481,6 +1486,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="574762237186762643">일정</translation>
 <translation id="5749158352074143502">이 탭으로 계속</translation>
 <translation id="5753021559215751319">비밀번호 저장</translation>
+<translation id="5756200167514420691">시크릿 모드에서 탭을 열어 웹을 비공개로 탐색하세요.</translation>
 <translation id="5756525336488841345">북마크 숨기기</translation>
 <translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
 <translation id="57586589942790530">카드 번호가 잘못되었습니다.</translation>
@@ -1551,6 +1557,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5988097621740394599">탭에서 가격 인하 정보를 확인합니다.</translation>
 <translation id="5988851877894965432">Chrome에서 URL 열기</translation>
 <translation id="599343768974649785">선정적인 텍스트</translation>
+<translation id="6000893618966378846">'인터넷 사용 기록 삭제'가 완료되었습니다.</translation>
 <translation id="6004988584831654445">설정을 완료했습니다. 새로운 작업이 도착하면 알림을 받습니다.</translation>
 <translation id="6006672969046233841">새 탭</translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
@@ -1579,7 +1586,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6089212833343035912">Google 비밀번호 관리자 PIN</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6094325891006032858">향상된 세이프 브라우징 사용 설정하기</translation>
-<translation id="6096965253650248286"><ph name="COUNT" /> 찾음</translation>
+<translation id="6096965253650248286"><ph name="COUNT" />개 찾음</translation>
 <translation id="6099466082815574659">이 iPad는 아동용으로 설정되어 있습니다</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="6100676328067737810">데이터가 Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다.</translation>
@@ -1810,6 +1817,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6736243959894955139">주소</translation>
 <translation id="6746338529702829275">계정 데이터 검토</translation>
+<translation id="6749473226660745022">사진</translation>
 <translation id="6750456911389438250">{count,plural, =1{방문 기록 항목 {count}개 가져옴}other{방문 기록 항목 {count}개 가져옴}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}other{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}}</translation>
 <translation id="6755200887046212842">계정 관리</translation>
@@ -1975,6 +1983,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7312823817809783355">내 작업</translation>
 <translation id="7313347584264171202">여기에서 시크릿 탭을 확인할 수 있습니다</translation>
+<translation id="7318555235645532245">'시크릿 모드 사용'이 완료되었습니다</translation>
 <translation id="7322186060879266048">{count,plural, =1{키보드 위에 자동 완성 옵션 {count}개가 있습니다.}other{키보드 위에 자동 완성 옵션 {count}개가 있습니다.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />명)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% 다운로드됨</translation>
@@ -2151,6 +2160,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7857520352710212030">사이트 고정됨</translation>
 <translation id="7859988229622350291">번역 안 함</translation>
 <translation id="7863211248337747225">앱 다운로드</translation>
+<translation id="7863990181930071932">위치 액세스 사용 중지됨</translation>
 <translation id="7865127013871431856">번역 옵션</translation>
 <translation id="7866872729285243843">어느 기기에서나 읽기 목록을 사용하려면 설정에서 '읽기 목록'을 사용 설정하세요.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> 자동 완성 양식</translation>
@@ -2324,7 +2334,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8385363453480067273">Google 렌즈로 눈앞의 사물을 렌즈로 검색해 보세요</translation>
 <translation id="8386068868580335421">재설정</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
-<translation id="8393889347136007944">탭을 <ph name="THRESHOLD" />일 동안 사용하지 않음</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" />일 동안 사용하지 않은 탭</translation>
 <translation id="8395180897620197612">로깅 중지</translation>
 <translation id="8407669440184693619">이 사이트의 비밀번호를 찾을 수 없음</translation>
 <translation id="8407831512155324054">비밀번호가 안전함</translation>
@@ -2459,6 +2469,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8786100550345425552">권한 수정</translation>
 <translation id="878871978861915380">'가격 추적' 숨기기</translation>
 <translation id="8792626944327216835">마이크</translation>
+<translation id="8795809107245894196">비밀번호 진단을 사용하여 비밀번호가 안전한지 확인하세요.</translation>
 <translation id="8796634520835503150">읽기 모드 사용 가능</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8803639129939845298">안전함</translation>
@@ -2491,6 +2502,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8879952635974818770">맞춤 콘텐츠</translation>
 <translation id="8887595428614802520">모든 탭 및 그룹 닫기</translation>
 <translation id="8888595487174963247">리마인더 삭제</translation>
+<translation id="8890516388109605451">소스</translation>
 <translation id="8893208530912252670">동영상</translation>
 <translation id="8898822736010347272">새로운 위협을 발견하고 모든 웹 사용자를 보호하는데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8900845556227858314">브라우저 앱</translation>
@@ -2531,6 +2543,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
 <translation id="9013605037177245304">알림 사용 설정</translation>
 <translation id="9029650858822697271">로그아웃되었습니다</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">인터넷 사용 기록 삭제 확인</translation>
 <translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9038526468059454274">다음 도구로 요약하기:</translation>

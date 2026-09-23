@@ -107,6 +107,7 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3072591112723064972">Állítsa be a Chromiumot alapértelmezett böngészőként, hogy azonnal megnyithassa benne a linkeket.</translation>
 <translation id="3115956258722352278">Legyen a Chromium az alapértelmezett böngészője?</translation>
 <translation id="3180939591219927904">Kapcsolja be az „Inkognitó lapok zárolása a Chromium bezárásakor” beállítást.</translation>
+<translation id="3239426886813624481">Ha meg szeretné osztani tartózkodási helyét a webhelyekkel, koppintson a Beállítások lehetőségre, hogy a Chromium használhassa a tartózkodási helyét.</translation>
 <translation id="327628223428512207">Adja meg az összetett jelszót, hogy menthesse a jelszót, és az összes eszközén hozzáférhessen a Chromium-adatokhoz</translation>
 <translation id="328933489847748230">{count,plural, =1{Jelenleg 1 Chromium-ablak látható}other{Jelenleg {count} Chromium-ablak látható}}</translation>
 <translation id="3344204225393848305">A Chromium beállítása alapértelmezettként</translation>

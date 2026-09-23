@@ -305,7 +305,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2226826835915474236">Raccourcis inactifs</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2227444325776770048">Continuer en tant que <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Accédez à toutes vos informations enregistrées</translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="223356358902285214">Activité sur le Web et les applications</translation>
 <translation id="2233735624724508540">Choisissez une période, puis appuyez sur "Supprimer les données"</translation>
@@ -359,7 +358,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2413014528833954543">Impossible de vérifier les mots de passe sur cet appareil</translation>
 <translation id="2414886740292270097">Sombre</translation>
 <translation id="2415037988255164008">Restaurer les fenêtres ?</translation>
-<translation id="2426805022920575512">Sélectionner un autre compte</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vidéos, une vidéo dans la liste}one{Vidéos, # vidéo dans la liste}other{Vidéos, # vidéos dans la liste}}</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2449931042095204989">Quand un site ou une appli Google demandent de précharger en mode privé des liens sur leur page, Chrome chiffre et précharge les pages via les serveurs de Google sans cookies. Le site préchargé ne sait alors rien de votre identité.</translation>
@@ -511,7 +509,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2996291259634659425">Créer une phrase secrète</translation>
 <translation id="2996682533106928201">Appuyer pour ignorer</translation>
 <translation id="2996809686854298943">Veuillez saisir une URL.</translation>
-<translation id="3007318536447999974">Pour parler à Gemini, autorisez-le à utiliser votre micro. Vous pouvez aussi gérer cela dans les <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="3024215143424744261">Préférences du mode Lecture fermées</translation>
 <translation id="3024277805447899099">Image d'aperçu</translation>
 <translation id="3026955690410463085">Inclure le lien</translation>
@@ -1291,7 +1288,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="6204781143409202534">Chrome a détecté un spam potentiel de <ph name="DOMAIN" />.</translation>
-<translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
 <translation id="6212567362666004597">Ajouter l'onglet à un groupe</translation>
 <translation id="6225572914528673855">Barre d'adresse</translation>
@@ -1950,7 +1946,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8570677896027847510">Impossible de télécharger le fichier de façon sécurisée</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8580435650274205305">Vous devez indiquer une date d'expiration</translation>
-<translation id="8582529315803410153">Vous trouverez ici les onglets de vos autres appareils</translation>
 <translation id="8585103689515290060">Services de saisie automatique</translation>
 <translation id="8586116786993312006">Appuyez pour supprimer les données de navigation dans Chrome</translation>
 <translation id="859046281437143747">Effectuez le suivi du prix via le bouton "Plus d'options"</translation>
@@ -1982,7 +1977,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> sera fermé</translation>
 <translation id="8723453889042591629">Traduire rapidement cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
-<translation id="8727043961453758442">Profiter pleinement de Chrome</translation>
+<translation id="8727043961453758442">Profitez pleinement de Chrome</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="8738163682604285902">Consulter le mode Lecture ?</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>

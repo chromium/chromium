@@ -270,6 +270,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7061455974939528301">Mantén premida a icona de Chrome e fai clic en na opción Edit Home Screen (Editar pantalla de inicio)</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
+<translation id="7135936755418321901">Toca en Configuración e permite que Chrome use a túa localización para poder compartila con sitios web.</translation>
 <translation id="7145599899567697473">Gardar e autocompletar contrasinais en Chrome</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>
@@ -284,6 +285,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7272930098487145294">Se queres gardar imaxes, toca Configuración para que Chrome poida engadir as túas fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chrome deste dispositivo</translation>
 <translation id="7284245284340063465">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
+<translation id="7287957555760192025">Se seleccionas ou ignoras unha suxestión, Chrome adaptarase para axudar a mostrarche suxestións máis relevantes no futuro.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Xa podes utilizar Chrome sempre que toques ligazóns en correos electrónicos, en documentos e noutras aplicacións.</translation>
 <translation id="7334364820047587268">Xa tes contrasinais para estas contas no teu xestor de contrasinais de Google. Se decides importar un dos contrasinais que se mostran máis abaixo, substituirá o actual.</translation>
@@ -357,6 +359,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8544583291890527417">Alertas sobre calquera problema de privacidade ou seguranza que detecte Chrome.</translation>
 <translation id="855027533751209304">Consello de Chrome: busca o que vexas</translation>
 <translation id="8558480467877843976">Agora podes usar Chrome sempre que explores contido ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>
+<translation id="8589791109349384456">Ao desactivar as suxestións, non se controla o procesamento que fai Chrome para outras funcións dos títulos das páxinas e os URL. Podes xestionar o acceso a estes datos na <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="8603022514504485810">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Utiliza os contrasinais, o historial, os marcadores e as tarxetas de crédito de Safari en Chrome</translation>
 <translation id="8630122478628016441">Activa a opción Bloquear pestanas do modo de incógnito ao pechar Chrome.</translation>

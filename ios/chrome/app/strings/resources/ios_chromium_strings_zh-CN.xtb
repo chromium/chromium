@@ -107,6 +107,7 @@
 <translation id="3072591112723064972">将 Chromium 设为默认浏览器，即可在此处直接打开链接。</translation>
 <translation id="3115956258722352278">将 Chromium 设为默认浏览器？</translation>
 <translation id="3180939591219927904">开启“在您关闭 Chromium 时锁定无痕式标签页”</translation>
+<translation id="3239426886813624481">如需与网站分享您的位置信息，请点按“设置”，并允许 Chromium 使用您的位置信息。</translation>
 <translation id="327628223428512207">输入口令才能保存此密码，并在所有设备上获取 Chromium 数据</translation>
 <translation id="328933489847748230">{count,plural, =1{目前显示了 1 个 Chromium 窗口}other{目前显示了 {count} 个 Chromium 窗口}}</translation>
 <translation id="3344204225393848305">将 Chromium 设为默认浏览器</translation>

@@ -306,6 +306,7 @@
 <translation id="4251772536351901305">გაგაფრთხილებთ სახიფათო საიტების შესახებ (თუნდაც Google-ისთვის იქამდე უცნობის შესახებ) საიტებიდან იმაზე მეტი მონაცემის სკანირების მეშვეობით, ვიდრე სტანდარტული დაცვის შემთხვევაში. სურვილისამებრ, შეგიძლიათ გამოტოვოთ Chromium-ის გაფრთხილებები.</translation>
 <translation id="4269093074552541569">Chromium-იდან გასვლა</translation>
 <translation id="4271805377592243930">Chromium-თან დაკავშირებული დახმარების მიღება</translation>
+<translation id="4275788652681621337">გვერდითი პანელის დახურვა</translation>
 <translation id="4281844954008187215">მომსახურების პირობები</translation>
 <translation id="4285930937574705105">ინსტალაცია ვერ განხორციელდა განუსაზღვრელი შეცდომის გამო. თუ Chromium ამჟამად გაშვებულია, დახურეთ იგი და ხელახლა სცადეთ.</translation>
 <translation id="4298125729853015961">Chromium-იდან პაროლების ექსპორტი</translation>
@@ -445,7 +446,6 @@
 <translation id="5896077214220653386">Gemini Enterprise — Chromium-ში</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — ქსელში შესვლა</translation>
 <translation id="5924017743176219022">მიმდინარეობს ინტერნეტთან დაკავშირება...</translation>
-<translation id="5939553720811388432">მოამზადეთ თქვენი Chromium</translation>
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5949225980829865667">ამ სანიშნისა და სხვა კონტენტის თქვენს მოწყობილობაში მისაღებად შედით Chromium-ში</translation>
 <translation id="5953657885167112863">მოირგეთ Chromium</translation>

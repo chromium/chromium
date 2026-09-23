@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Font Monospace</translation>
 <translation id="1757935267918149452">Butonul Schimbă parola Google, activează pentru a schimba parola Contului Google</translation>
 <translation id="1759776526873274358">Completează automat codurile de verificare pe care site-urile le folosesc pentru a-ți îmbunătăți securitatea. Chrome poate obține aceste coduri din Gmail. <ph name="BEGIN_LINK" />Află mai multe despre această funcție<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Accesează Portofelul Google ca să gestionezi <ph name="BEGIN_LINK1" />datele și preferințele de confidențialitate<ph name="END_LINK1" /> sau <ph name="BEGIN_LINK2" />metodele de plată<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />permisele<ph name="END_LINK3" />, cum ar fi cardurile de fidelitate și actele de identitate</translation>
 <translation id="1763864636252898013">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; sistemul de operare al dispozitivului nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Rulează Diagnostice rețea Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (de arhivă)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">Accesul la internet este blocat</translation>
 <translation id="2294150501457238325">Adaugă în siguranță pașaportul</translation>
 <translation id="2295831393422400053">Activează setarea Îmbunătățește căutările și navigarea pentru a folosi funcția Ajută-mă să scriu</translation>
-<translation id="2296244067976588032">Cheie de acces • iCloud Keychain</translation>
 <translation id="2296331629987861142">Plătește în rate simple (în funcție de eligibilitate; se aplică taxe)</translation>
 <translation id="2300306941146563769">Nu s-a încărcat</translation>
 <translation id="2301064673700597535">Declarațiile certificatului calificat</translation>
@@ -913,6 +911,7 @@ Poți elimina această sugestie din Chrome. Sursa inițială nu va fi ștearsă.
 <translation id="2505063700931618106">Informațiile cardului au fost salvate</translation>
 <translation id="2505268675989099013">Protejează contul</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (se aplică anumite condiții)</translation>
+<translation id="251033673027346551">Accesează Portofel Google ca să gestionezi <ph name="BEGIN_LINK" />datele și preferințele de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Nepermise (prestabilit)</translation>
 <translation id="2512413427717747692">Butonul Setează Chrome ca browser prestabilit, apasă pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
 <translation id="2515629240566999685">să verifici semnalul din zona ta.</translation>
@@ -1305,6 +1304,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
 <translation id="3209071504641569648">Solicitările, titlurile paginilor și adresele URL sunt trimise la Google și pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită</translation>
+<translation id="3211727636285361260">Deschide linkurile <ph name="PROTOCOL" /> prin <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">A început descărcarea. Ca să o vezi, trage din partea de sus și atinge butonul Înapoi.</translation>
 <translation id="3212581601480735796">Activitatea ta de pe <ph name="HOSTNAME" /> este monitorizată</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
@@ -2087,6 +2087,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="449126573531210296">Criptează parolele sincronizate folosind Contul Google</translation>
 <translation id="4493480324863638523">Adresă URL nevalidă. Trebuie să fie o adresă URL cu schemă standard, de exemplu: http://example.com sau https://example.com.</translation>
 <translation id="4497010149473852018">Cardurile de fidelitate disponibile pentru completarea la atingere. Tastatura este ascunsă.</translation>
+<translation id="4497843134750481377">Gestionează ofertele</translation>
 <translation id="4500587658229086076">Conținut nesecurizat</translation>
 <translation id="4501939680615452918">Caută locuri libere la restaurante populare</translation>
 <translation id="4503459574136856756">Rescrie-mi biografia astfel încât să aibă un ton mai profesional</translation>
@@ -3751,6 +3752,7 @@ Detalii suplimentare:
 <translation id="7347640536700429009">Numele de pe card nu este valid</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
+<translation id="7358055687760675498">Deschide linkurile <ph name="PROTOCOL" /> prin <ph name="HANDLER_HOSTNAME" /> în loc de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>
 <translation id="7362281996276843968">Acest grup este închis</translation>
 <translation id="7363096869660964304">Cu toate acestea, nu ești invizibil(ă). Trecerea în modul incognito nu ascunde activitatea de navigare față de angajator, față de furnizorul de servicii de internet sau față de site-urile pe care le accesezi.</translation>

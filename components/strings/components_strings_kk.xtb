@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">Monospace қарпі</translation>
 <translation id="1757935267918149452">"Google құпия сөзін өзгерту" түймесі, Google аккаунтыңыздың құпия сөзін өзгерту үшін белсендіріңіз</translation>
 <translation id="1759776526873274358">Сайттар қауіпсіздікті арттыру үшін пайдаланатын растау кодтарын автоматты түрде толтырыңыз. Chrome бұл кодтарды Gmail-ден ала алады. <ph name="BEGIN_LINK" />Осы функция туралы толық ақпарат<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Деректер мен құпиялық параметрлерін<ph name="END_LINK1" /> басқару немесе <ph name="BEGIN_LINK2" />төлеу әдістері<ph name="END_LINK2" /> мен тұрақты клиент карталары және жеке куәліктер сияқты <ph name="BEGIN_LINK3" />билеттерді<ph name="END_LINK3" /> басқару үшін Google Wallet-ке кіріңіз.</translation>
 <translation id="1763864636252898013">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификаты құрылғының операциялық жүйесі арқылы тексерілмеген. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Network Diagnostics құралын пайдаланып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Фотосурет (мұрағат)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">Интернетке кіруге тыйым салынған</translation>
 <translation id="2294150501457238325">Паспортты қауіпсіз түрде қосу</translation>
 <translation id="2295831393422400053">"Жазуға көмек керек" функциясын пайдалану үшін "Іздеу және браузерді қолдану нәтижелерін жақсарту" параметрін қосыңыз</translation>
-<translation id="2296244067976588032">Кіру кілті • iCloud кілттер тізбегі</translation>
 <translation id="2296331629987861142">Бөліп төлейсіз (талаптарға сай болуы керек, комиссия алынады).</translation>
 <translation id="2300306941146563769">Жүктеп салынбады</translation>
 <translation id="2301064673700597535">Тексерілген сертификаттар туралы мәлімдемелер</translation>
@@ -913,6 +911,7 @@
 <translation id="2505063700931618106">Карта туралы ақпарат сақталды.</translation>
 <translation id="2505268675989099013">Аккаунтты қорғау</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (шарттары бар)</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />Деректер мен құпиялық параметрлерін<ph name="END_LINK" /> реттеу үшін Google Wallet-ке кіріңіз.</translation>
 <translation id="2512101340618156538">Рұқсат етілмеген (әдепкі)</translation>
 <translation id="2512413427717747692">Chrome-ды әдепкі браузер түймесі етіп орнату: Chrome-ды iOS параметрлерінде жүйенің әдепкі браузері етіп орнату үшін Enter пернесін басыңыз.</translation>
 <translation id="2515629240566999685">Аймағыңыздағы сигналды тексеру</translation>
@@ -1304,6 +1303,7 @@
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3209034400446768650">Бұл бет ақылы болуы мүмкін</translation>
 <translation id="3209071504641569648">Сұрауларыңыз, бет атаулары және URL мекенжайлары Google-ға жіберіледі және дұрысталған автотолтыру функциясын жақсарту үшін тексерілуі мүмкін.</translation>
+<translation id="3211727636285361260"><ph name="PROTOCOL" /> сілтемелерін <ph name="HANDLER_HOSTNAME" /> арқылы ашу</translation>
 <translation id="3212468046572043669">Жүктеп алу басталды. Оны көру үшін жоғарыдан сүйреп, "Артқа" түймесін түртіңіз.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> хостында әрекетіңіз бақыланады</translation>
 <translation id="3215092763954878852">WebAuthn қолдану мүмкін болмады</translation>
@@ -2086,6 +2086,7 @@
 <translation id="449126573531210296">Синхрондалған құпия сөздерді Google аккаунтыңызбен шифрлау</translation>
 <translation id="4493480324863638523">URL мекенжайы жарамсыз. URL мекенжайы стандартты схемаға сай болуы керек (мысалы, http://example.com немесе https://example.com).</translation>
 <translation id="4497010149473852018">Тұрақты клиент карталарын түрту арқылы толтыруға болады. Пернетақта жасырылды.</translation>
+<translation id="4497843134750481377">Ұсыныстарды басқару</translation>
 <translation id="4500587658229086076">қорғалмаған контент</translation>
 <translation id="4501939680615452918">Танымал мейрамханалардың ашылу уақытын қара</translation>
 <translation id="4503459574136856756">Био мәтінімді кәсіби стильде қайта жазып бер</translation>
@@ -3749,6 +3750,7 @@
 <translation id="7347640536700429009">Картадағы аты-жөні жарамсыз.</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
 <translation id="7353601530677266744">Пәрмен жолы</translation>
+<translation id="7358055687760675498"><ph name="PROTOCOL" /> сілтемелерін <ph name="REPLACED_HANDLER_TITLE" /> орнына <ph name="HANDLER_HOSTNAME" /> арқылы ашу</translation>
 <translation id="7359588939039777303">Жарнамалар бөгелді.</translation>
 <translation id="7362281996276843968">Бұл топ жабылды</translation>
 <translation id="7363096869660964304">Алайда бәрібір бақылауда боласыз. Инкогнито режиміне өткенмен, браузерді қолдану тарихын жұмыс берушіңізден, интернет провайдеріңізден немесе сіз кірген веб-сайттардан жасыру мүмкін емес.</translation>

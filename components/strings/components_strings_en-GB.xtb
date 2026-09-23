@@ -467,7 +467,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1757773103848038814">Monospace font</translation>
 <translation id="1757935267918149452">Change Google password button, activate to change your Google Account password</translation>
 <translation id="1759776526873274358">Autofill verification codes that sites use to improve your security. Chrome can get these codes from your Gmail. <ph name="BEGIN_LINK" />Learn more about this feature<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Visit Google Wallet to control <ph name="BEGIN_LINK1" />data and privacy preferences<ph name="END_LINK1" /> or manage <ph name="BEGIN_LINK2" />payment methods<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" /> like loyalty cards and IDs</translation>
 <translation id="1763864636252898013">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your device's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Try running Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (archival)</translation>
@@ -777,7 +776,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2292556288342944218">Your Internet access is blocked</translation>
 <translation id="2294150501457238325">Add passport securely</translation>
 <translation id="2295831393422400053">Turn on the Make searches and browsing better setting to use Help me write</translation>
-<translation id="2296244067976588032">Passkey • iCloud Keychain</translation>
 <translation id="2296331629987861142">Pay in easy instalments (subject to eligibility, fees apply)</translation>
 <translation id="2300306941146563769">Not uploaded</translation>
 <translation id="2301064673700597535">Qualified Certificate Statements</translation>
@@ -913,6 +911,7 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2505063700931618106">Card info saved</translation>
 <translation id="2505268675989099013">Protect Account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (terms apply)</translation>
+<translation id="251033673027346551">Visit Google Wallet to manage <ph name="BEGIN_LINK" />data and privacy preferences<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Not allowed (default)</translation>
 <translation id="2512413427717747692">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
@@ -1305,6 +1304,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3209034400446768650">Page may charge money</translation>
 <translation id="3209071504641569648">Your requests, page titles and URLs are sent to Google and may be reviewed to improve enhanced autofill</translation>
+<translation id="3211727636285361260">Open <ph name="PROTOCOL" /> links through <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Download started. To see it, drag from the top and touch the back button</translation>
 <translation id="3212581601480735796">Your activity on <ph name="HOSTNAME" /> is being monitored</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
@@ -2087,6 +2087,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
 <translation id="4493480324863638523">Invalid URL. Must be a URL with a standard scheme, e.g. http://example.com or https://example.com.</translation>
 <translation id="4497010149473852018">Loyalty cards available to be filled on touch. Keyboard hidden.</translation>
+<translation id="4497843134750481377">Manage offers</translation>
 <translation id="4500587658229086076">insecure content</translation>
 <translation id="4501939680615452918">Look for openings at trending restaurants</translation>
 <translation id="4503459574136856756">Rewrite my bio to sound more professional</translation>
@@ -3751,6 +3752,7 @@ Additional details:
 <translation id="7347640536700429009">Name on card is invalid</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353601530677266744">Command Line</translation>
+<translation id="7358055687760675498">Open <ph name="PROTOCOL" /> links through <ph name="HANDLER_HOSTNAME" /> instead of <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Ads blocked.</translation>
 <translation id="7362281996276843968">This group is closed</translation>
 <translation id="7363096869660964304">However, you aren’t invisible. Going Incognito doesn’t hide your browsing from your employer, your Internet service provider, or the websites that you visit.</translation>

@@ -112,6 +112,7 @@
 <translation id="132683371494960526">Atinge de două ori pentru a modifica dosarul părinte.</translation>
 <translation id="132969855425874290">Închide Găsește și completează</translation>
 <translation id="1333455942675373522">Tastatură</translation>
+<translation id="1333669029961409292">A fost finalizată acțiunea Verifică parolele!</translation>
 <translation id="1334485477792811969">Servicii web</translation>
 <translation id="1335767868357998043">Alege poziția barei de adrese</translation>
 <translation id="1347468774581902829">Gestionează activitatea</translation>
@@ -218,6 +219,7 @@
 <translation id="1634520742547161889">LL/AA</translation>
 <translation id="1636234353664774105">Primește indicații de orientare spre destinație cu îndrumări pas cu pas folosind funcția de navigare</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
+<translation id="1644229815617955289">Gestionează istoricul, cookie-urile și altele pentru a-ți proteja confidențialitatea</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcaj salvat}few{Marcaje salvate}other{Marcaje salvate}}</translation>
 <translation id="1650979352027263879">Preferințele pentru aspect au fost eliminate</translation>
@@ -406,6 +408,7 @@
 <translation id="2240256190924001613">Este disponibil un profil de configurare</translation>
 <translation id="2244080985779413662">Site-ul dorește să descarce un fișier și să-l deschidă în Portofel.</translation>
 <translation id="2245007488813216650">Se traduce…</translation>
+<translation id="2246445006133863463">Astfel, poți să conversezi prin chat cu Gemini folosindu-ți vocea</translation>
 <translation id="2249119578464404734">În partea de sus a ecranului, atinge pictograma de căutare</translation>
 <translation id="2251686759395008410">Meniu → Istoric</translation>
 <translation id="2252378061043785266">Nu afișa niciodată acest site</translation>
@@ -878,6 +881,7 @@
 <translation id="3853162385423733133">Folosește și salvează în continuare parolele în Contul Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importă</translation>
 <translation id="3854052088499589035">Vei primi actualizări când faci progrese în Level Up</translation>
+<translation id="3854214753902617617">Explorează Navigarea sigură îmbunătățită</translation>
 <translation id="3857113360369572832">Deschide <ph name="BEGIN_BOLD" />Setările Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="386224966259596343">Vei avea ocazia să salvezi aceste informații în Portofel când vei completa din nou un formular relevant.</translation>
@@ -948,6 +952,7 @@
 <translation id="4047337302138771011">Permite accesul la parole</translation>
 <translation id="4049419681095579435">Coletul este deja urmărit</translation>
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
+<translation id="4052951214266508382">Permite ca Gemini să utilizeze microfonul</translation>
 <translation id="4054290211988862686">Alege un fișier</translation>
 <translation id="4070132839822635162">Nu mă conectez</translation>
 <translation id="4072473499345702662">Accesează Nivelul următor</translation>
@@ -1481,6 +1486,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="574762237186762643">Evenimente</translation>
 <translation id="5749158352074143502">Continuă cu această filă</translation>
 <translation id="5753021559215751319">Salvează parola</translation>
+<translation id="5756200167514420691">Deschide file în modul incognito pentru a naviga într-un mod mai privat pe web</translation>
 <translation id="5756525336488841345">Ascunde marcajele</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="57586589942790530">Numărul cardului nu este valid</translation>
@@ -1551,6 +1557,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5988097621740394599">Vezi scăderile de prețuri din file</translation>
 <translation id="5988851877894965432">Deschide adresele URL în Chrome</translation>
 <translation id="599343768974649785">Text explicit</translation>
+<translation id="6000893618966378846">A fost finalizată acțiunea Șterge datele de navigare!</translation>
 <translation id="6004988584831654445">Ai terminat! Primește notificări când apar sarcini noi.</translation>
 <translation id="6006672969046233841">Filă nouă</translation>
 <translation id="6011308810877101166">Îmbunătățește sugestiile de căutare</translation>
@@ -1810,6 +1817,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6732087373923685049">Cameră</translation>
 <translation id="6736243959894955139">Adresă</translation>
 <translation id="6746338529702829275">Examinează datele din cont</translation>
+<translation id="6749473226660745022">Fotografii</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} element din istoric importat}few{{count} elemente din istoric importate}other{{count} de elemente din istoric importate}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opțiune pentru datele de conectare disponibilă deasupra tastaturii.}few{{count} opțiuni pentru datele de conectare disponibile deasupra tastaturii.}other{{count} de opțiuni pentru datele de conectare disponibile deasupra tastaturii.}}</translation>
 <translation id="6755200887046212842">Gestionați conturile</translation>
@@ -1975,6 +1983,7 @@ Poți reporni oricând.</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312823817809783355">Sarcinile tale</translation>
 <translation id="7313347584264171202">Aici vei vedea filele incognito</translation>
+<translation id="7318555235645532245">Ai navigat în modul incognito!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opțiune de completare automată disponibilă deasupra tastaturii.}few{{count} opțiuni de completare automată disponibile deasupra tastaturii.}other{{count} de opțiuni de completare automată disponibile deasupra tastaturii.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descărcat</translation>
@@ -2151,6 +2160,7 @@ Poți reporni oricând.</translation>
 <translation id="7857520352710212030">Site-ul a fost fixat</translation>
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
 <translation id="7863211248337747225">Descarcă aplicația</translation>
+<translation id="7863990181930071932">Accesul la locație este dezactivat</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>
 <translation id="7866872729285243843">Pentru a accesa lista de lecturi de pe toate dispozitivele, activează Lista de lecturi în setări.</translation>
 <translation id="7874107544081154809">Completează automat formularul cu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
@@ -2459,6 +2469,7 @@ Poți reporni oricând.</translation>
 <translation id="8786100550345425552">Editează permisiunile</translation>
 <translation id="878871978861915380">Ascunde opțiunea Urmărirea prețurilor</translation>
 <translation id="8792626944327216835">Microfon</translation>
+<translation id="8795809107245894196">Folosește Verificarea parolei pentru a te asigura că parolele tale sunt sigure</translation>
 <translation id="8796634520835503150">Modul de lectură este disponibil</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8803639129939845298">Securizat</translation>
@@ -2491,6 +2502,7 @@ Poți reporni oricând.</translation>
 <translation id="8879952635974818770">Conținut personalizat</translation>
 <translation id="8887595428614802520">Închide toate filele și grupurile</translation>
 <translation id="8888595487174963247">Elimină mementoul</translation>
+<translation id="8890516388109605451">Surse</translation>
 <translation id="8893208530912252670">Videoclipuri</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
 <translation id="8900845556227858314">Aplicația browser</translation>
@@ -2531,6 +2543,7 @@ Poți reporni oricând.</translation>
 <translation id="9012585441087414258">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Dacă o pagină face ceva suspect, adresele URL și fragmente din conținutul paginii sunt trimise la Navigarea sigură Google.</translation>
 <translation id="9013605037177245304">Activează notificările</translation>
 <translation id="9029650858822697271">Te-ai deconectat</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
 <translation id="9035699147763101514">Dezvoltat de Inteligența personalizată cu Gemini. Gestionează-ți opțiunile în setări.</translation>
 <translation id="9038526468059454274">Rezumă cu</translation>

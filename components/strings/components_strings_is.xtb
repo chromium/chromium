@@ -467,7 +467,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1757773103848038814">Jafnstafaletur</translation>
 <translation id="1757935267918149452">Hnappurinn „Breyta Google-aðgangsorði“, virkjaðu til að breyta aðgangsorði Google-reikningsins</translation>
 <translation id="1759776526873274358">Fylla staðfestingarkóða sem vefsvæði nota til að auka öryggi þitt út sjálfvirkt. Chrome getur fengið þessa kóða úr Gmail. <ph name="BEGIN_LINK" />Nánar um þennan eiginleika<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">Opnaðu Google-veski til að stjórna <ph name="BEGIN_LINK1" />gagna- og persónuverndarstillingum<ph name="END_LINK1" /> eða stjórna <ph name="BEGIN_LINK2" />greiðslumátum<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />pössum<ph name="END_LINK3" /> á borð við tryggðarkort og skilríki</translation>
 <translation id="1763864636252898013">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; stýrikerfi tækisins treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Prófaðu að keyra Windows-netgreiningu<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Ljósmynd (skjalapappír)</translation>
@@ -777,7 +776,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2292556288342944218">Lokað er fyrir aðgang þinn að internetinu</translation>
 <translation id="2294150501457238325">Bættu vegabréfi við á öruggan hátt</translation>
 <translation id="2295831393422400053">Kveiktu á stillingunni „Bæta leit og vefskoðun“ til að nota rithjálp</translation>
-<translation id="2296244067976588032">Aðgangslykill • iCloud Keychain</translation>
 <translation id="2296331629987861142">Dreifðu greiðslum með einföldum hætti (háð gjaldgengi, gjöld eiga við)</translation>
 <translation id="2300306941146563769">Ekki sent</translation>
 <translation id="2301064673700597535">Staðhæfingar á gildu vottorði</translation>
@@ -905,6 +903,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2493122313108999546">Stærð breytt</translation>
 <translation id="249376477913017009">Tilkynning um sjálfvirka útfyllingu úr Gmail og fleiru var opnuð</translation>
 <translation id="2495083838625180221">JSON-þáttari</translation>
+<translation id="2495909791227061512">Tengjast nálægum tækjum?</translation>
 <translation id="2496402116964818747">Þú getur breytt því hvort þú notar fingrafar til að fylla út aðgangsorð í <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skanna nýtt kort</translation>
 <translation id="2501270939904835585">Merkimiðar (satín)</translation>
@@ -913,6 +912,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2505063700931618106">Kortaupplýsingar vistaðar</translation>
 <translation id="2505268675989099013">Vernda reikning</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (skilmálar gilda)</translation>
+<translation id="251033673027346551">Farðu í Google-veski til að stjórna <ph name="BEGIN_LINK" />stillingum gagna og persónuverndar<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Ekki heimilað (sjálfgefið)</translation>
 <translation id="2512413427717747692">Hnappur til að stilla Chrome sem sjálfgefinn vafra, ýttu á Enter til að stilla Chrome sem sjálfgefinn vafra kerfisins í stillingum iOS</translation>
 <translation id="2515629240566999685">Athuga merkið á þínu svæði</translation>
@@ -1305,6 +1305,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3209034400446768650">Síðan kann að rukka gjald</translation>
 <translation id="3209071504641569648">Beiðnirnar þínar, síðutitlar og vefslóðir eru sendar til Google og hugsanlega verður farið yfir þau til að bæta ítarlega sjálfvirka útfyllingu</translation>
+<translation id="3211727636285361260">Opna <ph name="PROTOCOL" />-tengla í gegnum <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Niðurhal hafið. Dragðu ofan frá og snertu hnappinn til baka til að sjá það</translation>
 <translation id="3212581601480735796">Fylgst er með virkni þinni á <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Ekki var hægt að nota WebAuthn</translation>
@@ -2087,6 +2088,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="449126573531210296">Dulkóða samstillt aðgangsorð með Google reikningnum þínum</translation>
 <translation id="4493480324863638523">Ógild vefslóð. Verður að vera vefslóð með hefðbundinni framsetningu, t.d. http://example.com or https://example.com.</translation>
 <translation id="4497010149473852018">Tryggðarkort sem hægt er að fylla út með einni snertingu. Lyklaborð er falið.</translation>
+<translation id="4497843134750481377">Stjórna tilboðum</translation>
 <translation id="4500587658229086076">óöruggt efni</translation>
 <translation id="4501939680615452918">Leitaðu að lausum borðum á vinsælum veitingastöðum</translation>
 <translation id="4503459574136856756">Endurskrifaðu upplýsingar um mig þannig að þær hljómi faglegri</translation>
@@ -3750,6 +3752,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7347640536700429009">Nafn á korti er ógilt</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7353601530677266744">Skipanalína</translation>
+<translation id="7358055687760675498">Opna <ph name="PROTOCOL" />-tengla í gegnum <ph name="HANDLER_HOSTNAME" /> í stað <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">Lokað á auglýsingar.</translation>
 <translation id="7362281996276843968">Þessi hópur er lokaður</translation>
 <translation id="7363096869660964304">Hafðu í huga að þú verður ekki ósýnileg(ur). Huliðsstillingin felur ekki vafraferilinn þinn gagnvart vinnuveitanda þínum eða netþjónustu, eða vefsvæðin sem þú skoðar.</translation>

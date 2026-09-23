@@ -467,7 +467,6 @@
 <translation id="1757773103848038814">ຟອນ Monospace</translation>
 <translation id="1757935267918149452">ປຸ່ມປ່ຽນລະຫັດຜ່ານ Google, ເປີດນຳໃຊ້ເພື່ອປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1759776526873274358">ຕື່ມຂໍ້ມູນລະຫັດການຢັ້ງຢືນທີ່ເວັບໄຊໃຊ້ໂດຍອັດຕະໂນມັດເພື່ອເພີ່ມຄວາມປອດໄພຂອງທ່ານ. Chrome ສາມາດຮັບລະຫັດເຫຼົ່ານີ້ໄດ້ຈາກ Gmail ຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດນີ້<ph name="LINK_END" /></translation>
-<translation id="176013700366797492">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອຄວບຄຸມ <ph name="BEGIN_LINK1" />ຄ່າກຳນົດຂໍ້ມູນ ແລະ ຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ຫຼື ຈັດການ <ph name="BEGIN_LINK2" />ວິທີການຈ່າຍເງິນ<ph name="END_LINK2" /> ແລະ <ph name="BEGIN_LINK3" />ບັດ<ph name="END_LINK3" /> ເຊັ່ນ: ບັດສະມາຊິກ ແລະ ບັດປະຈຳຕົວ</translation>
 <translation id="1763864636252898013">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນໂດຍລະບົບການດໍາເນີນງານຂອງອຸປະກອນຂອງທ່ານ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">ຮູບພາບ (Archival)</translation>
@@ -777,7 +776,6 @@
 <translation id="2292556288342944218">ການເຂົ້າເຖິງອິນເຕີເນັດຂອງທ່ານຖືກບລັອກໄວ້</translation>
 <translation id="2294150501457238325">ເພີ່ມໜັງສືຜ່ານແດນຢ່າງປອດໄພ</translation>
 <translation id="2295831393422400053">ເປີດການຕັ້ງຄ່າ ປັບປຸງການຊອກຫາ ແລະ ການທ່ອງເວັບໃຫ້ດີຂຶ້ນ ເພື່ອໃຊ້ຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ</translation>
-<translation id="2296244067976588032">ກະແຈຜ່ານ • Keychain ຂອງ iCloud</translation>
 <translation id="2296331629987861142">ຜ່ອນຈ່າຍໄດ້ງ່າຍໆ (ຂຶ້ນຢູ່ກັບການມີສິດ, ມີຄ່າບໍລິການ)</translation>
 <translation id="2300306941146563769">ອັບໂຫຼດບໍ່ໄດ້</translation>
 <translation id="2301064673700597535">ຖະແຫຼງການໃບຮັບຮອງທີ່ເຂົ້າເກນ</translation>
@@ -905,6 +903,7 @@
 <translation id="2493122313108999546">ປັບຂະໜາດແລ້ວ</translation>
 <translation id="249376477913017009">ເປີດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກ Gmail ແລະ ການແຈ້ງເຕືອນເພີ່ມເຕີມແລ້ວ</translation>
 <translation id="2495083838625180221">ຕົວ​ກະ​ຈາຍ JSON</translation>
+<translation id="2495909791227061512">ເຊື່ອມຕໍ່ກັບອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງບໍ?</translation>
 <translation id="2496402116964818747">ທ່ານສາມາດປ່ຽນວ່າຈະໃຊ້ລາຍນິ້ວມືຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານຫຼືບໍ່ໃນ <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">ສະ​ແກນ​ບັດ​ໃໝ່</translation>
 <translation id="2501270939904835585">ປ້າຍ (ຊາຕິນ)</translation>
@@ -913,6 +912,7 @@
 <translation id="2505063700931618106">ບັນທຶກຂໍ້ມູນບັດແລ້ວ</translation>
 <translation id="2505268675989099013">ປົກປ້ອງບັນຊີ</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (ມີຂໍ້ກຳນົດ)</translation>
+<translation id="251033673027346551">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອຈັດການ <ph name="BEGIN_LINK" />ຄ່າກຳນົດຂໍ້ມູນ ແລະ ຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">ບໍ່ອະນຸຍາດ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2512413427717747692">ປຸ່ມຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບໃນການຕັ້ງຄ່າ iOS</translation>
 <translation id="2515629240566999685">ກຳລັງກວດເບິ່ງສັນຍານໃນພື້ນທີ່ຂອງທ່ານ</translation>
@@ -1305,6 +1305,7 @@
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
 <translation id="3209071504641569648">ລະບົບຈະສົ່ງຄຳຮ້ອງຂໍ, ຊື່ໜ້າ ແລະ URL ຂອງທ່ານໄປຫາ Google ແລະ ອາດມີການກວດສອບເພື່ອປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
+<translation id="3211727636285361260">ເປີດລິ້ງ <ph name="PROTOCOL" /> ຜ່ານ <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">ເລີ່ມດາວໂຫຼດແລ້ວ. ເພື່ອເບິ່ງ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
 <translation id="3212581601480735796">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນ <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
@@ -2087,6 +2088,7 @@
 <translation id="449126573531210296">ເຂົ້າລະຫັດລະຫັດຜ່ານທີ່ຊິ້ງຂໍ້ມູນໄວ້ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4493480324863638523">URL ໃຊ້ບໍ່ໄດ້. ຕ້ອງແມ່ນ URL ທີ່ມີຮູບແບບມາດຕະຖານ ເຊັ່ນ: http://example.com ຫຼື https://example.com.</translation>
 <translation id="4497010149473852018">ບັດສະມາຊິກທີ່ພ້ອມນຳໃຊ້ສຳລັບການຕື່ມຂໍ້ມູນເມື່ອສຳຜັດ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
+<translation id="4497843134750481377">ຈັດການຂໍ້ສະເໜີ</translation>
 <translation id="4500587658229086076">ເນື້ອຫາທີ່ບໍ່ປອດໄພ</translation>
 <translation id="4501939680615452918">ຊອກຫາໂຕະຫວ່າງຢູ່ຮ້ານອາຫານທີ່ກຳລັງມາແຮງ</translation>
 <translation id="4503459574136856756">ຂຽນຊີວະປະຫວັດຂອງຂ້ອຍຄືນໃໝ່ໃຫ້ເບິ່ງເປັນມືອາຊີບຫຼາຍຂຶ້ນ</translation>
@@ -3750,6 +3752,7 @@
 <translation id="7347640536700429009">ຊື່ຢູ່ບັດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
 <translation id="7353601530677266744">ແຖວຄໍາສັ່ງ</translation>
+<translation id="7358055687760675498">ເປີດລິ້ງ <ph name="PROTOCOL" /> ຜ່ານ <ph name="HANDLER_HOSTNAME" /> ແທນ <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="7359588939039777303">ບລັອກໂຄສະນາໄວ້ແລ້ວ.</translation>
 <translation id="7362281996276843968">ກຸ່ມນີ້ປິດຢູ່</translation>
 <translation id="7363096869660964304">ແນວໃດກໍຕາມ, ທ່ານຈະບໍ່ຫາຍໄປໃສ. ການໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຈະບໍ່ເຊື່ອງການທ່ອງເວັບຂອງທ່ານຈາກນາຍຈ້າງ, ຜູ້ໃຫ້ບໍລິການອິນເຕີເນັດ ຫຼື ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
