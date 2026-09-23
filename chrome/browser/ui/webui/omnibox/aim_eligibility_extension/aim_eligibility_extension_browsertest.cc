@@ -32,8 +32,13 @@
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
@@ -108,29 +113,105 @@ class AimEligibilityExtensionBrowserTest : public ExtensionApiTest {
   std::unique_ptr<KeyedService> CreateMockService(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
-        *profile->GetPrefs(),
-        /*template_url_service=*/nullptr,
-        /*url_loader_factory=*/nullptr,
-        /*identity_manager=*/nullptr);
+    auto service =
+        std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+            *profile->GetPrefs(),
+            /*template_url_service=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            /*identity_manager=*/nullptr);
+    ON_CALL(*service, IsServerEligibilityEnabled())
+        .WillByDefault(testing::Return(false));
+    ON_CALL(*service, IsAimEligible())
+        .WillByDefault(testing::ReturnPointee(&aim_eligible_));
+    ON_CALL(*service, GetMostRecentResponse())
+        .WillByDefault(testing::ReturnRef(default_response_));
+    return service;
   }
 
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool aim_eligible_ = true;
+  omnibox::AimEligibilityResponse default_response_;
 };
+
+// Tests multiple scenarios of navigating to target URL and validating the
+// expected virtual and actual URL.
+IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, NavigationURLs) {
+  const GURL extension_url = Extension::ResolveExtensionURL(
+      Extension::GetBaseURLFromExtensionId(
+          extension_misc::kAimEligibilityExtensionId),
+      "aim_eligibility.html");
+  const GURL chrome_url("chrome://aim/");
+
+  // Mapped root path: chrome://aim/ loads /aim_eligibility.html and displays
+  // chrome://aim/.
+  // `GetLastCommittedURL()` returns the user-visible virtual URL (`chrome://`),
+  // whereas `GetLastCommittedEntry()->GetURL()` returns the underlying
+  // `chrome-extension://` URL that was actually loaded after the
+  // `BrowserURLHandler` rewrite.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), chrome_url, chrome_url));
+  EXPECT_EQ(chrome_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+
+  // Mapped sub-path: chrome://aim/eligibility loads /aim_eligibility.html.
+  // Reverse handler canonicalizes display URL to chrome://aim/.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), GURL("chrome://aim/eligibility"), chrome_url));
+  EXPECT_EQ(chrome_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+
+  // Unmapped sub-path fallback: chrome://aim/aim_eligibility.html loads
+  // /aim_eligibility.html. Reverse handler canonicalizes display URL to
+  // chrome://aim/.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), GURL("chrome://aim/aim_eligibility.html"), chrome_url));
+  EXPECT_EQ(chrome_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+
+  // Direct browser-initiated extension URL: no chrome:// rewrite.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), extension_url, extension_url));
+  EXPECT_EQ(extension_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+
+  // Same-document navigation (e.g. history.pushState with hash) triggers
+  // ReverseURLRewrite and preserves the chrome:// virtual URL.
+  ASSERT_TRUE(NavigateToURL(web_contents(), chrome_url));
+  {
+    content::TestNavigationObserver same_doc_observer(web_contents());
+    ASSERT_TRUE(content::ExecJs(web_contents(),
+                                "history.pushState({}, '', '#section');"));
+    same_doc_observer.Wait();
+    EXPECT_EQ(GURL("chrome://aim/#section"),
+              web_contents()->GetLastCommittedURL());
+    EXPECT_EQ(
+        extension_url.Resolve("#section"),
+        web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+  }
+
+  // Cross-document renderer-initiated relative navigation resolves against the
+  // underlying chrome-extension:// document origin.
+  ASSERT_TRUE(NavigateToURL(web_contents(), chrome_url));
+  {
+    content::TestNavigationObserver cross_doc_observer(web_contents());
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(), "window.location.href = '/aim_eligibility.html';"));
+    cross_doc_observer.Wait();
+    EXPECT_EQ(extension_url, web_contents()->GetLastCommittedURL());
+    EXPECT_EQ(
+        extension_url,
+        web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+  }
+}
 
 // Tests that multiple page handler instances can exist and that disconnecting
 // a pipe cleans up the handler in the bridge.
 IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
                        PageHandlersAndDisconnect) {
-  auto* mock_service = static_cast<MockAimEligibilityService*>(
-      AimEligibilityServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
-
   auto* bridge = AimEligibilityExtensionBridge::Get(profile());
   ASSERT_TRUE(bridge);
   auto& factory = bridge->service_worker_page_handler_factory();
@@ -178,11 +259,6 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
 IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, UiParity) {
   auto* mock_service = static_cast<MockAimEligibilityService*>(
       AimEligibilityServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(false));
-  aim_eligible_ = true;
-  EXPECT_CALL(*mock_service, IsAimEligible())
-      .WillRepeatedly(testing::ReturnPointee(&aim_eligible_));
 
   // Intercept the registration of eligibility changed callbacks to invoke them
   // manually.
@@ -240,13 +316,6 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, UiParity) {
 
 IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
                        LoadTimeDataInterception) {
-  auto* mock_service = static_cast<MockAimEligibilityService*>(
-      AimEligibilityServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
-
   // Verify the component extension is loaded.
   auto* registry = ExtensionRegistry::Get(profile());
   const Extension* extension = registry->enabled_extensions().GetByID(
@@ -333,13 +402,6 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
                        MAYBE_JavaScriptErrorReportingCapturesConsoleError) {
   auto mock_processor = base::MakeRefCounted<MockJsErrorReportProcessor>();
   mock_processor->SetAsDefault();
-
-  auto* mock_service = static_cast<MockAimEligibilityService*>(
-      AimEligibilityServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
 
   auto* registry = ExtensionRegistry::Get(profile());
   const Extension* extension = registry->enabled_extensions().GetByID(

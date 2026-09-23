@@ -2821,7 +2821,13 @@ TEST_F(ChromeContentBrowserClientUnboundedElementTest,
   NavigateAndCommit(GURL("https://example.test/page"));
   EXPECT_FALSE(client.IsUnboundedElementAllowed(main_rfh()));
 
-  const extensions::ExtensionId kExtensionId = "test_extension_id";
+  scoped_refptr<const extensions::Extension> component_extension =
+      extensions::ExtensionBuilder("Component Extension")
+          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
+          .Build();
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(
+      component_extension);
+  const extensions::ExtensionId kExtensionId = component_extension->id();
 
   content::RenderFrameHostTester::For(main_rfh())
       ->InitializeRenderFrameIfNeeded();
@@ -2831,8 +2837,8 @@ TEST_F(ChromeContentBrowserClientUnboundedElementTest,
       ->InitializeRenderFrameIfNeeded();
   content::OverrideLastCommittedOrigin(
       extension_rfh,
-      url::Origin::Create(GURL(std::string("chrome-extension://") +
-                               kExtensionId + "/index.html")));
+      url::Origin::Create(
+          component_extension->ResolveExtensionURL("index.html")));
 
   EXPECT_FALSE(client.IsUnboundedElementAllowed(extension_rfh));
 

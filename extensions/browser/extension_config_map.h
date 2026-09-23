@@ -8,7 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -16,6 +19,8 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/template_expressions.h"
+
+class GURL;
 
 namespace content {
 class BrowserContext;
@@ -55,6 +60,31 @@ class ExtensionConfigProvider {
   std::string GetDynamicResourceContent(const std::string& path,
                                         content::BrowserContext& context);
 
+  // Returns a custom chrome:// host string (e.g. "aim") if this component
+  // extension opts in to handling chrome://<host> navigations.
+  virtual std::string_view GetChromeURLHost() const;
+
+  // Sets the default extension resource path to load when navigating to the
+  // root chrome://<host>/ URL (e.g., "/aim_eligibility.html"). `resource_path`
+  // must start with "/".
+  void SetDefaultResource(std::string_view resource_path);
+
+  // Maps a chrome:// `url_path` to an extension `resource_path` (e.g.,
+  // AddResourcePath("/eligibility", "/aim_eligibility.html")). Both `url_path`
+  // and `resource_path` must start with "/".
+  void AddResourcePath(std::string_view url_path,
+                       std::string_view resource_path);
+
+  // Returns the extension resource path mapped to `url_path`, falling back to
+  // `url_path` itself if no mapping is registered.
+  std::string_view GetResourcePathForUrlPath(std::string_view url_path) const;
+
+  // Returns the user-visible chrome:// URL path mapped to `resource_path`
+  // (e.g., "/" for the default resource, or "/eligibility" for a mapped URL
+  // path), falling back to `resource_path` itself if no mapping is registered.
+  std::string_view GetUrlPathForResourcePath(
+      std::string_view resource_path) const;
+
   // Returns true if JS error reporting is enabled for this extension.
   virtual bool IsJsErrorReportingEnabled() const;
 
@@ -69,6 +99,8 @@ class ExtensionConfigProvider {
  private:
   const ExtensionId extension_id_;
   std::optional<ui::TemplateReplacements> template_replacements_;
+  base::flat_map<std::string, std::string> path_map_;
+  base::flat_map<std::string, std::string> reverse_path_map_;
 };
 
 // A registry for component extension configuration providers. It decouples the
@@ -77,7 +109,17 @@ class ExtensionConfigProvider {
 // (`ExtensionConfigProvider`).
 class ExtensionConfigMap : public KeyedService {
  public:
-  ExtensionConfigMap();
+  // Forward and reverse `content::BrowserURLHandler` pairs.
+  // `HandleChromeURL` rewrites chrome://<host>/<url_path> navigations to the
+  // corresponding chrome-extension://<extension_id>/<resource_path> URL.
+  // `HandleChromeURLReverse` converts
+  // chrome-extension://<extension_id>/<resource_path> URLs back to
+  // user-visible chrome://<host>/<url_path> URLs.
+  static bool HandleChromeURL(GURL* url, content::BrowserContext* context);
+  static bool HandleChromeURLReverse(GURL* url,
+                                     content::BrowserContext* context);
+
+  explicit ExtensionConfigMap(content::BrowserContext& browser_context);
   ExtensionConfigMap(const ExtensionConfigMap&) = delete;
   ExtensionConfigMap& operator=(const ExtensionConfigMap&) = delete;
   ~ExtensionConfigMap() override;
@@ -93,8 +135,16 @@ class ExtensionConfigMap : public KeyedService {
   ExtensionConfigProvider* GetConfigProvider(const Extension& extension);
 
   // Returns the ExtensionConfigProvider registered for `extension_id`, or
-  // nullptr if no provider is registered.
-  ExtensionConfigProvider* GetConfigProvider(const ExtensionId& extension_id);
+  // nullptr if no provider is registered or if the extension is not enabled in
+  // `ExtensionRegistry` as a component extension.
+  ExtensionConfigProvider* GetConfigProviderByExtensionId(
+      std::string_view extension_id);
+
+  // Returns the ExtensionConfigProvider registered for `chrome_url_host`, or
+  // nullptr if no provider is registered for that host or if the corresponding
+  // extension is not enabled in `ExtensionRegistry` as a component extension.
+  ExtensionConfigProvider* GetConfigProviderByChromeURLHost(
+      std::string_view chrome_url_host);
 
   // Returns true if the extension with `extension_id` is allowed to use the
   // Unbounded Element API.
@@ -103,9 +153,12 @@ class ExtensionConfigMap : public KeyedService {
   void ClearProvidersForTesting();
 
  private:
+  const raw_ref<content::BrowserContext> browser_context_;
   SEQUENCE_CHECKER(sequence_checker_);
   absl::flat_hash_map<ExtensionId, std::unique_ptr<ExtensionConfigProvider>>
-      providers_ GUARDED_BY_CONTEXT(sequence_checker_);
+      providers_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_map<std::string, ExtensionId> chrome_url_host_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace extensions

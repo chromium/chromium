@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_config_map.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 namespace extensions {
@@ -15,7 +16,9 @@ ExtensionConfigMapFactory::ExtensionConfigMapFactory(
     base::PassKey<ExtensionConfigMapFactory> pass_key)
     : BrowserContextKeyedServiceFactory(
           "ExtensionConfigMap",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(ExtensionRegistryFactory::GetInstance());
+}
 
 ExtensionConfigMapFactory::~ExtensionConfigMapFactory() = default;
 
@@ -48,7 +51,7 @@ content::BrowserContext* ExtensionConfigMapFactory::GetBrowserContextToUse(
 std::unique_ptr<KeyedService>
 ExtensionConfigMapFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ExtensionConfigMap>();
+  return std::make_unique<ExtensionConfigMap>(*context);
 }
 
 }  // namespace extensions

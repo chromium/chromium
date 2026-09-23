@@ -48,6 +48,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/extension_config_map.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_webkit_preferences.h"
@@ -859,6 +860,8 @@ void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(
   handler->AddHandlerPair(
       BrowserURLHandler::null_handler(),
       &ExtensionUrlOverrides::HandleChromeURLOverrideReverse);
+  handler->AddHandlerPair(&ExtensionConfigMap::HandleChromeURL,
+                          &ExtensionConfigMap::HandleChromeURLReverse);
 }
 
 void ChromeContentBrowserClientExtensionsPart::

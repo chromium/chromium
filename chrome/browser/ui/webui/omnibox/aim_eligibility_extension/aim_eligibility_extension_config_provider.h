@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_AIM_ELIGIBILITY_EXTENSION_AIM_ELIGIBILITY_EXTENSION_CONFIG_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_AIM_ELIGIBILITY_EXTENSION_AIM_ELIGIBILITY_EXTENSION_CONFIG_PROVIDER_H_
 
+#include <string_view>
+
 #include "extensions/browser/extension_config_map.h"
 
 namespace content {
@@ -21,6 +23,7 @@ class AimEligibilityExtensionConfigProvider
   ~AimEligibilityExtensionConfigProvider() override;
 
   base::DictValue GetLoadTimeData(content::BrowserContext& context) override;
+  std::string_view GetChromeURLHost() const override;
   bool IsJsErrorReportingEnabled() const override;
   bool ShouldCrashOnJsErrorInDevelopmentBuild() const override;
 };

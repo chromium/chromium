@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_config_provider.h"
 
 #include <memory>
+#include <string_view>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
@@ -23,7 +24,10 @@ void AimEligibilityExtensionConfigProvider::Register(
 }
 
 AimEligibilityExtensionConfigProvider::AimEligibilityExtensionConfigProvider()
-    : ExtensionConfigProvider(extension_misc::kAimEligibilityExtensionId) {}
+    : ExtensionConfigProvider(extension_misc::kAimEligibilityExtensionId) {
+  SetDefaultResource("/aim_eligibility.html");
+  AddResourcePath("/eligibility", "/aim_eligibility.html");
+}
 
 AimEligibilityExtensionConfigProvider::
     ~AimEligibilityExtensionConfigProvider() = default;
@@ -32,6 +36,11 @@ base::DictValue AimEligibilityExtensionConfigProvider::GetLoadTimeData(
     content::BrowserContext& context) {
   return OmniboxUI::GetAimEligibilityLoadTimeData(
       Profile::FromBrowserContext(&context));
+}
+
+std::string_view AimEligibilityExtensionConfigProvider::GetChromeURLHost()
+    const {
+  return "aim";
 }
 
 bool AimEligibilityExtensionConfigProvider::IsJsErrorReportingEnabled() const {
