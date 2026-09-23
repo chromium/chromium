@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",

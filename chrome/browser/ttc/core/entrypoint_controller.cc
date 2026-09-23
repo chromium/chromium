@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #endif
 
@@ -69,8 +69,12 @@ void EntrypointController::UpdateUi(ServiceState state) {
 
 void EntrypointController::UpdateToolbarButton(ServiceState state) {
 #if !BUILDFLAG(IS_ANDROID)
+  // Driven by OnTtcStateChanged(), which can fire while the window is going
+  // away.
+  BrowserWindow* const browser_window =
+      BrowserWindow::FromBrowser(&browser_.get());
   PinnedToolbarActions* const pinned_actions =
-      browser_->GetFeatures().pinned_toolbar_actions();
+      browser_window ? browser_window->GetPinnedToolbarActions() : nullptr;
   if (!pinned_actions) {
     return;
   }

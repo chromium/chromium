@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_activation_tracker.h"
@@ -195,7 +195,7 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
   CHECK(!base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   CHECK(browser);
   PinnedToolbarActions* controller =
-      browser->GetFeatures().pinned_toolbar_actions();
+      BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions();
   CHECK(controller);
 
   controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);

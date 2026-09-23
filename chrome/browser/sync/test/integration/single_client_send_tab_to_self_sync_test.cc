@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -477,7 +476,7 @@ void SimulateOpeningReceivedTab(
 
   if (!controller->IsBubbleShowing()) {
     PinnedToolbarActions* pinned_controller =
-        browser->GetFeatures().pinned_toolbar_actions();
+        BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions();
     pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
                                                       true);
     auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);

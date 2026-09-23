@@ -8,7 +8,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -48,8 +48,8 @@ class EntrypointControllerInteractiveTest
       bool expected_popped_out) {
     return CheckResult(
         [target_browser]() {
-          return CHECK_DEREF(
-                     target_browser->GetFeatures().pinned_toolbar_actions())
+          return CHECK_DEREF(BrowserWindow::FromBrowser(target_browser)
+                                 ->GetPinnedToolbarActions())
               .IsActionPoppedOut(kActionTtcToolbar);
         },
         expected_popped_out);
