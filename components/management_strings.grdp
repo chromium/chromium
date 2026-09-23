@@ -469,6 +469,14 @@
     </message>
   </if>
 
+  <!-- Strings related to Secure Gateway -->
+  <message name="IDS_MANAGEMENT_SECURE_GATEWAY_TITLE" desc="Title of the Secure Gateway disclosure section">
+    Secure gateway
+  </message>
+  <message name="IDS_MANAGEMENT_SECURE_GATEWAY_DISCLOSURE" desc="Message stating that administrators configured the secure gateway connector to protect access to organization private web applications.">
+    Your administrator configured the secure gateway connector to protect access to your organization’s private web applications. It may use data from your work profile to verify access.
+  </message>
+
   <!-- Strings related to Chrome Enterprise Connectors -->
   <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Connectors section of the page" formatter_data="android_java">
     Chrome Enterprise Connectors

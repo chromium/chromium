@@ -68,8 +68,19 @@ export function getHtml(this: ManagementUiElement) {
         <section>
           <h3 class="cr-title-text">$i18n{threatProtectionTitle}</h3>
           <div class="subtitle">${this.threatProtectionInfo_!.description}</div>
+          ${this.threatProtectionInfo_!.showSecureGatewayDisclosure ? html`
+            <div class="subtitle">
+              <div class="secure-gateway-title">
+                $i18n{secureGatewayTitle}
+              </div>
+              <div class="secure-gateway-description">
+                $i18n{secureGatewayDisclosure}
+              </div>
+            </div>
+          ` : ''}
           <!-- Wide Screen View: Semantic Table -->
-          <table class="content-indented wide-screen-only">
+          <table class="content-indented wide-screen-only"
+              ?hidden="${!this.threatProtectionInfo_!.info.length}">
             <tr>
               <th class="protection-name">$i18n{connectorEvent}</th>
               <th class="protection-permissions">
@@ -87,14 +98,17 @@ export function getHtml(this: ManagementUiElement) {
           </table>
 
           <!-- Small Screen View: Semantic Stacked List -->
-          <ul class="content-indented small-screen-only" role="list">
+          <ul class="content-indented small-screen-only" role="list"
+              ?hidden="${!this.threatProtectionInfo_!.info.length}">
             ${this.threatProtectionInfo_!.info.map(item => html`
               <li class="connector-item" role="listitem">
                 <div class="connector-item-title">
-                  <strong>$i18n{connectorEvent}:</strong> ${this.i18n(item.title)}
+                  <strong>$i18n{connectorEvent}:</strong>
+                  ${this.i18n(item.title)}
                 </div>
                 <div class="connector-item-value">
-                  <strong>$i18n{connectorVisibleData}:</strong> ${this.i18n(item.permission)}
+                  <strong>$i18n{connectorVisibleData}:</strong>
+                  ${this.i18n(item.permission)}
                 </div>
               </li>
             `)}

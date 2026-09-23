@@ -244,6 +244,8 @@ void ManagementUI::GetLocalizedStrings(
       {kThreatProtectionTitle, IDS_MANAGEMENT_THREAT_PROTECTION},
       {"connectorEvent", IDS_MANAGEMENT_CONNECTORS_EVENT},
       {"connectorVisibleData", IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA},
+      {"secureGatewayTitle", IDS_MANAGEMENT_SECURE_GATEWAY_TITLE},
+      {"secureGatewayDisclosure", IDS_MANAGEMENT_SECURE_GATEWAY_DISCLOSURE},
       {kManagementEnterpriseReportingEvent,
        IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT},
       {kManagementEnterpriseReportingVisibleData,

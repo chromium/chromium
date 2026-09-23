@@ -65,6 +65,8 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/net/core/features.h"
+#include "components/enterprise/net/core/prefs.h"
 #include "components/safe_browsing/core/common/features.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
@@ -249,6 +251,22 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationForPolicy(
 bool IsBrowserManaged(Profile* profile) {
   DCHECK(profile);
   return policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged();
+}
+
+bool IsSecureGatewayDisclosureRequired(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(profile);
+
+  if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
+    return false;
+  }
+
+  return !profile->GetPrefs()
+              ->GetList(enterprise_net::kProxyProvisioningDomains)
+              .empty();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::string GetDomainFromEmail(std::string_view email) {

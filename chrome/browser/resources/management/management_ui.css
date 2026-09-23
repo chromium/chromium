@@ -128,6 +128,15 @@ th {
   margin-top: 16px;
 }
 
+.secure-gateway-title {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+}
+
+.secure-gateway-description {
+  margin-top: 4px;
+}
+
 section {
   align-items: flex-start;
   display: flex;

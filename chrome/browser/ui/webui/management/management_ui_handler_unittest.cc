@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "components/enterprise/browser/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -33,10 +32,13 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/prefs.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/net/core/features.h"
+#include "components/enterprise/net/core/prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -2058,6 +2060,36 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ManagementUIHandlerTests, ThreatReportingInfo_SecureGateway) {
+  ResetTestConfig();
+  ASSERT_TRUE(SetUpProfileAndHandler());
+
+  // Initially secure gateway disclosure is false.
+  auto info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+
+  // When kProxyProvisioningDomains is set, but the feature is disabled,
+  // showSecureGatewayDisclosure remains false.
+  base::ListValue domains;
+  domains.Append("example.com");
+  profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                std::move(domains));
+
+  info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_FALSE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+
+  // When the feature is enabled and kProxyProvisioningDomains is set,
+  // showSecureGatewayDisclosure is true.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_net::kEnableDynamicRouteFetching);
+
+  info = handler_.GetThreatProtectionInfo(profile_);
+  EXPECT_TRUE(info.FindBool("showSecureGatewayDisclosure").value_or(false));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {

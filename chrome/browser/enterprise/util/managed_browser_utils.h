@@ -57,6 +57,9 @@ enum class EnterpriseLogoUrlScope {
 // if `profile` is an enterprise profile.
 bool IsBrowserManaged(Profile* profile);
 
+// Returns true if the secure gateway privacy disclosure should be displayed.
+bool IsSecureGatewayDisclosureRequired(Profile* profile);
+
 // Extracts the domain from provided |email| if it's an email address and
 // returns an empty string, otherwise.
 std::string GetDomainFromEmail(std::string_view email);
