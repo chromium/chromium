@@ -38,7 +38,7 @@ TEST_F(PerContextDataTest, ObjectTemplatesClearedOnDetach) {
   v8::HandleScope handle_scope(instance_->isolate());
   v8::Local<v8::Context> context = v8::Context::New(
       instance_->isolate(), nullptr, v8::Local<v8::ObjectTemplate>());
-  WrapperInfo info = {{kEmbedderNativeGin}, kGinPerContextData};
+  WrapperInfo info = {{kEmbedderNativeGin}, kTestObject};
   PerContextData* per_context_data = nullptr;
   {
     ContextHolder context_holder(instance_->isolate());

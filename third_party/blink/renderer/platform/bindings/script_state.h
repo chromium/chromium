@@ -265,8 +265,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
       static_cast<int>(gin::kEmbedderBlink);
 
   static constexpr v8::CppHeapPointerTag kTypeTag =
-      static_cast<v8::CppHeapPointerTag>(
-          CppHeapPointerTag::kScriptStateTag);
+      static_cast<v8::CppHeapPointerTag>(CppHeapExternalTag::kScriptStateTag);
 
   // For accessing information about the last script compilation via
   // internals.idl.
