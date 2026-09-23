@@ -103,8 +103,11 @@ source_set("host_main_headers") {
     "//remoting/host/webauthn:remote_webauthn_main_headers",
     "//remoting/host/win:remoting_console",
     "//remoting/host/win:remoting_core",
+    "//remoting/host/win:remoting_curtain",
     "//remoting/host/win:remoting_desktop",
     "//remoting/host/win:remoting_me2me_host",
+    "//remoting/host/win:remoting_network",
+    "//remoting/host/win:remoting_peer_connection",
   ]
   sources = [ "host_main.h" ]
   public_deps = [ "//remoting/base:remoting_export" ]

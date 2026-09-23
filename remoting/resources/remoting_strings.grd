@@ -775,6 +775,17 @@
       <message name="IDS_REMOTING_REMOTE_WEBAUTHN_DESCRIPTION" desc="The file description specified in the version information of remote_webauthn.exe.">
         Web Authentication Remoting Process
       </message>
+      <if expr="is_win">
+        <message name="IDS_REMOTING_NETWORK_DESCRIPTION" desc="The file description specified in the version information of remoting_network.exe." translateable="false">
+          Network Process
+        </message>
+        <message name="IDS_REMOTING_PEER_CONNECTION_DESCRIPTION" desc="The file description specified in the version information of remoting_peer_connection.exe." translateable="false">
+          Peer Connection Process
+        </message>
+        <message name="IDS_REMOTING_CURTAIN_DESCRIPTION" desc="The file description specified in the version information of remoting_curtain.exe." translateable="false">
+          Curtain Mode Process
+        </message>
+      </if>
       <message name="IDS_HOST_CATEGORY" desc="Name of the message category assigned to all messages written to the EventLog by Chromoting Host.">
         Host
       </message>

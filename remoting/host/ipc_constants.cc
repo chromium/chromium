@@ -75,8 +75,15 @@ mojo::NamedPlatformChannel::ServerName GetServerName(std::string_view name) {
 const base::FilePath::CharType kHostBinaryName[] =
     FILE_PATH_LITERAL("remoting_host");
 
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kDesktopBinaryName[] =
     FILE_PATH_LITERAL("remoting_desktop");
+const base::FilePath::CharType kNetworkBinaryName[] =
+    FILE_PATH_LITERAL("remoting_network");
+
+const base::FilePath::CharType kPeerConnectionBinaryName[] =
+    FILE_PATH_LITERAL("remoting_peer_connection");
+#endif  // BUILDFLAG(IS_WIN)
 
 const uint64_t kChromotingHostServicesMessagePipeId = 0u;
 

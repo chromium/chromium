@@ -247,14 +247,14 @@ std::unique_ptr<DesktopSession> DaemonProcessWin::DoCreateDesktopSession(
 void DaemonProcessWin::LaunchNetworkProcess() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  // Construct the host binary name.
-  base::FilePath host_binary;
-  if (!GetInstalledBinaryPath(kHostBinaryName, &host_binary)) {
+  // Construct the network binary name.
+  base::FilePath network_binary;
+  if (!GetInstalledBinaryPath(kNetworkBinaryName, &network_binary)) {
     Stop(kInitializationFailed);
     return;
   }
 
-  std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
+  auto target = std::make_unique<base::CommandLine>(network_binary);
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeNetwork);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);
@@ -275,13 +275,14 @@ std::unique_ptr<WorkerProcessLauncher::Delegate>
 DaemonProcessWin::CreatePeerConnectionProcessLauncherDelegate() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  base::FilePath host_binary;
-  if (!GetInstalledBinaryPath(kHostBinaryName, &host_binary)) {
+  base::FilePath peer_connection_binary;
+  if (!GetInstalledBinaryPath(kPeerConnectionBinaryName,
+                              &peer_connection_binary)) {
     LOG(ERROR) << "Failed to get installed binary path for PC process.";
     return nullptr;
   }
 
-  std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
+  auto target = std::make_unique<base::CommandLine>(peer_connection_binary);
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypePeerConnection);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);

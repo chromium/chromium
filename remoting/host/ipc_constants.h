@@ -17,8 +17,15 @@ namespace remoting {
 // Name of the host process binary.
 extern const base::FilePath::CharType kHostBinaryName[];
 
+#if BUILDFLAG(IS_WIN)
 // Name of the desktop process binary.
 extern const base::FilePath::CharType kDesktopBinaryName[];
+// Name of the network process binary.
+extern const base::FilePath::CharType kNetworkBinaryName[];
+
+// Name of the peer connection process binary.
+extern const base::FilePath::CharType kPeerConnectionBinaryName[];
+#endif  // BUILDFLAG(IS_WIN)
 
 // Message pipe ID used for ChromotingHostServices.
 extern const uint64_t kChromotingHostServicesMessagePipeId;

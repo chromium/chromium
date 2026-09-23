@@ -30,8 +30,11 @@ Most Me2Me processes are launched via a single binary (e.g.,
     *   *Purpose:* Default mode for Mac/Linux (official).
     *   *Entry:* `remoting/host/remoting_me2me_host.cc`
 *   **`network`**
-    *   *Purpose:* Handles network I/O and WebRTC.
+    *   *Purpose:* Handles host signaling, authentication, and session orchestration.
     *   *Entry:* `remoting/host/remoting_me2me_host.cc`
+*   **`peer_connection`**
+    *   *Purpose:* Sandboxed WebRTC transport, media encoding, and data channels.
+    *   *Entry:* `remoting/host/peer_connection_process_main.cc`
 *   **`daemon`**
     *   *Purpose:* Privileged process (SYSTEM/Root).
     *   *Entry:* `remoting/host/win/host_service.cc` (Win),

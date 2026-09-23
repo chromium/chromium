@@ -47,6 +47,9 @@
   <?define CoreBinary = "remoting_core.dll" ?>
   <?define HostBinary = "remoting_host.exe" ?>
   <?define RemoteSecurityKeyBinary = "remote_security_key.exe" ?>
+  <?define NetworkBinary = "remoting_network.exe" ?>
+  <?define PeerConnectionBinary = "remoting_peer_connection.exe" ?>
+  <?define CurtainBinary = "remoting_curtain.exe" ?>
 
   <?define ChromotingTypelib = "{b6396c45-b0cc-456b-9f49-f12964ee6df4}" ?>
 
@@ -383,14 +386,46 @@
                         Remove="uninstall"
                         Name="$(var.ServiceName)"
                         Wait="yes" />
+      </Component>
+
+      <Component Id="remoting_network" Guid="*">
+        <File Id="$(var.NetworkBinary)"
+              DiskId="1"
+              KeyPath="yes"
+              Name="$(var.NetworkBinary)"
+              Vital="yes"/>
 
         <fire:FirewallException xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension"
-                                Id="me2me_firewall_exception"
+                                Id="me2me_network_firewall_exception"
                                 IgnoreFailure="yes"
                                 Name="$(var.FirewallName)"
                                 Profile="all"
-                                Program="[#remoting_host.exe]"
+                                Program="[#$(var.NetworkBinary)]"
                                 Scope="any" />
+      </Component>
+
+      <Component Id="remoting_peer_connection" Guid="*">
+        <File Id="$(var.PeerConnectionBinary)"
+              DiskId="1"
+              KeyPath="yes"
+              Name="$(var.PeerConnectionBinary)"
+              Vital="yes"/>
+
+        <fire:FirewallException xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension"
+                                Id="me2me_peer_connection_firewall_exception"
+                                IgnoreFailure="yes"
+                                Name="$(var.FirewallName)"
+                                Profile="all"
+                                Program="[#$(var.PeerConnectionBinary)]"
+                                Scope="any" />
+      </Component>
+
+      <Component Id="remoting_curtain" Guid="*">
+        <File Id="$(var.CurtainBinary)"
+              DiskId="1"
+              KeyPath="yes"
+              Name="$(var.CurtainBinary)"
+              Vital="yes"/>
       </Component>
 
       <Component Id="remote_security_key" Guid="*">
@@ -460,7 +495,7 @@
 
               <RegistryKey Key="LocalServer32" Action="create">
                 <RegistryValue Type="string"
-                               Value="[binaries]$(var.HostBinary) --type=rdp_desktop_session"/>
+                               Value="&quot;[binaries]$(var.CurtainBinary)&quot; --type=rdp_desktop_session"/>
               </RegistryKey>
 
               <RegistryKey Key="TypeLib" Action="create">
@@ -835,8 +870,11 @@
       <ComponentRef Id="remoting_native_messaging_host"/>
       <ComponentRef Id="remoting_core"/>
       <ComponentRef Id="remoting_crashpad_handler"/>
+      <ComponentRef Id="remoting_curtain"/>
       <ComponentRef Id="remoting_desktop"/>
       <ComponentRef Id="remoting_host"/>
+      <ComponentRef Id="remoting_network"/>
+      <ComponentRef Id="remoting_peer_connection"/>
       <ComponentRef Id="remoting_lib"/>
       <ComponentRef Id="remoting_logging_registry"/>
       <ComponentRef Id="remoting_pairing_registry"/>

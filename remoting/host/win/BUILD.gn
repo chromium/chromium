@@ -14,9 +14,12 @@ group("all") {
 
   deps = [
     ":remoting_console",
+    ":remoting_curtain",
     ":remoting_desktop",
     ":remoting_me2me_host",
     ":remoting_native_messaging_host",
+    ":remoting_network",
+    ":remoting_peer_connection",
     "//remoting/host/security_key:remote_security_key",
   ]
 }
@@ -366,37 +369,59 @@ executable("remoting_console") {
   }
 }
 
-executable("remoting_me2me_host") {
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/win:windowed",
-    "//remoting/build/config:remoting_me2me_host",
-  ]
+template("remoting_me2me_host_executable") {
+  executable(target_name) {
+    forward_variables_from(invoker, [ "output_name" ])
 
-  defines = host_predefines + [ "REMOTING_HOST_BINARY=BINARY_HOST_ME2ME" ]
-
-  deps = [
-    ":dpi_aware_exe_manifest",
-    ":remoting_core",
-    ":remoting_windows_resources",
-    "//base:clang_profiling_buildflags",
-    "//remoting/host:host_main_headers",
-  ]
-
-  sources = [
-    "$root_gen_dir/remoting/version.rc",
-    "entry_point.cc",
-  ]
-
-  output_name = "remoting_host"
-
-  if (!is_asan && !use_clang_profiling) {
-    no_default_deps = true
-    ldflags = [
-      "/ENTRY:HostEntryPoint",
-      # "/NODEFAULTLIB",
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/win:windowed",
+      "//remoting/build/config:remoting_me2me_host",
     ]
+
+    defines = host_predefines + [ "REMOTING_HOST_BINARY=" + invoker.binary_id ]
+
+    deps = [
+      ":dpi_aware_exe_manifest",
+      ":remoting_core",
+      ":remoting_windows_resources",
+      "//base:clang_profiling_buildflags",
+      "//remoting/host:host_main_headers",
+    ]
+
+    sources = [
+      "$root_gen_dir/remoting/version.rc",
+      "entry_point.cc",
+    ]
+
+    if (!is_asan && !use_clang_profiling) {
+      no_default_deps = true
+      ldflags = [
+        "/ENTRY:HostEntryPoint",
+        # "/NODEFAULTLIB",
+      ]
+    }
   }
+}
+
+remoting_me2me_host_executable("remoting_me2me_host") {
+  binary_id = "BINARY_HOST_ME2ME"
+  output_name = "remoting_host"
+}
+
+remoting_me2me_host_executable("remoting_network") {
+  binary_id = "BINARY_HOST_NETWORK"
+  output_name = "remoting_network"
+}
+
+remoting_me2me_host_executable("remoting_peer_connection") {
+  binary_id = "BINARY_HOST_PEER_CONNECTION"
+  output_name = "remoting_peer_connection"
+}
+
+remoting_me2me_host_executable("remoting_curtain") {
+  binary_id = "BINARY_HOST_CURTAIN"
+  output_name = "remoting_curtain"
 }
 
 config("rdp_desktop_session_clsid_config") {

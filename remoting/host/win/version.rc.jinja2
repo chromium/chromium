@@ -97,6 +97,18 @@ BEGIN
       VALUE "FileDescription", "{% trans %}REMOTING_CRASHPAD_HANDLER_DESCRIPTION{% endtrans %}"
       VALUE "InternalName", "remoting_crashpad_handler.exe"
       VALUE "OriginalFilename", "remoting_crashpad_handler.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_HOST_NETWORK)
+      VALUE "FileDescription", "{% trans %}REMOTING_NETWORK_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remoting_network.exe"
+      VALUE "OriginalFilename", "remoting_network.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_HOST_PEER_CONNECTION)
+      VALUE "FileDescription", "{% trans %}REMOTING_PEER_CONNECTION_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remoting_peer_connection.exe"
+      VALUE "OriginalFilename", "remoting_peer_connection.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_HOST_CURTAIN)
+      VALUE "FileDescription", "{% trans %}REMOTING_CURTAIN_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remoting_curtain.exe"
+      VALUE "OriginalFilename", "remoting_curtain.exe"
 #else
 #error REMOTING_HOST_BINARY must be set to one of BINARY_XXX values.
 #endif

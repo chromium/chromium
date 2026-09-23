@@ -90,11 +90,12 @@ Our team strongly prefers small, easily reviewable CLs (Changelists).
 ## Automated Review via MAGI Protocol
 
 Before finalizing any task or uploading a CL in `//remoting`, you **MUST**
-invoke the `magi-mode` skill (defined in `//agents/skills/magi-mode/SKILL.md`)
-to run a multi-agent verification loop.
+invoke the MAGI multi-agent engineering workflow skill (defined in
+`//agents/skills/multi-agent-engineering-workflow/SKILL.md`) to run a
+multi-agent verification loop.
 
-*   **Execution:** Activate the `magi-mode` skill. The protocol handles review
-    and verification via its specialized sub-agents.
+*   **Execution:** Activate the `multi-agent-engineering-workflow` skill. The
+    protocol handles review and verification via its specialized sub-agents.
 *   **Domain-Specific Review Criteria:** When initiating the review, you MUST
     instruct the MAGI agents to include the following `//remoting`-specific
     review criteria in their checklist/context:

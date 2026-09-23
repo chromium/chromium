@@ -21,4 +21,7 @@ host_predefines = [
   "BINARY_REMOTE_OPEN_URL=9",  # For remote_open_url
   "BINARY_REMOTE_WEBAUTHN=10",  # For remote_webauthn
   "BINARY_REMOTING_CRASHPAD_HANDLER=11",  # For remoting_crashpad_handler
+  "BINARY_HOST_NETWORK=12",  # For remoting_network
+  "BINARY_HOST_PEER_CONNECTION=13",  # For remoting_peer_connection
+  "BINARY_HOST_CURTAIN=14",  # For remoting_curtain
 ]

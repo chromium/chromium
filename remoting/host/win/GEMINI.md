@@ -9,6 +9,12 @@ is characterized by deep integration with Windows services, COM, and WTS
 *   **Daemon Process (Windows Service):** `remoting/host/win/host_service.cc`
     *   This is the entry point when running as a Windows service.
     *   It manages the lifecycle of the `Network` and `Desktop` processes.
+*   **Host Process Executables & Roles:**
+    *   `remoting_host.exe`: Daemon Windows Service running as `SYSTEM`.
+    *   `remoting_network.exe`: Network process running as `LOCAL SERVICE` (Low Integrity).
+    *   `remoting_peer_connection.exe`: Peer Connection process running as `LOCAL SERVICE` inside AppContainer (`chromoting.peer_connection`, Untrusted Integrity).
+    *   `remoting_desktop.exe`: Desktop integration process running as `SYSTEM` in the interactive console or RDP user session (`uiAccess="true"`).
+    *   `remoting_curtain.exe`: Curtain mode loopback RDP process activated via COM `LocalServer32` as `LOCAL SERVICE`.
 *   **RDP Integration:** `remoting/host/win/rdp_desktop_session.cc` and
     `rdp_client.cc`
     *   CRD on Windows uses a loopback RDP connection to create the user session

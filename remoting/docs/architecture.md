@@ -42,33 +42,36 @@ be deleted.
 ### Multi-process architecture
 
 The CRD Windows host has a multi-process architecture, where we run a daemon
-process as SYSTEM at MIC SYSTEM level (//remoting/host/daemon_process.h), which
-also acts as a mojo IPC broker. A network process
-(//remoting/host/remoting_me2me_host.cc) is run as LOCAL_SERVICE at MIC LOW
-level for actually communicating with the client via network requests. A third
-desktop process (//remoting/host/desktop_process.h) is run as SYSTEM at MIC
-SYSTEM level, which is responsible to capturing screen frame data and other
-operations that need to be done on the user session. There are also user
-processes such as the remote-open-url process and file transfer process, which
-is run by the logged in user with MIC MEDIUM level within the CRD session, which
-talks to other CRD processes using Mojo IPC. All CRD processes use Mojo IPC to
+process as SYSTEM at MIC SYSTEM level (`//remoting/host/daemon_process.h`), which
+also acts as a mojo IPC broker (`remoting_host.exe`). A network process
+(`//remoting/host/remoting_me2me_host.cc`) is run as LOCAL_SERVICE at MIC LOW
+level (`remoting_network.exe`) for host signaling, heartbeat, authentication, and
+session management. A peer connection process
+(`//remoting/host/peer_connection_process_main.cc`) is run as LOCAL_SERVICE in an
+AppContainer with Untrusted integrity (`remoting_peer_connection.exe`) to isolate
+the untrusted WebRTC stack, data channels, and media encoders. A desktop process
+(`//remoting/host/desktop_process.h`) is run as SYSTEM at MIC SYSTEM level with
+`uiAccess="true"` (`remoting_desktop.exe`), which is responsible for capturing screen
+frame data and injecting input in the user session. In curtain mode, an RDP loopback
+session process (`remoting_curtain.exe`) hosts the ActiveX RDP client as LOCAL_SERVICE.
+There are also user processes such as the remote-open-url process and file transfer
+process, which are run by the logged in user with MIC MEDIUM level within the CRD session,
+talking to other CRD processes using Mojo IPC. All CRD processes use Mojo IPC to
 communicate with each other. Mojo connection is established by connecting to the
 broker process, i.e. the daemon process.
 
 The Mac host has an agent process broker process
-(//remoting/host/mac/agent_process_broker_main.cc), which is used to make sure
+(`//remoting/host/mac/agent_process_broker_main.cc`), which is used to make sure
 only one host process (i.e. network process, but with screen capturing and all
 other logic in it) is run at a time. The agent process broker process also acts
 as the mojo broker for user processes. It doesn't have a real multi-process
 architecture. Network request handling and screen capturing are done in the same
 process.
 
-The official Linux host currently only has one single host process (i.e. network
-process), and it acts as the mojo broker for user processes. However, we are
-currently working on a true multi-process architecture for Linux. The dev
-multi-process host on Linux can be run with
-`remoting/tools/run_multi_process_host.py $OUT_DIRECTORY` (e.g.
-OUT_DIRECTORY=out/debug) after building `remoting_dev_me2me_host`.
+The Linux host has a multi-process architecture using `remoting_me2me_host --type=...`,
+running the daemon as root, the network process as a restricted user, the peer connection
+process under a dedicated unprivileged user with Seccomp-BPF sandbox, and the desktop
+environment in the user's X11 or Wayland session.
 
 When necessary, read the following files:
 
@@ -80,6 +83,7 @@ When necessary, read the following files:
     *   This file also has the logic to determine whether the current process is
         a mojo broker.
 *   remoting/host/remoting_me2me_host.cc: Entry point of the network process.
+*   remoting/host/peer_connection_process_main.cc: Entry point of the peer connection process.
 *   remoting/host/daemon_process.h: Class that holds the daemon process logic.
     Note that different platforms have different entry points for the daemon
     process:
@@ -88,12 +92,14 @@ When necessary, read the following files:
     *   remoting/host/linux/daemon_process_main.cc: The entry point of the
         daemon process on Linux.
 *   remoting/host/desktop_process_main.cc: Entry point of the desktop process.
+*   remoting/host/mojom/peer_session.mojom: Defines interfaces for
+    communications between the network process, daemon process, and peer connection process.
 *   remoting/host/mojom/desktop_session.mojom: Defines interfaces for
-    communications between the network process and the desktop process.
+    communications between the network/peer-connection process and the desktop process.
 *   remoting/host/mojom/remoting_host.mojom: Defines interfaces for
     communications between the network process and the daemon process.
 *   remoting/host/mojom/chromoting_host_services.mojom: Defines interfaces to
-    allow user processes to communicate with the network process.
+    allow user processes to communicate with the host.
 *   Other files in remoting/host/mojom: Interfaces for other purposes. Read when
     necessary.
 
