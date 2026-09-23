@@ -5,6 +5,7 @@
 #include "components/exo/wayland/wayland_display_output.h"
 
 #include <cstdint>
+#include <memory>
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "components/exo/wayland/test/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
 #include "components/exo/wayland/wayland_display_observer.h"
+#include "components/exo/wayland/wl_output.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo::wayland {
@@ -130,6 +132,71 @@ TEST_F(WaylandDisplayOutputTest, InitializesAndUpdatesMetrics) {
   // Update display dimensions, this should be reflected in the metrics.
   UpdateDisplay("1200x800");
   EXPECT_EQ(gfx::Size(1200, 800), display_output->metrics().logical_size);
+}
+
+// Regression test for b/557391265. The wayland protocol allows a client to bind
+// the same global more than once, so each wl_output binding must be tracked
+// independently. Otherwise WaylandDisplayOutput can self destruct while an
+// untracked WaylandDisplayHandler still holds a pointer to it, which results in
+// a use-after-free when that handler is destroyed.
+TEST_F(WaylandDisplayOutputTest, DuplicateOutputBindings) {
+  class ClientData : public test::TestClient::CustomData {
+   public:
+    std::unique_ptr<wl_output> duplicate_output;
+  };
+
+  // Start with 2 displays.
+  UpdateDisplay("800x600,1024x786");
+
+  // Wait for the client to bind the newly added display's global.
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_EQ(client->globals().outputs.size(), 2u);
+  });
+
+  OutputControllerTestApi output_controller_test_api(
+      *server_->output_controller_for_testing());
+  WaylandDisplayOutput* display_output =
+      output_controller_test_api.GetWaylandDisplayOutput(
+          GetSecondaryDisplay().id());
+  ASSERT_TRUE(display_output);
+  EXPECT_EQ(display_output->output_counts(), 1);
+
+  // Bind the 2nd display's global a second time from the same client.
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_EQ(client->globals().outputs.size(), 2u);
+    auto data = std::make_unique<ClientData>();
+    data->duplicate_output.reset(static_cast<wl_output*>(
+        wl_registry_bind(client->globals().registry.get(),
+                         client->globals().outputs.back().name(),
+                         &wl_output_interface, kWlOutputVersion)));
+    client->set_data(std::move(data));
+    client->Roundtrip();
+  });
+
+  // Both bindings must be accounted for, including the duplicate one.
+  EXPECT_EQ(display_output->output_counts(), 2);
+
+  // Remove the 2nd display and let at least one delete attempt run.
+  UpdateDisplay("800x600");
+  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
+                                    1.5);
+
+  // Release the first binding. The duplicate binding must keep the output
+  // alive.
+  PostToClientAndWait([&](test::TestClient* client) {
+    wl_output_release(client->globals().outputs.back().release());
+    client->Roundtrip();
+    EXPECT_EQ(wl_display_get_error(client->display()), 0);
+  });
+
+  // Releasing the duplicate binding must not touch a destroyed
+  // WaylandDisplayOutput.
+  PostToClientAndWait([&](test::TestClient* client) {
+    wl_output_release(
+        client->GetDataAs<ClientData>()->duplicate_output.release());
+    client->Roundtrip();
+    EXPECT_EQ(wl_display_get_error(client->display()), 0);
+  });
 }
 
 }  // namespace exo::wayland

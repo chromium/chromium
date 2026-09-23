@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/output_metrics.h"
@@ -71,14 +71,14 @@ class WaylandDisplayOutput {
   // Caller must not access this object after calling this.
   void OnDisplayRemoved();
 
-  int output_counts() const { return output_ids_.size(); }
+  int output_counts() const { return output_resources_.size(); }
   bool had_registered_output() const { return had_registered_output_; }
 
  private:
   const int64_t id_;
   OutputMetrics metrics_;
   raw_ptr<wl_global, DanglingUntriaged> global_ = nullptr;
-  base::flat_map<wl_client*, raw_ptr<wl_resource, CtnExperimental>> output_ids_;
+  base::flat_set<raw_ptr<wl_resource, CtnExperimental>> output_resources_;
   bool had_registered_output_ = false;
   bool is_destructing_ = false;
 };

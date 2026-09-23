@@ -53,20 +53,19 @@ WaylandDisplayOutput::WaylandDisplayOutput(const display::Display& display)
     : id_(display.id()), metrics_(display) {}
 
 WaylandDisplayOutput::~WaylandDisplayOutput() {
-  // Empty the output_ids_ so that Unregister will be no op.
-  auto ids = std::move(output_ids_);
-  for (auto pair : ids) {
-    if (wl_resource_get_version(pair.second) >=
-        WL_OUTPUT_RELEASE_SINCE_VERSION) {
+  // Empty the output_resources_ so that Unregister will be no op.
+  auto resources = std::move(output_resources_);
+  for (wl_resource* resource : resources) {
+    if (wl_resource_get_version(resource) >= WL_OUTPUT_RELEASE_SINCE_VERSION) {
       // At version >= 3, clients should send wl_output.release to let server
       // know that an output object will be unused. Remove the user_data and
       // destructor, keep wl_resource alive as there could be other requests
       // referencing it asynchronously.
-      DestroyUserData<WaylandDisplayHandler>(pair.second);
-      wl_resource_set_user_data(pair.second, nullptr);
-      wl_resource_set_destructor(pair.second, nullptr);
+      DestroyUserData<WaylandDisplayHandler>(resource);
+      wl_resource_set_user_data(resource, nullptr);
+      wl_resource_set_destructor(resource, nullptr);
     } else {
-      wl_resource_destroy(pair.second);
+      wl_resource_destroy(resource);
     }
   }
 
@@ -94,14 +93,14 @@ void WaylandDisplayOutput::OnDisplayRemoved() {
 }
 
 void WaylandDisplayOutput::UnregisterOutput(wl_resource* output_resource) {
-  base::EraseIf(output_ids_, [output_resource](auto& pair) {
-    return pair.second == output_resource;
-  });
+  output_resources_.erase(output_resource);
 }
 
 void WaylandDisplayOutput::RegisterOutput(wl_resource* output_resource) {
   auto* client = wl_resource_get_client(output_resource);
-  output_ids_.insert(std::make_pair(client, output_resource));
+  // Ensure every binding must be tracked, to prevent untracked resource
+  // dangling.
+  CHECK(output_resources_.insert(output_resource).second);
   had_registered_output_ = true;
 
   if (is_destructing_) {
@@ -124,11 +123,15 @@ void WaylandDisplayOutput::RegisterOutput(wl_resource* output_resource) {
 
 wl_resource* WaylandDisplayOutput::GetOutputResourceForClient(
     wl_client* client) {
-  auto iter = output_ids_.find(client);
-  if (iter == output_ids_.end()) {
-    return nullptr;
+  for (wl_resource* resource : output_resources_) {
+    // This returns the first `resource` in iteration for `client`, if the
+    // `client` has multiple `resource`s created for this output, it is up to
+    // the client to be aware of the duplication.
+    if (wl_resource_get_client(resource) == client) {
+      return resource;
+    }
   }
-  return iter->second;
+  return nullptr;
 }
 
 void WaylandDisplayOutput::SendDisplayMetricsChanges(
@@ -138,16 +141,16 @@ void WaylandDisplayOutput::SendDisplayMetricsChanges(
   // Update output metrics before propagating display changes.
   metrics_ = OutputMetrics(display);
 
-  for (auto& pair : output_ids_) {
-    if (auto* handler = GetUserDataAs<WaylandDisplayHandler>(pair.second)) {
+  for (wl_resource* resource : output_resources_) {
+    if (auto* handler = GetUserDataAs<WaylandDisplayHandler>(resource)) {
       handler->SendDisplayMetricsChanges(display, changed_metrics);
     }
   }
 }
 
 void WaylandDisplayOutput::SendOutputActivated() {
-  for (auto& pair : output_ids_) {
-    auto* handler = GetUserDataAs<WaylandDisplayHandler>(pair.second);
+  for (wl_resource* resource : output_resources_) {
+    auto* handler = GetUserDataAs<WaylandDisplayHandler>(resource);
     CHECK(handler);
     handler->SendDisplayActivated();
   }
