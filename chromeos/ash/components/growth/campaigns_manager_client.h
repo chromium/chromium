@@ -47,9 +47,6 @@ class CampaignsManagerClient {
   // True if the device is in demo mode.
   virtual bool IsDeviceInDemoMode() const = 0;
 
-  // True if the device is cloud gaming device.
-  virtual bool IsCloudGamingDevice() const = 0;
-
   // True if the device is feature aware device.
   virtual bool IsFeatureAwareDevice() const = 0;
 

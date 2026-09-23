@@ -179,7 +179,6 @@ inline constexpr char kValidDemoModeTargeting[] = R"(
       "storeIds": ["2", "4", "6"],
       "countries": ["US"],
       "capability": {
-        "isCloudGamingDevice": true,
         "isFeatureAwareDevice": true
       }
     }
@@ -320,17 +319,15 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void MockDemoMode(bool in_demo_mode,
-                    bool cloud_gaming_device,
                     bool feature_aware_device,
                     const std::string_view& store_id,
                     const std::string_view& retailer_id,
                     const std::string_view& country) {
-    MockDemoMode(in_demo_mode, cloud_gaming_device, feature_aware_device,
-                 store_id, retailer_id, country, base::Version("1.0.0.0"));
+    MockDemoMode(in_demo_mode, feature_aware_device, store_id, retailer_id,
+                 country, base::Version("1.0.0.0"));
   }
 
   void MockDemoMode(bool in_demo_mode,
-                    bool cloud_gaming_device,
                     bool feature_aware_device,
                     const std::string_view& store_id,
                     const std::string_view& retailer_id,
@@ -338,8 +335,6 @@ class CampaignsManagerTest : public testing::Test {
                     const base::Version& app_version) {
     EXPECT_CALL(mock_client_, IsDeviceInDemoMode)
         .WillRepeatedly(testing::Return(in_demo_mode));
-    EXPECT_CALL(mock_client_, IsCloudGamingDevice)
-        .WillRepeatedly(testing::Return(cloud_gaming_device));
     EXPECT_CALL(mock_client_, IsFeatureAwareDevice)
         .WillRepeatedly(testing::Return(feature_aware_device));
     local_state_->SetString(ash::prefs::kDemoModeStoreId, store_id);
@@ -633,7 +628,6 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   base::HistogramTester histogram_tester;
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -697,7 +691,6 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaignInOobe) {
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -716,7 +709,6 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
   MockDemoMode(
       /*in_demo_mode=*/false,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -765,7 +757,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
 
   MockDemoMode(
       /*in_demo_mode=*/false,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -783,25 +774,9 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
                                       /*expected_bucket_count=*/0);
 }
 
-TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotGamingDevice) {
-  MockDemoMode(
-      /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/false,
-      /*feature_aware_device=*/true,
-      /*store_id=*/"2",
-      /*retailer_id=*/"bby",
-      /*country=*/"US");
-
-  LoadComponentAndVerifyLoadComplete(
-      base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
-
-  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
-}
-
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotFeatureAwareDevice) {
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/false,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -819,7 +794,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignstoreIdMismatch) {
 
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"1",
       /*retailer_id=*/"bby",
@@ -831,7 +805,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignstoreIdMismatch) {
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignRetailerIdMismatch) {
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"abc",
@@ -846,7 +819,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignRetailerIdMismatch) {
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignCanonicalizedRetailerId) {
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bestbuy",
@@ -860,7 +832,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignCanonicalizedRetailerId) {
             "storeIds": ["2", "4", "6"],
             "countries": ["US"],
             "capability": {
-              "isCloudGamingDevice": true,
               "isFeatureAwareDevice": true
             }
           }
@@ -874,7 +845,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignCanonicalizedRetailerId) {
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignCountryMismatch) {
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -890,7 +860,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionTargeting) {
   const base::Version expected_app_version("1.0.0.0");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -915,7 +884,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignWithInvalidAppVersion) {
   const base::Version empty_version;
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -940,7 +908,6 @@ TEST_F(CampaignsManagerTest,
   const base::Version empty_version;
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -968,7 +935,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMinMismatch) {
   const base::Version expected_app_version("1.0.0.0");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -992,7 +958,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMaxMismatch) {
   const base::Version expected_app_version("1.0.0.2");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -1007,7 +972,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMinOnly) {
 
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -1031,7 +995,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMinOnlyMismstch) {
   const base::Version expected_app_version("1.0.0.2");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -1054,7 +1017,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMaxOnly) {
   const base::Version expected_app_version("1.0.0.3");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -1078,7 +1040,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionMaxOnlyMismstch) {
   const base::Version expected_app_version("1.0.0.4");
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
@@ -1101,7 +1062,6 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignAppVersionInvalidAppVersion) {
   const base::Version expected_app_version = base::Version();
   MockDemoMode(
       /*in_demo_mode=*/true,
-      /*cloud_gaming_device=*/true,
       /*feature_aware_device=*/true,
       /*store_id=*/"2",
       /*retailer_id=*/"bby",

@@ -75,7 +75,6 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -1424,74 +1423,6 @@ IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
   test::OobeJS().ExpectElementValue("N/A", kDemoPreferencesCountrySelect);
 
   PopulateDemoPreferencesAndFinishSetup();
-  // The enum of success (no error) is recorded to DemoMode.Setup.Error on
-  // success.
-  histogram_tester_.ExpectBucketCount(
-      "DemoMode.Setup.Error",
-      DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
-}
-
-/**
- * Test case of Blazey specific device.
- */
-class DemoSetupBlazeyDeviceTest : public DemoSetupArcSupportedTest {
- public:
-  ~DemoSetupBlazeyDeviceTest() override = default;
-
-  DemoSetupBlazeyDeviceTest() {
-    statistics_provider_.SetMachineStatistic(system::kRegionKey, "us");
-    feature_list_.InitAndEnableFeature(chromeos::features::kCloudGamingDevice);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/1342461): Flaky on release bots.
-#if defined(ADDRESS_SANITIZER) || defined(NDEBUG)
-#define MAYBE_DeviceIsBlazeyEnabledDevice DISABLED_DeviceIsBlazeyEnabledDevice
-#else
-#define MAYBE_DeviceIsBlazeyEnabledDevice DeviceIsBlazeyEnabledDevice
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
-                       MAYBE_DeviceIsBlazeyEnabledDevice) {
-  // `LoginOrLockScreenVisibleWaiter::WaitImpl` has a time out equals to
-  // `TestTimeouts::test_launcher_timeout()` (which is equals to 135s in this
-  // test), but sometimes it might be longer than 2 minutes, which left 15s for
-  // this test to run. Increase the timeout of this test so that it has enough
-  // time.
-  base::test::ScopedRunLoopTimeout increase_timeout(
-      FROM_HERE, TestTimeouts::test_launcher_timeout() + base::Seconds(60));
-
-  // Simulate successful online setup.
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_ATTESTATION);
-  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
-  SimulateNetworkConnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-  UseOnlineModeOnNetworkScreen();
-
-  // Expect active "OK" button when entering the preference screen.
-  test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
-  ProceedThroughDemoPreferencesScreen();
-
-  AcceptTermsAndExpectDemoSetupProgress();
-
-  // Verify the email corresponds to US.
-  EXPECT_EQ("admin-us-blazey@cros-demo-mode.com",
-            DemoSetupController::GetSubOrganizationEmail(
-                CHECK_DEREF(g_browser_process->local_state())));
-
-  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
-  // it's shown again when Demo setup completes.
-  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
-
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
-      CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
-      CHECK_DEREF(g_browser_process->local_state())));
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success.
   histogram_tester_.ExpectBucketCount(

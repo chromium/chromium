@@ -30,7 +30,6 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               (OnTrackerInitializedCallback callback),
               (override));
   MOCK_METHOD(bool, IsDeviceInDemoMode, (), (const, override));
-  MOCK_METHOD(bool, IsCloudGamingDevice, (), (const, override));
   MOCK_METHOD(bool, IsFeatureAwareDevice, (), (const, override));
   MOCK_METHOD(bool,
               IsAppIconOnShelf,

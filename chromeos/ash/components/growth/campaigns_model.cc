@@ -54,7 +54,6 @@ inline constexpr char kDemoModeRetailers[] = "retailers";
 inline constexpr char kDemoModeCountries[] = "countries";
 inline constexpr char kDemoModeFeatureAware[] =
     "capability.isFeatureAwareDevice";
-inline constexpr char kDemoModeCloudGaming[] = "capability.isCloudGamingDevice";
 inline constexpr char kMinDemoModeAppVersion[] = "appVersion.min";
 inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 
@@ -437,10 +436,6 @@ const std::optional<base::Version> DemoModeTargeting::GetAppMinVersion() const {
 
 const std::optional<base::Version> DemoModeTargeting::GetAppMaxVersion() const {
   return StringToVersion(GetStringCriteria(kMaxDemoModeAppVersion));
-}
-
-const std::optional<bool> DemoModeTargeting::TargetCloudGamingDevice() const {
-  return GetBoolCriteria(kDemoModeCloudGaming);
 }
 
 const std::optional<bool> DemoModeTargeting::TargetFeatureAwareDevice() const {

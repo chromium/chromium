@@ -182,11 +182,6 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
   retailer->set_retailer_id(ash::demo_mode::RetailerName(local_state));
   retailer->set_store_id(ash::demo_mode::StoreNumber(local_state));
 
-  if (ash::demo_mode::IsCloudGamingDevice()) {
-    demo_mode_dimensions->add_customization_facet(
-        metrics::
-            SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
-  }
   if (ash::demo_mode::IsFeatureAwareDevice()) {
     demo_mode_dimensions->add_customization_facet(
         metrics::

@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -47,11 +46,6 @@ std::string RetailerName(const PrefService& local_state) {
 std::string StoreNumber(const PrefService& local_state) {
   CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
   return local_state.GetString(prefs::kDemoModeStoreId);
-}
-
-bool IsCloudGamingDevice() {
-  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
-  return chromeos::features::IsCloudGamingDeviceEnabled();
 }
 
 bool IsFeatureAwareDevice() {
@@ -124,10 +118,6 @@ enterprise_management::DemoModeDimensions GetDemoModeDimensions(
   dimensions.set_country(Country(local_state));
   dimensions.set_retailer_name(RetailerName(local_state));
   dimensions.set_store_number(StoreNumber(local_state));
-  if (IsCloudGamingDevice()) {
-    dimensions.add_customization_facets(
-        enterprise_management::DemoModeDimensions::CLOUD_GAMING_DEVICE);
-  }
   if (IsFeatureAwareDevice()) {
     dimensions.add_customization_facets(
         enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);

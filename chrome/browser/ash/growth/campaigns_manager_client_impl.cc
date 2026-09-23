@@ -128,10 +128,6 @@ bool CampaignsManagerClientImpl::IsDeviceInDemoMode() const {
   return ash::demo_mode::IsDeviceInDemoMode();
 }
 
-bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {
-  return ash::demo_mode::IsCloudGamingDevice();
-}
-
 bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
   return ash::demo_mode::IsFeatureAwareDevice();
 }

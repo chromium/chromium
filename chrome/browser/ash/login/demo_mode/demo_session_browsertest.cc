@@ -530,7 +530,6 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
               "storeIds": ["2", "4", "6"],
               "countries": ["US"],
               "capability": {
-                "isCloudGamingDevice": true,
                 "isFeatureAwareDevice": true
               }
             }

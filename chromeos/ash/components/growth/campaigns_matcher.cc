@@ -466,13 +466,6 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
 bool CampaignsMatcher::MatchDemoModeTier(
     const DemoModeTargeting& targeting) const {
-  const auto is_cloud_gaming = targeting.TargetCloudGamingDevice();
-  if (is_cloud_gaming.has_value()) {
-    if (is_cloud_gaming != client_->IsCloudGamingDevice()) {
-      return false;
-    }
-  }
-
   const auto is_feature_aware_device = targeting.TargetFeatureAwareDevice();
   if (is_feature_aware_device.has_value()) {
     if (is_feature_aware_device != client_->IsFeatureAwareDevice()) {

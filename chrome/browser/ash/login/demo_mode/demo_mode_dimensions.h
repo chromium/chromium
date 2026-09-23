@@ -25,10 +25,6 @@ std::string RetailerName(const PrefService& local_state);
 // User-entered number identifying the store that a demo device is running in.
 std::string StoreNumber(const PrefService& local_state);
 
-// Whether the demo device falls under the Cloud Gaming device branding
-// category.
-bool IsCloudGamingDevice();
-
 // Whether the demo device has additional features enabled by the feature
 // management module.
 bool IsFeatureAwareDevice();

@@ -209,8 +209,7 @@ class TargetingBase {
 //   "storeIds": ["2", "4", "6"],
 //   "country": ["US"],
 //   "capability": {
-//     "isFeatureAwareDevice": false,
-//     "isCloudGamingDevice": true,
+//     "isFeatureAwareDevice": false
 //   }
 // }
 class DemoModeTargeting : public TargetingBase {
@@ -225,7 +224,6 @@ class DemoModeTargeting : public TargetingBase {
   const base::ListValue* GetCountries() const;
   const std::optional<base::Version> GetAppMinVersion() const;
   const std::optional<base::Version> GetAppMaxVersion() const;
-  const std::optional<bool> TargetCloudGamingDevice() const;
   const std::optional<bool> TargetFeatureAwareDevice() const;
 };
 

@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -284,9 +283,7 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   const std::string app_expected_version = "0.0.0.0";
   const std::string resources_expected_version = "0.0.0.1";
   scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kCloudGamingDevice,
-       ash::features::kFeatureManagementFeatureAwareDeviceDemoMode},
-      {});
+      {ash::features::kFeatureManagementFeatureAwareDeviceDemoMode}, {});
   g_browser_process->local_state()->SetString("demo_mode.country",
                                               expected_country);
   g_browser_process->local_state()->SetString("demo_mode.retailer_id",
@@ -310,13 +307,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
       system_profile.demo_mode_dimensions().retailer().has_retailer_id());
   ASSERT_TRUE(system_profile.demo_mode_dimensions().retailer().has_store_id());
   EXPECT_EQ(system_profile.demo_mode_dimensions().customization_facet_size(),
-            2);
+            1);
   ASSERT_EQ(
       system_profile.demo_mode_dimensions().customization_facet().at(0),
-      metrics::
-          SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
-  ASSERT_EQ(
-      system_profile.demo_mode_dimensions().customization_facet().at(1),
       metrics::
           SystemProfileProto_DemoModeDimensions_CustomizationFacet_FEATURE_AWARE_DEVICE);
   std::string country = system_profile.demo_mode_dimensions().country();

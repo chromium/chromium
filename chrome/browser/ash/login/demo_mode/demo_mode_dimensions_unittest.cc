@@ -17,7 +17,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -66,12 +65,6 @@ TEST_F(DemoModeDimensionsTest, StoreNumber) {
   ASSERT_EQ(ash::demo_mode::StoreNumber(
                 CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
             "1234");
-}
-
-TEST_F(DemoModeDimensionsTest, IsCloudGamingDevice) {
-  ASSERT_FALSE(ash::demo_mode::IsCloudGamingDevice());
-  feature_list_.InitAndEnableFeature(chromeos::features::kCloudGamingDevice);
-  ASSERT_TRUE(ash::demo_mode::IsCloudGamingDevice());
 }
 
 TEST_F(DemoModeDimensionsTest, IsFeatureAwareDevice) {
@@ -172,9 +165,7 @@ TEST_F(DemoModeDimensionsTest, Locale) {
 
 TEST_F(DemoModeDimensionsTest, GetDemoModeDimensions) {
   feature_list_.InitWithFeatures(
-      {chromeos::features::kCloudGamingDevice,
-       ash::features::kFeatureManagementFeatureAwareDeviceDemoMode},
-      {});
+      {ash::features::kFeatureManagementFeatureAwareDeviceDemoMode}, {});
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kDemoModeCountry, "CA");
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
@@ -186,8 +177,6 @@ TEST_F(DemoModeDimensionsTest, GetDemoModeDimensions) {
   expected.set_country("CA");
   expected.set_retailer_name("retailer");
   expected.set_store_number("1234");
-  expected.add_customization_facets(
-      enterprise_management::DemoModeDimensions::CLOUD_GAMING_DEVICE);
   expected.add_customization_facets(
       enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);
 
