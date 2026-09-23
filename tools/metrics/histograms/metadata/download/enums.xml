@@ -381,6 +381,22 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="set_ui_options"/>
 </enum>
 
+<!-- LINT.IfChange(DownloadHistoryLoadTrigger) -->
+
+<enum name="DownloadHistoryLoadTrigger">
+  <int value="0" label="DownloadManager creation"/>
+  <int value="1" label="New or in-progress download"/>
+  <int value="2" label="Downloads WebUI page"/>
+  <int value="3" label="OfflineContentProvider (e.g. Download Home)"/>
+  <int value="4" label="Desktop Download Bubble"/>
+  <int value="5" label="Downloads Extension API"/>
+  <int value="6" label="BrowsingDataRemover"/>
+  <int value="7" label="BrowsingDataCounter"/>
+  <int value="8" label="Test"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/download_core_service.h:DownloadHistoryLoadTrigger) -->
+
 <enum name="DownloadImageType">
   <int value="0" label="Unrecognized"/>
   <int value="1" label="GIF"/>

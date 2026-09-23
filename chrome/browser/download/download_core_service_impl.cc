@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -75,8 +76,7 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
         manager_delegate_->GetDownloadIdReceiverCallback());
     if (!base::FeatureList::IsEnabled(
             download::features::kDeferredDownloadHistoryLoading)) {
-      download_history_ = std::make_unique<DownloadHistory>(
-          manager, std::make_unique<DownloadHistory::HistoryAdapter>(history));
+      InitializeHistory(DownloadHistoryLoadTrigger::kDownloadManagerCreation);
     }
   }
 
@@ -97,18 +97,27 @@ DownloadUIController* DownloadCoreServiceImpl::GetDownloadUIController() {
   return download_ui_ ? download_ui_.get() : nullptr;
 }
 
-void DownloadCoreServiceImpl::InitializeHistory() {
+void DownloadCoreServiceImpl::InitializeHistory(
+    DownloadHistoryLoadTrigger trigger) {
   if (download_history_ || profile_->IsOffTheRecord()) {
     return;
   }
   if (!download_manager_created_) {
     GetDownloadManagerDelegate();
+    if (download_history_) {
+      return;
+    }
   }
   DCHECK(download_manager_created_);
   DownloadManager* manager = profile_->GetDownloadManager();
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (history) {
+    base::UmaHistogramEnumeration("Download.History.LoadTrigger", trigger);
+    base::UmaHistogramCustomTimes(
+        "Download.History.TimeToFirstLoad",
+        base::TimeTicks::Now() - service_creation_time_, base::Milliseconds(1),
+        base::Hours(24), 100);
     download_history_ = std::make_unique<DownloadHistory>(
         manager, std::make_unique<DownloadHistory::HistoryAdapter>(history));
   }
@@ -191,6 +200,10 @@ bool DownloadCoreServiceImpl::IsDownloadUiEnabled() {
 }
 
 void DownloadCoreServiceImpl::Shutdown() {
+  if (!profile_->IsOffTheRecord()) {
+    base::UmaHistogramBoolean("Download.History.LoadedInSession",
+                              download_history_ != nullptr);
+  }
   if (download_manager_created_) {
     // Normally the DownloadManager would be shutdown later, after the Profile
     // goes away and BrowserContext's destructor runs. But that would be too

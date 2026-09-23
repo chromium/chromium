@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -35,7 +36,8 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   // DownloadCoreService
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
   DownloadHistory* GetDownloadHistory() override;
-  void InitializeHistory() override;
+  using DownloadCoreService::InitializeHistory;
+  void InitializeHistory(DownloadHistoryLoadTrigger trigger) override;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionDownloadsEventRouter* GetExtensionEventRouter() override;
 #endif
@@ -59,6 +61,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
  private:
   bool download_manager_created_;
   raw_ptr<Profile> profile_;
+  const base::TimeTicks service_creation_time_{base::TimeTicks::Now()};
 
   // ChromeDownloadManagerDelegate may be the target of callbacks from
   // the history service/DB thread and must be kept alive for those

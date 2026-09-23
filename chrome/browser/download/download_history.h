@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
@@ -158,6 +159,8 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   IdSet removed_while_adding_;
 
   bool initial_history_query_complete_;
+
+  const base::TimeTicks load_start_time_{base::TimeTicks::Now()};
 
   base::ObserverList<Observer>::Unchecked observers_;
 

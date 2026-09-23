@@ -828,7 +828,8 @@ void ChromeDownloadManagerDelegate::GetNextId(
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile_);
   if (service) {
-    service->InitializeHistory();
+    service->InitializeHistory(DownloadCoreService::DownloadHistoryLoadTrigger::
+                                   kNewOrInProgressDownload);
   }
   if (!next_id_retrieved_) {
     id_callbacks_.push_back(std::move(callback));

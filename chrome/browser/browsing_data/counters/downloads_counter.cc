@@ -29,7 +29,8 @@ void DownloadsCounter::Count() {
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile_);
   if (service) {
-    service->InitializeHistory();
+    service->InitializeHistory(
+        DownloadCoreService::DownloadHistoryLoadTrigger::kBrowsingDataCounter);
   }
 
   content::DownloadManager* download_manager = profile_->GetDownloadManager();

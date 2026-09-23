@@ -608,7 +608,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile_);
     if (service) {
-      service->InitializeHistory();
+      service->InitializeHistory(
+          DownloadCoreService::DownloadHistoryLoadTrigger::
+              kBrowsingDataRemover);
     }
     DownloadPrefs* download_prefs =
         DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager());

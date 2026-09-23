@@ -622,7 +622,8 @@ void DownloadOfflineContentProvider::EnsureDownloadCoreServiceStarted() {
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile_);
   if (service) {
-    service->InitializeHistory();
+    service->InitializeHistory(DownloadCoreService::DownloadHistoryLoadTrigger::
+                                   kOfflineContentProvider);
   }
 
   CHECK(profile_->GetDownloadManager());

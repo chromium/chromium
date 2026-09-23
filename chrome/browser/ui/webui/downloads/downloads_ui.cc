@@ -303,7 +303,8 @@ void DownloadsUI::CreatePageHandler(
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile);
   if (service) {
-    service->InitializeHistory();
+    service->InitializeHistory(
+        DownloadCoreService::DownloadHistoryLoadTrigger::kDownloadsPage);
   }
   DownloadManager* dlm = profile->GetDownloadManager();
 

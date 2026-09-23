@@ -574,7 +574,8 @@ void InitializeDownloadHistory(content::BrowserContext* context) {
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(context);
   if (service) {
-    service->InitializeHistory();
+    service->InitializeHistory(
+        DownloadCoreService::DownloadHistoryLoadTrigger::kExtensionApi);
   }
 }
 

@@ -404,6 +404,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.History.LoadedInSession" enum="BooleanLoaded"
+    expires_after="2027-03-18">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records whether download history was loaded during a non-incognito profile
+    session. Logged once per profile when DownloadCoreService shuts down.
+  </summary>
+</histogram>
+
+<histogram name="Download.History.LoadLatency" units="ms"
+    expires_after="2027-03-18">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the latency from when DownloadHistory is constructed (initiating the
+    history DB query) to when all history download items have been created in
+    DownloadManager and observers are notified.
+  </summary>
+</histogram>
+
+<histogram name="Download.History.LoadTrigger"
+    enum="DownloadHistoryLoadTrigger" expires_after="2027-03-18">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the first trigger that initiates loading DownloadHistory for a
+    non-incognito profile. Logged once when DownloadHistory is constructed.
+  </summary>
+</histogram>
+
+<histogram name="Download.History.TimeToFirstLoad" units="ms"
+    expires_after="2027-03-18">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the time elapsed from DownloadCoreService creation to when
+    DownloadHistory is first initialized for a non-incognito profile.
+  </summary>
+</histogram>
+
 <histogram name="Download.HttpResponseCode{BackgroundDownload}"
     enum="HttpResponseCode" expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->
