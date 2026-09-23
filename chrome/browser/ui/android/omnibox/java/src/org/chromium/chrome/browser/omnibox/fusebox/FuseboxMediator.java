@@ -1005,11 +1005,28 @@ import java.util.function.Supplier;
                 .setType(PopupButtonType.TOOL)
                 .setOnClicked(this::onDynamicButtonClicked)
                 .setText(mContext.getString(R.string.ai_mode_entrypoint_label))
+                .setSubtext(getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED))
                 .setIconId(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
                 .setEnabled(true)
                 .setSelected(selected)
                 .setProtoId(ToolMode.TOOL_MODE_UNSPECIFIED)
                 .build();
+    }
+
+    @VisibleForTesting
+    String getToolSubtext(@ToolMode int toolMode) {
+        if (!OmniboxFeatures.hasAccordion()) {
+            return "";
+        }
+
+        return switch (toolMode) {
+            case ToolMode.TOOL_MODE_UNSPECIFIED ->
+                    mContext.getString(R.string.fusebox_ai_mode_subtext);
+            case ToolMode.TOOL_MODE_IMAGE_GEN ->
+                    mContext.getString(R.string.fusebox_create_image_subtext);
+            case ToolMode.TOOL_MODE_CANVAS -> mContext.getString(R.string.fusebox_canvas_subtext);
+            default -> "";
+        };
     }
 
     private void launchCamera() {
@@ -1328,6 +1345,7 @@ import java.util.function.Supplier;
                             .setType(PopupButtonType.TOOL)
                             .setOnClicked(this::onDynamicButtonClicked)
                             .setText(label)
+                            .setSubtext(getToolSubtext(toolMode))
                             .setIconId(iconId)
                             .setEnabled(enabled)
                             .setSelected(selected)
@@ -1337,11 +1355,14 @@ import java.util.function.Supplier;
                             .build());
         }
 
+        boolean showSectionHeaders = !OmniboxFeatures.hasAccordion();
         boolean showTools = !toolButtonDataList.isEmpty();
         mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, showTools);
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE,
-                showTools && !TextUtils.isEmpty(inputState.getToolsSectionConfig().getHeader()));
+                showTools
+                        && showSectionHeaders
+                        && !TextUtils.isEmpty(inputState.getToolsSectionConfig().getHeader()));
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtonDataList);
 
         // The InputState is always targeting an AI Mode request and what would be possible, but the
@@ -1375,10 +1396,10 @@ import java.util.function.Supplier;
             }
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;
-        boolean showModelPickerDivider =
-                showModelPicker && !OmniboxFeatures.shouldShowBottomSheetPopup();
-        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPickerDivider);
-        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPicker);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE,
+                showModelPicker && showSectionHeaders);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_HEADER_TEXT,
                 inputState.getModelSectionConfig().getHeader());

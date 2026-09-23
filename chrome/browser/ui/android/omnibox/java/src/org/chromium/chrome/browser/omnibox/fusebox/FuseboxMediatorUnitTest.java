@@ -1550,17 +1550,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testModelPickerVisibility_hidesInBottomSheet() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
-        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
-        recreateMediator();
-        mMediator.onPlusButtonClicked();
-        assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
-    }
-
-    @Test
     public void testToolVisibility_hidesIfNoTools_inputStateMode() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
@@ -2653,6 +2642,51 @@ public class FuseboxMediatorUnitTest {
         mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
         watcher2.assertExpected();
+    }
+
+    @Test
+    public void getToolSubtext_returnsLocalizedStrings() {
+        OmniboxFeatures.setUseAccordionForTesting(true);
+        assertEquals(
+                mContext.getString(R.string.fusebox_ai_mode_subtext),
+                mMediator.getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED));
+        assertEquals(
+                mContext.getString(R.string.fusebox_create_image_subtext),
+                mMediator.getToolSubtext(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertEquals(
+                mContext.getString(R.string.fusebox_canvas_subtext),
+                mMediator.getToolSubtext(ToolMode.TOOL_MODE_CANVAS));
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_DEEP_SEARCH));
+
+        OmniboxFeatures.setUseAccordionForTesting(false);
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED));
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_CANVAS));
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_DEEP_SEARCH));
+    }
+
+    @Test
+    public void popupHeaders_accordionEnabled_suppressed() {
+        OmniboxFeatures.setUseAccordionForTesting(true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertEquals(4, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
+    }
+
+    @Test
+    public void popupHeaders_accordionDisabled_visible() {
+        OmniboxFeatures.setUseAccordionForTesting(false);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertEquals(4, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
     }
 
     @Test

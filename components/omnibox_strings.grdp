@@ -428,8 +428,20 @@
   <message name="IDS_ACC_FUSEBOX_POPUP_BUTTON_SELECTED" desc="Accessibility announcement when an option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
     <ph name="BUTTON_TEXT">%s<ex>AI Mode</ex></ph>, selected
   </message>
+  <message name="IDS_ACC_FUSEBOX_POPUP_TEXT_WITH_SUBTEXT" desc="Accessibility text for a button in the Omnibox `Add context` popup that has both a primary label and secondary subtext." formatter_data="android_java">
+    <ph name="TEXT">%1$s<ex>Create images</ex></ph>, <ph name="SUBTEXT">%2$s<ex>Visualize and edit</ex></ph>
+  </message>
   <message name="IDS_FUSEBOX_MORE_OPTIONS" desc="The label and accessibility text for the More Options button in the Fusebox popup." formatter_data="android_java">
     More options
+  </message>
+  <message name="IDS_FUSEBOX_AI_MODE_SUBTEXT" desc="Subtext displayed under the AI Mode button in the Fusebox popup." formatter_data="android_java">
+    Smarter, faster answers
+  </message>
+  <message name="IDS_FUSEBOX_CREATE_IMAGE_SUBTEXT" desc="Subtext displayed under the Create images button in the Fusebox popup." formatter_data="android_java">
+    Visualize and edit
+  </message>
+  <message name="IDS_FUSEBOX_CANVAS_SUBTEXT" desc="Subtext displayed under the Canvas button in the Fusebox popup." formatter_data="android_java">
+    Code, write, or make slides
   </message>
 
   <!-- Accessibility labels for autocomplete match types.

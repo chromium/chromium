@@ -28,6 +28,7 @@ public class PopupButtonData {
 
     public final Runnable onClicked;
     public final String text;
+    public final String subtext;
     // Either iconId (predefined vector drawable) or customIcon (bitmap favicon) is set.
     public final /*IconResourceIds*/ int iconId;
     public final @Nullable Bitmap customIcon;
@@ -41,6 +42,7 @@ public class PopupButtonData {
     private PopupButtonData(Builder builder) {
         this.onClicked = () -> builder.mOnClicked.onResult(this);
         this.text = builder.mText;
+        this.subtext = builder.mSubtext;
         this.iconId = builder.mIconId;
         this.customIcon = builder.mCustomIcon;
         this.enabled = builder.mEnabled;
@@ -55,6 +57,7 @@ public class PopupButtonData {
     public static class Builder {
         private Callback<PopupButtonData> mOnClicked = (data) -> {};
         private String mText = "";
+        private String mSubtext = "";
         private int mIconId;
         private @Nullable Bitmap mCustomIcon;
         private boolean mEnabled;
@@ -71,6 +74,11 @@ public class PopupButtonData {
 
         public Builder setText(String text) {
             mText = text;
+            return this;
+        }
+
+        public Builder setSubtext(String subtext) {
+            mSubtext = subtext;
             return this;
         }
 

@@ -374,10 +374,14 @@ class FuseboxViewBinder {
             View buttonView,
             PopupButtonData data,
             @BrandedColorScheme int brandedColorScheme) {
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
         buttonView.setOnClickListener((v) -> data.onClicked.run());
         buttonView.setTooltipText(data.tooltip);
-        TextView actionText = (TextView) buttonView.findViewById(R.id.action_text);
+        TextView actionText = holder.mActionText;
+        TextView actionSubtext = assumeNonNull(holder.mActionSubtext);
         actionText.setText(data.text);
+        actionSubtext.setText(data.subtext);
+        actionSubtext.setVisibility(TextUtils.isEmpty(data.subtext) ? View.GONE : View.VISIBLE);
         if (data.type == PopupButtonType.RECENT_TAB) {
             actionText.setMaxLines(1);
             actionText.setEllipsize(TextUtils.TruncateAt.END);
@@ -387,14 +391,25 @@ class FuseboxViewBinder {
         }
 
         Resources res = buttonView.getResources();
+        String accessibilityText =
+                TextUtils.isEmpty(data.subtext)
+                        ? data.text
+                        : res.getString(
+                                R.string.acc_fusebox_popup_text_with_subtext,
+                                data.text,
+                                data.subtext);
         CharSequence desc =
                 data.selected
-                        ? res.getString(R.string.acc_fusebox_popup_button_selected, data.text)
-                        : data.text;
+                        ? res.getString(
+                                R.string.acc_fusebox_popup_button_selected, accessibilityText)
+                        : accessibilityText;
         buttonView.setContentDescription(desc);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+        @StyleRes
+        int subtextAppearance =
+                OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
         boolean isBottomSheet = model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getFuseboxPopupIconTintList(
@@ -402,14 +417,13 @@ class FuseboxViewBinder {
         ColorStateList iconBackgroundTint =
                 OmniboxResourceProvider.getFuseboxPopupIconBackgroundTintList(
                         buttonView.getContext(), brandedColorScheme, isBottomSheet);
-        themeButton(buttonView, textAppearance, iconTint, iconBackgroundTint);
+        themeButton(buttonView, textAppearance, subtextAppearance, iconTint, iconBackgroundTint);
 
         @Px
         int iconSize =
                 OmniboxResourceProvider.getFuseboxPopupIconSize(
                         buttonView.getContext(), isBottomSheet);
 
-        FuseboxItemViewHolder holder = getViewHolder(buttonView);
         holder.mHasColor = data.hasColor;
         updateIconSize(holder.mActionIcon, iconSize);
         updateIconSize(holder.mActionEndIcon, iconSize);
@@ -504,15 +518,20 @@ class FuseboxViewBinder {
     private static void themeButton(
             View buttonView,
             @StyleRes int textAppearance,
+            @StyleRes int subtextAppearance,
             ColorStateList iconTint,
             @Nullable ColorStateList iconBackgroundTint) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         TextView textView = holder.mActionText;
+        TextView subtextView = holder.mActionSubtext;
         ImageView imageView = holder.mActionIcon;
         ImageView endImageView = holder.mActionEndIcon;
 
         if (textView != null) {
             textView.setTextAppearance(textAppearance);
+        }
+        if (subtextView != null) {
+            subtextView.setTextAppearance(subtextAppearance);
         }
         if (imageView != null) {
             imageView.setImageTintList(iconTint);
@@ -591,19 +610,19 @@ class FuseboxViewBinder {
                 OmniboxResourceProvider.getFuseboxPopupIconBackgroundTintList(
                         context, brandedColorScheme, isBottomSheet);
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
+        @StyleRes
+        int smallTextAppearance =
+                OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
         for (View button : popup.mAttachmentButtons) {
-            themeButton(button, textAppearance, iconTint, iconBackgroundTint);
+            themeButton(button, textAppearance, smallTextAppearance, iconTint, iconBackgroundTint);
         }
 
         for (View button : popup.mDynamicThemedButtons) {
-            themeButton(button, textAppearance, iconTint, iconBackgroundTint);
+            themeButton(button, textAppearance, smallTextAppearance, iconTint, iconBackgroundTint);
         }
 
-        @StyleRes
-        int headerTextAppearance =
-                OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
         for (TextView header : popup.mHeaders) {
-            header.setTextAppearance(headerTextAppearance);
+            header.setTextAppearance(smallTextAppearance);
         }
 
         @ColorInt
@@ -759,12 +778,14 @@ class FuseboxViewBinder {
     private static class FuseboxItemViewHolder {
         public final ImageView mActionIcon;
         public final TextView mActionText;
+        public final @Nullable TextView mActionSubtext;
         public final ImageView mActionEndIcon;
         public boolean mHasColor;
 
         public FuseboxItemViewHolder(View itemView) {
             mActionIcon = itemView.findViewById(R.id.start_icon);
             mActionText = itemView.findViewById(R.id.action_text);
+            mActionSubtext = itemView.findViewById(R.id.action_subtext);
             mActionEndIcon = itemView.findViewById(R.id.end_icon);
         }
     }

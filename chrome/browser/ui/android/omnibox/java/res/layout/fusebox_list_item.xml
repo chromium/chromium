@@ -24,13 +24,30 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:tint="@macro/default_icon_color_secondary" />
 
-    <TextView
-        android:id="@+id/action_text"
-        android:duplicateParentState="true"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAlignment="viewStart"/>
+        android:orientation="vertical"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no">
+
+        <TextView
+            android:id="@+id/action_text"
+            android:duplicateParentState="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"/>
+
+        <TextView
+            android:id="@+id/action_subtext"
+            android:duplicateParentState="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:visibility="gone"/>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/end_icon"

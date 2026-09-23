@@ -845,6 +845,35 @@ public class FuseboxViewBinderUnitTest {
                                 .setSelected(false)
                                 .build()));
         assertEquals("custom tool", getDynamicToolButton(0).getContentDescription());
+
+        String expectedWithSubtext =
+                res.getString(
+                        R.string.acc_fusebox_popup_text_with_subtext,
+                        "custom tool",
+                        "custom subtext");
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonData.Builder()
+                                .setText("custom tool")
+                                .setSubtext("custom subtext")
+                                .setType(PopupButtonType.TOOL)
+                                .setSelected(false)
+                                .build()));
+        assertEquals(expectedWithSubtext, getDynamicToolButton(0).getContentDescription());
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonData.Builder()
+                                .setText("custom tool")
+                                .setSubtext("custom subtext")
+                                .setType(PopupButtonType.TOOL)
+                                .setSelected(true)
+                                .build()));
+        assertEquals(
+                res.getString(R.string.acc_fusebox_popup_button_selected, expectedWithSubtext),
+                getDynamicToolButton(0).getContentDescription());
     }
 
     @Test
