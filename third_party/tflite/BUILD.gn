@@ -997,7 +997,6 @@ if (!use_litert_tflite) {
         "src/tensorflow/lite/delegates/coreml/coreml_executor.h",
         "src/tensorflow/lite/delegates/coreml/coreml_executor.mm",
       ]
-      configs_to_remove = [ "//build/config/compiler:enable_arc" ]
       configs_to_add = [
         ":tflite_config",
         ":tflite_flags",
