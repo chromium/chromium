@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/notreached.h"
 #import "base/values.h"
 #import "components/enterprise/device_trust/core/common_types.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_challenge_tab_helper.h"
@@ -55,6 +56,7 @@ const char* DeviceTrustErrorToJsErrorCode(
     case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
       return "INTERNAL_ERROR";
   }
+  NOTREACHED();
 }
 
 // Returns the default JavaScript error message for a DeviceTrustError.
@@ -76,14 +78,51 @@ const char* DeviceTrustErrorToJsErrorMessage(
     case enterprise_connectors::DeviceTrustError::kFailedToCreateResponse:
       return "Device attestation is not available.";
   }
+  NOTREACHED();
 }
 
-// Rejects the originating JS promise with an error code and message.
+// Errors specific to the iOS script-message bridge, not the shared device
+// attestation flow.
+enum class ScriptMessageError {
+  kUnsupportedFrame,
+};
+
+// Returns the JavaScript error code for a ScriptMessageError.
+const char* ScriptMessageErrorToErrorCode(ScriptMessageError error) {
+  switch (error) {
+    case ScriptMessageError::kUnsupportedFrame:
+      return "UNSUPPORTED_FRAME";
+  }
+  NOTREACHED();
+}
+
+// Returns the default JavaScript error message for a ScriptMessageError.
+const char* ScriptMessageErrorToErrorMessage(ScriptMessageError error) {
+  switch (error) {
+    case ScriptMessageError::kUnsupportedFrame:
+      return "Device attestation is only supported in the main frame.";
+  }
+  NOTREACHED();
+}
+
+// Rejects the originating JS promise with an error code and message for a
+// DeviceTrustError.
 void RejectAttestationRequest(ReplyCallback callback,
                               enterprise_connectors::DeviceTrustError error) {
   base::DictValue reply;
   reply.Set("errorCode", DeviceTrustErrorToJsErrorCode(error));
   reply.Set("errorMessage", DeviceTrustErrorToJsErrorMessage(error));
+  base::Value reply_value(std::move(reply));
+  std::move(callback).Run(&reply_value, nil);
+}
+
+// Rejects the originating JS promise with an error code and message for a
+// ScriptMessageError.
+void RejectAttestationRequest(ReplyCallback callback,
+                              ScriptMessageError error) {
+  base::DictValue reply;
+  reply.Set("errorCode", ScriptMessageErrorToErrorCode(error));
+  reply.Set("errorMessage", ScriptMessageErrorToErrorMessage(error));
   base::Value reply_value(std::move(reply));
   std::move(callback).Run(&reply_value, nil);
 }
@@ -150,12 +189,9 @@ void DeviceTrustJavaScriptFeature::ScriptMessageReceivedWithReply(
     web::WebState* web_state,
     const web::ScriptMessage& message,
     ScriptMessageReplyCallback callback) {
-  // TODO(crbug.com/563331507): Return a dedicated JS validation error instead
-  // of reusing kFailedToParseChallenge.
   if (!message.is_main_frame()) {
-    RejectAttestationRequest(
-        std::move(callback),
-        enterprise_connectors::DeviceTrustError::kFailedToParseChallenge);
+    RejectAttestationRequest(std::move(callback),
+                             ScriptMessageError::kUnsupportedFrame);
     return;
   }
 

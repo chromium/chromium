@@ -164,7 +164,12 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonMainFrameMessage) {
   SendMessage(MakeMessageBody(base::Value(kChallenge)),
               /*is_main_frame=*/false);
 
-  ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
+  ExpectErrorReply("UNSUPPORTED_FRAME");
+  ASSERT_TRUE(reply_.has_value());
+  ASSERT_TRUE(reply_->is_dict());
+  EXPECT_THAT(reply_->GetDict().FindString("errorMessage"),
+              testing::Pointee(testing::StrEq(
+                  "Device attestation is only supported in the main frame.")));
 }
 
 // Verifies that messages with null bodies are rejected.
