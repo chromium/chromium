@@ -88,7 +88,6 @@ class InitialWebUIWindowMetricsManager;
 class IOSPromoController;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
-class PinnedToolbarActions;
 class ProfileMenuCoordinator;
 class OrganizerPanelController;
 class ReadingListSidePanelCoordinator;
@@ -319,10 +318,6 @@ class BrowserWindowFeatures {
     location_bar_model->swap(location_bar_model_);
   }
 #endif
-
-  PinnedToolbarActions* pinned_toolbar_actions() {
-    return pinned_toolbar_actions_;
-  }
 
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
@@ -584,7 +579,6 @@ class BrowserWindowFeatures {
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
-  raw_ptr<PinnedToolbarActions> pinned_toolbar_actions_ = nullptr;
   raw_ptr<TabStripModel> tab_strip_model_;
 
   // Embedder features. Must be declared last.

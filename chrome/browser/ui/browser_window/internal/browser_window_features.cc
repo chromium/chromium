@@ -156,7 +156,6 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
@@ -1040,13 +1039,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
               *browser_, browser_);
     }
 
-    if (browser_view) {
-      // Get the PinnedToolbarActions for the browser; it might not exist for
-      // browsers with a custom tab toolbar.
-      pinned_toolbar_actions_ =
-          browser_view->toolbar_button_provider()->GetPinnedToolbarActions();
-    }
-
     qrcode_window_controller_ =
         GetUserDataFactory()
             .CreateInstance<qrcode_generator::QRCodeWindowController>(*browser,
@@ -1163,7 +1155,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
   send_tab_to_self_toolbar_bubble_controller_.reset();
   qrcode_window_controller_.reset();
-  pinned_toolbar_actions_ = nullptr;
   memory_saver_opt_in_iph_controller_.reset();
   ios_promo_controller_.reset();
   if (chrome_labs_coordinator_) {
