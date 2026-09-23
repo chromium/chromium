@@ -458,12 +458,11 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
   return item;
 }
 
-
-NSMenuItem* BuildPeopleMenu(NSApplication* nsapp,
-                            id app_delegate,
-                            const std::u16string& product_name,
-                            bool is_pwa,
-                            bool is_rtl) {
+NSMenuItem* BuildProfilesMenu(NSApplication* nsapp,
+                              id app_delegate,
+                              const std::u16string& product_name,
+                              bool is_pwa,
+                              bool is_rtl) {
   // clang-format off
   NSMenuItem* item =
       Item(IDS_PROFILES_MENU_NAME)
@@ -643,7 +642,7 @@ NSMenu* BuildMainMenu(NSApplication* nsapp,
            &BuildViewMenu,
            &BuildHistoryMenu,
            &BuildBookmarksMenu,
-           &BuildPeopleMenu,
+           &BuildProfilesMenu,
            &BuildTabMenu,
            &BuildWindowMenu,
            &BuildHelpMenu,
