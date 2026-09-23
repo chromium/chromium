@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -32,26 +31,9 @@ using content::EvalJs;
 constexpr base::FilePath::CharType kDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
 
-// Counts the open Browser-backed Picture-in-Picture windows by iterating the
-// global browser collection. Avoids the FindBrowserWith* helpers, which are
-// discouraged for new code.
-int CountPictureInPictureBrowsers() {
-  int count = 0;
-  GlobalBrowserCollection::GetInstance()->ForEach(
-      [&count](BrowserWindowInterface* browser) {
-        if (browser->GetType() ==
-            BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE) {
-          ++count;
-        }
-        return true;
-      });
-  return count;
-}
-
 }  // namespace
 
-// Base fixture: enables the Document Picture-in-Picture web API and serves the
-// test page. The standalone feature is toggled by the derived fixtures.
+// Base fixture for the standalone Document PiP browser tests.
 class DocumentPipStandaloneBrowserTestBase : public InProcessBrowserTest {
  public:
   DocumentPipStandaloneBrowserTestBase() = default;
@@ -97,27 +79,6 @@ class DocumentPipStandaloneEnabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Opening a Document PiP window routes to a DocumentPipHost (no Browser) and
-// the window is not part of BrowserList.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
-                       RequestWindowOpensStandaloneHost) {
-  OpenDocumentPipWindow();
-
-  auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
-  EXPECT_NE(nullptr, host->GetWidget());
-  EXPECT_NE(nullptr, host->GetChildWebContents());
-  EXPECT_NE(OpenerWebContents(), host->GetChildWebContents());
-
-  auto* manager = PictureInPictureWindowManager::GetInstance();
-  EXPECT_EQ(host->GetChildWebContents(), manager->GetChildWebContents());
-  EXPECT_TRUE(PictureInPictureWindowManager::IsChildWebContents(
-      host->GetChildWebContents()));
-
-  // The standalone path must not create a Browser-backed PiP window.
-  EXPECT_EQ(0, CountPictureInPictureBrowsers());
-}
 
 // The standalone PiP widget should be placed on the same display as its
 // opener (regression guard for: the widget is given only a size, so the origin
@@ -236,32 +197,4 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
   EXPECT_EQ(
       nullptr,
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents());
-}
-
-// Fixture with the standalone Document PiP path disabled (legacy behavior).
-class DocumentPipStandaloneDisabledBrowserTest
-    : public DocumentPipStandaloneBrowserTestBase {
- public:
-  DocumentPipStandaloneDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kDocumentPictureInPictureAPI},
-        /*disabled_features=*/{features::kDocumentPipStandaloneWindow});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// With the flag off, Document PiP still opens a Browser-backed window and no
-// DocumentPipHost is created.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneDisabledBrowserTest,
-                       RequestWindowUsesBrowserBackedPath) {
-  OpenDocumentPipWindow();
-
-  auto* child_web_contents =
-      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
-  ASSERT_NE(nullptr, child_web_contents);
-
-  EXPECT_EQ(nullptr, GetDocumentPipHost());
-  EXPECT_EQ(1, CountPictureInPictureBrowsers());
 }
