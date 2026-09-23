@@ -17,6 +17,9 @@ namespace base {
 // RefCountedDeleteOnSequence is similar to RefCountedThreadSafe, and ensures
 // that the object will be deleted on a specified sequence.
 //
+// The reference count starts from one, so the first scoped_refptr has to be
+// created by base::AdoptRef() or base::MakeRefCounted().
+//
 // Sample usage:
 // class Foo : public RefCountedDeleteOnSequence<Foo> {
 //
@@ -32,7 +35,7 @@ namespace base {
 template <class T>
 class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
  public:
-  using RefCountPreferenceTag = subtle::StartRefCountFromZeroTag;
+  using RefCountPreferenceTag = subtle::StartRefCountFromOneTag;
 
   // A SequencedTaskRunner for the current sequence can be acquired by calling
   // SequencedTaskRunner::GetCurrentDefault().

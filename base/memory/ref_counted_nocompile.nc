@@ -100,7 +100,9 @@ void SubclassOverridesRefcountPreferenceThreadsafe() {
 void SubclassOverridesRefcountPreferenceDeleteOnSequence() {
   class Derived : public DeleteOnSequenceBase {
    public:
-    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+    // RefCountedDeleteOnSequence already starts from one, so override with the
+    // opposite preference to exercise the check.
+    using RefCountPreferenceTag = subtle::StartRefCountFromZeroTag;
   };
 
   scoped_refptr<Derived> ptr;  // expected-error@*:* {{It's unsafe to override the ref count preference. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses.}}

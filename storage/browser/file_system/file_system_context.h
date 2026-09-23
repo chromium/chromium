@@ -18,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -97,8 +96,6 @@ using URLRequestAutoMountHandler = base::RepeatingCallback<bool(
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
     : public base::RefCountedDeleteOnSequence<FileSystemContext> {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   FileSystemContext() = delete;
   FileSystemContext(const FileSystemContext&) = delete;
   FileSystemContext& operator=(const FileSystemContext&) = delete;
