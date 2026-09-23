@@ -861,23 +861,31 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
 }
 
 - (void)embedMostVisitedView:(UIView*)mostVisitedView {
-  if (_mostVisitedView != mostVisitedView) {
+  BOOL viewChanged = (_mostVisitedView != mostVisitedView);
+  if (viewChanged) {
     if (_mostVisitedView) {
       [_mostVisitedView removeFromSuperview];
     }
     _mostVisitedView = mostVisitedView;
   }
-  if (self.isViewLoaded && _mostVisitedView && _mostVisitedContainerView) {
-    if (_mostVisitedView.superview == _mostVisitedContainerView) {
-      return;
-    }
+  if (!self.isViewLoaded || !_mostVisitedContainerView) {
+    return;
+  }
+  if (!viewChanged && _mostVisitedView &&
+      _mostVisitedView.superview == _mostVisitedContainerView) {
+    return;
+  }
+  if (!viewChanged && !_mostVisitedView) {
+    return;
+  }
+  if (_mostVisitedView) {
     _mostVisitedView.translatesAutoresizingMaskIntoConstraints = NO;
     [_mostVisitedContainerView addSubview:_mostVisitedView];
     AddSameConstraints(_mostVisitedView, _mostVisitedContainerView);
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-    [self updateFeedInsets];
   }
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
+  [self updateFeedInsets];
 }
 
 #pragma mark - Snapping Offsets

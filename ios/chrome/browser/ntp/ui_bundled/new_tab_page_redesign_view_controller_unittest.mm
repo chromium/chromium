@@ -9,6 +9,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
@@ -91,6 +94,7 @@ T* FindChildViewController(UIViewController* parent) {
 - (BOOL)isCompactHeight;
 - (void)backdropTapped:(UITapGestureRecognizer*)recognizer;
 - (void)updateMagicStackHierarchy;
+- (void)updateMostVisitedHierarchy;
 @end
 
 class NewTabPageRedesignViewControllerTest : public PlatformTest {
@@ -326,6 +330,101 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestBottomSheetDidEscape) {
 
   // Calling bottomSheetViewControllerDidEscape should not crash.
   [view_controller_ bottomSheetViewControllerDidEscape:sheet];
+}
+
+// Tests that onHeightChanged callback triggers bottom sheet position update
+// when MVT is not in the bottom sheet.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMvtHeightChangeCallbackWhenNotInBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMVTInBottomSheet);
+
+  [view_controller_ loadViewIfNeeded];
+  NewTabPageBottomSheetViewController* sheet =
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
+  id mock_bottom_sheet = OCMPartialMock(sheet);
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  MostVisitedTilesCollectionView* collection_view =
+      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+  ASSERT_TRUE(collection_view != nil);
+  ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
+
+  OCMExpect([mock_bottom_sheet updateBottomSheetPositionAnimated:YES]);
+  collection_view.onContentSizeChanged(CGSizeMake(300, 100));
+  [mock_bottom_sheet verify];
+}
+
+// Tests that onHeightChanged callback updates feed insets and sheet position
+// when MVT is in the bottom sheet.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMvtHeightChangeCallbackWhenInBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  [view_controller_ loadViewIfNeeded];
+  NewTabPageBottomSheetViewController* sheet =
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
+  id mock_bottom_sheet = OCMPartialMock(sheet);
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  MostVisitedTilesCollectionView* collection_view =
+      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+  ASSERT_TRUE(collection_view != nil);
+  ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
+
+  OCMExpect([mock_bottom_sheet updateBottomSheetPositionAnimated:YES]);
+  collection_view.onContentSizeChanged(CGSizeMake(300, 100));
+  [mock_bottom_sheet verify];
+}
+
+// Tests that onContentSizeChanged callback correctly updates the bottom sheet
+// even when setMostVisitedTilesConfig is invoked before viewDidLoad.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMvtHeightChangeCallbackWhenConfiguredBeforeViewDidLoad) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  // Configure before view is loaded.
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  // Now load view, which instantiates bottomSheetViewController.
+  [view_controller_ loadViewIfNeeded];
+  NewTabPageBottomSheetViewController* sheet =
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
+  id mock_bottom_sheet = OCMPartialMock(sheet);
+
+  MostVisitedTilesCollectionView* collection_view =
+      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+  ASSERT_TRUE(collection_view != nil);
+  ASSERT_TRUE(collection_view.onContentSizeChanged != nil);
+
+  OCMExpect([mock_bottom_sheet updateBottomSheetPositionAnimated:YES]);
+  collection_view.onContentSizeChanged(CGSizeMake(300, 100));
+  [mock_bottom_sheet verify];
 }
 
 // Tests that setDefaultSearchEngineName updates fakebox accessibility label.
@@ -740,6 +839,55 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   EXPECT_EQ(nil, sheet.magicStackViewController);
   EXPECT_FALSE([magic_stack.view isDescendantOfView:sheet.view]);
   EXPECT_TRUE([magic_stack.view isDescendantOfView:view_controller_.view]);
+}
+
+// Tests that Most Visited Tiles view hierarchy updates correctly between
+// iPad regular and compact/iPhone layouts.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMostVisitedHierarchyReparenting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  [view_controller_ loadViewIfNeeded];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+
+  [view_controller_ setMostVisitedTilesConfig:config];
+
+  MostVisitedTilesCollectionView* mvt_view =
+      FindSubviewByClass<MostVisitedTilesCollectionView>(view_controller_.view);
+  ASSERT_TRUE(mvt_view != nil);
+  NewTabPageBottomSheetViewController* sheet =
+      FindChildViewController<NewTabPageBottomSheetViewController>(
+          view_controller_);
+  ASSERT_TRUE(sheet != nil);
+
+  // In iPad regular, MVT should be in redesign VC and not in bottom sheet.
+  EXPECT_FALSE([mvt_view isDescendantOfView:sheet.view]);
+  EXPECT_TRUE([mvt_view isDescendantOfView:view_controller_.view]);
+
+  // Transition to compact layout.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_ updateMostVisitedHierarchy];
+
+  // In compact layout, MVT should be embedded in bottom sheet.
+  EXPECT_TRUE([mvt_view isDescendantOfView:sheet.view]);
+
+  // Transition back to iPad regular layout.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [view_controller_ updateMostVisitedHierarchy];
+
+  // MVT should be restored to redesign VC and not in bottom sheet.
+  EXPECT_FALSE([mvt_view isDescendantOfView:sheet.view]);
+  EXPECT_TRUE([mvt_view isDescendantOfView:view_controller_.view]);
 }
 
 // Tests that on iPad regular, didUpdateTopOffset synchronizes tablet omnibox

@@ -298,12 +298,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     _quickActionsViewController.view.hidden = !self.quickActionsVisible;
   }
 
-  // Add Most Visited Tiles (MVTs) container if not in bottom sheet.
-  if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
-    _mostVisitedContainerView = [[UIView alloc] init];
-    _mostVisitedContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_centerContentContainerView addSubview:_mostVisitedContainerView];
-  }
+  // Add Most Visited Tiles (MVTs) container.
+  _mostVisitedContainerView = [[UIView alloc] init];
+  _mostVisitedContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_centerContentContainerView addSubview:_mostVisitedContainerView];
 
   _magicStackContainerView = [[UIView alloc] init];
   _magicStackContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -370,25 +368,23 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     ]];
   }
 
-  if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
-    [NSLayoutConstraint activateConstraints:@[
-      [_mostVisitedContainerView.widthAnchor
-          constraintEqualToAnchor:_fakeLocationBar.widthAnchor],
-      [_mostVisitedContainerView.centerXAnchor
-          constraintEqualToAnchor:_fakeLocationBar.centerXAnchor],
-    ]];
+  [NSLayoutConstraint activateConstraints:@[
+    [_mostVisitedContainerView.widthAnchor
+        constraintEqualToAnchor:_fakeLocationBar.widthAnchor],
+    [_mostVisitedContainerView.centerXAnchor
+        constraintEqualToAnchor:_fakeLocationBar.centerXAnchor],
+  ]];
 
-    UIView* anchorView = self.quickActionsVisible
-                             ? _quickActionsViewController.view
-                             : _fakeLocationBar;
-    CGFloat constant =
-        content_suggestions::MostVisitedTopPadding(self.traitCollection);
+  UIView* anchorView = self.quickActionsVisible
+                           ? _quickActionsViewController.view
+                           : _fakeLocationBar;
+  CGFloat constant =
+      content_suggestions::MostVisitedTopPadding(self.traitCollection);
 
-    _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
-        constraintEqualToAnchor:anchorView.bottomAnchor
-                       constant:constant];
-    _mvtTopConstraint.active = YES;
-  }
+  _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
+      constraintEqualToAnchor:anchorView.bottomAnchor
+                     constant:constant];
+  _mvtTopConstraint.active = YES;
 
   _fakeLocationBar.layer.cornerRadius =
       _fakeLocationBarHeightConstraint.constant / 2.0;
@@ -495,13 +491,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   [self.view addSubview:_bottomSheetViewController.view];
   [_bottomSheetViewController didMoveToParentViewController:self];
 
-  if (_mostVisitedView) {
-    if (IsMVTInBottomSheetEnabled() && ![self isIPadRegularLayout]) {
-      [_bottomSheetViewController embedMostVisitedView:_mostVisitedView];
-    } else {
-      [self embedMostVisitedView];
-    }
-  }
+  [self updateMostVisitedHierarchy];
 
   if (_searchEngineLogoView) {
     [self addSearchEngineLogoView];
@@ -559,6 +549,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 }
 
 - (void)handleTraitChanges {
+  [self updateMostVisitedHierarchy];
   [self updateMagicStackHierarchy];
   if (_bottomSheetViewController) {
     [_bottomSheetViewController updateLayoutModeForCurrentTraitCollection];
@@ -745,7 +736,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 - (CGFloat)restingOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController {
   CGFloat offset = [self centeredFakeOmniboxTop] + [self topContentHeight];
-  if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
+  if (![self shouldPlaceMVTInBottomSheet]) {
     offset += kRestingSheetMVTTopMargin;
   }
 
@@ -874,31 +865,21 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
   if (!config) {
     _mostVisitedView = nil;
+    [self updateMostVisitedHierarchy];
     return;
   }
 
   MostVisitedTilesCollectionView* collectionView =
       [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
 
-  if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
-    __weak __typeof(_bottomSheetViewController) weakBottomSheetViewController =
-        _bottomSheetViewController;
-    collectionView.onContentSizeChanged = ^(CGSize) {
-      [weakBottomSheetViewController updateBottomSheetPositionAnimated:YES];
-    };
-  }
+  __weak __typeof(self) weakSelf = self;
+  collectionView.onContentSizeChanged = ^(CGSize) {
+    [weakSelf handleMostVisitedTilesContentSizeChanged];
+  };
 
   _mostVisitedView = CreateMostVisitedContainerView(collectionView, YES);
 
-  if (IsMVTInBottomSheetEnabled() && ![self isIPadRegularLayout]) {
-    if (_bottomSheetViewController) {
-      [_bottomSheetViewController embedMostVisitedView:_mostVisitedView];
-    }
-  } else {
-    if (self.isViewLoaded) {
-      [self embedMostVisitedView];
-    }
-  }
+  [self updateMostVisitedHierarchy];
 
   for (MostVisitedItem* item in config.mostVisitedItems) {
     [ContentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
@@ -1018,6 +999,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
          UIUserInterfaceSizeClassRegular;
 }
 
+- (BOOL)shouldPlaceMVTInBottomSheet {
+  return ![self isIPadRegularLayout] && IsMVTInBottomSheetEnabled();
+}
+
 - (void)backdropTapped:(UITapGestureRecognizer*)recognizer {
   if (recognizer.state == UIGestureRecognizerStateEnded) {
     [_bottomSheetViewController collapseToRestingAnimated:YES];
@@ -1030,8 +1015,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _customizationMenuButton.accessibilityElementsHidden = hidden;
 }
 
+// Returns the view directly above the Magic Stack in regular iPad layout.
 - (UIView*)topContentAnchorViewForMagicStack {
-  if (_mostVisitedContainerView && _mostVisitedView) {
+  if (_mostVisitedContainerView && _mostVisitedView &&
+      _mostVisitedView.superview == _mostVisitedContainerView) {
     return _mostVisitedContainerView;
   }
   if (self.quickActionsVisible && _quickActionsViewController) {
@@ -1040,6 +1027,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   return _fakeLocationBar;
 }
 
+// Updates autolayout constraints for the Magic Stack container view when
+// displayed in regular iPad layout.
 - (void)updateMagicStackConstraints {
   if (_magicStackConstraints) {
     [NSLayoutConstraint deactivateConstraints:_magicStackConstraints];
@@ -1065,6 +1054,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   [NSLayoutConstraint activateConstraints:_magicStackConstraints];
 }
 
+// Embeds or detaches the Magic Stack child view controller depending on the
+// horizontal size class (regular iPad vs compact/bottom sheet).
 - (void)updateMagicStackHierarchy {
   if (!self.isViewLoaded) {
     return;
@@ -1102,12 +1093,51 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 }
 
-// Add _mostVisitedView to the view hierarchy.
+// Handles content size updates from Most Visited Tiles to reposition the bottom
+// sheet.
+- (void)handleMostVisitedTilesContentSizeChanged {
+  [_bottomSheetViewController updateBottomSheetPositionAnimated:YES];
+}
+
+// Updates the view hierarchy of Most Visited Tiles depending on whether they
+// should be embedded within the bottom sheet or displayed in the top content
+// area.
+- (void)updateMostVisitedHierarchy {
+  if (!self.isViewLoaded) {
+    return;
+  }
+  if ([self shouldPlaceMVTInBottomSheet]) {
+    if (_mostVisitedContainerView) {
+      _mostVisitedContainerView.hidden = YES;
+    }
+    if (_mostVisitedView &&
+        _mostVisitedView.superview == _mostVisitedContainerView) {
+      [_mostVisitedView removeFromSuperview];
+    }
+    if (_bottomSheetViewController) {
+      [_bottomSheetViewController embedMostVisitedView:_mostVisitedView];
+    }
+  } else {
+    if (_bottomSheetViewController) {
+      [_bottomSheetViewController embedMostVisitedView:nil];
+    }
+    if (_mostVisitedContainerView) {
+      _mostVisitedContainerView.hidden = NO;
+    }
+    [self embedMostVisitedView];
+  }
+}
+
+// Embeds `_mostVisitedView` into `_mostVisitedContainerView` when not placed in
+// the bottom sheet.
 - (void)embedMostVisitedView {
-  if (IsMVTInBottomSheetEnabled() && ![self isIPadRegularLayout]) {
+  if ([self shouldPlaceMVTInBottomSheet]) {
     return;
   }
   if (!_mostVisitedView || !_mostVisitedContainerView) {
+    return;
+  }
+  if (_mostVisitedView.superview == _mostVisitedContainerView) {
     return;
   }
   _mostVisitedView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1171,7 +1201,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     height += content_suggestions::MostVisitedTopPadding(self.traitCollection);
   }
 
-  if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
+  if (![self shouldPlaceMVTInBottomSheet]) {
     height +=
         MostVisitedContainerHeight(_mostVisitedContainerView, _mostVisitedView);
   }
@@ -1310,7 +1340,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
     BOOL isVisible = self.quickActionsVisible;
     _quickActionsViewController.view.hidden = !isVisible;
 
-    if (!IsMVTInBottomSheetEnabled() || [self isIPadRegularLayout]) {
+    if (_mvtTopConstraint) {
       _mvtTopConstraint.active = NO;
 
       UIView* anchorView =

@@ -720,3 +720,41 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_ updateFeedSigninPromoVisibility];
   EXPECT_OCMOCK_VERIFY(delegate);
 }
+
+// Tests that embedMostVisitedView embeds the view, and passing nil removes it
+// and updates insets.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestEmbedMostVisitedViewAndDetach) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat insets_without_mvt = scroll_view.contentInset.top;
+
+  UIView* mvt_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
+  [mvt_view.heightAnchor constraintEqualToConstant:120.0].active = YES;
+
+  [view_controller_ embedMostVisitedView:mvt_view];
+  [view_controller_.view layoutIfNeeded];
+
+  UIView* container =
+      [view_controller_ valueForKey:@"_mostVisitedContainerView"];
+  ASSERT_TRUE(container != nil);
+  EXPECT_EQ(mvt_view.superview, container);
+  EXPECT_GT(scroll_view.contentInset.top, insets_without_mvt);
+
+  // Detach by passing nil.
+  [view_controller_ embedMostVisitedView:nil];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(mvt_view.superview, nil);
+  EXPECT_EQ(scroll_view.contentInset.top, insets_without_mvt);
+}
