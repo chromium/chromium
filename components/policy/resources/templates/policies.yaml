@@ -1301,9 +1301,9 @@ policies:
   1300: AutofillPredictionSettings
   1301: ArcOpenLinksInBrowserByDefault
   1302: EnterpriseProfileBadgeToolbarSettings
-  1303: DefaultDirectSocketsPrivateNetworkAccessSetting
-  1304: DirectSocketsPrivateNetworkAccessAllowedForUrls
-  1305: DirectSocketsPrivateNetworkAccessBlockedForUrls
+  1303: ''
+  1304: ''
+  1305: ''
   1306: SelectParserRelaxationEnabled
   1307: ClassManagementEnabled
   1308: EnterpriseSearchAggregatorSettings

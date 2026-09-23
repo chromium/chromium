@@ -74,9 +74,6 @@ inline constexpr char kManagedDefaultWebPrintingSetting[] =
     "profile.managed_default_content_settings.web_printing";
 inline constexpr char kManagedDefaultDirectSocketsSetting[] =
     "profile.managed_default_content_settings.direct_sockets";
-inline constexpr char
-    kManagedDefaultDirectSocketsPrivateNetworkAccessSetting[] =
-        "profile.managed_default_content_settings.direct_sockets_pna";
 inline constexpr char kManagedDefaultSubAppsWithoutPromptsSetting[] =
     "profile.managed_default_content_settings.sub_apps_without_prompts";
 inline constexpr char kManagedDefaultLegacyCookieScope[] =
@@ -196,12 +193,6 @@ inline constexpr char kManagedDirectSocketsAllowedForUrls[] =
     "profile.managed_direct_sockets_allowed_for_urls";
 inline constexpr char kManagedDirectSocketsBlockedForUrls[] =
     "profile.managed_direct_sockets_blocked_for_urls";
-inline constexpr char
-    kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls[] =
-        "profile.managed_direct_sockets_pna_allowed_for_urls";
-inline constexpr char
-    kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls[] =
-        "profile.managed_direct_sockets_pna_blocked_for_urls";
 inline constexpr char kManagedSubAppsWithoutPromptsAllowedForOrigins[] =
     "profile.managed_sub_apps_without_prompts_allowed_for_origins";
 inline constexpr char kManagedSubAppsWithoutPromptsBlockedForOrigins[] =

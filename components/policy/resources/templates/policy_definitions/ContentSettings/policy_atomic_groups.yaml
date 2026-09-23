@@ -88,9 +88,6 @@ DirectSocketsSettings:
   - DefaultDirectSocketsSetting
   - DirectSocketsAllowedForUrls
   - DirectSocketsBlockedForUrls
-  - DefaultDirectSocketsPrivateNetworkAccessSetting
-  - DirectSocketsPrivateNetworkAccessAllowedForUrls
-  - DirectSocketsPrivateNetworkAccessBlockedForUrls
 ControlledFrameSettings:
   caption: Controlled Frame settings
   policies:
