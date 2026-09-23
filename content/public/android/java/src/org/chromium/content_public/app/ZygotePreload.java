@@ -19,11 +19,15 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * Class used in android:zygotePreloadName attribute of manifest.
- * Code in this class runs in the zygote. It runs in a limited environment
- * (eg no application) and cannot communicate with any other app process,
- * so care must be taken when writing code in this class. Eg it should not
- * create any thread.
+ * Class used in android:zygotePreloadName attribute of manifest. Code in this class runs in the App
+ * Zygote. It runs in a limited environment (e.g. no Application context) and cannot communicate
+ * with any other app process, so care must be taken when writing code in this class:
+ *
+ * <ul>
+ *   <li>It must not create any threads.
+ *   <li>It must not retain writable file descriptors or mutable shared memory across forking (see
+ *       //docs/security/android-sandbox.md#zygote).
+ * </ul>
  */
 @RequiresApi(Build.VERSION_CODES.Q)
 @NullMarked

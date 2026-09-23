@@ -104,6 +104,37 @@ acquire resources and perform initialization that is common to all future
 processes. This extends the benefits of lower initialization time and greater
 memory sharing from the system zygote to individual applications.
 
+With greater memory sharing comes greater responsibility.
+
+When about to fork, the Zygote checks that all its open File Descriptors (FDs)
+are in its allowlist. The allowlist includes useful files like /dev/urandom, IPC
+sockets, config files, system libraries and APKs. Automatically excluding other
+files protects apps against accidental exposure of Android Framework internals
+(like ART).
+
+One particular risk of exposing open FDs in child processes is that their offset
+position can be changed in isolated processes. A malicious call to `lseek(2)`
+from an unprivileged context could potentially confuse privileged code reading
+or writing from/to these shared FDs.
+
+However, FDs open during Zygote Preload are not checked against the allowlist
+above. Chrome is therefore fully responsible for controlling the added shared
+state created during Preload. Keeping an open file descriptor or a memory
+mapping (or a native library loaded) past Zygote Preload makes them shared
+across all isolated processes. There is no automatic protection against
+accidental cross-process leaks like this.
+
+[RELRO Sharing](../android_native_libraries.md#relro-sharing) is one example of
+a readonly memory region (and its FD) created during Preload and shared across
+all process types in Chrome. In this case Preload must make sure to unmap all
+writable mappings and convert the region to readonly (PROT_READ for ashmem,
+F_SEAL_WRITE or F_SEAL_FUTURE_WRITE for memfd).
+
+Chrome trusts the App Zygote (`app_zygote` SELinux domain) and its child process
+bootstrap to never host untrusted code or data. Chrome could potentially
+mitigate some kinds of zygote contamination, but these checks would not be
+effective at protecting against leaking web credentials.
+
 ## Sandboxing
 
 Similar to the [Linux sandbox design](../linux/sandboxing.md), which uses a
@@ -131,6 +162,10 @@ are usually assigned to one of three domains:
 - [**isolated_app**](https://cs.android.com/android/platform/superproject/main/+/main:system/sepolicy/private/isolated_app.te;drc=941ba723baceac19151560e8a1d2830b9be6493c)
   is a restrictive sandbox that can be applied via the `<service
   android:isolatedProcess="true">` tag in an application's manifest
+- [**app_zygote**](https://cs.android.com/android/platform/superproject/main/+/main:system/sepolicy/private/app_zygote.te;drc=9128735f1f02603c6c35de40a5c2eeb6e8cdc2e6)
+  is similarly restrictive to `isolated_app`; it is additionally allowed to
+  access/open executable and static application files for preload, allowed to
+  fork into `isolated_app`
 
 In Chrome, the browser process runs under the **untrusted_app** SELinux domain,
 which enforces separation between distinct apps on the system.

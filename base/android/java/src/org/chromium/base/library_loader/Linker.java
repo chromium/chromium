@@ -49,9 +49,15 @@ import javax.annotation.concurrent.GuardedBy;
  *
  * Security considerations:
  *
- * - The shared RELRO memory region is always forced read-only after creation, which means it is
+ * - The shared RELRO memory region is always forced readonly after creation, which means it is
  *   impossible for a compromised process to map it read-write (e.g. by calling mmap() or
  *   mprotect()) and modify its content, altering values seen in other processes.
+ *
+ * - The App Zygote process is guaranteed (by Android) to be uncompromised. See
+ *   //docs/security/android-sandbox.md#zygote.
+ *
+ * - When the RELRO region is taken from an isolated process, it should be done before any untrusted
+ *   data or code reaches that process.
  *
  * - The common library load addresses are randomized for each instance of the program on the
  *   device.

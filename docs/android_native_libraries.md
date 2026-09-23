@@ -167,6 +167,17 @@ Builds on | Variant | Description
    * For non-renderer processes, the above Android N+ logic applies.
    * For renderer processes, the OS starts all Monochrome renderer processes by `fork()`ing the WebView zygote rather than the normal application zygote.
 
+**Security properties:**
+ * When the Browser process consumes a shared RELRO FD produced by the App
+   Zygote, it relies on the App Zygote not hosting untrusted code or data. The
+   initial forked child process transferring the `IRelroLibInfo` parcel during
+   `ChildProcessService.setupConnection()` must be done before any untrusted web
+   or network input is processed.
+ * After populating the shared memory region, the producer unmaps its temporary
+   writable mapping and marks the FD read-only.
+ * For the broader App Zygote threat model and cross-process isolation
+   invariants, see [Chrome Android Sandbox Design](security/android-sandbox.md#zygote).
+
 
 
 ## Library Prefetching

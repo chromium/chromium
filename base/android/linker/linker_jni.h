@@ -301,10 +301,10 @@ class NativeLibInfo {
   //
   // The external NativeLibInfo can arrive from a different process.
   //
-  // Note on security: The RELRO region is treated as *trusted*, no untrusted
-  // user/website/network input can be processed in an isolated process before
-  // it sends the RELRO FD. This is because there is no way to check whether the
-  // process has a writable mapping of the region remaining.
+  // Note on security: The RELRO region is treated as *trusted* because the App
+  // Zygote does not host untrusted code/data before it sends the RELRO FD. The
+  // Linker does not check write protection of the region for simplicity. See
+  // //docs/security/android-sandbox.md#zygote.
   bool CompareRelroAndReplaceItBy(const NativeLibInfo& other_lib_info);
 
   void set_relro_info_for_testing(uintptr_t start, size_t size) {
