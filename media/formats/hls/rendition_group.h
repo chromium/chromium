@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
@@ -88,7 +89,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // individually valid, has a type matching Rendition::Type, and belongs to
   // this group. If the rendition is invalid in the context of the group, an
   // error will be returned.
-  ParseStatus::Or<std::monostate> AddRendition(
+  base::expected<std::monostate, ParseStatus> AddRendition(
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri,

@@ -45,7 +45,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const auto playlist_uri = GURL("http://localhost/playlist.m3u8");
 
   // Try to parse it as a multivariant playlist
-  media::hls::MultivariantPlaylist::Parse(
+  auto result = media::hls::MultivariantPlaylist::Parse(
       source, playlist_uri, url::Origin::Create(playlist_uri), version);
 
   return 0;

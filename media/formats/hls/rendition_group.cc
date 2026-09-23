@@ -77,7 +77,7 @@ RenditionGroup::RenditionGroup(base::PassKey<MultivariantPlaylist>,
 
 RenditionGroup::~RenditionGroup() = default;
 
-ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
+base::expected<std::monostate, ParseStatus> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri,
@@ -99,7 +99,8 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     if (HLSQuirks::DeduplicateRenditionNamesInGroup()) {
       name += base::NumberToString(renditions_map_.size());
     } else {
-      return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
+      return base::unexpected(
+          ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
     }
   }
 
@@ -137,7 +138,8 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     if (!default_rendition_.has_value()) {
       default_rendition_ = std::make_tuple(track, &rendition);
     } else if (!HLSQuirks::AllowMultipleDefaultRenditionsInGroup()) {
-      return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
+      return base::unexpected(
+          ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames);
     }
   }
 

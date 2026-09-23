@@ -58,7 +58,7 @@ T* GetOrCreateRenditionGroup(
 MultivariantPlaylist::~MultivariantPlaylist() = default;
 
 // static
-ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
+base::expected<scoped_refptr<MultivariantPlaylist>, ParseStatus>
 MultivariantPlaylist::Parse(std::string_view source,
                             GURL uri,
                             url::Origin security_origin,
@@ -66,11 +66,11 @@ MultivariantPlaylist::Parse(std::string_view source,
   DCHECK(version != 0);
   if (version < Playlist::kMinSupportedVersion ||
       version > Playlist::kMaxSupportedVersion) {
-    return ParseStatusCode::kPlaylistHasUnsupportedVersion;
+    return base::unexpected(ParseStatusCode::kPlaylistHasUnsupportedVersion);
   }
 
   if (!uri.is_valid()) {
-    return ParseStatusCode::kInvalidUri;
+    return base::unexpected(ParseStatusCode::kInvalidUri);
   }
 
   SourceLineIterator src_iter{source};
@@ -79,7 +79,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   {
     auto m3u_tag_result = CheckM3uTag(&src_iter);
     if (!m3u_tag_result.has_value()) {
-      return std::move(m3u_tag_result).error();
+      return base::unexpected(std::move(m3u_tag_result).error());
     }
   }
 
@@ -103,7 +103,7 @@ MultivariantPlaylist::Parse(std::string_view source,
         break;
       }
 
-      return std::move(error);
+      return base::unexpected(std::move(error));
     }
 
     auto item = std::move(item_result).value();
@@ -113,7 +113,8 @@ MultivariantPlaylist::Parse(std::string_view source,
       // The HLS spec requires that there may be no tags between the
       // X-STREAM-INF tag and its URI.
       if (inf_tag.has_value()) {
-        return ParseStatusCode::kXStreamInfTagNotFollowedByUri;
+        return base::unexpected(
+            ParseStatusCode::kXStreamInfTagNotFollowedByUri);
       }
 
       if (!tag->GetName().has_value()) {
@@ -125,13 +126,14 @@ MultivariantPlaylist::Parse(std::string_view source,
         case TagKind::kCommonTag: {
           auto error = ParseCommonTag(*tag, &common_state);
           if (error.has_value()) {
-            return std::move(error).value();
+            return base::unexpected(std::move(error).value());
           }
           continue;
         }
         case TagKind::kMediaPlaylistTag:
           if (!HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
-            return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+            return base::unexpected(
+                ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
           }
           continue;
         case TagKind::kMultivariantPlaylistTag:
@@ -153,7 +155,7 @@ MultivariantPlaylist::Parse(std::string_view source,
           auto result =
               XMediaTag::Parse(*tag, common_state.variable_dict, sub_buffer);
           if (!result.has_value()) {
-            return std::move(result).error();
+            return base::unexpected(std::move(result).error());
           }
           auto media_tag = std::move(result).value();
 
@@ -169,7 +171,7 @@ MultivariantPlaylist::Parse(std::string_view source,
               } else {
                 resolved_playlist_uri = uri.Resolve(media_tag.uri->Str());
                 if (!resolved_playlist_uri->is_valid()) {
-                  return ParseStatusCode::kInvalidUri;
+                  return base::unexpected(ParseStatusCode::kInvalidUri);
                 }
                 auto id_iter = rendition_uri_map.find(*resolved_playlist_uri);
                 if (id_iter == rendition_uri_map.end()) {
@@ -185,7 +187,7 @@ MultivariantPlaylist::Parse(std::string_view source,
                   base::PassKey<MultivariantPlaylist>(), std::move(media_tag),
                   uri, std::move(resolved_playlist_uri), *rendition_id);
               if (!rendition_result.has_value()) {
-                return std::move(rendition_result).error();
+                return base::unexpected(std::move(rendition_result).error());
               }
               break;
             }
@@ -216,7 +218,7 @@ MultivariantPlaylist::Parse(std::string_view source,
           auto error = ParseUniqueTag(*tag, inf_tag, common_state.variable_dict,
                                       sub_buffer);
           if (error.has_value()) {
-            return std::move(error).value();
+            return base::unexpected(std::move(error).value());
           }
           break;
         }
@@ -232,14 +234,14 @@ MultivariantPlaylist::Parse(std::string_view source,
     auto variant_uri_result = ParseUri(std::get<UriItem>(std::move(item)), uri,
                                        common_state, sub_buffer);
     if (!variant_uri_result.has_value()) {
-      return std::move(variant_uri_result).error();
+      return base::unexpected(std::move(variant_uri_result).error());
     }
     auto variant_uri = std::move(variant_uri_result).value();
 
     // For this to be a valid variant, we must have previously parsed an
     // X-STREAM-INF tag.
     if (!inf_tag.has_value()) {
-      return ParseStatusCode::kVariantMissingStreamInfTag;
+      return base::unexpected(ParseStatusCode::kVariantMissingStreamInfTag);
     }
 
     scoped_refptr<RenditionGroup> audio_renditions;
@@ -274,12 +276,12 @@ MultivariantPlaylist::Parse(std::string_view source,
   }
 
   if (inf_tag.has_value()) {
-    return ParseStatusCode::kXStreamInfTagNotFollowedByUri;
+    return base::unexpected(ParseStatusCode::kXStreamInfTagNotFollowedByUri);
   }
 
   // Version must match what was expected.
   if (!common_state.CheckVersion(version)) {
-    return ParseStatusCode::kPlaylistHasVersionMismatch;
+    return base::unexpected(ParseStatusCode::kPlaylistHasVersionMismatch);
   }
 
   // Ensure that each rendition group has at least one rendition
@@ -289,7 +291,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   // virtual group, we should expect that there are no tracks at all.
   for (const auto& group : audio_rendition_groups) {
     if (group.first.has_value() != group.second->HasTracks()) {
-      return ParseStatusCode::kRenditionGroupDoesNotExist;
+      return base::unexpected(ParseStatusCode::kRenditionGroupDoesNotExist);
     }
   }
 

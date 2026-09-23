@@ -99,9 +99,9 @@ ResolvedSourceString& ResolvedSourceString::operator=(
 SourceLineIterator::SourceLineIterator(std::string_view source)
     : current_line_(1), source_(source) {}
 
-ParseStatus::Or<SourceString> SourceLineIterator::Next() {
+base::expected<SourceString, ParseStatus> SourceLineIterator::Next() {
   if (source_.empty()) {
-    return ParseStatusCode::kReachedEOF;
+    return base::unexpected(ParseStatusCode::kReachedEOF);
   }
 
   const auto line_end = source_.find_first_of("\r\n");
@@ -132,7 +132,7 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   } else if (following.starts_with("\r\n")) {
     source_ = following.substr(2);
   } else {
-    return ParseStatusCode::kInvalidEOL;
+    return base::unexpected(ParseStatusCode::kInvalidEOL);
   }
 
   const auto line_number = current_line_;

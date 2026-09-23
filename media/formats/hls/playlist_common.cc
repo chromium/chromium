@@ -21,11 +21,11 @@ bool CommonParserState::CheckVersion(
   }
 }
 
-ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
+base::expected<M3uTag, ParseStatus> CheckM3uTag(SourceLineIterator* src_iter) {
   auto item_result = GetNextLineItem(src_iter);
   if (!item_result.has_value()) {
-    return ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
-        .AddCause(std::move(item_result).error());
+    return base::unexpected(ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
+                                .AddCause(std::move(item_result).error()));
   }
 
   auto item = std::move(item_result).value();
@@ -33,20 +33,21 @@ ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
     // The #EXTM3U tag must be the first line in the playlist
     if (tag_item->GetName() != ToTagName(CommonTagName::kM3u) ||
         tag_item->GetLineNumber() != 1) {
-      return ParseStatusCode::kPlaylistMissingM3uTag;
+      return base::unexpected(ParseStatusCode::kPlaylistMissingM3uTag);
     }
 
     // Make sure the M3U tag parses correctly
     auto result = M3uTag::Parse(*tag_item);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
-          .AddCause(std::move(result).error());
+      return base::unexpected(
+          ParseStatus(ParseStatusCode::kPlaylistMissingM3uTag)
+              .AddCause(std::move(result).error()));
     }
 
     return result;
   }
 
-  return ParseStatusCode::kPlaylistMissingM3uTag;
+  return base::unexpected(ParseStatusCode::kPlaylistMissingM3uTag);
 }
 
 void HandleUnknownTag(TagItem /*tag*/) {
@@ -115,7 +116,7 @@ std::optional<ParseStatus> ParseCommonTag(TagItem tag,
   return std::nullopt;
 }
 
-ParseStatus::Or<GURL> ParseUri(
+base::expected<GURL, ParseStatus> ParseUri(
     UriItem item,
     const GURL& playlist_uri,
     const CommonParserState& state,
@@ -123,14 +124,14 @@ ParseStatus::Or<GURL> ParseUri(
   // Variables may appear in URIs, check for any occurrences and resolve them.
   auto uri_str_result = state.variable_dict.Resolve(item.content, sub_buffer);
   if (!uri_str_result.has_value()) {
-    return std::move(uri_str_result).error();
+    return base::unexpected(std::move(uri_str_result).error());
   }
 
   // URIs may be relative to the playlist URI, resolve it against that.
   auto resolved_uri =
       playlist_uri.Resolve(std::move(uri_str_result).value().Str());
   if (!resolved_uri.is_valid()) {
-    return ParseStatusCode::kInvalidUri;
+    return base::unexpected(ParseStatusCode::kInvalidUri);
   }
 
   return resolved_uri;

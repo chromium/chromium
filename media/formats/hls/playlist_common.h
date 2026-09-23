@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/tags.h"
@@ -39,7 +40,7 @@ struct CommonParserState {
 
 // Validates that the first line of the given SourceLineIterator contains a
 // valid #EXTM3U tag.
-ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter);
+base::expected<M3uTag, ParseStatus> CheckM3uTag(SourceLineIterator* src_iter);
 
 // Handles an unknown tag.
 void HandleUnknownTag(TagItem);
@@ -68,10 +69,11 @@ std::optional<ParseStatus> ParseUniqueTag(TagItem tag,
   return std::nullopt;
 }
 
-ParseStatus::Or<GURL> ParseUri(UriItem item,
-                               const GURL& playlist_uri,
-                               const CommonParserState& state,
-                               VariableDictionary::SubstitutionBuffer& buffer);
+base::expected<GURL, ParseStatus> ParseUri(
+    UriItem item,
+    const GURL& playlist_uri,
+    const CommonParserState& state,
+    VariableDictionary::SubstitutionBuffer& buffer);
 
 }  // namespace media::hls
 

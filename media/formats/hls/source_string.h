@@ -162,7 +162,7 @@ struct MEDIA_EXPORT SourceLineIterator {
   // the current line. Returns `ParseStatusCode::kInvalidEOL` if invalid line
   // endings were found, or `ParseStatusCode::kReachedEOF` if no further lines
   // exist in the manifest.
-  ParseStatus::Or<SourceString> Next();
+  base::expected<SourceString, ParseStatus> Next();
 
   size_t CurrentLineForTesting() const { return current_line_; }
   std::string_view SourceForTesting() const { return source_; }
