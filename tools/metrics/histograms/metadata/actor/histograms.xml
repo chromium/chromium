@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <variant name="UserNavigatedAway" summary="User manually navigated away."/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason, //chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:StoppedReasonName) -->
 
 <!-- LINT.IfChange(ToolRequest) -->
 
@@ -1005,6 +1005,20 @@ chromium-metrics-reviews@google.com.
   <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
+<histogram name="Actor.Task.OmniboxClickCount.{StoppedReason}" units="count"
+    expires_after="2027-08-11">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    total number of times the user clicked or focused the search box (omnibox)
+    while the task was active.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+</histogram>
+
 <histogram name="Actor.Task.StateTransition.ActionCount.{OldState}_{NewState}"
     units="count" expires_after="2027-02-14">
   <owner>kenok@google.com</owner>
@@ -1185,6 +1199,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>Recorded when a global task indicator nudge is shown.</summary>
+</histogram>
+
+<histogram name="Actor.Ui.OmniboxClick.TaskState" enum="ActorTaskState"
+    expires_after="2027-08-11">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded each time the user clicks or focuses the search box (omnibox) while
+    an Actor task is active. This captures the state of the active task at the
+    moment of user interaction.
+  </summary>
 </histogram>
 
 <histogram name="Actor.Ui.TabController.Error" enum="ActorUiTabControllerError"

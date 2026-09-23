@@ -168,7 +168,8 @@ class ActorTask : public base::SupportsUserData {
     kMaxValue = kTimeout,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason,
-  // //tools/metrics/histograms/metadata/actor/enums.xml:StoppedReasonEnum)
+  // //tools/metrics/histograms/metadata/actor/enums.xml:StoppedReasonEnum,
+  // //chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:StoppedReasonName)
 
   enum class TaskDuration {
     kDefault = 0,
@@ -250,6 +251,10 @@ class ActorTask : public base::SupportsUserData {
   // Returns true if the task has completed, either successfully or cancelled.
   bool IsCompleted() const;
   static bool IsCompletedState(State state);
+
+  std::optional<StoppedReason> stopped_reason() const {
+    return stopped_reason_;
+  }
 
   ExecutionEngine& GetExecutionEngine() const;
 

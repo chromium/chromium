@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
+import org.chromium.chrome.browser.actor.ActorMetrics;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -167,6 +168,7 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorContro
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.open_in_app.TabbedOpenInAppEntryPoint;
@@ -358,6 +360,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
     private @Nullable PdfPageIphController mPdfPageIphController;
     private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
+    private @Nullable UrlFocusChangeListener mActorUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private @Nullable PwaBottomSheetController mPwaBottomSheetController;
     private @Nullable NotificationPermissionController mNotificationPermissionController;
@@ -916,6 +919,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarManager != null) {
             mToolbarManager.getOmniboxStub().removeUrlFocusChangeListener(mUrlFocusChangeListener);
+            if (mActorUrlFocusChangeListener != null) {
+                OmniboxStub omniboxStub = mToolbarManager.getOmniboxStub();
+                if (omniboxStub != null) {
+                    omniboxStub.removeUrlFocusChangeListener(mActorUrlFocusChangeListener);
+                }
+                mActorUrlFocusChangeListener = null;
+            }
         }
 
         if (mOfflineIndicatorInProductHelpController != null) {
@@ -1144,6 +1154,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 || VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
             mToolbarManager.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         }
+
+        mActorUrlFocusChangeListener =
+                new UrlFocusChangeListener() {
+                    @Override
+                    public void onUrlFocusChange(boolean hasFocus) {
+                        if (hasFocus) {
+                            ActorMetrics.recordOmniboxFocus(mActivityTabProvider.get());
+                        }
+                    }
+                };
+        mToolbarManager
+                .getOmniboxStubSupplier()
+                .onAvailable(
+                        omniboxStub -> {
+                            if (mActorUrlFocusChangeListener != null) {
+                                omniboxStub.addUrlFocusChangeListener(mActorUrlFocusChangeListener);
+                            }
+                        });
     }
 
     @Override

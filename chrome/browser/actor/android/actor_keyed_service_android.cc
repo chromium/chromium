@@ -161,6 +161,11 @@ void ActorKeyedServiceAndroid::NotifyBackgroundSetupFailed(
 
 void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
   JNIEnv* env = AttachCurrentThread();
+  if (task.stopped_reason().has_value()) {
+    Java_ActorKeyedService_onTaskStopped(
+        env, java_obj_, task.id().GetUnsafeValue(),
+        static_cast<int>(task.stopped_reason().value()));
+  }
   Java_ActorKeyedService_onTaskStateChanged(env, java_obj_,
                                             task.id().GetUnsafeValue(),
                                             static_cast<int>(task.GetState()));

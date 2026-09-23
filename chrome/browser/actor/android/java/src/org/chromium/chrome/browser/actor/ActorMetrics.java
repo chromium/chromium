@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -101,6 +103,8 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     private static @Nullable ActorMetrics sInstance;
 
     private final Map<@ActorTaskId Integer, LatencyTracker> mTrackers = new HashMap<>();
+    private final Map<@ActorTaskId Integer, Integer> mOmniboxClickCounts = new HashMap<>();
+    private final Set<@ActorTaskId Integer> mStoppedTasks = new HashSet<>();
     private @ActorMode int mCurrentGlobalMode = ActorMode.FOREGROUND;
 
     /**
@@ -116,6 +120,49 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     }
 
     private ActorMetrics() {}
+
+    /**
+     * Records omnibox focus/click metrics if the given tab has an active Actor task bound to it.
+     *
+     * @param tab The current {@link Tab}.
+     */
+    public static void recordOmniboxFocus(@Nullable Tab tab) {
+        if (tab == null || tab.isDestroyed()) return;
+        Profile profile = tab.getProfile();
+        if (profile == null) return;
+        ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
+        if (service == null || service.getActiveTasksCount() == 0) return;
+
+        @Nullable
+        @ActorTaskId
+        Integer taskId = service.getActiveTaskIdOnTab(tab.getId(), /* includePaused= */ true);
+        if (taskId == null) return;
+
+        ActorTask task = service.getTask(taskId);
+        if (task == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Actor.Ui.OmniboxClick.TaskState", task.getState(), ActorTaskState.MAX_VALUE + 1);
+        getInstance().incrementOmniboxClickCount(taskId);
+    }
+
+    private void incrementOmniboxClickCount(@ActorTaskId int taskId) {
+        mOmniboxClickCounts.put(taskId, mOmniboxClickCounts.getOrDefault(taskId, 0) + 1);
+    }
+
+    @Override
+    public void onTaskStopped(@ActorTaskId int taskId, @StoppedReason int stoppedReason) {
+        if (!mStoppedTasks.add(taskId)) {
+            return;
+        }
+        String reasonName = getStoppedReasonName(stoppedReason);
+        if (!reasonName.isEmpty()) {
+            int clickCount = mOmniboxClickCounts.getOrDefault(taskId, 0);
+            RecordHistogram.recordCount100Histogram(
+                    "Actor.Task.OmniboxClickCount." + reasonName, clickCount);
+        }
+        mOmniboxClickCounts.remove(taskId);
+    }
 
     /** Records the PiP status (Enter/Exit). */
     public static void recordPipStatus(@ActorPipStatus int status) {
@@ -259,6 +306,14 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         if (ActorUtils.isCompletedState(newState)) {
             tracker.recordTaskMetrics();
             mTrackers.remove(taskId);
+            if (!mStoppedTasks.contains(taskId)) {
+                @StoppedReason
+                int defaultReason =
+                        (newState == ActorTaskState.FINISHED)
+                                ? StoppedReason.TASK_COMPLETE
+                                : StoppedReason.STOPPED_BY_USER;
+                onTaskStopped(taskId, defaultReason);
+            }
         }
     }
 
@@ -324,4 +379,42 @@ public class ActorMetrics implements ActorKeyedService.Observer {
             @ActorTaskId int taskId, @ActorTaskState int newState) {
         onTaskStateChanged(taskId, newState);
     }
+
+    public void onTaskStoppedForTesting(@ActorTaskId int taskId, @StoppedReason int stoppedReason) {
+        onTaskStopped(taskId, stoppedReason);
+    }
+
+    public int getOmniboxClickCountForTesting(@ActorTaskId int taskId) {
+        return mOmniboxClickCounts.getOrDefault(taskId, 0);
+    }
+
+    // LINT.IfChange(StoppedReasonName)
+    private static String getStoppedReasonName(@StoppedReason int stoppedReason) {
+        switch (stoppedReason) {
+            case StoppedReason.STOPPED_BY_USER:
+                return "Cancelled";
+            case StoppedReason.TASK_COMPLETE:
+                return "Completed";
+            case StoppedReason.MODEL_ERROR:
+                return "ModelError";
+            case StoppedReason.CHROME_FAILURE:
+                return "ChromeFailure";
+            case StoppedReason.TAB_DETACHED:
+                return "TabDetached";
+            case StoppedReason.SHUTDOWN:
+                return "Shutdown";
+            case StoppedReason.USER_STARTED_NEW_CHAT:
+                return "NewChat";
+            case StoppedReason.USER_LOADED_PREVIOUS_CHAT:
+                return "PreviousChat";
+            case StoppedReason.USER_NAVIGATED_AWAY:
+                return "UserNavigatedAway";
+            case StoppedReason.TIMEOUT:
+                return "Timeout";
+            default:
+                return "";
+        }
+    }
+    // LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason,
+    // //tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason)
 }

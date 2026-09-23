@@ -38,6 +38,9 @@ public class ActorKeyedService {
 
         /** Triggered when a task's intermediate step progress (worklog) is updated. */
         default void onTaskStepProgressUpdated(@ActorTaskId int taskId, String stepProgress) {}
+
+        /** Triggered when a task is stopped or completed with a reason. */
+        default void onTaskStopped(@ActorTaskId int taskId, @StoppedReason int stoppedReason) {}
     }
 
     @CalledByNative
@@ -82,6 +85,9 @@ public class ActorKeyedService {
 
     /** Allows the UI to stop a running task. */
     public void stopTask(@ActorTaskId int taskId, @StoppedReason int stopReason) {
+        for (Observer obs : mObservers) {
+            obs.onTaskStopped(taskId, stopReason);
+        }
         if (mNativePtr == 0) return;
         ActorKeyedServiceJni.get().stopTask(mNativePtr, taskId, stopReason);
     }
@@ -179,6 +185,13 @@ public class ActorKeyedService {
             @ActorTaskId int taskId, @JniType("std::string") String stepProgress) {
         for (Observer obs : mObservers) {
             obs.onTaskStepProgressUpdated(taskId, stepProgress);
+        }
+    }
+
+    @CalledByNative
+    private void onTaskStopped(@ActorTaskId int taskId, @StoppedReason int stoppedReason) {
+        for (Observer obs : mObservers) {
+            obs.onTaskStopped(taskId, stoppedReason);
         }
     }
 

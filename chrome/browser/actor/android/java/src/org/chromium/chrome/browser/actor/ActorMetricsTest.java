@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,9 @@ import java.util.concurrent.TimeUnit;
 public class ActorMetricsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final int TAB_ID = 77;
+
+    @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private Profile mOriginalProfile;
     @Mock private ActorKeyedService mActorService;
@@ -42,6 +47,8 @@ public class ActorMetricsTest {
 
     @Before
     public void setUp() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mOriginalProfile);
         ActorKeyedServiceFactory.setForTesting(mActorService);
         ActorMetrics.resetForTesting();
@@ -231,5 +238,203 @@ public class ActorMetricsTest {
 
         mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_withActiveTaskOnTab() {
+        int taskId = 101;
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(TAB_ID, /* includePaused= */ true))
+                .thenReturn(taskId);
+        when(mActorService.getTask(taskId)).thenReturn(mockTask);
+
+        var focusWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Ui.OmniboxClick.TaskState", ActorTaskState.ACTING);
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        focusWatcher.assertExpected();
+
+        assertEquals(1, mActorMetrics.getOmniboxClickCountForTesting(taskId));
+
+        // Focus a second time in REFLECTING state.
+        when(mockTask.getState()).thenReturn(ActorTaskState.REFLECTING);
+        var focusWatcher2 =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Ui.OmniboxClick.TaskState", ActorTaskState.REFLECTING);
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        focusWatcher2.assertExpected();
+        assertEquals(2, mActorMetrics.getOmniboxClickCountForTesting(taskId));
+
+        // Finish the task and assert OmniboxClickCount.Completed is emitted with 2.
+        var completionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Task.OmniboxClickCount.Completed", 2);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        completionWatcher.assertExpected();
+        assertEquals(0, mActorMetrics.getOmniboxClickCountForTesting(taskId));
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_taskBoundToOtherTabIgnored() {
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(TAB_ID, /* includePaused= */ true))
+                .thenReturn(null);
+
+        var focusWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Ui.OmniboxClick.TaskState")
+                        .build();
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        focusWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_noActiveTask() {
+        when(mActorService.getActiveTasksCount()).thenReturn(0);
+
+        var focusWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Ui.OmniboxClick.TaskState")
+                        .build();
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        focusWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_nullTab() {
+        var focusWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Ui.OmniboxClick.TaskState")
+                        .build();
+
+        ActorMetrics.recordOmniboxFocus(null);
+        focusWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_stoppedReasonRecorded() {
+        int taskId = 202;
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(TAB_ID, /* includePaused= */ true))
+                .thenReturn(taskId);
+        when(mActorService.getTask(taskId)).thenReturn(mockTask);
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        ActorMetrics.recordOmniboxFocus(mTab);
+        ActorMetrics.recordOmniboxFocus(mTab);
+        assertEquals(3, mActorMetrics.getOmniboxClickCountForTesting(taskId));
+
+        var timeoutWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Actor.Task.OmniboxClickCount.Timeout", 3);
+
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TIMEOUT);
+        timeoutWatcher.assertExpected();
+
+        // Ensure that subsequent completed state change does not double-record.
+        var cancelledWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Task.OmniboxClickCount.Cancelled")
+                        .build();
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.CANCELLED);
+        cancelledWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStopped_userNavigatedAway() {
+        int taskId = 404;
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(TAB_ID, /* includePaused= */ true))
+                .thenReturn(taskId);
+        when(mActorService.getTask(taskId)).thenReturn(mockTask);
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Task.OmniboxClickCount.UserNavigatedAway", 1);
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.USER_NAVIGATED_AWAY);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testTaskCompletedWithZeroClicks() {
+        int taskId = 303;
+        var completionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Task.OmniboxClickCount.Completed", 0);
+
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
+        completionWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTaskStateChangedFollowedByOnTaskStopped_noDuplicateRecord() {
+        int taskId = 505;
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(TAB_ID, /* includePaused= */ true))
+                .thenReturn(taskId);
+        when(mActorService.getTask(taskId)).thenReturn(mockTask);
+
+        ActorMetrics.recordOmniboxFocus(mTab);
+        assertEquals(1, mActorMetrics.getOmniboxClickCountForTesting(taskId));
+
+        var cancelledWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Task.OmniboxClickCount.Cancelled", 1);
+        mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.CANCELLED);
+        cancelledWatcher.assertExpected();
+
+        // Subsequent onTaskStopped (e.g. from JNI or observer dispatch) must not record again.
+        var duplicateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Task.OmniboxClickCount.Cancelled")
+                        .expectNoRecords("Actor.Task.OmniboxClickCount.Timeout")
+                        .build();
+        mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TIMEOUT);
+        duplicateWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_tabDestroyedIgnored() {
+        Tab destroyedTab = mock(Tab.class);
+        when(destroyedTab.isDestroyed()).thenReturn(true);
+
+        var focusWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Ui.OmniboxClick.TaskState")
+                        .build();
+
+        ActorMetrics.recordOmniboxFocus(destroyedTab);
+        focusWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordOmniboxFocus_offTheRecordIgnored() {
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
+        Tab otrTab = mock(Tab.class);
+        when(otrTab.isDestroyed()).thenReturn(false);
+        when(otrTab.getProfile()).thenReturn(otrProfile);
+
+        var focusWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Ui.OmniboxClick.TaskState")
+                        .build();
+
+        ActorMetrics.recordOmniboxFocus(otrTab);
+        focusWatcher.assertExpected();
     }
 }
