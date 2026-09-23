@@ -39,7 +39,6 @@
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -317,9 +316,6 @@ TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
 // This verifies that when the feature is disabled, the scan result is SUCCESS
 // and it proceeds without a warning dialog.
 TEST_F(DownloadManagerTabHelperTest, DownloadCompleteProceeds) {
-  scoped_feature_list_.InitAndDisableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   web_state_->WasShown();
   std::unique_ptr<web::FakeDownloadTask> task =
       CreateFakeDownloadTask(GURL(kUrl), kMimeType);
@@ -362,9 +358,6 @@ TEST_F(DownloadManagerTabHelperTest, DownloadCompleteSavedToDriveDoesNotMove) {
 // is set, the scan result will be SUCCESS and the download proceeds,
 TEST_F(DownloadManagerTabHelperTest,
        DownloadCompleteWithScanningEnabledProceeds) {
-  scoped_feature_list_.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   web_state_->WasShown();
   std::unique_ptr<web::FakeDownloadTask> task =
       CreateFakeDownloadTask(GURL(kUrl), kMimeType);
@@ -419,9 +412,6 @@ TEST_F(DownloadManagerTabHelperTest, EnterpriseMetadataCleanup) {
 // Tests that when a download task is complete, the tab helper notifies the
 // delegate about state updates and correctly reports `IsScannerProcessing()`.
 TEST_F(DownloadManagerTabHelperTest, DownloadCompleteNotifiesDelegate) {
-  scoped_feature_list_.InitAndDisableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   web_state_->WasShown();
   std::unique_ptr<web::FakeDownloadTask> task =
       CreateFakeDownloadTask(GURL(kUrl), kMimeType);

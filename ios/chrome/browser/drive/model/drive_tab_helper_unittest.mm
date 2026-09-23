@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -165,33 +164,9 @@ TEST_F(DriveTabHelperTest,
   EXPECT_EQ(nullptr, helper_->GetUploadTaskForDownload(download_task_.get()));
 }
 
-// Tests that when the feature flag is disabled, the upload starts directly
-// when the download is complete.
-TEST_F(DriveTabHelperTest, UploadStartsDirectlyWhenFeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);
-
-  UploadTask* upload_task =
-      helper_->GetUploadTaskForDownload(download_task_.get());
-  ASSERT_NE(nullptr, upload_task);
-  EXPECT_EQ(UploadTask::State::kNotStarted, upload_task->GetState());
-
-  // Simulate completion of the download task.
-  download_task_->SetDone(true);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return upload_task->GetState() == UploadTask::State::kInProgress;
-  }));
-}
-
 // Tests that when scanning is ENABLED and result is SUCCESS, the upload
 // proceeds.
 TEST_F(DriveTabHelperTest, ScanningSuccessStartsUpload) {
-  scoped_feature_list_.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
   EnableConnector();
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);

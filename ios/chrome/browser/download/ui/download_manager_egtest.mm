@@ -21,7 +21,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
@@ -110,8 +109,6 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   configuration.features_disabled.push_back(kChromeNextIa);
 
   if ([self isEnterpriseDownloadTest]) {
-    configuration.features_enabled.push_back(
-        enterprise_connectors::kEnableFileDownloadConnectorIOS);
     configuration.additional_args.push_back(base::StrCat(
         {"--", safe_browsing::switches::kCloudBinaryUploadServiceUrlFlag, "=",
          _uploadServer->GetServiceURL().spec()}));

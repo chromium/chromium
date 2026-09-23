@@ -37,7 +37,6 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/components/enterprise/data_controls/clipboard_enums.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -401,11 +400,6 @@ void CheckAndAcceptSystemDialog() {
 
   if ([self isRunningTest:@selector(testShowFullURLInWebContextMenu)]) {
     config.features_disabled.push_back(kIOSWebContextMenuNewTitle);
-  }
-
-  if ([self isRunningTest:@selector(testSaveImageBlockByDownloadProtection)]) {
-    config.features_enabled.push_back(
-        enterprise_connectors::kEnableFileDownloadConnectorIOS);
   }
 
   return config;
@@ -1482,8 +1476,6 @@ void CheckAndAcceptSystemDialog() {
 - (void)testSaveImageToAlbumOptionsBlockByDownloadProtection {
   // Relaunch the app with the Download Connector enabled.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
   config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

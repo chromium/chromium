@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -497,9 +496,6 @@ TEST_F(ContextMenuConfigurationProviderTest,
 // subtitle if download protection connector is enabled.
 TEST_F(ContextMenuConfigurationProviderTest,
        SaveImageBlockedWhenEnableFileDOwnloadConnector) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
 
   PrefService* pref_service = profile_->GetPrefs();
   SetDownloadConnectorsPref(pref_service, kDownloadConnectorsAnalysisPref);
@@ -536,9 +532,6 @@ TEST_F(ContextMenuConfigurationProviderTest,
 // has a download blocked subtitle if download protection connector is enabled.
 TEST_F(ContextMenuConfigurationProviderTest,
        AllOptionsToSaveImageBlockedWhenEnableFileDownloadConnector) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
 
   PrefService* pref_service = profile_->GetPrefs();
   SetDownloadConnectorsPref(pref_service, kDownloadConnectorsAnalysisPref);

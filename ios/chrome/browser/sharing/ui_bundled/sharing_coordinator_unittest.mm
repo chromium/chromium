@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -351,8 +350,6 @@ TEST_F(SharingCoordinatorTest, Start_FileDownloadShouldProceed) {
 // Download Protection Feature is enabled but no policy is set.
 TEST_F(SharingCoordinatorTest,
        Start_DLPEnabledNoPolicy_FileDownloadShouldProceed) {
-  scoped_feature_list_.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
   url_value_ = base::Value("https://example.com/test.pdf");
   SetupForFileDownload();
 

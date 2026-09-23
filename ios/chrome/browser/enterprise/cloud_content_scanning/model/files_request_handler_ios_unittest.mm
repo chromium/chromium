@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -121,8 +120,6 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
         IOSReportingEventRouterFactory::GetForProfile(profile_.get()));
     connectors_service_ =
         ConnectorsServiceFactory::GetForProfile(profile_.get());
-
-    scoped_feature_list_.InitAndEnableFeature(kEnableFileDownloadConnectorIOS);
   }
 
   // Enables the file download connector by setting the appropriate pref.

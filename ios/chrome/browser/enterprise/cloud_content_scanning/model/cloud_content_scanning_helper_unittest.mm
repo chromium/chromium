@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
-#import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -323,10 +322,6 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanning) {
 // Tests that PrepareCloudContentScanning correctly parses and sets up resources
 // for a blocking scan (block_until_verdict = kBlock).
 TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningBlocking) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   // Set up the policy pref to enable blocking scans.
   SetUpAnalysisConnectorPolicy(kBlockingAnalysisSettingsPref);
 
@@ -354,10 +349,6 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningBlocking) {
 
 // Tests that PrepareCloudContentScanning handles non-blocking scans correctly.
 TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningNonBlocking) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   // Set up the policy pref to enable non-blocking scans.
   SetUpAnalysisConnectorPolicy(kNonBlockingAnalysisSettingsPref);
 
@@ -379,10 +370,6 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningNonBlocking) {
 // all active scans.
 TEST_F(CloudContentScanningHelperTest,
        PrepareCloudContentScanningNonBlockingLifetime) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableFileDownloadConnectorIOS);
-
   // Set up the policy pref to enable non-blocking scans.
   SetUpAnalysisConnectorPolicy(kNonBlockingAnalysisSettingsPref);
 

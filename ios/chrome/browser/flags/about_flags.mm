@@ -2253,12 +2253,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiCoordinatorTeardownFixName,
      flag_descriptions::kGeminiCoordinatorTeardownFixDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiCoordinatorTeardownFix)},
-    {"enable-file-download-connector-ios",
-     flag_descriptions::kEnableFileDownloadConnectorIOSName,
-     flag_descriptions::kEnableFileDownloadConnectorIOSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         enterprise_connectors::kEnableFileDownloadConnectorIOS)},
     {"enable-dynamic-route-fetching",
      enterprise_net::flag_descriptions::kEnableDynamicRouteFetchingName,
      enterprise_net::flag_descriptions::kEnableDynamicRouteFetchingDescription,

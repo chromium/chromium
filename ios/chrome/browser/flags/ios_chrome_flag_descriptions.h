@@ -748,12 +748,6 @@ inline constexpr char kEnableFeedHeaderSettingsName[] =
 inline constexpr char kEnableFeedHeaderSettingsDescription[] =
     "When enabled, some UI elements of the feed header can be modified.";
 
-inline constexpr char kEnableFileDownloadConnectorIOSName[] =
-    "Enable file download connectors on iOS.";
-inline constexpr char kEnableFileDownloadConnectorIOSDescription[] =
-    "When enabled, the enterprise DLP file download featured is available on "
-    "iOS. ";
-
 inline constexpr char kEnableFuseboxKeyboardAccessoryName[] =
     "Enable Omnibox Keyboard Accessory in Fusebox";
 inline constexpr char kEnableFuseboxKeyboardAccessoryDescription[] =
