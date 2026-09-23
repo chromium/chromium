@@ -409,9 +409,6 @@ std::optional<ExternalTexture> CreateExternalTexture(
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
-  if (!shared_image) {
-    return {};
-  }
 
   viz::RasterContextProvider* raster_context_provider =
       context_provider_wrapper->ContextProvider().RasterContextProvider();

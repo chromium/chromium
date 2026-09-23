@@ -52,9 +52,6 @@ void WebGpuSharedImageLease::SetSyncToken(const gpu::SyncToken& sync_token) {
 
 scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageLease::GetSharedImage()
     const {
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
   return resource_.shared_image_;
 }
 

@@ -87,9 +87,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
 
   scoped_refptr<gpu::ClientSharedImage> dest_shared_image =
       lease->GetSharedImage();
-  if (!dest_shared_image) {
-    return nullptr;
-  }
 
   if (!is_dummy_mailbox_texture) {
     bool copy_success = false;
@@ -152,7 +149,6 @@ WebGPUMailboxTexture::FromWebGpuSharedImageLease(
     std::unique_ptr<WebGpuSharedImageLease> lease) {
   CHECK(lease);
   scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
-  CHECK(shared_image);
   gpu::SyncToken sync_token = lease->GetSyncToken();
 
   gfx::Size size = shared_image->size();
