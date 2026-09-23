@@ -13,6 +13,7 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
 #include "base/threading/platform_thread.h"
@@ -80,6 +81,7 @@ bool IsRendererDebugURL(const GURL& url) {
       url == kChromeUICrashURL || url == kChromeUIDumpURL ||
       url == kChromeUIKillURL || url == kChromeUIHangURL ||
       url == kChromeUIShorthangURL || url == kChromeUIMemoryExhaustURL ||
+      url == kChromeUIBlinkOOMURL || url == kChromeUIBlinkWorkerOOMURL ||
       url == kChromeUIV8OOMURL || url == kChromeUICrashRustURL) {
     return true;
   }
@@ -114,14 +116,16 @@ bool IsRendererDebugURL(const GURL& url) {
 
 namespace {
 
-// The following methods are outside of the anonymous namespace to ensure that
-// the corresponding symbols get emitted even on symbol_level 1.
 NOINLINE void ExhaustMemory() {
   volatile void* ptr = nullptr;
   do {
     ptr = malloc(0x10000000);
     base::debug::Alias(&ptr);
   } while (ptr);
+}
+
+NOINLINE void SimulateBlinkOOM() {
+  OOM_CRASH(0);
 }
 
 #if defined(ADDRESS_SANITIZER)
@@ -204,6 +208,10 @@ void HandleChromeDebugURL(const GURL& url) {
         << "Intentionally exhausting renderer memory because user navigated to "
         << url.spec();
     ExhaustMemory();
+  } else if (url == kChromeUIBlinkOOMURL) {
+    LOG(ERROR) << "Intentionally causing Blink OOM because user navigated to "
+               << url.spec();
+    SimulateBlinkOOM();
   } else if (url == kChromeUICheckCrashURL) {
     LOG(ERROR) << "Intentionally causing CHECK because user navigated to "
                << url.spec();

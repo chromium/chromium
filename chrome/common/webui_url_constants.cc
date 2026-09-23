@@ -329,6 +329,8 @@ base::span<const base::cstring_view> ChromeDebugURLs() {
        blink::kChromeUIMemoryExhaustURL,
        blink::kChromeUIMemoryPressureCriticalURL,
        blink::kChromeUIMemoryPressureModerateURL,
+       blink::kChromeUIBlinkOOMURL,
+       blink::kChromeUIBlinkWorkerOOMURL,
        blink::kChromeUIV8OOMURL,
 #if BUILDFLAG(IS_WIN)
        blink::kChromeUIBrowserHeapCorruptionURL,

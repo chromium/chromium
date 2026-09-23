@@ -42,6 +42,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "partition_alloc/page_allocator.h"
+#include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -211,6 +212,28 @@ class CrashReportingBrowserTest : public ReportingBrowserTest {
       delete;
 
   ~CrashReportingBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ReportingBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_LINUX)
+    // Disable the sandbox so that renderers do not run as PID 1 inside a Linux
+    // PID namespace (where the kernel marks the process with SIGNAL_UNKILLABLE)
+    // and without seccomp-bpf restrictions during crash handling.
+    //
+    // When simulating an in-renderer crash (e.g. via OOM_CRASH(0) /
+    // PA_IMMEDIATE_CRASH(), which executes `int3` followed by `ud2`), Crashpad
+    // catches `SIGTRAP` (`int3`), records the dump, restores `SIG_DFL`, and
+    // re-raises `SIGTRAP` via `raise(SIGTRAP)` in
+    // `Signals::RestoreHandlerAndReraiseSignalOnReturn()`. When the renderer is
+    // PID 1 of its PID namespace, `SIGNAL_UNKILLABLE` causes the kernel to
+    // ignore `raise(SIGTRAP)` with `SIG_DFL`, allowing execution to continue to
+    // `ud2` (`SIGILL`). `SIGILL` then enters `StackDumpSignalHandler`, which
+    // calls `alarm()` (triggering a seccomp-bpf `SIGSYS` violation) and fails
+    // to terminate the `SIGNAL_UNKILLABLE` process after restoring `SIG_DFL`,
+    // causing `RenderProcessHostWatcher::Wait()` to time out.
+    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
+#endif  // BUILDFLAG(IS_LINUX)
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1022,11 +1045,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("oom", *reason);
 }
 
-// This timeouts on all platforms. We need to find a way to simulate OOM instead
-// of actually exhausting memory which puts too much stress on the bots.
-// TODO(crbug.com/407473725): Re-enable when done.
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       DISABLED_CrashReportMemoryExhaust) {
+                       DISABLED_ON_ASAN(CrashReportBlinkOOM)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1040,7 +1060,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
   content::RenderProcessHostWatcher crash_observer(
       contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  contents->GetController().LoadURL(GURL(blink::kChromeUIMemoryExhaustURL),
+  contents->GetController().LoadURL(GURL(blink::kChromeUIBlinkOOMURL),
                                     content::Referrer(),
                                     ui::PAGE_TRANSITION_TYPED, std::string());
   crash_observer.Wait();
@@ -1072,11 +1092,8 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   EXPECT_EQ("oom", *reason);
 }
 
-// This timeouts on all platforms. We need to find a way to simulate OOM instead
-// of actually exhausting memory which puts too much stress on the bots.
-// TODO(crbug.com/407473725): Re-enable when done.
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       DISABLED_CrashReportWorkerMemoryExhaust) {
+                       DISABLED_ON_ASAN(CrashReportBlinkWorkerOOM)) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1090,12 +1107,9 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
   content::RenderProcessHostWatcher crash_observer(
       contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  content::ExecuteScriptAsync(frame,
-                              "const blob = new Blob(["
-                              "  'const a = []; while (true) a.push(new "
-                              "Array(16 * 1024 * 1024).fill(1));'"
-                              "], { type: 'text/javascript' });"
-                              "new Worker(URL.createObjectURL(blob));");
+  contents->GetController().LoadURL(GURL(blink::kChromeUIBlinkWorkerOOMURL),
+                                    content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
   crash_observer.Wait();
 
   upload_response()->WaitForRequest();

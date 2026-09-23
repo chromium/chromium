@@ -3117,6 +3117,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                             GURL(blink::kChromeUIHangURL),
                             GURL(blink::kChromeUIShorthangURL),
                             GURL(blink::kChromeUIMemoryExhaustURL),
+                            GURL(blink::kChromeUIBlinkOOMURL),
+                            GURL(blink::kChromeUIBlinkWorkerOOMURL),
                             GURL(blink::kChromeUIV8OOMURL)};
 
   for (const auto& test_url : kTestUrls) {

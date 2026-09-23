@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "partition_alloc/oom.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -80,8 +81,11 @@
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
@@ -298,6 +302,13 @@ class JavaScriptExecuteRequestForTestsHandler
 
   LocalFrameMojoHandler::JavaScriptExecuteRequestForTestsCallback callback_;
 };
+
+NOINLINE void SimulateBlinkWorkerOOM(
+    std::unique_ptr<WorkerBackingThread> worker_thread) {
+  CHECK(!IsMainThread());
+  CHECK(worker_thread->BackingThread().IsCurrentThread());
+  OOM_CRASH(0);
+}
 
 }  // namespace
 
@@ -1167,6 +1178,19 @@ void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
     // depend on //third_party/blink/renderer/core without a layering violation.
     ReportV8OOMError("HandleRendererDebugURL",
                      v8::OOMDetails{.is_heap_oom = true});
+  } else if (url == kChromeUIBlinkWorkerOOMURL) {
+    LOG(ERROR)
+        << "Intentionally causing Blink worker OOM because user navigated to "
+        << url;
+    // Handled here, because code in //third_party/blink/common cannot use
+    // //third_party/blink/renderer/core to create an actual worker thread.
+    auto worker_thread = std::make_unique<WorkerBackingThread>(
+        ThreadCreationParams(ThreadType::kDedicatedWorkerThread));
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        worker_thread->BackingThread().GetTaskRunner();
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(&SimulateBlinkWorkerOOM, std::move(worker_thread)));
   } else {
     // This is a Chrome Debug URL. Handle it.
     HandleChromeDebugURL(GURL(url));

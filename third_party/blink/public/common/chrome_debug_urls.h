@@ -71,6 +71,9 @@ inline constexpr char kChromeUINetworkErrorsListingURL[] =
 inline constexpr char kChromeUINetworkErrorURL[] = "chrome://network-error/";
 inline constexpr char kChromeUIProcessInternalsURL[] =
     "chrome://process-internals/";
+inline constexpr char kChromeUIBlinkOOMURL[] = "chrome://blink-oom/";
+inline constexpr char kChromeUIBlinkWorkerOOMURL[] =
+    "chrome://blink-oom/worker/";
 inline constexpr char kChromeUIV8OOMURL[] = "chrome://v8-oom/";
 
 #if BUILDFLAG(IS_ANDROID)
