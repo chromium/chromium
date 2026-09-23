@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -803,6 +804,15 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
   auto* gr_context = shared_context_state_->gr_context();
   const bool need_graphite_submit =
       dest_scoped_access->NeedGraphiteContextSubmit();
+  const bool check_gl_upload_errors = !dest_shared_image->IsCleared() &&
+                                      shared_context_state_->GrContextIsGL() &&
+                                      !shared_context_state_->context_lost();
+  gl::GLApi* const gl_api =
+      check_gl_upload_errors ? gl::g_current_gl_context : nullptr;
+  if (gl_api) {
+    DrainGLErrors(gl_api);
+  }
+
   for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
     bool written = false;
     if (gr_context) {
@@ -840,6 +850,14 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
                                            need_graphite_submit);
 
   if (success && !dest_shared_image->IsCleared()) {
+    if (gl_api) {
+      GLenum error = DrainGLErrors(gl_api);
+      if (error != GL_NO_ERROR) {
+        return base::unexpected(
+            GLError(error, "WritePixelsYUV",
+                    "GL driver reported an error during texture upload"));
+      }
+    }
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
   }
   return base::ok();

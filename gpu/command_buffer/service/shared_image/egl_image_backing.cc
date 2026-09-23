@@ -491,8 +491,7 @@ EGLImageBacking::GenEGLImageSiblings(base::span<const uint8_t> pixel_data) {
       // GenEGLImageSibling is attributable to the storage call. Silently
       // squelching these errors is unfortunate, but is done in order to mirror
       // other allocation checks done in the command decoder.
-      while (api->glGetErrorFn() != GL_NO_ERROR) {
-      }
+      DrainGLErrors(api);
       for (int plane = 0; plane < num_planes; plane++) {
         gl::ScopedEGLImage egl_image =
             GenEGLImageSibling(pixel_data, service_ids, plane);
