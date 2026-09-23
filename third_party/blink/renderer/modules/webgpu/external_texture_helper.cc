@@ -459,7 +459,7 @@ std::optional<ExternalTexture> CreateExternalTexture(
           context_provider_wrapper);
 
       lease->SetSyncToken(context_provider.RasterInterface()->RasterSharedImage(
-          shared_image, lease->GetSyncToken(), std::move(last_recording),
+          shared_image, lease->sync_token(), std::move(last_recording),
           &image_provider, needs_clear));
 
       image_provider.ReleaseLockedImages();
