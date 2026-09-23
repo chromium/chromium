@@ -531,6 +531,42 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_live_tab_context_impl") {
+    sources = [ "browser_live_tab_context.cc" ]
+    public_deps = [
+      ":browser_live_tab_context",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_init_state",
+      ":browser_tab_strip",
+      ":browser_tabrestore",
+      ":browser_window_header",
+      ":ui_features",
+      "//base",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/glic",
+      "//chrome/browser/performance_manager",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/window_metadata",
+      "//chrome/browser/web_applications",
+      "//components/saved_tab_groups/public",
+      "//components/sessions",
+      "//components/split_tabs",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+    ]
+  }
+
   source_set("browser_tab_restorer") {
     sources = [ "browser_tab_restorer.cc" ]
     deps = [
@@ -1834,8 +1870,11 @@ static_library("ui") {
     deps += [
       ":browser_content_setting_bubble_model_delegate",
       ":browser_content_setting_bubble_model_delegate_impl",
+      ":browser_live_tab_context_impl",
       ":browser_tab_menu_model_delegate",
       ":browser_tab_restorer",
+      ":browser_tab_strip",
+      ":browser_tab_strip_model_delegate_impl",
       ":browser_tabrestore",
       ":browser_tabrestore_impl",
       ":browser_window_deleter",
@@ -1843,6 +1882,7 @@ static_library("ui") {
       ":browser_window_theme_observer",
       ":browser_window_theme_observer_impl",
       ":chrome_pages",
+      ":chrome_pages_impl",
       ":chrome_web_modal_dialog_manager_delegate",
       ":scoped_tabbed_browser_displayer",
       ":singleton_tabs",
@@ -1861,9 +1901,21 @@ static_library("ui") {
       ":browser_window_deleter_impl",
       ":browser_window_theme_observer_impl",
 
+      # browser_live_tab_context.cc includes browser_commands.h and
+      # browser_window.h which cannot be split out yet.
+      ":browser_live_tab_context_impl",
+
       # browser_tab_restorer.cc includes browser_commands.h which cannot be
       # split out yet.
       ":browser_tab_restorer",
+
+      # browser_tab_strip_model_delegate.cc includes browser_commands.h,
+      # browser_tabstrip.h, browser_window.h, and unload_controller.h which
+      # cannot be split out yet.
+      ":browser_tab_strip_model_delegate_impl",
+
+      # chrome_pages.cc includes browser_window.h which cannot be split out yet.
+      ":chrome_pages_impl",
 
       # scoped_tabbed_browser_displayer.cc includes browser_window.h which
       # cannot be split out yet.
@@ -1942,12 +1994,8 @@ static_library("ui") {
       "browser_command_controller.h",
       "browser_commands.cc",
       "browser_commands.h",
-      "browser_live_tab_context.cc",
-      "browser_tab_restorer.cc",
-      "browser_tab_strip_model_delegate.cc",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
-      "chrome_pages.cc",
       "unload_controller.cc",
       "unload_controller.h",
     ]
@@ -4517,6 +4565,63 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_tab_strip_model_delegate_impl") {
+    sources = [ "browser_tab_strip_model_delegate.cc" ]
+    public_deps = [
+      ":browser_tab_strip",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_init_state",
+      ":browser_live_tab_context",
+      ":browser_tab_menu_model_delegate",
+      ":browser_window_header",
+      ":tab_helpers",
+      ":ui_features",
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser:primitives",
+      "//chrome/browser/glic",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/reading_list",
+      "//chrome/browser/sessions",
+      "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui/browser_web_contents_delegate",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/contextual_tasks",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/common:constants",
+      "//components/contextual_tasks/public:feature_list",
+      "//components/feature_engagement/public",
+      "//components/reading_list/core",
+      "//components/saved_tab_groups/internal",
+      "//components/saved_tab_groups/public",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/sessions",
+      "//components/split_tabs",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx/range",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ui/chromeos/locked_state",
+        "//chrome/common:chrome_features",
+      ]
+    }
+  }
+
   source_set("incognito_clear_browsing_data_dialog_interface") {
     public = [ "incognito_clear_browsing_data_dialog_interface.h" ]
   }
@@ -4542,6 +4647,71 @@ if (!is_android) {
       "//components/signin/public/base:signin_buildflags",
       "//url",
     ]
+  }
+
+  source_set("chrome_pages_impl") {
+    sources = [ "chrome_pages.cc" ]
+    public_deps = [
+      ":chrome_pages",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_element_identifiers",
+      ":browser_window_header",
+      ":scoped_tabbed_browser_displayer",
+      ":singleton_tabs",
+      "//base",
+      "//build:branding_buildflags",
+      "//build:buildflag_header_h",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/extensions",
+      "//chrome/browser/file_system_access",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/user_education",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/autofill/core/common",
+      "//components/bookmarks/browser",
+      "//components/commerce/core:commerce_constants",
+      "//components/content_settings/core/common",
+      "//components/data_sharing/public",
+      "//components/password_manager/core/common",
+      "//components/privacy_sandbox:features",
+      "//components/safe_browsing/core/common",
+      "//components/search_engines",
+      "//components/signin/public/base",
+      "//components/version_info",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
+      "//net",
+      "//ui/base",
+      "//url",
+    ]
+    if (is_chromeos) {
+      deps += [
+        ":settings_window_manager_chromeos",
+        "//ash/constants",
+        "//ash/webui/settings/public/constants",
+        "//chrome/browser/ui/ash/system_web_apps",
+        "//chromeos/ash/experiences/settings_ui",
+      ]
+    } else {
+      deps += [ "//chrome/browser/download/bubble" ]
+    }
   }
 
   source_set("browser_tests") {
