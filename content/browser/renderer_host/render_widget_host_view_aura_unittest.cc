@@ -8010,4 +8010,58 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchDispatchSurvivesSynchronousDestroy) {
   widget_host_->RemoveInputEventObserver(&observer);
 }
 
+TEST_F(RenderWidgetHostViewAuraTest,
+       MouseDispatchSurvivesSynchronousDestroyInForwardMouseEventToParent) {
+  InitViewForFrame(nullptr);
+
+  // A parent window delegate that destroys the child window during
+  // OnMouseEvent. This simulates the behavior of
+  // WebContentsViewAura::OnMouseEvent on Windows, where
+  // ForwardMouseEventToParent() calls ActivateContents() on the delegate, which
+  // can synchronously destroy the WebContents (and therefore the Aura window).
+  class DestroyingParentWindowDelegate : public aura::test::TestWindowDelegate {
+   public:
+    explicit DestroyingParentWindowDelegate(
+        RenderWidgetHostViewAura* child_view)
+        : child_view_(child_view) {}
+
+    void OnMouseEvent(ui::MouseEvent* event) override {
+      if (child_view_) {
+        fired_ = true;
+        aura::Window* window = child_view_->GetNativeView();
+        aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouches(
+            window);
+        aura::Env::GetInstance()->gesture_recognizer()->CleanupStateForConsumer(
+            window);
+        delete window;
+        child_view_ = nullptr;
+      }
+    }
+
+    bool fired() const { return fired_; }
+
+   private:
+    raw_ptr<RenderWidgetHostViewAura> child_view_ = nullptr;
+    bool fired_ = false;
+  };
+
+  aura::Window* root = parent_view_->GetNativeView()->GetRootWindow();
+  DestroyingParentWindowDelegate parent_delegate(view_.get());
+  std::unique_ptr<aura::Window> parent = std::make_unique<aura::Window>(&parent_delegate);
+  parent->Init(ui::LAYER_NOT_DRAWN);
+  parent->Show();
+  root->AddChild(parent.get());
+  parent->AddChild(view_->GetNativeView());
+
+  FakeRenderWidgetHostViewAura* target_view = view_.ExtractAsDangling();
+
+  ui::MouseEvent mouse_press(ui::EventType::kMousePressed, gfx::Point(10, 10),
+                             gfx::Point(10, 10), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  target_view->OnMouseEvent(&mouse_press);
+
+  EXPECT_TRUE(parent_delegate.fired());
+}
+
 }  // namespace content

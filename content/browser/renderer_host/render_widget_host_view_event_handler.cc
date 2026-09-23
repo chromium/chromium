@@ -341,6 +341,11 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   ForwardMouseEventToParent(event);
+  // Forwarding the event may have resulted in the view or window being
+  // destroyed.
+  if (!window_ || !host_ || host_view_->destroy_pending()) {
+    return;
+  }
   // TODO(mgiuca): Return if event->handled() returns true. This currently
   // breaks drop-down lists which means something is incorrectly setting
   // event->handled to true (http://crbug.com/577983).
@@ -926,7 +931,7 @@ bool RenderWidgetHostViewEventHandler::ShouldMoveToCenter(
 }
 
 bool RenderWidgetHostViewEventHandler::ShouldRouteEvents() const {
-  if (!host_->delegate()) {
+  if (!host_ || !host_->delegate()) {
     return false;
   }
 
