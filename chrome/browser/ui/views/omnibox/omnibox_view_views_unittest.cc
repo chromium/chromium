@@ -118,6 +118,15 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   OmniboxEditModel* model() { return controller()->edit_model(); }
 
+  void set_is_full_webui_omnibox(bool value) { is_full_webui_omnibox_ = value; }
+  void set_is_full_webui_omnibox_ready(bool value) {
+    is_full_webui_omnibox_ready_ = value;
+  }
+  bool IsFullWebUIOmnibox() const override { return is_full_webui_omnibox_; }
+  bool IsFullWebUIOmniboxReady() const override {
+    return is_full_webui_omnibox_ && is_full_webui_omnibox_ready_;
+  }
+
   // OmniboxViewViews:
   void OnThemeChanged() override;
 
@@ -162,6 +171,9 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   // SetEmphasis() logs whether the base color of the text is emphasized.
   bool base_text_emphasis_;
+
+  bool is_full_webui_omnibox_ = false;
+  bool is_full_webui_omnibox_ready_ = false;
 };
 
 TestingOmniboxView::TestingOmniboxView(bool popup_window_mode,
@@ -1527,8 +1539,10 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenDoubleClick) {
 
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
        MouseDoubleClickWithFocusBehaviorNever) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  // Once the Full WebUI Omnibox is ready, LocationBarView hands focus over to
+  // WebUI and drops the Views textfield to FocusBehavior::NEVER.
+  omnibox_view()->set_is_full_webui_omnibox(true);
+  omnibox_view()->set_is_full_webui_omnibox_ready(true);
   omnibox_view()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   EXPECT_TRUE(IsElidedUrlDisplayed());
 
@@ -1549,8 +1563,8 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
 
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
        MouseDragSelectionWithFocusBehaviorNever) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  omnibox_view()->set_is_full_webui_omnibox(true);
+  omnibox_view()->set_is_full_webui_omnibox_ready(true);
   omnibox_view()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   EXPECT_TRUE(IsElidedUrlDisplayed());
 
@@ -1569,6 +1583,24 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
   gfx::Range selection = omnibox_view()->GetSelectionBounds();
   EXPECT_FALSE(selection.is_empty());
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
+}
+
+// Between browser creation and the WebUI popup handler coming up, the omnibox
+// *is* a Full WebUI Omnibox but is not ready: the Views textfield still holds
+// focus and must behave exactly as it does in classic mode. Regressing this
+// leaves the omnibox stuck in a half-initialized state where neither stack
+// handles input. See OmniboxViewViews::IsFullWebUIOmniboxReady().
+TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
+       MouseClickBeforeFullWebUIReadyBehavesLikeClassic) {
+  omnibox_view()->set_is_full_webui_omnibox(true);
+  omnibox_view()->set_is_full_webui_omnibox_ready(false);
+  ASSERT_TRUE(IsElidedUrlDisplayed());
+
+  SendMouseClick(4 * kCharacterWidth);
+
+  EXPECT_TRUE(IsElidedUrlDisplayed());
+  EXPECT_EQ(u"example.com", omnibox_view()->GetText());
+  EXPECT_TRUE(omnibox_view()->IsSelectAll());
 }
 
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenRightClick) {

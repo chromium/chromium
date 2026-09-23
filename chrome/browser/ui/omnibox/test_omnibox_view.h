@@ -27,6 +27,9 @@ class TestOmniboxView : public OmniboxView {
     return inline_autocompletion_;
   }
 
+  void set_is_full_webui_omnibox(bool value) { is_full_webui_omnibox_ = value; }
+  bool IsFullWebUIOmnibox() const override;
+
   static State CreateState(std::string text, size_t sel_start, size_t sel_end);
 
   // OmniboxView:
@@ -72,6 +75,7 @@ class TestOmniboxView : public OmniboxView {
   std::u16string inline_autocompletion_;
   gfx::Range selection_;
   gfx::Range saved_temporary_selection_;
+  bool is_full_webui_omnibox_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_VIEW_H_

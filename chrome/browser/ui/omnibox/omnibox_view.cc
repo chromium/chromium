@@ -226,6 +226,10 @@ void OmniboxView::ShowVirtualKeyboardIfEnabled() {}
 
 void OmniboxView::HideImeIfNeeded() {}
 
+bool OmniboxView::IsFullWebUIOmnibox() const {
+  return false;
+}
+
 OmniboxView::State OmniboxView::GetState() const {
   State state;
   state.text = GetText();

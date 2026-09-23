@@ -216,6 +216,11 @@ class OmniboxView {
   // Hides a virtual keyboard or alternate input view if enabled.
   virtual void HideImeIfNeeded();
 
+  // Whether the client has a Full WebUI Omnibox. Declared here so
+  // `OmniboxEditModel` can query this state without directly depending on
+  // Views-layer classes.
+  virtual bool IsFullWebUIOmnibox() const;
+
  protected:
   // Tracks important state that may change between OnBeforePossibleChange() and
   // OnAfterPossibleChange().

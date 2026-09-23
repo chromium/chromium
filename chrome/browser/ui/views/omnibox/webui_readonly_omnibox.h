@@ -153,6 +153,7 @@ class WebUIReadOnlyOmnibox
   void EmphasizeURLComponents() override;
   void SetEmphasis(bool emphasize, const gfx::Range& range) override;
   void UpdateSchemeStyle(const gfx::Range& range) override;
+  bool IsFullWebUIOmnibox() const override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

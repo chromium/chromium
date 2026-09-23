@@ -223,6 +223,16 @@ class OmniboxViewViews
                           bool value,
                           const gfx::Range& range);
 
+  // Whether the client has a Full WebUI Omnibox. Constant for
+  // the lifetime of the window. Use for structural decisions: tab state
+  // ownership, painting, accessibility.
+  bool IsFullWebUIOmnibox() const override;
+  // Whether the Full WebUI Omnibox's WebUI has loaded and taken over. Flips
+  // false->true once, asynchronously. Use for behavioral decisions: focus,
+  // selection, caret and mouse gestures, all of which the Views omnibox must
+  // keep handling normally until the handoff completes.
+  virtual bool IsFullWebUIOmniboxReady() const;
+
  private:
   friend class TestingOmniboxView;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);

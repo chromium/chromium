@@ -13,6 +13,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -449,6 +451,11 @@ void WebUIReadOnlyOmnibox::UpdateSchemeStyle(const gfx::Range& range) {
     text_colors_.ApplyValue(color, range);
     text_strike_through_.ApplyValue(true, range);
   }
+}
+
+bool WebUIReadOnlyOmnibox::IsFullWebUIOmnibox() const {
+  return location_bar_ && location_bar_->GetPresenterDelegate() &&
+         location_bar_->GetPresenterDelegate()->is_full_webui_omnibox();
 }
 
 void WebUIReadOnlyOmnibox::ExecuteCommand(int command_id, int event_flags) {

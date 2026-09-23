@@ -411,8 +411,7 @@ bool OmniboxEditModel::ResetDisplayTexts() {
   // async tab updates from wiping out the restored draft.
   const bool user_interacting =
       has_focus() ||
-      (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
-       user_input_in_progress_);
+      (view_ && view_->IsFullWebUIOmnibox() && user_input_in_progress_);
 
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
@@ -1252,7 +1251,7 @@ void OmniboxEditModel::StartZeroSuggestRequest(
     bool user_clobbered_permanent_text) {
   // In Full WebUI mode, the WebUI searchbox manages zero-suggest queries
   // directly via `SearchboxHandler`.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  if (view_ && view_->IsFullWebUIOmnibox()) {
     return;
   }
 

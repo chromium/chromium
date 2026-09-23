@@ -106,3 +106,7 @@ bool TestOmniboxView::OnAfterPossibleChange(bool allow_keyword_ui_change) {
 int TestOmniboxView::GetOmniboxTextLength() const {
   return 0;
 }
+
+bool TestOmniboxView::IsFullWebUIOmnibox() const {
+  return is_full_webui_omnibox_;
+}
