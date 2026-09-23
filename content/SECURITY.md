@@ -165,6 +165,19 @@ functional bugs (unless a broader boundary is broken):
   access to unpartitioned storage and third-party cookies via JavaScript, but
   network requests from the document (or workers) must reflect the revoked
   permission.
+* **Client Hints (`Accept-CH` / `Critical-CH`):** Client Hints and their
+  persistence (`ContentSettingsType::CLIENT_HINTS`) are a content-negotiation
+  and privacy mechanism, not a process-isolated security boundary. High-entropy
+  client hints expose device and user-agent properties that are already
+  accessible to active scripts via JavaScript APIs (e.g.,
+  `navigator.userAgentData.getHighEntropyValues()`), and any site can already
+  trigger `Accept-CH` persistence for a third-party origin via a top-level
+  redirect. Additionally, Client Hints intentionally propagate main-frame
+  context and policies (`main_frame_origin`, `is_outermost_main_frame`, and
+  `PermissionsPolicy`) to subframes, subresources, preloads, and network-service
+  interceptors. Issues where preloading, prefetching, or subresource fetches
+  persist or inherit `Accept-CH` state should be filed as functional bugs rather
+  than security vulnerabilities.
 
 
 ## Mitigating Factors
