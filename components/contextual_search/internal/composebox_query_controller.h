@@ -87,6 +87,17 @@ class ComposeboxQueryController
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/histograms.xml:ComposeboxImageUploadType)
 
+  // LINT.IfChange(LensComposeboxClusterInfoStatus)
+  enum class ClusterInfoStatus {
+    kSuccess = 0,
+    kHttpError = 1,
+    kProtoParseError = 2,
+    kBackgrounded = 3,
+    kMaxRetriesReached = 4,
+    kMaxValue = kMaxRetriesReached,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensComposeboxClusterInfoStatus)
+
   using GetAuthHeadersCallback = base::RepeatingCallback<void(
       std::optional<size_t>,
       base::OnceCallback<void(std::vector<std::string>)>)>;
@@ -670,6 +681,9 @@ class ComposeboxQueryController
 
   // The number of times fetching cluster info has failed.
   int cluster_info_retries_ = 0;
+
+  // The timestamp when the cluster info fetch was started.
+  std::optional<base::TimeTicks> cluster_info_fetch_start_time_;
 
   // The endpoint fetcher used for the cluster info request.
   std::unique_ptr<endpoint_fetcher::EndpointFetcher>

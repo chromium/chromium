@@ -108,6 +108,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Composebox.ClusterInfo.ResponseTime" units="ms"
+    expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Composebox ClusterInfo response is received. Measures the
+    time elapsed between when the ClusterInfo fetch was initiated and when the
+    response was received.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.ClusterInfo.Status"
+    enum="LensComposeboxClusterInfoStatus" expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Composebox ClusterInfo fetch request completes, fails, is
+    backgrounded, or exhausts retries.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Composebox.ContextUpload.FailureResponseTime" units="ms"
     expires_after="2027-03-21">
   <owner>hujasonx@chromium.org</owner>
@@ -216,6 +237,37 @@ chromium-metrics-reviews@google.com.
     (width or height) of the successfully downscaled image.
   </summary>
   <token key="UploadType" variants="ComposeboxImageUploadType"/>
+</histogram>
+
+<histogram name="Lens.Composebox.SearchUrl.ContextFilesAttached" units="files"
+    expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Composebox Search URL is generated with context attachments.
+    Measures the number of attached files the user included in the request.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.SearchUrl.ContextFilesValidatedAndIncluded"
+    units="files" expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Composebox Search URL is generated with context attachments.
+    Measures the number of attached files that were successfully validated and
+    included in the search URL request.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.SearchUrl.HasClusterInfo" enum="Boolean"
+    expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Composebox Search URL is requested for multimodal context.
+    Logs whether cluster info was present and valid at the time of URL creation.
+  </summary>
 </histogram>
 
 <histogram name="Lens.Composebox.ShownInSession" enum="Boolean"
