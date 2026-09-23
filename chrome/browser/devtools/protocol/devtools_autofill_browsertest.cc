@@ -759,7 +759,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofill) {
     EXPECT_EQ("NY", state.ExtractString());
     content::EvalJsResult country = content::EvalJs(
         web_contents(), "document.getElementById('country').value");
-    EXPECT_EQ("US", country.ExtractString());
+    EXPECT_EQ(base::FeatureList::IsEnabled(
+                  autofill::features::kAutofillDisallowCountryCodeFilling)
+                  ? "United States"
+                  : "US",
+              country.ExtractString());
   }
 }
 
