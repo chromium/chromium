@@ -210,6 +210,14 @@ bool BaseTemporalInputType::ValueMissing(const String& value) const {
          !GetElement().IsDisabledOrReadOnly();
 }
 
+bool BaseTemporalInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 bool BaseTemporalInputType::MayTriggerVirtualKeyboard() const {
   return true;
 }

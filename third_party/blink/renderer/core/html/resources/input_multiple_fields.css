@@ -14,10 +14,18 @@ input[type="datetime-local" i],
 input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
-    font-family: monospace;
     padding: 0;
-    padding-inline-start: 1px;
     cursor: default;
+
+    @supports not blink-feature(AppearanceBase) {
+        font-family: monospace;
+        padding-inline-start: 1px;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        font-family: -internal-auto-base(monospace, revert-rule);
+        padding-inline-start: -internal-auto-base(1px, revert-rule);
+    }
 }
 
 input::-webkit-datetime-edit {

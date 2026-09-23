@@ -73,6 +73,8 @@ class BaseTemporalInputType : public InputType {
   bool TypeMismatchFor(const String&) const;
   bool ValueMissing(const String&) const;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  protected:
   BaseTemporalInputType(Type type, HTMLInputElement& element)
       : InputType(type, element) {}
