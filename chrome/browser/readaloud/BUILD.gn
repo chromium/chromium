@@ -5,6 +5,7 @@
 if (is_android) {
   source_set("readaloud") {
     sources = [
+      "audio_generation/overview_generation_broker.h",
       "audio_generation/speech_synthesis_broker.h",
       "read_aloud_audio_broker.h",
       "read_aloud_playback_session.h",
@@ -29,6 +30,7 @@ if (is_android) {
 
   source_set("impl") {
     sources = [
+      "audio_generation/overview_generation_broker.cc",
       "audio_generation/speech_synthesis_broker.cc",
       "read_aloud_audio_broker.cc",
       "read_aloud_playback_session.cc",
@@ -55,6 +57,7 @@ if (is_android) {
     testonly = true
     sources = [
       "android/prefs_unittest.cc",
+      "audio_generation/overview_generation_broker_unittest.cc",
       "audio_generation/speech_synthesis_broker_unittest.cc",
       "fake_audio_stream_factory.cc",
       "fake_audio_stream_factory.h",
