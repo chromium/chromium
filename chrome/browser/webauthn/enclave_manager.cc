@@ -91,7 +91,6 @@
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
 #include "crypto/subtle_passkey.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
@@ -755,16 +754,16 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
   auto ret = std::make_unique<EnclaveLocalState>();
 
   const base::span<const uint8_t> contents = base::as_byte_span(contents_str);
-  if (contents.size() < crypto::kSHA256Length + sizeof(kHashPrefix)) {
+  if (contents.size() < crypto::hash::kSha256Size + sizeof(kHashPrefix)) {
     FIDO_LOG(ERROR) << "Enclave state too small to be valid";
     return ret;
   }
 
-  const base::span<const uint8_t> digest = contents.last(crypto::kSHA256Length);
-  const base::span<const uint8_t> payload = contents.first(
-      contents.size() - crypto::kSHA256Length - sizeof(kHashPrefix));
-  const std::array<uint8_t, crypto::kSHA256Length> calculated =
-      crypto::SHA256Hash(payload);
+  const auto [payload, checksum_field] = contents.split_at(
+      contents.size() - crypto::hash::kSha256Size - sizeof(kHashPrefix));
+  const auto digest = checksum_field.last<crypto::hash::kSha256Size>();
+  const std::array<uint8_t, crypto::hash::kSha256Size> calculated =
+      crypto::hash::Sha256(payload);
   if (calculated != digest) {
     FIDO_LOG(ERROR) << "Checksum mismatch. Discarding state.";
     return ret;
@@ -2049,8 +2048,8 @@ class EnclaveManager::StateMachine {
         manager_->identity_key_->key().GetSubjectPublicKeyInfo();
     const std::string spki_str = VecToString(spki);
     if (user_->identity_public_key() != spki_str) {
-      std::array<uint8_t, crypto::kSHA256Length> device_id =
-          crypto::SHA256Hash(spki);
+      std::array<uint8_t, crypto::hash::kSha256Size> device_id =
+          crypto::hash::Sha256(spki);
       user_->set_identity_public_key(spki_str);
       user_->set_wrapped_identity_private_key(
           VecToString(manager_->identity_key_->key().GetWrappedKey()));
@@ -4635,8 +4634,8 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
     user_ = StateForUser(local_state_.get(), *primary_account_info_);
   }
 
-  const std::array<uint8_t, crypto::kSHA256Length> digest =
-      crypto::SHA256Hash(base::as_byte_span(serialized));
+  const std::array<uint8_t, crypto::hash::kSha256Size> digest =
+      crypto::hash::Sha256(base::as_byte_span(serialized));
   serialized.append(std::begin(kHashPrefix), std::end(kHashPrefix));
   serialized.append(digest.begin(), digest.end());
 

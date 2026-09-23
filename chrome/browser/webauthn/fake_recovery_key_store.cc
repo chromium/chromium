@@ -17,7 +17,6 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "crypto/evp.h"
 #include "crypto/keypair.h"
-#include "crypto/sha2.h"
 #include "crypto/sign.h"
 #include "crypto/subtle_passkey.h"
 #include "device/fido/enclave/constants.h"
