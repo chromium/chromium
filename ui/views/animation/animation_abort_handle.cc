@@ -23,22 +23,16 @@ AnimationAbortHandle::~AnimationAbortHandle() {
   }
 
   if (animation_state_ != AnimationState::kEnded) {
-    for (ui::Layer* layer : tracked_layers_) {
-      if (deleted_layers_.find(layer) != deleted_layers_.end()) {
-        continue;
-      }
+    while (layer_observations_.IsObservingAnySource()) {
+      ui::Layer* const layer = layer_observations_.sources().begin()->get();
+      layer_observations_.RemoveObservation(layer);
 
       layer->GetAnimator()->AbortAllAnimations();
     }
   }
 
-  // Remove the abort handle itself from the alive tracked layers.
-  for (ui::Layer* layer : tracked_layers_) {
-    if (deleted_layers_.find(layer) != deleted_layers_.end()) {
-      continue;
-    }
-    layer->RemoveObserver(this);
-  }
+  // `layer_observations_` removes `this` from every layer that is still being
+  // observed when it is destroyed.
 }
 
 void AnimationAbortHandle::OnObserverDeleted() {
@@ -46,14 +40,9 @@ void AnimationAbortHandle::OnObserverDeleted() {
 }
 
 void AnimationAbortHandle::AddLayer(ui::Layer* layer) {
-  // Do not allow to add the layer that was deleted before.
-  DCHECK(deleted_layers_.find(layer) == deleted_layers_.end());
-
-  bool inserted = tracked_layers_.insert(layer).second;
-
   // In case that one layer is added to the abort handle multiple times.
-  if (inserted) {
-    layer->AddObserver(this);
+  if (!layer_observations_.IsObservingSource(layer)) {
+    layer_observations_.AddObservation(layer);
   }
 }
 
@@ -68,16 +57,9 @@ void AnimationAbortHandle::OnAnimationEnded() {
 }
 
 void AnimationAbortHandle::LayerDestroyed(ui::Layer* layer) {
-  layer->RemoveObserver(this);
-
-  // NOTE: layer deletion may be caused by animation abortion. In addition,
-  // aborting an animation may lead to multiple layer deletions (for example, a
-  // animation abort callback could delete multiple views' layers). Therefore
-  // the destroyed layer should not be removed from `tracked_layers_` directly.
-  // Otherwise, iterating `tracked_layers_` in the animation abort handle's
-  // destructor is risky.
-  bool inserted = deleted_layers_.insert(layer).second;
-  DCHECK(inserted);
+  // Stop observing `layer` before it goes away: `layer_observations_` holds a
+  // raw_ptr to each observed source and must not outlive it.
+  layer_observations_.RemoveObservation(layer);
 }
 
 }  // namespace views

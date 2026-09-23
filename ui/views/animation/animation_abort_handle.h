@@ -5,10 +5,9 @@
 #ifndef UI_VIEWS_ANIMATION_ANIMATION_ABORT_HANDLE_H_
 #define UI_VIEWS_ANIMATION_ANIMATION_ABORT_HANDLE_H_
 
-#include <set>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/views_export.h"
@@ -50,11 +49,11 @@ class VIEWS_EXPORT AnimationAbortHandle : public ui::LayerObserver {
   raw_ptr<AnimationBuilder::Observer, DanglingUntriaged> observer_;
   AnimationState animation_state_ = AnimationState::kNotStarted;
 
-  // Stores the layers tracked by the animation abort handle.
-  std::set<raw_ptr<ui::Layer, SetExperimental>> tracked_layers_;
-
-  // Stores the layers that are deleted during tracking.
-  std::set<raw_ptr<ui::Layer, SetExperimental>> deleted_layers_;
+  // The layers whose animations this handle aborts. A layer is removed from
+  // this set as soon as it is destroyed (see LayerDestroyed()), so every
+  // source in it is guaranteed to be alive.
+  base::ScopedMultiSourceObservation<ui::Layer, ui::LayerObserver>
+      layer_observations_{this};
 };
 
 }  // namespace views
