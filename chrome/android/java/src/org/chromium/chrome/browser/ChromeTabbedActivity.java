@@ -258,6 +258,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfBackPressHandler;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -700,6 +701,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private CallbackController mCallbackController = new CallbackController();
     private TabbedModeTabDelegateFactory mTabDelegateFactory;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
+    private @Nullable SendTabToSelfBackPressHandler mSendTabToSelfBackPressHandler;
     private @Nullable MinimizeAppAndCloseTabBackPressHandler
             mMinimizeAppAndCloseTabBackPressHandler;
     private HomeSurfaceTracker mHomeSurfaceTracker;
@@ -5013,6 +5015,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mBackPressManager.addHandler(
                     mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
         }
+        // On desktop Android, OS back presses should not change which tab is focused, so this
+        // handler is neither created nor registered there.
+        if (!shouldUseDesktopBackConventions()
+                && ChromeFeatureList.sSendTabToSelfSwitchToParentOnBack.isEnabled()) {
+            mSendTabToSelfBackPressHandler =
+                    new SendTabToSelfBackPressHandler(
+                            getActivityTabProvider().asObservable(), this::getTabModelSelector);
+            mBackPressManager.addHandler(
+                    mSendTabToSelfBackPressHandler, BackPressHandler.Type.SEND_TAB_TO_SELF);
+        }
         // On desktop Android, OS back presses should not close tabs or minimize the Chrome app,
         // so we skip creating and registering this handler.
         if (!shouldUseDesktopBackConventions() && mMinimizeAppAndCloseTabBackPressHandler == null) {
@@ -5031,6 +5043,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         mMinimizeAppAndCloseTabBackPressHandler);
             }
         }
+    }
+
+    /**
+     * @return The handler that switches back to the parent tab when the back gesture is used on a
+     *     tab opened from the Send Tab To Self message banner, or null if the feature is disabled
+     *     or this device uses desktop back conventions.
+     */
+    public @Nullable SendTabToSelfBackPressHandler getSendTabToSelfBackPressHandler() {
+        return mSendTabToSelfBackPressHandler;
     }
 
     /**
@@ -5343,6 +5364,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mReadingListBackPressHandler != null) {
             mReadingListBackPressHandler.destroy();
             mReadingListBackPressHandler = null;
+        }
+        if (mSendTabToSelfBackPressHandler != null) {
+            mSendTabToSelfBackPressHandler.destroy();
+            mSendTabToSelfBackPressHandler = null;
         }
         if (mMinimizeAppAndCloseTabBackPressHandler != null) {
             mMinimizeAppAndCloseTabBackPressHandler.destroy();

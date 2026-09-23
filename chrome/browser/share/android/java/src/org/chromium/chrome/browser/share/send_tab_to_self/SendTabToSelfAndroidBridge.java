@@ -587,6 +587,15 @@ public class SendTabToSelfAndroidBridge {
             }
 
             normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+
+            // Enable the back press handler to intercept the back gesture from `newestTab` and
+            // switch back to the parent tab.
+            SendTabToSelfBackPressHandler handler =
+                    tabbedActivity.getSendTabToSelfBackPressHandler();
+            if (handler != null) {
+                handler.enable(newestTab);
+            }
+
             // In the multi-tab case, show the "open in app" message banner if applicable. This does
             // not happen automatically here, since the LabelData was already cleaned up above
             // (which it needs to be for metrics to be recorded correctly).
