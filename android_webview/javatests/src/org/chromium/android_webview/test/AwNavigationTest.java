@@ -67,8 +67,7 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testBasicNavigationProperties() throws Throwable {
-        final String url =
-                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        String url = mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
 
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
@@ -100,7 +99,7 @@ public class AwNavigationTest extends AwParameterizedTest {
                         new Pair<>("Custom-Header", "Value1"),
                         new Pair<>("Custom-Header", "Value2"));
 
-        final String url =
+        String url =
                 mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", headers);
 
         mActivityTestRule.loadUrlSync(
@@ -120,9 +119,9 @@ public class AwNavigationTest extends AwParameterizedTest {
     public void testRendererInitiatedNavigation() throws Throwable {
         AwActivityTestRule.enableJavaScriptOnUiThread(mTestContainerView.getAwContents());
 
-        final String page1Url =
+        String page1Url =
                 mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
-        final String page2Url =
+        String page2Url =
                 mWebServer.setResponse("/page2.html", "<html><body>Page 2</body></html>", null);
 
         // Load Page 1
@@ -149,9 +148,8 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSameDocumentNavigation() throws Throwable {
-        final String url =
-                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
-        final String fragmentUrl = url + "#fragment";
+        String url = mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        String fragmentUrl = url + "#fragment";
 
         // Load initial page
         mActivityTestRule.loadUrlSync(
@@ -177,8 +175,7 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testReload() throws Throwable {
-        final String url =
-                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        String url = mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
 
         // Load initial page
         mActivityTestRule.loadUrlSync(
@@ -199,9 +196,9 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHistoryNavigation() throws Throwable {
-        final String url1 =
+        String url1 =
                 mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
-        final String url2 =
+        String url2 =
                 mWebServer.setResponse("/page2.html", "<html><body>Page 2</body></html>", null);
 
         // Load Page 1
@@ -245,7 +242,7 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testErrorPageNavigation() throws Throwable {
-        final String badUrl = "http://fake.domain.test/a.html";
+        String badUrl = "http://fake.domain.test/a.html";
 
         // Load bad URL
         mActivityTestRule.loadUrlAsync(mTestContainerView.getAwContents(), badUrl);
@@ -267,8 +264,7 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNavigationVisibleCallback() throws Throwable {
-        final String url =
-                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        String url = mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
 
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
@@ -285,9 +281,9 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNavigationVisibleCallback_followUpCrossDocumentNavigation() throws Throwable {
-        final String page1Url =
-                mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
-        final String page2Url =
+        String page1Url =
+mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
+        String page2Url =
                 mWebServer.setResponse("/page2.html", "<html><body>Page 2</body></html>", null);
         // Load initial page
         mActivityTestRule.loadUrlSync(
@@ -322,9 +318,8 @@ public class AwNavigationTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNavigationVisibleCallback_followUpSameDocumentNavigation() throws Throwable {
-        final String url =
-                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
-        final String fragmentUrl = url + "#fragment";
+        String url = mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        String fragmentUrl = url + "#fragment";
         // Load initial page
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
@@ -358,8 +353,7 @@ public class AwNavigationTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testNavigationStartTime() throws Throwable {
         long timeBeforeStart = SystemClock.uptimeMillis();
-        final String url =
-                mWebServer.setResponse("/time.html", "<html><body>Time</body></html>", null);
+        String url = mWebServer.setResponse("/time.html", "<html><body>Time</body></html>", null);
 
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
