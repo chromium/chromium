@@ -53,6 +53,8 @@ export class TestSearchboxBrowserProxy {
         'startScreenshare', {token: null});
     this.handler.setPromiseResolveFor<'captureRegionScreenshot'>(
         'captureRegionScreenshot', {token: null});
+    this.handler.setPromiseResolveFor<'showHotkeyDropdown'>(
+        'showHotkeyDropdown', undefined);
   }
 
   initVisibilityPrefs() {

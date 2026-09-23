@@ -612,3 +612,9 @@ void ContextualTasksExtensionHandler::CaptureRegionScreenshot(
     CaptureRegionScreenshotCallback callback) {
   NOTREACHED();
 }
+
+void ContextualTasksExtensionHandler::ShowHotkeyDropdown(
+    const gfx::Rect& anchor_bounds,
+    ShowHotkeyDropdownCallback callback) {
+  NOTREACHED();
+}

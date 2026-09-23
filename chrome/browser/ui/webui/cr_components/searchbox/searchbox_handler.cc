@@ -2139,6 +2139,11 @@ void SearchboxHandler::CaptureRegionScreenshot(
   NOTREACHED();
 }
 
+void SearchboxHandler::ShowHotkeyDropdown(const gfx::Rect& anchor_bounds,
+                                          ShowHotkeyDropdownCallback callback) {
+  NOTREACHED();
+}
+
 OmniboxController* SearchboxHandler::Delegate::GetOmniboxController() {
   return nullptr;
 }

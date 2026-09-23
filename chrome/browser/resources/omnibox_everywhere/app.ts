@@ -122,6 +122,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       hideTitle_: {type: Boolean},
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
+      isHotkeyDropdownOpen_: {type: Boolean},
       isActive_: {
         type: Boolean,
         reflect: true,
@@ -132,6 +133,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   protected accessor omniboxPopupDebugEnabled_ =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
+  protected accessor isHotkeyDropdownOpen_: boolean = false;
   protected accessor isActive_: boolean = true;
   protected accessor isComposeboxMode_: boolean = false;
   protected accessor searchboxLayoutMode_: string =
@@ -429,8 +431,25 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     freElement.addEventListener('animationcancel', onAnimationDone);
   }
 
-  protected onFreShowHotkeyDropdown_(e: CustomEvent<ShowHotkeyDropdownDetail>) {
-    SearchboxBrowserProxy.getInstance().handler.showHotkeyDropdown(e.detail);
+  protected async onFreShowHotkeyDropdown_(
+      e: CustomEvent<ShowHotkeyDropdownDetail>) {
+    if (this.isHotkeyDropdownOpen_) {
+      return;
+    }
+    this.isHotkeyDropdownOpen_ = true;
+    try {
+      await SearchboxBrowserProxy.getInstance().handler.showHotkeyDropdown(
+          e.detail);
+    } finally {
+      this.isHotkeyDropdownOpen_ = false;
+      // Defer to a macrotask so in-flight window focus/blur events settle
+      // before sampling document focus.
+      setTimeout(() => {
+        if (this.isConnected && !this.isHotkeyDropdownOpen_) {
+          this.isActive_ = document.hasFocus();
+        }
+      }, 0);
+    }
   }
 
   protected onFreOpenSettings_() {
@@ -536,6 +555,9 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   }
 
   private onWindowBlur_() {
+    if (this.isHotkeyDropdownOpen_) {
+      return;
+    }
     this.isActive_ = false;
     this.clearActivationTimeout_();
   }
