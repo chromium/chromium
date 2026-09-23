@@ -49,6 +49,7 @@ class VIEWS_EXPORT Separator : public View {
   // Overridden from View:
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override;
+  void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
