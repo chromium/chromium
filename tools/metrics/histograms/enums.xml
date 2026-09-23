@@ -2407,7 +2407,8 @@ Called by update_net_error_codes.py.-->
   <int value="124" label="(Obsolete) Top-level 3PCD Origin Trial"/>
   <int value="125" label="Display Media System Audio"/>
   <int value="126" label="Javascript optimizer"/>
-  <int value="127" label="Storage Access Header Origin Trial"/>
+  <int value="127"
+      label="(Obsolete) Storage Access Header Origin Trial [Removed in M156]"/>
   <int value="128" label="Hand Tracking"/>
   <int value="129" label="Web App Installation"/>
   <int value="130" label="Direct Sockets Private Network Access"/>
