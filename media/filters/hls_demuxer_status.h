@@ -129,7 +129,8 @@ struct HlsDemuxerStatusTraits {
 using HlsDemuxerStatus = TypedStatus<HlsDemuxerStatusTraits>;
 
 template <typename T>
-using HlsDemuxerStatusCb = base::OnceCallback<void(HlsDemuxerStatus::Or<T>)>;
+using HlsDemuxerStatusCb =
+    base::OnceCallback<void(base::expected<T, HlsDemuxerStatus>)>;
 
 using HlsDemuxerStatusCallback = base::OnceCallback<void(HlsDemuxerStatus)>;
 

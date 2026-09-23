@@ -112,7 +112,7 @@ hls::RenditionManager::CodecSupportType GetSupportedTypes(
   return hls::RenditionManager::CodecSupportType::kUnsupported;
 }
 
-HlsDemuxerStatus::Or<RelaxedParserSupportedType> CheckMP4Bytes(
+base::expected<RelaxedParserSupportedType, HlsDemuxerStatus> CheckMP4Bytes(
     base::span<const uint8_t> data) {
   NullMediaLog null;
   std::unique_ptr<mp4::BoxReader> reader;
@@ -120,10 +120,10 @@ HlsDemuxerStatus::Or<RelaxedParserSupportedType> CheckMP4Bytes(
   if (result == mp4::ParseResult::kOk) {
     return RelaxedParserSupportedType::kMP4;
   }
-  return HlsDemuxerStatus::Codes::kUnsupportedContainer;
+  return base::unexpected(HlsDemuxerStatus::Codes::kUnsupportedContainer);
 }
 
-HlsDemuxerStatus::Or<RelaxedParserSupportedType>
+base::expected<RelaxedParserSupportedType, HlsDemuxerStatus>
 CheckBitstreamForContainerMagic(base::span<const uint8_t> data,
                                 std::string_view path) {
   if (!data.empty()) {
@@ -171,7 +171,7 @@ CheckBitstreamForContainerMagic(base::span<const uint8_t> data,
     return RelaxedParserSupportedType::kAAC;
   }
 
-  return HlsDemuxerStatus::Codes::kUnsupportedContainer;
+  return base::unexpected(HlsDemuxerStatus::Codes::kUnsupportedContainer);
 }
 
 PipelineStatus ConvertToPiplineStatus(HlsDemuxerStatus&& status) {
@@ -673,7 +673,7 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
     HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!result.has_value()) {
-    std::move(cb).Run(std::move(result).error().AddHere());
+    std::move(cb).Run(base::unexpected(std::move(result).error().AddHere()));
     return;
   }
   auto stream = std::move(result).value();
@@ -807,7 +807,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
   }
 }
 
-hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
+base::expected<scoped_refptr<hls::MediaPlaylist>, hls::ParseStatus>
 HlsManifestDemuxerEngine::ParseMediaPlaylistFromStringSource(
     std::string_view source,
     GURL uri,
@@ -996,7 +996,7 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
     HlsDemuxerStatusCallback parse_complete_cb,
     PlaylistParseInfo parse_info,
     scoped_refptr<hls::MediaPlaylist> playlist,
-    HlsDemuxerStatus::Or<RelaxedParserSupportedType> maybe_mime) {
+    base::expected<RelaxedParserSupportedType, HlsDemuxerStatus> maybe_mime) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   CHECK(!renditions_.contains(parse_info.role));
   if (!maybe_mime.has_value()) {
@@ -1040,7 +1040,8 @@ void HlsManifestDemuxerEngine::DetermineStreamContainer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   const auto& segments = playlist->GetSegments();
   if (segments.empty()) {
-    std::move(container_cb).Run(HlsDemuxerStatus::Codes::kUnsupportedContainer);
+    std::move(container_cb)
+        .Run(base::unexpected(HlsDemuxerStatus::Codes::kUnsupportedContainer));
     return;
   }
 
@@ -1071,20 +1072,22 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   if (!maybe_stream.has_value()) {
-    std::move(cb).Run(std::move(maybe_stream).error());
+    std::move(cb).Run(base::unexpected(std::move(maybe_stream).error()));
     return;
   }
 
   auto stream = std::move(maybe_stream).value();
   if (!stream->buffer_size()) {
-    std::move(cb).Run(HlsDemuxerStatus::Codes::kNoSegmentData);
+    std::move(cb).Run(
+        base::unexpected(HlsDemuxerStatus::Codes::kNoSegmentData));
     return;
   }
 
   std::vector<uint8_t> mem;
   base::span<const uint8_t> plaintext;
   if (!segment->GetPlaintextStreamSource(stream->data(), &plaintext, &mem)) {
-    std::move(cb).Run(HlsDemuxerStatus::Codes::kUnsupportedCryptoMethod);
+    std::move(cb).Run(
+        base::unexpected(HlsDemuxerStatus::Codes::kUnsupportedCryptoMethod));
     return;
   }
 

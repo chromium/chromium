@@ -35,7 +35,8 @@ class MEDIA_EXPORT HlsDataSourceProvider {
  public:
   virtual ~HlsDataSourceProvider() = 0;
 
-  using ReadResult = HlsDemuxerStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
+  using ReadResult =
+      base::expected<std::unique_ptr<HlsDataSourceStream>, HlsDemuxerStatus>;
   using ReadCb = HlsDemuxerStatusCb<std::unique_ptr<HlsDataSourceStream>>;
 
   // Represents reading from a specific URI at the given byte range. Multiple

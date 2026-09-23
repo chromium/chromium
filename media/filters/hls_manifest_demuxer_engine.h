@@ -263,7 +263,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       HlsDemuxerStatusCallback parse_complete_cb,
       PlaylistParseInfo parse_info,
       scoped_refptr<hls::MediaPlaylist> playlist,
-      HlsDemuxerStatus::Or<RelaxedParserSupportedType> maybe_info);
+      base::expected<RelaxedParserSupportedType, HlsDemuxerStatus> maybe_info);
   void DetermineBitstreamContainer(
       scoped_refptr<hls::MediaSegment> segment,
       HlsDemuxerStatusCb<RelaxedParserSupportedType> cb,
@@ -275,7 +275,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                    std::unique_ptr<MediaTracks> tracks);
 
   // Parses a playlist using the multivariant playlist, if it's being used.
-  hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
+  base::expected<scoped_refptr<hls::MediaPlaylist>, hls::ParseStatus>
   ParseMediaPlaylistFromStringSource(std::string_view source,
                                      GURL uri,
                                      const url::Origin& manifest_origin,
