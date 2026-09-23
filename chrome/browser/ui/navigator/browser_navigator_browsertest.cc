@@ -2387,7 +2387,8 @@ class MockScreen : public display::ScreenBase {
 #define MAYBE_BrowserNavigatorTestWithMockScreen \
   BrowserNavigatorTestWithMockScreen
 #endif
-class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
+class MAYBE_BrowserNavigatorTestWithMockScreen
+    : public BrowserNavigatorPictureInPictureTest {
  public:
   void SetScreenInstance() override {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2423,7 +2424,14 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
+INSTANTIATE_TEST_SUITE_P(All,
+                         MAYBE_BrowserNavigatorTestWithMockScreen,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(MAYBE_BrowserNavigatorTestWithMockScreen,
                        Disposition_PictureInPicture_OpensInSameDisplay) {
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
@@ -2436,6 +2444,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
   ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
   auto display1 = display::Screen::Get()->GetAllDisplays()[0];
   auto display2 = display::Screen::Get()->GetAllDisplays()[1];
+  ASSERT_NE(display2.id(), display::Screen::Get()->GetPrimaryDisplay().id());
 
   {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2464,11 +2473,24 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
 
     params.source_contents = tab;
     params.contents_to_insert = WebContents::Create(web_contents_params);
+    WebContents* child = params.contents_to_insert.get();
     Navigate(&params);
 
+    auto* manager = PictureInPictureWindowManager::GetInstance();
+    EXPECT_EQ(tab, manager->GetWebContents());
+    ASSERT_EQ(child, manager->GetChildWebContents());
+    if (standalone_enabled()) {
+      EXPECT_EQ(nullptr, params.browser);
+    } else {
+      ASSERT_NE(nullptr, params.browser);
+      EXPECT_EQ(params.browser->GetType(),
+                BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+    }
+
     // The PiP window should also be on display 1.
-    EXPECT_TRUE(display1.work_area().Contains(
-        params.browser->GetWindow()->GetBounds()));
+    const auto pip_bounds = manager->GetPictureInPictureWindowBoundsInScreen();
+    ASSERT_TRUE(pip_bounds.has_value());
+    EXPECT_TRUE(display1.work_area().Contains(*pip_bounds));
   }
 
   {
@@ -2498,7 +2520,19 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
 
     params.source_contents = tab;
     params.contents_to_insert = WebContents::Create(web_contents_params);
+    WebContents* child = params.contents_to_insert.get();
     Navigate(&params);
+
+    auto* manager = PictureInPictureWindowManager::GetInstance();
+    EXPECT_EQ(tab, manager->GetWebContents());
+    ASSERT_EQ(child, manager->GetChildWebContents());
+    if (standalone_enabled()) {
+      EXPECT_EQ(nullptr, params.browser);
+    } else {
+      ASSERT_NE(nullptr, params.browser);
+      EXPECT_EQ(params.browser->GetType(),
+                BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+    }
 
     // The PiP window should also be on display 2.
 #if BUILDFLAG(IS_OZONE)
@@ -2509,13 +2543,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
       // if the window is in the correct display without relying on bounds.
       const auto pip_window_display =
           display::Screen::Get()->GetDisplayNearestWindow(
-              params.browser->GetWindow()->GetNativeWindow());
+              child->GetTopLevelNativeWindow());
       ASSERT_EQ(display2.id(), pip_window_display.id());
       return;
     }
 #endif
-    EXPECT_TRUE(display2.work_area().Contains(
-        params.browser->GetWindow()->GetBounds()));
+    const auto pip_bounds = manager->GetPictureInPictureWindowBoundsInScreen();
+    ASSERT_TRUE(pip_bounds.has_value());
+    EXPECT_TRUE(display2.work_area().Contains(*pip_bounds));
   }
 }
 
