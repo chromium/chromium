@@ -99,21 +99,23 @@ class DropdownPopupWindowImpl
         mBackground =
                 assumeNonNull(AppCompatResources.getDrawable(mContext, typedValue.resourceId));
         ListMenuUtils.clipContentViewOutline(mListView, R.attr.popupBgCornerRadius);
-        mAnchoredPopupWindow =
-                new AnchoredPopupWindow(
-                        mContext, mAnchorView, mBackground, mListView, rectProvider);
-        mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
-        mAnchoredPopupWindow.setLayoutObserver(this);
-        mAnchoredPopupWindow.setElevation(
-                mContext.getResources().getDimensionPixelSize(R.dimen.dropdown_elevation));
         Rect paddingRect = new Rect();
         mBackground.getPadding(paddingRect);
         rectProvider.setInsetPx(0, /* top= */ paddingRect.bottom, 0, /* bottom= */ paddingRect.top);
         mHorizontalPadding = paddingRect.right + paddingRect.left;
-        mAnchoredPopupWindow.setPreferredHorizontalOrientation(
-                AnchoredPopupWindow.HorizontalOrientation.CENTER);
-        mAnchoredPopupWindow.setUpdateOrientationOnChange(true);
-        mAnchoredPopupWindow.setOutsideTouchable(true);
+        mAnchoredPopupWindow =
+                new AnchoredPopupWindow.Builder(
+                                mContext, mAnchorView, mBackground, () -> mListView, rectProvider)
+                        .addOnDismissListener(onDismissLitener)
+                        .setLayoutObserver(this)
+                        .setElevation(
+                                mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.dropdown_elevation))
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.CENTER)
+                        .setUpdateOrientationOnChange(true)
+                        .setOutsideTouchable(true)
+                        .build();
     }
 
     /**
