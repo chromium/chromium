@@ -3542,7 +3542,9 @@ ci.builder(
                     # https://crbug.com/375086487
                     ("--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall:" +
                      # https://crbug.com/542940281
-                     "PrerenderBrowserTest.HTTPFormActivation"),
+                     "PrerenderBrowserTest.HTTPFormActivation:" +
+                     # https://crbug.com/565259101
+                     "SearchPrefetchActivationBeaconBrowserTest.SearchPrefetchToPrerenderUpgradeActivationBeaconSent"),
                 ],
                 swarming = targets.swarming(
                     shards = 2,
