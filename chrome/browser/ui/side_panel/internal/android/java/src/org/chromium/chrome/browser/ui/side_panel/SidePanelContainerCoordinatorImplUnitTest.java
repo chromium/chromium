@@ -60,6 +60,20 @@ public class SidePanelContainerCoordinatorImplUnitTest {
                 0,
                 SidePanelContainerCoordinatorImpl.determineShowableWidthDp(
                         availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp));
+
+        // 5. Wide window, but a higher priority container took the space for the wide side panel.
+        windowWidthDp = MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL;
+        availableWidthDp = WIDE_SIDE_PANEL_WIDTH_DP - 1;
+        assertEquals(
+                NARROW_SIDE_PANEL_WIDTH_DP,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthDp(
+                        availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp));
+
+        availableWidthDp = NARROW_SIDE_PANEL_WIDTH_DP - 1;
+        assertEquals(
+                availableWidthDp,
+                SidePanelContainerCoordinatorImpl.determineShowableWidthDp(
+                        availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp));
     }
 
     @Test

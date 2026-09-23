@@ -568,8 +568,10 @@ final class SidePanelContainerCoordinatorImpl
     static int determineShowableWidthDp(
             int availableWidthDp, int windowWidthDp, int minSidePanelContainerWidthDp) {
         // 1. Check if we can use the fixed, larger width.
-        if (windowWidthDp >= MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL) {
-            assert availableWidthDp >= WIDE_SIDE_PANEL_WIDTH_DP;
+        // A window this wide does not guarantee the space is there: a higher priority container,
+        // e.g. a manually resized Vertical Tabs rail, may have taken most of it.
+        if (windowWidthDp >= MIN_WINDOW_WIDTH_DP_FOR_WIDE_SIDE_PANEL
+                && availableWidthDp >= WIDE_SIDE_PANEL_WIDTH_DP) {
             return WIDE_SIDE_PANEL_WIDTH_DP;
         }
 

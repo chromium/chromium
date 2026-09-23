@@ -42,13 +42,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -116,9 +115,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
-        // toggleCollapseState() persists the user preference; reset it between tests.
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+        // toggleCollapseState() and resizes persist user preferences; reset them between tests.
+        VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
     @Test
@@ -587,6 +585,87 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         when(mMockTabListCoordinator.openKeyboardFocusedContextMenu()).thenReturn(false);
         assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
+    }
+
+    @Test
+    public void testSupportsManualResize() {
+        // Off by default.
+        assertFalse(mCoordinator.supportsManualResize());
+
+        enableManualResize();
+        assertTrue(mCoordinator.supportsManualResize());
+
+        // A user-collapsed rail can still be manually resized.
+        mCollapseController.toggleCollapseState();
+        assertTrue(mCoordinator.supportsManualResize());
+    }
+
+    @Test
+    public void testSupportsManualResize_ForcedCollapsedWindow() {
+        enableManualResize();
+
+        // A window too narrow to expand forces the rail collapsed, which removes the handle.
+        mCoordinator.determineShowableSize(
+                mCollapsedRailWidth, mNarrowWindowWidth, /* isFullscreen= */ false);
+        assertFalse(mCoordinator.supportsManualResize());
+    }
+
+    @Test
+    public void testOnResizeLive_AppliesProposedWidth() {
+        enableManualResize();
+
+        @Px int proposedWidth = ViewUtils.dpToPx(mActivity, 300);
+        mCoordinator.onResizeLive(proposedWidth);
+
+        assertShowableWidth(proposedWidth, mWideWindowWidth);
+    }
+
+    @Test
+    public void testOnResizeLive_ClampsToRailBounds() {
+        enableManualResize();
+
+        mCoordinator.onResizeLive(ViewUtils.dpToPx(mActivity, 10));
+        assertShowableWidth(
+                ViewUtils.dpToPx(mActivity, VerticalTabUtils.MIN_EXPANDED_WIDTH_DP),
+                mWideWindowWidth);
+
+        mCoordinator.onResizeLive(ViewUtils.dpToPx(mActivity, 10000));
+        assertShowableWidth(
+                ViewUtils.dpToPx(mActivity, VerticalTabUtils.MAX_EXPANDED_WIDTH_DP),
+                ViewUtils.dpToPx(mActivity, 2000));
+    }
+
+    @Test
+    public void testOnResizeCommitted_PersistsWidthAndExpandsFromCollapsed() {
+        enableManualResize();
+        mCollapseController.toggleCollapseState();
+        assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
+
+        mCoordinator.onResizeLive(ViewUtils.dpToPx(mActivity, 200));
+        mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 300));
+
+        assertFalse(VerticalTabUtils.isRailCollapsedFromSharedPref());
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
+        assertEquals(300, VerticalTabUtils.getUserResizedWidthDp());
+        // The persisted width is used once the drag is over.
+        assertShowableWidth(ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
+    }
+
+    @Test
+    public void testOnResizeCommitted_BelowMinimumCollapsesRail() {
+        enableManualResize();
+
+        mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 40));
+
+        assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
+    }
+
+    private void enableManualResize() {
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
+                .apply();
     }
 
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {

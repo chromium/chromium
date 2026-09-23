@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -54,6 +55,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     private final VerticalTabRailCollapseController mCollapseController;
     private final @Px int mExpandedViewWidth;
     private final @Px int mCollapsedViewWidth;
+    private final @Px int mMinManualWidth;
+    private final @Px int mMaxManualWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mIsAutoHiddenSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -61,6 +64,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     // Whether the vertical tab is set to visible via UI. Remains true even if it is temporarily
     // hidden by other conditions such as narrow window i.e. |mIsAutoHiddenSupplier.get()| is true.
     private boolean mManualVisible;
+    // The rail width proposed by an in-progress manual resize drag, or 0 if no drag is in progress.
+    private @Px int mLiveResizeWidth;
 
     public VerticalTabsSideUiCoordinator(
             Activity activity,
@@ -84,6 +89,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mRootView.addView(mTabListCoordinator.getView());
         mExpandedViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
         mCollapsedViewWidth = ViewUtils.dpToPx(activity, COLLAPSED_WIDTH_DP);
+        mMinManualWidth = ViewUtils.dpToPx(activity, VerticalTabUtils.MIN_EXPANDED_WIDTH_DP);
+        mMaxManualWidth = ViewUtils.dpToPx(activity, VerticalTabUtils.MAX_EXPANDED_WIDTH_DP);
         mCollapseController.setRailStateChangeDelegate(this::handleUserRequestedStateChange);
     }
 
@@ -227,6 +234,34 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mIsVerticalTabsActiveSupplier.set(mManualVisible);
     }
 
+    @Override
+    public boolean supportsManualResize() {
+        return VerticalTabUtils.isManualResizeEnabled() && !mCollapseController.isForcedCollapsed();
+    }
+
+    @Override
+    public void onResizeLive(@Px int proposedWidthPx) {
+        mLiveResizeWidth = proposedWidthPx;
+        // Dragging the rail is an explicit request for an expanded rail. The width is clamped to
+        // the rail's minimum until the drag is released.
+        mCollapseController.setCollapsedByUserFromResize(/* isCollapsed= */ false);
+    }
+
+    @Override
+    public void onResizeCommitted(@Px int finalWidthPx) {
+        mLiveResizeWidth = 0;
+        boolean isCollapsed = finalWidthPx < mMinManualWidth;
+        mCollapseController.setCollapsedByUserFromResize(isCollapsed);
+
+        // Releasing the drag below the rail's minimum usable width collapses it. When isCollapsed
+        // is true, setCollapsedByUserFromResize() persists the collapsed state, so we only persist
+        // the non-collapsed user-set width here.
+        if (!isCollapsed) {
+            int widthDp = ViewUtils.pxToDp(mRootView.getContext(), finalWidthPx);
+            VerticalTabUtils.setUserResizedWidthDp(widthDp);
+        }
+    }
+
     // SideUiObserver implementation:
     @Override
     public @Nullable Transition onPreSideUiSpecsChange(
@@ -286,6 +321,19 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
             @Px int availableWidthPx) {
         if (effectiveState == RailCollapseState.COLLAPSED) {
             return mCollapsedViewWidth;
+        }
+        if (VerticalTabUtils.isManualResizeEnabled()) {
+            @Px
+            int savedManualWidth =
+                    ViewUtils.dpToPx(
+                            mRootView.getContext(), VerticalTabUtils.getUserResizedWidthDp());
+            @Px int manualWidth = mLiveResizeWidth != 0 ? mLiveResizeWidth : savedManualWidth;
+            if (manualWidth != 0) {
+                // User-resized width overrides auto-sizing and is clamped only by rail and
+                // available width bounds.
+                return MathUtils.clamp(
+                        manualWidth, mMinManualWidth, Math.min(mMaxManualWidth, availableWidthPx));
+            }
         }
         if (boundary == WindowWidthBoundary.DYNAMIC_EXPANDABLE) {
             int ratioWidthPx =

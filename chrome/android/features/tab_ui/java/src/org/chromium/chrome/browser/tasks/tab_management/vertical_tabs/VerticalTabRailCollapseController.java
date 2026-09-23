@@ -132,6 +132,20 @@ class VerticalTabRailCollapseController {
     }
 
     /**
+     * Updates the user collapse preference from a manual resize. Does not apply the new state, as
+     * the resize flow drives its own Side UI update.
+     *
+     * @param isCollapsed Whether the rail should be collapsed.
+     */
+    void setCollapsedByUserFromResize(boolean isCollapsed) {
+        if (mIsCollapsedByUser == isCollapsed) return;
+        mIsCollapsedByUser = isCollapsed;
+        VerticalTabUtils.setRailCollapsedInSharedPref(isCollapsed);
+        // A resize is an explicit request, so like a toggle it overrides the current hover.
+        mIsHoverExpanded = false;
+    }
+
+    /**
      * Feeds the window width constraint. This is the only rail state input owned by {@link
      * VerticalTabsSideUiCoordinator}; the narrow-window policy, the resulting effective state and
      * the collapse button state are all derived here. Applies the new effective state if the
@@ -162,7 +176,8 @@ class VerticalTabRailCollapseController {
 
     /**
      * Returns whether the window is too narrow to host an expanded rail. While this is true the
-     * rail stays collapsed regardless of the other inputs, so the collapse button is disabled.
+     * rail stays collapsed regardless of the other inputs, so the collapse button is disabled and
+     * the rail cannot be resized.
      */
     boolean isForcedCollapsed() {
         return mIsForcedCollapsed;
