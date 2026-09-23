@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/addresses/name_info.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -28,6 +29,7 @@ namespace {
 
 using i18n_model_definition::kLegacyHierarchyCountryCode;
 using ::testing::IsEmpty;
+using ::testing::Message;
 using ::testing::Test;
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -35,6 +37,7 @@ using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
 constexpr char kLocale[] = "en-US";
+constexpr char kJapaneseLocale[] = "ja";
 
 struct FullNameTestCase {
   std::string full_name_input;
@@ -880,158 +883,83 @@ TEST_F(NameInfoTest, HaveMergeableAlternativeNames) {
   NameInfo name7_katakana = CreateNameInfo(u"葵", u"", u"山本", u"山本・葵",
                                            u"", u"", u"サクラ レイ", true);
 
-  // Base cases for latin characters.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name1, AddressCountryCode("JP"), empty, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name1, AddressCountryCode("JP"), name1, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      empty, AddressCountryCode("JP"), name1, AddressCountryCode("JP")));
+  auto are_alternative_names_mergeable =
+      [](const NameInfo& name1, const NameInfo& name2, bool expect) {
+        SCOPED_TRACE(Message()
+                     << "name1: " << name1.GetInfo(NAME_FULL, kJapaneseLocale)
+                     << " ("
+                     << name1.GetInfo(ALTERNATIVE_FULL_NAME, kJapaneseLocale)
+                     << ")"
+                     << ", name2: " << name2.GetInfo(NAME_FULL, kJapaneseLocale)
+                     << " ("
+                     << name2.GetInfo(ALTERNATIVE_FULL_NAME, kJapaneseLocale)
+                     << ")"
+                     << ", expect: " << expect);
 
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name1, AddressCountryCode("JP"), name1_mergeable,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name1_mergeable, AddressCountryCode("JP"), name1,
-      AddressCountryCode("JP")));
+        // Test both merge orders.
+        EXPECT_EQ(NameInfo::AreAlternativeNamesMergeable(
+                      name1, AddressCountryCode("JP"), name2,
+                      AddressCountryCode("JP")),
+                  expect);
+        EXPECT_EQ(NameInfo::AreAlternativeNamesMergeable(
+                      name2, AddressCountryCode("JP"), name1,
+                      AddressCountryCode("JP")),
+                  expect);
+      };
+
+  // Base cases for latin characters.
+  are_alternative_names_mergeable(name1, empty, /*expect=*/true);
+  are_alternative_names_mergeable(name1, name1, /*expect=*/true);
+
+  are_alternative_names_mergeable(name1, name1_mergeable, /*expect=*/true);
 
   // CJK characters with empty profile.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), empty, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3, AddressCountryCode("JP"), empty, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), empty,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3_katakana, AddressCountryCode("JP"), empty,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      empty, AddressCountryCode("JP"), name2, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      empty, AddressCountryCode("JP"), name3, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      empty, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      empty, AddressCountryCode("JP"), name3_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, empty, /*expect=*/true);
+  are_alternative_names_mergeable(name3, empty, /*expect=*/true);
+  are_alternative_names_mergeable(name2_katakana, empty, /*expect=*/true);
+  are_alternative_names_mergeable(name3_katakana, empty, /*expect=*/true);
 
   // Mergeable profiles using Hiragana.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name2, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3, AddressCountryCode("JP"), name3, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4, AddressCountryCode("JP"), name4, AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name2, /*expect=*/true);
+  are_alternative_names_mergeable(name3, name3, /*expect=*/true);
+  are_alternative_names_mergeable(name4, name4, /*expect=*/true);
 
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name3, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3, AddressCountryCode("JP"), name2, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name4, AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4, AddressCountryCode("JP"), name2, AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name3, /*expect=*/true);
+  are_alternative_names_mergeable(name2, name4, /*expect=*/true);
 
   // Mergeable profiles using Katakana.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name3_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4_katakana, AddressCountryCode("JP"), name4_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2_katakana, name2_katakana,
+                                  /*expect=*/true);
+  are_alternative_names_mergeable(name3_katakana, name3_katakana,
+                                  /*expect=*/true);
+  are_alternative_names_mergeable(name4_katakana, name4_katakana,
+                                  /*expect=*/true);
 
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name3_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3_katakana, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name4_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4_katakana, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2_katakana, name3_katakana,
+                                  /*expect=*/true);
+  are_alternative_names_mergeable(name2_katakana, name4_katakana,
+                                  /*expect=*/true);
 
   // Mergeable profiles where one is using Katakana and the other Hiragana.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name3_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3_katakana, AddressCountryCode("JP"), name2,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name3,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name3_katakana, /*expect=*/true);
+  are_alternative_names_mergeable(name3, name2_katakana, /*expect=*/true);
 
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name4_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4_katakana, AddressCountryCode("JP"), name2,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name4,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name4_katakana, /*expect=*/true);
+  are_alternative_names_mergeable(name4, name2_katakana, /*expect=*/true);
 
   // Semantically the same profiles one using Katakana the other Hiragana.
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name2,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3_katakana, AddressCountryCode("JP"), name3,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name3, AddressCountryCode("JP"), name3_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4_katakana, AddressCountryCode("JP"), name4,
-      AddressCountryCode("JP")));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      name4, AddressCountryCode("JP"), name4_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name2_katakana, /*expect=*/true);
+  are_alternative_names_mergeable(name3, name3_katakana, /*expect=*/true);
+  are_alternative_names_mergeable(name4, name4_katakana, /*expect=*/true);
 
   // Non mergeable profiles where one is using Katakana and the other Hiragana.
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name6_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name6_katakana, AddressCountryCode("JP"), name2,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name2, AddressCountryCode("JP"), name7_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name7_katakana, AddressCountryCode("JP"), name2,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name7_katakana, AddressCountryCode("JP"), name4,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name4, AddressCountryCode("JP"), name7_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2, name6_katakana, /*expect=*/false);
+  are_alternative_names_mergeable(name2, name7_katakana, /*expect=*/false);
+  are_alternative_names_mergeable(name4, name7_katakana, /*expect=*/false);
 
   // Non mergeable profiles where both are using Katakana.
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name2_katakana, AddressCountryCode("JP"), name5_katakana,
-      AddressCountryCode("JP")));
-  EXPECT_FALSE(NameInfo::AreAlternativeNamesMergeable(
-      name5_katakana, AddressCountryCode("JP"), name2_katakana,
-      AddressCountryCode("JP")));
+  are_alternative_names_mergeable(name2_katakana, name5_katakana,
+                                  /*expect=*/false);
 }
 
 struct IsNameVariantOfTestCase {
@@ -1195,106 +1123,57 @@ TEST_F(NameInfoTest, HaveMergeableNames) {
 
   NameInfo different = CreateNameInfo(u"Joe", u"", u"Larsson", u"");
 
-  // |p1|, |p2|, |p3|, |p4| and |empty| should all be the mergeable with
+  auto are_names_mergeable = [](const NameInfo& name1, const NameInfo& name2,
+                                bool expect) {
+    SCOPED_TRACE(Message() << "name1: " << name1.GetInfo(NAME_FULL, kLocale)
+                           << ", name2: " << name2.GetInfo(NAME_FULL, kLocale)
+                           << ", expect: " << expect);
+
+    // Test both orders.
+    EXPECT_EQ(NameInfo::AreNamesMergeable(name1, kLegacyHierarchyCountryCode,
+                                          name2, kLegacyHierarchyCountryCode),
+              expect);
+    EXPECT_EQ(NameInfo::AreNamesMergeable(name2, kLegacyHierarchyCountryCode,
+                                          name1, kLegacyHierarchyCountryCode),
+              expect);
+  };
+
+  // `p1`, `p2`, `p3`, `p4` and `empty` should all be the mergeable with
   // one another. The order of the comparands should not matter.
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1, kLegacyHierarchyCountryCode, p1,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1, kLegacyHierarchyCountryCode, p2,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1, kLegacyHierarchyCountryCode, p3,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1, kLegacyHierarchyCountryCode, p4,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p2, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p2, kLegacyHierarchyCountryCode, p1,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p2, kLegacyHierarchyCountryCode, p2,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p2, kLegacyHierarchyCountryCode, p3,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p2, kLegacyHierarchyCountryCode, p4,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p3, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p3, kLegacyHierarchyCountryCode, p1,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p3, kLegacyHierarchyCountryCode, p2,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p3, kLegacyHierarchyCountryCode, p3,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p3, kLegacyHierarchyCountryCode, p4,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p4, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p4, kLegacyHierarchyCountryCode, p1,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p4, kLegacyHierarchyCountryCode, p2,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p4, kLegacyHierarchyCountryCode, p3,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p4, kLegacyHierarchyCountryCode, p4,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          p1, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          p2, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          p3, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          p4, kLegacyHierarchyCountryCode));
+  {
+    const std::array<const NameInfo*, 5> mergeable_profiles = {&empty, &p1, &p2,
+                                                               &p3, &p4};
+    for (size_t i = 0; i < mergeable_profiles.size(); ++i) {
+      for (size_t j = i; j < mergeable_profiles.size(); ++j) {
+        are_names_mergeable(*mergeable_profiles[i], *mergeable_profiles[j],
+                            /*expect=*/true);
+      }
+    }
+  }
 
-  // |initials| is mergeable with |p1| and |p4| but not |p2| or |p3|.
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(initials, kLegacyHierarchyCountryCode,
-                                          empty, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(initials, kLegacyHierarchyCountryCode,
-                                          p1, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(initials, kLegacyHierarchyCountryCode,
-                                          p4, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(empty, kLegacyHierarchyCountryCode,
-                                          initials,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(
-      p1, kLegacyHierarchyCountryCode, initials, kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(
-      p4, kLegacyHierarchyCountryCode, initials, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      initials, kLegacyHierarchyCountryCode, p2, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      initials, kLegacyHierarchyCountryCode, p3, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p2, kLegacyHierarchyCountryCode, initials, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p3, kLegacyHierarchyCountryCode, initials, kLegacyHierarchyCountryCode));
+  // `initials` is mergeable with `empty`, `p1` and `p4` but not `p2` or `p3`.
+  {
+    const std::array<const NameInfo*, 3> mergeable_profiles = {&empty, &p1,
+                                                               &p4};
+    for (const NameInfo* p : mergeable_profiles) {
+      are_names_mergeable(initials, *p, /*expect=*/true);
+    }
 
-  // None of the non-empty profiles should match |different|. The order of the
+    const std::array<const NameInfo*, 2> non_mergeable_profiles = {&p2, &p3};
+    for (const NameInfo* p : non_mergeable_profiles) {
+      are_names_mergeable(initials, *p, /*expect=*/false);
+    }
+  }
+
+  // None of the non-empty profiles should match `different`. The order of the
   // comparands should not matter.
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p1, kLegacyHierarchyCountryCode, different, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p2, kLegacyHierarchyCountryCode, different, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p3, kLegacyHierarchyCountryCode, different, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p4, kLegacyHierarchyCountryCode, different, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(
-      NameInfo::AreNamesMergeable(initials, kLegacyHierarchyCountryCode,
-                                  different, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      different, kLegacyHierarchyCountryCode, p1, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      different, kLegacyHierarchyCountryCode, p2, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      different, kLegacyHierarchyCountryCode, p3, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      different, kLegacyHierarchyCountryCode, p4, kLegacyHierarchyCountryCode));
-  EXPECT_FALSE(
-      NameInfo::AreNamesMergeable(different, kLegacyHierarchyCountryCode,
-                                  initials, kLegacyHierarchyCountryCode));
+  {
+    const std::array<const NameInfo*, 5> non_empty_profiles = {&p1, &p2, &p3,
+                                                               &p4, &initials};
+    for (const NameInfo* p : non_empty_profiles) {
+      are_names_mergeable(*p, different, /*expect=*/false);
+    }
+  }
 }
 
 TEST_F(NameInfoTest, HaveMergeableNamesWithGermanTransliteration) {
