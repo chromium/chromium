@@ -23,6 +23,7 @@
 // need for implementing NarrowToU8, was not released at the time of writing.
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
@@ -324,12 +325,12 @@ uint8_t FirstColPrediction(uint8_t up, uint8_t up_right, uint8_t right) {
   int max_up_right = up > right ? up : right;
   int min_up_right = up > right ? right : up;
   int horiz_grad_prediction = right + (up - up_right);
-  uint8_t ret[3];
+  std::array<uint8_t, 3> ret;
   int idx = ((up_right > max_up_right) << 1) | (up_right < min_up_right);
   ret[0b00] = horiz_grad_prediction;
   ret[0b01] = min_up_right;
   ret[0b10] = max_up_right;
-  return UNSAFE_TODO(ret[idx]);
+  return ret[idx];
 }
 
 // Same deal as with first column prediction, but with 4 possible prediction
@@ -345,12 +346,12 @@ uint8_t BodyPrediction(uint8_t up_left,
   int use_right_grad = up_right <= max_up_right && up_right >= min_up_right;
   int idx = (use_right_grad << 1 | use_right_grad) |
             (up_left > max_up_right) << 1 | up_left < min_up_right;
-  uint8_t ret[4];
+  std::array<uint8_t, 4> ret;
   ret[0b00] = left_grad;
   ret[0b01] = min_up_right;
   ret[0b10] = max_up_right;
   ret[0b11] = right_grad;
-  return UNSAFE_TODO(ret[idx]);
+  return ret[idx];
 }
 
 // Core (scalar) decompression functions.
@@ -1147,7 +1148,7 @@ void BinSubblocks(const uint8_t* src,
                   const uint8_t* footer,
                   uint8_t* dest,
                   size_t block_offset,
-                  std::vector<T>* subblock_bins) {
+                  base::span<std::vector<T>, 2> subblock_bins) {
   size_t subblock1_len, subblock2_len;
   ParseBlockMetadata(footer, block_offset, subblock1_len, subblock2_len);
   T subblock1 = {UNSAFE_TODO(src + block_offset),
@@ -1158,8 +1159,8 @@ void BinSubblocks(const uint8_t* src,
   int subblock1_type = subblock1_len == kMT21SubblockSize;
   int subblock2_type = subblock2_len == kMT21SubblockSize;
 
-  UNSAFE_TODO(subblock_bins[subblock1_type]).push_back(subblock1);
-  UNSAFE_TODO(subblock_bins[subblock2_type]).push_back(subblock2);
+  subblock_bins[subblock1_type].push_back(subblock1);
+  subblock_bins[subblock2_type].push_back(subblock2);
 }
 
 }  // namespace

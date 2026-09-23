@@ -390,7 +390,8 @@ TEST(MT21UtilTest, TestSubblockBinning) {
   ASSERT_TRUE(ComputeFooterOffset(512, sizeof(footer), kMT21YFooterAlignment) ==
               0);
 
-  BinSubblocks((const uint8_t*)0xDEADBEEF, footer, (uint8_t*)0xC0FFEE, 0, bins);
+  BinSubblocks<MT21YSubblock>((const uint8_t*)0xDEADBEEF, footer,
+                              (uint8_t*)0xC0FFEE, 0, bins);
 
   ASSERT_TRUE(bins[0].size() == 1);
   ASSERT_TRUE(bins[1].size() == 1);
