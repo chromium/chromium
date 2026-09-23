@@ -445,7 +445,6 @@ public class ExtensionsToolbarCoordinatorImpl
                         .setPreferredHorizontalOrientation(
                                 HorizontalOrientation.MAX_AVAILABLE_SPACE)
                         .setHorizontalOverlapAnchor(true)
-                        .setRemoveArrow(true)
                         .setInsetRect(new Rect())
                         .build());
     }
