@@ -58,9 +58,11 @@ public class TabGroupUtils {
     /**
      * This method gets the selected tab of the group where {@code tab} is in.
      *
+     * <p>TODO(crbug.com/496272676): Remove once ANDROID_TAB_UI_REFACTOR is launched.
+     *
      * @param tabModel The tab model that owns the {@code tab}.
      * @param tab The {@link Tab}.
-     * @return The selected tab of the group which contains the {@code tab}
+     * @return The selected tab of the group which contains the {@code tab}.
      */
     public static Tab getSelectedTabInGroupForTab(TabModel tabModel, Tab tab) {
         return assumeNonNull(tabModel.getRepresentativeTabAt(tabModel.representativeIndexOf(tab)));

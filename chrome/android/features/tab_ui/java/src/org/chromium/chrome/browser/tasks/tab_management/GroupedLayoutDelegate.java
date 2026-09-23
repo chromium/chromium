@@ -570,22 +570,31 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void didMoveTabGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-        List<Tab> relatedTabs = mMediator.getRelatedTabsForId(movedTab.getId());
+    public void didMoveTabGroup(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
+        if (tabModelOldIndex == tabModelNewIndex) return;
+
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        int tabCount = tabModel.getTabCountForGroup(tabGroupId);
+        if (tabCount == 0) return;
+
         int curPosition;
         if (mUseTabGroupCardType) {
-            curPosition = getIndexFromTab(movedTab);
+            curPosition = mModelList.indexFromTabGroupId(tabGroupId);
         } else {
             Tab currentGroupSelectedTab =
-                    TabGroupUtils.getSelectedTabInGroupForTab(tabModel, movedTab);
+                    tabModel.getTabById(tabModel.getGroupLastShownTabId(tabGroupId));
+            if (currentGroupSelectedTab == null) return;
             curPosition = getIndexFromTabId(currentGroupSelectedTab.getId());
             if (curPosition == TabModel.INVALID_TAB_INDEX) {
-                // Sync TabListModel with updated TabModel.
+                // Query the group's original slot to re-sync the representative tab card in the
+                // model list.
                 int indexToUpdate =
                         mModelList.indexOfNthTabCard(
                                 tabModel.representativeIndexOf(
-                                        tabModel.getTabAt(tabModelOldIndex)));
+                                        tabModel.getTabAt(
+                                                tabModelNewIndex > tabModelOldIndex
+                                                        ? tabModelOldIndex
+                                                        : tabModelOldIndex + tabCount - 1)));
                 mModelList.updateTabListModelIdForGroup(currentGroupSelectedTab, indexToUpdate);
                 curPosition = getIndexFromTabId(currentGroupSelectedTab.getId());
             }
@@ -596,14 +605,15 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // to determine the new position, instead of manual offset math and looking up
         // adjacent tabs.
 
-        // Find the tab which was in the destination index before this move. Use
-        // that tab to figure out the new position.
+        // Find the adjacent tab leapfrogged by this move to determine the target UI position.
+        // Moving forward anchors to the tab before the group (-1); moving backward anchors to
+        // the tab shifted past the group (+tabCount).
         int destinationTabIndex =
                 tabModelNewIndex > tabModelOldIndex
-                        ? tabModelNewIndex - relatedTabs.size()
-                        : tabModelNewIndex + 1;
+                        ? tabModelNewIndex - 1
+                        : tabModelNewIndex + tabCount;
         Tab destinationTab = tabModel.getTabAt(destinationTabIndex);
-        assumeNonNull(destinationTab);
+        if (destinationTab == null) return;
         int newPosition;
         if (mUseTabGroupCardType) {
             newPosition = getIndexFromTab(destinationTab);

@@ -243,7 +243,7 @@ public class StripLayoutHelper
 
                 @Override
                 public void didMoveTabGroup(
-                        Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                        Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
                     mMovingGroup = false;
 
                     // Additionally rebuild the StripLayoutTabs here as well. This was previously

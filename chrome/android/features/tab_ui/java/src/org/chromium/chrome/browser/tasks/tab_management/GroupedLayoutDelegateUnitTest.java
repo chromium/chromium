@@ -1218,9 +1218,9 @@ public class GroupedLayoutDelegateUnitTest {
         createAndAddPropertyModel(TAB2_ID);
         createAndAddPropertyModel(TAB1_ID);
 
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
 
         // After move, mTab1 is at 0, mTab2 is at 1. We mock the destination tab for calculating new
         // position.
@@ -1229,7 +1229,8 @@ public class GroupedLayoutDelegateUnitTest {
         setupRepresentativeTab(mTab1, mTab1, 0);
         setupRepresentativeTab(mTab2, mTab2, 1);
 
-        mDelegate.didMoveTabGroup(mTab1, 1, 0);
+        mDelegate.didMoveTabGroup(
+                TAB_GROUP_ID, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
         assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
@@ -1244,7 +1245,7 @@ public class GroupedLayoutDelegateUnitTest {
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(CARD_TYPE, TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId2)
-                        .with(TabProperties.TAB_ID, TAB2_ID)
+                        .with(TabProperties.TAB_ID, TAB3_ID)
                         .build();
         PropertyModel groupCard1 =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -1256,41 +1257,48 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCard2));
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCard1));
 
-        when(mTab1.getTabGroupId()).thenReturn(groupId1);
-        when(mTab2.getTabGroupId()).thenReturn(groupId2);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTab3.getTabGroupId()).thenReturn(groupId2);
+        when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
+        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
-
-        setupRepresentativeTab(mTab1, mTab1, 0);
-        setupRepresentativeTab(mTab2, mTab2, 1);
-
-        GroupedLayoutDelegate delegate =
-                new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
-        delegate.didMoveTabGroup(mTab1, 1, 0);
+        mDelegate.didMoveTabGroup(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
 
         assertEquals(groupCard1, mModelList.get(0).model);
         assertEquals(groupCard2, mModelList.get(1).model);
     }
 
     @Test
-    public void testDidMoveTabGroup_NonExistentTab() {
-        when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+    public void testDidMoveTabGroup_Forward() {
+        Token groupId1 = new Token(1L, 1L);
 
-        when(mMediator.getRelatedTabsForId(TAB3_ID)).thenReturn(List.of(mTab3));
-        when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3));
-        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
+        PropertyModel groupCard1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CARD_TYPE, TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId1)
+                        .with(TabProperties.TAB_ID, TAB1_ID)
+                        .build();
+        createAndAddPropertyModel(TAB3_ID);
 
-        setupRepresentativeTab(mTab3, mTab3, 1);
-        when(mTabModel.getRepresentativeTabAt(2)).thenReturn(mTab3);
-        when(mTabModel.representativeIndexOf(mTab3)).thenReturn(2);
+        mModelList.add(0, new ListItem(TabProperties.UiType.TAB_GROUP, groupCard1));
 
-        // mModelList is empty at this point, so the tab is non-existent.
-        mDelegate.didMoveTabGroup(mTab3, 2, 1);
+        when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab3);
 
-        // Verify it doesn't crash and we don't try to update a tab.
+        mDelegate.didMoveTabGroup(groupId1, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
+
+        assertEquals(TAB3_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(groupCard1, mModelList.get(1).model);
+    }
+
+    @Test
+    public void testDidMoveTabGroup_NonExistentGroup() {
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+
+        // mModelList is empty at this point, so the group card is non-existent.
+        mDelegate.didMoveTabGroup(
+                TAB_GROUP_ID, /* tabModelOldIndex= */ 2, /* tabModelNewIndex= */ 1);
+
+        // Verify it doesn't crash and we don't try to update a card.
         verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
     }
 

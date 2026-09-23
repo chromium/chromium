@@ -80,16 +80,14 @@ public interface TabGroupObserver {
      */
     default void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {}
 
-    // TODO(crbug.com/434015906): Passing the last tab here is a limitation of the current impl,
-    // we should fix this once tab collections is launched.
     /**
      * This method is called after a group is moved.
      *
-     * @param movedTab The tab which has been moved. This is the last tab within the group.
-     * @param tabModelOldIndex The old index of the {@code movedTab} in the {@link TabModel}.
-     * @param tabModelNewIndex The new index of the {@code movedTab} in the {@link TabModel}.
+     * @param tabGroupId The tab group ID of the group that was moved.
+     * @param tabModelOldIndex The old index of the first tab in the group in the {@link TabModel}.
+     * @param tabModelNewIndex The new index of the first tab in the group in the {@link TabModel}.
      */
-    default void didMoveTabGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {}
+    default void didMoveTabGroup(Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {}
 
     /**
      * This method is called after a tab within a group is moved.

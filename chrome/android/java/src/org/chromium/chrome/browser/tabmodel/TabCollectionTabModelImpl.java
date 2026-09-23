@@ -955,20 +955,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (tabs.isEmpty()) return;
 
         Tab firstTab = tabs.get(0);
-        int curIndex = indexOf(firstTab);
-        int oldIndex = curIndex;
+        int oldIndex = indexOf(firstTab);
 
         ObserverList.RewindableIterator<TabGroupObserver> groupObservers =
                 mTabGroupObservers.rewindableIterator();
         while (groupObservers.hasNext()) {
-            groupObservers.next().willMoveTabGroup(tabGroupId, curIndex);
+            groupObservers.next().willMoveTabGroup(tabGroupId, oldIndex);
         }
 
         int finalIndex =
                 TabCollectionTabModelImplJni.get()
                         .moveTabGroupTo(mNativeTabCollectionTabModelImplPtr, tabGroupId, newIndex);
 
-        if (finalIndex == curIndex) return;
+        if (finalIndex == oldIndex) return;
 
         invalidateCache();
 
@@ -978,17 +977,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             Tab tab = tabs.get(i);
             modelObservers.rewind();
             while (modelObservers.hasNext()) {
-                modelObservers.next().didMoveTab(tab, finalIndex + i, curIndex + i);
+                modelObservers.next().didMoveTab(tab, finalIndex + i, oldIndex + i);
             }
         }
 
-        int offset = tabs.size() - 1;
-        Tab lastTab = tabs.get(offset);
-        curIndex += offset;
-        finalIndex += offset;
         groupObservers.rewind();
         while (groupObservers.hasNext()) {
-            groupObservers.next().didMoveTabGroup(lastTab, curIndex, finalIndex);
+            groupObservers.next().didMoveTabGroup(tabGroupId, oldIndex, finalIndex);
         }
         modelObservers.rewind();
         while (modelObservers.hasNext()) {
