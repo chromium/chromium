@@ -143,6 +143,10 @@ const int kGeminiContextualCueChipSlidingWindow = 2;
 NSString* const kGeminiFirstRunWrapperStackAccessibilityIdentifier =
     @"GeminiFirstRunWrapperStackAccessibilityIdentifier";
 
+// The accessibility ID of the close button in the Gemini modal.
+NSString* const kGeminiModalContentCloseButtonAccessibilityIdentifier =
+    @"GeminiModalContentCloseButtonAccessibilityIdentifier";
+
 @implementation GeminiStartupState
 
 - (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint {

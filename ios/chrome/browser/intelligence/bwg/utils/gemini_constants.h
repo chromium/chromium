@@ -336,4 +336,7 @@ extern const int kGeminiContextualCueChipSlidingWindow;
 // The accessibility ID of the Gemini wrapper stack in the first run flow.
 extern NSString* const kGeminiFirstRunWrapperStackAccessibilityIdentifier;
 
+// The accessibility ID of the close button in the Gemini modal.
+extern NSString* const kGeminiModalContentCloseButtonAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_CONSTANTS_H_
