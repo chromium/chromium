@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -1339,6 +1340,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         configureInstancesForOtherWindowTests(
                 isIncognito, atInstanceLimit, numOtherEligibleWindows);
+        AdditionalNavigationParams navParams = mock(AdditionalNavigationParams.class);
+        mUrlParams.setAdditionalNavigationParams(navParams);
 
         // Act.
         mMultiInstanceOrchestrator.openUrlInOtherWindow(
@@ -1347,10 +1350,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         if (preferNew && atInstanceLimit) {
             verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
+            verify(navParams).destroy();
         } else if (preferNew || !eligibleOtherWindowExists) {
             var intentCaptor = ArgumentCaptor.forClass(Intent.class);
             verify(mTabbedActivity1).startActivity(intentCaptor.capture());
             verifyNewWindowIntentForUrlLaunch(intentCaptor.getValue(), isIncognito);
+            verify(navParams, never()).destroy();
         } else if (isIncognito || numOtherEligibleWindows == 1) {
             var intentCaptor = ArgumentCaptor.forClass(Intent.class);
             verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
@@ -1358,6 +1363,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                     "Uri data is incorrect.",
                     mUrlParams.getUrl(),
                     intentCaptor.getValue().getData().toString());
+            verify(navParams, never()).destroy();
         } else {
             ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
             verify(mMultiInstanceManager1)
@@ -1374,6 +1380,11 @@ public class MultiInstanceOrchestratorImplUnitTest {
                     "Uri data is incorrect.",
                     mUrlParams.getUrl(),
                     intentCaptor.getValue().getData().toString());
+            verify(navParams, never()).destroy();
+
+            // Also verify dismissal (null result) destroys AdditionalNavigationParams.
+            callbackCaptor.getValue().onResult(null);
+            verify(navParams).destroy();
         }
     }
 

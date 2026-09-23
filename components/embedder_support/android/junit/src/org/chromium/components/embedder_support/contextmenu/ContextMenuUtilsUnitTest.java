@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,6 +42,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -757,5 +760,60 @@ public class ContextMenuUtilsUnitTest {
 
         doReturn(viewAndroidDelegate).when(mWebContentsMock).getViewAndroidDelegate();
         doReturn(dragStateTracker).when(viewAndroidDelegate).getDragStateTracker();
+    }
+
+    @Test
+    public void testContextMenuParamsDestroy() {
+        AdditionalNavigationParams unusedParams = mock(AdditionalNavigationParams.class);
+        ContextMenuParams menuParamsUnused =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        new GURL(sSrcUrl),
+                        ALT_TEXT,
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.NONE,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        unusedParams);
+        menuParamsUnused.destroy();
+        verify(unusedParams).destroy();
+
+        AdditionalNavigationParams takenParams = mock(AdditionalNavigationParams.class);
+        ContextMenuParams menuParamsTaken =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.NONE,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        new GURL(sSrcUrl),
+                        ALT_TEXT,
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.NONE,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        takenParams);
+        Assert.assertEquals(takenParams, menuParamsTaken.takeAdditionalNavigationParams());
+        Assert.assertNull(menuParamsTaken.takeAdditionalNavigationParams());
+        menuParamsTaken.destroy();
+        verify(takenParams, never()).destroy();
     }
 }

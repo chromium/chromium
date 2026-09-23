@@ -324,6 +324,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (!isIncognito) {
             loadUrlParams.setReferrer(referrer);
             loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
         }
         MultiInstanceOrchestratorFactory.getInstance()
                 .openUrlInOtherWindow(
@@ -481,6 +483,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         EphemeralTabCoordinator ephemeralTabCoordinator = mEphemeralTabCoordinatorSupplier.get();
         if (ephemeralTabCoordinator == null) {
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
             return;
         }
         var initiatorOrigin = getWebContents().getMainFrame().getLastCommittedOrigin();

@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Implements {@link MultiInstanceOrchestrator} as a singleton. */
 @NullMarked
@@ -303,6 +304,7 @@ import java.util.Set;
             ((MultiInstanceManagerApi31) multiInstanceManager)
                     .showTargetSelectorDialog(
                             (instanceInfo) -> {
+                                if (instanceInfo == null) return;
                                 moveTabsToWindowByIdChecked(
                                         instanceInfo.instanceId,
                                         tabs,
@@ -396,6 +398,7 @@ import java.util.Set;
         if (multiInstanceManager != null) {
             multiInstanceManager.showTargetSelectorDialog(
                     (instanceInfo) -> {
+                        if (instanceInfo == null) return;
                         moveTabGroupToWindowByIdChecked(
                                 instanceInfo.instanceId,
                                 tabGroupMetadata,
@@ -464,24 +467,38 @@ import java.util.Set;
             boolean openInTabGroup) {
         var targetActivityClass =
                 MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
-        if (targetActivityClass == null) return false;
-
-        Intent intent =
-                getBasicUrlLaunchIntent(
-                        sourceActivity,
-                        loadUrlParams,
-                        parentTabId,
-                        isIncognito,
-                        targetActivityClass);
-
-        if (additionalUrls != null && !additionalUrls.isEmpty()) {
-            intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, new ArrayList<>(additionalUrls));
-            if (openInTabGroup) {
-                intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
-            }
+        if (targetActivityClass == null) {
+            destroyAdditionalNavigationParams(loadUrlParams);
+            return false;
         }
 
+        // Defer calling getBasicUrlLaunchIntent() until the launch is ready to proceed, because
+        // IntentHandler.createAsyncNewTabIntent() registers loadUrlParams (including its native
+        // AdditionalNavigationParams) in AsyncTabParamsManagerSingleton, which would leak if
+        // instance limits are exceeded or the target selector dialog is dismissed.
+        Supplier<Intent> createIntent =
+                () -> {
+                    Intent intent =
+                            getBasicUrlLaunchIntent(
+                                    sourceActivity,
+                                    loadUrlParams,
+                                    parentTabId,
+                                    isIncognito,
+                                    targetActivityClass);
+                    if (additionalUrls != null && !additionalUrls.isEmpty()) {
+                        intent.putExtra(
+                                IntentHandler.EXTRA_ADDITIONAL_URLS,
+                                new ArrayList<>(additionalUrls));
+                        if (openInTabGroup) {
+                            intent.putExtra(
+                                    IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
+                        }
+                    }
+                    return intent;
+                };
+
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            Intent intent = createIntent.get();
             addOpenUrlInNewWindowIntentExtras(
                     sourceActivity, intent, /* isIncognitoWindow= */ false);
             MultiInstanceManager.onMultiInstanceModeStarted();
@@ -518,11 +535,12 @@ import java.util.Set;
                 if (multiInstanceManager != null) {
                     multiInstanceManager.showInstanceCreationLimitMessage();
                 }
+                destroyAdditionalNavigationParams(loadUrlParams);
                 return false;
             }
             openUrlInOtherWindowApi31(
                     sourceActivity,
-                    intent,
+                    createIntent.get(),
                     /* windowId= */ INVALID_WINDOW_ID,
                     isTargetIncognitoWindow);
             return true;
@@ -540,21 +558,37 @@ import java.util.Set;
             assert lastAccessedWindowId != INVALID_WINDOW_ID
                     : "Last accessed window id for the target instance type should be valid.";
             openUrlInOtherWindowApi31(
-                    sourceActivity, intent, lastAccessedWindowId, isTargetIncognitoWindow);
+                    sourceActivity,
+                    createIntent.get(),
+                    lastAccessedWindowId,
+                    isTargetIncognitoWindow);
             return true;
         }
 
         @StringRes int title = R.string.contextmenu_open_in_other_window;
         multiInstanceManager.showTargetSelectorDialog(
-                (instanceInfo) ->
-                        openUrlInOtherWindowApi31(
-                                sourceActivity,
-                                intent,
-                                instanceInfo.instanceId,
-                                /* isIncognitoWindow= */ false),
+                (instanceInfo) -> {
+                    if (instanceInfo == null) {
+                        destroyAdditionalNavigationParams(loadUrlParams);
+                        return;
+                    }
+                    openUrlInOtherWindowApi31(
+                            sourceActivity,
+                            createIntent.get(),
+                            instanceInfo.instanceId,
+                            /* isIncognitoWindow= */ false);
+                },
                 targetInstanceType,
                 title);
         return true;
+    }
+
+    private static void destroyAdditionalNavigationParams(LoadUrlParams loadUrlParams) {
+        var params = loadUrlParams.getAdditionalNavigationParams();
+        if (params != null) {
+            params.destroy();
+            loadUrlParams.setAdditionalNavigationParams(null);
+        }
     }
 
     private void moveTabsToOtherWindowPreApi31(List<Tab> tabs) {

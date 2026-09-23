@@ -53,7 +53,7 @@ public class ContextMenuParams {
     private final boolean mOpenedFromInterestFor;
     private final int mInterestForNodeID;
 
-    private final @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
+    private @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
     private final MenuModelBridge mMenuModelBridge;
 
     @CalledByNative
@@ -209,16 +209,22 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return The additional navigation params associated with this Context Menu.
+     * Takes ownership of the additional navigation params associated with this Context Menu.
+     *
+     * @return The additional navigation params associated with this Context Menu, or null if none
+     *     or already taken.
      */
-    public @Nullable AdditionalNavigationParams getAdditionalNavigationParams() {
-        return mAdditionalNavigationParams;
+    public @Nullable AdditionalNavigationParams takeAdditionalNavigationParams() {
+        var ret = mAdditionalNavigationParams;
+        mAdditionalNavigationParams = null;
+        return ret;
     }
 
     /** Releases resources associated with this Context Menu. */
     public void destroy() {
         if (mAdditionalNavigationParams != null) {
             mAdditionalNavigationParams.destroy();
+            mAdditionalNavigationParams = null;
         }
     }
 

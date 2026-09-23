@@ -48,6 +48,7 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
 
     @CalledByNative
     private long takeNativeState() {
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         long ptr = mNativePtr;
         mNativePtr = 0;
         return ptr;
@@ -56,7 +57,7 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     @CalledByNative
     @Override
     public void destroy() {
-        LifetimeAssert.destroy(mLifetimeAssert);
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         if (mNativePtr != 0) {
             AdditionalNavigationParamsImplJni.get().destroy(mNativePtr);
             mNativePtr = 0;

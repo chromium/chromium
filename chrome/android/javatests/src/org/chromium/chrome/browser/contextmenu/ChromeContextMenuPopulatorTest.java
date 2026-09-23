@@ -3554,7 +3554,7 @@ public class ChromeContextMenuPopulatorTest {
                         params.getUrl(),
                         params.getReferrer(),
                         /* navigateToTab= */ false,
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3567,7 +3567,7 @@ public class ChromeContextMenuPopulatorTest {
                 .onOpenInNewTabInGroup(
                         params.getUrl(),
                         params.getReferrer(),
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3601,7 +3601,7 @@ public class ChromeContextMenuPopulatorTest {
                         params.getReferrer(),
                         /* isIncognito= */ false,
                         /* preferNew= */ false,
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3617,7 +3617,7 @@ public class ChromeContextMenuPopulatorTest {
                         params.getReferrer(),
                         /* isIncognito= */ false,
                         /* preferNew= */ true,
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3630,7 +3630,7 @@ public class ChromeContextMenuPopulatorTest {
                 .onOpenInEphemeralTab(
                         params.getUrl(),
                         params.getLinkText(),
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3643,7 +3643,7 @@ public class ChromeContextMenuPopulatorTest {
                 .onOpenInEphemeralTab(
                         params.getSrcUrl(),
                         params.getTitleText(),
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3656,7 +3656,7 @@ public class ChromeContextMenuPopulatorTest {
                 .onOpenImageInNewTab(
                         params.getSrcUrl(),
                         params.getReferrer(),
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test
@@ -3669,7 +3669,7 @@ public class ChromeContextMenuPopulatorTest {
                 .onOpenImageUrl(
                         params.getSrcUrl(),
                         params.getReferrer(),
-                        params.getAdditionalNavigationParams());
+                        params.takeAdditionalNavigationParams());
     }
 
     @Test

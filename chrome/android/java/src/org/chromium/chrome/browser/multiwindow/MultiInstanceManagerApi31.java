@@ -251,7 +251,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     /* package */ void showTargetSelectorDialog(
-            Callback<InstanceInfo> moveCallback,
+            Callback<@Nullable InstanceInfo> moveCallback,
             @PersistedInstanceType int instanceType,
             @StringRes int titleId) {
         TargetSelectorCoordinator.showDialog(

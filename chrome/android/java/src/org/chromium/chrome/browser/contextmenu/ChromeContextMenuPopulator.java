@@ -35,6 +35,7 @@ import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
@@ -1368,13 +1369,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                     && !mParams.getLinkUrl().isEmpty())
                             ? mParams.getLinkUrl()
                             : mParams.getSrcUrl();
+            var additionalNavigationParams = mParams.takeAdditionalNavigationParams();
             verifyGenericCopyImageActionIsAllowedByPolicy(
                     url.getSpec(),
-                    () ->
+                    (isAllowed) -> {
+                        if (isAllowed) {
                             mItemDelegate.onOpenImageInNewTab(
-                                    url,
-                                    mParams.getReferrer(),
-                                    mParams.getAdditionalNavigationParams()));
+                                    url, mParams.getReferrer(), additionalNavigationParams);
+                        } else if (additionalNavigationParams != null) {
+                            additionalNavigationParams.destroy();
+                        }
+                    });
         } else if (itemId == R.id.contextmenu_open_image_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_EPHEMERAL_TAB);
             GURL url =
@@ -1384,12 +1389,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                     && !mParams.getLinkUrl().isEmpty())
                             ? mParams.getLinkUrl()
                             : mParams.getSrcUrl();
+            var additionalNavigationParams = mParams.takeAdditionalNavigationParams();
             verifyGenericCopyImageActionIsAllowedByPolicy(
                     url.getSpec(),
-                    () -> {
-                        String title = getTitleOrGuessIfNotPresent();
-                        mItemDelegate.onOpenInEphemeralTab(
-                                url, title, mParams.getAdditionalNavigationParams());
+                    (isAllowed) -> {
+                        if (isAllowed) {
+                            String title = getTitleOrGuessIfNotPresent();
+                            mItemDelegate.onOpenInEphemeralTab(
+                                    url, title, additionalNavigationParams);
+                        } else if (additionalNavigationParams != null) {
+                            additionalNavigationParams.destroy();
+                        }
                     });
         } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
@@ -1398,14 +1408,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getUrl(),
                     mParams.getReferrer(),
                     /* navigateToTab= */ false,
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_new_tab_in_group) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB_IN_GROUP);
             RecordUserAction.record("TabContextMenu.OpenInNewTabInGroup");
             mItemDelegate.onOpenInNewTabInGroup(
                     mParams.getUrl(),
                     mParams.getReferrer(),
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
             mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
@@ -1419,7 +1429,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getReferrer(),
                     mItemDelegate.isIncognito(),
                     /* preferNew= */ false,
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_new_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_WINDOW);
             mItemDelegate.openInOtherWindow(
@@ -1427,19 +1437,19 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getReferrer(),
                     mItemDelegate.isIncognito(),
                     /* preferNew= */ true,
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_EPHEMERAL_TAB);
             mItemDelegate.onOpenInEphemeralTab(
                     mParams.getUrl(),
                     mParams.getLinkText(),
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_image) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE);
             mItemDelegate.onOpenImageUrl(
                     mParams.getSrcUrl(),
                     mParams.getReferrer(),
-                    mParams.getAdditionalNavigationParams());
+                    mParams.takeAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_read_later) {
             recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
             String title = mParams.getTitleText();
@@ -1575,7 +1585,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     /** Copy the video frame, that triggered the current context menu, to system clipboard. */
     private void copyVideoFrameToClipboard() {
         verifyGenericCopyImageActionIsAllowedByPolicy(
-                mParams.getSrcUrl().getSpec(), mNativeDelegate::copyVideoFrame);
+                mParams.getSrcUrl().getSpec(),
+                (isAllowed) -> {
+                    if (isAllowed) mNativeDelegate.copyVideoFrame();
+                });
     }
 
     /** Download the video frame, that triggered the current context menu, to the device. */
@@ -1584,13 +1597,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private void verifyGenericCopyImageActionIsAllowedByPolicy(
-            String imageUri, Runnable continueIfCopyAllowed) {
+            String imageUri, Callback<Boolean> callback) {
         DataProtectionBridge.verifyGenericCopyImageActionIsAllowedByPolicy(
-                imageUri,
-                mItemDelegate.getWebContents().getMainFrame(),
-                (isAllowed) -> {
-                    if (isAllowed) continueIfCopyAllowed.run();
-                });
+                imageUri, mItemDelegate.getWebContents().getMainFrame(), callback);
     }
 
     /**
