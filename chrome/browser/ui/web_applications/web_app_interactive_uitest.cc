@@ -173,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest, FindBarFocusEvents) {
   // Reset tracker for the close operation.
   focus_tracker.Reset();
   // Close the find bar.
-  app_browser->GetFeatures().GetFindBarController()->EndFindSession(
-      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+  FindBarController::From(app_browser)
+      ->EndFindSession(find_in_page::SelectionAction::kKeep,
+                       find_in_page::ResultAction::kKeep);
   // Wait for the focus event to be processed correctly.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return focus_tracker.focused_count() == 1 &&

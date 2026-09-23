@@ -507,8 +507,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EnterImmersiveFullscreenMode(browser());
 
   chrome::Find(browser());
-  FindBar* find_bar =
-      browser()->GetFeatures().GetFindBarController()->find_bar();
+  FindBar* find_bar = FindBarController::From(browser())->find_bar();
   ASSERT_TRUE(find_bar);
 
   gfx::Rect unrevealed_bounds =

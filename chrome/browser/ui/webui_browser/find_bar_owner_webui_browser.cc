@@ -83,10 +83,7 @@ std::u16string FindBarOwnerWebUIBrowser::GetFindBarAccessibleWindowTitle() {
 
 void FindBarOwnerWebUIBrowser::OnFindBarVisibilityChanged(
     gfx::Rect visible_bounds) {
-  window_->browser()
-      ->GetFeatures()
-      .GetFindBarController()
-      ->OnFindBarVisibilityChanged();
+  FindBarController::From(window_->browser())->OnFindBarVisibilityChanged();
 }
 
 void FindBarOwnerWebUIBrowser::CloseOverlappingBubbles() {

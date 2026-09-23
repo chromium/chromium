@@ -415,6 +415,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   extension_installed_watcher_ =
       std::make_unique<ExtensionInstalledWatcher>(browser);
 
+  find_bar_controller_ = GetUserDataFactory().CreateInstance<FindBarController>(
+      *browser, *browser, browser_command_controller_.get());
+
   history_clusters_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<HistoryClustersSidePanelCoordinator>(
           *browser, browser, browser->GetProfile());
@@ -1248,8 +1251,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // Must be before window_feature_controller_ (raw pointer).
   immersive_mode_controller_.reset();
   history_clusters_side_panel_coordinator_.reset();
-  // TODO(crbug.com/423956131): Update reset order once FindBarController is
-  // deterministically constructed.
   find_bar_controller_.reset();
   extension_installed_watcher_.reset();
   context_highlight_window_feature_.reset();
@@ -1262,21 +1263,11 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 }
 
 FindBarController* BrowserWindowFeatures::GetFindBarController() {
-  if (!find_bar_controller_.get()) {
-    CHECK(browser_);
-    find_bar_controller_ = std::make_unique<FindBarController>(
-        *browser_, browser_command_controller_.get());
-    // Callers of this getter have always received a controller whose FindBar
-    // is already built, so force it here rather than changing that contract.
-    // Deferring it is the point of the follow-up that constructs the
-    // controller deterministically.
-    find_bar_controller_->find_bar();
-  }
   return find_bar_controller_.get();
 }
 
 bool BrowserWindowFeatures::HasFindBarController() const {
-  return find_bar_controller_.get() != nullptr;
+  return find_bar_controller_ && find_bar_controller_->HasFindBar();
 }
 
 // static

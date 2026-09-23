@@ -19,6 +19,7 @@ source_set("find_bar") {
     "//components/find_in_page",
     "//components/keyed_service/core",
     "//ui/base/data_transfer_policy",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!is_android) {

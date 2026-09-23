@@ -35,11 +35,19 @@
 using content::NavigationController;
 using content::WebContents;
 
+DEFINE_USER_DATA(FindBarController);
+
 FindBarController::FindBarController(
     BrowserWindowInterface& browser,
     chrome::BrowserCommandController* browser_command_controller)
     : browser_(browser),
-      browser_command_controller_(browser_command_controller) {}
+      browser_command_controller_(browser_command_controller),
+      scoped_unowned_user_data_(browser.GetUnownedUserDataHost(), *this) {}
+
+// static
+FindBarController* FindBarController::From(BrowserWindowInterface* browser) {
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+}
 
 FindBar* FindBarController::find_bar() {
   return GetOrCreateFindBar();
@@ -254,16 +262,8 @@ void FindBarController::DidStartNavigation(
     // user was searching the old page and find bar should close when new page
     // commits. If not visible, user has opened it during load to search new
     // page.
-    //
-    // Note: FindBarController is lazily created on first use, so if the user
-    // has never opened the find bar, the first navigation will miss this
-    // callback due to timing issues. In that case, when the user opens the
-    // find bar after the current navigation, the find bar will still be closed
-    // (default behavior, See crbug.com/469819146).
-    // This is acceptable. Fixing would require either eager initialization of
-    // FindBarController or more complex tracking mechanisms.
     close_find_bar_on_navigation_commit_ =
-        GetOrCreateFindBar()->IsFindBarVisible();
+        find_bar_ && find_bar_->IsFindBarVisible();
   }
 }
 
@@ -276,8 +276,8 @@ void FindBarController::DidFinishNavigation(
 
 void FindBarController::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  FindBar* const find_bar = GetOrCreateFindBar();
-  if (!find_bar->IsFindBarVisible() || !load_details.is_main_frame ||
+  if (!find_bar_ || !find_bar_->IsFindBarVisible() ||
+      !load_details.is_main_frame ||
       !load_details.is_navigation_to_different_page()) {
     return;
   }
@@ -303,8 +303,8 @@ void FindBarController::NavigationEntryCommitted(
       find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);
       // Use UpdateUIForFindResult instead of ClearResults to preserve the text
       // field content.
-      find_bar->UpdateUIForFindResult(find_tab_helper->find_result(),
-                                      std::u16string());
+      find_bar_->UpdateUIForFindResult(find_tab_helper->find_result(),
+                                       std::u16string());
     }
   }
 
@@ -445,7 +445,7 @@ void FindBarController::UpdatePageAction() {
     return;
   }
 
-  if (!GetOrCreateFindBar()->IsFindBarVisible()) {
+  if (!find_bar_ || !find_bar_->IsFindBarVisible()) {
     find_bar_page_action_activity_.reset();
     controller->Hide(kActionFind);
   } else {

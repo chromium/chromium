@@ -60,7 +60,6 @@ class BrowserInitState;
 class BrowserWindow;
 struct BrowserWindowCreateParams;
 class BrowserWindowFeatures;
-class FindBarController;
 class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -250,15 +249,6 @@ class Browser : public TabStripModelObserver,
 
   // Shared code between Reload() and ReloadBypassingCache().
   void ReloadInternal(WindowOpenDisposition disposition, bool bypass_cache);
-
-  // Create `FindBarController` if it does not exist.
-  // TODO(crbug.com/423956131): Convert to `GetFindBarController` which returns
-  // existing `FindBarController`.
-  FindBarController* CreateOrGetFindBarController();
-
-  // Returns true if a `FindBarController` exists for this browser.
-  // TODO(crbug.com/423956131): Remove this function.
-  bool HasFindBarController();
 
   // Data members /////////////////////////////////////////////////////////////
 

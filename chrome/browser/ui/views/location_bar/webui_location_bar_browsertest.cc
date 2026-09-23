@@ -1012,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                    .ExtractBool());
 
   // Show find bar.
-  auto* find_bar_controller = browser()->GetFeatures().GetFindBarController();
+  auto* find_bar_controller = FindBarController::From(browser());
   find_bar_controller->Show();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {

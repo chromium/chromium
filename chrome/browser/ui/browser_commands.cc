@@ -2526,8 +2526,7 @@ void FindPrevious(BrowserWindowInterface* browser) {
 void FindInPage(BrowserWindowInterface* browser,
                 bool find_next,
                 bool forward_direction) {
-  browser->GetFeatures().GetFindBarController()->Show(find_next,
-                                                      forward_direction);
+  FindBarController::From(browser)->Show(find_next, forward_direction);
 }
 
 void ShowTabSearch(BrowserWindowInterface* browser) {
@@ -2624,7 +2623,7 @@ bool CanCloseFind(BrowserWindowInterface* browser) {
 }
 
 void CloseFind(BrowserWindowInterface* browser) {
-  browser->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser)->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 }
 

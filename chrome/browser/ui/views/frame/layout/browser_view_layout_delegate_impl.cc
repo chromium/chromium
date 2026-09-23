@@ -231,12 +231,12 @@ gfx::NativeView BrowserViewLayoutDelegateImpl::GetHostViewForAnchoring() const {
 }
 
 bool BrowserViewLayoutDelegateImpl::HasFindBarController() const {
-  return browser_view_->browser()->GetFeatures().HasFindBarController();
+  auto* const controller = FindBarController::From(browser_view_->browser());
+  return controller && controller->HasFindBar();
 }
 
 void BrowserViewLayoutDelegateImpl::MoveWindowForFindBarIfNecessary() const {
-  auto* const controller =
-      browser_view_->browser()->GetFeatures().GetFindBarController();
+  auto* const controller = FindBarController::From(browser_view_->browser());
   return controller->find_bar()->MoveWindowIfNecessary();
 }
 

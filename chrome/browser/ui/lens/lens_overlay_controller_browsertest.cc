@@ -5220,7 +5220,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Open the find bar.
-  browser()->GetFeatures().GetFindBarController()->Show();
+  FindBarController::From(browser())->Show();
 
   // Verify the overlay turns off.
   ASSERT_TRUE(base::test::RunUntil(

@@ -12,20 +12,20 @@
 
 using FindBarControllerTest = InProcessBrowserTest;
 
-// Creating the FindBarController on startup can result in a startup performance
-// regression. This test ensures that the FindBarController isn't created until
+// Creating the FindBar on startup can result in a startup performance
+// regression. This test ensures that the FindBar isn't created until
 // truly needed. See https://crbug.com/41354464.
 IN_PROC_BROWSER_TEST_F(FindBarControllerTest,
                        NoFindBarControllerOnBrowserCreate) {
-  // FindBarController should not be created on browser start.
-  EXPECT_FALSE(browser()->GetFeatures().HasFindBarController());
-  // GetFindBarController should create the FindBarController on demand.
-  EXPECT_NE(nullptr, browser()->GetFeatures().GetFindBarController());
-  // This should now indicate that there is now a FindBarController instance.
-  EXPECT_TRUE(browser()->GetFeatures().HasFindBarController());
+  // FindBar should not be created on browser start.
+  EXPECT_FALSE(FindBarController::From(browser())->HasFindBar());
+  // find_bar() should create the FindBar on demand.
+  EXPECT_NE(nullptr, FindBarController::From(browser())->find_bar());
+  // This should now indicate that there is now a FindBar instance.
+  EXPECT_TRUE(FindBarController::From(browser())->HasFindBar());
 }
 
-// This test ensure that the FindBarController is created when the tab having
+// This test ensure that the FindBar is created when the tab having
 // active find session is inserted in a new window.
 IN_PROC_BROWSER_TEST_F(FindBarControllerTest, FindBarControllerOnWindowCreate) {
   // Start find session.
@@ -33,6 +33,6 @@ IN_PROC_BROWSER_TEST_F(FindBarControllerTest, FindBarControllerOnWindowCreate) {
   // Move tab to a new window
   chrome::MoveActiveTabToNewWindow(browser());
 
-  // Make sure FindBarController is created.
-  EXPECT_TRUE(browser()->GetFeatures().HasFindBarController());
+  // Make sure FindBar is created.
+  EXPECT_TRUE(FindBarController::From(browser())->HasFindBar());
 }

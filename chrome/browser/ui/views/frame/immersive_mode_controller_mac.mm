@@ -429,9 +429,9 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
   }
 
   // The find bar should be reparented if it exists.
-  if (browser_view_->browser()->GetFeatures().HasFindBarController()) {
-    FindBarController* find_bar_controller =
-        browser_view_->browser()->GetFeatures().GetFindBarController();
+  if (FindBarController* find_bar_controller =
+          FindBarController::From(browser_view_->browser());
+      find_bar_controller && find_bar_controller->HasFindBar()) {
     if (child == find_bar_controller->find_bar()->GetHostWidget()) {
       return true;
     }

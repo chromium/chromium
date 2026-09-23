@@ -64,14 +64,12 @@ class FindBarPlatformHelperMacTest : public InProcessBrowserTest {
 // Tests that the find bar is populated with the pasteboard at construction.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
                        FindBarPopulatedWithPasteboardOnConstruction) {
-  ASSERT_FALSE(browser()->GetFeatures().HasFindBarController());
+  FindBarController* find_bar_controller = FindBarController::From(browser());
+  ASSERT_NE(nullptr, find_bar_controller);
+  ASSERT_FALSE(find_bar_controller->HasFindBar());
 
   NSString* initial_find_string = @"Initial String";
   [[FindPasteboard sharedInstance] setFindText:initial_find_string];
-
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
-  ASSERT_NE(nullptr, find_bar_controller);
 
   EXPECT_EQ(base::SysNSStringToUTF16(initial_find_string),
             find_bar_controller->find_bar()->GetFindText());
@@ -89,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
                        FindBarUpdatedFromPasteboard) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSimple)));
 
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_NE(nullptr, find_bar_controller);
   FindBar* find_bar = find_bar_controller->find_bar();
   ASSERT_NE(nullptr, find_bar);

@@ -47,10 +47,8 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             web_contents);
-    browser->GetFeatures()
-        .GetFindBarController()
-        ->find_bar()
-        ->SetFindTextAndSelectedRange(search_str16, gfx::Range());
+    FindBarController::From(browser)->find_bar()->SetFindTextAndSelectedRange(
+        search_str16, gfx::Range());
     return ui_test_utils::FindInPage(web_contents, search_str16, forward,
                                      case_sensitive, ordinal, nullptr);
   }
@@ -144,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindBarFocusEvents) {
   // Reset tracker for the close operation.
   focus_tracker.Reset();
   // Close the find bar.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   // Wait for the focus event to be processed correctly.
   ASSERT_TRUE(base::test::RunUntil([&]() {

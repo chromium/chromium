@@ -850,9 +850,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
   ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
 
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_TRUE(find_bar_controller);
+  find_bar_controller->find_bar();
 
   // Show immersive mode on first tab
   controller1->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -883,9 +883,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_TRUE(find_bar_controller);
+  find_bar_controller->find_bar();
 
   // 1. Ensure the find bar controller is created and points to the tab.
   EXPECT_EQ(find_bar_controller->web_contents(), tab->GetContents());
@@ -959,8 +959,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   AwaitAndAssertOverlayVisibility(/*visible=*/true);
 
   // Open FindBar explicitly
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_TRUE(find_bar_controller);
   find_bar_controller->Show();
 

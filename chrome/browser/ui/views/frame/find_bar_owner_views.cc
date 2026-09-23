@@ -55,9 +55,7 @@ void FindBarOwnerViews::OnFindBarVisibilityChanged(gfx::Rect visible_bounds) {
   // revealed when the mouse is hovered over the find bar.
   ImmersiveModeController::From(browser_view_->browser())
       ->OnFindBarVisibleBoundsChanged(visible_bounds);
-  browser_view_->browser()
-      ->GetFeatures()
-      .GetFindBarController()
+  FindBarController::From(browser_view_->browser())
       ->OnFindBarVisibilityChanged();
 }
 

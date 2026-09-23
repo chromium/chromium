@@ -113,10 +113,8 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   bool GetFindBarWindowInfoForBrowser(BrowserWindowInterface* browser,
                                       gfx::Point* position,
                                       bool* fully_visible) {
-    const FindBarTesting* find_bar = browser->GetFeatures()
-                                         .GetFindBarController()
-                                         ->find_bar()
-                                         ->GetFindBarTesting();
+    const FindBarTesting* find_bar =
+        FindBarController::From(browser)->find_bar()->GetFindBarTesting();
     return find_bar->GetFindBarWindowInfo(position, fully_visible);
   }
 
@@ -126,8 +124,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
 
   std::u16string_view GetFindBarTextForBrowser(
       BrowserWindowInterface* browser) {
-    FindBar* find_bar =
-        browser->GetFeatures().GetFindBarController()->find_bar();
+    FindBar* find_bar = FindBarController::From(browser)->find_bar();
     return find_bar->GetFindText();
   }
 
@@ -137,8 +134,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
 
   std::u16string_view GetFindBarMatchCountTextForBrowser(
       BrowserWindowInterface* browser) {
-    return browser->GetFeatures()
-        .GetFindBarController()
+    return FindBarController::From(browser)
         ->find_bar()
         ->GetFindBarTesting()
         ->GetMatchCountText();
@@ -149,18 +145,14 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   }
 
   int GetFindBarWidthForBrowser(BrowserWindowInterface* browser) {
-    const FindBarTesting* find_bar = browser->GetFeatures()
-                                         .GetFindBarController()
-                                         ->find_bar()
-                                         ->GetFindBarTesting();
+    const FindBarTesting* find_bar =
+        FindBarController::From(browser)->find_bar()->GetFindBarTesting();
     return find_bar->GetContentsWidth();
   }
 
   size_t GetFindBarAudibleAlertsForBrowser(BrowserWindowInterface* browser) {
-    const FindBarTesting* find_bar = browser->GetFeatures()
-                                         .GetFindBarController()
-                                         ->find_bar()
-                                         ->GetFindBarTesting();
+    const FindBarTesting* find_bar =
+        FindBarController::From(browser)->find_bar()->GetFindBarTesting();
     return find_bar->GetAudibleAlertCount();
   }
 
@@ -176,7 +168,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   void EnsureFindBoxOpen() { EnsureFindBoxOpenForBrowser(browser()); }
 
   int FindNext(WebContents* web_contents, int* ordinal) {
-    browser()->GetFeatures().GetFindBarController()->Show(true /*find_next*/);
+    FindBarController::From(browser())->Show(true /*find_next*/);
     ui_test_utils::FindResultWaiter observer(web_contents);
     observer.Wait();
     if (ordinal) {
@@ -193,10 +185,8 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     BrowserWindowInterface* browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             web_contents);
-    browser->GetFeatures()
-        .GetFindBarController()
-        ->find_bar()
-        ->SetFindTextAndSelectedRange(search_str, gfx::Range());
+    FindBarController::From(browser)->find_bar()->SetFindTextAndSelectedRange(
+        search_str, gfx::Range());
     return ui_test_utils::FindInPage(web_contents, search_str, forward,
                                      case_sensitive, ordinal, nullptr);
   }
@@ -432,11 +422,11 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_EQ(0,
             FindInPageASCII(web_contents, "zzz", kFwd, kIgnoreCase, nullptr));
   EXPECT_EQ(1u, GetFindBarAudibleAlertsForBrowser(browser()));
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Now show the findbar (prepopulated) and ensure there's no alert.
-  browser()->GetFeatures().GetFindBarController()->Show(false /*find_next*/);
+  FindBarController::From(browser())->Show(false /*find_next*/);
   EXPECT_EQ(u"zzz", GetFindBarText());
   ui_test_utils::FindResultWaiter observer1(web_contents);
   observer1.Wait();
@@ -444,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_EQ(1u, GetFindBarAudibleAlertsForBrowser(browser()));
 
   // Now do a find-next and ensure there *is* an alert
-  browser()->GetFeatures().GetFindBarController()->Show(true /*find_next*/);
+  FindBarController::From(browser())->Show(true /*find_next*/);
   EXPECT_EQ(u"zzz", GetFindBarText());
   ui_test_utils::FindResultWaiter observer2(web_contents);
   observer2.Wait();
@@ -494,11 +484,11 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, StaleCountAfterNoResults) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("simple.html")));
   EXPECT_EQ(0,
             FindInPageASCII(web_contents, "link", kFwd, kIgnoreCase, nullptr));
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("link.html")));
-  browser()->GetFeatures().GetFindBarController()->Show();
+  FindBarController::From(browser())->Show();
   ui_test_utils::FindResultWaiter observer(web_contents);
   observer.Wait();
   EXPECT_EQ(1, observer.number_of_matches());
@@ -899,9 +889,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   ASSERT_TRUE(web_contents);
 
   // Ensure FindBarController exists and is observing the WebContents before
-  // we start the navigation. If we create the controller after
+  // we start the navigation. If we create the FindBar after
   // navigation starts, it will miss the DidStartNavigation callback.
-  browser()->GetFeatures().GetFindBarController();
+  FindBarController::From(browser())->find_bar();
 
   // Start a navigation but don't wait for it to complete.
   url = GetURL(kLinkPage);
@@ -944,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 
   // Ensure FindBarController exists and is observing the WebContents before
   // we start the navigation.
-  browser()->GetFeatures().GetFindBarController();
+  FindBarController::From(browser())->find_bar();
 
   // Start a navigation but don't wait for it to complete.
   url = GetURL(kLinkPage);
@@ -1338,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, RestartSearchFromF3) {
   EXPECT_EQ(1, ordinal);
 
   // End the Find session, thereby making the next F3 start afresh.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Simulate F3 while Find box is closed. Should have 1 match.
@@ -1382,12 +1372,11 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_PreferPreviousSearch) {
 
   // Switch back to first tab.
   browser()->GetTabStripModel()->ActivateTabAt(0);
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   // Simulate F3.
   FindNext(web_contents_1, &ordinal);
-  FindBar* find_bar =
-      browser()->GetFeatures().GetFindBarController()->find_bar();
+  FindBar* find_bar = FindBarController::From(browser())->find_bar();
   if (find_bar->HasGlobalFindPasteboard()) {
     EXPECT_EQ(find_in_page::FindTabHelper::FromWebContents(web_contents_1)
                   ->find_text(),
@@ -1420,7 +1409,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulateSameTab) {
   EXPECT_EQ(u"1/1", GetMatchCountText());
 
   // Close the Find box.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Open the Find box again.
@@ -1468,8 +1457,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulateInNewTab) {
 // when we come back to tabA we should still see A (because that was the last
 // search in that tab).
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulatePreserveLast) {
-  FindBar* find_bar =
-      browser()->GetFeatures().GetFindBarController()->find_bar();
+  FindBar* find_bar = FindBarController::From(browser())->find_bar();
   if (find_bar->HasGlobalFindPasteboard()) {
     return;
   }
@@ -1491,7 +1479,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulatePreserveLast) {
   EXPECT_EQ(u"page", GetFindBarText());
 
   // Close the Find box.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Now create a second tab and load the same page.
@@ -1516,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulatePreserveLast) {
   EXPECT_EQ(u"page", GetFindBarText());
 
   // Close the Find box.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Re-open the Find box.
@@ -1533,8 +1521,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulatePreserveLast) {
 // This tests that search terms entered into an incognito find bar are not used
 // as prepopulate terms for non-incognito windows.
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
-  FindBar* find_bar =
-      browser()->GetFeatures().GetFindBarController()->find_bar();
+  FindBar* find_bar = FindBarController::From(browser())->find_bar();
   if (find_bar->HasGlobalFindPasteboard()) {
     return;
   }
@@ -1555,7 +1542,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
   EXPECT_EQ(u"page", GetFindBarTextForBrowser(browser()));
 
   // Close the Find box.
-  browser()->GetFeatures().GetFindBarController()->EndFindSession(
+  FindBarController::From(browser())->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Open a new incognito window and navigate to the same page.
@@ -1582,8 +1569,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
   EXPECT_EQ(u"text", GetFindBarTextForBrowser(incognito_browser));
 
   // Close the Find box.
-  incognito_browser->GetFeatures().GetFindBarController()->EndFindSession(
-      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+  FindBarController::From(incognito_browser)
+      ->EndFindSession(find_in_page::SelectionAction::kKeep,
+                       find_in_page::ResultAction::kKeep);
 
   // Now open a new tab in the original (non-incognito) browser.
   chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
@@ -1693,8 +1681,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
                        MAYBE_GlobalPasteBoardClearMatches) {
-  FindBar* find_bar =
-      browser()->GetFeatures().GetFindBarController()->find_bar();
+  FindBar* find_bar = FindBarController::From(browser())->find_bar();
   if (!find_bar->HasGlobalFindPasteboard()) {
     return;
   }

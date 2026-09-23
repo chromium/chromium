@@ -66,8 +66,7 @@ class FindBarPlatformHelperMacInteractiveUITest : public InProcessBrowserTest {
 // Tests that the pasteboard is updated when the find bar is changed.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        PasteboardUpdatedFromFindBar) {
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_NE(nullptr, find_bar_controller);
 
   const std::u16string empty_string;
@@ -99,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        IncognitoPasteboardNotUpdatedFromFindBar) {
   BrowserWindowInterface* browser_incognito = CreateIncognitoBrowser();
   FindBarController* find_bar_controller =
-      browser_incognito->GetFeatures().GetFindBarController();
+      FindBarController::From(browser_incognito);
   ASSERT_NE(nullptr, find_bar_controller);
 
   const std::u16string empty_string;
@@ -136,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 // Flaky. crbug.com/41402159
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        DISABLED_GlobalPasteBoardClearMatches) {
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_NE(nullptr, find_bar_controller);
 
   GURL url = GetURL(kSimple);
@@ -213,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ui_test_utils::FindResultWaiter(web_contents_incognito).Wait();
 
   FindBarController* find_bar_controller =
-      browser_incognito->GetFeatures().GetFindBarController();
+      FindBarController::From(browser_incognito);
   ASSERT_NE(nullptr, find_bar_controller);
   EXPECT_EQ(u"bar", find_bar_controller->find_bar()->GetFindText());
 }
@@ -223,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 // TODO(http://crbug.com/41389476): Remove when referenced bug is fixed.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                        PreferPreviousSearch) {
-  FindBarController* find_bar_controller =
-      browser()->GetFeatures().GetFindBarController();
+  FindBarController* find_bar_controller = FindBarController::From(browser());
   ASSERT_NE(nullptr, find_bar_controller);
 
   GURL url = GetURL(kSimple);
@@ -271,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   find_bar_controller->EndFindSession(find_in_page::SelectionAction::kKeep,
                                       find_in_page::ResultAction::kKeep);
   // Simulate F3.
-  browser()->GetFeatures().GetFindBarController()->Show(true /*find_next*/);
+  FindBarController::From(browser())->Show(true /*find_next*/);
   EXPECT_EQ(u"given", find_in_page::FindTabHelper::FromWebContents(
                           first_active_web_contents)
                           ->find_text());

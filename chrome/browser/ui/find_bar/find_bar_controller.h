@@ -15,6 +15,7 @@
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class FindBar;
@@ -40,6 +41,8 @@ enum class ResultAction;
 class FindBarController : public content::WebContentsObserver,
                           public find_in_page::FindResultObserver {
  public:
+  DECLARE_USER_DATA(FindBarController);
+
   // `browser` is used to create the FindBar the first time it is needed; see
   // GetOrCreateFindBar().
   FindBarController(
@@ -50,6 +53,8 @@ class FindBarController : public content::WebContentsObserver,
   FindBarController& operator=(const FindBarController&) = delete;
 
   ~FindBarController() override;
+
+  static FindBarController* From(BrowserWindowInterface* browser);
 
   // Shows the find bar. Any previous search string will again be visible.
   // The find operation will also be started depending on |find_next| and
@@ -93,6 +98,9 @@ class FindBarController : public content::WebContentsObserver,
   // a widget, so this is deliberately deferred until something actually needs
   // it rather than done at construction.
   FindBar* find_bar();
+
+  // Returns whether the FindBar has been created yet. Does not create one.
+  bool HasFindBar() const { return find_bar_ != nullptr; }
 
   // Updates the page action, which the find bar appears anchored to.
   void UpdatePageAction();
@@ -157,6 +165,8 @@ class FindBarController : public content::WebContentsObserver,
 
   raw_ptr<chrome::BrowserCommandController> browser_command_controller_ =
       nullptr;
+
+  ui::ScopedUnownedUserData<FindBarController> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_

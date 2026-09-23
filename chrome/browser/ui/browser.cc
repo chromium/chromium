@@ -562,13 +562,13 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
                tab_strip_model, "change", change);
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
-      // Initialize find bar controller when tab having active find session
+      // Initialize find bar when tab having active find session
       // is inserted in a new window.
       find_in_page::FindTabHelper* find_tab_helper =
           find_in_page::FindTabHelper::FromWebContents(selection.new_contents);
-      if (!HasFindBarController() && find_tab_helper &&
+      if (!FindBarController::From(this)->HasFindBar() && find_tab_helper &&
           find_tab_helper->is_find_session_active()) {
-        std::ignore = CreateOrGetFindBarController();
+        FindBarController::From(this)->find_bar();
       }
       for (const auto& contents : change.GetInsert()->contents) {
         OnTabInsertedAt(contents.contents, contents.index);
@@ -835,8 +835,8 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
     }
   }
 
-  if (HasFindBarController()) {
-    CreateOrGetFindBarController()->HandleActiveTabChanged(
+  if (FindBarController::From(this)->HasFindBar()) {
+    FindBarController::From(this)->HandleActiveTabChanged(
         selection.new_contents);
   }
 
@@ -906,15 +906,7 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
   SetAsDelegate(contents, false);
   BrowserUiController::From(this)->RemoveScheduledUpdatesFor(contents);
 
-  if (HasFindBarController() && was_active) {
-    CreateOrGetFindBarController()->ChangeWebContents(nullptr);
+  if (FindBarController::From(this)->HasFindBar() && was_active) {
+    FindBarController::From(this)->ChangeWebContents(nullptr);
   }
-}
-
-FindBarController* Browser::CreateOrGetFindBarController() {
-  return GetFeatures().GetFindBarController();
-}
-
-bool Browser::HasFindBarController() {
-  return GetFeatures().HasFindBarController();
 }

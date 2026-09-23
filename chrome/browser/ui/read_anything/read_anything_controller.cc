@@ -401,16 +401,16 @@ void ReadAnythingController::MaybeUpdateFindBarController() {
     target_contents = tab_->GetContents();
   }
 
-  // If the target is just the main web contents, we don't need to force the
-  // FindBarController's creation if it doesn't already exist.
-  auto& window_features = tab_->GetBrowserWindowInterface()->GetFeatures();
-  if (target_contents == tab_->GetContents() &&
-      !window_features.HasFindBarController()) {
+  auto* find_bar_controller =
+      FindBarController::From(tab_->GetBrowserWindowInterface());
+  if (!find_bar_controller) {
     return;
   }
 
-  auto* find_bar_controller = window_features.GetFindBarController();
-  if (!find_bar_controller) {
+  // If the target is just the main web contents, we don't need to force the
+  // FindBar's creation if it doesn't already exist.
+  if (target_contents == tab_->GetContents() &&
+      !find_bar_controller->HasFindBar()) {
     return;
   }
 
