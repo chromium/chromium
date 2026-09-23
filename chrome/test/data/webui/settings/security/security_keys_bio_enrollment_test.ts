@@ -82,6 +82,16 @@ suite('SecurityKeysBioEnrollment', function() {
     allDivs = Object.values(BioEnrollDialogPage);
   });
 
+  function assertEntries(expected: Enrollment[]) {
+    const entries = dialog.$.container.querySelectorAll('.list-item');
+    assertEquals(expected.length, entries.length);
+    for (let i = 0; i < expected.length; i++) {
+      assertEquals(
+          expected[i]!.name,
+          entries[i]!.querySelector('.name')!.textContent.trim());
+    }
+  }
+
   test('Initialization', async function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('startBioEnroll');
@@ -198,19 +208,19 @@ suite('SecurityKeysBioEnrollment', function() {
     enumerateResolver.resolve(enrollments);
     await uiReady;
     assertShown(allDivs, dialog, 'enrollments');
-    assertDeepEquals(dialog.$.enrollmentList.items, sortedEnrollments);
+    flush();
+    assertEntries(sortedEnrollments);
 
     // Delete the second enrollments and refresh the list.
-    flush();
-    dialog.$.enrollmentList.querySelectorAll('cr-icon-button')[1]!.click();
+    dialog.$.container.querySelectorAll('cr-icon-button')[1]!.click();
     const id = await browserProxy.whenCalled('deleteEnrollment');
     assertEquals(sortedEnrollments[1]!.id, id);
     sortedEnrollments.splice(1, 1);
     enrollments.splice(1, 1);
     deleteResolver.resolve(enrollments);
-    await uiReady;
-    assertShown(allDivs, dialog, 'enrollments');
-    assertDeepEquals(dialog.$.enrollmentList.items, sortedEnrollments);
+    await microtasksFinished();
+    flush();
+    assertEntries(sortedEnrollments);
   });
 
   test('AddEnrollment', async function() {
@@ -254,7 +264,8 @@ suite('SecurityKeysBioEnrollment', function() {
     enumerateResolver.resolve([]);
     await uiReady;
     assertShown(allDivs, dialog, 'enrollments');
-    assertEquals(dialog.$.enrollmentList.items!.length, 0);
+    flush();
+    assertEntries([]);
 
     // Simulate add enrollment.
     assertFalse(dialog.$.addButton.hidden);

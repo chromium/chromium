@@ -15,7 +15,6 @@ import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 import '../../i18n_setup.js';
@@ -30,7 +29,6 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {FingerprintProgressArcElement} from './fingerprint_progress_arc.js';
@@ -54,9 +52,9 @@ export interface SettingsSecurityKeysBioEnrollDialogElement {
     arc: FingerprintProgressArcElement,
     cancelButton: CrButtonElement,
     confirmButton: CrButtonElement,
+    container: HTMLElement,
     dialog: CrDialogElement,
     error: HTMLElement,
-    enrollmentList: IronListElement,
     enrollmentName: CrInputElement,
     pin: SettingsSecurityKeysPinFieldElement,
   };
@@ -187,7 +185,6 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   private onEnrollments_(enrollments: Enrollment[]) {
     this.enrollments_ =
         enrollments.slice().sort((a, b) => a.name.localeCompare(b.name));
-    this.$.enrollmentList.fire('iron-resize');
     this.dialogPage_ = BioEnrollDialogPage.ENROLLMENTS;
   }
 
@@ -396,9 +393,6 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
-
-    // Also asynchronously notify iron-list of the possible resize.
-    setTimeout(() => this.$.enrollmentList.notifyResize(), 0);
   }
 
   private deleteEnrollment_(event: {model: {index: number}}) {
