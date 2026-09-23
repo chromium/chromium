@@ -10,6 +10,12 @@ import unittest
 from parameterized import parameterized
 import setup_modules  # pylint: disable=unused-import
 
+import multiprocessing
+import os
+import pickle
+import tempfile
+import unittest.mock
+
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.extract_actions as extract_actions
 
@@ -423,6 +429,68 @@ class ExtractActionsTest(unittest.TestCase):
     for expected_action in expected_actions:
       self.assertEqual(finder.FindNextAction(), expected_action)
     self.assertIsNone(finder.FindNextAction())
+
+
+def _CollectWordsAndPid(file_path: str) -> set[str]:
+  with open(file_path, encoding='utf-8') as f:
+    return set(f.read().split()) | {f'pid:{os.getpid()}'}
+
+
+class WalkDirectoryTest(unittest.TestCase):
+  def setUp(self) -> None:
+    self._tmp_dir = tempfile.TemporaryDirectory()
+    self._root = self._tmp_dir.name
+    self.addCleanup(self._tmp_dir.cleanup)
+
+    self._saved_threshold = extract_actions._PARALLEL_SCAN_THRESHOLD
+    self._saved_max_workers = extract_actions._MAX_SCAN_WORKERS
+    extract_actions._MAX_SCAN_WORKERS = 2
+    self.addCleanup(self._RestoreGlobals)
+
+    self._WriteFile('top.cc', 'ActionTop')
+    self._WriteFile('sub/nested.cc', 'ActionNested')
+    self._WriteFile('sub/deeper/deep.cc', 'ActionDeep')
+    self._WriteFile('.hidden.cc', 'ActionHidden')
+    # Ignored: non-matching extension, test suffix, dot-only name, dot-dir,
+    # and third_party.
+    self._WriteFile('header.h', 'ActionHeader')
+    self._WriteFile('foo_test.cc', 'ActionTest')
+    self._WriteFile('.cc', 'ActionDotOnly')
+    self._WriteFile('.git/inside_git.cc', 'ActionGit')
+    self._WriteFile('third_party/dep.cc', 'ActionThirdParty')
+
+  _EXPECTED = {'ActionTop', 'ActionNested', 'ActionDeep', 'ActionHidden'}
+
+  def _RestoreGlobals(self) -> None:
+    extract_actions._PARALLEL_SCAN_THRESHOLD = self._saved_threshold
+    extract_actions._MAX_SCAN_WORKERS = self._saved_max_workers
+
+  def _WriteFile(self, relative_path: str, contents: str) -> None:
+    path = os.path.join(self._root, relative_path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+      f.write(contents)
+
+  def _Walk(self) -> tuple[set[str], set[int]]:
+    raw: set[str] = set()
+    extract_actions.WalkDirectory(self._root, raw, '.cc', _CollectWordsAndPid)
+    actions = {item for item in raw if not item.startswith('pid:')}
+    pids = {
+      int(item.removeprefix('pid:')) for item in raw if item.startswith('pid:')
+    }
+    return actions, pids
+
+  def testParallelScanMatchesSerialScan(self) -> None:
+    extract_actions._PARALLEL_SCAN_THRESHOLD = 1000
+    serial_actions, serial_pids = self._Walk()
+    self.assertEqual(serial_actions, self._EXPECTED)
+    self.assertEqual(serial_pids, {os.getpid()})
+
+    extract_actions._PARALLEL_SCAN_THRESHOLD = 1
+    parallel_actions, parallel_pids = self._Walk()
+    self.assertEqual(parallel_actions, self._EXPECTED)
+    self.assertTrue(parallel_pids)
+    self.assertNotIn(os.getpid(), parallel_pids)
 
 
 if __name__ == '__main__':
