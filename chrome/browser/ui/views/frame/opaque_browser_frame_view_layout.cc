@@ -17,6 +17,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+#include "ui/views/window/client_view.h"
 #include "ui/views/window/frame_buttons.h"
 #include "ui/views/window/frame_caption_button.h"
 

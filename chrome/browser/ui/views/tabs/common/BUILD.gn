@@ -114,6 +114,7 @@ source_set("impl") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_frame_view",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/frame:themed_background",

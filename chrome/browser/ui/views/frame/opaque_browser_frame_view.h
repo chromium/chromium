@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
@@ -21,6 +20,7 @@
 #include "ui/views/window/frame_view.h"
 
 class BrowserView;
+class BrowserWidget;
 class CaptionButtonPlaceholderContainer;
 class OpaqueBrowserFrameViewLayout;
 class TabIconView;
@@ -37,6 +37,7 @@ namespace views {
 class Button;
 class FrameBackground;
 class Label;
+class MenuRunner;
 }  // namespace views
 
 class OpaqueBrowserFrameView : public BrowserFrameView,

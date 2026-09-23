@@ -3154,13 +3154,9 @@ static_library("ui") {
     sources += [
       "views/frame/base_tab_strip_region_view.cc",
       "views/frame/base_tab_strip_region_view.h",
-      "views/frame/browser_frame_view.cc",
-      "views/frame/browser_frame_view.h",
       "views/frame/browser_view.cc",
       "views/frame/horizontal_tab_strip_region_view.cc",
       "views/frame/horizontal_tab_strip_region_view.h",
-      "views/frame/layout/browser_view_layout.cc",
-      "views/frame/layout/browser_view_layout.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
     ]
@@ -3357,11 +3353,15 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:app_menu_button_impl",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
       "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host",
+      "//chrome/browser/ui/views/frame:browser_frame_view",
+      "//chrome/browser/ui/views/frame:browser_frame_view_impl",
       "//chrome/browser/ui/views/frame:browser_native_widget",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory",
       "//chrome/browser/ui/views/frame:browser_root_view",
       "//chrome/browser/ui/views/frame:browser_root_view_impl",
       "//chrome/browser/ui/views/frame:browser_view_app_layout_impl",
+      "//chrome/browser/ui/views/frame:browser_view_layout",
+      "//chrome/browser/ui/views/frame:browser_view_layout_core_impl",
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate",
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
       "//chrome/browser/ui/views/frame:browser_view_layout_impl",
@@ -3690,7 +3690,16 @@ static_library("ui") {
       # which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
 
-      # browser_view_layout_impl includes browser_view_layout.h which cannot be
+      # browser_frame_view_impl includes browser_view.h and
+      # app_browser_controller.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:browser_frame_view_impl",
+
+      # browser_view_layout_core_impl includes multi_contents_view.h,
+      # exclusive_access_bubble_views.h, and app_browser_controller.h
+      # from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:browser_view_layout_core_impl",
+
+      # browser_view_layout_impl includes multi_contents_view.h which cannot be
       # split out yet.
       "//chrome/browser/ui/views/frame:browser_view_layout_impl",
 
@@ -4071,14 +4080,11 @@ static_library("ui") {
         "//chrome/browser/ui/views/web_apps/isolated_web_apps:multi_capture_notification_details_view",
       ]
     } else {
-      sources += [
-        "views/frame/opaque_browser_frame_view.cc",
-        "views/frame/opaque_browser_frame_view.h",
-        "views/frame/opaque_browser_frame_view_layout.cc",
-        "views/frame/opaque_browser_frame_view_layout.h",
-      ]
       deps += [
         "//chrome/browser/ui/views:screen_capture_notification_ui_views",
+        "//chrome/browser/ui/views/frame:opaque_browser_frame_view",
+        "//chrome/browser/ui/views/frame:opaque_browser_frame_view_impl",
+        "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout",
         "//chrome/browser/ui/views/policy:enterprise_startup_dialog",
         "//chrome/browser/ui/views/policy:idle_dialog",
         "//chrome/browser/ui/views/shortcuts",
@@ -4090,6 +4096,12 @@ static_library("ui") {
         # componentized:
         # - c/b/ui/browser.h
         "//chrome/browser/ui/views/shortcuts:impl",
+
+        # opaque_browser_frame_view_impl includes browser_view.h,
+        # browser_widget.h, top_container_view.h, tab_icon_view.h,
+        # new_tab_button.h, tab_strip.h, toolbar_view.h, and
+        # app_browser_controller.h from //chrome/browser/ui:ui.
+        "//chrome/browser/ui/views/frame:opaque_browser_frame_view_impl",
       ]
     }
 
@@ -5062,6 +5074,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views:sad_tab_view",
       "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/frame:browser_frame_view",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/common",

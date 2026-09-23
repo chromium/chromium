@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -24,6 +23,7 @@
 #include "ui/views/window/frame_view.h"
 
 class BrowserView;
+class BrowserWidget;
 
 // This enum is used for functions who rely on the state of the browser to alter
 // the appearance of the window frame.
@@ -265,10 +265,7 @@ class BrowserFrameView : public views::FrameView {
 
   // Subscription to receive notifications when the frame's PaintAsActive state
   // changes.
-  base::CallbackListSubscription paint_as_active_subscription_ =
-      browser_widget_->RegisterPaintAsActiveChangedCallback(
-          base::BindRepeating(&BrowserFrameView::PaintAsActiveChanged,
-                              base::Unretained(this)));
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 namespace chrome {

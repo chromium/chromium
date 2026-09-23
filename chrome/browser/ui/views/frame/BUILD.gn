@@ -33,6 +33,7 @@ source_set("picture_in_picture_browser_frame_view") {
   public = [ "picture_in_picture_browser_frame_view.h" ]
   sources = [ "picture_in_picture_browser_frame_view.cc" ]
   public_deps = [
+    ":browser_frame_view",
     ":browser_widget",
     "//base",
     "//chrome/browser/picture_in_picture",
@@ -728,6 +729,7 @@ source_set("custom_corners_background_impl") {
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
+    ":browser_frame_view",
     ":browser_widget",
     ":custom_corners",
     ":custom_floating_corner",
@@ -833,6 +835,7 @@ if (is_win) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_frame_view",
       ":browser_widget",
       ":browser_window_property_manager_win",
       ":frame",
@@ -1456,6 +1459,7 @@ if (is_mac) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_frame_view",
       ":browser_widget",
       ":glass_frame_service",
       "//base",
@@ -1643,6 +1647,7 @@ source_set("browser_tests") {
   sources = []
 
   deps = [
+    ":browser_frame_view",
     ":browser_view_header",
     ":top_container_view",
   ]
@@ -1816,6 +1821,8 @@ if (is_linux) {
       "browser_frame_view_linux.cc",
     ]
     public_deps = [
+      ":opaque_browser_frame_view",
+      ":opaque_browser_frame_view_layout",
       "//base",
       "//chrome/browser:browser_public_dependencies",
       "//skia",
@@ -1844,6 +1851,7 @@ if (is_linux) {
       "//ui/linux:linux_ui",
     ]
     deps = [
+      ":opaque_browser_frame_view_layout",
       "//build:buildflag_header_h",
       "//ui/gfx/geometry",
       "//ui/linux:linux_ui",
@@ -1891,11 +1899,94 @@ if (is_linux) {
   }
 }
 
+source_set("opaque_browser_frame_view") {
+  public = [ "opaque_browser_frame_view.h" ]
+  public_deps = [
+    ":browser_frame_view",
+    ":browser_view_layout_params",
+    ":opaque_browser_frame_view_layout_delegate",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/views",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("opaque_browser_frame_view_layout") {
+  public = [ "opaque_browser_frame_view_layout.h" ]
+  sources = [ "opaque_browser_frame_view_layout.cc" ]
+  public_deps = [
+    ":opaque_browser_frame_view",
+    ":opaque_browser_frame_view_layout_delegate",
+    "//base",
+    "//ui/views",
+  ]
+  deps = [
+    ":caption_button_placeholder_container",
+    "//base:i18n",
+    "//build:buildflag_header_h",
+    "//ui/compositor",
+    "//ui/views",
+  ]
+}
+
+if (!is_chromeos) {
+  source_set("opaque_browser_frame_view_impl") {
+    sources = [ "opaque_browser_frame_view.cc" ]
+    public_deps = [
+      ":opaque_browser_frame_view",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_native_widget",
+      ":browser_view_header",
+      ":browser_widget",
+      ":caption_button_placeholder_container",
+      ":opaque_browser_frame_view_layout",
+      ":top_container_view",
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/views:tab_icon_view",
+      "//chrome/browser/ui/views/tabs:new_tab_button",
+      "//chrome/browser/ui/views/tabs:tab_strip",
+      "//chrome/browser/ui/views/toolbar",
+      "//components/strings:components_strings",
+      "//content/public/browser",
+      "//skia",
+      "//ui/accessibility:ax_enums_mojo",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base/metadata",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/color",
+      "//ui/compositor",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views/window/vector_icons",
+    ]
+    if (is_linux) {
+      deps += [ "//ui/linux:linux_ui" ]
+    }
+    if (is_win) {
+      deps += [ "//ui/display" ]
+    }
+  }
+}
+
 if (use_aura && !is_chromeos) {
   source_set("browser_frame_view_factory_views") {
     sources = [ "browser_frame_view_factory_views.cc" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
+      ":opaque_browser_frame_view",
+      ":opaque_browser_frame_view_layout",
       ":picture_in_picture_browser_frame_view",
       "//base",
       "//build:buildflag_header_h",
@@ -1916,6 +2007,40 @@ if (use_aura && !is_chromeos) {
   }
 }
 
+source_set("browser_view_layout") {
+  public = [ "layout/browser_view_layout.h" ]
+  public_deps = [
+    ":custom_floating_corner",
+    "//base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_view_layout_core_impl") {
+  sources = [ "layout/browser_view_layout.cc" ]
+  public_deps = [
+    ":browser_view_layout",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":browser_view_app_layout_impl",
+    ":browser_view_layout_delegate",
+    ":browser_view_popup_layout_impl",
+    ":browser_view_tabbed_layout_impl",
+    ":multi_contents_view",
+    "//base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/exclusive_access",
+    "//chrome/browser/ui/web_applications",
+    "//components/web_modal",
+    "//ui/views",
+  ]
+}
+
 source_set("browser_view_layout_delegate_impl") {
   public = [ "layout/browser_view_layout_delegate_impl.h" ]
   sources = [ "layout/browser_view_layout_delegate_impl.cc" ]
@@ -1928,6 +2053,8 @@ source_set("browser_view_layout_delegate_impl") {
   ]
 
   deps = [
+    ":browser_frame_view",
+    ":browser_view_layout",
     ":browser_widget",
     ":glass_frame_service",
     "//build:buildflag_header_h",
@@ -1961,6 +2088,7 @@ source_set("browser_view_layout_impl") {
   sources = [ "layout/browser_view_layout_impl.cc" ]
 
   public_deps = [
+    ":browser_view_layout",
     ":browser_view_layout_delegate",
     ":browser_view_layout_params",
     ":custom_corners_background",
@@ -2010,6 +2138,7 @@ source_set("browser_view_popup_layout_impl") {
   public = [ "layout/browser_view_popup_layout_impl.h" ]
   sources = [ "layout/browser_view_popup_layout_impl.cc" ]
   public_deps = [
+    ":browser_view_layout",
     ":browser_view_layout_delegate",
     ":browser_view_layout_impl",
     "//chrome/browser:browser_public_dependencies",
@@ -2027,6 +2156,7 @@ source_set("browser_view_tabbed_layout_impl") {
   public = [ "layout/browser_view_tabbed_layout_impl.h" ]
   sources = [ "layout/browser_view_tabbed_layout_impl.cc" ]
   public_deps = [
+    ":browser_view_layout",
     ":browser_view_layout_delegate",
     ":browser_view_layout_impl",
     ":browser_view_layout_params",
@@ -2060,6 +2190,53 @@ source_set("browser_view_tabbed_layout_impl") {
   ]
   if (is_mac) {
     deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+  }
+}
+
+source_set("browser_frame_view") {
+  public = [ "browser_frame_view.h" ]
+  public_deps = [
+    ":browser_view_layout_params",
+    "//base",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_frame_view_impl") {
+  sources = [ "browser_frame_view.cc" ]
+  public_deps = [
+    ":browser_frame_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":browser_view_header",
+    ":browser_widget",
+    ":safe_invoke",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/web_applications",
+    "//skia",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  if (is_win) {
+    deps += [
+      "//chrome/browser/taskbar",
+      "//chrome/browser/ui:layout_constants",
+      "//ui/display",
+    ]
   }
 }
 
@@ -2241,6 +2418,7 @@ source_set("top_container_view_impl") {
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
+    ":browser_frame_view",
     ":browser_view_header",
     ":browser_widget",
     ":custom_corners_background",
@@ -2275,6 +2453,7 @@ source_set("browser_widget_impl") {
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
+    ":browser_frame_view",
     ":browser_native_widget",
     ":browser_native_widget_factory",
     ":browser_root_view",

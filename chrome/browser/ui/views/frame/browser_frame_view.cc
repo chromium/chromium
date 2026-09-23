@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/theme_resources.h"
@@ -112,6 +113,9 @@ BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
     : browser_widget_(browser_widget), browser_view_(browser_view) {
   DCHECK(browser_widget_);
   DCHECK(browser_view_);
+  paint_as_active_subscription_ =
+      browser_widget_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &BrowserFrameView::PaintAsActiveChanged, base::Unretained(this)));
   SetProperty(views::kElementIdentifierKey, kBrowserFrameElementId);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kShowBrowserFrameRegionsCommandLineSwitch)) {

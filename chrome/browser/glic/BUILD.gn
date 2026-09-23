@@ -657,6 +657,7 @@ source_set("impl") {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout",
       "//chrome/browser/ui/views/frame/",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/interaction",

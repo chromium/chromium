@@ -186,6 +186,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/views/frame:browser_frame_view",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/interaction",
