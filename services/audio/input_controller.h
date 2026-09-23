@@ -30,6 +30,7 @@
 namespace media {
 class AecdumpRecordingManager;
 class AudioBus;
+class AudioDebugRecordingManager;
 class AudioInputStream;
 class AudioManager;
 struct AudioGlitchInfo;
@@ -336,6 +337,7 @@ class InputController final {
   // `deliver_processed_audio_callback` should be consumed.
   std::unique_ptr<VoiceIsolationHandler> MaybeCreateVoiceIsolationHandler(
       raw_ptr<MlModelManager> ml_model_manager,
+      media::AudioDebugRecordingManager* debug_recording_manager,
       const media::AudioParameters& processing_output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 

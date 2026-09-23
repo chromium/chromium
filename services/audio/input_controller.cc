@@ -462,6 +462,7 @@ void InputController::MaybeSetUpAudioProcessing(
 std::unique_ptr<VoiceIsolationHandler>
 InputController::MaybeCreateVoiceIsolationHandler(
     raw_ptr<MlModelManager> ml_model_manager,
+    media::AudioDebugRecordingManager* debug_recording_manager,
     const media::AudioParameters& processing_output_params,
     DeliverProcessedAudioCallback deliver_processed_audio_callback) {
   if (!ml_model_manager) {
@@ -472,7 +473,8 @@ InputController::MaybeCreateVoiceIsolationHandler(
       *ml_model_manager, processing_output_params,
       std::move(deliver_processed_audio_callback),
       base::BindRepeating(&EventHandler::OnLog,
-                          base::Unretained(event_handler_)));
+                          base::Unretained(event_handler_)),
+      debug_recording_manager);
 }
 
 #endif
@@ -740,7 +742,8 @@ void InputController::DoCreate(
   std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler;
   if (processing_config && processing_config->settings.voice_isolation) {
     voice_isolation_handler = MaybeCreateVoiceIsolationHandler(
-        ml_model_manager, params, std::move(deliver_processed_audio_callback));
+        ml_model_manager, audio_manager->GetAudioDebugRecordingManager(),
+        params, std::move(deliver_processed_audio_callback));
     if (!voice_isolation_handler) {
       event_handler_->OnError(STREAM_CREATE_ERROR);
       LogCaptureStartupResult(ParamsToStreamType(params),

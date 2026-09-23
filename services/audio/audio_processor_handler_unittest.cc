@@ -22,6 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/audio/audio_debug_recording_helper.h"
+#include "media/audio/mock_audio_debug_recording_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
@@ -95,18 +97,26 @@ class AudioProcessorHandlerTest : public ::testing::Test {
   CreateVoiceIsolationHandlerWithMock(
       std::unique_ptr<media::MockVoiceIsolation> mock_voice_isolation,
       const media::AudioParameters& output_params,
-      VoiceIsolationHandler::DeliverProcessedAudioCallback callback) {
+      VoiceIsolationHandler::DeliverProcessedAudioCallback callback,
+      std::unique_ptr<media::AudioDebugRecorder> debug_recorder = nullptr) {
     // Pass-through.
     ON_CALL(*mock_voice_isolation, ProcessAudio(_, _))
         .WillByDefault([](const media::AudioBus& input,
                           media::AudioBus& output) { input.CopyTo(&output); });
     return VoiceIsolationHandler::CreateForTesting(
-        std::move(mock_voice_isolation), output_params, callback);
+        std::move(mock_voice_isolation), output_params, callback,
+        /*log_callback=*/base::DoNothing(), std::move(debug_recorder));
   }
 #endif
 };
 
 namespace {
+
+class MockAudioDebugRecorder : public media::AudioDebugRecorder {
+ public:
+  ~MockAudioDebugRecorder() override = default;
+  MOCK_METHOD(void, OnData, (const media::AudioBus* source), (override));
+};
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 // Matches VoiceIsolationStartupResult in enums.xml.
@@ -486,7 +496,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulation) {
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
-      /*voice_isolation=*/nullptr);
+      /*voice_isolation_handler=*/nullptr);
 
   handler->StartProcessing();
 
@@ -519,7 +529,7 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
       controls_remote.InitWithNewPipeAndPassReceiver(),
       /*aecdump_recording_manager=*/nullptr,
       /*ml_model_manager=*/nullptr,
-      /*voice_isolation=*/nullptr);
+      /*voice_isolation_handler=*/nullptr);
 
   handler->StartProcessing();
 
@@ -612,6 +622,57 @@ TEST_F(AudioProcessorHandlerTest,
   run_loop2.Run();
 
   handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder) {
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
+  media::MockAudioDebugRecordingManager mock_debug_recording_manager;
+
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*log_callback=*/base::DoNothing(), &mock_debug_recording_manager);
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HasDebugRecorderForTesting());
+}
+
+TEST_F(AudioProcessorHandlerTest, VoiceIsolationDebugRecordingCapturesData) {
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  auto mock_recorder =
+      std::make_unique<testing::StrictMock<MockAudioDebugRecorder>>();
+  EXPECT_CALL(*mock_recorder, OnData(_)).Times(1);
+
+  auto handler = CreateVoiceIsolationHandlerWithMock(
+      std::move(mock_voice_isolation), output_params_, deliver_callback_.Get(),
+      std::move(mock_recorder));
+
+  auto input_bus = media::AudioBus::Create(output_params_);
+  input_bus->Zero();
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationDebugRecordingCapturesDataWhenBypassed) {
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  auto mock_recorder =
+      std::make_unique<testing::StrictMock<MockAudioDebugRecorder>>();
+  EXPECT_CALL(*mock_recorder, OnData(_)).Times(1);
+
+  auto handler = CreateVoiceIsolationHandlerWithMock(
+      std::move(mock_voice_isolation), output_params_, deliver_callback_.Get(),
+      std::move(mock_recorder));
+
+  handler->SetVoiceIsolation(false);
+  EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
+
+  auto input_bus = media::AudioBus::Create(output_params_);
+  input_bus->Zero();
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
 }
 
 TEST_F(AudioProcessorHandlerTest,

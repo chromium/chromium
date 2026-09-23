@@ -17,11 +17,13 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "media/audio/audio_debug_recording_helper.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
 class AudioBus;
+class AudioDebugRecordingManager;
 class MlModelHandle;
 class VoiceIsolation;
 class VoiceIsolationComponent;
@@ -43,6 +45,7 @@ class VoiceIsolationHandler {
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
       const media::AudioGlitchInfo& audio_glitch_info)>;
+
   using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
   VoiceIsolationHandler(const VoiceIsolationHandler&) = delete;
@@ -54,13 +57,15 @@ class VoiceIsolationHandler {
       MlModelManager& ml_model_manager,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
-      LogCallback log_callback = base::DoNothing());
+      LogCallback log_callback = base::DoNothing(),
+      media::AudioDebugRecordingManager* debug_recording_manager = nullptr);
 
   static std::unique_ptr<VoiceIsolationHandler> CreateForTesting(
       std::unique_ptr<media::VoiceIsolation> voice_isolation,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
-      LogCallback log_callback = base::DoNothing());
+      LogCallback log_callback = base::DoNothing(),
+      std::unique_ptr<media::AudioDebugRecorder> debug_recorder = nullptr);
 
   // Processes the captured audio. Called on the capture/processing thread.
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
@@ -87,6 +92,11 @@ class VoiceIsolationHandler {
   // the caller's thread.
   bool HasProcessingThread() const;
 
+  bool HasDebugRecorderForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    return debug_recorder_ != nullptr;
+  }
+
   bool IsVoiceIsolationBypassedForTesting() const {
     return IsVoiceIsolationBypassed();
   }
@@ -101,12 +111,14 @@ class VoiceIsolationHandler {
  private:
   VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
+      std::unique_ptr<media::AudioDebugRecorder> debug_recorder,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       LogCallback log_callback);
 
   VoiceIsolationHandler(
       std::unique_ptr<media::VoiceIsolation> voice_isolation,
+      std::unique_ptr<media::AudioDebugRecorder> debug_recorder,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       LogCallback log_callback);
@@ -133,7 +145,14 @@ class VoiceIsolationHandler {
   const media::AudioParameters output_params_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
   const LogCallback log_callback_;
+
+  // Preallocated buffer for processed audio, accessed exclusively in
+  // ProcessCapturedAudioInternal() on the capture or FIFO thread.
   std::unique_ptr<media::AudioBus> output_bus_;
+
+  // Thread-safe recorder feeding debug audio data. Immutable after
+  // construction.
+  const std::unique_ptr<media::AudioDebugRecorder> debug_recorder_;
 
   // Initialized on the owning sequence and read on the real-time audio thread
   // when `bypass_voice_isolation_` is false.
