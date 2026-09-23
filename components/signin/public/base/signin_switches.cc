@@ -428,10 +428,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Days(180));
 #endif
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableACPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.
 // Extensions are not shipped on Android yet. The flow is newly implemented. We

@@ -684,10 +684,6 @@ inline constexpr char kEditPasswordsInSettingsName[] =
 inline constexpr char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-inline constexpr char kEnableACPrefetchName[] = "Enable AC Prefetch";
-inline constexpr char kEnableACPrefetchDescription[] =
-    "Ensures that account capabilities are prefetched and cached.";
-
 inline constexpr char kEnableAccountPreviewPreferredAccountFollowupName[] =
     "Enable Account Preview Preferred Account Followup";
 inline constexpr char

@@ -367,12 +367,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kAccountPreviewAppAccountExpirationDuration);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-// Feature flag to prefetch and cache account capabilities.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableACPrefetch);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
