@@ -49,7 +49,7 @@ View requests in Network panel
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Connection
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Protocol
@@ -80,7 +80,7 @@ Cypher with Mac
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Subject
@@ -147,13 +147,13 @@ Open full certificate details
             </TR>
         </TABLE>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section certificate-transparency-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate Transparency
         </DIV>
-        <TABLE class=details-table sct-summary >
+        <TABLE class= details-table sct-summary  >
         </TABLE>
-        <DIV class=sct-details hidden >
+        <DIV class= sct-details hidden  >
         </DIV>
         <DIV class=origin-view-section-notes >
 This request complies with Chrome’s Certificate Transparency policy.

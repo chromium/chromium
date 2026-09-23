@@ -153,7 +153,7 @@ View requests in Network panel
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Connection
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Protocol
@@ -184,7 +184,7 @@ Cypher with Mac
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Subject
@@ -301,7 +301,7 @@ View requests in Network panel
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Connection
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Protocol
@@ -340,7 +340,7 @@ AES-128-GCM
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Subject
@@ -454,7 +454,7 @@ View requests in Network panel
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Connection
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Protocol
@@ -493,7 +493,7 @@ AES-128-GCM
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Subject
@@ -607,7 +607,7 @@ View requests in Network panel
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Connection
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Protocol
@@ -654,7 +654,7 @@ enabled
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Certificate
         </DIV>
-        <TABLE class=details-table >
+        <TABLE class= details-table  >
             <TR class=details-table-row >
                 <TD >
 Subject
