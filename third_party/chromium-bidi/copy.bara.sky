@@ -48,7 +48,8 @@ core.workflow(
     name = "default",
     origin = git.origin(
         url = origin_url,
-        ref = "main",
+        ref = "refs/heads/main",
+        describe_version = False,
         partial_fetch = True,
         first_parent = True,
     ),
