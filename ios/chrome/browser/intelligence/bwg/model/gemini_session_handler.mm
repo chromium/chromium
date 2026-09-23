@@ -461,6 +461,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   [self dismissAndRecordMetrics];
 }
 
+- (void)didTapResponseReadyViewButton {
+  [self.geminiViewStateDelegate didTapResponseReadyViewButton];
+}
+
 #pragma mark - Private
 
 // Finds the web state with the given client ID as unique identifier.

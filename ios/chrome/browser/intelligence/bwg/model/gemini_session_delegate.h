@@ -190,6 +190,10 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 // Called when request is received from SDK to dismiss the UI.
 - (void)didRequestDismissal;
 
+// Called when the user taps the "View" button in the response ready collapsed
+// state.
+- (void)didTapResponseReadyViewButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SESSION_DELEGATE_H_
