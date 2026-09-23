@@ -363,6 +363,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ARC_INSTALL"/>
     <variant name="BROWSER_LAUNCH"/>
     <variant name="CHROME_BROWSER_ENTERPRISE"/>
+    <variant name="CHROME_BROWSER_ENTERPRISE_METRIC"/>
     <variant name="CRASH_EVENTS"/>
     <variant name="CRD_EVENTS"/>
     <variant name="CROS_SECURITY_AGENT"/>

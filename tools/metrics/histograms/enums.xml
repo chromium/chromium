@@ -3675,6 +3675,7 @@ shown properly on the user-facing crash UI.
   <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
   <int value="31" label="CRASH_EVENTS"/>
   <int value="40" label="BROWSER_LAUNCH"/>
+  <int value="41" label="CHROME_BROWSER_ENTERPRISE_METRIC"/>
 </enum>
 
 <enum name="EnterpriseCloudReportingStatusCode">
