@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
   virtual void ProcessAudio(const AudioBus& input_bus,
                             AudioBus& output_bus) = 0;
 
+  // Clears all internal state and buffers. In multi-threaded environments it
+  // should be called from the same sequence as `ProcessAudio`.
+  virtual void ClearBuffers() = 0;
+
  protected:
   VoiceIsolation() = default;
 };

@@ -37,6 +37,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) StftVoiceIsolation
 
   size_t FramesPerSecond() const override;
 
+  void ClearBuffers() override;
+
  private:
   const size_t fft_size_;
   std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation_;
@@ -58,6 +60,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) WindowedFft {
                         base::span<float> output_dfts);
   void InverseTransform(base::span<float> input_dfts,
                         base::span<float> output_audio);
+
+  // Clears the internal state.
+  void Clear();
 
  private:
   const unsigned int fft_size_;

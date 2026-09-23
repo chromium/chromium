@@ -150,4 +150,54 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
   }
 }
 
+TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
+  constexpr int kSampleRate = 48000;
+  constexpr int kFrameSize = kSampleRate / 100;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(model.get(), params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> silence_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 1.0f);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 1.0f);
+  silence_bus->Zero();
+  output_bus->Zero();
+
+  // Feed 5 consecutive frames containing a constant signal so lookahead FIFOs
+  // and STFT overlap-add buffers are fully populated and emitting non-zero
+  // audio.
+  constexpr int kNumActiveFrames = 5;
+  for (int i = 0; i < kNumActiveFrames; ++i) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  }
+  const float active_energy = std::inner_product(
+      output_bus->channel(0).begin(), output_bus->channel(0).end(),
+      output_bus->channel(0).begin(), 0.0f);
+  EXPECT_GT(active_energy, 0.0f);
+
+  // Clear all internal FIFOs, STFT history, and model state.
+  voice_isolation->ClearBuffers();
+
+  // Feed pure silence and verify that no stranded samples from before the
+  // clear leak into the output across the entire priming window and beyond.
+  constexpr int kNumSilenceFramesToVerify = 6;
+  for (int i = 0; i < kNumSilenceFramesToVerify; ++i) {
+    voice_isolation->ProcessAudio(*silence_bus, *output_bus);
+    for (int sample = 0; sample < kFrameSize; ++sample) {
+      EXPECT_FLOAT_EQ(output_bus->channel(0)[sample], 0.0f)
+          << "Non-zero sample leaked at frame " << i << ", sample " << sample;
+      EXPECT_FLOAT_EQ(output_bus->channel(1)[sample], 0.0f)
+          << "Non-zero sample leaked at frame " << i << ", sample " << sample;
+    }
+  }
+}
+
 }  // namespace media

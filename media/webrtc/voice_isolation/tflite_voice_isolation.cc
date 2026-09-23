@@ -230,4 +230,13 @@ size_t TfLiteVoiceIsolation::FramesPerSecond() const {
   return 50;
 }
 
+void TfLiteVoiceIsolation::ClearBuffers() {
+  if (interpreter_) {
+    // ResetVariableTensors() zeroes internal variable tensor buffers via memset
+    // without allocating heap memory or acquiring locks, making it safe for the
+    // real-time audio thread.
+    CHECK_EQ(interpreter_->ResetVariableTensors(), kTfLiteOk);
+  }
+}
+
 }  // namespace media

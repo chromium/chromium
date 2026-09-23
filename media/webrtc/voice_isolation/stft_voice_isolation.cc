@@ -206,6 +206,13 @@ void WindowedFft::InverseTransform(base::span<float> input_dfts,
                    apply_window);
 }
 
+void WindowedFft::Clear() {
+  std::fill(forward_buffer_.begin(), forward_buffer_.end(), 0.0f);
+  std::fill(temp_buffer_.begin(), temp_buffer_.end(), 0.0f);
+  std::fill(inverse_buffer_.begin(), inverse_buffer_.end(), 0.0f);
+  std::fill(fft_workplace_.begin(), fft_workplace_.end(), 0.0f);
+}
+
 StftVoiceIsolation::StftVoiceIsolation(
     std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation)
     : fft_size_(internal_voice_isolation->FrameSize() / 2),
@@ -244,6 +251,13 @@ size_t StftVoiceIsolation::FrameSize() const {
 
 size_t StftVoiceIsolation::FramesPerSecond() const {
   return internal_voice_isolation_->FramesPerSecond();
+}
+
+void StftVoiceIsolation::ClearBuffers() {
+  windowed_fft_->Clear();
+  if (internal_voice_isolation_) {
+    internal_voice_isolation_->ClearBuffers();
+  }
 }
 
 }  // namespace media

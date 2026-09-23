@@ -26,6 +26,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) PassthroughVoiceIsolation
 
   size_t FramesPerSecond() const override;
 
+  void ClearBuffers() override;
+
  private:
   const size_t frame_size_;
   const size_t frames_per_second_;

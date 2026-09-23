@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolationComponent {
   // process in real-time. This is the calling frequency. For raw audio signals
   // `FramesPerSecond()`*`FrameSize()` is equal to the sampling rate.
   virtual size_t FramesPerSecond() const = 0;
+
+  // Clears all internal state.
+  virtual void ClearBuffers() = 0;
 };
 }  // namespace media
 

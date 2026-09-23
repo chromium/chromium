@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
 
   size_t FrameSize() const override;
   size_t FramesPerSecond() const override;
+  void ClearBuffers() override;
 
   // `model` needs to outlive this TfLiteVoiceIsolation instance.
   static std::unique_ptr<TfLiteVoiceIsolation> MaybeCreate(

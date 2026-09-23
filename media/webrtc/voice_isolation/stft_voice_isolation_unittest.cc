@@ -27,6 +27,7 @@ class MockVoiceIsolationComponent : public VoiceIsolationComponent {
               (override));
   MOCK_METHOD(size_t, FrameSize, (), (const, override));
   MOCK_METHOD(size_t, FramesPerSecond, (), (const, override));
+  MOCK_METHOD(void, ClearBuffers, (), (override));
 };
 
 }  // namespace
@@ -132,6 +133,52 @@ TEST(StftVoiceIsolationTest, ProcessAudioLoopback) {
   int delay = frame_size / 2;
   for (size_t i = delay; i < full_output.size() - delay; ++i) {
     EXPECT_NEAR(full_output[i], full_input[i - delay], 1e-4f) << "Frame " << i;
+  }
+}
+
+TEST(StftVoiceIsolationTest, ClearBuffersResetsHistoryAndForwards) {
+  auto mock_passthrough_inner = std::make_unique<MockVoiceIsolationComponent>();
+  MockVoiceIsolationComponent* const mock_passthrough_inner_ptr =
+      mock_passthrough_inner.get();
+
+  constexpr unsigned int kFftSize = 320;
+  EXPECT_CALL(*mock_passthrough_inner_ptr, FrameSize())
+      .WillRepeatedly(Return(2 * kFftSize));
+  EXPECT_CALL(*mock_passthrough_inner_ptr, FramesPerSecond())
+      .WillRepeatedly(Return(50));
+  EXPECT_CALL(*mock_passthrough_inner_ptr, ProcessAudio(_, _))
+      .WillRepeatedly(
+          [](base::span<const float> input, base::span<float> output) {
+            output.copy_from_nonoverlapping(input);
+          });
+
+  StftVoiceIsolation stft(std::move(mock_passthrough_inner));
+  const size_t frame_size = stft.FrameSize();
+  const std::vector<float> ones(frame_size, 1.0f);
+  const std::vector<float> zeros(frame_size, 0.0f);
+  std::vector<float> output(frame_size, 0.0f);
+
+  stft.ProcessAudio(ones, output);
+
+  // Verify that processing input produces non-zero output so that the effect
+  // of ClearBuffers() below is unambiguous.
+  bool has_non_zero_output = false;
+  for (float val : output) {
+    if (val != 0.0f) {
+      has_non_zero_output = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_non_zero_output);
+
+  // Clearing buffers should discard internal state so a subsequent frame of
+  // silence produces pure silence.
+  EXPECT_CALL(*mock_passthrough_inner_ptr, ClearBuffers()).Times(1);
+  stft.ClearBuffers();
+
+  stft.ProcessAudio(zeros, output);
+  for (size_t i = 0; i < frame_size; ++i) {
+    EXPECT_FLOAT_EQ(output[i], 0.0f);
   }
 }
 

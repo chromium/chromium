@@ -34,4 +34,6 @@ size_t PassthroughVoiceIsolation::FramesPerSecond() const {
   return frames_per_second_;
 }
 
+void PassthroughVoiceIsolation::ClearBuffers() {}
+
 }  // namespace media

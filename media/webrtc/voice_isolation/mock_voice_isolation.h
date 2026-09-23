@@ -20,6 +20,7 @@ class MockVoiceIsolation : public VoiceIsolation {
               ProcessAudio,
               (const AudioBus& input_bus, AudioBus& output_bus),
               (override));
+  MOCK_METHOD(void, ClearBuffers, (), (override));
 };
 
 }  // namespace media

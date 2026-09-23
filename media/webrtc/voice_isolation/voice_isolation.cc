@@ -59,6 +59,7 @@ class VoiceIsolationImpl : public VoiceIsolation {
   VoiceIsolationImpl& operator=(const VoiceIsolationImpl&) = delete;
 
   void ProcessAudio(const AudioBus& input_bus, AudioBus& output_bus) override;
+  void ClearBuffers() override;
 
  private:
   std::unique_ptr<VoiceIsolationComponent> voice_isolation_component_;
@@ -71,6 +72,7 @@ VoiceIsolationImpl::VoiceIsolationImpl(
     const media::AudioParameters& audio_params)
     : voice_isolation_component_(std::move(internal_voice_isolation)) {
   CHECK(audio_params.IsValid());
+  CHECK(voice_isolation_component_);
 
   media::AudioParameters mono_internal(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -112,7 +114,7 @@ void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
         backward_fifo_->GetInputAudioBus();
 
     voice_isolation_component_->ProcessAudio(internal_in->channel(0),
-                                            internal_out->channel(0));
+                                             internal_out->channel(0));
 
     forward_fifo_->PopOutput();
     backward_fifo_->Push(std::move(internal_out));
@@ -126,6 +128,12 @@ void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
     TRACE_EVENT_INSTANT("audio", "VoiceIsolationImpl::OutputZeroed");
     output_bus.Zero();
   }
+}
+
+void VoiceIsolationImpl::ClearBuffers() {
+  forward_fifo_->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  backward_fifo_->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  voice_isolation_component_->ClearBuffers();
 }
 }  // namespace
 
