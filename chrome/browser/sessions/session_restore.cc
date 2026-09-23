@@ -1198,14 +1198,14 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     }
     if (browser->GetTabStripModel()->group_model()->ContainsTabGroup(
             *initial_group)) {
-      browser->GetTabStripModel()->SetFocusedGroup(*initial_group);
+      browser->GetTabStripModel()->EnterFocusMode(*initial_group);
       return;
     }
     auto it = new_group_ids.find(*initial_group);
     if (it != new_group_ids.end() &&
         browser->GetTabStripModel()->group_model()->ContainsTabGroup(
             it->second)) {
-      browser->GetTabStripModel()->SetFocusedGroup(it->second);
+      browser->GetTabStripModel()->EnterFocusMode(it->second);
     }
   }
 

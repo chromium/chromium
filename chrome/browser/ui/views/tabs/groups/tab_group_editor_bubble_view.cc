@@ -1114,15 +1114,13 @@ void TabGroupEditorBubbleView::FocusGroupPressed() {
   base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
                                 TabGroupFocusEntryPoint::kEditorBubble);
   TabStripModel* const model = browser_->GetTabStripModel();
-  model->SetFocusedGroup(group_);
+  model->EnterFocusMode(group_);
   GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::UnfocusGroupPressed() {
-  base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
-                                TabGroupFocusExitReason::kEditorBubble);
   TabStripModel* const model = browser_->GetTabStripModel();
-  model->SetFocusedGroup(std::nullopt);
+  model->ExitFocusMode(TabGroupFocusExitReason::kEditorBubble);
   GetWidget()->Close();
 }
 

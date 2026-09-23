@@ -533,7 +533,11 @@ BrowserTabStripController::GetFocusedGroup() const {
 
 void BrowserTabStripController::SetFocusedGroup(
     std::optional<tab_groups::TabGroupId> group) {
-  model_->SetFocusedGroup(group);
+  if (group.has_value()) {
+    model_->EnterFocusMode(*group);
+  } else {
+    model_->ExitFocusMode();
+  }
 }
 
 void BrowserTabStripController::SetVisualDataForGroup(

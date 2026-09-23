@@ -326,7 +326,7 @@ void BrowserLiveTabContext::SetFocusedTabGroup(
     return;
   }
   if (tab_strip_model_->group_model()->ContainsTabGroup(group)) {
-    tab_strip_model_->SetFocusedGroup(group);
+    tab_strip_model_->EnterFocusMode(group);
   }
 }
 

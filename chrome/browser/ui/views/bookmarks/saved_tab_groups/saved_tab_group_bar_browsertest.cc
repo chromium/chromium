@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   ASSERT_TRUE(saved_group2.has_value());
 
   // Focus Tab Group 1.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   EXPECT_EQ(group1, model->GetFocusedGroup());
 
   // Open Tab Group 2 via SavedTabGroupUtils (simulating opening from Bookmarks
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(
       TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
 
   // Focus Tab Group 1.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   EXPECT_EQ(group1, model->GetFocusedGroup());
 
   // Create a saved tab group that is closed.

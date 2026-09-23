@@ -5357,7 +5357,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
   AddTabsAndResetBrowser(browser(), 2);
   tab_groups::TabGroupId group = model->AddToNewGroup({0, 1, 2});
   EnsureFocusToTabStrip(tab_strip);
-  model->SetFocusedGroup(group);
+  model->EnterFocusMode(group);
   StopAnimating(tab_strip);
 
   ASSERT_EQ(3, model->count());
@@ -5402,7 +5402,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
   StopAnimating(tab_strip2);
 
   // Focus group2 in browser2.
-  model2->SetFocusedGroup(group2);
+  model2->EnterFocusMode(group2);
   ASSERT_EQ(model2->GetFocusedGroup(), group2);
 
   // Drag group1 by its header from browser into browser2.

@@ -2244,7 +2244,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  chrome::UnfocusTabGroup(
+                  chrome::ExitFocusMode(
                       bwi, TabGroupFocusExitReason::kTabStripButton);
                 },
                 bwi))

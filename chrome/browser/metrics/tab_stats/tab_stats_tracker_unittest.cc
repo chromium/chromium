@@ -1061,7 +1061,7 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetricsFocusMode) {
 
   // Group tabs and focus the group.
   tab_groups::TabGroupId group_id = tab_strip_model_->AddToNewGroup({0, 1});
-  tab_strip_model_->SetFocusedGroup(group_id);
+  tab_strip_model_->EnterFocusMode(group_id);
   EXPECT_EQ(group_id, tab_strip_model_->GetFocusedGroup());
 
   tab_stats_tracker_->OnHeartbeatEvent();
@@ -1071,7 +1071,7 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetricsFocusMode) {
       UmaStatsReportingDelegate::kFocusModeIsActiveHistogramName, 2);
 
   // Unfocus the group.
-  tab_strip_model_->SetFocusedGroup(std::nullopt);
+  tab_strip_model_->ExitFocusMode();
   EXPECT_FALSE(tab_strip_model_->GetFocusedGroup().has_value());
 
   tab_stats_tracker_->OnHeartbeatEvent();

@@ -217,10 +217,17 @@ TEST_F(TabStripModelSelectionStateTest, FocusedGroupValidity) {
                                      group1);
   EXPECT_TRUE(state1.Valid());
 
-  // State with tab2 (in group2) when focused_group is group1 should be invalid.
+  // State with non-active tab2 (in group2) and active tab1 (in group1) should
+  // still be valid when focused_group is group1.
   TabStripModelSelectionState state2({tab1_.get(), tab2_.get()}, tab1_.get(),
                                      tab1_.get(), group1);
-  EXPECT_FALSE(state2.Valid());
+  EXPECT_TRUE(state2.Valid());
+
+  // State with active tab2 (in group2) when focused_group is group1 should be
+  // invalid.
+  TabStripModelSelectionState state3({tab1_.get(), tab2_.get()}, tab2_.get(),
+                                     tab1_.get(), group1);
+  EXPECT_FALSE(state3.Valid());
 }
 
 }  // namespace tabs

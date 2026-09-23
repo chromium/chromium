@@ -5449,7 +5449,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest, RestoreFocusedTabGroup) {
   // Group the tabs and enter Focus Mode for the group.
   const tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
-  browser()->tab_strip_model()->SetFocusedGroup(group);
+  browser()->tab_strip_model()->EnterFocusMode(group);
   EXPECT_EQ(group, browser()->tab_strip_model()->GetFocusedGroup());
 
   // Quit and restore the session.

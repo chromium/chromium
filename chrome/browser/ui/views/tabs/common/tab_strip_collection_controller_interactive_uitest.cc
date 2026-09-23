@@ -532,15 +532,15 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_TRUE(group.has_value());
 
         // Focus on the group, which should override the tab strip color.
-        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->EnterFocusMode(group.value());
         EXPECT_TRUE(CheckBrowserHasColorOverride());
 
         // Unset focused group, which should remove the override.
-        browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+        browser()->GetTabStripModel()->ExitFocusMode();
         EXPECT_FALSE(CheckBrowserHasColorOverride());
 
         // Focus on the group again, which should override the tab strip color.
-        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->EnterFocusMode(group.value());
         EXPECT_TRUE(CheckBrowserHasColorOverride());
       }));
 }
@@ -562,11 +562,11 @@ IN_PROC_BROWSER_TEST_F(
                                                          /*is_ephemeral=*/true);
 
         // Focus on the ephemeral group, which should not override the color.
-        browser()->GetTabStripModel()->SetFocusedGroup(ephemeral_group);
+        browser()->GetTabStripModel()->EnterFocusMode(ephemeral_group);
         EXPECT_FALSE(CheckBrowserHasColorOverride());
 
         // Unset focused group, which should remain without color override.
-        browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+        browser()->GetTabStripModel()->ExitFocusMode();
         EXPECT_FALSE(CheckBrowserHasColorOverride());
       }));
 }
@@ -588,11 +588,11 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_TRUE(group.has_value());
 
         // Focus on the group, which should show the unfocus button.
-        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->EnterFocusMode(group.value());
       }),
       WaitForShow(kUnfocusTabGroupButtonElementId), Do([this]() {
         // Unset focused group, which should hide the button.
-        browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+        browser()->GetTabStripModel()->ExitFocusMode();
       }),
       WaitForHide(kUnfocusTabGroupButtonElementId));
 }
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(
                     EXPECT_EQ(model->active_index(), 0);
 
                     // 2. Enter Focus Mode on group 1.
-                    model->SetFocusedGroup(group1);
+                    model->EnterFocusMode(group1);
                     EXPECT_EQ(model->GetFocusedGroup(), group1);
 
                     // FocusNextTabGroup should cycle focus.
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(
                     model->AddToNewGroup({0});
                     tab_groups::TabGroupId ephemeral_group =
                         model->AddToNewGroup({1}, /*is_ephemeral=*/true);
-                    model->SetFocusedGroup(ephemeral_group);
+                    model->EnterFocusMode(ephemeral_group);
                     EXPECT_EQ(model->GetFocusedGroup(), ephemeral_group);
 
                     chrome::FocusNextTabGroup(browser());

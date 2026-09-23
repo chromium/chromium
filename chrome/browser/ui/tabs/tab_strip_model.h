@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
@@ -720,12 +721,15 @@ class TabStripModel {
   // returns nullopt.
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
 
-  // Sets the group to be focused.
-  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group);
+  // Enters focus mode for `group`.
+  void EnterFocusMode(const tab_groups::TabGroupId& group);
 
-  // Unfocuses the currently focused group, dissolving it if it is an ephemeral
-  // group.
-  void UnfocusGroup();
+  // Exits focus mode, recording `reason` (if provided) in
+  // TabGroups.Focus.ExitReason. If an ephemeral (non-group focus) group was
+  // focused, it is removed, since such a group only exists to back focus mode
+  // and must never outlive it.
+  void ExitFocusMode(
+      std::optional<TabGroupFocusExitReason> reason = std::nullopt);
 
   // Rotates the focused tab group between the unfocused state and active tab
   // groups in the strip. Requires `features::kTabGroupsFocusing` to be enabled
@@ -1180,8 +1184,7 @@ class TabStripModel {
   TabStripSelectionChange SetSelection(
       const tabs::TabStripModelSelectionState& new_model,
       TabStripModelObserver::ChangeReason reason,
-      bool triggered_by_other_operation,
-      bool notify_focus_change = true);
+      bool triggered_by_other_operation);
 
   // Close all tabs in the given `group` at once.
   void CloseAllTabsInGroupImpl(const tab_groups::TabGroupId& group);
@@ -1238,6 +1241,10 @@ class TabStripModel {
   void AddToExistingGroupImpl(const std::vector<int>& indices,
                               const tab_groups::TabGroupId& group,
                               const bool add_to_end = false);
+
+  // Removes the tabs at `indices` from their groups, moving them out of group
+  // bounds if necessary.
+  void RemoveFromGroupImpl(const std::vector<int>& indices);
 
   // Adds all selected indices provided by `context_index` into a new tab group.
   void AddToNewGroupFromContextIndex(int context_index);

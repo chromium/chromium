@@ -399,3 +399,112 @@ TEST_F(TabStripModelContextMenuTest, NonGroupFocusGreyedOutWhenMixture) {
   EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleFocusGroup));
 }
+
+class NonGroupFocusDissolutionTest : public TabStripModelContextMenuTest {
+ public:
+  void SetUp() override {
+    TabStripModelContextMenuTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+  }
+
+  // Appends `tab_count` tabs, then starts a non-group focus session over the
+  // first `focused_tab_count` of them. Returns the ephemeral group.
+  tab_groups::TabGroupId StartNonGroupFocus(int tab_count,
+                                            int focused_tab_count) {
+    for (int i = 0; i < tab_count; ++i) {
+      tab_strip_model()->AppendWebContents(CreateTestWebContents(), i == 0);
+    }
+
+    ui::ListSelectionModel selection;
+    selection.SetSelectedIndex(0);
+    for (int i = 1; i < focused_tab_count; ++i) {
+      selection.AddIndexToSelection(i);
+    }
+    tab_strip_model()->SetSelectionFromModel(selection);
+
+    tab_strip_model()->ExecuteContextMenuCommand(
+        0, TabStripModel::CommandToggleFocusGroup);
+
+    const std::optional<tab_groups::TabGroupId> group =
+        tab_strip_model()->GetFocusedGroup();
+    CHECK(group.has_value());
+    CHECK(tab_strip_model()->IsEphemeralTabGroup(group.value()));
+    return group.value();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(NonGroupFocusDissolutionTest,
+       AddToNewGroupDissolvesEphemeralFocusedGroup) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
+
+  ui::ListSelectionModel single_selection;
+  single_selection.SetSelectedIndex(0);
+  tab_strip_model()->SetSelectionFromModel(single_selection);
+  ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), ephemeral_group);
+
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandAddToNewGroup);
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+
+  // Tab 0 lands in a new permanent group.
+  const std::optional<tab_groups::TabGroupId> new_group =
+      tab_strip_model()->GetTabGroupForTab(0);
+  ASSERT_TRUE(new_group.has_value());
+  EXPECT_NE(new_group.value(), ephemeral_group);
+  EXPECT_FALSE(tab_strip_model()->IsEphemeralTabGroup(new_group.value()));
+
+  // Tab 1 was in the ephemeral group but not selected, so it is now ungrouped
+  // rather than stranded in the ephemeral group.
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), std::nullopt);
+}
+
+TEST_F(NonGroupFocusDissolutionTest,
+       ActivatingTabOutsideEphemeralGroupDissolvesIt) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/1);
+
+  tab_strip_model()->ActivateTabAt(1);
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+}
+
+TEST_F(NonGroupFocusDissolutionTest,
+       InsertingTabOutsideEphemeralGroupDissolvesIt) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), std::nullopt);
+}
+
+TEST_F(NonGroupFocusDissolutionTest,
+       ClosingTabOutsideEphemeralGroupDissolvesIt) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
+
+  tab_strip_model()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+}

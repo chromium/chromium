@@ -228,9 +228,10 @@ bool GroupAllUngroupedTabs(BrowserWindowInterface* browser);
 bool CanGroupAllUngroupedTabs(BrowserWindowInterface* browser);
 // Creates a new tab at the end of the group which last had the active tab.
 void AddNewTabToRecentGroup(BrowserWindowInterface* browser);
-// Unfocuses the currently focused tab group, if any.
-void UnfocusTabGroup(BrowserWindowInterface* browser,
-                     TabGroupFocusExitReason exit_reason);
+// Exits tab group focus mode in `browser` if a group is currently focused,
+// recording `exit_reason` in metrics.
+void ExitFocusMode(BrowserWindowInterface* browser,
+                   TabGroupFocusExitReason exit_reason);
 
 void MuteSiteForKeyboardFocusedTab(BrowserWindowInterface* browser);
 bool HasKeyboardFocusedTab(const BrowserWindowInterface* browser);

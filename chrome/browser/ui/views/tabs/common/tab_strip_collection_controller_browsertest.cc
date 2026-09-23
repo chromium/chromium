@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   EXPECT_TRUE(unpinned_tab_view->GetVisible());
 
   // Focus the group.
-  model->SetFocusedGroup(group_id);
+  model->EnterFocusMode(group_id);
   RunScheduledLayouts();
 
   // Verify pinned tab remains visible and unfocused tab is hidden.
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   EXPECT_FALSE(unpinned_tab_view->GetVisible());
 
   // Unfocus the group.
-  model->SetFocusedGroup(std::nullopt);
+  model->ExitFocusMode();
   RunScheduledLayouts();
 
   // Verify all are restored.
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   ASSERT_TRUE(model->IsTabSelected(0));
 
   // Focus the group.
-  model->SetFocusedGroup(group_id);
+  model->EnterFocusMode(group_id);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
       GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
 
   // Focus on group1. Unpinned tabs outside group1 should be frozen.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   EXPECT_FALSE(
       GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
   EXPECT_FALSE(
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
       GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
 
   // Unfocus group1. All tabs should be unfrozen.
-  model->SetFocusedGroup(std::nullopt);
+  model->ExitFocusMode();
   EXPECT_FALSE(
       GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
   EXPECT_FALSE(
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   const tab_groups::TabGroupId group1 = model->AddToNewGroup({1, 2});
 
   // Focus on group1.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   // Pinned tab (0) and focused group tabs (1, 2) should NOT be frozen.
   EXPECT_FALSE(
       GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   const tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
 
   // Focus group1.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   EXPECT_FALSE(
       GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
   EXPECT_FALSE(
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
       GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
 
   // Switch focus to group2.
-  model->SetFocusedGroup(group2);
+  model->EnterFocusMode(group2);
   EXPECT_TRUE(
       GetTabViewAt(0)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
   EXPECT_TRUE(
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
       GetTabViewAt(3)->HasFreezingVote(FreezingVoteReason::kFocusedGroup));
 
   // Focus group1 while group2 is collapsed.
-  model->SetFocusedGroup(group1);
+  model->EnterFocusMode(group1);
   EXPECT_FALSE(GetTabViewAt(0)->HasFreezingVote());
   EXPECT_FALSE(GetTabViewAt(1)->HasFreezingVote());
   // Tabs in group2 now have BOTH collapsed and unfocused freezing votes.
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
 
   // Unfocus group1. Unfocused votes should be released, but collapsed votes
   // remain.
-  model->SetFocusedGroup(std::nullopt);
+  model->ExitFocusMode();
   EXPECT_TRUE(
       GetTabViewAt(2)->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   EXPECT_FALSE(

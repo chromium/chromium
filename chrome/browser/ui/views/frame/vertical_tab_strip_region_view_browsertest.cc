@@ -1642,7 +1642,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Focus the tab group.
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   // Switch to vertical tabs mode.
@@ -1674,7 +1674,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Focus the group while in vertical mode.
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   EXPECT_TRUE(
       region_view()->GetTopContainer()->GetUnfocusButton()->GetVisible());
   EXPECT_FALSE(
@@ -1685,7 +1685,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
   EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
 
   // Unfocus the tab group while in horizontal mode.
-  tab_strip_model()->SetFocusedGroup(std::nullopt);
+  tab_strip_model()->ExitFocusMode();
   EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
 
   // Switch back to vertical mode.
@@ -1733,7 +1733,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Focus the tab group.
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   // Switch to vertical tabs mode.
@@ -1764,7 +1764,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   ui_test_utils::BrowserCreatedObserver observer;
@@ -1794,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   ui_test_utils::BrowserCreatedObserver observer;
@@ -1828,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   ui_test_utils::BrowserCreatedObserver observer;
@@ -1860,7 +1860,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeUnifiedTest,
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  tab_strip_model()->SetFocusedGroup(group_id);
+  tab_strip_model()->EnterFocusMode(group_id);
   ASSERT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 
   BrowserWindowInterface* target_browser =

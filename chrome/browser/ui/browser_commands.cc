@@ -434,7 +434,7 @@ void MaybePreserveFocusedGroupInTarget(
   const int group_tab_count =
       target_model->group_model()->GetTabGroup(*focused_group)->tab_count();
   if (non_pinned_count == group_tab_count) {
-    target_model->SetFocusedGroup(*focused_group);
+    target_model->EnterFocusMode(*focused_group);
   }
 }
 
@@ -640,7 +640,7 @@ void FocusAdjacentTabGroupInFocusMode(TabStripModel* tab_strip_model,
   size_t target_index = next ? (current_index + 1) % groups_in_order.size()
                              : (current_index + groups_in_order.size() - 1) %
                                    groups_in_order.size();
-  tab_strip_model->SetFocusedGroup(groups_in_order[target_index]);
+  tab_strip_model->EnterFocusMode(groups_in_order[target_index]);
 }
 
 }  // namespace
@@ -1968,11 +1968,10 @@ void AddNewTabToRecentGroup(BrowserWindowInterface* browser) {
   AddTabAt(browser, GURL(), -1, true, group_id);
 }
 
-void UnfocusTabGroup(BrowserWindowInterface* browser,
-                     TabGroupFocusExitReason exit_reason) {
+void ExitFocusMode(BrowserWindowInterface* browser,
+                   TabGroupFocusExitReason exit_reason) {
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason", exit_reason);
-    browser->GetTabStripModel()->UnfocusGroup();
+    browser->GetTabStripModel()->ExitFocusMode(exit_reason);
   }
 }
 

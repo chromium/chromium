@@ -1187,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTestWithFocusing,
   base::Uuid saved_guid = saved_group->saved_guid();
 
   // Focus the group.
-  browser()->tab_strip_model()->SetFocusedGroup(local_id);
+  browser()->tab_strip_model()->EnterFocusMode(local_id);
   ASSERT_EQ(local_id, browser()->tab_strip_model()->GetFocusedGroup());
 
   // Delete the saved group.

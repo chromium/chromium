@@ -181,7 +181,8 @@ TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
   // tab group in the browser).
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
       browser->GetTabStripModel()->GetFocusedGroup().has_value()) {
-    browser->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+    browser->GetTabStripModel()->ExitFocusMode(
+        TabGroupFocusExitReason::kGroupCreated);
   }
 
   // Open the tabs in the saved group.

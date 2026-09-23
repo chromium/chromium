@@ -1398,15 +1398,15 @@ TEST_F(TabStripModelTest, FocusMode) {
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0, 1});
 
   // Focus the group.
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Setting the same group again should not change anything.
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Unfocus the group.
-  tabstrip()->SetFocusedGroup(std::nullopt);
+  tabstrip()->ExitFocusMode();
   EXPECT_FALSE(tabstrip()->GetFocusedGroup().has_value());
 }
 
@@ -1439,7 +1439,7 @@ TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocus) {
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   model.CloseAllTabsInGroup(group);
@@ -1458,7 +1458,7 @@ TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocus) {
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   model.RemoveFromGroup({0, 1});
@@ -1478,7 +1478,7 @@ TEST_F(TabStripModelTest, InsertingDetachedTabGroupUnsetsFocus) {
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group1 = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group1);
+  model.EnterFocusMode(group1);
   EXPECT_EQ(model.GetFocusedGroup(), group1);
 
   TestTabStripModelDelegate delegate2;
@@ -1510,7 +1510,7 @@ TEST_F(TabStripModelTest,
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   // Closing first tab keeps group focused.
@@ -1537,12 +1537,12 @@ TEST_F(TabStripModelTest, FocusModeSessionDurationHistogramOnExit) {
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
 
   // Focus the group. Session starts, no histogram recorded yet.
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 0);
 
   // Unfocus the group. Session ends, duration histogram recorded.
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
 }
@@ -1562,17 +1562,17 @@ TEST_F(TabStripModelTest, FocusModeSessionDurationHistogramOnSwitchGroup) {
   const tab_groups::TabGroupId group2 = model.AddToNewGroup({2, 3});
 
   // Focus group 1.
-  model.SetFocusedGroup(group1);
+  model.EnterFocusMode(group1);
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 0);
 
   // Switch focus directly from group 1 to group 2.
   // Group 1 session should end and record a duration histogram.
-  model.SetFocusedGroup(group2);
+  model.EnterFocusMode(group2);
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
 
   // Unfocus group 2. Group 2 session ends and records another duration
   // histogram.
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 2);
 }
 
@@ -1590,7 +1590,7 @@ TEST_F(TabStripModelTest,
   const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
 
   // Focus group.
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   // Activate pinned tab (activation 1).
@@ -1603,7 +1603,7 @@ TEST_F(TabStripModelTest,
   model.ActivateTabAt(0);
 
   // Exit focus mode.
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
 
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
   histogram_tester.ExpectUniqueSample(
@@ -1627,13 +1627,13 @@ TEST_F(TabStripModelTest,
   model.SetTabPinned(0, true);
   const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
 
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
 
   // Switch between tabs within the group without touching pinned tab 0.
   model.ActivateTabAt(1);
   model.ActivateTabAt(2);
 
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
 
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
   histogram_tester.ExpectUniqueSample(
@@ -1656,12 +1656,12 @@ TEST_F(TabStripModelTest,
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
 
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
 
   // Switch between tabs within the group.
   model.ActivateTabAt(1);
 
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
 
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
   histogram_tester.ExpectUniqueSample(
@@ -1684,7 +1684,7 @@ TEST_F(TabStripModelTest,
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({1, 2});
 
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
 
   // Pin a tab while focus mode is active.
   model.SetTabPinned(0, true);
@@ -1692,7 +1692,7 @@ TEST_F(TabStripModelTest,
   // Activate the newly pinned tab.
   model.ActivateTabAt(0);
 
-  model.SetFocusedGroup(std::nullopt);
+  model.ExitFocusMode();
 
   histogram_tester.ExpectTotalCount("TabGroups.Focus.SessionDuration", 1);
   histogram_tester.ExpectUniqueSample(
@@ -1712,7 +1712,7 @@ TEST_F(TabStripModelTest, RemovingLastTabOfFocusedGroupUnsetsFocus) {
   model.AppendWebContents(CreateWebContents(), false);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   // Removing the inactive tab keeps focus mode on the group.
@@ -1745,7 +1745,7 @@ TEST_F(TabStripModelTest, FocusGroupActivatesTabs) {
   EXPECT_EQ(1u, tabstrip()->selection_model().size());
 
   // Focus the group.
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
 
   // Now tabs 1 should be selected.
   EXPECT_FALSE(tabstrip()->IsTabSelected(0));
@@ -1773,7 +1773,7 @@ TEST_F(TabStripModelTest, FocusGroupActivatesTabs) {
 
   // Now, focus another group.
   tab_groups::TabGroupId group_id2 = tabstrip()->AddToNewGroup({3});
-  tabstrip()->SetFocusedGroup(group_id2);
+  tabstrip()->EnterFocusMode(group_id2);
 
   // Now only tab 3 should be selected.
   EXPECT_FALSE(tabstrip()->IsTabSelected(0));
@@ -1784,7 +1784,7 @@ TEST_F(TabStripModelTest, FocusGroupActivatesTabs) {
   EXPECT_EQ(3, tabstrip()->active_index());
 
   // Selection remains the same if the Focus is cleared.
-  tabstrip()->SetFocusedGroup(std::nullopt);
+  tabstrip()->ExitFocusMode();
   EXPECT_FALSE(tabstrip()->IsTabSelected(0));
   EXPECT_FALSE(tabstrip()->IsTabSelected(1));
   EXPECT_FALSE(tabstrip()->IsTabSelected(2));
@@ -1821,7 +1821,7 @@ TEST_F(TabStripModelTest, FocusGroupClampsSelection) {
   EXPECT_EQ(0, tabstrip()->active_index());
 
   // Now only tabs in the group should be selected.
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
 
   EXPECT_FALSE(tabstrip()->IsTabSelected(0));
   EXPECT_FALSE(tabstrip()->IsTabSelected(1));
@@ -1831,7 +1831,7 @@ TEST_F(TabStripModelTest, FocusGroupClampsSelection) {
   EXPECT_EQ(2, tabstrip()->active_index());
 
   // Selection remains the same if the Focus is cleared.
-  tabstrip()->SetFocusedGroup(std::nullopt);
+  tabstrip()->ExitFocusMode();
   EXPECT_FALSE(tabstrip()->IsTabSelected(0));
   EXPECT_FALSE(tabstrip()->IsTabSelected(1));
   EXPECT_TRUE(tabstrip()->IsTabSelected(2));
@@ -1856,20 +1856,20 @@ TEST_F(TabStripModelTest, OnTabGroupFocusChangedObserver) {
   // Expect a call when the group is focused.
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group_id),
                                                     testing::Eq(std::nullopt)));
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Expect no call when the same group is focused again.
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::_, testing::_))
       .Times(0);
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Expect a call when the group is unfocused.
   EXPECT_CALL(mock_observer,
               OnTabGroupFocusChanged(testing::Eq(std::nullopt),
                                      testing::Optional(group_id)));
-  tabstrip()->SetFocusedGroup(std::nullopt);
+  tabstrip()->ExitFocusMode();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   tabstrip()->RemoveObserver(&mock_observer);
@@ -1887,7 +1887,7 @@ TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocusAndNotifies) {
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
                                                     testing::Eq(std::nullopt)));
-  tabstrip()->SetFocusedGroup(group);
+  tabstrip()->EnterFocusMode(group);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
@@ -1910,7 +1910,7 @@ TEST_F(TabStripModelTest,
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   model.CloseAllTabsInGroup(group);
@@ -1938,7 +1938,7 @@ TEST_F(TabStripModelTest, CloseAllTabsInGroupNoFallbackTabWhenOtherTabsExist) {
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
 
   model.CloseAllTabsInGroup(group);
 
@@ -1961,7 +1961,7 @@ TEST_F(TabStripModelTest,
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
 
   // When AddTabAt triggers ungrouping, CloseAllTabsInGroup should not crash.
   model.CloseAllTabsInGroup(group);
@@ -1982,7 +1982,7 @@ TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocusAndNotifies) {
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
                                                     testing::Eq(std::nullopt)));
-  tabstrip()->SetFocusedGroup(group);
+  tabstrip()->EnterFocusMode(group);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
@@ -2005,7 +2005,7 @@ TEST_F(TabStripModelTest, ClosingLastTabOfFocusedGroupUnsetsFocusAndNotifies) {
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Optional(group),
                                                     testing::Eq(std::nullopt)));
-  tabstrip()->SetFocusedGroup(group);
+  tabstrip()->EnterFocusMode(group);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnTabGroupFocusChanged(testing::Eq(std::nullopt),
@@ -2724,7 +2724,7 @@ TEST_F(TabStripModelTest, SetFocusedGroupActivatesTab) {
   EXPECT_EQ(0, tabstrip()->active_index());
 
   // Focus the group.
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // The active tab should now be in the group.
@@ -2741,7 +2741,7 @@ TEST_F(TabStripModelTest, DetachingFocusedGroupUnsetsFocus) {
   model.AppendWebContents(CreateWebContents(), true);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
-  model.SetFocusedGroup(group);
+  model.EnterFocusMode(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
   model.DetachTabGroupForInsertion(group);
@@ -2754,7 +2754,7 @@ TEST_F(TabStripModelTest, ReorderingTabsInFocusedGroupPreservesFocus) {
 
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Reorder tabs inside the focused group using SetSelectionFromModel.
@@ -2772,7 +2772,7 @@ TEST_F(TabStripModelTest, SelectingTabOutsideFocusedGroupUnsetsFocus) {
 
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Select tab 3 which is outside the focused group.
@@ -2790,7 +2790,7 @@ TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
 
   PrepareTabs(tabstrip(), 3);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Close index 1, which is the only tab in the focused group.
@@ -2802,7 +2802,7 @@ TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
 TEST_F(TabStripModelTest, NewBackgroundTabWithoutGroupUnsetsFocus) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Add a background tab without specifying a group.
@@ -2819,7 +2819,7 @@ TEST_F(TabStripModelTest, DeletingTabOutsideFocusedGroupUnsetsFocus) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Close tab at index 0 (an ungrouped tab outside the focused group).
@@ -2835,7 +2835,7 @@ TEST_F(TabStripModelTest, DeletingTabOutsideFocusedGroupUnsetsFocus) {
 TEST_F(TabStripModelTest, NewPinnedTabInFocusedGroupDoesNotJoinFocusedGroup) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Add a new pinned tab.
@@ -2849,7 +2849,7 @@ TEST_F(TabStripModelTest, NewPinnedTabInFocusedGroupDoesNotJoinFocusedGroup) {
 TEST_F(TabStripModelTest, CommandCloseOtherTabsInFocusedGroupOnly) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Execute "Close Other Tabs" on tab index 1.
@@ -2868,7 +2868,7 @@ TEST_F(TabStripModelTest, CommandCloseTabsToRightInFocusedGroupOnly) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({3});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   // Execute "Close Tabs to the Right" on tab index 0 inside group_a.
@@ -2886,7 +2886,7 @@ TEST_F(TabStripModelTest, SelectingPinnedTabPreservesFocus) {
   PrepareTabs(tabstrip(), 4);
   tabstrip()->SetTabPinned(0, true);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Activate the pinned tab (index 0).
@@ -2901,7 +2901,7 @@ TEST_F(TabStripModelTest, UnpinningActivePinnedTabExitsFocusMode) {
   PrepareTabs(tabstrip(), 4);
   tabstrip()->SetTabPinned(0, true);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Activate the pinned tab (index 0).
@@ -2926,7 +2926,7 @@ TEST_F(TabStripModelTest, UnpinningInactivePinnedTabPreservesFocusMode) {
   PrepareTabs(tabstrip(), 4);
   tabstrip()->SetTabPinned(0, true);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Ensure active tab is within the focused group (index 1).
@@ -2948,7 +2948,7 @@ TEST_F(TabStripModelTest, AddingActiveTabToNewGroupExitsFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -2960,15 +2960,14 @@ TEST_F(TabStripModelTest, AddingActiveTabToNewGroupExitsFocusMode) {
   // Focus mode should exit so the new group and its editor bubble are visible.
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
   histogram_tester.ExpectUniqueSample(
-      "TabGroups.Focus.ExitReason",
-      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+      "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kGroupCreated, 1);
 }
 
 TEST_F(TabStripModelTest, AddingInactiveTabToNewGroupExitsFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -2980,15 +2979,14 @@ TEST_F(TabStripModelTest, AddingInactiveTabToNewGroupExitsFocusMode) {
   // Focus mode should exit so the new group and its editor bubble are visible.
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
   histogram_tester.ExpectUniqueSample(
-      "TabGroups.Focus.ExitReason",
-      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+      "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kGroupCreated, 1);
 }
 
 TEST_F(TabStripModelTest, RemovingActiveTabFromGroupExitsFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 3);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3011,7 +3009,7 @@ TEST_F(TabStripModelTest, AddingActiveTabToExistingGroupExitsFocusMode) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
   tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({2, 3});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3033,7 +3031,7 @@ TEST_F(TabStripModelTest, AddingInactiveTabToExistingGroupPreservesFocusMode) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
   tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({2, 3});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3052,7 +3050,7 @@ TEST_F(TabStripModelTest, RemovingInactiveTabFromGroupPreservesFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 3);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3071,7 +3069,7 @@ TEST_F(TabStripModelTest, PinningActiveTabInFocusedGroupPreservesFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3090,7 +3088,7 @@ TEST_F(TabStripModelTest, PinningInactiveTabInFocusedGroupPreservesFocusMode) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
-  tabstrip()->SetFocusedGroup(group_a);
+  tabstrip()->EnterFocusMode(group_a);
   ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
 
   tabstrip()->ActivateTabAt(0);
@@ -3112,7 +3110,7 @@ TEST_F(TabStripModelTest, RemovingPinnedTabPreservesFocusAndSelectsGroupTab) {
   PrepareTabs(tabstrip(), 4);
   tabstrip()->SetTabPinned(0, true);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Close/remove the pinned tab at index 0.
@@ -3131,7 +3129,7 @@ TEST_F(TabStripModelTest, ClosingTabInFocusedGroupSelectsAdjacentTab) {
 
   PrepareTabs(tabstrip(), 5);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2, 3});
-  tabstrip()->SetFocusedGroup(group_id);
+  tabstrip()->EnterFocusMode(group_id);
   ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
 
   // Activate the middle tab in the focused group (index 2).
@@ -3201,7 +3199,7 @@ TEST_F(TabStripModelTest, RotateFocusedGroup) {
   EXPECT_EQ(group0, tabstrip()->GetFocusedGroup());
 
   // Reset to the unfocused state.
-  tabstrip()->SetFocusedGroup(std::nullopt);
+  tabstrip()->ExitFocusMode();
 
   // Rotating backward transitions through all groups in reverse visual order,
   // returns to unfocused, and wraps around.
@@ -3229,7 +3227,7 @@ TEST_F(TabStripModelTest, RotateFocusedGroup_EphemeralGroup) {
 
   // When focused on an ephemeral group, rotating forward or backward should not
   // switch focus away from the ephemeral group.
-  tabstrip()->SetFocusedGroup(ephemeral_group);
+  tabstrip()->EnterFocusMode(ephemeral_group);
   EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
 
   tabstrip()->RotateFocusedGroup(/*forward=*/true);
@@ -3237,6 +3235,37 @@ TEST_F(TabStripModelTest, RotateFocusedGroup_EphemeralGroup) {
 
   tabstrip()->RotateFocusedGroup(/*forward=*/false);
   EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
+}
+
+// Moving every tab of an ephemeral group to another window dissolves the group
+// rather than transplanting it, and is reported as its own exit reason instead
+// of looking like the group's last tab was closed.
+TEST_F(TabStripModelTest, MovingEphemeralGroupToAnotherWindowDissolvesIt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->ForgetAllOpeners();
+  tab_groups::TabGroupId ephemeral_group =
+      tabstrip()->AddToNewGroup({1, 2}, /*is_ephemeral=*/true);
+  tabstrip()->EnterFocusMode(ephemeral_group);
+  ASSERT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
+
+  base::HistogramTester histogram_tester;
+  auto detached = tabstrip()->DetachTabsAndCollectionsForInsertion({1, 2});
+
+  // Two loose tabs, not one group collection.
+  EXPECT_EQ(2u, detached.size());
+  for (const auto& entry : detached) {
+    EXPECT_TRUE(std::holds_alternative<std::unique_ptr<DetachedTab>>(entry));
+  }
+
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
 }
 
 TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {

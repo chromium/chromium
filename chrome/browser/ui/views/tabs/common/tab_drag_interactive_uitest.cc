@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragFocusModeTest,
         const std::vector<tab_groups::TabGroupId> groups =
             tab_strip_model->group_model()->ListTabGroups();
         ASSERT_EQ(1u, groups.size());
-        tab_strip_model->SetFocusedGroup(groups[0]);
+        tab_strip_model->EnterFocusMode(groups[0]);
       }),
 
       NameDescendantViewByType<TabGroupHeaderView>(kBrowserViewElementId,

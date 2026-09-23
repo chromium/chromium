@@ -1418,7 +1418,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
       AddNewTabToRecentGroup(browser_);
       break;
     case IDC_UNFOCUS_TAB_GROUP:
-      UnfocusTabGroup(browser_, TabGroupFocusExitReason::kTabStripButton);
+      ExitFocusMode(browser_, TabGroupFocusExitReason::kTabStripButton);
       break;
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);

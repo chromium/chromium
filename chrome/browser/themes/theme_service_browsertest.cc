@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(FocusModeThemeServiceBrowserTest,
   // user_color_override).
   tab_groups::TabGroupId group_a =
       browser_a->GetTabStripModel()->AddToNewGroup({0});
-  browser_a->GetTabStripModel()->SetFocusedGroup(group_a);
+  browser_a->GetTabStripModel()->EnterFocusMode(group_a);
 
   // Verify Window A does not have the custom theme.
   EXPECT_EQ(nullptr, browser_view_a->GetWidget()
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(FocusModeThemeServiceBrowserTest,
       browser_view_b->GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME));
 
   // Unfocus Window A and affirm that its custom theme is restored.
-  browser_a->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+  browser_a->GetTabStripModel()->ExitFocusMode();
 
   EXPECT_NE(nullptr, browser_view_a->GetWidget()
                          ->GetColorProviderKeyForTesting()

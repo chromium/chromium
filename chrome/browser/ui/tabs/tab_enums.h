@@ -144,7 +144,8 @@ enum class TabGroupFocusExitReason {
   kActiveTabGroupOperation = 7,
   kTabOutsideGroupClosed = 8,
   kTabContextMenu = 9,
-  kMaxValue = kTabContextMenu,
+  kGroupCreated = 10,
+  kMaxValue = kGroupCreated,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusExitReason)
 

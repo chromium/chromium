@@ -109,7 +109,6 @@ class TabStripModelSelectionState final {
   static constexpr char kFocusedTabGroupIdKey[] = "focused_tab_group_id";
 
  private:
-  void UpdateFocusGroupValidity();
   void UpdateListSelectionModel() const;
   ui::ListSelectionModel::SelectedIndices ComputeSelectedIndices() const;
   void InvalidateListSelectionModel() const;

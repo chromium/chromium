@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
   EXPECT_EQ(tab->x(), TabGroupView::kTabLeadingPadding);
 
   // Focus the group.
-  browser()->GetTabStripModel()->SetFocusedGroup(group_id);
+  browser()->GetTabStripModel()->EnterFocusMode(group_id);
   RunScheduledLayouts();
 
   // In focus mode, group line should be hidden and tab should be aligned at x =
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
   EXPECT_EQ(tab->x(), 0);
 
   // Unfocus the group.
-  browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+  browser()->GetTabStripModel()->ExitFocusMode();
   RunScheduledLayouts();
 
   // Group line should be restored and tab indented again.
