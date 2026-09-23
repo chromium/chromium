@@ -668,6 +668,73 @@ TEST_F(ContextualSearchSessionHandleTest,
                                              GURL("https://example.com"), ""));
 }
 
+TEST_F(
+    ContextualSearchSessionHandleTest,
+    OnSmartTabSharingToggled_FalseThenTrue_PreservesDeselectedTabsAndClearsOnCreateSearchUrl) {
+  auto mock_validator = std::make_unique<MockTabValidator>();
+  ON_CALL(*mock_validator, AreUrlsEquivalent)
+      .WillByDefault(testing::Return(true));
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* local_mock_controller_ptr =
+      mock_controller.get();
+  auto local_service = std::make_unique<ContextualSearchService>(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
+      std::move(mock_validator), base::DoNothing());
+  auto local_handle = local_service->CreateSessionForTesting(
+      std::move(mock_controller),
+      std::make_unique<ContextualSearchMetricsRecorder>(
+          ContextualSearchSource::kOmnibox));
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+  local_handle->set_smart_tab_sharing_active(true);
+
+  base::UnguessableToken tab_token = local_handle->CreateContextToken();
+  FileInfo tab_file_info;
+  tab_file_info.file_token = tab_token;
+  tab_file_info.tab_session_id = SessionID::FromSerializedValue(1);
+  tab_file_info.tab_url = GURL("https://example.com");
+  tab_file_info.is_implicit_upload = true;
+  tab_file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  tab_file_info.input_data->was_smart_tab_selection = true;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(99999);
+  tab_file_info.request_id = req_id;
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_file_info));
+
+  auto request_info1 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  local_handle->CreateClientToAimRequest(std::move(request_info1));
+
+  // Manually toggle STS OFF: persisted_tabs_ is cleared and tab is deselected.
+  local_handle->OnSmartTabSharingToggled(false);
+  EXPECT_TRUE(local_handle->smart_tab_sharing_toggled_since_last_turn());
+  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
+                                            GURL("https://example.com"), ""));
+
+  // Manually toggle STS ON then OFF again: deselected_tabs_urls_ must remain
+  // populated so previous-turn tabs do not become re-underlined.
+  local_handle->OnSmartTabSharingToggled(true);
+  EXPECT_TRUE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
+                                            GURL("https://example.com"), ""));
+  local_handle->OnSmartTabSharingToggled(false);
+  EXPECT_TRUE(local_handle->IsTabDeselected(SessionID::FromSerializedValue(1),
+                                            GURL("https://example.com"), ""));
+
+  // Submitting via CreateSearchUrl must reset
+  // smart_tab_sharing_toggled_since_last_turn_ and
+  // sts_toggled_removed_contexts_.
+  auto search_url_info = std::make_unique<
+      ContextualSearchContextController::CreateSearchUrlRequestInfo>();
+  EXPECT_CALL(*local_mock_controller_ptr, CreateSearchUrl(_, _)).Times(1);
+  local_handle->CreateSearchUrl(std::move(search_url_info), base::DoNothing());
+  EXPECT_FALSE(local_handle->smart_tab_sharing_toggled_since_last_turn());
+  EXPECT_TRUE(local_handle->sts_toggled_removed_contexts().empty());
+}
+
 TEST_F(ContextualSearchSessionHandleTest,
        GetSubmittedContextFileInfos_IncludesPersistedTabsAcrossTurns) {
   auto mock_validator = std::make_unique<MockTabValidator>();

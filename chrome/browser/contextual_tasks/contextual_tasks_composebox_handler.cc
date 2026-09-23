@@ -458,7 +458,8 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       active_tab = tab_list->GetActiveTab();
       if (active_tab && !has_visual_selection) {
         bool should_block_recontextualize = false;
-        if (omnibox::IsTabDeselectionInComposeboxEnabled()) {
+        if (omnibox::IsTabDeselectionInComposeboxEnabled() &&
+            !IsSmartTabSharingActive()) {
           if (session_handle) {
             SessionID session_id =
                 sessions::SessionTabHelper::IdForTab(active_tab->GetContents());

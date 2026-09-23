@@ -532,6 +532,9 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
     MaybeAddTabToPersistedTabs(token);
   }
 
+  sts_toggled_removed_contexts_.clear();
+  smart_tab_sharing_toggled_since_last_turn_ = false;
+
   // Set the invocation source on the search URL request info, if it is not
   // already set.
   if (!search_url_request_info->invocation_source.has_value()) {
@@ -595,13 +598,6 @@ void ContextualSearchSessionHandle::OnSmartTabSharingToggled(bool active) {
       submitted_context_tokens_.clear();
       uploaded_context_tokens_.clear();
     } else {
-      // Toggling STS ON: clear deselected tabs so open tabs can be shared and
-      // underlined again. Preserve existing STS/implicit contexts from previous
-      // turns (e.g. when re-enabling STS in Turn 2 after
-      // ShouldToggleOffAfterSubmit() reset the toggle after Turn 1), while
-      // expiring any explicit manual tab chips.
-      deselected_tabs_urls_.clear();
-
       auto is_smart_or_implicit_tab = [&](const base::UnguessableToken& token) {
         if (!context_controller) {
           return false;
@@ -626,6 +622,11 @@ void ContextualSearchSessionHandle::OnSmartTabSharingToggled(bool active) {
                 sts_toggled_removed_contexts_.push_back(
                     file_info->request_id.value());
               }
+              if (file_info->tab_session_id.has_value()) {
+                deselected_tabs_urls_[file_info->tab_session_id.value()] =
+                    std::make_pair(file_info->tab_url.value_or(GURL()),
+                                   file_info->tab_title.value_or(""));
+              }
             }
             return true;
           };
@@ -633,7 +634,14 @@ void ContextualSearchSessionHandle::OnSmartTabSharingToggled(bool active) {
       for (auto it = persisted_tabs_.begin(); it != persisted_tabs_.end();) {
         if (!is_smart_or_implicit_tab(it->second.first)) {
           sts_toggled_removed_contexts_.push_back(it->second.second);
-          MarkFileSuperceded(context_controller, it->second.first);
+          if (auto* file_info =
+                  MarkFileSuperceded(context_controller, it->second.first)) {
+            if (file_info->tab_session_id.has_value()) {
+              deselected_tabs_urls_[file_info->tab_session_id.value()] =
+                  std::make_pair(file_info->tab_url.value_or(GURL()),
+                                 file_info->tab_title.value_or(""));
+            }
+          }
           it = persisted_tabs_.erase(it);
         } else {
           ++it;

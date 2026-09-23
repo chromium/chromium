@@ -895,6 +895,9 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
     session_handle->OnSmartTabSharingToggled(active);
   }
   ClearFiles(/*should_block_auto_suggested_tabs=*/true);
+  if (page_) {
+    page_->SetAimThreadRestoredTabs({});
+  }
   if (input_state_model_) {
     input_state_model_->SetSmartTabSharingActive(active);
     input_state_model_->OnContextChanged();

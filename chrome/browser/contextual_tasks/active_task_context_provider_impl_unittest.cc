@@ -218,6 +218,47 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextWithTabs) {
   run_loop.Run();
 }
 
+TEST_F(ActiveTaskContextProviderImplTest,
+       RefreshContextClearsUnderlinesWhenSmartTabSharingToggled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kContextManagementInComposebox);
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  SessionID id1 = sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  UrlResource resource(GURL("https://example.com"), ResourceType::kWebpage);
+  resource.tab_id = id1;
+  task.AddUrlResource(resource);
+
+  dummy_handle_.set_smart_tab_sharing_toggled_since_last_turn(true);
+
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillOnce(Return(std::make_pair(task_id, &dummy_handle_)));
+
+  EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
+      .WillOnce([&task](const base::Uuid&,
+                        const std::set<ContextualTaskContextSource>&,
+                        std::unique_ptr<ContextDecorationParams>,
+                        base::OnceCallback<void(
+                            std::unique_ptr<ContextualTaskContext>)> callback) {
+        std::move(callback).Run(std::make_unique<ContextualTaskContext>(task));
+      });
+
+  EXPECT_CALL(*tab_list_, GetTabCount()).WillRepeatedly(Return(1));
+  EXPECT_CALL(*tab_list_, GetTab(0)).WillRepeatedly(Return(tab1));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  provider_->RefreshContext();
+  run_loop.Run();
+}
+
 TEST_F(ActiveTaskContextProviderImplTest, AutoSuggestedTab) {
   tabs::TabInterface* tab1 = CreateMockTab();
 

@@ -37,16 +37,31 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     contextual_search::ContextualSearchSessionHandle* session_handle) {
   std::set<tabs::TabHandle> tabs;
 
+  if (session_handle &&
+      session_handle->smart_tab_sharing_toggled_since_last_turn()) {
+    return tabs;
+  }
+
   // Map SessionID to its GURL and title.
   std::map<SessionID, std::pair<GURL, std::u16string>>
       context_session_ids_url_map;
   // Add the tabs from context if they exist in the current browser window.
   for (const auto& attachment : context.GetUrlAttachments()) {
     SessionID id = attachment.GetTabSessionId();
-    if (id.is_valid()) {
-      context_session_ids_url_map[id] =
-          std::make_pair(attachment.GetURL(), attachment.GetTitle());
+    if (!id.is_valid()) {
+      continue;
     }
+    // Only keep tabs that the session still tracks as context. GetTokenForTab()
+    // covers uploaded (attached but not yet submitted), submitted and persisted
+    // tabs, and returns an empty token for tabs whose context was superceded
+    // (e.g. cleared by a manual smart tab sharing toggle).
+    if (session_handle &&
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+        session_handle->GetTokenForTab(id).is_empty()) {
+      continue;
+    }
+    context_session_ids_url_map[id] =
+        std::make_pair(attachment.GetURL(), attachment.GetTitle());
   }
 
   if (context_session_ids_url_map.empty()) {
