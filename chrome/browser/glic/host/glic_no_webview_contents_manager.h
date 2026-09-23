@@ -254,6 +254,18 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // the desired display state.
   DisplayState CalculateDesiredState() const;
 
+  // Whether the client is stuck in a state it cannot leave without being
+  // reloaded. Readiness is not computed here; the Host derives that from the
+  // web client connection.
+  bool HasClientLoadFailed() const;
+
+  // Reports `HasClientLoadFailed()` to the Host.
+  void UpdateClientLoadFailed();
+
+  // The state of the web client, or `kUninitialized` if no web client has
+  // completed initialization.
+  mojom::WebClientState web_client_state() const;
+
   // Re-evaluates and applies the desired display state, coordinating
   // transitions and cleaning up overlay resources.
   void UpdateDisplayState();

@@ -369,6 +369,10 @@ void GlicPageHandler::NotifyClientLoadError(
   host().ClientLoadErrorOccurred(ToClientLoadErrorReason(reason));
 }
 
+void GlicPageHandler::OnClientLoadFailed(bool failed) {
+  host().SetClientLoadFailed(this, failed);
+}
+
 void GlicPageHandler::ClientReadyToShow(const mojom::OpenPanelInfo& open_info) {
   page_->ClientReadyStateChanged(true);
 }

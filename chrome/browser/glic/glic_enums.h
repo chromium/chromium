@@ -113,6 +113,31 @@ enum class EmbedderType {
   kMaxValue = kTab,
 };
 
+// Whether the Glic client is usable, as seen by the browser.
+//
+// This is derived by `Host` rather than reported to it. The client is ready
+// exactly when `mojom::WebClientState` says it has come up, so `kReady` and
+// the web client state machine cannot disagree in either direction. Whoever
+// hosts the client -- chrome://glic, or the GlicNoWebview overlay -- supplies
+// only the one bit the browser cannot see for itself: whether a client that is
+// not up yet is still loading or has failed. This lets browser-side code wait
+// on the client without knowing which host is in use, or anything about its
+// internal state machine.
+//
+// Responsiveness is a separate axis: a client that is up but unresponsive
+// (`WebClientState::kUnresponsive`) is still `kReady` here, because it can
+// become responsive again on its own.
+enum class ClientLoadState {
+  // The client is being created or is still loading. It cannot be used yet,
+  // but may become ready later.
+  kLoading,
+  // The client has finished loading and can be used.
+  kReady,
+  // The client failed to load. It will not become ready again unless it is
+  // reloaded.
+  kError,
+};
+
 // Why the Glic client failed to load, i.e. failed to become usable. Scoped to
 // failures that prevent the client from reaching a usable state; errors raised
 // by a client that is already running are a separate concept.

@@ -142,6 +142,7 @@ export class GlicAppController implements WebviewDelegate {
   private clientLoadErrorReported = false;
 
   state: WebUiState|undefined;
+  private clientLoadFailed: boolean|undefined;
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -323,6 +324,43 @@ export class GlicAppController implements WebviewDelegate {
     }
     this.clientLoadErrorReported = false;
     this.maybeReportClientLoadError();
+    const failed = this.hasClientLoadFailed(this.state);
+    if (this.clientLoadFailed !== failed) {
+      this.clientLoadFailed = failed;
+      this.browserProxy.pageHandler.onClientLoadFailed(failed);
+    }
+  }
+
+  // Whether `state` is one the client cannot leave without being reloaded.
+  // Readiness is deliberately not reported: the browser decides that from the
+  // web client connection, so the only states distinguished here are "still
+  // on its way" and "gave up".
+  private hasClientLoadFailed(state: WebUiState): boolean {
+    switch (state) {
+      case WebUiState.kUninitialized:
+      case WebUiState.kBeginLoad:
+      case WebUiState.kShowLoading:
+      case WebUiState.kHoldLoading:
+      case WebUiState.kFinishLoading:
+      case WebUiState.kReady:
+      case WebUiState.kWarmed:
+      // An unresponsive client is left again by `webClientStateChanged()` on
+      // the next kResponsive, without a reload, and the browser tracks
+      // responsiveness itself through `WebClientState`.
+      case WebUiState.kUnresponsive:
+        return false;
+      case WebUiState.kError:
+      case WebUiState.kOffline:
+      case WebUiState.kUnavailable:
+      case WebUiState.kSignIn:
+      case WebUiState.kGuestError:
+      case WebUiState.kDisabledByAdmin:
+      case WebUiState.kLocationMismatch:
+      case WebUiState.kIneligibleAccount:
+        return true;
+      default:
+        assertNotReachedCase(state);
+    }
   }
 
   // Reports the current failure cause to the browser, which is the single

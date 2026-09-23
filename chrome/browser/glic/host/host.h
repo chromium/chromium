@@ -166,6 +166,10 @@ class Host : public GlicSharingManagerProvider {
     // WebUiStateChanged() this describes the cause rather than the panel, and
     // it is reported in both the webview and no-webview worlds.
     virtual void ClientLoadErrorOccurred(ClientLoadErrorReason reason) {}
+
+    // Called when the client load state changes.
+    virtual void ClientLoadStateChanged(ClientLoadState state) {}
+
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
@@ -300,9 +304,6 @@ class Host : public GlicSharingManagerProvider {
   bool IsPrimaryClientOpen();
 
   mojom::WebClientState web_client_state() const;
-  bool is_web_client_ready() const {
-    return web_client_state() == mojom::WebClientState::kResponsive;
-  }
 
   // Whether the primary web client is connected. Guaranteed not to be true
   // until the initialize() handshake has completed.
@@ -329,6 +330,26 @@ class Host : public GlicSharingManagerProvider {
   const mojom::WebUiState& GetPrimaryWebUiState() const {
     return primary_webui_state_;
   }
+
+  // The load state of the glic client. `kReady` if and only if
+  // `web_client_state()` is `kResponsive` or `kUnresponsive`.
+  ClientLoadState client_load_state() const { return client_load_state_; }
+
+  // Called by whatever is hosting the client (the glic WebUI, or
+  // `GlicNoWebviewContentsManager`) when the client enters or leaves a state it
+  // cannot recover from without being reloaded.
+  //
+  // Hosts report failure only. Readiness is derived here from the web client
+  // state machine, so a host cannot claim a client is usable when it is not,
+  // and `client_load_state()` is `kError` or `kLoading` only while the client
+  // has yet to come up. `failed` decides which of the two.
+  void SetClientLoadFailed(bool failed);
+
+  // As above, for reports coming from a WebUI page handler. Ignored unless
+  // `page_handler` is the current page handler: the glic window supports
+  // right-click->Reload, during which two page handlers briefly coexist, and a
+  // late report from the outgoing one must not overwrite the new load's state.
+  void SetClientLoadFailed(GlicPageHandler* page_handler, bool failed);
 
   void NotifyInstanceActivationChanged(bool is_active);
   void OnActuatingChanged(bool actuating);
@@ -441,6 +462,10 @@ class Host : public GlicSharingManagerProvider {
   content::Visibility GetExpectedVisibility() const;
   void UpdateVisibility();
 
+  // Recomputes `client_load_state_` from `client_load_failed_` and web client
+  // connectivity, notifying observers if it changed.
+  void UpdateClientLoadState();
+
   raw_ptr<Profile> profile_;
 
   // The instance that owns this host.
@@ -463,6 +488,10 @@ class Host : public GlicSharingManagerProvider {
   base::flat_map<mojom::AdditionalContextSource, mojom::AdditionalContextPtr>
       pending_additional_contexts_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
+  // The last value passed to `SetClientLoadFailed()`.
+  bool client_load_failed_ = false;
+  // Derived from `client_load_failed_` and web client connectivity.
+  ClientLoadState client_load_state_ = ClientLoadState::kLoading;
   std::optional<mojom::PanelState> pending_panel_state_;
   ClientState client_state_;
   bool drag_resize_enabled_ = false;

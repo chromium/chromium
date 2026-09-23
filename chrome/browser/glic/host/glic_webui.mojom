@@ -271,4 +271,17 @@ interface PageHandler {
   // has one handler for client errors that works unchanged in the
   // GlicNoWebview world, where this page does not exist.
   NotifyClientLoadError(ClientLoadErrorReason reason);
+
+  // Notifies the PageHandler whether the client is stuck in a failure state,
+  // i.e. one it will not leave unless it is reloaded.
+  //
+  // Only failure is reported, because only failure is the page's to report.
+  // The client is usable exactly when it is connected and responsive, which
+  // the browser already knows; what it cannot see is whether a client that is
+  // not connected is still on its way or has given up.
+  //
+  // Unlike `NotifyClientLoadError()`, which reports the cause of one
+  // user-visible failure so it can be recorded, this is the current state and
+  // exists to drive browser-side waits on the client.
+  OnClientLoadFailed(bool failed);
 };

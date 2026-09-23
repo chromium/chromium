@@ -109,8 +109,18 @@ void Host::HibernateImpl(bool is_destroying) {
   client_state_ = {};
   page_handler_ = nullptr;
   contents_changed_subscription_ = {};
+  // The web client is about to go away, so any previous verdict about it is
+  // stale. Clear it before `contents_` is destroyed, since tearing the client
+  // down recomputes the load state, and that recompute must not see the old
+  // failure. This also keeps `Reload()` (Hibernate() then Awaken()) from
+  // carrying a failure from the old load into the new one.
+  client_load_failed_ = false;
   contents_.reset();
   web_contents_visibility_ = content::Visibility::HIDDEN;
+  if (!is_destroying) {
+    // Covers hibernating with no web client to tear down.
+    UpdateClientLoadState();
+  }
 }
 
 void Host::Hibernate() {
@@ -276,6 +286,7 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
     // is momentarily two page handlers for the same web contents. Since this
     // can affect real users, it needs to be handled specially here.
     WebUiStateChanged(page_handler_, mojom::WebUiState::kUninitialized);
+    SetClientLoadFailed(false);
     // TODO(harringtond): Web client liveness needs detangled from the page
     // handler. This is currently needed because, on reload, the web client
     // isn't cleared soon enough otherwise.
@@ -292,6 +303,7 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   }
   page_handler_ = nullptr;
   WebUiStateChanged(page_handler, mojom::WebUiState::kUninitialized);
+  SetClientLoadFailed(false);
   // TODO(harringtond): Web client liveness needs detangled from the page
   // handler. This is currently needed because, on reload, the web client
   // isn't cleared soon enough otherwise.
@@ -429,6 +441,7 @@ void Host::WebClientInitialized() {
 }
 
 void Host::WebClientInitializeFailed() {
+  SetClientLoadFailed(true);
   observers_.Notify(&Observer::WebClientInitializeFailed);
 }
 
@@ -563,6 +576,10 @@ GlicPageHandler* Host::GetPrimaryPageHandlerForTesting() {
 }
 
 void Host::OnWebClientStateChanged(mojom::WebClientState state) {
+  // The web client state machine is what readiness is derived from, so this is
+  // the one place the load state needs recomputing as the client comes and
+  // goes.
+  UpdateClientLoadState();
   observers_.Notify(&Observer::WebClientStateChanged, state);
 }
 
@@ -601,6 +618,45 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
 
 void Host::ClientLoadErrorOccurred(ClientLoadErrorReason reason) {
   observers_.Notify(&Observer::ClientLoadErrorOccurred, reason);
+}
+
+void Host::SetClientLoadFailed(bool failed) {
+  client_load_failed_ = failed;
+  UpdateClientLoadState();
+}
+
+void Host::SetClientLoadFailed(GlicPageHandler* page_handler, bool failed) {
+  if (page_handler != page_handler_) {
+    // A page handler that is no longer current is on its way out; its report
+    // describes the load being replaced, not the one in progress.
+    return;
+  }
+  SetClientLoadFailed(failed);
+}
+
+void Host::UpdateClientLoadState() {
+  // Readiness is decided here, not reported: a client that reached
+  // `kResponsive` is usable by definition, and one that never got there is
+  // not, whatever its host believes. The host supplies only the failure bit,
+  // which tells "still loading" apart from "gave up".
+  //
+  // `kUnresponsive` still counts as ready: the client is up and can become
+  // responsive again on its own, without being reloaded.
+  const mojom::WebClientState web_state = web_client_state();
+  ClientLoadState state;
+  if (web_state == mojom::WebClientState::kResponsive ||
+      web_state == mojom::WebClientState::kUnresponsive) {
+    state = ClientLoadState::kReady;
+  } else if (client_load_failed_) {
+    state = ClientLoadState::kError;
+  } else {
+    state = ClientLoadState::kLoading;
+  }
+  if (client_load_state_ == state) {
+    return;
+  }
+  client_load_state_ = state;
+  observers_.Notify(&Observer::ClientLoadStateChanged, client_load_state_);
 }
 
 void Host::NotifyInstanceActivationChanged(bool is_active) {

@@ -612,7 +612,27 @@ GlicNoWebviewContentsManager::CalculateDesiredState() const {
   return DisplayState::kShowingOverlay;
 }
 
+mojom::WebClientState GlicNoWebviewContentsManager::web_client_state() const {
+  GlicWebClientAccess* access = web_client_manager_.web_client_access();
+  return access ? access->web_client_state()
+                : mojom::WebClientState::kUninitialized;
+}
+
+bool GlicNoWebviewContentsManager::HasClientLoadFailed() const {
+  // Unresponsiveness is deliberately not included: the client is still
+  // connected and can become responsive again without being reloaded.
+  return overlay_manager_.error_type().has_value() || is_guest_error_ ||
+         web_client_state() == mojom::WebClientState::kError;
+}
+
+void GlicNoWebviewContentsManager::UpdateClientLoadFailed() {
+  if (host_) {
+    host_->SetClientLoadFailed(HasClientLoadFailed());
+  }
+}
+
 void GlicNoWebviewContentsManager::UpdateDisplayState() {
+  UpdateClientLoadFailed();
   DisplayState desired = CalculateDesiredState();
   if (state_ == desired) {
     // If hidden/warming and the guest becomes ready, immediately reclaim any
@@ -631,6 +651,7 @@ void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
   ClearTransientErrorState();
   guest_ready_.Set(false);
   is_guest_error_ = false;
+  UpdateClientLoadFailed();
 }
 
 void GlicNoWebviewContentsManager::OnGuestNavigated(
@@ -674,6 +695,12 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       }
       break;
   }
+
+  // Every branch above either clears `is_guest_error_` or changes the overlay
+  // error, so the Host's failure bit has to follow in all of them. The ones
+  // that went through `UpdateDisplayState()` have already reported it and this
+  // is a no-op for them.
+  UpdateClientLoadFailed();
 }
 
 void GlicNoWebviewContentsManager::StartGuestBootstrap() {
@@ -734,6 +761,7 @@ void GlicNoWebviewContentsManager::OnWebClientStateChanged(
 void GlicNoWebviewContentsManager::LoadGuest() {
   guest_ready_.Set(false);
   is_guest_error_ = false;
+  UpdateClientLoadFailed();
   GURL guest_url = GetGuestURL();
   net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url);
   guest_contents()->GetController().LoadURLWithParams(

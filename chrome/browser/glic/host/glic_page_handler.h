@@ -92,6 +92,7 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   void UpdateProfileReadyState();
 
   void OnWebUiStateChanged(glic::mojom::WebUiState new_state) override;
+  void OnClientLoadFailed(bool failed) override;
 
   void NotifyClientLoadError(
       glic::mojom::ClientLoadErrorReason reason) override;
