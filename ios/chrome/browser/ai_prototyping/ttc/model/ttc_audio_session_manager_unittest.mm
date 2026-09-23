@@ -15,16 +15,30 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+@interface TTCAudioSessionManager (Testing)
+- (AVAudioSessionMode)modeForDestination:(TTCAudioOutputDestination)destination;
+- (AVAudioSessionCategoryOptions)categoryOptionsForDestination:
+    (TTCAudioOutputDestination)destination;
+- (void)notifyRouteChanged;
+@end
+
 // Test fake conforming to TTCAudioSessionManagerDelegate for verifying
-// lifecycle and interruption notifications.
+// lifecycle, route changes, reconfigurations, and interruption notifications.
 @interface FakeTTCAudioSessionManagerDelegate
     : NSObject <TTCAudioSessionManagerDelegate>
 @property(nonatomic, assign) BOOL interruptionBeganCalled;
 @property(nonatomic, assign) BOOL interruptionEndedCalled;
+@property(nonatomic, assign) BOOL didChangeRouteCalled;
+@property(nonatomic, assign) BOOL didRequireReconfigurationCalled;
+@property(nonatomic, copy) NSString* lastRouteDescription;
+@property(nonatomic, assign) BOOL lastHasHardwareAEC;
 @property(nonatomic, weak) TTCAudioSessionManager* lastDeliveredManager;
 @property(nonatomic, assign) BOOL shouldResumeValue;
 @property(nonatomic, copy) void (^onInterruptionBegan)(void);
 @property(nonatomic, copy) void (^onInterruptionEnded)(BOOL shouldResume);
+@property(nonatomic, copy) void (^onRouteChange)
+    (NSString* routeDescription, BOOL hasHardwareAEC);
+@property(nonatomic, copy) void (^onReconfigurationRequired)(void);
 @end
 
 @implementation FakeTTCAudioSessionManagerDelegate
@@ -52,6 +66,31 @@
   }
 }
 
+- (void)audioSessionManager:(TTCAudioSessionManager*)manager
+    didChangeRouteDescription:(NSString*)routeDescription
+               hasHardwareAEC:(BOOL)hasAEC {
+  _lastDeliveredManager = manager;
+  _didChangeRouteCalled = YES;
+  _lastRouteDescription = [routeDescription copy];
+  _lastHasHardwareAEC = hasAEC;
+  if (_onRouteChange) {
+    auto block = _onRouteChange;
+    _onRouteChange = nil;
+    block(routeDescription, hasAEC);
+  }
+}
+
+- (void)audioSessionManagerDidRequireEngineReconfiguration:
+    (TTCAudioSessionManager*)manager {
+  _lastDeliveredManager = manager;
+  _didRequireReconfigurationCalled = YES;
+  if (_onReconfigurationRequired) {
+    auto block = _onReconfigurationRequired;
+    _onReconfigurationRequired = nil;
+    block();
+  }
+}
+
 @end
 
 namespace {
@@ -60,6 +99,11 @@ class TTCAudioSessionManagerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategorySoloAmbient
+                    mode:AVAudioSessionModeDefault
+                 options:0
+                   error:nil];
     manager_ = [[TTCAudioSessionManager alloc] init];
     delegate_ = [[FakeTTCAudioSessionManagerDelegate alloc] init];
     manager_.delegate = delegate_;
@@ -71,6 +115,11 @@ class TTCAudioSessionManagerTest : public PlatformTest {
       manager_ = nil;
       delegate_ = nil;
     }
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategorySoloAmbient
+                    mode:AVAudioSessionModeDefault
+                 options:0
+                   error:nil];
     PlatformTest::TearDown();
   }
 
@@ -79,20 +128,33 @@ class TTCAudioSessionManagerTest : public PlatformTest {
   FakeTTCAudioSessionManagerDelegate* delegate_ = nil;
 };
 
-// Test that configureAudioSession configures PlayAndRecord and VoiceChat mode
-// synchronously on the UI thread.
+// Test that configureAudioSession configures PlayAndRecord and appropriate mode
+// synchronously on the UI thread, and notifies delegate of initial route.
 TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionSynchronous) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
   NSError* error = [manager_ configureAudioSession];
   EXPECT_NSEQ(error, nil);
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode, AVAudioSessionModeVoiceChat);
+  EXPECT_NSEQ(session.mode,
+              [manager_ modeForDestination:manager_.outputDestination]);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  ASSERT_NE(route_desc, nil);
 }
 
 // Test that configureAudioSessionWithCompletion: configures the session
 // asynchronously on the task runner and invokes completion on the UI thread.
 TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionWithCompletion) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
   base::test::TestFuture<NSError*> future;
   [manager_ configureAudioSessionWithCompletion:base::CallbackToBlock(
                                                     future.GetCallback())];
@@ -102,7 +164,254 @@ TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionWithCompletion) {
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode, AVAudioSessionModeVoiceChat);
+  EXPECT_NSEQ(session.mode,
+              [manager_ modeForDestination:manager_.outputDestination]);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  ASSERT_NE(route_desc, nil);
+}
+
+// Test that modeForDestination maps speaker to VideoChat (for loudspeaker AEC)
+// and earpiece/external to VoiceChat (for VoIP processing).
+TEST_F(TTCAudioSessionManagerTest, TestModeForDestination) {
+  EXPECT_NSEQ([manager_ modeForDestination:TTCAudioOutputDestination::kSpeaker],
+              AVAudioSessionModeVideoChat);
+  EXPECT_NSEQ(
+      [manager_ modeForDestination:TTCAudioOutputDestination::kEarpiece],
+      AVAudioSessionModeVoiceChat);
+  EXPECT_NSEQ(
+      [manager_ modeForDestination:TTCAudioOutputDestination::kExternal],
+      AVAudioSessionModeVoiceChat);
+}
+
+// Test that categoryOptionsForDestination sets DefaultToSpeaker only for
+// speaker, enables Bluetooth and AirPlay for speaker and external, and omits
+// them for earpiece to force receiver routing.
+TEST_F(TTCAudioSessionManagerTest, TestCategoryOptionsForDestination) {
+  AVAudioSessionCategoryOptions speakerOptions = [manager_
+      categoryOptionsForDestination:TTCAudioOutputDestination::kSpeaker];
+  EXPECT_TRUE((speakerOptions & AVAudioSessionCategoryOptionDefaultToSpeaker) !=
+              0);
+  EXPECT_TRUE(
+      (speakerOptions & AVAudioSessionCategoryOptionAllowBluetoothHFP) != 0);
+  EXPECT_TRUE(
+      (speakerOptions & AVAudioSessionCategoryOptionAllowBluetoothA2DP) != 0);
+  EXPECT_TRUE((speakerOptions & AVAudioSessionCategoryOptionAllowAirPlay) != 0);
+
+  AVAudioSessionCategoryOptions earpieceOptions = [manager_
+      categoryOptionsForDestination:TTCAudioOutputDestination::kEarpiece];
+  EXPECT_EQ(earpieceOptions, 0u);
+
+  AVAudioSessionCategoryOptions externalOptions = [manager_
+      categoryOptionsForDestination:TTCAudioOutputDestination::kExternal];
+  EXPECT_FALSE(
+      (externalOptions & AVAudioSessionCategoryOptionDefaultToSpeaker) != 0);
+  EXPECT_TRUE(
+      (externalOptions & AVAudioSessionCategoryOptionAllowBluetoothHFP) != 0);
+  EXPECT_TRUE(
+      (externalOptions & AVAudioSessionCategoryOptionAllowBluetoothA2DP) != 0);
+  EXPECT_TRUE((externalOptions & AVAudioSessionCategoryOptionAllowAirPlay) !=
+              0);
+}
+
+// Test that setting output destination synchronously updates outputDestination
+// and notifies delegate of route and reconfiguration changes.
+TEST_F(TTCAudioSessionManagerTest, TestSetOutputDestination) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
+  NSError* error = nil;
+  BOOL success =
+      [manager_ setOutputDestination:TTCAudioOutputDestination::kEarpiece
+                               error:&error];
+  EXPECT_TRUE(success);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kEarpiece);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+  ASSERT_NE(route_desc, nil);
+}
+
+// Test that asynchronously setting output destination updates outputDestination
+// and notifies delegate.
+TEST_F(TTCAudioSessionManagerTest, TestSetOutputDestinationAsync) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
+  base::test::TestFuture<BOOL, NSError*> future;
+  [manager_ setOutputDestination:TTCAudioOutputDestination::kEarpiece
+                      completion:base::CallbackToBlock(future.GetCallback())];
+
+  auto [success, error] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_NSEQ(error, nil);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kEarpiece);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+  ASSERT_NE(route_desc, nil);
+}
+
+// Test that setOutputOverriddenToSpeaker transitions between speaker and
+// natural routing.
+TEST_F(TTCAudioSessionManagerTest, TestSetOutputOverriddenToSpeaker) {
+  NSError* error = nil;
+  BOOL success = [manager_ setOutputOverriddenToSpeaker:YES error:&error];
+  EXPECT_TRUE(success);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
+
+  // Transitioning to NO should route to earpiece (when no external device is
+  // connected).
+  success = [manager_ setOutputOverriddenToSpeaker:NO error:&error];
+  EXPECT_TRUE(success);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kEarpiece);
+}
+
+// Test that asynchronously overriding output to speaker updates destination.
+TEST_F(TTCAudioSessionManagerTest, TestSetOutputOverriddenToSpeakerAsync) {
+  base::test::TestFuture<BOOL, NSError*> future;
+  [manager_
+      setOutputOverriddenToSpeaker:YES
+                        completion:base::CallbackToBlock(future.GetCallback())];
+
+  auto [success, error] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_NSEQ(error, nil);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
+
+  base::test::TestFuture<BOOL, NSError*> restore_future;
+  [manager_ setOutputOverriddenToSpeaker:NO
+                              completion:base::CallbackToBlock(
+                                             restore_future.GetCallback())];
+  auto [restore_success, restore_error] = restore_future.Take();
+  EXPECT_TRUE(restore_success);
+  EXPECT_NSEQ(restore_error, nil);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kEarpiece);
+}
+
+// Test that setPreferredInput succeeds and requests reconfiguration.
+TEST_F(TTCAudioSessionManagerTest, TestSetPreferredInput) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
+  NSError* error = nil;
+  BOOL success = [manager_ setPreferredInput:nil error:&error];
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+}
+
+// Test that asynchronously setting preferred input succeeds and notifies
+// delegate.
+TEST_F(TTCAudioSessionManagerTest, TestSetPreferredInputAsync) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange =
+      base::CallbackToBlock(route_future.GetRepeatingCallback());
+
+  base::test::TestFuture<BOOL, NSError*> future;
+  [manager_ setPreferredInput:nil
+                   completion:base::CallbackToBlock(future.GetCallback())];
+
+  auto [success, error] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_NSEQ(error, nil);
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+}
+
+// Test that availableInputs and preferredInput return valid collections and
+// properties.
+TEST_F(TTCAudioSessionManagerTest, TestPortProperties) {
+  NSArray<AVAudioSessionPortDescription*>* inputs = manager_.availableInputs;
+  ASSERT_NE(inputs, nil);
+
+  // preferredInput is nil by default when using system default routing.
+  EXPECT_NSEQ(manager_.preferredInput, nil);
+
+  // Initial destination is either kSpeaker or kExternal.
+  EXPECT_TRUE(
+      manager_.outputDestination == TTCAudioOutputDestination::kSpeaker ||
+      manager_.outputDestination == TTCAudioOutputDestination::kExternal);
+}
+
+// Test that routing and input methods return cancellation errors when
+// disconnected.
+TEST_F(TTCAudioSessionManagerTest, TestRoutingCancelledWhenDisconnected) {
+  [manager_ disconnect];
+
+  NSError* error = nil;
+  BOOL sync_dest_success =
+      [manager_ setOutputDestination:TTCAudioOutputDestination::kSpeaker
+                               error:&error];
+  EXPECT_FALSE(sync_dest_success);
+  ASSERT_NSNE(error, nil);
+  EXPECT_EQ(error.code, static_cast<NSInteger>(
+                            TTCAudioSessionManagerErrorCode::kCancelled));
+
+  base::test::TestFuture<BOOL, NSError*> async_dest_future;
+  [manager_ setOutputDestination:TTCAudioOutputDestination::kSpeaker
+                      completion:base::CallbackToBlock(
+                                     async_dest_future.GetCallback())];
+  auto [async_dest_success, async_dest_error] = async_dest_future.Take();
+  EXPECT_FALSE(async_dest_success);
+  ASSERT_NSNE(async_dest_error, nil);
+  EXPECT_EQ(
+      async_dest_error.code,
+      static_cast<NSInteger>(TTCAudioSessionManagerErrorCode::kCancelled));
+
+  NSError* input_error = nil;
+  BOOL sync_input_success = [manager_ setPreferredInput:nil error:&input_error];
+  EXPECT_FALSE(sync_input_success);
+  ASSERT_NSNE(input_error, nil);
+  EXPECT_EQ(input_error.code, static_cast<NSInteger>(
+                                  TTCAudioSessionManagerErrorCode::kCancelled));
+
+  base::test::TestFuture<BOOL, NSError*> async_input_future;
+  [manager_ setPreferredInput:nil
+                   completion:base::CallbackToBlock(
+                                  async_input_future.GetCallback())];
+  auto [async_input_success, async_input_error] = async_input_future.Take();
+  EXPECT_FALSE(async_input_success);
+  ASSERT_NSNE(async_input_error, nil);
+  EXPECT_EQ(
+      async_input_error.code,
+      static_cast<NSInteger>(TTCAudioSessionManagerErrorCode::kCancelled));
+}
+
+// Test that rapid out-of-order destination changes return cancellation error
+// for superseded requests.
+TEST_F(TTCAudioSessionManagerTest, TestSupersededDestinationChange) {
+  base::test::TestFuture<BOOL, NSError*> first_future;
+  base::test::TestFuture<BOOL, NSError*> second_future;
+
+  [manager_
+      setOutputDestination:TTCAudioOutputDestination::kEarpiece
+                completion:base::CallbackToBlock(first_future.GetCallback())];
+  [manager_
+      setOutputDestination:TTCAudioOutputDestination::kSpeaker
+                completion:base::CallbackToBlock(second_future.GetCallback())];
+
+  auto [first_success, first_error] = first_future.Take();
+  auto [second_success, second_error] = second_future.Take();
+
+  EXPECT_FALSE(first_success);
+  ASSERT_NSNE(first_error, nil);
+  EXPECT_EQ(first_error.code, static_cast<NSInteger>(
+                                  TTCAudioSessionManagerErrorCode::kCancelled));
+
+  EXPECT_TRUE(second_success);
+  EXPECT_NSEQ(second_error, nil);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
 }
 
 // Test that hasHardwareAEC matches the active input port's hardware voice call
@@ -264,17 +573,25 @@ TEST_F(TTCAudioSessionManagerTest, TestDisconnectRemovesInterruptionObserver) {
 // Test that disconnect can be called safely multiple times without errors,
 // and ensures the prior session state is restored.
 TEST_F(TTCAudioSessionManagerTest, TestDisconnectIdempotence) {
+  AVAudioSession* session = [AVAudioSession sharedInstance];
+  NSError* prime_error = nil;
+  [session setCategory:AVAudioSessionCategorySoloAmbient
+                  mode:AVAudioSessionModeDefault
+               options:0
+                 error:&prime_error];
+  ASSERT_NSEQ(prime_error, nil);
+
   NSError* config_error = [manager_ configureAudioSession];
   EXPECT_NSEQ(config_error, nil);
+  EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
 
   [manager_ disconnect];
   [manager_ disconnect];
 
-  AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^{
-        return ![session.category
-            isEqualToString:AVAudioSessionCategoryPlayAndRecord];
+        return [session.category
+            isEqualToString:AVAudioSessionCategorySoloAmbient];
       }));
 }
 
