@@ -16,15 +16,15 @@ namespace network_time {
 
 // Update as follows:
 //
-// curl -i "http://clients2.google.com/time/1/current?cup2key=10:123123123"
+// curl -i \
+//   "http://clients2.google.com/time/1/current?cup2key=ML-DSA-44-10:123123123"
 //
-// where 10 is the key version and 123123123 is the nonce.  Copy the response
+// where 10 is the key version and 123123123 is the nonce. Copy the response
 // and the x-cup-server-proof header into |kGoodTimeResponseBody| and
 // |kGoodTimeResponseServerProofHeader| respectively, and the
 // 'current_time_millis' value of the response into
-// |kGoodTimeResponseHandlerJsTime|.  Do this five times, so that the five
+// |kGoodTimeResponseHandlerJsTime|. Do this five times, so that the five
 // requests appear in order below.
-
 
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {
