@@ -792,10 +792,10 @@ class RasterDecoderImpl final : public RasterDecoder,
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
   void DeletePaintCachePathsINTERNALHelper(
       GLsizei n,
-      const volatile GLuint* paint_cache_ids);
+      const volatile GLuint64* paint_cache_ids);
   void DeletePaintCacheEffectsINTERNALHelper(
       GLsizei n,
-      const volatile GLuint* paint_cache_ids);
+      const volatile GLuint64* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
 
 #if defined(NDEBUG)
@@ -2785,13 +2785,13 @@ class TransferCacheDeserializeHelperImpl final
 
 void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
     GLsizei n,
-    const volatile GLuint* paint_cache_ids) {
+    const volatile GLuint64* paint_cache_ids) {
   paint_cache_->Purge(cc::PaintCacheDataType::kPath, n, paint_cache_ids);
 }
 
 void RasterDecoderImpl::DeletePaintCacheEffectsINTERNALHelper(
     GLsizei n,
-    const volatile GLuint* paint_cache_ids) {
+    const volatile GLuint64* paint_cache_ids) {
   paint_cache_->Purge(cc::PaintCacheDataType::kSkRuntimeEffect, n,
                       paint_cache_ids);
 }

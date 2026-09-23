@@ -300,8 +300,8 @@ void PaintOpReader::Read(SkColor4f* color) {
 }
 
 void PaintOpReader::Read(SkPath* path) {
-  uint32_t path_id;
-  ReadSimple(&path_id);
+  PaintCacheId path_id;
+  Read(&path_id);
   if (!valid_)
     return;
 

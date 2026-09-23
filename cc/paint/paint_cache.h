@@ -38,7 +38,7 @@ namespace cc {
 // since it avoids the need for cross-process ref-counting required by the
 // TransferCache.
 
-using PaintCacheId = uint32_t;
+using PaintCacheId = uint64_t;
 using PaintCacheIds = std::vector<PaintCacheId>;
 enum class PaintCacheDataType : uint32_t {
   kPath,

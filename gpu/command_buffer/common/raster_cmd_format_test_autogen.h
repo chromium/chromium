@@ -73,12 +73,12 @@ TEST_F(RasterFormatTest, DeleteQueriesEXTImmediate) {
   void* next_cmd = cmd.Set(&cmd, static_cast<GLsizei>(std::size(ids)), ids);
   EXPECT_EQ(static_cast<uint32_t>(cmds::DeleteQueriesEXTImmediate::kCmdId),
             cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * 4u),
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * sizeof(GLuint)),
             cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);
   CheckBytesWrittenMatchesExpectedSize(
-      next_cmd,
-      sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) *
+                                                           sizeof(GLuint)));
   EXPECT_EQ(0,
             UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
@@ -256,7 +256,7 @@ TEST_F(RasterFormatTest, UnlockTransferCacheEntryINTERNAL) {
 }
 
 TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNALImmediate) {
-  static GLuint ids[] = {
+  static GLuint64 ids[] = {
       12,
       23,
       34,
@@ -267,12 +267,13 @@ TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNALImmediate) {
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::DeletePaintCachePathsINTERNALImmediate::kCmdId),
             cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * 4u),
-            cmd.header.size * 4u);
+  EXPECT_EQ(
+      sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * sizeof(GLuint64)),
+      cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);
   CheckBytesWrittenMatchesExpectedSize(
-      next_cmd,
-      sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) *
+                                                           sizeof(GLuint64)));
   EXPECT_EQ(0,
             UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
@@ -293,7 +294,7 @@ TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNAL) {
 }
 
 TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNALImmediate) {
-  static GLuint ids[] = {
+  static GLuint64 ids[] = {
       12,
       23,
       34,
@@ -304,12 +305,13 @@ TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNALImmediate) {
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::DeletePaintCacheEffectsINTERNALImmediate::kCmdId),
             cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * 4u),
-            cmd.header.size * 4u);
+  EXPECT_EQ(
+      sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * sizeof(GLuint64)),
+      cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);
   CheckBytesWrittenMatchesExpectedSize(
-      next_cmd,
-      sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) *
+                                                           sizeof(GLuint64)));
   EXPECT_EQ(0,
             UNSAFE_TODO(memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids))));
 }
