@@ -230,6 +230,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
       FillingProduct filling_product,
       const HatsSurveyStringData& field_filling_stats_data) final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
+  void TriggerPersonalizationAndTrustSurveys(
+      FillingProduct filling_product,
+      const HatsSurveyStringData& field_filling_stats_data) final;
   void TriggerAutofillAiFillingJourneySurvey(
       bool suggestion_accepted,
       EntityType entity_type,

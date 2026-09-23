@@ -958,6 +958,14 @@ BASE_FEATURE(kAutofillPageLanguageDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/354175563): Remove when launched.
 BASE_FEATURE(kAutofillPaymentsFieldSwapping, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the user may be prompted a HaTS survey about the personalization
+// experience and the perceived trust they have in the features.
+// TODO(crbug.com/543741063): Transform to killswitch after some time.
+BASE_FEATURE(kAutofillPersonalizationAndTrustAddressSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin
 // while the credit card number and CVC are in iframes hosted by a payment

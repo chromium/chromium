@@ -1015,6 +1015,48 @@ void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 #endif
 }
 
+void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
+    FillingProduct filling_product,
+    const HatsSurveyStringData& field_filling_stats_data) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  const std::string hats_trigger = [filling_product]() {
+    switch (filling_product) {
+      case FillingProduct::kAddress:
+        return kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled;
+      case FillingProduct::kAutofillAi:
+        return kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled;
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kPassword:
+      case FillingProduct::kOneTimePassword:
+      case FillingProduct::kAtMemory:
+      case FillingProduct::kNone:
+      case FillingProduct::kMerchantPromoCode:
+      case FillingProduct::kPasskey:
+      case FillingProduct::kDataList:
+      case FillingProduct::kIban:
+      case FillingProduct::kAutocomplete:
+      case FillingProduct::kCompose:
+      case FillingProduct::kLoyaltyCard:
+      case FillingProduct::kIdentityCredential:
+        NOTREACHED();
+    }
+    NOTREACHED();
+  }();
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      hats_trigger, web_contents(),
+      /*timeout_ms=*/5000,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/field_filling_stats_data);
+}
+
 void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
     bool suggestion_accepted,
     EntityType entity_type,

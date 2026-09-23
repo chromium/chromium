@@ -717,6 +717,12 @@ class AutofillClient {
   // Triggers a survey to ask the user why they declined saving an address.
   virtual void TriggerDeclinedSaveAddressReasonSurvey();
 
+  // Triggers a survey to ask the user about their experience regarding
+  // personalization features in Chrome.
+  virtual void TriggerPersonalizationAndTrustSurveys(
+      FillingProduct filling_product,
+      const HatsSurveyStringData& field_filling_stats_data);
+
   // Triggers a survey after the user sees an Autofill AI suggestion and submits
   // a form. The triggering happens only if the uses sees an Autofill AI
   // suggestion, regardless of whether they accepted it or not.

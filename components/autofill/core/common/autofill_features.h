@@ -364,6 +364,10 @@ BASE_DECLARE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillPageLanguageDetection);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillPaymentsFieldSwapping);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustAddressSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPolicyControlledFeatureAutofill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPolicyControlledFeatureManualText);

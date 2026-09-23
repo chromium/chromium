@@ -114,6 +114,10 @@ extern const char kHatsSurveyTriggerSuspiciousSiteWarning[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 extern const char kHatsSurveyTriggerAutofillAiFilling[];
+extern const char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[];
+extern const char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled[];
 extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPrivacySandboxActSurvey[];
 extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[];

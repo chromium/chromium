@@ -318,6 +318,12 @@ void AutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerPersonalizationAndTrustSurveys(
+    FillingProduct filling_product,
+    const HatsSurveyStringData& field_filling_stats_data) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
     bool suggestion_accepted,
     EntityType entity_type,

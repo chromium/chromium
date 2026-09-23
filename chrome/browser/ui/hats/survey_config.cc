@@ -213,6 +213,15 @@ constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsSurveyTriggerAutofillAiFilling[] = "autofill-ai-filling";
+constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[] =
+        "autofill-personalization-and-trust-address-filled";
+// This survey is a requirement for the Ambient Autofill feature to allow users
+// to provide feedback and should not be removed without legal approval. Its
+// PSDs must allow to see if Ambient Autofill (pContext record type) was used.
+constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled[] =
+        "autofill-personalization-and-trust-autofill-ai-filled";
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
@@ -526,6 +535,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerAutofillPasswordUserPerception,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"Filling assistance"});
+
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,
                               kHatsSurveyTriggerAutofillAddress);
   survey_configs.emplace_back(&features::kAutofillCardSurvey,
@@ -968,6 +978,44 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{"User accepted suggestion"},
       std::vector<std::string>{"Entity type", "Triggering field types",
                                "Saved entities"});
+
+  const std::vector<std::string>
+      autofill_personalization_and_trust_product_specific_data = {
+          // Comma-separated list of all field types in the submitted form. The
+          // types are sent in canonical order with duplicates removed.
+          "All field types",
+
+          "Total number of fields in form",
+          "Number of correctly filled fields",
+          "Number of fields that were submitted empty without filling",
+          "Number of fields that were modified after filling",
+          "Number of fields that were cleared after filling",
+          "Number of fields that were manually filled without filling",
+
+          // Comma-separated list of the filling products that were used on the
+          // fields of the submitted form. The list is in canonical order with
+          // duplicates removed.
+          "Filling products used",
+          // For each filling using AutofillAi, the kind of record that was used
+          // (local, wallet, personal context).
+          "AutofillAi entity record types used",
+          // For each filling using AutofillAi, the entity type that was filled.
+          "AutofillAi entity types used",
+          // Time between form submission and the last Autofill use, in seconds.
+          "Time since last Autofill use",
+      };
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillPersonalizationAndTrustAddressSurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      autofill_personalization_and_trust_product_specific_data);
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillPersonalizationAndTrustAutofillAiSurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      autofill_personalization_and_trust_product_specific_data);
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
