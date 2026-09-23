@@ -318,12 +318,8 @@ void ContextualTasksExtensionHandler::GetCyclingPlaceholderConfig(
 }
 void ContextualTasksExtensionHandler::GetRecentTabs(
     GetRecentTabsCallback callback) {
-  content::WebContents* host_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
-  auto* browser_window_interface =
-      host_contents ? webui::GetBrowserWindowInterface(host_contents) : nullptr;
-  std::move(callback).Run(
-      ContextualSearchboxHandler::GetRecentTabInfos(browser_window_interface));
+  std::move(callback).Run(ContextualSearchboxHandler::GetRecentTabInfos(
+      GetBrowserWindowInterface()));
 }
 void ContextualTasksExtensionHandler::GetTabPreview(
     int32_t tab_id,
@@ -450,23 +446,18 @@ void ContextualTasksExtensionHandler::PostSearchMessage(
   }
 }
 
-content::WebContents* ContextualTasksExtensionHandler::GetActiveTabWebContents()
-    const {
+BrowserWindowInterface*
+ContextualTasksExtensionHandler::GetBrowserWindowInterface() const {
   content::WebContents* host_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!host_contents) {
     return nullptr;
   }
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(host_contents);
-  if (!browser_window_interface) {
-    return nullptr;
-  }
-  auto* active_tab = browser_window_interface->GetActiveTabInterface();
-  if (!active_tab) {
-    return nullptr;
-  }
-  return active_tab->GetContents();
+  // Retrieve the browser window via TabInterface when hosted in a tab, or via
+  // WebUI embedding context when hosted in the side panel.
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(host_contents);
+  return tab ? tab->GetBrowserWindowInterface()
+             : webui::GetBrowserWindowInterface(host_contents);
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -514,12 +505,16 @@ ContextualTasksExtensionHandler::GetActiveTabContextId() {
     return std::nullopt;
   }
 
-  content::WebContents* active_tab_contents = GetActiveTabWebContents();
-  if (!active_tab_contents) {
+  auto* browser_window_interface = GetBrowserWindowInterface();
+  if (!browser_window_interface) {
+    return std::nullopt;
+  }
+  auto* active_tab = browser_window_interface->GetActiveTabInterface();
+  if (!active_tab || !active_tab->GetContents()) {
     return std::nullopt;
   }
   SessionID active_tab_id =
-      sessions::SessionTabHelper::IdForTab(active_tab_contents);
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
   if (!active_tab_id.is_valid()) {
     return std::nullopt;
   }
@@ -557,11 +552,15 @@ ContextualTasksExtensionHandler::GetLensOverlayToken() {
 #if !BUILDFLAG(IS_ANDROID)
 LensSearchController* ContextualTasksExtensionHandler::GetLensSearchController()
     const {
-  content::WebContents* active_tab_contents = GetActiveTabWebContents();
-  if (!active_tab_contents) {
+  auto* browser_window_interface = GetBrowserWindowInterface();
+  if (!browser_window_interface) {
     return nullptr;
   }
-  return LensSearchController::FromTabWebContents(active_tab_contents);
+  auto* active_tab = browser_window_interface->GetActiveTabInterface();
+  if (!active_tab || !active_tab->GetContents()) {
+    return nullptr;
+  }
+  return LensSearchController::FromTabWebContents(active_tab->GetContents());
 }
 #endif
 
@@ -571,13 +570,9 @@ void ContextualTasksExtensionHandler::InitializeInputStateModel() {
     return;
   }
 
-  content::WebContents* active_tab_contents = GetActiveTabWebContents();
-  if (active_tab_contents) {
-    Profile* profile =
-        Profile::FromBrowserContext(active_tab_contents->GetBrowserContext());
-    if (profile) {
-      input_state_model_->SetPrefService(profile->GetPrefs());
-    }
+  auto* browser_context = render_frame_host().GetBrowserContext();
+  if (auto* profile = Profile::FromBrowserContext(browser_context)) {
+    input_state_model_->SetPrefService(profile->GetPrefs());
   }
 
   input_state_subscription_ = input_state_model_->subscribe(
@@ -599,19 +594,20 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
   if (!session_handle) {
     return nullptr;
   }
-  content::WebContents* active_tab_contents = GetActiveTabWebContents();
-  if (!active_tab_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
     return nullptr;
   }
   auto* user_data =
       contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
-          active_tab_contents);
+          web_contents);
   if (!user_data) {
     contextual_tasks::ContextualTasksWebContentsUserData::CreateForWebContents(
-        active_tab_contents);
+        web_contents);
     user_data =
         contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
-            active_tab_contents);
+            web_contents);
   }
   return user_data->GetOrCreateInputStateModel(*session_handle);
 }

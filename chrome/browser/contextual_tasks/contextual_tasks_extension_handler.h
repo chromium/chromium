@@ -235,7 +235,7 @@ class ContextualTasksExtensionHandler
   explicit ContextualTasksExtensionHandler(content::RenderFrameHost* rfh);
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  content::WebContents* GetActiveTabWebContents() const;
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
 
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
