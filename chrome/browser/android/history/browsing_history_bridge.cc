@@ -13,10 +13,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
@@ -28,10 +32,28 @@ inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
     const std::vector<int64_t>& vec) {
   return ScopedJavaLocalRef<jobject>(ToJniArray(env, vec));
 }
+
+// Declared before `BrowsingHistoryBridge_jni.h`, which instantiates it, and
+// defined after it because the implementation calls
+// `Java_BrowsingHistoryBridge_createClientInfo` from that header.
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<syncer::DeviceInfo>(
+    JNIEnv* env,
+    const syncer::DeviceInfo& device);
 }  // namespace jni_zero
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
+
+namespace jni_zero {
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<syncer::DeviceInfo>(
+    JNIEnv* env,
+    const syncer::DeviceInfo& device) {
+  return Java_BrowsingHistoryBridge_createClientInfo(
+      env, std::vector<std::string>{device.guid()}, device.client_name());
+}
+}  // namespace jni_zero
 
 using history::BrowsingHistoryService;
 
@@ -63,7 +85,8 @@ void BrowsingHistoryBridge::QueryHistory(
     const JavaRef<jobject>& j_result_obj,
     const std::u16string& query,
     const std::optional<std::string>& app_id,
-    const std::optional<std::string>& hostname_suffix) {
+    const std::optional<std::string>& hostname_suffix,
+    const std::optional<std::string>& client_id) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
@@ -76,6 +99,9 @@ void BrowsingHistoryBridge::QueryHistory(
   options.app_id = app_id;
   if (hostname_suffix.has_value()) {
     options.hostname_suffix = *hostname_suffix;
+  }
+  if (client_id.has_value()) {
+    options.client_ids.push_back(*client_id);
   }
   browsing_history_service_->QueryHistory(query, options);
 }
@@ -93,20 +119,26 @@ void BrowsingHistoryBridge::QueryHistoryContinuation(
   std::move(query_history_continuation_).Run();
 }
 
-void BrowsingHistoryBridge::GetAllAppIds(JNIEnv* env,
-                                         const JavaRef<jobject>& j_result_obj) {
-  j_app_ids_result_obj_.Reset(env, j_result_obj);
+void BrowsingHistoryBridge::GetAllAppIds() {
   browsing_history_service_->GetAllAppIds();
+}
+
+std::vector<const syncer::DeviceInfo*> BrowsingHistoryBridge::GetAllClients() {
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
+  if (device_info_sync_service &&
+      device_info_sync_service->GetDeviceInfoTracker()) {
+    return device_info_sync_service->GetDeviceInfoTracker()
+        ->GetAllChromeDeviceInfo();
+  }
+  return {};
 }
 
 void BrowsingHistoryBridge::OnGetAllAppIds(
     const std::vector<std::string>& app_ids) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  for (const std::string& id : app_ids) {
-    Java_BrowsingHistoryBridge_addAppIdToList(env, j_app_ids_result_obj_, id);
-  }
   Java_BrowsingHistoryBridge_onQueryAppsComplete(env, j_history_service_obj_,
-                                                 j_app_ids_result_obj_);
+                                                 app_ids);
 }
 
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(

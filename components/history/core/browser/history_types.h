@@ -1069,10 +1069,10 @@ struct DuplicateClusterVisit {
   VisitID visit_id = 0;
 
   // Not persisted; derived from visit_id.
-  GURL url = {};
+  GURL url;
 
   // Not persisted; derived from visit_id.
-  base::Time visit_time = {};
+  base::Time visit_time;
 };
 
 // An `AnnotatedVisit` associated with some other metadata from clustering.

@@ -6,13 +6,37 @@ package org.chromium.chrome.browser.history;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Provides methods needed for querying and managing browsing history. */
 @NullMarked
 public interface HistoryProvider {
+    /** Information about a synced client device. */
+    class ClientInfo {
+        public final List<String> clientIds;
+        public final String name;
+
+        public ClientInfo(List<String> clientIds, String name) {
+            this.clientIds = clientIds;
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ClientInfo)) return false;
+            ClientInfo that = (ClientInfo) o;
+            return Objects.equals(clientIds, that.clientIds) && Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clientIds, name);
+        }
+    }
+
     /** Observer to be notified of browsing history events. */
     interface BrowsingHistoryObserver {
         /**
@@ -47,28 +71,36 @@ public interface HistoryProvider {
          * @param items The list of app IDs.
          */
         void onQueryAppsComplete(List<String> items);
+
+        /**
+         * Called after {@link BrowsingHistoryBridge#queryClients()} is complete.
+         *
+         * @param items The list of synced client devices.
+         */
+        default void onQueryClientsComplete(List<ClientInfo> items) {}
     }
 
     /** Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events. */
     void setObserver(BrowsingHistoryObserver observer);
 
     /**
-     * Query browsing history. Only one query may be in-flight at any time. See
-     * BrowsingHistoryService::QueryHistory.
+     * Query browsing history with default {@link QueryOptions}. Only one query may be in-flight at
+     * any time. See BrowsingHistoryService::QueryHistory.
      *
      * @param query The query search text. May be empty.
-     * @param appId The package name of the app to filter the query result visited by CCT. Can be
-     *     null for the results visited by BrApp.
      */
-    void queryHistory(String query, @Nullable String appId);
+    default void queryHistory(String query) {
+        queryHistory(query, new QueryOptions());
+    }
 
     /**
-     * Query browsing history for a particular host. Only one query may be in-flight at any time.
-     * See BrowsingHistoryService::QueryHistory.
+     * Query browsing history with {@link QueryOptions}. Only one query may be in-flight at any
+     * time. See BrowsingHistoryService::QueryHistory.
      *
-     * @param hostName The host name.
+     * @param query The query search text. May be empty.
+     * @param options The {@link QueryOptions} for querying browsing history.
      */
-    void queryHistoryForHost(String hostName);
+    void queryHistory(String query, QueryOptions options);
 
     /**
      * Fetches more results using the previous query's text, only valid to call after queryHistory
@@ -78,6 +110,9 @@ public interface HistoryProvider {
 
     /** Fetches all the app IDs used in the database. */
     void queryApps();
+
+    /** Fetches all synced client devices. */
+    void queryClients();
 
     /**
      * Gets the last time any webpage on the given host was visited, excluding the last navigation

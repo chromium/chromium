@@ -41,20 +41,10 @@ public class StubbedHistoryProvider implements HistoryProvider {
     }
 
     @Override
-    public void queryHistory(String query, String appId) {
-        mHostOnly = false;
-        query(query);
-    }
-
-    @Override
-    public void queryHistoryForHost(String hostName) {
-        mHostOnly = true;
-        query(hostName);
-    }
-
-    private void query(String query) {
+    public void queryHistory(String query, QueryOptions options) {
+        mHostOnly = options.hostName != null;
         mLastQueryEndPosition = 0;
-        mLastQuery = query;
+        mLastQuery = mHostOnly ? options.hostName : query;
         queryHistoryContinuation();
     }
 
@@ -108,6 +98,9 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public boolean isQueryAppsTriggered() {
         return mQueryAppsTriggered;
     }
+
+    @Override
+    public void queryClients() {}
 
     @Override
     public void getLastVisitToHostBeforeRecentNavigations(

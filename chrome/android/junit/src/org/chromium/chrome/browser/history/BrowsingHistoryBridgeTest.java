@@ -161,4 +161,25 @@ public class BrowsingHistoryBridgeTest {
         assertArrayEquals(primaryTimestamps, allTimestamps.get(primaryUrl));
         assertArrayEquals(secondaryTimestamps, allTimestamps.get(secondaryUrl));
     }
+
+    @Test
+    public void testQueryHistoryWithOptions() {
+        QueryOptions options = new QueryOptions("org.chromium.app", "example.com", "client_123");
+        mBrowsingHistoryBridge.queryHistory("search query", options);
+
+        verify(mNativeMocks)
+                .queryHistory(
+                        anyLong(),
+                        any(),
+                        eq("search query"),
+                        eq("org.chromium.app"),
+                        eq("example.com"),
+                        eq("client_123"));
+    }
+
+    @Test
+    public void testQueryClients() {
+        mBrowsingHistoryBridge.queryClients();
+        verify(mNativeMocks).getAllClients(anyLong());
+    }
 }

@@ -344,8 +344,7 @@ public class TabSearchOverlayTest {
                         @Override
                         public void onQueryAppsComplete(List<String> items) {}
                     });
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> historyBridge.queryHistory("one.html", /* appId= */ null));
+            ThreadUtils.runOnUiThreadBlocking(() -> historyBridge.queryHistory("one.html"));
             helper.waitForNext();
         } finally {
             ThreadUtils.runOnUiThreadBlocking(historyBridge::destroy);

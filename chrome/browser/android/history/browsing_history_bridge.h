@@ -16,6 +16,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 
+namespace syncer {
+class DeviceInfo;
+}
+
 using base::android::JavaRef;
 
 // The bridge for fetching browsing history information for the Android
@@ -36,12 +40,15 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
                     const JavaRef<jobject>& j_result_obj,
                     const std::u16string& query,
                     const std::optional<std::string>& app_id,
-                    const std::optional<std::string>& hostname_suffix);
+                    const std::optional<std::string>& hostname_suffix,
+                    const std::optional<std::string>& client_id);
 
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaRef<jobject>& j_result_obj);
 
-  void GetAllAppIds(JNIEnv* env, const JavaRef<jobject>& j_result_obj);
+  void GetAllAppIds();
+
+  std::vector<const syncer::DeviceInfo*> GetAllClients();
 
   void GetLastVisitToHostBeforeRecentNavigations(
       const std::string& host_name,
@@ -80,7 +87,6 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
   base::android::ScopedJavaGlobalRef<jobject> j_history_service_obj_;
   base::android::ScopedJavaGlobalRef<jobject> j_query_result_obj_;
-  base::android::ScopedJavaGlobalRef<jobject> j_app_ids_result_obj_;
 
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove_;
 

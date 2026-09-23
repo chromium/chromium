@@ -107,7 +107,7 @@ public class IncognitoHistoryLeakageTest {
                     BrowsingHistoryBridge historyService = new BrowsingHistoryBridge(profile);
                     historyService.setObserver(historyObserver);
                     String historyQueryFilter = "";
-                    historyService.queryHistory(historyQueryFilter, null);
+                    historyService.queryHistory(historyQueryFilter);
                 });
         historyObserver.getQueryCallback().waitForCallback(0);
         return historyObserver.getHistoryQueryResults();

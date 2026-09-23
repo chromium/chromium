@@ -158,11 +158,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
-        if (mHostName != null) {
-            mHistoryProvider.queryHistoryForHost(mHostName);
-        } else {
-            mHistoryProvider.queryHistory(mQueryText, mAppId);
-        }
+        mHistoryProvider.queryHistory(
+                mQueryText, new QueryOptions(mAppId, mHostName, /* clientId= */ null));
     }
 
     void onSearchStart() {
@@ -218,7 +215,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         onSearchStart();
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
-        mHistoryProvider.queryHistory(mQueryText, mAppId);
+        mHistoryProvider.queryHistory(mQueryText, new QueryOptions(mAppId, null, null));
     }
 
     /** Called when a search is ended. */

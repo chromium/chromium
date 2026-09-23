@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
@@ -47,15 +48,15 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @Override
-    public void queryHistory(String query, @Nullable String appId) {
+    public void queryHistory(String query, QueryOptions options) {
         BrowsingHistoryBridgeJni.get()
-                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), query, appId, null);
-    }
-
-    @Override
-    public void queryHistoryForHost(String hostName) {
-        BrowsingHistoryBridgeJni.get()
-                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), "", null, hostName);
+                .queryHistory(
+                        mNativeHistoryBridge,
+                        new ArrayList<>(),
+                        query,
+                        options.appId,
+                        options.hostName,
+                        options.clientId);
     }
 
     @Override
@@ -66,12 +67,22 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
     @Override
     public void queryApps() {
-        BrowsingHistoryBridgeJni.get().getAllAppIds(mNativeHistoryBridge, new ArrayList<>());
+        BrowsingHistoryBridgeJni.get().getAllAppIds(mNativeHistoryBridge);
+        // Native will call onQueryAppsComplete asynchronously.
+    }
+
+    @Override
+    public void queryClients() {
+        List<ClientInfo> clients =
+                BrowsingHistoryBridgeJni.get().getAllClients(mNativeHistoryBridge);
+        if (mObserver != null) mObserver.onQueryClientsComplete(clients);
     }
 
     @CalledByNative
-    public static void addAppIdToList(List<String> items, @JniType("std::string") String appId) {
-        items.add(appId);
+    public static ClientInfo createClientInfo(
+            @JniType("std::vector<std::string>") List<String> clientIds,
+            @JniType("std::string") String clientName) {
+        return new ClientInfo(clientIds, clientName);
     }
 
     @Override
@@ -146,7 +157,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @CalledByNative
-    public void onQueryAppsComplete(List<String> items) {
+    public void onQueryAppsComplete(@JniType("std::vector<std::string>") List<String> items) {
         if (mObserver != null) mObserver.onQueryAppsComplete(items);
     }
 
@@ -186,7 +197,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 List<HistoryItem> historyItems,
                 @JniType("std::u16string") String query,
                 @JniType("std::optional<std::string>") @Nullable String appId,
-                @JniType("std::optional<std::string>") @Nullable String hostnameSuffix);
+                @JniType("std::optional<std::string>") @Nullable String hostnameSuffix,
+                @JniType("std::optional<std::string>") @Nullable String clientId);
 
         void queryHistoryContinuation(
                 long nativeBrowsingHistoryBridge, List<HistoryItem> historyItems);
@@ -204,6 +216,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
         void removeItems(long nativeBrowsingHistoryBridge);
 
-        void getAllAppIds(long nativeBrowsingHistoryBridge, List<String> appIds);
+        void getAllAppIds(long nativeBrowsingHistoryBridge);
+
+        @JniType("std::vector<const syncer::DeviceInfo*>")
+        List<ClientInfo> getAllClients(long nativeBrowsingHistoryBridge);
     }
 }

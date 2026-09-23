@@ -774,6 +774,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/history/HistoryPane.java",
   "java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
   "java/src/org/chromium/chrome/browser/history/HistoryUmaRecorder.java",
+  "java/src/org/chromium/chrome/browser/history/QueryOptions.java",
   "java/src/org/chromium/chrome/browser/homepage/HomepageManager.java",
   "java/src/org/chromium/chrome/browser/homepage/HomepagePolicyManager.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/HomepageMetricsEnums.java",

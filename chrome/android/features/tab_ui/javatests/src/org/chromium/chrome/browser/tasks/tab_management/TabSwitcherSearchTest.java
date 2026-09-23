@@ -581,7 +581,7 @@ public class TabSwitcherSearchTest {
                     @Override
                     public void onQueryAppsComplete(List<String> items) {}
                 });
-        runOnUiThreadBlocking(() -> historyBridge.queryHistory("one.html", /* appId= */ null));
+        runOnUiThreadBlocking(() -> historyBridge.queryHistory("one.html"));
         helper.waitForNext();
 
         tabSwitcherSearchStation.typeInOmnibox("One");

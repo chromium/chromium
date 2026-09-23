@@ -721,6 +721,7 @@ if (is_android) {
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser/android",
+      "//components/sync_device_info",
       "//components/sync_preferences/synced_set_up/android",
       "//components/sync_preferences/synced_set_up/android:jni_headers",
       "//components/tabs:impl",

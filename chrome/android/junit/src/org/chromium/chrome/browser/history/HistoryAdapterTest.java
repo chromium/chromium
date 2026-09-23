@@ -641,7 +641,7 @@ public class HistoryAdapterTest {
 
         mAdapter.search("query");
 
-        Mockito.verify(mockProvider).queryHistory("query", null);
+        Mockito.verify(mockProvider).queryHistory("query", new QueryOptions());
         // While the query is ongoing, no more items can be loaded.
         Assert.assertFalse(mAdapter.canLoadMoreItems());
 
