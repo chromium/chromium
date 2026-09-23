@@ -52,6 +52,9 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
 
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_RIGHT_MOUSE_BUTTON);
+
   SetPreferredSize(gfx::Size(width, height));
   SetBackground(views::CreateRoundedRectBackground(
       kColorAppMenuBlockButtonBackground, corner_radius));

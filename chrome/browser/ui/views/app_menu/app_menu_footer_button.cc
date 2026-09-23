@@ -17,6 +17,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -53,6 +54,9 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_RIGHT_MOUSE_BUTTON);
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
