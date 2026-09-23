@@ -1111,6 +1111,35 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void popupMoreOptionsButton_themedWithColorScheme_incognitoAndDefault() {
+        Activity activity = mActivityController.get();
+        TextView moreOptionsText =
+                mViewHolder.popup.mMoreOptionsButton.findViewById(R.id.action_text);
+        ImageView moreOptionsEndIcon =
+                mViewHolder.popup.mMoreOptionsButton.findViewById(R.id.end_icon);
+
+        // Verify non-incognito default theme.
+        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                activity.getColorStateList(R.color.default_text_color_list),
+                moreOptionsText.getTextColors());
+        assertEquals(
+                OmniboxResourceProvider.getSecondaryIconTintList(
+                        activity, BrandedColorScheme.APP_DEFAULT),
+                moreOptionsEndIcon.getImageTintList());
+
+        // Verify incognito theme.
+        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        assertEquals(
+                activity.getColorStateList(R.color.default_text_color_light_list),
+                moreOptionsText.getTextColors());
+        assertEquals(
+                OmniboxResourceProvider.getSecondaryIconTintList(
+                        activity, BrandedColorScheme.INCOGNITO),
+                moreOptionsEndIcon.getImageTintList());
+    }
+
+    @Test
     public void bind_popupToolButtons_withAccordion() {
         OmniboxFeatures.setUseAccordionForTesting(true);
 

@@ -613,6 +613,14 @@ class FuseboxViewBinder {
         @StyleRes
         int smallTextAppearance =
                 OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
+
+        themeButton(
+                popup.mMoreOptionsButton,
+                textAppearance,
+                smallTextAppearance,
+                iconTint,
+                iconBackgroundTint);
+
         for (View button : popup.mAttachmentButtons) {
             themeButton(button, textAppearance, smallTextAppearance, iconTint, iconBackgroundTint);
         }
