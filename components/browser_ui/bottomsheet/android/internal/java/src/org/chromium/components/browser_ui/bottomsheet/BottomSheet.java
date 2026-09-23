@@ -221,6 +221,14 @@ class BottomSheet extends BottomSheetView
 
         mModel = buildModel();
         mMediator = new BottomSheetMediator(mModel);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        // Bind only once the child views exist. super.onFinishInflate() is what assigns
+        // mCloseButton; binding any earlier makes every setter in BottomSheetView no-op against its
+        // null guard, silently dropping properties that buildModel() pre-set.
         PropertyModelChangeProcessor.create(mModel, this, BottomSheetViewBinder::bind);
     }
 

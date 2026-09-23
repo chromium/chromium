@@ -1197,6 +1197,35 @@ public class BottomSheetUnitTest {
     }
 
     @Test
+    public void testCloseButtonClick_DismissesWithCloseButtonReason() {
+        BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 1000);
+        BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f);
+        // A close button is only offered for non-modal popup content.
+        doReturn(true).when(content).hasCustomScrimLifecycle();
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.FULL, false);
+
+        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        assertEquals(
+                "Non-modal popup content must offer a close button.",
+                View.VISIBLE,
+                closeButton.getVisibility());
+
+        sheet.addObserver(mBottomSheetObserver);
+        closeButton.performClick();
+        // The listener animates to HIDDEN, so the sheet parks in SCROLLING until the
+        // animation ends; the terminal state and observer callback only land on end.
+        sheet.endAnimations();
+
+        assertEquals(
+                "The close button must dismiss the sheet outright.",
+                SheetState.HIDDEN,
+                sheet.getSheetState());
+        verify(mBottomSheetObserver)
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.CLOSE_BUTTON);
+    }
+
+    @Test
     public void testSmallFormFactorUi_CloseButtonAlwaysHidden() {
         BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ false);
 
