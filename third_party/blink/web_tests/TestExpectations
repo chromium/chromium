@@ -943,6 +943,7 @@ crbug.com/1168277 external/wpt/css/css-counter-styles/counter-style-at-rule/disc
 crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 
 # May fail because scroll-axis-lock does not propagate to the viewport.
+crbug.com/561877895 external/wpt/css/css-overflow/scroll-axis-lock-none-touch-subframe.html [ Pass Failure ]
 crbug.com/561877895 external/wpt/css/css-overflow/scroll-axis-lock-none-touch-viewport.html [ Pass Failure ]
 
 # CSS Grid Lanes failing tests

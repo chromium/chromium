@@ -116,8 +116,9 @@ async function waitForScrollReset(test, scroller, x = 0, y = 0) {
     if (scroller.scrollLeft == x && scroller.scrollTop == y) {
       resolve();
     } else {
-      const eventTarget =
-        scroller == document.scrollingElement ? document : scroller;
+      const eventTarget = scroller == scroller.ownerDocument.scrollingElement ?
+          scroller.ownerDocument :
+          scroller;
       scroller.scrollTo(x, y);
       waitForScrollendEventNoTimeout(eventTarget).then(resolve);
     }
