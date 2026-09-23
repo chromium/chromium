@@ -185,7 +185,7 @@ OfflineAudioContext::OfflineAudioContext(LocalDOMWindow* window,
                        render_quantum_frames),
       total_render_frames_(number_of_frames) {
   destination_node_ = OfflineAudioDestinationNode::Create(
-      this, number_of_channels, number_of_frames, sample_rate);
+      this, number_of_channels, sample_rate);
   Initialize();
 }
 
@@ -264,14 +264,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     return EmptyPromise();
   }
 
-  DestinationHandler().InitializeOfflineRenderThread(render_target);
-  if (HasAllocationFailed()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The offline audio context could not be initialized due to memory "
-        "limitations.");
-    return EmptyPromise();
-  }
+  DestinationHandler().EnsureOfflineRenderThreadInitialized();
+  DestinationHandler().SetSharedRenderTarget(render_target);
 
   // Start rendering and return the promise.
   is_rendering_started_ = true;

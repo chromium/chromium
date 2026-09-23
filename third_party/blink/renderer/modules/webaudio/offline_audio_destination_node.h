@@ -41,12 +41,10 @@ class OfflineAudioDestinationNode final : public AudioDestinationNode {
  public:
   static OfflineAudioDestinationNode* Create(BaseAudioContext*,
                                              unsigned number_of_channels,
-                                             uint32_t frames_to_process,
                                              float sample_rate);
 
   OfflineAudioDestinationNode(BaseAudioContext&,
                               unsigned number_of_channels,
-                              uint32_t frames_to_process,
                               float sample_rate);
 
   AudioBuffer* DestinationBuffer() const { return destination_buffer_.Get(); }

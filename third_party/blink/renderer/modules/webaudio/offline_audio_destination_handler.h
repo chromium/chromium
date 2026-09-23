@@ -18,14 +18,12 @@ namespace blink {
 
 class BaseAudioContext;
 class AudioBus;
-class OfflineAudioContext;
 
 class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
  public:
   static scoped_refptr<OfflineAudioDestinationHandler> Create(
       AudioNode&,
       unsigned number_of_channels,
-      uint32_t frames_to_process,
       float sample_rate);
   ~OfflineAudioDestinationHandler() override;
 
@@ -50,11 +48,13 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   double SampleRate() const override { return sample_rate_; }
 
-  // This is called when rendering of the offline context is started
-  // which will save the rendered audio data in `render_target`.  This
-  // allows creation of the AudioBuffer when startRendering is called
-  // instead of when the OfflineAudioContext is created.
-  void InitializeOfflineRenderThread(AudioBuffer* render_target);
+  // Ensures the render task runner is initialized before rendering starts.
+  void EnsureOfflineRenderThreadInitialized();
+
+  // Sets the destination buffer for the next render. Must be called on the
+  // main thread before `StartRendering()` and never while a render is in
+  // flight. `render_target` must have `number_of_channels_` channels.
+  void SetSharedRenderTarget(AudioBuffer* render_target);
 
   unsigned NumberOfChannels() const { return number_of_channels_; }
 
@@ -63,7 +63,6 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
  private:
   OfflineAudioDestinationHandler(AudioNode&,
                                  unsigned number_of_channels,
-                                 uint32_t frames_to_process,
                                  float sample_rate);
 
   // Set up the rendering and start. After setting the context up, it will
@@ -118,7 +117,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // These variables are for counting the number of frames for the current
   // progress and the remaining frames to be processed.
   size_t frames_processed_ = 0;
-  uint32_t frames_to_process_;
+  uint32_t frames_to_process_ = 0;
 
   // This flag is necessary to distinguish the state of the context between
   // 'created' and 'suspended'. If this flag is false and the current state
