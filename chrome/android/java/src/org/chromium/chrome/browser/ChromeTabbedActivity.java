@@ -325,14 +325,13 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupMenuActionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupsPaneFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
@@ -1319,15 +1318,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {
-        TabManagementDelegate delegate = TabManagementDelegateProvider.getDelegate();
-        TabGroupCreationUiDelegate tabGroupCreationUiDelegate =
-                delegate.createTabGroupCreationUiFlow(
-                        this,
-                        getModalDialogManager(),
-                        mHubManagerSupplier,
-                        mTabModelSelector.getCurrentTabModelSupplier());
         Pair<TabSwitcher, Pane> result =
-                delegate.createTabSwitcherPane(
+                TabSwitcherPaneFactory.createTabSwitcherPane(
                         this,
                         getLifecycleDispatcher(),
                         getProfileProviderSupplier(),
@@ -1352,7 +1344,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         getCompositorViewHolderSupplier(),
                         getShareDelegateSupplier(),
                         mTabBookmarkerSupplier,
-                        tabGroupCreationUiDelegate,
                         mUndoBarPopupController,
                         mHubProvider.getHubManagerSupplier(),
                         getArchivedTabsAutoDeletePromoManager(),
@@ -1376,19 +1367,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private Pane createTabGroupsPane() {
-        return TabManagementDelegateProvider.getDelegate()
-                .createTabGroupsPane(
-                        this,
-                        getTabModelSelector(),
-                        adaptOnOverviewColorAlphaChange(),
-                        getProfileProviderSupplier(),
-                        mHubProvider.getHubManagerSupplier(),
-                        () ->
-                                ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                                        .getTabGroupSyncController(),
-                        getModalDialogManagerSupplier(),
-                        mEdgeToEdgeControllerSupplier,
-                        mRootUiCoordinator.getDataSharingTabManager());
+        return TabGroupsPaneFactory.createTabGroupsPane(
+                this,
+                getTabModelSelector(),
+                adaptOnOverviewColorAlphaChange(),
+                getProfileProviderSupplier(),
+                mHubProvider.getHubManagerSupplier(),
+                () -> ((TabbedRootUiCoordinator) mRootUiCoordinator).getTabGroupSyncController(),
+                getModalDialogManagerSupplier(),
+                mEdgeToEdgeControllerSupplier,
+                mRootUiCoordinator.getDataSharingTabManager());
     }
 
     private Pane createHistoryPane() {

@@ -72,7 +72,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
     @Mock private Tab mTab;
     @Mock private TabModel mTabModel;
-    @Mock private TabManagementDelegate mTabManagementDelegate;
+    @Mock private TabGroupUiFactory.Factory mTabGroupUiFactory;
     @Mock private TabGroupUi mTabGroupUi;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -112,11 +112,11 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mUndoBarThrottle,
                         mTabBookmarkerSupplier,
                         mShareDelegateSupplier);
-        when(mTabManagementDelegate.createTabGroupUi(
+        when(mTabGroupUiFactory.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
                         any(), any(), any(), any(), any()))
                 .thenReturn(mTabGroupUi);
-        TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
+        TabGroupUiFactory.setFactoryForTesting(mTabGroupUiFactory);
     }
 
     @After
@@ -131,7 +131,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
         mActivityTabProvider.setForTesting(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
-        verifyNoInteractions(mTabManagementDelegate);
+        verifyNoInteractions(mTabGroupUiFactory);
         assertNull(mTabGroupUiOneshotSupplier.get());
 
         when(mTabModel.isTabInTabGroup(mTab)).thenReturn(true);
@@ -139,7 +139,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mTabManagementDelegate)
+        verify(mTabGroupUiFactory)
                 .createTabGroupUi(
                         mActivity,
                         mViewGroup,
@@ -166,12 +166,12 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
         mActivityTabProvider.setForTesting(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
-        verifyNoInteractions(mTabManagementDelegate);
+        verifyNoInteractions(mTabGroupUiFactory);
         assertNull(mTabGroupUiOneshotSupplier.get());
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mTabManagementDelegate)
+        verify(mTabGroupUiFactory)
                 .createTabGroupUi(
                         mActivity,
                         mViewGroup,

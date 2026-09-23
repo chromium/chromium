@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 /** Handles the flow of creating a new tab group through the UI. */
 @NullMarked
-public class TabGroupCreationUiDelegate {
+class TabGroupCreationUiDelegate {
     private final Context mContext;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable PaneManager> mPaneManagerSupplier;
@@ -42,7 +42,7 @@ public class TabGroupCreationUiDelegate {
      * @param tabModelSupplier Supplies the tab model used to create tab groups.
      * @param factory Used to create an instance of {@link TabGroupCreationDialogManager}
      */
-    public TabGroupCreationUiDelegate(
+    TabGroupCreationUiDelegate(
             Context context,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable PaneManager> paneManagerSupplier,
