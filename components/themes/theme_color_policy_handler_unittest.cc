@@ -42,7 +42,7 @@ class ThemeColorPolicyHandlerTest : public testing::Test {
 
     ApplyPolicies();
     base::Value* value;
-    EXPECT_TRUE(prefs_.GetValue(themes::prefs::kPolicyThemeColor, &value));
+    EXPECT_TRUE(prefs_.GetValue(themes::kPolicyThemeColor, &value));
     ASSERT_TRUE(value);
     EXPECT_EQ(value->GetInt(), static_cast<int>(expected_color));
   }

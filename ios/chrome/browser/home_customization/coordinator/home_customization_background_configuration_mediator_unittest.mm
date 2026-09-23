@@ -143,7 +143,7 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
 
     registry->RegisterBooleanPref(prefs::kNTPCustomBackgroundEnabledByPolicy,
                                   true);
-    registry->RegisterIntegerPref(themes::prefs::kPolicyThemeColor,
+    registry->RegisterIntegerPref(themes::kPolicyThemeColor,
                                   SK_ColorTRANSPARENT);
     return prefs;
   }

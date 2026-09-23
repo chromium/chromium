@@ -71,8 +71,8 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
         pref_service_->registry());
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kNTPCustomBackgroundEnabledByPolicy, true);
-    pref_service_->registry()->RegisterIntegerPref(
-        themes::prefs::kPolicyThemeColor, SK_ColorTRANSPARENT);
+    pref_service_->registry()->RegisterIntegerPref(themes::kPolicyThemeColor,
+                                                   SK_ColorTRANSPARENT);
   }
 
   void TearDown() override {
@@ -768,7 +768,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
 
   // Set managed pref.
   SkColor managed_color = 0x0000ff;
-  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+  pref_service_->SetManagedPref(themes::kPolicyThemeColor,
                                 base::Value(static_cast<int>(managed_color)));
 
   EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
@@ -796,7 +796,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
   EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
 
   // Un-manage the pref.
-  pref_service_->RemoveManagedPref(themes::prefs::kPolicyThemeColor);
+  pref_service_->RemoveManagedPref(themes::kPolicyThemeColor);
 
   // Data should be back to the start.
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
@@ -823,7 +823,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, false);
 
   SkColor managed_color = 0x0000ff;
-  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+  pref_service_->SetManagedPref(themes::kPolicyThemeColor,
                                 base::Value(static_cast<int>(managed_color)));
 
   // The policy theme color should be ignored and there should be no active
@@ -852,7 +852,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
   // After removing the policy theme color, the originally set color should be
   // active.
-  pref_service_->RemoveManagedPref(themes::prefs::kPolicyThemeColor);
+  pref_service_->RemoveManagedPref(themes::kPolicyThemeColor);
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
   EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
   EXPECT_EQ(2u, service_->GetRecentlyUsedBackgrounds().size());
@@ -1301,7 +1301,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, DelegateIsThemeSyncable) {
   EXPECT_TRUE(service_->IsCurrentThemeSyncable());
 
   // Policy themes are NOT syncable.
-  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+  pref_service_->SetManagedPref(themes::kPolicyThemeColor,
                                 base::Value(static_cast<int>(0x0000ff)));
   EXPECT_FALSE(service_->IsCurrentThemeSyncable());
 }
@@ -1324,7 +1324,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_FALSE(service_->IsCurrentThemeManagedByPolicy());
 
   // Managed by theme color policy.
-  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+  pref_service_->SetManagedPref(themes::kPolicyThemeColor,
                                 base::Value(static_cast<int>(0x0000ff)));
   EXPECT_TRUE(service_->IsCurrentThemeManagedByPolicy());
 }

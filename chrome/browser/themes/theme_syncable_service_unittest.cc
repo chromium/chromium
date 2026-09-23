@@ -1058,7 +1058,7 @@ TEST_F(RealThemeSyncableServiceTest, UpdateThemeSpecifics_CurrentTheme_Policy) {
   fake_change_processor()->changes().clear();
   // Set up theme service to use policy theme.
   testing_profile()->GetTestingPrefService()->SetManagedPref(
-      themes::prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+      themes::kPolicyThemeColor, std::make_unique<base::Value>(100));
 
   ASSERT_TRUE(theme_service()->UsingPolicyTheme());
   // Applying policy theme doesn't trigger sync changes.

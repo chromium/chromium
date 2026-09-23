@@ -153,7 +153,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &HomeBackgroundCustomizationService::OnPolicyPrefsChanged,
       weak_ptr_factory_.GetWeakPtr());
-  pref_change_registrar_.Add(themes::prefs::kPolicyThemeColor, callback);
+  pref_change_registrar_.Add(themes::kPolicyThemeColor, callback);
   pref_change_registrar_.Add(prefs::kNTPCustomBackgroundEnabledByPolicy,
                              callback);
 
@@ -350,10 +350,9 @@ HomeBackgroundCustomizationService::GetCurrentColorTheme() {
   }
 
   // If policy theme is managed, just return that and bypass all local data.
-  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
+  if (pref_service_->IsManagedPreference(themes::kPolicyThemeColor)) {
     sync_pb::UserColorTheme theme;
-    theme.set_color(
-        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor));
+    theme.set_color(pref_service_->GetInteger(themes::kPolicyThemeColor));
     theme.set_browser_color_variant(
         sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
     return theme;
@@ -626,7 +625,7 @@ bool HomeBackgroundCustomizationService::
     IsCustomizationDisabledOrColorManagedByPolicy() const {
   return !pref_service_->GetBoolean(
              prefs::kNTPCustomBackgroundEnabledByPolicy) ||
-         pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor);
+         pref_service_->IsManagedPreference(themes::kPolicyThemeColor);
 }
 
 bool HomeBackgroundCustomizationService::IsThemeSyncActive() {
@@ -737,7 +736,7 @@ void HomeBackgroundCustomizationService::DefaultRecentlyUsedBackgroundsLoaded(
 
 void HomeBackgroundCustomizationService::OnPolicyPrefsChanged(
     const std::string& name) {
-  CHECK(themes::prefs::kPolicyThemeColor == name ||
+  CHECK(themes::kPolicyThemeColor == name ||
         prefs::kNTPCustomBackgroundEnabledByPolicy == name);
 
   // When policy changes, background may change, so make sure observers are

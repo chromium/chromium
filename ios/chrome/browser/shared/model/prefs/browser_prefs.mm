@@ -687,8 +687,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       static_cast<int>(ChooseFromDrivePolicySettings::kEnabled));
 
   // Preferences related to ntp browser theme color set by enterprise policy.
-  registry->RegisterIntegerPref(themes::prefs::kPolicyThemeColor,
-                                SK_ColorTRANSPARENT);
+  registry->RegisterIntegerPref(themes::kPolicyThemeColor, SK_ColorTRANSPARENT);
 
   // Preferences related to download restrictions enterprise policy.
   registry->RegisterIntegerPref(policy::policy_prefs::kDownloadRestrictions, 0);

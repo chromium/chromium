@@ -42,8 +42,8 @@ TEST_F(ThemesAndCustomizationStepEligibilityCheckerTest,
        IneligibleWhenPolicyTheme) {
   ThemesAndCustomizationStepEligibilityChecker checker;
 
-  profile().GetTestingPrefService()->SetManagedPref(
-      themes::prefs::kPolicyThemeColor, base::Value(123456));
+  profile().GetTestingPrefService()->SetManagedPref(themes::kPolicyThemeColor,
+                                                    base::Value(123456));
 
   base::test::TestFuture<bool> future;
   checker.CheckEligibility(profile(), future.GetCallback());

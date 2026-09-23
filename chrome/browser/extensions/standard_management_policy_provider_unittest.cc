@@ -266,14 +266,14 @@ TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
 
   // Setting policy theme prevents users from loading an extension theme.
   profile_.GetTestingPrefService()->SetManagedPref(
-      themes::prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+      themes::kPolicyThemeColor, std::make_unique<base::Value>(100));
 
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error16));
   EXPECT_NE(std::u16string(), error16);
 
   // Unsetting policy theme allows users to load an extension theme.
   profile_.GetTestingPrefService()->RemoveManagedPref(
-      themes::prefs::kPolicyThemeColor);
+      themes::kPolicyThemeColor);
 
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
 }

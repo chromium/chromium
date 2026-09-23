@@ -70,6 +70,6 @@ void ThemeColorPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  prefs->SetInteger(themes::prefs::kPolicyThemeColor,
+  prefs->SetInteger(themes::kPolicyThemeColor,
                     HexToSkColor(value->GetString()));
 }
