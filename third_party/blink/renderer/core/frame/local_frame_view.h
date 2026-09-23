@@ -907,7 +907,7 @@ class CORE_EXPORT LocalFrameView final
   void SelfVisibleChanged() override;
   void ParentVisibleChanged() override;
   void PropagateFrameRectsInternal() override;
-  void PropagateFrameRectsRecursively(bool force = false);
+  void PropagateFrameRectsRecursively();
   void NotifyFrameRectsChangedIfNeeded();
 
   // Updates viewport intersection state when LocalFrame's scroll positions,

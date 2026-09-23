@@ -282,6 +282,7 @@ blink_core_tests_frame = [
   "policy_container_test.cc",
   "report_test.cc",
   "reporting_context_test.cc",
+  "remote_frame_test.cc",
   "root_frame_viewport_test.cc",
   "rotation_viewport_anchor_test.cc",
   "use_counter_impl_test.cc",

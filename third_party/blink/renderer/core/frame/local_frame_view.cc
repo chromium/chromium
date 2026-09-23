@@ -2733,15 +2733,17 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   DisallowLayoutInvalidationScope disallow_layout_invalidation(this);
 #endif
 
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    PropagateFrameRectsRecursively();
+  }
   // This needs to be done prior to paint: it will update the cc::Layer bounds
   // for the remote frame views, which will be wrapped during paint in
   // ForeignLayerDisplayItem's whose visual rect is set at construction based
   // on cc::Layer bounds.
+  // If the compositing rect changes, the new rect will propagated to the remote
+  // frame in post-lifecycle steps or the next lifecycle.
   ForAllRemoteFrameViews(
       [](RemoteFrameView& frame_view) { frame_view.UpdateCompositingRect(); });
-  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
-    PropagateFrameRectsRecursively();
-  }
 
   uint64_t dom_version = frame_->GetDocument()->DomTreeVersion();
   if (last_dom_stats_version_ != dom_version) {
@@ -4184,7 +4186,10 @@ void LocalFrameView::SetCursor(const ui::Cursor& cursor) {
 void LocalFrameView::PropagateFrameRectsInternal() {
   TRACE_EVENT0("blink", "LocalFrameView::PropagateFrameRects");
 
-  if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    ForAllChildViewsAndPlugins(
+        [](EmbeddedContentView& view) { view.SetNeedsFrameRectPropagation(); });
+  } else {
     if (LayoutSizeFixedToFrameSize()) {
       SetLayoutSizeInternal(
           Size(), {.should_suppress_events =
@@ -4211,19 +4216,18 @@ void LocalFrameView::PropagateFrameRectsInternal() {
   }
 }
 
-void LocalFrameView::PropagateFrameRectsRecursively(bool force) {
+void LocalFrameView::PropagateFrameRectsRecursively() {
   CHECK(RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled());
-  bool propagate = force || NeedsFrameRectPropagation();
-  if (propagate) {
+  if (NeedsFrameRectPropagation()) {
     PropagateFrameRects();
   }
-  ForAllChildViewsAndPlugins([propagate](EmbeddedContentView& view) {
+  ForAllChildViewsAndPlugins([](EmbeddedContentView& view) {
     auto* local_frame_view = DynamicTo<LocalFrameView>(view);
-    if (local_frame_view && !local_frame_view->ShouldThrottleRendering()) {
-      // If the current frame view propagates, it will force descendant frame
-      // views to propagate as well.
-      local_frame_view->PropagateFrameRectsRecursively(propagate);
-    } else if (propagate) {
+    if (local_frame_view) {
+      if (!local_frame_view->ShouldThrottleRendering()) {
+        local_frame_view->PropagateFrameRectsRecursively();
+      }
+    } else if (view.NeedsFrameRectPropagation()) {
       view.PropagateFrameRects();
     }
   });

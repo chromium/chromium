@@ -77,6 +77,9 @@ specific_include_rules = {
   "remote_frame\\.cc": [
     "+ui/base/window_open_disposition.h",
   ],
+  "remote_frame_test\\.cc": [
+    "+components/viz/common/surfaces/frame_sink_id.h",
+  ],
   "remote_frame_view\\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
