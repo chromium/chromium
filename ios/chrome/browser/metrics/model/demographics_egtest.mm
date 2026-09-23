@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/ukm/ukm_service.h"
@@ -32,6 +31,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 - (void)setUp {
   [super setUp];
+  [ChromeEarlGrey writeFirstRunSentinel];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -85,10 +85,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                    (testUMADemographicsReportingWithFeatureDisabled)]) {
     config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
   }
-  // Note: Can't use the actual feature definition, because its build target
-  // depends on a bunch of stuff that mustn't make it into the EG test target.
-  config.additional_args.push_back(
-      "--enable-features=ManualLogUploadsInTheFRE");
   return config;
 }
 
@@ -224,20 +220,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                  @"Failed to enable kDemographicMetricsReporting.");
 
-  const int success =
-      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
-  ConditionBlock condition = ^{
-    NSError* error = [MetricsAppInterface
-        expectUniqueSampleWithCount:1
-                          forBucket:success
-                       forHistogram:@"UMA.UserDemographics.Status"];
-    return error == nil;
-  };
-
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForActionTimeout, condition),
-             @"iOS First Run failed to upload metric");
-
   [MetricsAppInterface buildAndStoreUMALog];
   GREYAssertTrue([MetricsAppInterface hasUnsentUMALogs],
                  @"The UKM service should have unsent logs.");
@@ -246,10 +228,10 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                                   gender:kTestGender],
                  @"The report should contain the specified user demographics");
 
-  // Expect 2 counts because in the iOS First Run, the MetricsService is started
-  // quicker, which causes two metrics log uploads to happen by this point.
+  const int success =
+      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
   NSError* error = [MetricsAppInterface
-      expectUniqueSampleWithCount:2
+      expectUniqueSampleWithCount:1
                         forBucket:success
                      forHistogram:@"UMA.UserDemographics.Status"];
   chrome_test_util::GREYAssertErrorNil(error);
