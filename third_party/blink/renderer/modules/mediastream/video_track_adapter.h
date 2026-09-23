@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/modules/mediastream/media_stream_types.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
@@ -66,6 +67,8 @@ class MODULES_EXPORT VideoTrackAdapter
   void RemoveTrack(const MediaStreamVideoTrack* track);
   void ReconfigureTrack(const MediaStreamVideoTrack* track,
                         const VideoTrackAdapterSettings& settings);
+  void SetTrackSubCaptureTarget(const MediaStreamVideoTrack* track,
+                                const base::Token& sub_capture_target);
 
   // Delivers |frame| to all tracks that have registered a callback.
   // Must be called on the video task runner.
@@ -159,21 +162,30 @@ class MODULES_EXPORT VideoTrackAdapter
                                std::optional<float> device_scale_factor)>;
   using VideoTrackFormatInternalCallback =
       CrossThreadFunction<void(const media::VideoCaptureFormat&)>;
+
+  struct VideoTrackCallbacks {
+    VideoCaptureDeliverFrameInternalCallback frame_callback;
+    VideoCaptureNotifyFrameDroppedInternalCallback
+        notify_frame_dropped_callback;
+    DeliverEncodedVideoFrameInternalCallback encoded_frame_callback;
+    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback;
+    VideoTrackSettingsInternalCallback settings_callback;
+    VideoTrackFormatInternalCallback format_callback;
+  };
+
   void AddTrackOnVideoTaskRunner(
       const MediaStreamVideoTrack* track,
-      VideoCaptureDeliverFrameInternalCallback frame_callback,
-      VideoCaptureNotifyFrameDroppedInternalCallback
-          notify_frame_dropped_callback,
-      DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-      VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
-      VideoTrackSettingsInternalCallback settings_callback,
-      VideoTrackFormatInternalCallback format_callback,
-      const VideoTrackAdapterSettings& settings);
+      VideoTrackCallbacks callbacks,
+      const VideoTrackAdapterSettings& settings,
+      base::Token sub_capture_target = base::Token());
 
   void RemoveTrackOnVideoTaskRunner(const MediaStreamVideoTrack* track);
   void ReconfigureTrackOnVideoTaskRunner(
       const MediaStreamVideoTrack* track,
       const VideoTrackAdapterSettings& settings);
+  void SetTrackSubCaptureTargetOnVideoTaskRunner(
+      const MediaStreamVideoTrack* track,
+      base::Token sub_capture_target);
 
   using OnMutedInternalCallback = CrossThreadFunction<void(bool mute_state)>;
   void StartFrameMonitoringOnVideoTaskRunner(

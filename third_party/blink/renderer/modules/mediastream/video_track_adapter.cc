@@ -178,6 +178,88 @@ VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
   return new_settings;
 }
 
+bool RequiresEvenAlignment(media::VideoPixelFormat format) {
+  const media::VideoChromaSampling sampling =
+      media::VideoPixelFormatToChromaSampling(format);
+  return !media::IsRGB(format) &&
+         sampling != media::VideoChromaSampling::k444 &&
+         sampling != media::VideoChromaSampling::k400;
+}
+
+scoped_refptr<media::VideoFrame> MaybeCropFrameForTrack(
+    scoped_refptr<media::VideoFrame> frame,
+    const base::Token& sub_capture_target) {
+  if (sub_capture_target.is_zero()) {
+    // Uncropped track: deliver the frame as-is.
+    //
+    // TODO(crbug.com/555826257): Tracks sharing a source all carry the same
+    // target today, so a frame reaching here is never GPU-cropped. Once the
+    // source can apply a different target per track, a frame GPU-cropped to
+    // another track's target must be dropped here instead.
+    return frame;
+  }
+
+  const auto& bounds_map = frame->metadata().region_capture_bounds;
+  auto it = bounds_map.find(sub_capture_target);
+  if (it == bounds_map.end()) {
+    // Either:
+    // 1. The frame was GPU-cropped to a different target token, or
+    // 2. The frame is full-frame and the target is empty or offscreen.
+    //
+    // Case 1 follows from how FrameSinkVideoCapturerImpl populates the
+    // metadata. When it physically crops on the GPU it publishes exactly one
+    // entry in `region_capture_bounds`: the target it cropped to, mapped onto
+    // the whole of `frame->visible_rect()`, because after cropping that target
+    // occupies the entire frame. Had this frame been cropped to
+    // `sub_capture_target`, the lookup above would therefore have succeeded, so
+    // a miss means the frame was cropped to some other track's target.
+    //
+    // Per W3C Region Capture Section 6.2.2.1:
+    // "The user agent MUST NOT produce new frames on tracks with an empty
+    // crop-session target."
+    return nullptr;
+  }
+
+  gfx::Rect target_rect = it->second;
+  target_rect.Intersect(frame->visible_rect());
+  if (target_rect.IsEmpty()) {
+    return nullptr;
+  }
+
+  if (target_rect == frame->visible_rect()) {
+    // The target spans the entire visible frame (e.g. when physically cropped
+    // on the GPU). No wrapping is needed.
+    return frame;
+  }
+
+  gfx::Rect aligned_rect = target_rect;
+
+  // Subsampled chroma formats (e.g. NV12, I420) require 2-pixel even alignment
+  // to avoid chroma phase distortion when logically wrapping planes.
+  // Formats with 1:1 color sampling (RGB and 4:4:4) preserve exact pixel
+  // boundaries.
+  if (RequiresEvenAlignment(frame->format())) {
+    // Round origins UP (inward) to nearest even coordinate.
+    int x = (target_rect.x() + 1) & ~1;
+    int y = (target_rect.y() + 1) & ~1;
+    // Round bounds DOWN (inward) to nearest even coordinate.
+    int right = target_rect.right() & ~1;
+    int bottom = target_rect.bottom() & ~1;
+
+    int width = right - x;
+    int height = bottom - y;
+
+    if (width < 2 || height < 2) {
+      return nullptr;
+    }
+
+    aligned_rect = gfx::Rect(x, y, width, height);
+  }
+
+  return media::VideoFrame::WrapVideoFrame(frame, frame->format(), aligned_rect,
+                                           aligned_rect.size());
+}
+
 }  // anonymous namespace
 
 // VideoFrameResolutionAdapter is created on and lives on the video task runner.
@@ -187,14 +269,10 @@ VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
 class VideoTrackAdapter::VideoFrameResolutionAdapter
     : public ThreadSafeRefCounted<VideoFrameResolutionAdapter> {
  public:
-  struct VideoTrackCallbacks {
-    VideoCaptureDeliverFrameInternalCallback frame_callback;
-    VideoCaptureNotifyFrameDroppedInternalCallback
-        notify_frame_dropped_callback;
-    DeliverEncodedVideoFrameInternalCallback encoded_frame_callback;
-    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback;
-    VideoTrackSettingsInternalCallback settings_callback;
-    VideoTrackFormatInternalCallback format_callback;
+  struct VideoTrackParameters {
+    VideoTrackCallbacks callbacks;
+    base::Token sub_capture_target;
+    ComputedSettings track_settings;
   };
   // Setting |max_frame_rate| to 0.0, means that no frame rate limitation
   // will be done.
@@ -207,30 +285,25 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   VideoFrameResolutionAdapter& operator=(const VideoFrameResolutionAdapter&) =
       delete;
 
-  // Add |frame_callback|, |encoded_frame_callback| to receive video frames on
-  // the video task runner, |capture_version_callback| to receive
-  // notifications when a new capture-target version is acknowledged, and
-  // |settings_callback| to set track settings on the main thread.
-  // |frame_callback| will however be released on the main render thread.
-  void AddCallbacks(
-      const MediaStreamVideoTrack* track,
-      VideoCaptureDeliverFrameInternalCallback frame_callback,
-      VideoCaptureNotifyFrameDroppedInternalCallback
-          notify_frame_dropped_callback,
-      DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-      VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
-      VideoTrackSettingsInternalCallback settings_callback,
-      VideoTrackFormatInternalCallback format_callback);
+  // Add |track| and its callbacks to receive video frames on the video task
+  // runner. |frame_callback| will however be released on the main render
+  // thread.
+  void AddTrack(const MediaStreamVideoTrack* track,
+                VideoTrackCallbacks callbacks,
+                base::Token sub_capture_target = base::Token());
 
-  // Removes the callbacks associated with |track| if |track| has been added. It
-  // is ok to call RemoveCallbacks() even if |track| has not been added.
-  void RemoveCallbacks(const MediaStreamVideoTrack* track);
+  // Removes the track associated with |track| if |track| has been added. It
+  // is ok to call RemoveTrack() even if |track| has not been added.
+  void RemoveTrack(const MediaStreamVideoTrack* track);
 
-  // Removes the callbacks associated with |track| if |track| has been added. It
-  // is ok to call RemoveAndGetCallbacks() even if the |track| has not been
-  // added. The function returns the callbacks if it was removed, or empty
-  // callbacks if |track| was not present in the adapter.
-  VideoTrackCallbacks RemoveAndGetCallbacks(const MediaStreamVideoTrack* track);
+  // Removes the track associated with |track| if |track| has been added. It
+  // is ok to call RemoveAndGetTrack() even if the |track| has not been
+  // added. The function returns the parameters if it was removed, or empty
+  // parameters if |track| was not present in the adapter.
+  VideoTrackParameters RemoveAndGetTrack(const MediaStreamVideoTrack* track);
+
+  void SetTrackSubCaptureTarget(const MediaStreamVideoTrack* track,
+                                const base::Token& sub_capture_target);
 
   // The source has provided us with a frame.
   void DeliverFrame(
@@ -265,8 +338,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   AdaptFrameResolution(scoped_refptr<media::VideoFrame> video_frame,
                        bool is_device_rotated);
 
-  // Delivers |video_frame| to the specific track represented by |callback|.
-  void DeliverFrameToTrack(const VideoTrackCallbacks& callback,
+  // Delivers |video_frame| to the specific track represented by |track_params|,
+  // updating track settings if the frame format has changed.
+  void DeliverFrameToTrack(VideoTrackParameters& track_params,
                            scoped_refptr<media::VideoFrame> video_frame,
                            const base::TimeTicks& estimated_capture_time);
 
@@ -278,8 +352,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
                       media::VideoCaptureFrameDropReason* reason);
 
   // Updates track settings if either frame width, height or frame rate have
-  // changed since last update. Returns true if settings changed.
-  bool MaybeUpdateTrackSettings(const media::VideoFrame& frame);
+  // changed since last update.
+  void MaybeUpdateTrackSettings(VideoTrackParameters& track_params,
+                                const media::VideoFrame& frame);
 
   // Updates computed source format for all tracks if either frame width, height
   // or frame rate have changed since last update.
@@ -314,10 +389,10 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // that is half of max fps.
   base::TimeDelta accumulated_drift_;
 
-  ComputedSettings track_settings_;
   ComputedSettings source_format_settings_;
 
-  base::flat_map<const MediaStreamVideoTrack*, VideoTrackCallbacks> callbacks_;
+  base::flat_map<const MediaStreamVideoTrack*, VideoTrackParameters>
+      track_parameters_;
 };
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
@@ -344,60 +419,95 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::~VideoFrameResolutionAdapter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  DCHECK(callbacks_.empty());
+  DCHECK(track_parameters_.empty());
 }
 
-void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
+void VideoTrackAdapter::VideoFrameResolutionAdapter::AddTrack(
     const MediaStreamVideoTrack* track,
-    VideoCaptureDeliverFrameInternalCallback frame_callback,
-    VideoCaptureNotifyFrameDroppedInternalCallback
-        notify_frame_dropped_callback,
-    DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
-    VideoTrackSettingsInternalCallback settings_callback,
-    VideoTrackFormatInternalCallback format_callback) {
+    VideoTrackCallbacks callbacks,
+    base::Token sub_capture_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
+
+  VideoTrackParameters track_params = {std::move(callbacks), sub_capture_target,
+                                       ComputedSettings()};
 
   // The new track's settings should match the resolution adapter's current
-  // |track_settings_| as set for existing track(s) with matching
-  // VideoTrackAdapterSettings.
-  if (!callbacks_.empty() && track_settings_.frame_size.width() > 0 &&
-      track_settings_.frame_size.height() > 0) {
-    settings_callback.Run(track_settings_.frame_size,
-                          track_settings_.frame_rate,
-                          track_settings_.metadata_frame_source_size,
-                          track_settings_.device_scale_factor);
+  // track settings as set for existing track(s) sharing the same sub-capture
+  // target (or no sub-capture target). All tracks in this adapter with the same
+  // sub-capture target share the same resolution and frame rate settings.
+  for (const auto& [existing_track, existing_params] : track_parameters_) {
+    if (existing_params.sub_capture_target == track_params.sub_capture_target &&
+        existing_params.track_settings.frame_size.width() > 0 &&
+        existing_params.track_settings.frame_size.height() > 0) {
+      ComputedSettings& track_settings = track_params.track_settings;
+      track_settings = existing_params.track_settings;
+      track_params.callbacks.settings_callback.Run(
+          track_settings.frame_size, track_settings.frame_rate,
+          track_settings.metadata_frame_source_size,
+          track_settings.device_scale_factor);
+      break;
+    }
   }
 
-  VideoTrackCallbacks track_callbacks = {
-      std::move(frame_callback),
-      std::move(notify_frame_dropped_callback),
-      std::move(encoded_frame_callback),
-      std::move(capture_version_callback),
-      std::move(settings_callback),
-      std::move(format_callback)};
-
-  callbacks_.emplace(track, std::move(track_callbacks));
+  track_parameters_.emplace(track, std::move(track_params));
 }
 
-void VideoTrackAdapter::VideoFrameResolutionAdapter::RemoveCallbacks(
+void VideoTrackAdapter::VideoFrameResolutionAdapter::RemoveTrack(
     const MediaStreamVideoTrack* track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  callbacks_.erase(track);
+  track_parameters_.erase(track);
 }
 
-VideoTrackAdapter::VideoFrameResolutionAdapter::VideoTrackCallbacks
-VideoTrackAdapter::VideoFrameResolutionAdapter::RemoveAndGetCallbacks(
+VideoTrackAdapter::VideoFrameResolutionAdapter::VideoTrackParameters
+VideoTrackAdapter::VideoFrameResolutionAdapter::RemoveAndGetTrack(
     const MediaStreamVideoTrack* track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  VideoTrackCallbacks track_callbacks;
-  auto it = callbacks_.find(track);
-  if (it == callbacks_.end())
-    return track_callbacks;
+  VideoTrackParameters track_params;
+  auto it = track_parameters_.find(track);
+  if (it == track_parameters_.end()) {
+    return track_params;
+  }
 
-  track_callbacks = std::move(it->second);
-  callbacks_.erase(it);
-  return track_callbacks;
+  track_params = std::move(it->second);
+  track_parameters_.erase(it);
+  return track_params;
+}
+
+void VideoTrackAdapter::VideoFrameResolutionAdapter::SetTrackSubCaptureTarget(
+    const MediaStreamVideoTrack* track,
+    const base::Token& sub_capture_target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
+  auto it = track_parameters_.find(track);
+  if (it == track_parameters_.end()) {
+    return;
+  }
+
+  VideoTrackParameters& target_track_params = it->second;
+  if (target_track_params.sub_capture_target == sub_capture_target) {
+    return;
+  }
+
+  target_track_params.sub_capture_target = sub_capture_target;
+  // Clear old settings since the cropped resolution for the new target
+  // may be completely different.
+  target_track_params.track_settings = ComputedSettings();
+
+  // If another track on this adapter is already capturing this target,
+  // inherit its settings and invoke the settings callback immediately.
+  for (const auto& [existing_track, existing_params] : track_parameters_) {
+    if (existing_track != track &&
+        existing_params.sub_capture_target == sub_capture_target &&
+        existing_params.track_settings.frame_size.width() > 0 &&
+        existing_params.track_settings.frame_size.height() > 0) {
+      target_track_params.track_settings = existing_params.track_settings;
+      target_track_params.callbacks.settings_callback.Run(
+          target_track_params.track_settings.frame_size,
+          target_track_params.track_settings.frame_rate,
+          target_track_params.track_settings.metadata_frame_source_size,
+          target_track_params.track_settings.device_scale_factor);
+      break;
+    }
+  }
 }
 
 base::expected<scoped_refptr<media::VideoFrame>,
@@ -512,29 +622,61 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     return;
   }
 
-  if (callbacks_.empty()) {
+  if (track_parameters_.empty()) {
     return;
   }
 
-  base::expected<scoped_refptr<media::VideoFrame>,
-                 media::VideoCaptureFrameDropReason>
-      adapted_frame =
-          AdaptFrameResolution(std::move(video_frame), is_device_rotated);
-  if (!adapted_frame.has_value()) {
-    OnFrameDropped(adapted_frame.error());
-    return;
-  }
+  // Crop (or pass through) per track according to each track's sub-capture
+  // target token, then adapt resolution. Cache the adapted frame per target
+  // token so tracks sharing the same target (or no target) on this adapter do
+  // not redundantly crop and scale the frame.
+  struct CachedFrame {
+    base::Token token;
+    base::expected<scoped_refptr<media::VideoFrame>,
+                   media::VideoCaptureFrameDropReason>
+        result;
+  };
+  // Inline capacity chosen to avoid per-frame heap allocations for typical
+  // multi-track scenarios (e.g., 1 uncropped track + 2-3 cropped regions)
+  // while keeping stack usage small (~128 bytes).
+  constexpr wtf_size_t kInlineCachedFramesCapacity = 4;
+  Vector<CachedFrame, kInlineCachedFramesCapacity> adapted_frames_cache;
 
-  bool settings_changed = MaybeUpdateTrackSettings(*adapted_frame.value());
-  for (const auto& callback : callbacks_) {
-    if (settings_changed) {
-      callback.second.settings_callback.Run(
-          track_settings_.frame_size, track_settings_.frame_rate,
-          track_settings_.metadata_frame_source_size,
-          track_settings_.device_scale_factor);
+  for (auto& [track, track_params] : track_parameters_) {
+    const base::Token& target_token = track_params.sub_capture_target;
+
+    base::expected<scoped_refptr<media::VideoFrame>,
+                   media::VideoCaptureFrameDropReason>
+        adapted_frame = nullptr;
+    bool found_in_cache = false;
+
+    // Linear search is highly optimal here since the number of unique
+    // targets per adapter is extremely small (usually 1-3).
+    for (const auto& cached : adapted_frames_cache) {
+      if (cached.token == target_token) {
+        adapted_frame = cached.result;
+        found_in_cache = true;
+        break;
+      }
     }
-    DeliverFrameToTrack(callback.second, adapted_frame.value(),
-                        estimated_capture_time);
+
+    if (!found_in_cache) {
+      scoped_refptr<media::VideoFrame> track_frame =
+          MaybeCropFrameForTrack(video_frame, target_token);
+      if (track_frame) {
+        adapted_frame =
+            AdaptFrameResolution(std::move(track_frame), is_device_rotated);
+      }
+      adapted_frames_cache.push_back(CachedFrame{target_token, adapted_frame});
+    }
+
+    if (!adapted_frame.has_value()) {
+      track_params.callbacks.notify_frame_dropped_callback.Run(
+          adapted_frame.error());
+    } else if (adapted_frame.value()) {
+      DeliverFrameToTrack(track_params, adapted_frame.value(),
+                          estimated_capture_time);
+    }
   }
 }
 
@@ -542,16 +684,17 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  for (const auto& callback : callbacks_) {
-    callback.second.encoded_frame_callback.Run(frame, estimated_capture_time);
+  for (const auto& [track, track_params] : track_parameters_) {
+    track_params.callbacks.encoded_frame_callback.Run(frame,
+                                                      estimated_capture_time);
   }
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::
     NewCaptureVersionOnVideoTaskRunner(media::CaptureVersion capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  for (const auto& callback : callbacks_) {
-    callback.second.capture_version_callback.Run(capture_version);
+  for (const auto& [track, track_params] : track_parameters_) {
+    track_params.callbacks.capture_version_callback.Run(capture_version);
   }
 }
 
@@ -563,15 +706,17 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::SettingsMatch(
 
 bool VideoTrackAdapter::VideoFrameResolutionAdapter::IsEmpty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  return callbacks_.empty();
+  return track_parameters_.empty();
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrameToTrack(
-    const VideoTrackCallbacks& callback,
+    VideoTrackParameters& track_params,
     scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  callback.frame_callback.Run(std::move(video_frame), estimated_capture_time);
+  MaybeUpdateTrackSettings(track_params, *video_frame);
+  track_params.callbacks.frame_callback.Run(std::move(video_frame),
+                                            estimated_capture_time);
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::OnFrameDropped(
@@ -579,8 +724,8 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::OnFrameDropped(
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   // Notify callbacks, such as
   // MediaStreamVideoTrack::FrameDeliverer::NotifyFrameDroppedOnVideoTaskRunner.
-  for (const auto& callback : callbacks_) {
-    callback.second.notify_frame_dropped_callback.Run(reason);
+  for (const auto& [track, track_params] : track_parameters_) {
+    track_params.callbacks.notify_frame_dropped_callback.Run(reason);
   }
 }
 
@@ -629,23 +774,27 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   return false;
 }
 
-bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
+void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
+    VideoTrackParameters& track_params,
     const media::VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  ComputeFrameRate(frame.timestamp(), &track_settings_.frame_rate,
-                   &track_settings_.prev_frame_timestamp);
-  if (MaybeUpdateFrameRate(&track_settings_) ||
-      frame.natural_size() != track_settings_.frame_size ||
+  ComputedSettings& track_settings = track_params.track_settings;
+  ComputeFrameRate(frame.timestamp(), &track_settings.frame_rate,
+                   &track_settings.prev_frame_timestamp);
+  if (MaybeUpdateFrameRate(&track_settings) ||
+      frame.natural_size() != track_settings.frame_size ||
       frame.metadata().source_size !=
-          track_settings_.metadata_frame_source_size ||
+          track_settings.metadata_frame_source_size ||
       frame.metadata().device_scale_factor !=
-          track_settings_.device_scale_factor) {
-    track_settings_.frame_size = frame.natural_size();
-    track_settings_.metadata_frame_source_size = frame.metadata().source_size;
-    track_settings_.device_scale_factor = frame.metadata().device_scale_factor;
-    return true;
+          track_settings.device_scale_factor) {
+    track_settings.frame_size = frame.natural_size();
+    track_settings.metadata_frame_source_size = frame.metadata().source_size;
+    track_settings.device_scale_factor = frame.metadata().device_scale_factor;
+    track_params.callbacks.settings_callback.Run(
+        track_settings.frame_size, track_settings.frame_rate,
+        track_settings.metadata_frame_source_size,
+        track_settings.device_scale_factor);
   }
-  return false;
 }
 void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
     const media::VideoFrame& frame) {
@@ -656,24 +805,26 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
     media::VideoCaptureFormat source_format;
     source_format.frame_size = source_format_settings_.frame_size;
     source_format.frame_rate = source_format_settings_.frame_rate;
-    for (const auto& callback : callbacks_)
-      callback.second.format_callback.Run(source_format);
+    for (const auto& [track, track_params] : track_parameters_) {
+      track_params.callbacks.format_callback.Run(source_format);
+    }
   }
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::ResetFrameRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  track_settings_.frame_rate = 0.0;
-  track_settings_.last_updated_frame_rate = 0.0;
-  track_settings_.prev_frame_timestamp = base::TimeDelta::Max();
   source_format_settings_.prev_frame_timestamp = base::TimeDelta::Max();
   timestamp_last_delivered_frame_ = base::TimeDelta::Max();
   accumulated_drift_ = base::TimeDelta();
-  for (const auto& callback : callbacks_) {
-    callback.second.settings_callback.Run(
-        track_settings_.frame_size, 0.0,
-        track_settings_.metadata_frame_source_size,
-        track_settings_.device_scale_factor);
+  for (auto& [track, track_params] : track_parameters_) {
+    ComputedSettings& track_settings = track_params.track_settings;
+    track_settings.frame_rate = 0.0;
+    track_settings.last_updated_frame_rate = 0.0;
+    track_settings.prev_frame_timestamp = base::TimeDelta::Max();
+    track_params.callbacks.settings_callback.Run(
+        track_settings.frame_size, 0.0,
+        track_settings.metadata_frame_source_size,
+        track_settings.device_scale_factor);
   }
 }
 
@@ -701,35 +852,31 @@ void VideoTrackAdapter::AddTrack(
     const VideoTrackAdapterSettings& settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  VideoTrackCallbacks callbacks = {
+      CrossThreadBindRepeating(
+          std::move(video_stream_fallbacks.deliver_frame_cb)),
+      CrossThreadBindRepeating(
+          std::move(video_stream_fallbacks.frame_dropped_cb)),
+      CrossThreadBindRepeating(
+          std::move(video_stream_fallbacks.encoded_frame_cb)),
+      CrossThreadBindRepeating(
+          std::move(video_stream_fallbacks.capture_version_cb)),
+      CrossThreadBindRepeating(std::move(video_stream_fallbacks.settings_cb)),
+      CrossThreadBindRepeating(std::move(video_stream_fallbacks.format_cb))};
+
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &VideoTrackAdapter::AddTrackOnVideoTaskRunner,
-          CrossThreadUnretained(this), CrossThreadUnretained(track),
-          CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.deliver_frame_cb)),
-          CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.frame_dropped_cb)),
-          CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.encoded_frame_cb)),
-          CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.capture_version_cb)),
-          CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.settings_cb)),
-          CrossThreadBindRepeating(std::move(video_stream_fallbacks.format_cb)),
-          settings));
+      CrossThreadBindOnce(&VideoTrackAdapter::AddTrackOnVideoTaskRunner,
+                          CrossThreadUnretained(this),
+                          CrossThreadUnretained(track), std::move(callbacks),
+                          settings, base::Token()));
 }
 
 void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
     const MediaStreamVideoTrack* track,
-    VideoCaptureDeliverFrameInternalCallback frame_callback,
-    VideoCaptureNotifyFrameDroppedInternalCallback
-        notify_frame_dropped_callback,
-    DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
-    VideoTrackSettingsInternalCallback settings_callback,
-    VideoTrackFormatInternalCallback format_callback,
-    const VideoTrackAdapterSettings& settings) {
+    VideoTrackCallbacks callbacks,
+    const VideoTrackAdapterSettings& settings,
+    base::Token sub_capture_target) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   scoped_refptr<VideoFrameResolutionAdapter> adapter;
   for (const auto& frame_adapter : adapters_) {
@@ -744,11 +891,7 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
     adapters_.push_back(adapter);
   }
 
-  adapter->AddCallbacks(
-      track, std::move(frame_callback),
-      std::move(notify_frame_dropped_callback),
-      std::move(encoded_frame_callback), std::move(capture_version_callback),
-      std::move(settings_callback), std::move(format_callback));
+  adapter->AddTrack(track, std::move(callbacks), sub_capture_target);
 }
 
 void VideoTrackAdapter::RemoveTrack(const MediaStreamVideoTrack* track) {
@@ -769,6 +912,27 @@ void VideoTrackAdapter::ReconfigureTrack(
       CrossThreadBindOnce(&VideoTrackAdapter::ReconfigureTrackOnVideoTaskRunner,
                           WrapRefCounted(this), CrossThreadUnretained(track),
                           settings));
+}
+
+void VideoTrackAdapter::SetTrackSubCaptureTarget(
+    const MediaStreamVideoTrack* track,
+    const base::Token& sub_capture_target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  PostCrossThreadTask(
+      *video_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &VideoTrackAdapter::SetTrackSubCaptureTargetOnVideoTaskRunner,
+          WrapRefCounted(this), CrossThreadUnretained(track),
+          sub_capture_target));
+}
+
+void VideoTrackAdapter::SetTrackSubCaptureTargetOnVideoTaskRunner(
+    const MediaStreamVideoTrack* track,
+    base::Token sub_capture_target) {
+  DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
+  for (const auto& adapter : adapters_) {
+    adapter->SetTrackSubCaptureTarget(track, sub_capture_target);
+  }
 }
 
 void VideoTrackAdapter::StartFrameMonitoring(
@@ -916,7 +1080,7 @@ void VideoTrackAdapter::RemoveTrackOnVideoTaskRunner(
        // SAFETY: The iterator is used only for traversal, and the loop is
        // exited directly after the erase.
        UNSAFE_BUFFERS(++it)) {
-    (*it)->RemoveCallbacks(track);
+    (*it)->RemoveTrack(track);
     if ((*it)->IsEmpty()) {
       adapters_.erase(it);
       break;
@@ -929,31 +1093,27 @@ void VideoTrackAdapter::ReconfigureTrackOnVideoTaskRunner(
     const VideoTrackAdapterSettings& settings) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
 
-  VideoFrameResolutionAdapter::VideoTrackCallbacks track_callbacks;
+  VideoFrameResolutionAdapter::VideoTrackParameters track_params;
   // Remove the track.
   for (auto it = adapters_.begin(); it != adapters_.end();
        // SAFETY: The iterator is used only for traversal, and the loop is
        // exited directly after the erase.
        UNSAFE_BUFFERS(++it)) {
-    track_callbacks = (*it)->RemoveAndGetCallbacks(track);
-    if (!track_callbacks.frame_callback)
+    track_params = (*it)->RemoveAndGetTrack(track);
+    if (!track_params.callbacks.frame_callback) {
       continue;
+    }
     if ((*it)->IsEmpty()) {
-      DCHECK(track_callbacks.frame_callback);
+      DCHECK(track_params.callbacks.frame_callback);
       adapters_.erase(it);
     }
     break;
   }
 
   // If the track was found, re-add it with new settings.
-  if (track_callbacks.frame_callback) {
-    AddTrackOnVideoTaskRunner(
-        track, std::move(track_callbacks.frame_callback),
-        std::move(track_callbacks.notify_frame_dropped_callback),
-        std::move(track_callbacks.encoded_frame_callback),
-        std::move(track_callbacks.capture_version_callback),
-        std::move(track_callbacks.settings_callback),
-        std::move(track_callbacks.format_callback), settings);
+  if (track_params.callbacks.frame_callback) {
+    AddTrackOnVideoTaskRunner(track, std::move(track_params.callbacks),
+                              settings, track_params.sub_capture_target);
   }
 }
 

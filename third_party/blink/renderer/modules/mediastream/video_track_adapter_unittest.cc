@@ -38,6 +38,8 @@ namespace blink {
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Property;
 
 // Most VideoTrackAdapter functionality is tested in MediaStreamVideoSourceTest.
 // These tests focus on the computation of cropped frame sizes in edge cases
@@ -1056,15 +1058,44 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     return track;
   }
 
+  std::unique_ptr<MediaStreamVideoTrack> AddTrackWithCallbacks(
+      MediaStreamVideoSourceCallbacks video_stream_fallbacks,
+      VideoTrackAdapterSettings adapter_settings =
+          VideoTrackAdapterSettings()) {
+    auto track = std::make_unique<MediaStreamVideoTrack>(
+        mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+        true);
+    RunSyncOnRenderThread([&] {
+      adapter_->AddTrack(track.get(), std::move(video_stream_fallbacks),
+                         adapter_settings);
+    });
+    return track;
+  }
+
   template <class Function>
   void RunSyncOnRenderThread(Function function) {
     base::RunLoop run_loop;
     base::OnceClosure quit_closure = run_loop.QuitClosure();
-    render_thread_.task_runner()->PostTask(FROM_HERE,
-                                           base::BindLambdaForTesting([&] {
-                                             std::move(function)();
-                                             std::move(quit_closure).Run();
-                                           }));
+    render_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          std::move(function)();
+          platform_support_->GetIOTaskRunner()->PostTask(
+              FROM_HERE, std::move(quit_closure));
+        }));
+    run_loop.Run();
+  }
+
+  // Delivers `frame` to the adapter on the IO task runner and blocks until it
+  // has been fanned out to the tracks, so that the caller can assert on the
+  // results immediately afterwards.
+  void DeliverFrameAndWait(scoped_refptr<media::VideoFrame> frame) {
+    base::RunLoop run_loop;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    platform_support_->GetIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          adapter_->DeliverFrameOnVideoTaskRunner(frame, base::TimeTicks());
+          std::move(quit_closure).Run();
+        }));
     run_loop.Run();
   }
 
@@ -1074,6 +1105,26 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,
                     base::TimeTicks estimated_capture_time));
+
+  // Expects exactly one frame delivery per entry in `expected_rects`, matched
+  // on the delivered frame's visible rect. A delivery whose rect is not listed
+  // -- including a second copy of one that is -- fails as an unexpected call,
+  // and a listed rect that never arrives fails as an unsatisfied expectation.
+  //
+  // Frames are identified by rect rather than by track because the adapter
+  // fans a single input frame out to every track, and the delivery callback
+  // does not say which track a frame belongs to. The rects therefore have to
+  // be distinct for a test to pin down per-track behaviour.
+  void ExpectFramesMatching(const std::vector<gfx::Rect>& expected_rects) {
+    for (const gfx::Rect& rect : expected_rects) {
+      EXPECT_CALL(*this,
+                  OnFrameDelivered(
+                      Pointee(Property("visible_rect",
+                                       &media::VideoFrame::visible_rect, rect)),
+                      _))
+          .Times(1);
+    }
+  }
 
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
@@ -1128,14 +1179,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, kSourceSize, gfx::Rect(kSourceSize),
             kSourceSize, base::Milliseconds(i * 33));
-    base::RunLoop run_loop;
-    base::OnceClosure quit_closure = run_loop.QuitClosure();
-    platform_support_->GetIOTaskRunner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          adapter_->DeliverFrameOnVideoTaskRunner(frame, base::TimeTicks());
-          std::move(quit_closure).Run();
-        }));
-    run_loop.Run();
+    DeliverFrameAndWait(frame);
   }
 
   // Flush the render thread where format_cb is posted.
@@ -1169,14 +1213,7 @@ TEST_F(VideoTrackAdapterEncodedTest, MultiTrackFrameRateCalculation) {
         media::VideoFrame::CreateZeroInitializedFrame(
             media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
             kFrameSize, base::Milliseconds(i * 33));
-    base::RunLoop run_loop;
-    base::OnceClosure quit_closure = run_loop.QuitClosure();
-    platform_support_->GetIOTaskRunner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          adapter_->DeliverFrameOnVideoTaskRunner(frame, base::TimeTicks());
-          std::move(quit_closure).Run();
-        }));
-    run_loop.Run();
+    DeliverFrameAndWait(frame);
   }
 
   // Flush the render thread where settings_cb is posted.
@@ -1185,6 +1222,355 @@ TEST_F(VideoTrackAdapterEncodedTest, MultiTrackFrameRateCalculation) {
   EXPECT_GT(track1_fps, 0.0);
   EXPECT_GT(track2_fps, 0.0);
   EXPECT_NEAR(track1_fps, track2_fps, 0.1);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest, DeliverFrameWithRegionCaptureBounds) {
+  auto track1 = AddTrack();
+  auto track2 = AddTrack();
+  auto track3 = AddTrack();
+
+  const base::Token token1(0x11111111, 0x22222222);
+  const base::Token token2(0x33333333, 0x44444444);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->SetTrackSubCaptureTarget(track1.get(), token1);
+    adapter_->SetTrackSubCaptureTarget(track2.get(), token2);
+  });
+
+  ExpectFramesMatching({
+      // track1's bounds are (11, 21, 101, 201); I420 chroma subsampling snaps
+      // them to even origin and size.
+      gfx::Rect(12, 22, 100, 200),
+      gfx::Rect(50, 60, 200, 150),  // track2, already even.
+      gfx::Rect(0, 0, 1920, 1080),  // track3, uncropped.
+  });
+
+  const gfx::Size kFrameSize(1920, 1080);
+  scoped_refptr<media::VideoFrame> input_frame =
+      media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+          kFrameSize, base::Milliseconds(10));
+
+  base::flat_map<base::Token, gfx::Rect> bounds;
+  bounds[token1] = gfx::Rect(11, 21, 101, 201);
+  bounds[token2] = gfx::Rect(50, 60, 200, 150);
+  input_frame->metadata().region_capture_bounds = bounds;
+
+  DeliverFrameAndWait(input_frame);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+    adapter_->RemoveTrack(track3.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       DeliverFrameWithRegionCaptureBoundsRgbExactAlignment) {
+  auto track1 = AddTrack();
+  auto track2 = AddTrack();
+
+  const base::Token token1(0x11111111, 0x22222222);
+
+  RunSyncOnRenderThread(
+      [&] { adapter_->SetTrackSubCaptureTarget(track1.get(), token1); });
+
+  ExpectFramesMatching({
+      // ARGB preserves exact odd coordinates and dimensions without 2-pixel
+      // rounding, so track1 sees the bounds rect unmodified.
+      gfx::Rect(11, 21, 101, 201),
+      gfx::Rect(0, 0, 1920, 1080),  // track2, uncropped.
+  });
+
+  const gfx::Size kFrameSize(1920, 1080);
+  scoped_refptr<media::VideoFrame> input_frame =
+      media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_ARGB, kFrameSize, gfx::Rect(kFrameSize),
+          kFrameSize, base::Milliseconds(10));
+
+  base::flat_map<base::Token, gfx::Rect> bounds;
+  bounds[token1] = gfx::Rect(11, 21, 101, 201);
+  input_frame->metadata().region_capture_bounds = bounds;
+
+  DeliverFrameAndWait(input_frame);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       DeliverFrameWithEmptyOrOffscreenRegionCaptureBounds) {
+  auto track1 = AddTrack();
+  auto track2 = AddTrack();
+  auto track3 = AddTrack();
+
+  const base::Token token1(0x11111111, 0x22222222);
+  const base::Token token2(0x33333333, 0x44444444);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->SetTrackSubCaptureTarget(track1.get(), token1);
+    adapter_->SetTrackSubCaptureTarget(track2.get(), token2);
+  });
+
+  // token1 is NOT present in bounds (simulating offscreen / 0px), so track1
+  // must not be delivered to at all; a frame for it would show up here as an
+  // unexpected call.
+  ExpectFramesMatching({
+      gfx::Rect(50, 60, 200, 150),  // track2, cropped to token2.
+      gfx::Rect(0, 0, 1920, 1080),  // track3, uncropped.
+  });
+
+  const gfx::Size kFrameSize(1920, 1080);
+  scoped_refptr<media::VideoFrame> input_frame =
+      media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+          kFrameSize, base::Milliseconds(10));
+
+  base::flat_map<base::Token, gfx::Rect> bounds;
+  // token1 is omitted
+  bounds[token2] = gfx::Rect(50, 60, 200, 150);
+  input_frame->metadata().region_capture_bounds = bounds;
+
+  DeliverFrameAndWait(input_frame);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+    adapter_->RemoveTrack(track3.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       DeliverFrameWithRegionCaptureBoundsSettingsCallbackOnlyOncePerSize) {
+  int track1_settings_calls = 0;
+  gfx::Size track1_last_size;
+  auto track1_settings_cb = base::BindLambdaForTesting(
+      [&](gfx::Size frame_size, double frame_rate,
+          std::optional<gfx::Size> metadata_source_size,
+          std::optional<float> device_scale_factor) {
+        track1_settings_calls++;
+        track1_last_size = frame_size;
+      });
+
+  int track2_settings_calls = 0;
+  gfx::Size track2_last_size;
+  auto track2_settings_cb = base::BindLambdaForTesting(
+      [&](gfx::Size frame_size, double frame_rate,
+          std::optional<gfx::Size> metadata_source_size,
+          std::optional<float> device_scale_factor) {
+        track2_settings_calls++;
+        track2_last_size = frame_size;
+      });
+
+  auto track1 = AddTrack(track1_settings_cb);
+  auto track2 = AddTrack(track2_settings_cb);
+
+  const base::Token token1(0x11111111, 0x22222222);
+  const base::Token token2(0x33333333, 0x44444444);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->SetTrackSubCaptureTarget(track1.get(), token1);
+    adapter_->SetTrackSubCaptureTarget(track2.get(), token2);
+  });
+
+  EXPECT_CALL(*this, OnFrameDelivered).Times(testing::AnyNumber());
+
+  const gfx::Size kFrameSize(1920, 1080);
+  base::flat_map<base::Token, gfx::Rect> bounds;
+  bounds[token1] = gfx::Rect(10, 20, 100, 200);
+  bounds[token2] = gfx::Rect(50, 60, 300, 400);
+
+  auto deliver_frame = [&](base::TimeDelta timestamp) {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, timestamp);
+    frame->metadata().region_capture_bounds = bounds;
+    DeliverFrameAndWait(frame);
+  };
+
+  // Deliver frame 1. Both tracks should receive an initial settings callback.
+  deliver_frame(base::Milliseconds(33));
+  EXPECT_EQ(track1_settings_calls, 1);
+  EXPECT_EQ(track1_last_size, gfx::Size(100, 200));
+  EXPECT_EQ(track2_settings_calls, 1);
+  EXPECT_EQ(track2_last_size, gfx::Size(300, 400));
+
+  // Deliver subsequent frames with the same dimensions. Settings callbacks
+  // must NOT be invoked again (no thrashing between tracks).
+  deliver_frame(base::Milliseconds(66));
+  deliver_frame(base::Milliseconds(99));
+  EXPECT_EQ(track1_settings_calls, 1);
+  EXPECT_EQ(track2_settings_calls, 1);
+
+  // Now change bounds for track1 only.
+  bounds[token1] = gfx::Rect(10, 20, 160, 240);
+  deliver_frame(base::Milliseconds(132));
+  EXPECT_EQ(track1_settings_calls, 2);
+  EXPECT_EQ(track1_last_size, gfx::Size(160, 240));
+  EXPECT_EQ(track2_settings_calls, 1);
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       SetTrackSubCaptureTargetInheritsSettingsImmediately) {
+  int track1_settings_calls = 0;
+  gfx::Size track1_last_size;
+  auto track1_settings_cb = base::BindLambdaForTesting(
+      [&](gfx::Size frame_size, double frame_rate,
+          std::optional<gfx::Size> metadata_source_size,
+          std::optional<float> device_scale_factor) {
+        track1_settings_calls++;
+        track1_last_size = frame_size;
+      });
+
+  int track2_settings_calls = 0;
+  gfx::Size track2_last_size;
+  auto track2_settings_cb = base::BindLambdaForTesting(
+      [&](gfx::Size frame_size, double frame_rate,
+          std::optional<gfx::Size> metadata_source_size,
+          std::optional<float> device_scale_factor) {
+        track2_settings_calls++;
+        track2_last_size = frame_size;
+      });
+
+  auto track1 = AddTrack(track1_settings_cb);
+  auto track2 = AddTrack(track2_settings_cb);
+
+  const base::Token token1(0x11111111, 0x22222222);
+
+  RunSyncOnRenderThread(
+      [&] { adapter_->SetTrackSubCaptureTarget(track1.get(), token1); });
+
+  EXPECT_CALL(*this, OnFrameDelivered).Times(testing::AnyNumber());
+
+  const gfx::Size kFrameSize(1920, 1080);
+  base::flat_map<base::Token, gfx::Rect> bounds;
+  bounds[token1] = gfx::Rect(10, 20, 100, 200);
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+          kFrameSize, base::Milliseconds(33));
+  frame->metadata().region_capture_bounds = bounds;
+
+  DeliverFrameAndWait(frame);
+
+  EXPECT_EQ(track1_settings_calls, 1);
+  EXPECT_EQ(track1_last_size, gfx::Size(100, 200));
+  EXPECT_EQ(track2_settings_calls, 1);
+  EXPECT_EQ(track2_last_size, gfx::Size(1920, 1080));
+
+  // Now track2 changes target to token1. It should immediately inherit
+  // track1's settings (100, 200) without waiting for a new frame.
+  RunSyncOnRenderThread(
+      [&] { adapter_->SetTrackSubCaptureTarget(track2.get(), token1); });
+
+  EXPECT_EQ(track2_settings_calls, 2);
+  EXPECT_EQ(track2_last_size, gfx::Size(100, 200));
+
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       DeliverFrameDefensiveCheckWhenRegionCaptureBoundsMissing) {
+  int track1_deliveries = 0;
+  int track2_deliveries = 0;
+
+  MediaStreamVideoSourceCallbacks cb1;
+  cb1.deliver_frame_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<media::VideoFrame>,
+                                     base::TimeTicks) { track1_deliveries++; });
+  cb1.frame_dropped_cb = base::DoNothing();
+  cb1.encoded_frame_cb = base::DoNothing();
+  cb1.settings_cb = base::DoNothing();
+  cb1.capture_version_cb = base::DoNothing();
+  cb1.format_cb = base::DoNothing();
+
+  MediaStreamVideoSourceCallbacks cb2;
+  cb2.deliver_frame_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<media::VideoFrame>,
+                                     base::TimeTicks) { track2_deliveries++; });
+  cb2.frame_dropped_cb = base::DoNothing();
+  cb2.encoded_frame_cb = base::DoNothing();
+  cb2.settings_cb = base::DoNothing();
+  cb2.capture_version_cb = base::DoNothing();
+  cb2.format_cb = base::DoNothing();
+
+  auto track1 = AddTrackWithCallbacks(std::move(cb1));
+  auto track2 = AddTrackWithCallbacks(std::move(cb2));
+
+  const base::Token token1(0x11111111, 0x22222222);
+
+  RunSyncOnRenderThread([&] {
+    // track1 is cropped, track2 is uncropped
+    adapter_->SetTrackSubCaptureTarget(track1.get(), token1);
+  });
+
+  const gfx::Size kFrameSize(1920, 1080);
+
+  // Deliver a frame WITHOUT region_capture_bounds and WITHOUT
+  // region_capture_rect. track1 (cropped) must NOT receive it; track2
+  // (uncropped) MUST receive it.
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, base::Milliseconds(33));
+    DeliverFrameAndWait(frame);
+  }
+
+  EXPECT_EQ(track1_deliveries, 0);
+  EXPECT_EQ(track2_deliveries, 1);
+
+  // Deliver a frame WITH region_capture_rect cropped to a DIFFERENT target
+  // (token2). track1 (cropped to token1) must NOT receive it. track2 is
+  // uncropped, so it still receives whatever the capturer produced.
+  const base::Token token2(0x33333333, 0x44444444);
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, gfx::Size(200, 100), gfx::Rect(200, 100),
+            gfx::Size(200, 100), base::Milliseconds(66));
+    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    frame->metadata().region_capture_bounds = {
+        {token2, gfx::Rect(0, 0, 200, 100)}};
+    DeliverFrameAndWait(frame);
+  }
+
+  EXPECT_EQ(track1_deliveries, 0);
+  EXPECT_EQ(track2_deliveries, 2);
+
+  // Deliver a frame WITH region_capture_rect cropped to token1 (simulating GPU
+  // single-target crop to token1). track1 (cropped to token1) MUST receive it;
+  // track2 is uncropped and still receives it too.
+  {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, gfx::Size(200, 100), gfx::Rect(200, 100),
+            gfx::Size(200, 100), base::Milliseconds(99));
+    frame->metadata().region_capture_rect = gfx::Rect(0, 0, 200, 100);
+    frame->metadata().region_capture_bounds = {
+        {token1, gfx::Rect(0, 0, 200, 100)}};
+    DeliverFrameAndWait(frame);
+  }
+
+  EXPECT_EQ(track1_deliveries, 1);
+  EXPECT_EQ(track2_deliveries, 3);
 
   RunSyncOnRenderThread([&] {
     adapter_->RemoveTrack(track1.get());
