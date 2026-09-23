@@ -2103,20 +2103,23 @@ void Window::UpdateLayerName() {
 
 void Window::RegisterFrameSinkId() {
   DCHECK(frame_sink_id_.is_valid());
-  if (registered_frame_sink_id_ || disable_frame_sink_id_registration_)
+  if (registered_frame_sink_id_ || disable_frame_sink_id_registration_) {
     return;
-  if (auto* compositor = layer()->GetCompositor()) {
-    compositor->AddChildFrameSink(frame_sink_id_);
+  }
+  if (auto* host = GetHost(); host && host->compositor()) {
+    host->compositor()->AddChildFrameSink(frame_sink_id_);
     registered_frame_sink_id_ = true;
   }
 }
 
 void Window::UnregisterFrameSinkId() {
-  if (!registered_frame_sink_id_)
+  if (!registered_frame_sink_id_) {
     return;
+  }
   registered_frame_sink_id_ = false;
-  if (auto* compositor = layer()->GetCompositor())
-    compositor->RemoveChildFrameSink(frame_sink_id_);
+  if (auto* host = GetHost(); host && host->compositor()) {
+    host->compositor()->RemoveChildFrameSink(frame_sink_id_);
+  }
 }
 
 void Window::UpdateLocalSurfaceId() {

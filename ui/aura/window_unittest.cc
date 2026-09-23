@@ -62,6 +62,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
 
@@ -1504,6 +1505,44 @@ TEST_F(WindowLayerManagedByParentTest, NoLayoutManager) {
     EXPECT_DEATH(parent.SetLayoutManager(std::make_unique<TestLayoutManager>()),
                  "");
   }
+}
+
+// Verify that reparenting a window with an unmanaged layer (and a child window
+// with a FrameSinkId) across root windows registers and unregisters the
+// FrameSinkId with the correct root window's compositor, even before the
+// layer is moved to the new root layer tree.
+TEST_F(WindowLayerManagedByParentTest, ReparentAcrossRootsWithFrameSinkId) {
+  std::unique_ptr<WindowTreeHost> second_host =
+      WindowTreeHost::Create(ui::PlatformWindowInitProperties{{100, 100}});
+  second_host->InitHost();
+
+  Window parent_win(nullptr);
+  parent_win.Init(ui::LAYER_TEXTURED);
+  parent_win.SetLayerManagedByParent(false);
+
+  Window child_win(nullptr);
+  child_win.Init(ui::LAYER_SOLID_COLOR);
+  child_win.SetEmbedFrameSinkId(viz::FrameSinkId(1, 1));
+  parent_win.AddChild(&child_win);
+
+  // Add `parent_win` to `second_host`'s root window and attach its layer under
+  // an intermediate layer in `second_host`.
+  ui::LayerNotDrawn host1_layer;
+  second_host->window()->layer()->Add(&host1_layer);
+  second_host->window()->AddChild(&parent_win);
+  host1_layer.Add(parent_win.layer());
+
+  // Reparent `parent_win` to the primary `root_window()` before moving
+  // `parent_win.layer()` to `root_window()`'s layer tree (matching
+  // NativeViewHostAura::AttachNativeView).
+  ui::LayerNotDrawn host2_layer;
+  root_window()->layer()->Add(&host2_layer);
+  root_window()->AddChild(&parent_win);
+  host2_layer.Add(parent_win.layer());
+
+  // Removing `parent_win` from `root_window()` should unregister the
+  // FrameSinkId from `root_window()`'s compositor without crashing.
+  root_window()->RemoveChild(&parent_win);
 }
 
 // Various capture assertions.
