@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -51,6 +52,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
 
@@ -684,6 +686,7 @@ public class TabbedModeTabModelStoreTest {
             ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE
                     + ":phase/"
                     + TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE)
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/565238230
     public void testAuthoritativeStoreActivityRecreationCrash() throws Exception {
         setupActivityStore(StoreType.TAB_STATE_STORE);
 
