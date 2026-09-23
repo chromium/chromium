@@ -212,6 +212,26 @@
   position: relative;
 }
 
+/* Voice search uses the search token blues on every surface, instead of
+ * inheriting whichever submit color the embedding composebox happens to use.
+ */
+#submitButton {
+  --color-composebox-submit-button-background: #346BF1;
+}
+
+#submitButton[disabled] {
+  --color-composebox-submit-button-background: #C2D3FB;
+}
+
+/* The shared submit button fades itself out when disabled. The inactive color
+ * above is already the faded token, so keep both background layers at full
+ * opacity.
+ */
+#submitButton[disabled]::part(submit-icon),
+#submitButton[disabled]::part(button-energy) {
+  opacity: 1;
+}
+
 :host-context([webui-rounded-icons]) #stopButton {
   --cr-icon-button-icon-size: 24px;
 }
