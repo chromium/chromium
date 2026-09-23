@@ -220,6 +220,29 @@ export class OmniboxEverywhereOmniboxElement extends
     this.callbackRouter_ = browserProxy.callbackRouter;
     this.dragAndDropHandler =
         new DragAndDropHandler(this, this.fileContextEnabled_);
+
+    // Intercept action execution (e.g., "Switch to this tab", Chrome Pedals)
+    // to ensure that the searchbox input and dropdown results are cleared when
+    // an action is triggered. Since Omnibox Everywhere keeps its WebContents
+    // alive in the background across hide/show cycles, un-cleared input would
+    // otherwise linger into subsequent invocations.
+    //
+    // Note: `originalExecuteAction` MUST be dispatched before calling
+    // `clearAutocompleteMatches()`. `clearAutocompleteMatches()` issues
+    // `stopAutocomplete(/*clearResult=*/ true)` which invalidates the result
+    // list in C++ `AutocompleteController`; dispatching `originalExecuteAction`
+    // first guarantees the browser processes the action against valid matches.
+    //
+    // TODO(b/565416805): Consider moving executeAction to the mixin
+    // and overriding from there.
+    const originalExecuteAction =
+        this.pageHandler_.executeAction.bind(this.pageHandler_);
+    this.pageHandler_.executeAction = (...args) => {
+      const result = originalExecuteAction(...args);
+      this.setInputText('');
+      this.clearAutocompleteMatches();
+      return result;
+    };
   }
 
   override connectedCallback() {

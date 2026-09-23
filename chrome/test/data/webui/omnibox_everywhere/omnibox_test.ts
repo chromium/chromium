@@ -350,6 +350,48 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertEquals('', omnibox.$.input.inputElement.value);
   });
 
+  test('executeAction clears input text and autocomplete matches', async () => {
+    omnibox.setInputText('query');
+    omnibox.activeQueryId = 0;
+    omnibox.lastQueriedInput = 'query';
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: 0,
+          input: 'query',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'query match',
+              actions: [{
+                hint: 'Switch to this tab',
+                suggestionContents: '',
+                iconPath: 'icon.png',
+                a11yLabel: 'Switch to this tab',
+              }],
+            }),
+          ],
+        }));
+    await microtasksFinished();
+    assertEquals('query', omnibox.$.input.inputElement.value);
+
+    const matchEl =
+        omnibox.$.matches.shadowRoot?.querySelector('cr-searchbox-match');
+    assertTrue(!!matchEl);
+    const actionEl = matchEl.shadowRoot?.querySelector('cr-searchbox-action');
+    assertTrue(!!actionEl);
+
+    actionEl.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    await testProxy.handler.whenCalled('executeAction');
+    assertEquals('', omnibox.$.input.inputElement.value);
+    assertFalse(omnibox.dropdownIsVisible);
+  });
+
   test('multiLineEnabled is initialized from loadTimeData', () => {
     assertTrue(omnibox.multiLineEnabled);
     assertTrue(omnibox.hasAttribute('multi-line-enabled'));
