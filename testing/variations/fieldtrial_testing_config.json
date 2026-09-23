@@ -6291,28 +6291,6 @@
             ]
         }
     ],
-    "DesktopNtpSimplification": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ModuleMinStalenessUpdateTimeInterval": "1d",
-                        "StaleModulesCountThreshold": "14"
-                    },
-                    "enable_features": [
-                        "NtpFeatureOptimizationModuleRemoval"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpTabResumption": [
         {
             "platforms": [
