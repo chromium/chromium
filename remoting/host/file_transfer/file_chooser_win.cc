@@ -16,6 +16,8 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -91,9 +93,16 @@ void FileChooserWindows::SetLauncherForTesting(LaunchProcessCallback launcher) {
 
 void FileChooserWindows::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LaunchResult result = launcher_for_testing_ ? launcher_for_testing_.Run()
-                                              : LaunchChooserProcess();
-  OnProcessLaunched(std::move(result));
+  if (launcher_for_testing_) {
+    OnProcessLaunched(launcher_for_testing_.Run());
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&FileChooserWindows::LaunchChooserProcess),
+      base::BindOnce(&FileChooserWindows::OnProcessLaunched,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FileChooserWindows::OnProcessLaunched(LaunchResult result) {

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -59,6 +60,7 @@ class FileChooserWindows : public FileChooser {
   base::Process process_;
   mojo::Remote<mojom::FileChooser> file_chooser_;
   LaunchProcessCallback launcher_for_testing_;
+  base::WeakPtrFactory<FileChooserWindows> weak_factory_{this};
 };
 
 }  // namespace remoting
