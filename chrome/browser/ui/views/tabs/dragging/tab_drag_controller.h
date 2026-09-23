@@ -152,6 +152,13 @@ class TabDragController : public views::WidgetObserver,
   // Returns true if there is a drag underway.
   static bool IsActive();
 
+  // Called when `browser`'s tab strip becomes empty. If a touch drag session is
+  // active, takes ownership of closing `browser` (deferring it until the drag
+  // completes) and returns true. Returns false if the caller should close
+  // `browser` itself, as usual.
+  [[nodiscard]] static bool OnBrowserTabStripEmptyDuringDrag(
+      BrowserWindowInterface* browser);
+
   // Returns true if a regular drag and drop session is running as a fallback
   // instead of a move loop.
   static bool IsSystemDnDSessionRunning();
@@ -427,6 +434,13 @@ class TabDragController : public views::WidgetObserver,
   void DetachAndAttachToNewContext(ReleaseCapture release_capture,
                                    TabDragContext* target_context);
 
+  // Hides browsers whose tab strips emptied mid-drag and whose close was
+  // deferred by `OnBrowserTabStripEmptyDuringDrag()`, so they don't linger on
+  // screen tabless. Must only be called once the drag has taken capture on
+  // `attached_context_`, since hiding a window releases capture if it contains
+  // the capture window.
+  void HideDeferredEmptyBrowsers();
+
   // Detaches the tabs being dragged, creates a new Browser to contain them and
   // runs a nested move loop.
   [[nodiscard]] Liveness DetachIntoNewBrowserAndRunMoveLoop(
@@ -698,6 +712,11 @@ class TabDragController : public views::WidgetObserver,
 
   std::unique_ptr<DraggedTabsClosedTracker>
       attached_context_tabs_closed_tracker_;
+
+  // Browsers whose tab strips became empty during the drag session and whose
+  // close was deferred until the drag session completes.
+  std::vector<base::WeakPtr<BrowserWindowInterface>>
+      empty_browsers_to_close_on_end_drag_;
 
   std::unique_ptr<WindowFinder> window_finder_;
 

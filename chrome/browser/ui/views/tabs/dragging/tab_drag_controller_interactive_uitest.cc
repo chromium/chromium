@@ -1163,6 +1163,16 @@ class DetachToBrowserTabDragControllerTest
     return true;
   }
 
+  // Returns the number of browsers expected to exist mid-drag, after the source
+  // browser's tab strip has been emptied by the drag. For touch drags,
+  // TabDragController defers closing the emptied browser until the drag ends
+  // (so it is still counted); for mouse drags it is closed right away.
+  size_t ExpectedBrowserCountWithEmptiedSource(size_t count_after_drag) {
+    return input_source() == InputSource::INPUT_SOURCE_TOUCH
+               ? count_after_drag + 1
+               : count_after_drag;
+  }
+
   // Helper method to click the first tab. Used to ensure no additional widgets
   // are in focus. For example, the tab editor bubble  is automatically opened
   // upon creating a new group.
@@ -3957,10 +3967,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
 
-  // Should now be attached to tab_strip2.
+  // Should now be attached to tab_strip2. For touch drags the emptied source
+  // browser remains alive until the drag ends.
   ASSERT_TRUE(IsDragSessionActive(tab_strip2));
   ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(ExpectedBrowserCountWithEmptiedSource(1u),
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Drag to the trailing end of the tabstrip to ensure we're in a
   // predictable spot within the strip.
@@ -3971,6 +3983,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ASSERT_FALSE(IsDragSessionActive(tab_strip2));
   ASSERT_FALSE(TabDragController::IsActive());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlobalBrowserCollection::GetInstance()->GetSize() == 1u;
+  }));
   EXPECT_EQ("100 0 1", IDString(browser2->GetTabStripModel()));
 
   EXPECT_FALSE(GetIsDragged(browser2));
@@ -4006,10 +4021,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
 
-  // Should now be attached to tab_strip2.
+  // Should now be attached to tab_strip2. For touch drags the emptied source
+  // browser remains alive until the drag ends.
   ASSERT_TRUE(IsDragSessionActive(tab_strip2));
   ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(ExpectedBrowserCountWithEmptiedSource(1u),
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // A new browser should open to hold the dragged tabs. We use a custom
   // AsyncBrowserWaiter because waiting synchronously via BrowserCreatedObserver
@@ -4040,7 +4057,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return new_tab_strip && !IsDragSessionActive(new_tab_strip) &&
-           !TabDragController::IsActive();
+           !TabDragController::IsActive() &&
+           GlobalBrowserCollection::GetInstance()->GetSize() == 2u;
   }));
   EXPECT_EQ("100", IDString(browser2->GetTabStripModel()));
   EXPECT_EQ("0 1", IDString(new_browser->GetTabStripModel()));
@@ -4960,11 +4978,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
 
-  // Should now be attached to tab_strip2.
+  // Should now be attached to tab_strip2. For touch drags the emptied source
+  // browser remains alive until the drag ends.
   ASSERT_TRUE(IsDragSessionActive(tab_strip2));
   ASSERT_TRUE(WaitForAttach(tab_strip2, 3));
   ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(ExpectedBrowserCountWithEmptiedSource(1u),
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // `source_context_` decides revert-versus-complete and is cleared from a
   // TabStripModelObserver callback, so escape races it.
@@ -4984,7 +5004,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ("100 0 1", IDString(browser2->GetTabStripModel()));
 
   // browser() will have been destroyed, but browser2 should remain.
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlobalBrowserCollection::GetInstance()->GetSize() == 1u;
+  }));
 
   EXPECT_FALSE(GetIsDragged(browser2));
 
@@ -5016,11 +5038,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2, this, tab_strip,
                                 target_tab_strip));
 
-  // Should now be attached to `target_tab_strip`.
+  // Should now be attached to `target_tab_strip`. For touch drags the emptied
+  // source browser remains alive until the drag ends.
   ASSERT_TRUE(IsDragSessionActive(target_tab_strip));
   ASSERT_TRUE(WaitForAttach(target_tab_strip, 3));
   ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(ExpectedBrowserCountWithEmptiedSource(1u),
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Drag to the trailing end of the tabstrip to ensure we're in a consistent
   // spot within the strip.
@@ -5031,6 +5055,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   ASSERT_FALSE(IsDragSessionActive(target_tab_strip));
   ASSERT_FALSE(TabDragController::IsActive());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlobalBrowserCollection::GetInstance()->GetSize() == 1u;
+  }));
   EXPECT_EQ("100 0 1", IDString(target_browser->GetTabStripModel()));
 
   EXPECT_FALSE(GetIsDragged(target_browser));
@@ -5138,11 +5165,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
 
-  // Should now be attached to tab_strip2.
+  // Should now be attached to tab_strip2. For touch drags the emptied source
+  // browser remains alive until the drag ends.
   ASSERT_TRUE(IsDragSessionActive(tab_strip2));
   ASSERT_TRUE(WaitForAttach(tab_strip2, 2));
   ASSERT_TRUE(TabDragController::IsActive());
-  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(ExpectedBrowserCountWithEmptiedSource(1u),
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Drag to the trailing end of the tabstrip to ensure we're in a consistent
   // spot within the strip.
@@ -5153,6 +5182,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   ASSERT_FALSE(IsDragSessionActive(tab_strip2));
   ASSERT_FALSE(TabDragController::IsActive());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlobalBrowserCollection::GetInstance()->GetSize() == 1u;
+  }));
   EXPECT_EQ("100 0", IDString(browser2->GetTabStripModel()));
 
   EXPECT_FALSE(GetIsDragged(browser2));
