@@ -8,12 +8,15 @@
 #import <regex.h>
 #import <sys/types.h>
 
+#import "base/check.h"
 #import "base/check_op.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "base/time/time_override.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -41,6 +44,9 @@
 
 namespace {
 
+using ::base::test::TestFutureMode;
+using ::testing::Eq;
+
 const int64_t kUnknownInstallDate = 2;
 
 base::Time GetTimeWithDelta(base::TimeDelta delta) {
@@ -52,6 +58,27 @@ base::TimeTicks GetTimeTicksWithDelta(base::TimeDelta delta) {
   static base::TimeTicks base = base::subtle::TimeTicksNowIgnoringOverride();
   return base + delta;
 }
+
+// Returns whether `future` is ready and consume all values.
+template <typename T>
+bool IsReadyAndClear(base::test::TestFuture<T>& future) {
+  const bool result = future.IsReady();
+  future.Clear();
+  return result;
+}
+
+// Expects `future` to be ready and returns the last captured value,
+// dropping all other captured values (if any).
+template <typename T>
+T TakeLastValue(base::test::TestFuture<T>& future) {
+  CHECK(future.IsReady());
+  T result = future.Take();
+  while (future.IsReady()) {
+    result = future.Take();
+  }
+  return result;
+}
+
 }  // namespace
 
 class OmahaServiceTest : public PlatformTest {
@@ -63,8 +90,6 @@ class OmahaServiceTest : public PlatformTest {
         need_update_(false) {
     GetApplicationContext()->GetLocalState()->SetInt64(
         metrics::prefs::kInstallDate, kUnknownInstallDate);
-    OmahaPersistentState::SaveTo([NSUserDefaults standardUserDefaults],
-                                 OmahaPersistentState {});
   }
 
   OmahaServiceTest(const OmahaServiceTest&) = delete;
@@ -157,13 +182,11 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
-      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                          base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+  service.StartInternal(OmahaPersistentState{},
+                        GetPendingSharedURLLoaderFactoryCallback(),
+                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                                            base::Unretained(this)),
+                        base::DoNothing());
 
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -189,13 +212,11 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
-      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                          base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+  service.StartInternal(OmahaPersistentState{},
+                        GetPendingSharedURLLoaderFactoryCallback(),
+                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                                            base::Unretained(this)),
+                        base::DoNothing());
 
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -245,19 +266,15 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   });
 
   for (const TestCase& test_case : kTestCases) {
-    OmahaPersistentState::SaveTo(
-        [NSUserDefaults standardUserDefaults], OmahaPersistentState {
-          .last_sent_version = base::Version(test_case.previous_version),
-        });
-
     OmahaService service(false);
     service.StartInternal(
-        OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+        OmahaPersistentState{
+            .last_sent_version = base::Version(test_case.previous_version),
+        },
         GetPendingSharedURLLoaderFactoryCallback(),
         base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                             base::Unretained(this)),
-        base::BindRepeating(&OmahaPersistentState::SaveTo,
-                            [NSUserDefaults standardUserDefaults]));
+        base::DoNothing());
 
     std::string content = service.GetPingContent(
         "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
@@ -277,53 +294,53 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
 }
 
 TEST_F(OmahaServiceTest, SendPingSuccess) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+  }
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
+
   EXPECT_FALSE(NeedUpdate());
   EXPECT_FALSE(ScheduledCallbackUsed());
 }
 
 TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      base::DoNothing());
 
   service.SendPing();
 
@@ -338,18 +355,13 @@ TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      base::DoNothing());
 
   service.SendPing();
 
@@ -383,26 +395,26 @@ TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
 }
 
 TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   std::string response =
       std::string(
@@ -412,6 +424,7 @@ TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
       "\" status=\"ok\">"
       "<updatecheck status=\"error\"/><ping status=\"ok\"/>"
       "</app></response>";
+
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
@@ -421,62 +434,67 @@ TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
 }
 
 TEST_F(OmahaServiceTest, OneOffSuccess) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
+
   EXPECT_FALSE(NeedUpdate());
   EXPECT_TRUE(WasOneOff());
 }
 
 TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   // One off callback set during ongoing ping, it should now be used for
   // response.
@@ -487,51 +505,64 @@ TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
+
   EXPECT_FALSE(NeedUpdate());
   EXPECT_TRUE(WasOneOff());
 }
 
 TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
+
   EXPECT_FALSE(NeedUpdate());
   EXPECT_TRUE(WasOneOff());
 
   service.SendPing();
+
+  // State must have been saved.
+  EXPECT_TRUE(IsReadyAndClear(future));
 
   pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -539,73 +570,79 @@ TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
 
   EXPECT_FALSE(NeedUpdate());
   EXPECT_FALSE(WasOneOff());
+
+  // State must have been saved.
+  EXPECT_TRUE(IsReadyAndClear(future));
 }
 
 TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.CheckNowOnIOThread(
       base::BindOnce(&OmahaServiceTest::OneOffCheck, base::Unretained(this)));
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   service.SendPing();
 
   // Ping during one-off should be dropped, nothing should change.
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  EXPECT_FALSE(IsReadyAndClear(future));
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
+
   EXPECT_FALSE(NeedUpdate());
   EXPECT_TRUE(WasOneOff());
 }
 
 TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
+  future.Clear();
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
 
-  EXPECT_EQ(4088, service.last_server_date_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.last_server_date, 4088);
+  }
 
   const char* expectedResult =
       "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
@@ -630,22 +667,25 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
 }
 
 TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
+      OmahaPersistentState{}, GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   std::string response =
       std::string(
@@ -656,36 +696,42 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
       "<event status=\"ok\"/>"
       "<ping status=\"ok\"/>"
       "</app></response>";
+
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
 
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_GT(service.last_sent_time_, now);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_GT(captured_state.last_response_time, now);
+  }
+
   EXPECT_FALSE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   std::string response =
       std::string(
@@ -710,36 +756,42 @@ TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_EQ(service.current_ping_time_, service.next_tries_time_);
-  EXPECT_GT(service.last_sent_time_, now);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_EQ(captured_state.last_ping_time, captured_state.next_ping_time);
+    EXPECT_GT(captured_state.last_response_time, now);
+  }
+
   EXPECT_TRUE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, SendPingFailure) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  // Tries with a non 200 result.
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
-  base::Time next_tries_time = service.next_tries_time_;
+  base::Time next_tries_time;
+  {
+    // Tries with a non 200 result.
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+    next_tries_time = captured_state.next_ping_time;
+  }
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   auto url_response_head =
@@ -748,69 +800,56 @@ TEST_F(OmahaServiceTest, SendPingFailure) {
       pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
       std::move(url_response_head), std::string());
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_EQ(next_tries_time, service.next_tries_time_);
-  EXPECT_LT(service.last_sent_time_, now);
+  EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(NeedUpdate());
 
   // Tries with an incorrect xml message.
   service.SendPing();
 
-  EXPECT_EQ(2, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
-  next_tries_time = service.next_tries_time_;
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 2);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+    next_tries_time = captured_state.next_ping_time;
+  }
 
   pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "Incorrect Message");
 
-  EXPECT_EQ(2, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_EQ(next_tries_time, service.next_tries_time_);
-  EXPECT_LT(service.last_sent_time_, now);
+  EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, PersistStatesTest) {
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.next_ping_time = now + base::Seconds(2),
+                           .last_ping_time = now + base::Seconds(3),
+                           .last_response_time = now - base::Seconds(1),
+                           .last_sent_version = version_info::GetVersion(),
+                           .number_of_failures = 5},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
-
-  service.number_of_tries_ = 5;
-  service.last_sent_time_ = now - base::Seconds(1);
-  service.next_tries_time_ = now + base::Seconds(2);
-  service.current_ping_time_ = now + base::Seconds(3);
-  service.last_sent_version_ = version_info::GetVersion();
   service.PersistStates();
-  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
-  OmahaService service2(false);
-  service2.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
-      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                          base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
-
-  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
-
-  EXPECT_EQ(service.number_of_tries_, 5);
-  EXPECT_EQ(service2.last_sent_time_, now - base::Seconds(1));
-  EXPECT_EQ(service2.next_tries_time_, now + base::Seconds(2));
-  EXPECT_EQ(service2.current_ping_time_, now + base::Seconds(3));
-  EXPECT_EQ(service.last_sent_version_, version_info::GetVersion());
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 5);
+    EXPECT_EQ(captured_state.last_response_time, now - base::Seconds(1));
+    EXPECT_EQ(captured_state.next_ping_time, now + base::Seconds(2));
+    EXPECT_EQ(captured_state.last_ping_time, now + base::Seconds(3));
+    EXPECT_EQ(captured_state.last_sent_version, version_info::GetVersion());
+  }
 }
 
 TEST_F(OmahaServiceTest, BackoffTest) {
@@ -827,22 +866,25 @@ TEST_F(OmahaServiceTest, BackoffTest) {
 // Tests that an active ping is scheduled immediately after a successful install
 // event send.
 TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
+      OmahaPersistentState{}, GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   std::string response =
       std::string(
@@ -857,34 +899,39 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_LT(service.current_ping_time_ - now, base::Minutes(1));
-  EXPECT_GT(service.next_tries_time_, service.current_ping_time_);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_LT(captured_state.last_ping_time - now, base::Minutes(1));
+    EXPECT_GT(captured_state.next_ping_time, captured_state.last_ping_time);
+  }
+
   EXPECT_FALSE(NeedUpdate());
 }
 
 // Tests that active pings are not sent in rapid succession.
 TEST_F(OmahaServiceTest, NonSpammingTest) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
-  base::Time now = base::Time::Now();
+  const base::Time now = base::Time::Now();
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(false);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   service.SendPing();
 
-  EXPECT_EQ(1, service.number_of_tries_);
-  EXPECT_TRUE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_, now + base::Minutes(54));
-  EXPECT_LE(service.next_tries_time_, now + base::Hours(7));
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 1);
+    EXPECT_TRUE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time, now + base::Minutes(54));
+    EXPECT_LE(captured_state.next_ping_time, now + base::Hours(7));
+  }
 
   std::string response =
       std::string(
@@ -898,22 +945,25 @@ TEST_F(OmahaServiceTest, NonSpammingTest) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
 
-  EXPECT_EQ(0, service.number_of_tries_);
-  EXPECT_FALSE(service.current_ping_time_.is_null());
-  EXPECT_GE(service.next_tries_time_ - now, base::Hours(2));
-  EXPECT_GT(service.last_sent_time_, now);
+  {
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
+    EXPECT_EQ(captured_state.number_of_failures, 0);
+    EXPECT_FALSE(captured_state.last_ping_time.is_null());
+    EXPECT_GE(captured_state.next_ping_time - now, base::Hours(2));
+    EXPECT_GT(captured_state.last_response_time, now);
+  }
+
   EXPECT_FALSE(NeedUpdate());
 }
 
 TEST_F(OmahaServiceTest, InstallRetryTest) {
   OmahaService service(false);
-  service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
-      GetPendingSharedURLLoaderFactoryCallback(),
-      base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
-                          base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+  service.StartInternal(OmahaPersistentState{},
+                        GetPendingSharedURLLoaderFactoryCallback(),
+                        base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
+                                            base::Unretained(this)),
+                        base::DoNothing());
 
   EXPECT_FALSE(service.IsNextPingInstallRetry());
   std::string id1 = service.GetNextPingRequestId(OmahaPingEvent::kInstallEvent);
@@ -940,18 +990,14 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
 }
 
 TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
-  OmahaPersistentState::SaveTo(
-      [NSUserDefaults standardUserDefaults],
-      OmahaPersistentState { .last_sent_version = version_info::GetVersion() });
-
+  base::test::TestFuture<OmahaPersistentState> future(TestFutureMode::kQueue);
   OmahaService service(true);
   service.StartInternal(
-      OmahaPersistentState::LoadFrom([NSUserDefaults standardUserDefaults]),
+      OmahaPersistentState{.last_sent_version = version_info::GetVersion()},
       GetPendingSharedURLLoaderFactoryCallback(),
       base::BindRepeating(&OmahaServiceTest::OnNeedUpdate,
                           base::Unretained(this)),
-      base::BindRepeating(&OmahaPersistentState::SaveTo,
-                          [NSUserDefaults standardUserDefaults]));
+      future.GetRepeatingCallback<const OmahaPersistentState&>());
 
   {
     base::subtle::ScopedTimeClockOverrides clock_overrides(
@@ -960,12 +1006,16 @@ TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
 
     // Sending a successful ping will schedule another ping in the future.
     service.SendPing();
+    future.Clear();
+
     auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         pending_request->request.url.spec(), GetResponseSuccess());
 
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
     EXPECT_GE(TimerRemainingTime(&service), base::Minutes(299));
-    EXPECT_EQ(service.last_sent_time_, base::Time::Now());
+    EXPECT_EQ(captured_state.last_response_time, base::Time::Now());
   }
 
   // Simulate two hours of system suspend time.
@@ -982,9 +1032,10 @@ TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
     // After the resync, there should be ~3 hours of running time
     // left, since the wall clock advanced by 2 hours.
     service.ResyncTimerIfNeeded();
+
     EXPECT_GT(TimerRemainingTime(&service), base::Minutes(179));
     EXPECT_LT(TimerRemainingTime(&service), base::Minutes(181));
-    EXPECT_NE(service.last_sent_time_, base::Time::Now());
+    ASSERT_FALSE(future.IsReady());
   }
 
   // Simulate six hours of wall clock time, two hours of that suspended.
@@ -1004,9 +1055,11 @@ TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         pending_request->request.url.spec(), GetResponseSuccess());
 
+    ASSERT_TRUE(future.IsReady());
+    const OmahaPersistentState captured_state = TakeLastValue(future);
     EXPECT_GT(TimerRemainingTime(&service), base::Minutes(299));
     EXPECT_LT(TimerRemainingTime(&service), base::Minutes(301));
-    EXPECT_EQ(service.last_sent_time_, base::Time::Now());
+    EXPECT_EQ(captured_state.last_response_time, base::Time::Now());
   }
 
   // Spin the runloop to clear any pending tasks.
