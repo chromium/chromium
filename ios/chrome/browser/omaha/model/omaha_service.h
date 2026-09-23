@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "ios/chrome/browser/omaha/model/omaha_persistent_state.h"
 #include "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
 class OmahaService;
@@ -213,29 +214,11 @@ class OmahaService {
   // the main thread and cached for use on the IO thread.
   int64_t application_install_date_;
 
-  // The time at which the last ping was sent.
-  base::Time last_sent_time_;
-
-  // The time at which to send the next ping.
-  base::Time next_tries_time_;
-
-  // The timestamp of the ping to send.
-  base::Time current_ping_time_;
-
-  // Last version for which an installation ping has been sent.
-  base::Version last_sent_version_;
-
-  // Last received server date.
-  int last_server_date_;
-
-  // The identifier of the request in flight.
-  std::string retry_request_id_;
-
   // The language in use at start up.
   std::string locale_lang_;
 
-  // Number of tries of the last ping.
-  uint8_t number_of_tries_;
+  // The current service state.
+  OmahaPersistentState current_state_;
 
   // Whether the ping currently being sent is an install (new or update) ping.
   bool sending_install_event_;
