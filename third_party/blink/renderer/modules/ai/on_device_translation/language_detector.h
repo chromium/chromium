@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_LANGUAGE_DETECTOR_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
@@ -66,6 +67,7 @@ class MODULES_EXPORT LanguageDetector final : public ScriptWrappable {
       Vector<LanguageDetectionModel::LanguagePrediction> predictions);
   static void OnDetectComplete(
       ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
+      base::TimeTicks start_time,
       base::expected<Vector<LanguageDetectionModel::LanguagePrediction>,
                      DetectLanguageError> result);
 

@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
@@ -205,19 +206,22 @@ void OnGotStatus(
   if (!execution_context) {
     return;
   }
-  Availability availability =
-      HandleLanguageDetectionModelCheckResult(execution_context, result);
-
   if (options->hasExpectedInputLanguages()) {
     std::optional<Vector<String>> expected_input_languages =
         GetBestFitLanguages(kSupportedLanguages,
                             options->expectedInputLanguages());
     if (!expected_input_languages.has_value()) {
-      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+      Availability availability = HandleModelAvailabilityCheckResult(
+          execution_context, AIMetrics::AISessionType::kLanguageDetector,
+          mojom::blink::ModelAvailabilityCheckResult::
+              kUnavailableUnsupportedLanguage);
+      resolver->Resolve(AvailabilityToV8(availability));
       return;
     }
   }
 
+  Availability availability =
+      HandleLanguageDetectionModelCheckResult(execution_context, result);
   resolver->Resolve(AvailabilityToV8(availability));
 }
 
@@ -377,8 +381,8 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
 
   language_detection_model_->DetectLanguage(
       task_runner_, input,
-      blink::BindOnce(LanguageDetector::OnDetectComplete,
-                      WrapPersistent(resolver)));
+      blink::BindOnce(&LanguageDetector::OnDetectComplete,
+                      WrapPersistent(resolver), base::TimeTicks::Now()));
   return resolver->Promise();
 }
 
@@ -521,6 +525,7 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
 
 void LanguageDetector::OnDetectComplete(
     ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
+    base::TimeTicks start_time,
     base::expected<Vector<LanguageDetectionModel::LanguagePrediction>,
                    DetectLanguageError> result) {
   if (resolver->aborted()) {
@@ -528,10 +533,22 @@ void LanguageDetector::OnDetectComplete(
   }
 
   if (result.has_value()) {
+    base::UmaHistogramEnumeration(
+        AIMetrics::GetAISessionResponseStatusMetricName(
+            AIMetrics::AISessionType::kLanguageDetector),
+        mojom::blink::ModelStreamingResponseStatus::kComplete);
+    base::UmaHistogramMediumTimes(
+        AIMetrics::GetAISessionResponseCompleteTimeMetricName(
+            AIMetrics::AISessionType::kLanguageDetector),
+        base::TimeTicks::Now() - start_time);
     // Order the result from most to least confident.
     std::sort(result.value().rbegin(), result.value().rend());
     resolver->Resolve(ConvertResult(result.value()));
   } else {
+    base::UmaHistogramEnumeration(
+        AIMetrics::GetAISessionResponseStatusMetricName(
+            AIMetrics::AISessionType::kLanguageDetector),
+        mojom::blink::ModelStreamingResponseStatus::kErrorUnknown);
     switch (result.error()) {
       case DetectLanguageError::kUnavailable:
         resolver->Reject(MakeGarbageCollected<DOMException>(
