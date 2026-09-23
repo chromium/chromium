@@ -38,8 +38,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sync/desk_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
