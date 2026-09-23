@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +32,7 @@ class TabGroupUiViewBinder {
     public static class ViewHolder {
         public final TabGroupUiToolbarView toolbarView;
         public final RecyclerView contentView;
+        public @Nullable Runnable scrollRunnable;
 
         ViewHolder(TabGroupUiToolbarView toolbarView, RecyclerView contentView) {
             this.toolbarView = toolbarView;
@@ -55,7 +57,12 @@ class TabGroupUiViewBinder {
             viewHolder.toolbarView.setNewTabButtonOnClickListener(
                     model.get(NEW_TAB_BUTTON_ON_CLICK_LISTENER));
         } else if (IS_MAIN_CONTENT_VISIBLE == propertyKey) {
-            viewHolder.toolbarView.setMainContentVisibility(model.get(IS_MAIN_CONTENT_VISIBLE));
+            boolean visible = model.get(IS_MAIN_CONTENT_VISIBLE);
+            viewHolder.toolbarView.setMainContentVisibility(visible);
+            if (!visible && viewHolder.scrollRunnable != null) {
+                viewHolder.contentView.removeCallbacks(viewHolder.scrollRunnable);
+                viewHolder.scrollRunnable = null;
+            }
         } else if (BACKGROUND_COLOR == propertyKey) {
             viewHolder.toolbarView.setContentBackgroundColor(model.get(BACKGROUND_COLOR));
         } else if (SHOW_GROUP_DIALOG_BUTTON_VISIBLE == propertyKey) {
@@ -82,10 +89,17 @@ class TabGroupUiViewBinder {
         // the runnable below should avoid this happening by skipping the scroll logic until after
         // the the view is done animating and is laid out.
         RecyclerView contentView = viewHolder.contentView;
+        if (viewHolder.scrollRunnable != null) {
+            contentView.removeCallbacks(viewHolder.scrollRunnable);
+        }
         Runnable scrollRunnable =
                 new Runnable() {
                     @Override
                     public void run() {
+                        if (!model.get(IS_MAIN_CONTENT_VISIBLE)) {
+                            viewHolder.scrollRunnable = null;
+                            return;
+                        }
                         // Retry if animating or layout is incomplete.
                         if (contentView.isAnimating()
                                 || contentView.getWidth() == 0
@@ -93,17 +107,23 @@ class TabGroupUiViewBinder {
                             contentView.post(this);
                             return;
                         }
+                        viewHolder.scrollRunnable = null;
                         int index = model.get(INITIAL_SCROLL_INDEX);
                         LinearLayoutManager manager =
                                 (LinearLayoutManager) assumeNonNull(contentView.getLayoutManager());
+                        int firstPosition = manager.findFirstVisibleItemPosition();
+                        int lastPosition = manager.findLastVisibleItemPosition();
                         int showingItemsCount =
-                                manager.findLastVisibleItemPosition()
-                                        - manager.findFirstVisibleItemPosition();
+                                firstPosition == RecyclerView.NO_POSITION
+                                                || lastPosition == RecyclerView.NO_POSITION
+                                        ? 0
+                                        : Math.max(0, lastPosition - firstPosition);
                         // Try to scroll to a state where the selected tab is in the middle of the
                         // strip.
                         manager.scrollToPositionWithOffset(index - showingItemsCount / 2, 0);
                     }
                 };
-        scrollRunnable.run();
+        viewHolder.scrollRunnable = scrollRunnable;
+        contentView.post(scrollRunnable);
     }
 }

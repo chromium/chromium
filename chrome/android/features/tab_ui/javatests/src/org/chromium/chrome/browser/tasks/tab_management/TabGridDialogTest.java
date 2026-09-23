@@ -457,7 +457,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky test - see: https://crbug.com/40748303")
     public void testTabGridDialogAnimation() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -469,39 +468,48 @@ public class TabGridDialogTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Add 400px top margin to the recyclerView.
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        RecyclerView recyclerView = getRecyclerView(cta);
+        assertNotNull(recyclerView);
         float tabGridCardPadding = TabUiThemeProvider.getTabGridCardMargin(cta);
         int deltaTopMargin = 400;
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
         params.topMargin += deltaTopMargin;
-        ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
-        CriteriaHelper.pollUiThread(() -> !recyclerView.isComputingLayout());
+        try {
+            ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
+            CriteriaHelper.pollUiThread(() -> !recyclerView.isComputingLayout());
 
-        // Calculate expected values of animation source rect.
-        mHasReceivedSourceRect = false;
-        View parentView = cta.getCompositorViewHolderForTesting();
-        Rect parentRect = new Rect();
-        parentView.getGlobalVisibleRect(parentRect);
-        Rect sourceRect = new Rect();
-        recyclerView.getChildAt(0).getGlobalVisibleRect(sourceRect);
-        // TODO(yuezhanggg): Figure out why the sourceRect.left is wrong after setting the margin.
-        float expectedTop = sourceRect.top - parentRect.top + tabGridCardPadding + deltaTopMargin;
-        float expectedWidth = sourceRect.width() - 2 * tabGridCardPadding;
-        float expectedHeight = sourceRect.height() - 2 * tabGridCardPadding;
+            // Calculate expected values of animation source rect.
+            mHasReceivedSourceRect = false;
+            View parentView = cta.getCompositorViewHolderForTesting();
+            Rect parentRect = new Rect();
+            parentView.getGlobalVisibleRect(parentRect);
+            Rect sourceRect = new Rect();
+            recyclerView.getChildAt(0).getGlobalVisibleRect(sourceRect);
+            // TODO(yuezhanggg): Figure out why the sourceRect.left is wrong after setting the
+            // margin.
+            float expectedTop =
+                    sourceRect.top - parentRect.top + tabGridCardPadding + deltaTopMargin;
+            float expectedWidth = sourceRect.width() - 2 * tabGridCardPadding;
+            float expectedHeight = sourceRect.height() - 2 * tabGridCardPadding;
 
-        // Setup the callback to verify the animation source Rect.
-        TabGridDialogView.setSourceRectCallbackForTesting(
-                result -> {
-                    mHasReceivedSourceRect = true;
-                    assertEquals("Top mismatch", expectedTop, result.top, 0.0);
-                    assertEquals("Height mismatch", expectedHeight, result.height(), 0.0);
-                    assertEquals("Width mismatch", expectedWidth, result.width(), 0.0);
-                });
+            // Setup the callback to verify the animation source Rect.
+            TabGridDialogView.setSourceRectCallbackForTesting(
+                    result -> {
+                        mHasReceivedSourceRect = true;
+                        assertEquals("Top mismatch", expectedTop, result.top, 0.0);
+                        assertEquals("Height mismatch", expectedHeight, result.height(), 0.0);
+                        assertEquals("Width mismatch", expectedWidth, result.width(), 0.0);
+                    });
 
-        TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(() -> mHasReceivedSourceRect);
-        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
+            TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
+            CriteriaHelper.pollUiThread(() -> mHasReceivedSourceRect);
+            CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
+        } finally {
+            TabGridDialogView.setSourceRectCallbackForTesting(/* callback= */ null);
+            params.topMargin -= deltaTopMargin;
+            ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setLayoutParams(params));
+        }
     }
 
     @Test
@@ -1285,7 +1293,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
-    @DisabledTest(message = "TODO(crbug.com/373952611): Fix flakiness.")
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1334,8 +1341,7 @@ public class TabGridDialogTest {
                         .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 3, 3));
 
         // Click on the title this should not save the title.
-        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click());
+        clickTitleTextToFocus(cta);
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -1355,8 +1361,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, twoTabsString);
 
         // Click on the title.
-        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click());
+        clickTitleTextToFocus(cta);
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -1600,7 +1605,8 @@ public class TabGridDialogTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Verify the initial group card content description.
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+        RecyclerView recyclerView = getRecyclerView(cta);
+        assertNotNull(recyclerView);
         View firstItem = recyclerView.findViewHolderForAdapterPosition(0).itemView;
         String expandTargetString = "Expand tab group with 3 tabs, color Grey.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
@@ -2053,6 +2059,7 @@ public class TabGridDialogTest {
     private boolean isDialogFullyVisible(ChromeTabbedActivity cta) {
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
         View dialogContainerView = cta.findViewById(R.id.dialog_container_view);
+        if (dialogView == null || dialogContainerView == null) return false;
         return dialogView.getVisibility() == View.VISIBLE && dialogContainerView.getAlpha() == 1f;
     }
 
@@ -2192,8 +2199,13 @@ public class TabGridDialogTest {
         // when dialog hides. Make sure the source card has restored its alpha change.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
-                    for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
+                    RecyclerView recyclerView = getRecyclerView(cta);
+                    if (recyclerView == null) return false;
+                    RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
+                    if (adapter == null) return false;
+                    int itemCount = adapter.getItemCount();
+                    if (itemCount > 0 && recyclerView.getChildCount() == 0) return false;
+                    for (int i = 0; i < itemCount; i++) {
                         RecyclerView.ViewHolder viewHolder =
                                 recyclerView.findViewHolderForAdapterPosition(i);
                         if (viewHolder == null) continue;
@@ -2412,10 +2424,25 @@ public class TabGridDialogTest {
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }
 
+    private void clickTitleTextToFocus(ChromeTabbedActivity cta) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View toolbarView = cta.findViewById(R.id.tab_group_toolbar);
+                    Criteria.checkThat("Toolbar view is null", toolbarView, notNullValue());
+                    View titleTextView = toolbarView.findViewById(R.id.title);
+                    Criteria.checkThat("Title text view is null", titleTextView, notNullValue());
+                    Criteria.checkThat(
+                            "Title text view lacks window focus",
+                            titleTextView.hasWindowFocus(),
+                            Matchers.is(true));
+                });
+        onViewWaiting(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
+    }
+
     private void testTitleTextFocus(ChromeTabbedActivity cta) throws ExecutionException {
         // Click the text field to grab focus and click back button to lose focus.
-        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click());
+        clickTitleTextToFocus(cta);
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -2430,8 +2457,7 @@ public class TabGridDialogTest {
         verifyShowingDialog(cta, 2, null);
 
         // Click the text field to grab focus and click scrim to lose focus.
-        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click());
+        clickTitleTextToFocus(cta);
         verifyTitleTextFocus(cta, true);
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimation(cta);
@@ -2441,20 +2467,30 @@ public class TabGridDialogTest {
     private void verifyTitleTextFocus(ChromeTabbedActivity cta, boolean shouldFocus) {
         CriteriaHelper.pollUiThread(
                 () -> {
+                    View toolbarView = cta.findViewById(R.id.tab_group_toolbar);
                     View titleTextView =
-                            cta.findViewById(R.id.tab_group_toolbar).findViewById(R.id.title);
+                            toolbarView != null ? toolbarView.findViewById(R.id.title) : null;
+                    if (isDialogFullyVisible(cta)) {
+                        Criteria.checkThat(
+                                "Title text view is null", titleTextView, notNullValue());
+                    }
                     KeyboardVisibilityDelegate delegate =
                             cta.getWindowAndroid().getKeyboardDelegate();
                     boolean keyboardVisible =
                             delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting());
-                    boolean isFocused = titleTextView.isFocused();
-                    return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
+                    boolean isFocused = titleTextView != null && titleTextView.isFocused();
+                    Criteria.checkThat(
+                            "Title text focus mismatch", isFocused, Matchers.is(shouldFocus));
+                    Criteria.checkThat(
+                            "Keyboard visibility mismatch",
+                            keyboardVisible,
+                            Matchers.is(shouldFocus));
                 });
     }
 
-    private RecyclerView getRecyclerView(ChromeTabbedActivity cta) {
+    private @Nullable RecyclerView getRecyclerView(ChromeTabbedActivity cta) {
         ViewGroup group = cta.findViewById(getTabSwitcherAncestorId(cta));
-        return group.findViewById(R.id.tab_list_recycler_view);
+        return group != null ? group.findViewById(R.id.tab_list_recycler_view) : null;
     }
 
     private void clickThroughConfirmationDialog() {

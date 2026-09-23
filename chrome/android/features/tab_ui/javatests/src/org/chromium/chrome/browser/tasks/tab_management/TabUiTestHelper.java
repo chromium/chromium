@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.waitForStableRecyclerView;
 
 import android.app.Activity;
@@ -671,30 +673,38 @@ public class TabUiTestHelper {
         assertTrue(recyclerView instanceof TabListRecyclerView);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    boolean allFetched = true;
-                    int i = 0;
                     LinearLayoutManager layoutManager =
                             (LinearLayoutManager) recyclerView.getLayoutManager();
-                    for (i = layoutManager.findFirstVisibleItemPosition();
-                            i <= layoutManager.findLastVisibleItemPosition();
-                            i++) {
+                    Criteria.checkThat("LayoutManager is null.", layoutManager, notNullValue());
+                    assumeNonNull(layoutManager);
+                    int firstVisible = layoutManager.findFirstVisibleItemPosition();
+                    int lastVisible = layoutManager.findLastVisibleItemPosition();
+                    Criteria.checkThat(
+                            "No visible items.", firstVisible, not(RecyclerView.NO_POSITION));
+                    Criteria.checkThat(
+                            "Invalid last visible item.",
+                            lastVisible,
+                            not(RecyclerView.NO_POSITION));
+                    for (int i = firstVisible; i <= lastVisible; i++) {
                         View v = layoutManager.findViewByPosition(i);
+                        Criteria.checkThat(
+                                "View at position " + i + " is null.", v, notNullValue());
+                        assumeNonNull(v);
                         TabThumbnailView thumbnail = v.findViewById(R.id.tab_thumbnail);
 
                         // Some items may not be cards or may not have thumbnails.
                         if (thumbnail == null) continue;
 
-                        if (thumbnail.isPlaceholder()
-                                || !(thumbnail.getDrawable() instanceof BitmapDrawable)
-                                || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
-                            allFetched = false;
-                            break;
-                        }
+                        boolean hasValidBitmap =
+                                !thumbnail.isPlaceholder()
+                                        && (thumbnail.getDrawable()
+                                                instanceof BitmapDrawable bitmapDrawable)
+                                        && bitmapDrawable.getBitmap() != null;
+                        Criteria.checkThat(
+                                "The thumbnail for card at position " + i + " is missing.",
+                                hasValidBitmap,
+                                is(true));
                     }
-                    Criteria.checkThat(
-                            "The thumbnail for card at position " + i + " is missing.",
-                            allFetched,
-                            is(true));
                 });
     }
 
