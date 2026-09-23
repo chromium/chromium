@@ -163,6 +163,7 @@ source_set("unit_tests") {
     "//chrome/browser/commerce",
     "//chrome/browser/optimization_guide",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/commerce/core:shopping_service_test_support",
     "//components/optimization_guide/core",
     "//components/segmentation_platform/embedder",

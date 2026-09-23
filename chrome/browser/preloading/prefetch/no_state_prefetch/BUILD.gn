@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/preloading:prefs",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/no_state_prefetch/browser",

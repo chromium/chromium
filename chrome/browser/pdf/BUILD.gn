@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser/mime_handler",

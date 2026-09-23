@@ -251,6 +251,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/accessibility/live_caption",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/live_caption:constants",
       "//components/soda:test_support",
       "//content/test:test_support",

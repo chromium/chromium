@@ -108,7 +108,7 @@ source_set("test_support") {
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/signin",
     "//chrome/browser/webdata_services",
-    "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_browser_process_impl",
     "//components/prefs:test_support",
     "//components/regional_capabilities",
     "//components/regional_capabilities:test_support",

@@ -191,6 +191,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:testing_browser_process",
       "//components/country_codes",
       "//components/metrics",
       "//components/regional_capabilities",

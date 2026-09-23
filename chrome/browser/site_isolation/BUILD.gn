@@ -71,6 +71,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/javascript_dialogs",
       "//components/page_load_metrics/browser:test_support",
       "//components/subresource_filter/core/browser",
