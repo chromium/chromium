@@ -11335,6 +11335,25 @@
             ]
         }
     ],
+    "IsolateSubframeErrorPages": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsolateSubframeErrorPages"
+                    ]
+                }
+            ]
+        }
+    ],
     "JavaScriptPermissionBasedAPIMetricsEnabled": [
         {
             "platforms": [
