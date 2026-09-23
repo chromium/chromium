@@ -186,4 +186,52 @@ TEST(AudioParamHandlerTest, SetValueCurveWithPastStartTime) {
   }
 }
 
+TEST(AudioParamHandlerTest, KRateAutomationClamping) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 128, 48000, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  AudioParamHandler& handler = osc->frequency()->Handler();
+  handler.SetAutomationRate(V8AutomationRate::Enum::kKRate);
+
+  const float max_value = handler.MaxValue();
+  const float min_value = handler.MinValue();
+
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
+  auto verify_clamped_value = [&](float expected_value) {
+    audio_thread.RunOnAudioThreadWithContext(
+        context,
+        CrossThreadBindOnce(
+            [](AudioParam* param, float expected) {
+              AudioParamHandler& h = param->Handler();
+              EXPECT_FLOAT_EQ(h.FinalValue(), expected);
+              EXPECT_FLOAT_EQ(h.Value(), expected);
+
+              std::array<float, 128> values{};
+              h.CalculateSampleAccurateValues(values);
+              for (float v : values) {
+                EXPECT_FLOAT_EQ(v, expected);
+              }
+            },
+            WrapCrossThreadPersistent(osc->frequency()), expected_value));
+  };
+
+  // Schedule an automation value above maxValue at t = 0.
+  handler.SetValueAtTime(max_value * 2.0f, 0.0, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  verify_clamped_value(max_value);
+
+  // Schedule an automation value below minValue at t = 0 on the main thread.
+  handler.SetValueAtTime(min_value * 2.0f, 0.0, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  verify_clamped_value(min_value);
+}
+
 }  // namespace blink

@@ -310,7 +310,7 @@ float AudioParamHandler::Value() {
   }
 
   SetValue(v);
-  return v;
+  return IntrinsicValue();
 }
 
 void AudioParamHandler::SetValue(float value) {
@@ -1305,21 +1305,21 @@ float AudioParamHandler::ValuesForFrameRange(size_t start_frame,
   // We can't contend the lock in the realtime audio thread.
   base::AutoTryLock try_locker(events_lock_);
   if (!try_locker.is_acquired()) {
+    default_value = ClampTo(default_value, min_value, max_value);
     std::ranges::fill(values, default_value);
     return default_value;
   }
 
-  float last_value =
-      ValuesForFrameRangeImpl(start_frame, end_frame, default_value, values,
-                              sample_rate, control_rate, render_quantum_frames);
+  ValuesForFrameRangeImpl(start_frame, end_frame, default_value, values,
+                          sample_rate, control_rate, render_quantum_frames);
 
   // Clamp the values now to the nominal range
   vector_math::Vclip(values, min_value, max_value, values);
 
-  return last_value;
+  return values.back();
 }
 
-float AudioParamHandler::ValuesForFrameRangeImpl(
+void AudioParamHandler::ValuesForFrameRangeImpl(
     const size_t start_frame,
     const size_t end_frame,
     float default_value,
@@ -1333,7 +1333,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
   // range.
   if (!events_.size() || (end_frame / sample_rate <= events_[0]->Time())) {
     std::ranges::fill(values, default_value);
-    return default_value;
+    return;
   }
 
   wtf_size_t number_of_events = events_.size();
@@ -1354,7 +1354,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
 
     if (HandleAllEventsInThePast(current_time, sample_rate, default_value,
                                  values, render_quantum_frames)) {
-      return default_value;
+      return;
     }
   }
 
@@ -1514,10 +1514,6 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
   // If there's any time left after processing the last event then just
   // propagate the last value to the end of the values buffer.
   std::ranges::fill(values.subspan(write_index), value);
-
-  // This value is used to set the `.value` attribute of the AudioParam.  it
-  // should be the last computed value.
-  return values.back();
 }
 
 std::tuple<size_t, size_t> AudioParamHandler::HandleFirstEvent(
