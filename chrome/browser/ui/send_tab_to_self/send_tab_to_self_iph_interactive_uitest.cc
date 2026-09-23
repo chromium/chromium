@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -462,8 +463,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature));
 }
 
+// TODO(crbug.com/565062574): The test crashes on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TutorialFlowCompletesOnTabSend \
+  DISABLED_TutorialFlowCompletesOnTabSend
+#else
+#define MAYBE_TutorialFlowCompletesOnTabSend TutorialFlowCompletesOnTabSend
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       TutorialFlowCompletesOnTabSend) {
+                       MAYBE_TutorialFlowCompletesOnTabSend) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
