@@ -75,6 +75,7 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 #include "url/android/gurl_android.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -374,8 +375,9 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
         JNIEnv* env = base::android::AttachCurrentThread();
         ScopedJavaLocalRef<jobject> j_item =
             DownloadManagerService::CreateJavaDownloadInfo(env, download_item);
-        Java_DownloadController_onPdfDownloadStarted(env, tab->GetJavaObject(),
-                                                     j_item);
+        Java_DownloadController_onPdfDownloadStarted(
+            env, tab->GetJavaObject(), j_item,
+            download_item->GetRequestInitiator());
         should_cancel_download = false;
       }
     }

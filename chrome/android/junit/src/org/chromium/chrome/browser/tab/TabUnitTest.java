@@ -85,6 +85,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestOrigins;
+import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
 
@@ -1157,12 +1159,18 @@ public class TabUnitTest {
     }
 
     private void handleDidFinishNavigation(TabImpl tab, GURL url) {
+        handleDidFinishNavigation(
+                tab, url, /* isRendererInitiated= */ false, /* initiatorOrigin= */ null);
+    }
+
+    private void handleDidFinishNavigation(
+            TabImpl tab, GURL url, boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
         tab.handleDidFinishNavigation(
                 url,
                 /* transitionType= */ 0,
                 /* isPdf= */ false,
-                /* isRendererInitiated= */ false,
-                /* initiatorOrigin= */ null);
+                isRendererInitiated,
+                initiatorOrigin);
     }
 
     @Test
@@ -1349,5 +1357,68 @@ public class TabUnitTest {
         handleDidFinishNavigation(mTab, new GURL(encodedUrl));
 
         verify(mNavigationController, never()).loadUrl(any());
+    }
+
+    private void setUpTabWithWebContents() {
+        mTab.setNativePtrForTesting(1);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+    }
+
+    /**
+     * The re-download must reuse the initiator recorded on the pdf entry. Dropping it would send
+     * the request with no initiator, which net::cookie_util::ComputeSameSiteContext() treats as
+     * same-site, handing the target site's SameSite=Strict cookies to a cross-site initiator. See
+     * crbug.com/500173014.
+     */
+    @Test
+    public void testHandleDidFinishNavigation_PdfRedownload_PreservesInitiatorOrigin() {
+        setUpTabWithWebContents();
+
+        String httpUrl = "https://example.com/test.pdf";
+        String encodedUrl = PdfUtils.encodePdfPageUrl(httpUrl);
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+
+        handleDidFinishNavigation(
+                mTab, new GURL(encodedUrl), /* isRendererInitiated= */ true, initiatorOrigin);
+
+        verify(mNavigationController)
+                .loadUrl(
+                        argThat(
+                                params ->
+                                        httpUrl.equals(params.getUrl())
+                                                && params.getIsRendererInitiated()
+                                                && initiatorOrigin.equals(
+                                                        params.getInitiatorOrigin())));
+    }
+
+    /**
+     * A browser-initiated traversal legitimately has no initiator, e.g. a PDF opened from the
+     * omnibox, a bookmark or an external intent. The re-download must stay browser-initiated with a
+     * null initiator so that the site's cookies are still sent; substituting an opaque origin here
+     * would strip SameSite=Strict cookies and break authenticated PDFs.
+     */
+    @Test
+    public void testHandleDidFinishNavigation_PdfRedownload_BrowserInitiatedKeepsNullInitiator() {
+        setUpTabWithWebContents();
+
+        String httpUrl = "https://example.com/test.pdf";
+        String encodedUrl = PdfUtils.encodePdfPageUrl(httpUrl);
+
+        handleDidFinishNavigation(
+                mTab,
+                new GURL(encodedUrl),
+                /* isRendererInitiated= */ false,
+                /* initiatorOrigin= */ null);
+
+        verify(mNavigationController)
+                .loadUrl(
+                        argThat(
+                                params ->
+                                        httpUrl.equals(params.getUrl())
+                                                && !params.getIsRendererInitiated()
+                                                && params.getInitiatorOrigin() == null));
     }
 }

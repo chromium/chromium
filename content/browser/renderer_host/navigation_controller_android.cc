@@ -316,6 +316,15 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
   if (j_initiator_origin) {
     params.initiator_origin =
         url::Origin::FromJavaObject(env, j_initiator_origin);
+  } else if (params.is_renderer_initiated) {
+    // All renderer-initiated navigations must have an initiator origin (see the
+    // DCHECK in
+    // NavigationControllerImpl::CreateNavigationRequestFromLoadParams() /
+    // LoadURLWithParams()). Every Java caller is expected to supply an
+    // initiator, so report the bug but fail closed with an opaque origin rather
+    // than letting the navigation through with none.
+    base::debug::DumpWithoutCrashing();
+    params.initiator_origin = url::Origin();
   }
 
   if (input_start != 0)
