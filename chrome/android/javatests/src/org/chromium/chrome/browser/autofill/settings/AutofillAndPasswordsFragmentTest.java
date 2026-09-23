@@ -38,6 +38,7 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -93,6 +94,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for {@link AutofillAndPasswordsFragment}. */
@@ -100,8 +102,11 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillAndPasswordsFragmentTest {
+    private static final FakeAccountManagerFacade sFakeAccountManagerFacade =
+            new FakeAccountManagerFacade();
+
     @Rule(order = 0)
-    public SigninTestRule mSigninTestRule = new SigninTestRule();
+    public SigninTestRule mSigninTestRule = new SigninTestRule(sFakeAccountManagerFacade);
 
     @Rule(order = 1)
     public SettingsTestRule<AutofillAndPasswordsFragment> mSettingsTestRule =
@@ -180,6 +185,11 @@ public class AutofillAndPasswordsFragmentTest {
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                                 SigninPreferencesManager.SigninPromoAccessPointId
                                         .AUTOFILL_AND_PASSWORDS));
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(sFakeAccountManagerFacade::removeAllAccounts);
     }
 
     @Test
