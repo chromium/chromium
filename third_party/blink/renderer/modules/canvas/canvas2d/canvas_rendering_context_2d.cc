@@ -1278,11 +1278,13 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
   }
 
   if (did_fail_to_create_resource_provider_) {
+    ResetRecorder();
     return false;
   }
 
   if (!canvas()->IsValidImageSize()) {
     did_fail_to_create_resource_provider_ = true;
+    ResetRecorder();
     if (!canvas()->Size().IsEmpty()) {
       LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
     }
@@ -1338,6 +1340,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
   // Bail out if the context is lost.
   if (isContextLost() && !IsContextBeingRestored()) {
+    ResetRecorder();
     return;
   }
 
@@ -1365,6 +1368,7 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
   CHECK(!shared_image_provider_ && !bitmap_provider_);
 
   if (did_fail_to_create_resource_provider_) {
+    ResetRecorder();
     return;
   }
 
@@ -1385,6 +1389,7 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
                                   CanvasResourceProviderType::kBitmap);
   } else {
     did_fail_to_create_resource_provider_ = true;
+    ResetRecorder();
     return;
   }
 

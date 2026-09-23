@@ -293,6 +293,8 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   if (shared_image_provider_ || bitmap_provider_) {
     ConfigureRecorder(host->Size(), shared_image_provider_ &&
                                         shared_image_provider_->IsGraphite());
+  } else {
+    ResetRecorder();
   }
 
   Host()->UpdateMemoryUsage();
