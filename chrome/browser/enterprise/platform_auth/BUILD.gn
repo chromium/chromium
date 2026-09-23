@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/enterprise:impl",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//testing/gtest",
   ]
 
@@ -87,6 +88,7 @@ source_set("unit_tests") {
       "scoped_cf_prefs_observer_override.h",
     ]
     deps += [
+      "//chrome/test/base:testing_browser_process",
       "//components/enterprise/platform_auth:enterprise_platform_auth",
       "//third_party/ocmock",
     ]

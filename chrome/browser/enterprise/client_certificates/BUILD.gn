@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/enterprise/client_certificates/core",
     "//content/public/browser",
     "//content/test:test_support",

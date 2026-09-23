@@ -40,6 +40,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/desktop_to_mobile_promos",
       "//components/feature_engagement/public",
       "//components/prefs",

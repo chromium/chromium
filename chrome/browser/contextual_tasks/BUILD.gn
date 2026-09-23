@@ -735,6 +735,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//components/application_locale_storage",
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",

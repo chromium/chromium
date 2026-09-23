@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/enterprise:impl",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/dbus/attestation",
     "//components/account_id:test_support",
     "//testing/gtest",

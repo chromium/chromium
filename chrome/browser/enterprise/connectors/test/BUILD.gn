@@ -27,6 +27,7 @@ source_set("test_support") {
 
   deps = [
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/data_controls/core/browser",
   ]
