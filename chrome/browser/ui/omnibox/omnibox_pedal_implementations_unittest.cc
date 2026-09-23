@@ -15,8 +15,10 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -33,17 +35,15 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     InitPedals();
   }
 
-  void InitPedals() {
+  void InitPedals(
+      OmniboxPedalProfileType profile_type = OmniboxPedalProfileType::kRegular,
+      OmniboxPedalOtrType otr_type = OmniboxPedalOtrType::kIncognito) {
     // Note, pedals initialization must happen after features are initialized so
     // that field trial checks will allow instantiation of all pedals.
     autocomplete_provider_client_.set_pedal_provider(
         std::make_unique<OmniboxPedalProvider>(
             autocomplete_provider_client_,
-            GetPedalImplementations(
-                autocomplete_provider_client_
-                    .IsPrimaryOTRProfileWithRegularParent(),
-                autocomplete_provider_client_.IsGuestSession(),
-                /*testing=*/true)));
+            GetPedalImplementations(profile_type, otr_type, /*testing=*/true)));
   }
 
   OmniboxPedalProvider* provider() {
@@ -51,18 +51,13 @@ class OmniboxPedalImplementationsTest : public testing::Test {
   }
 
   void SetIncognitoProfile() {
-    // This macro mutates the client state to go off the record.
-    EXPECT_CALL(autocomplete_provider_client_,
-                IsPrimaryOTRProfileWithRegularParent())
-        .WillOnce(testing::Return(true));
-    InitPedals();
+    InitPedals(OmniboxPedalProfileType::kOtrWithRegularParent,
+               OmniboxPedalOtrType::kIncognito);
   }
 
   void SetGuestSession() {
-    // This macro mutates the client state to go off the record.
-    EXPECT_CALL(autocomplete_provider_client_, IsGuestSession())
-        .WillOnce(testing::Return(true));
-    InitPedals();
+    InitPedals(OmniboxPedalProfileType::kGuest,
+               OmniboxPedalOtrType::kIncognito);
   }
 
   void OnAutocompleteAccept(const GURL& destination_url,
@@ -18021,6 +18016,36 @@ TEST_F(OmniboxPedalImplementationsTest,
 TEST_F(OmniboxPedalImplementationsTest,
        UnorderedSynonymExpressionsAreConceptMatches) {
   TestLiteralConceptExpressions();
+}
+
+TEST_F(OmniboxPedalImplementationsTest, PedalCloseIncognitoWindowsStrings) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto pedals_incognito = GetPedalImplementations(
+      OmniboxPedalProfileType::kOtrWithRegularParent,
+      OmniboxPedalOtrType::kIncognito, /*testing=*/true);
+  auto it_incognito =
+      pedals_incognito.find(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS);
+  ASSERT_NE(it_incognito, pedals_incognito.end());
+  EXPECT_EQ(it_incognito->second->GetLabelStrings().hint,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT));
+  EXPECT_EQ(it_incognito->second->GetLabelStrings().suggestion_contents,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS));
+
+  auto pedals_isolated =
+      GetPedalImplementations(OmniboxPedalProfileType::kOtrWithRegularParent,
+                              OmniboxPedalOtrType::kIsolated, /*testing=*/true);
+  auto it_isolated =
+      pedals_isolated.find(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS);
+  ASSERT_NE(it_isolated, pedals_isolated.end());
+  EXPECT_EQ(
+      it_isolated->second->GetLabelStrings().hint,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS_HINT));
+  EXPECT_EQ(it_isolated->second->GetLabelStrings().suggestion_contents,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS_SUGGESTION_CONTENTS));
+#endif
 }
 
 TEST_F(OmniboxPedalImplementationsTest, MemoryUsageIsModerate) {

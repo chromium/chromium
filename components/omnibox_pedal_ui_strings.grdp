@@ -326,6 +326,19 @@
     Close Incognito windows button, activate to close all Incognito windows that are currently open
   </message>
 
+  <message name="IDS_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS_HINT" desc="The button text contents to suggest pedal action, CLOSE_ISOLATED_WINDOWS">
+    Close all Isolated windows
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, CLOSE_ISOLATED_WINDOWS">
+    Close all Isolated windows that are currently open
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to CLOSE_ISOLATED_WINDOWS.">
+    <ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press Tab then Enter to close all Isolated windows that are currently open
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CLOSE_ISOLATED_WINDOWS" desc="Announcement when pedal action button is focused, CLOSE_ISOLATED_WINDOWS">
+    Close Isolated windows button, activate to close all Isolated windows that are currently open
+  </message>
+
   <message name="IDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT" desc="The button text contents to suggest pedal action, PLAY_CHROME_DINO_GAME">
     Play Chrome Dino game
   </message>

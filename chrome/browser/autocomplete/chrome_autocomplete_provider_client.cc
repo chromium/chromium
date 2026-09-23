@@ -258,10 +258,22 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
+  OmniboxPedalProfileType profile_type = OmniboxPedalProfileType::kRegular;
+  if (profile_->IsGuestSession()) {
+    profile_type = OmniboxPedalProfileType::kGuest;
+  } else if (profile_->IsPrimaryOTRProfileWithRegularParent()) {
+    profile_type = OmniboxPedalProfileType::kOtrWithRegularParent;
+  }
+
+  const OmniboxPedalOtrType otr_type =
+      IncognitoModePrefs::GetIncognitoModeType(profile_) ==
+              IncognitoModePrefs::IncognitoModeType::kEnterprise
+          ? OmniboxPedalOtrType::kIsolated
+          : OmniboxPedalOtrType::kIncognito;
+
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
       *this,
-      GetPedalImplementations(profile_->IsPrimaryOTRProfileWithRegularParent(),
-                              profile_->IsGuestSession(), /*testing=*/false));
+      GetPedalImplementations(profile_type, otr_type, /*testing=*/false));
 }
 
 ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() = default;

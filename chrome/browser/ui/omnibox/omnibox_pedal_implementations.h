@@ -15,9 +15,25 @@ namespace gfx {
 struct VectorIcon;
 }
 
+// Profile type for configuring Omnibox pedal implementations.
+enum class OmniboxPedalProfileType {
+  kRegular,
+  kOtrWithRegularParent,
+  kGuest,
+};
+
+// Off-the-record profile type (Incognito vs Enterprise Isolated Mode).
+enum class OmniboxPedalOtrType {
+  kIncognito,
+  kIsolated,
+};
+
 // Returns the full set of encapsulated OmniboxPedal implementations.
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
-GetPedalImplementations(bool incognito, bool guest, bool testing);
+GetPedalImplementations(
+    OmniboxPedalProfileType profile_type = OmniboxPedalProfileType::kRegular,
+    OmniboxPedalOtrType otr_type = OmniboxPedalOtrType::kIncognito,
+    bool testing = false);
 
 // This utility method is used by `SharingHubIconView` and its related Pedal
 // (Chrome Action button) in the omnibox. It returns the sharing hub icon,
