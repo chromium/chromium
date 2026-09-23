@@ -1808,10 +1808,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat oldWidth = _moduleWidth.constant;
   CGFloat width;
   if (IsNewTabPageUICleanupEnabled()) {
-    CGFloat maxWidth = (IsRegularXRegularSizeClass(self))
-                           ? kDiscoverFeedContentMaxWidthUICleanup
-                           : kDiscoverFeedContentMaxWidth;
-    width = MIN(viewWidth - (2 * kNewTabPageHorizontalMargin), maxWidth);
+    width = MIN(viewWidth - (2 * kNewTabPageHorizontalMargin),
+                kDiscoverFeedContentMaxWidth);
   } else {
     CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
     width = MIN(viewWidth * widthMultiplier, kDiscoverFeedContentMaxWidth);
