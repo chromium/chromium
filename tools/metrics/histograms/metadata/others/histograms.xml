@@ -5282,20 +5282,26 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SSORecallPromo.PromoAction" enum="SSOPromoUserAction"
-    expires_after="2026-08-02">
+    expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Action the user takes when the Single Sign On promotion is shown.
+
+    Warning: this histogram was expired from 2026-08-02 (M153) to 2026-09-23
+    (M156); data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SSORecallPromo.PromoSeenCount" units="units"
-    expires_after="2026-08-02">
+    expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Number of times the promotion has been seen on the current device.
+
+    Warning: this histogram was expired from 2026-08-02 (M153) to 2026-09-23
+    (M156); data may be missing.
   </summary>
 </histogram>
 
