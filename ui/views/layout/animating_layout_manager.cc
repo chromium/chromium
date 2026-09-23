@@ -610,10 +610,10 @@ bool AnimatingLayoutManager::OnViewRemoved(View* host, View* view) {
 
   // Remove any elements in the current layout corresponding to the removed
   // view.
-  std::erase_if(current_layout_.child_layouts,
-                [view](const ChildLayout& child_layout) {
-                  return child_layout.child_view == view;
-                });
+  absl::erase_if(current_layout_.child_layouts,
+                 [view](const ChildLayout& child_layout) {
+                   return child_layout.child_view == view;
+                 });
 
   return LayoutManagerBase::OnViewRemoved(host, view);
 }
@@ -662,7 +662,7 @@ bool AnimatingLayoutManager::OnViewAdded(View* host, View* view) {
   // set the view to not be visible.
   if (IsChildIncludedInLayout(view) && cached_layout_size() && !is_animating_) {
     const gfx::Size target_size = GetAvailableTargetLayoutSize();
-    ProposedLayout proposed_layout =
+    const ProposedLayout& proposed_layout =
         target_layout_manager()->GetProposedLayout(target_size);
     if (HaveSameVisibleViews(current_layout_, proposed_layout)) {
       SetViewVisibility(view, false);
@@ -803,7 +803,7 @@ bool AnimatingLayoutManager::RecalculateTarget() {
 
   // If there has been no appreciable change in layout, there's no reason to
   // start or update an animation.
-  const ProposedLayout proposed_layout =
+  const ProposedLayout& proposed_layout =
       target_layout_manager()->GetProposedLayout(target_size);
 
   if (target_layout_ == proposed_layout) {

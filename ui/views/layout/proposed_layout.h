@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
@@ -56,8 +57,12 @@ struct VIEWS_EXPORT ProposedLayout {
   // dimensions of the size bounds are specified, this will be the same size.
   gfx::Size host_size;
 
+  using ChildLayoutList = absl::InlinedVector<ChildLayout, 8>;
+
   // Contains an entry for each child view included in the layout.
-  std::vector<ChildLayout> child_layouts;
+  // Inlined storage for up to 8 children avoids heap allocation for typical
+  // views hierarchies without inflating memory footprint.
+  ChildLayoutList child_layouts;
 };
 
 // Returns a layout that's linearly interpolated between |start| and |target|
