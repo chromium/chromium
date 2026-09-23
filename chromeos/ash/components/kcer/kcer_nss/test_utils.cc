@@ -17,8 +17,8 @@
 #include "chromeos/ash/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -158,34 +158,81 @@ base::WeakPtr<Kcer> TestKcerHolder::GetKcer() {
 bool VerifySignature(SigningScheme signing_scheme,
                      PublicKeySpki spki,
                      DataToSign data_to_sign,
-                     Signature signature,
-                     bool strict) {
-  crypto::sign::SignatureKind signature_algo = crypto::sign::RSA_PKCS1_SHA1;
-  switch (signing_scheme) {
-    case SigningScheme::kRsaPkcs1Sha1:
-      signature_algo = crypto::sign::RSA_PKCS1_SHA1;
-      break;
-    case SigningScheme::kRsaPkcs1Sha256:
-      signature_algo = crypto::sign::RSA_PKCS1_SHA256;
-      break;
-    case SigningScheme::kRsaPssRsaeSha256:
-      signature_algo = crypto::sign::RSA_PSS_SHA256;
-      break;
-    case SigningScheme::kEcdsaSecp256r1Sha256:
-      signature_algo = crypto::sign::ECDSA_SHA256;
-      break;
-    default:
-      return !strict;
-  }
-
-  crypto::SignatureVerifier signature_verifier;
-  if (!signature_verifier.VerifyInit(signature_algo, signature.value(),
-                                     spki.value())) {
-    LOG(ERROR) << "Failed to initialize signature verifier";
+                     Signature signature) {
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki.value());
+  if (!public_key) {
+    LOG(ERROR) << "Failed to parse public key SPKI";
     return false;
   }
-  signature_verifier.VerifyUpdate(data_to_sign.value());
-  return signature_verifier.VerifyFinal();
+
+  crypto::sign::SignatureKind signature_algo;
+  using enum crypto::sign::SignatureKind;
+  switch (signing_scheme) {
+    case SigningScheme::kRsaPkcs1Sha1:
+      signature_algo = RSA_PKCS1_SHA1;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPkcs1Sha256:
+      signature_algo = RSA_PKCS1_SHA256;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPkcs1Sha384:
+      signature_algo = RSA_PKCS1_SHA384;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPkcs1Sha512:
+      signature_algo = RSA_PKCS1_SHA512;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPssRsaeSha256:
+      signature_algo = RSA_PSS_SHA256;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPssRsaeSha384:
+      signature_algo = RSA_PSS_SHA384;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kRsaPssRsaeSha512:
+      signature_algo = RSA_PSS_SHA512;
+      if (!public_key->IsRsa()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+      signature_algo = ECDSA_SHA256;
+      if (!public_key->IsEc()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+      signature_algo = ECDSA_SHA384;
+      if (!public_key->IsEc()) {
+        return false;
+      }
+      break;
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      signature_algo = ECDSA_SHA512;
+      if (!public_key->IsEc()) {
+        return false;
+      }
+      break;
+  }
+
+  return crypto::sign::Verify(signature_algo, *public_key, data_to_sign.value(),
+                              signature.value());
 }
 
 std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {

@@ -49,8 +49,7 @@ TEST_F(ClientCertIdentityKcerTest, Success) {
 
   EXPECT_TRUE(VerifySignature(
       SigningScheme::kRsaPkcs1Sha256, cert_and_key->key.GetSpki(),
-      DataToSign(std::move(data_to_sign)), Signature(sign_waiter.Get<1>()),
-      /*strict=*/true));
+      DataToSign(std::move(data_to_sign)), Signature(sign_waiter.Get<1>())));
 }
 
 // Test that ClientCertIdentityKcer correctly fails to acquire a key when Kcer

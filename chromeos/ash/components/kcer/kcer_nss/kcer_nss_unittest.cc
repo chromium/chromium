@@ -609,8 +609,6 @@ TEST_F(KcerNssTest, ListKeys) {
 
 // Test that Kcer::Sign() works correctly for RSA keys with different signing
 // schemes.
-// TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
-// schemes and add them to the test.
 TEST_F(KcerNssTest, SignRsa) {
   InitializeKcer({Token::kUser});
 
@@ -650,9 +648,61 @@ TEST_F(KcerNssTest, SignRsa) {
                                 data_to_sign, rsa256_signature));
   }
 
+  // Test kRsaPkcs1Sha384 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha384;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
+  // Test kRsaPkcs1Sha512 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha512;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
   // Test kRsaPssRsaeSha256 signature.
   {
     SigningScheme signing_scheme = SigningScheme::kRsaPssRsaeSha256;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
+  // Test kRsaPssRsaeSha384 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kRsaPssRsaeSha384;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
+  // Test kRsaPssRsaeSha512 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kRsaPssRsaeSha512;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
     kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
                 sign_waiter.GetCallback());
@@ -691,8 +741,6 @@ TEST_F(KcerNssTest, SignRsa) {
 }
 
 // Test that Kcer::Sign() works correctly for ECC keys.
-// TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
-// schemes and add them to the test.
 TEST_F(KcerNssTest, SignEcc) {
   InitializeKcer({Token::kUser});
 
@@ -708,6 +756,32 @@ TEST_F(KcerNssTest, SignEcc) {
   // Test kEcdsaSecp256r1Sha256 signature.
   {
     SigningScheme signing_scheme = SigningScheme::kEcdsaSecp256r1Sha256;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
+  // Test kEcdsaSecp384r1Sha384 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kEcdsaSecp384r1Sha384;
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
+  }
+
+  // Test kEcdsaSecp521r1Sha512 signature.
+  {
+    SigningScheme signing_scheme = SigningScheme::kEcdsaSecp521r1Sha512;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
     kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
                 sign_waiter.GetCallback());

@@ -1250,11 +1250,9 @@ void KcerFuzzer::RunSign() {
   }
 
   if (sign_waiter.Get().has_value()) {
-    // Not strict, i.e. silently skip verification for signing schemes if it's
-    // not implemented yet.
-    EXPECT_TRUE(VerifySignature(
-        signing_scheme, expected_key->public_key.GetSpki(), data_to_sign,
-        sign_waiter.Get().value(), /*strict=*/false));
+    EXPECT_TRUE(VerifySignature(signing_scheme,
+                                expected_key->public_key.GetSpki(),
+                                data_to_sign, sign_waiter.Get().value()));
     return;
   }
 

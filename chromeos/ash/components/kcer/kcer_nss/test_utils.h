@@ -105,15 +105,11 @@ bool ExpectKeyPermissionsEqual(const std::optional<chaps::KeyPermissions>& a,
                                const std::optional<chaps::KeyPermissions>& b);
 
 // Verifies `signature` created with `signing_scheme` and the public key from
-// `spki` for `data_to_sign`. By default (with `strict` == true) only returns
-// true if the signature is correct. With `strict` == false, silently ignores
-// schemes for which the verification is not implemented yet and also returns
-// true for them. Returns false if signature is incorrect.
+// `spki` for `data_to_sign`. Returns true if the signature is correct.
 bool VerifySignature(SigningScheme signing_scheme,
                      PublicKeySpki spki,
                      DataToSign data_to_sign,
-                     Signature signature,
-                     bool strict = true);
+                     Signature signature);
 
 // Returns |hash| prefixed with DER-encoded PKCS#1 DigestInfo with
 // AlgorithmIdentifier=id-sha256.
