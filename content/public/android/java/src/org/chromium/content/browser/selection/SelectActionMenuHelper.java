@@ -38,7 +38,6 @@ import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -141,33 +140,24 @@ public class SelectActionMenuHelper {
                 getPrimaryAssistItem(context, selectedText, classificationResult);
         if (primaryAssistItem != null) menu.addMenuItem(primaryAssistItem);
 
-        menu.addAll(
-                getDefaultItems(
-                        context,
-                        delegate,
-                        menuType,
-                        isSelectionReadOnly,
-                        selectedText,
-                        selectionActionMenuDelegate));
-
-        // TODO(crbug.com/452918681): Instead of creating extra lists. We should pass the
-        //  PendingSelectionMenu into these helper methods. This would require refactoring tests.
-        List<SelectionMenuItem> secondaryAssistItems =
-                getSecondaryAssistItems(classificationResult);
-        if (secondaryAssistItems != null) menu.addAll(secondaryAssistItems);
-
-        List<SelectionMenuItem> textProcessingAssistItems =
-                getTextProcessingItems(
-                        context,
-                        menuType,
-                        isSelectionPassword,
-                        isSelectionReadOnly,
-                        selectedText,
-                        isTextProcessingAllowed,
-                        selectionActionMenuDelegate);
-        if (textProcessingAssistItems != null) {
-            menu.addAll(textProcessingAssistItems);
-        }
+        addDefaultItems(
+                menu,
+                context,
+                delegate,
+                menuType,
+                isSelectionReadOnly,
+                selectedText,
+                selectionActionMenuDelegate);
+        addSecondaryAssistItems(menu, classificationResult);
+        addTextProcessingItems(
+                menu,
+                context,
+                menuType,
+                isSelectionPassword,
+                isSelectionReadOnly,
+                selectedText,
+                isTextProcessingAllowed,
+                selectionActionMenuDelegate);
         if (selectionActionMenuDelegate != null) {
             menu.addAll(
                     selectionActionMenuDelegate.getAdditionalMenuItems(
@@ -198,14 +188,14 @@ public class SelectActionMenuHelper {
     }
 
     @VisibleForTesting
-    static List<SelectionMenuItem> getDefaultItems(
+    static void addDefaultItems(
+            PendingSelectionMenu menu,
             @Nullable Context context,
             TextSelectionCapabilitiesDelegate delegate,
             @MenuType int menuType,
             boolean isSelectionReadOnly,
             String selectedText,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        List<SelectionMenuItem> menuItems = new ArrayList<>();
         // If the delegate is null, use the static default implementation. Otherwise call the method
         // on the delegate.
         @DefaultItem
@@ -220,25 +210,26 @@ public class SelectActionMenuHelper {
             int order = pos * DEFAULT_ITEM_ORDER_SPACING;
             if (item == DefaultItem.CUT) {
                 if (menuType == MenuType.DROPDOWN ? !isSelectionReadOnly : delegate.canCut()) {
-                    menuItems.add(cut(order, delegate.canCut()));
+                    menu.addMenuItem(cut(order, delegate.canCut()));
                 }
             } else if (item == DefaultItem.COPY) {
                 if (menuType == MenuType.DROPDOWN || delegate.canCopy()) {
-                    menuItems.add(copy(order, delegate.canCopy()));
+                    menu.addMenuItem(copy(order, delegate.canCopy()));
                 }
             } else if (item == DefaultItem.PASTE) {
                 if (menuType == MenuType.DROPDOWN ? !isSelectionReadOnly : delegate.canPaste()) {
-                    menuItems.add(paste(order, delegate.canPaste()));
+                    menu.addMenuItem(paste(order, delegate.canPaste()));
                 }
             } else if (item == DefaultItem.PASTE_AS_PLAIN_TEXT) {
                 if (menuType == MenuType.DROPDOWN
                         ? !isSelectionReadOnly
                         : delegate.canPasteAsPlainText()) {
-                    menuItems.add(pasteAsPlainText(context, order, delegate.canPasteAsPlainText()));
+                    menu.addMenuItem(
+                            pasteAsPlainText(context, order, delegate.canPasteAsPlainText()));
                 }
             } else if (item == DefaultItem.SHARE) {
                 if (menuType == MenuType.DROPDOWN || delegate.canShare(menuType)) {
-                    menuItems.add(
+                    menu.addMenuItem(
                             share(
                                     context,
                                     order,
@@ -250,11 +241,11 @@ public class SelectActionMenuHelper {
                 if (menuType == MenuType.DROPDOWN
                         ? !isSelectionReadOnly
                         : delegate.canSelectAll(menuType)) {
-                    menuItems.add(selectAll(order, delegate.canSelectAll(menuType)));
+                    menu.addMenuItem(selectAll(order, delegate.canSelectAll(menuType)));
                 }
             } else if (item == DefaultItem.WEB_SEARCH) {
                 if (menuType == MenuType.DROPDOWN || delegate.canWebSearch(menuType)) {
-                    menuItems.add(
+                    menu.addMenuItem(
                             webSearch(
                                     context,
                                     order,
@@ -266,17 +257,16 @@ public class SelectActionMenuHelper {
                 }
             }
         }
-        return menuItems;
     }
 
-    private static @Nullable List<SelectionMenuItem> getSecondaryAssistItems(
-            @Nullable Result classificationResult) {
+    private static void addSecondaryAssistItems(
+            PendingSelectionMenu menu, @Nullable Result classificationResult) {
         // We have to use android.R.id.textAssist as group id to make framework show icons for
         // menu items if there is selected text.
         @IdRes int groupId = android.R.id.textAssist;
 
         if (classificationResult == null || classificationResult.textClassification == null) {
-            return null;
+            return;
         }
         TextClassification classification = classificationResult.textClassification;
         List<RemoteAction> actions = classification.getActions();
@@ -284,13 +274,12 @@ public class SelectActionMenuHelper {
         if (count < 2) {
             // More than one item is needed as the first item is reserved for the
             // primary assist item.
-            return null;
+            return;
         }
         List<Drawable> icons = classificationResult.additionalIcons;
         assert icons == null || icons.size() == count
                 : "icons list should be either null or have the same length with actions.";
 
-        List<SelectionMenuItem> secondaryAssistItems = new ArrayList<>();
         // First action is reserved for primary action so start at index 1.
         final int startIndex = 1;
         for (int i = startIndex; i < count; i++) {
@@ -300,7 +289,7 @@ public class SelectActionMenuHelper {
                 continue;
             }
 
-            SelectionMenuItem item =
+            menu.addMenuItem(
                     new SelectionMenuItem.Builder(action.getTitle())
                             .setId(Menu.NONE)
                             .setGroupId(groupId)
@@ -309,14 +298,13 @@ public class SelectActionMenuHelper {
                                     i - startIndex, ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
                             .setContentDescription(action.getContentDescription())
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                            .build();
-            secondaryAssistItems.add(item);
+                            .build());
         }
-        return secondaryAssistItems;
     }
 
     @VisibleForTesting
-    /* package */ static @Nullable List<SelectionMenuItem> getTextProcessingItems(
+    /* package */ static void addTextProcessingItems(
+            PendingSelectionMenu menu,
             Context context,
             @MenuType int menuType,
             boolean isSelectionPassword,
@@ -324,10 +312,9 @@ public class SelectActionMenuHelper {
             String selectedText,
             boolean isTextProcessingAllowed,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        if (selectedText.isEmpty()) return null;
-        List<SelectionMenuItem> textProcessingItems = new ArrayList<>();
+        if (selectedText.isEmpty()) return;
         if (isSelectionPassword || !isTextProcessingAllowed) {
-            return textProcessingItems;
+            return;
         }
         List<ResolveInfo> supportedActivities =
                 PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
@@ -337,7 +324,7 @@ public class SelectActionMenuHelper {
                             menuType, supportedActivities);
         }
         if (supportedActivities.isEmpty()) {
-            return textProcessingItems;
+            return;
         }
         final PackageManager packageManager = context.getPackageManager();
         for (int i = 0; i < supportedActivities.size(); i++) {
@@ -361,7 +348,7 @@ public class SelectActionMenuHelper {
                     order = SelectionMenuItem.ItemOrder.READ_ALOUD_EDITABLE;
                 }
             }
-            textProcessingItems.add(
+            menu.addMenuItem(
                     new SelectionMenuItem.Builder(title)
                             .setId(Menu.NONE)
                             .setGroupId(R.id.select_action_menu_text_processing_items)
@@ -371,7 +358,6 @@ public class SelectActionMenuHelper {
                             .setIntent(intent)
                             .build());
         }
-        return textProcessingItems;
     }
 
     private static boolean isReadAloud(@Nullable CharSequence title) {

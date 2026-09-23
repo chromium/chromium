@@ -1177,20 +1177,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
         assert mContext != null;
 
-        List<SelectionMenuItem> textProcessingItems =
-                SelectActionMenuHelper.getTextProcessingItems(
-                        mContext,
-                        MenuType.FLOATING,
-                        false,
-                        false,
-                        "test",
-                        true,
-                        mSelectionActionMenuDelegate);
-        if (textProcessingItems != null && !textProcessingItems.isEmpty()) {
-            PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
-            pendingMenu.addAll(textProcessingItems);
-            pendingMenu.getMenuAsActionMode(menu);
-        }
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        SelectActionMenuHelper.addTextProcessingItems(
+                pendingMenu,
+                mContext,
+                MenuType.FLOATING,
+                false,
+                false,
+                "test",
+                true,
+                mSelectionActionMenuDelegate);
+        pendingMenu.getMenuAsActionMode(menu);
     }
 
     @Override
