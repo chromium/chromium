@@ -12,6 +12,17 @@ import os.path
 
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(
+    path=[
+      'generate_vulkan_types.py',
+      'vulkan_types.mojom',
+      'vulkan_types_mojom_traits.h',
+      'vulkan_types_mojom_traits.cc',
+      'generated_vulkan_type_mappings.gni',
+      'PRESUBMIT.py',
+    ]
+  ):
+    return []
   generating_files = input_api.AffectedFiles(
       file_filter=lambda x: os.path.basename(x.LocalPath()) in [
           'generate_vulkan_types.py'])

@@ -51,6 +51,16 @@ def _GetGpuEnv(input_api):
 
 def CheckGpuTestsUnittests(input_api, output_api):
   """Runs the unittests for the gpu_tests directory."""
+  if not input_api.HasAffectedFiles(
+    path=[
+      'gpu_tests',
+      'unittest_data',
+      'gpu_project_config.py',
+      'run_unittests.py',
+      'PRESUBMIT.py',
+    ]
+  ):
+    return []
   gpu_env = _GetGpuEnv(input_api)
   command = input_api.Command(
     name='run_content_test_gpu_unittests',
@@ -64,6 +74,10 @@ def CheckGpuTestsUnittests(input_api, output_api):
 
 def CheckMachineTimesUnittests(input_api, output_api):
   """Runs the unittests for the machine_times directory."""
+  if not input_api.HasAffectedFiles(
+    path=['machine_times', 'unexpected_passes', 'PRESUBMIT.py']
+  ):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api,
     output_api,
@@ -78,6 +92,8 @@ def CheckMachineTimesUnittests(input_api, output_api):
 
 def CheckUnexpectedPassesUnittests(input_api, output_api):
   """Runs the unittests for the unexpected_passes directory."""
+  if not input_api.HasAffectedFiles(path=['unexpected_passes', 'PRESUBMIT.py']):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api,
     output_api,
@@ -89,6 +105,10 @@ def CheckUnexpectedPassesUnittests(input_api, output_api):
 
 def CheckFlakeSuppressorUnittests(input_api, output_api):
   """Runs the unittests for the flake_suppressor directory."""
+  if not input_api.HasAffectedFiles(
+    path=['flake_suppressor', 'gpu_tests', 'PRESUBMIT.py']
+  ):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api,
     output_api,
@@ -100,6 +120,14 @@ def CheckFlakeSuppressorUnittests(input_api, output_api):
 
 def CheckValidateTagConsistency(input_api, output_api):
   """Checks that GPU expectation tags are consistent across all files."""
+  if not input_api.HasAffectedFiles(
+    path=[
+      input_api.os_path.join('gpu_tests', 'test_expectations'),
+      'validate_tag_consistency.py',
+      'PRESUBMIT.py',
+    ]
+  ):
+    return []
   command = input_api.Command(
     name='validate_tag_consistency',
     cmd=[

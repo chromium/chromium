@@ -46,6 +46,8 @@ def _IsWebGPUCmdBufferFile(affected_file):
 
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions=('.py', '.txt', '.h', '.cc')):
+    return []
   gles2_cmd_buffer_files = input_api.AffectedFiles(
       file_filter=_IsGLES2CmdBufferFile)
   raster_cmd_buffer_files = input_api.AffectedFiles(

@@ -11,6 +11,15 @@ for more details on the presubmit API built into depot_tools.
 import os.path
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(
+    path=[
+      'generate_bindings.py',
+      'vulkan_function_pointers.cc',
+      'vulkan_function_pointers.h',
+      'PRESUBMIT.py',
+    ]
+  ):
+    return []
   generating_files = input_api.AffectedFiles(
       file_filter=lambda x: os.path.basename(x.LocalPath()) in [
           'generate_bindings.py'])

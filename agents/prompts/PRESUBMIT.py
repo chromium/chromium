@@ -12,6 +12,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 def CheckPrompts(input_api, output_api):
     """Checks that all .md files are up-to-date with their .tmpl.md sources."""
+    if not input_api.HasAffectedFiles(extensions=('.md', '.py')):
+        return []
     script_path = input_api.os_path.join(
         input_api.PresubmitLocalPath(), 'process_prompts.py'
     )

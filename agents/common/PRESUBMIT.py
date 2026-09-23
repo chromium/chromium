@@ -11,6 +11,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPythonTests(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     return input_api.RunTests(
         input_api.canned_checks.GetUnitTestsInDirectory(
             input_api,

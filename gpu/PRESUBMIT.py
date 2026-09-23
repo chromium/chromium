@@ -11,6 +11,8 @@ for more details about the presubmit API built into depot_tools.
 import sys
 
 def CommonChecks(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
 
   output = []
   sys_path_backup = sys.path
