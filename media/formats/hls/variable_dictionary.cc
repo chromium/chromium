@@ -91,7 +91,7 @@ bool VariableDictionary::Insert(types::VariableName name, std::string value) {
       .second;
 }
 
-ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
+base::expected<ResolvedSourceString, ParseStatus> VariableDictionary::Resolve(
     SourceString input,
     SubstitutionBuffer& buffer) const {
   // Get the first variable reference. If this fails, there were no references
@@ -108,8 +108,9 @@ ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
   if (next_var.head.Empty() && next_var.tail->second.Empty()) {
     auto value = Find(next_var.tail->first);
     if (!value) {
-      return ParseStatus(ParseStatusCode::kVariableUndefined)
-          .WithData("key", next_var.tail->first.GetName());
+      return base::unexpected(
+          ParseStatus(ParseStatusCode::kVariableUndefined)
+              .WithData("key", next_var.tail->first.GetName()));
     }
 
     return ResolvedSourceString::Create(
@@ -130,8 +131,9 @@ ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
     // Look up the variable value
     auto value = Find(next_var.tail->first);
     if (!value) {
-      return ParseStatus(ParseStatusCode::kVariableUndefined)
-          .WithData("key", next_var.tail->first.GetName());
+      return base::unexpected(
+          ParseStatus(ParseStatusCode::kVariableUndefined)
+              .WithData("key", next_var.tail->first.GetName()));
     }
     string_buf.append(*value);
 

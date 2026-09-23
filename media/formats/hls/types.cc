@@ -21,12 +21,14 @@ namespace media::hls::types {
 namespace parsing {
 
 // static
-ParseStatus::Or<base::TimeDelta> TimeDelta::Parse(ResolvedSourceString str) {
-  return ParseDecimalFloatingPoint(str).MapValue(
-      [](DecimalFloatingPoint t) -> ParseStatus::Or<base::TimeDelta> {
+base::expected<base::TimeDelta, ParseStatus> TimeDelta::Parse(
+    ResolvedSourceString str) {
+  return ParseDecimalFloatingPoint(str).and_then(
+      [](DecimalFloatingPoint t)
+          -> base::expected<base::TimeDelta, ParseStatus> {
         auto duration = base::Seconds(t);
         if (duration.is_max()) {
-          return ParseStatusCode::kValueOverflowsTimeDelta;
+          return base::unexpected(ParseStatusCode::kValueOverflowsTimeDelta);
         }
         return duration;
       });
@@ -45,7 +47,7 @@ ByteRangeExpression& ByteRangeExpression::operator=(
     ByteRangeExpression&& other) = default;
 
 // static
-ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
+base::expected<ByteRangeExpression, ParseStatus> ByteRangeExpression::Parse(
     ResolvedSourceString source_str) {
   // If this ByteRange has an offset, it will be separated from the length by
   // '@'.
@@ -53,8 +55,9 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
   const auto length_str = source_str.Consume(at_index);
   auto length = ParseDecimalInteger(length_str);
   if (!length.has_value()) {
-    return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
-        .AddCause(std::move(length).error());
+    return base::unexpected(
+        ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+            .AddCause(std::move(length).error()));
   }
 
   // If the offset was present, try to parse it
@@ -63,8 +66,9 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
     source_str.Consume(1);
     auto offset_result = ParseDecimalInteger(source_str);
     if (!offset_result.has_value()) {
-      return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
-          .AddCause(std::move(offset_result).error());
+      return base::unexpected(
+          ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+              .AddCause(std::move(offset_result).error()));
     }
 
     offset = std::move(offset_result).value();
@@ -74,37 +78,40 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
 }
 
 // static
-ParseStatus::Or<base::Time> ISO8601Date::Parse(ResolvedSourceString str) {
+base::expected<base::Time, ParseStatus> ISO8601Date::Parse(
+    ResolvedSourceString str) {
   base::Time time;
   if (base::Time::FromString(str.Str().data(), &time)) {
     return time;
   }
-  return ParseStatusCode::kMalformedDate;
+  return base::unexpected(ParseStatusCode::kMalformedDate);
 }
 
 // static
-ParseStatus::Or<ResolvedSourceString> RawStr::Parse(ResolvedSourceString str) {
+base::expected<ResolvedSourceString, ParseStatus> RawStr::Parse(
+    ResolvedSourceString str) {
   return str;
 }
 
 // static
-ParseStatus::Or<DecimalInteger> RawInt::Parse(ResolvedSourceString str) {
+base::expected<DecimalInteger, ParseStatus> RawInt::Parse(
+    ResolvedSourceString str) {
   return ParseDecimalInteger(str);
 }
 
 // static
-ParseStatus::Or<DecimalFloatingPoint> RawFloat::Parse(
+base::expected<DecimalFloatingPoint, ParseStatus> RawFloat::Parse(
     ResolvedSourceString str) {
   return ParseDecimalFloatingPoint(str);
 }
 
 // static
-ParseStatus::Or<bool> YesOrNo::Parse(ResolvedSourceString str) {
+base::expected<bool, ParseStatus> YesOrNo::Parse(ResolvedSourceString str) {
   return str.Str() == "YES";
 }
 
 // static
-ParseStatus::Or<::media::hls::types::DecimalResolution>
+base::expected<::media::hls::types::DecimalResolution, ParseStatus>
 DecimalResolution::Parse(ResolvedSourceString str) {
   return ::media::hls::types::DecimalResolution::Parse(str);
 }
@@ -187,7 +194,7 @@ std::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
 
 }  // namespace
 
-ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
+base::expected<DecimalInteger, ParseStatus> ParseDecimalInteger(
     ResolvedSourceString source_str) {
   static const base::NoDestructor<re2::RE2> decimal_integer_regex("\\d{1,20}");
 
@@ -198,36 +205,38 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
   // extracts the range containing valid characters from a given
   // std::string_view. For now that's the caller's responsibility.
   if (!RE2::FullMatch(str, *decimal_integer_regex)) {
-    return ParseStatusCode::kFailedToParseDecimalInteger;
+    return base::unexpected(ParseStatusCode::kFailedToParseDecimalInteger);
   }
 
   DecimalInteger result;
   if (!base::StringToUint64(str, &result)) {
-    return ParseStatusCode::kFailedToParseDecimalInteger;
+    return base::unexpected(ParseStatusCode::kFailedToParseDecimalInteger);
   }
 
   return result;
 }
 
-ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
+base::expected<DecimalFloatingPoint, ParseStatus> ParseDecimalFloatingPoint(
     ResolvedSourceString source_str) {
   // Utilize signed parsing function
   auto result = ParseSignedDecimalFloatingPoint(source_str);
   if (!result.has_value()) {
-    return ParseStatusCode::kFailedToParseDecimalFloatingPoint;
+    return base::unexpected(
+        ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   }
 
   // Decimal-floating-point values may not be negative (including -0.0)
   SignedDecimalFloatingPoint value = std::move(result).value();
   if (std::signbit(value)) {
-    return ParseStatusCode::kFailedToParseDecimalFloatingPoint;
+    return base::unexpected(
+        ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   }
 
   return value;
 }
 
-ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
-    ResolvedSourceString source_str) {
+base::expected<SignedDecimalFloatingPoint, ParseStatus>
+ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str) {
   // Accept no decimal point, decimal point with leading digits, trailing
   // digits, or both
   static const base::NoDestructor<re2::RE2> decimal_floating_point_regex(
@@ -238,26 +247,28 @@ ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
   // Check that the set of characters is allowed: - . 0-9
   // `base::StringToDouble` is not as strict as the HLS spec
   if (!re2::RE2::FullMatch(str, *decimal_floating_point_regex)) {
-    return ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint;
+    return base::unexpected(
+        ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint);
   }
 
   DecimalFloatingPoint result;
   const bool success = base::StringToDouble(str, &result);
   if (!success || !std::isfinite(result)) {
-    return ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint;
+    return base::unexpected(
+        ParseStatusCode::kFailedToParseSignedDecimalFloatingPoint);
   }
 
   return result;
 }
 
 // static
-ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
+base::expected<DecimalResolution, ParseStatus> DecimalResolution::Parse(
     ResolvedSourceString source_str) {
   // decimal-resolution values are in the format: DecimalInteger 'x'
   // DecimalInteger
   const auto x_index = source_str.Str().find_first_of('x');
   if (x_index == std::string_view::npos) {
-    return ParseStatusCode::kFailedToParseDecimalResolution;
+    return base::unexpected(ParseStatusCode::kFailedToParseDecimalResolution);
   }
 
   // Extract width and height strings
@@ -269,15 +280,15 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
   auto height = ParseDecimalInteger(height_str);
   for (auto* x : {&width, &height}) {
     if (!x->has_value()) {
-      return ParseStatus(ParseStatusCode::kFailedToParseDecimalResolution)
-          .AddCause(std::move(*x).error());
+      return base::unexpected(
+          ParseStatus(ParseStatusCode::kFailedToParseDecimalResolution)
+              .AddCause(std::move(*x).error()));
     }
   }
 
   return DecimalResolution{.width = std::move(width).value(),
                            .height = std::move(height).value()};
 }
-
 
 // static
 std::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
@@ -294,41 +305,41 @@ std::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
   return ByteRange(length, offset);
 }
 
-ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
+base::expected<ResolvedSourceString, ParseStatus> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
     VariableDictionary::SubstitutionBuffer& sub_buffer,
     bool allow_empty) {
   return ParseQuotedStringWithoutSubstitution(source_str, allow_empty)
-      .MapValue([&variable_dict, &sub_buffer](auto str) {
+      .and_then([&variable_dict, &sub_buffer](auto str) {
         return variable_dict.Resolve(str, sub_buffer);
       })
-      .MapValue(
-          [allow_empty](auto str) -> ParseStatus::Or<ResolvedSourceString> {
-            if (!allow_empty && str.Empty()) {
-              return ParseStatusCode::kFailedToParseQuotedString;
-            } else {
-              return str;
-            }
-          });
+      .and_then([allow_empty](auto str)
+                    -> base::expected<ResolvedSourceString, ParseStatus> {
+        if (!allow_empty && str.Empty()) {
+          return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
+        } else {
+          return str;
+        }
+      });
 }
 
-ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
+base::expected<SourceString, ParseStatus> ParseQuotedStringWithoutSubstitution(
     SourceString source_str,
     bool allow_empty) {
   if (source_str.Size() < 2) {
-    return ParseStatusCode::kFailedToParseQuotedString;
+    return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
   }
   if (*source_str.Str().begin() != '"') {
-    return ParseStatusCode::kFailedToParseQuotedString;
+    return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
   }
   if (*source_str.Str().rbegin() != '"') {
-    return ParseStatusCode::kFailedToParseQuotedString;
+    return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
   }
 
   auto str = source_str.Substr(1, source_str.Size() - 2);
   if (!allow_empty && str.Empty()) {
-    return ParseStatusCode::kFailedToParseQuotedString;
+    return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
   }
 
   return str;
@@ -337,7 +348,8 @@ ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
 AttributeListIterator::AttributeListIterator(SourceString content)
     : remaining_content_(content) {}
 
-ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
+base::expected<AttributeListIterator::Item, ParseStatus>
+AttributeListIterator::Next() {
   // Cache `remaining_content_` to the stack so that if we error out,
   // we'll continue returning the same error.
   auto content = remaining_content_;
@@ -347,7 +359,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
 
   // Empty string is tolerated, but caller must handle this case.
   if (content.Empty()) {
-    return ParseStatusCode::kReachedEOF;
+    return base::unexpected(ParseStatusCode::kReachedEOF);
   }
 
   // The remainder of the function expects a string matching
@@ -356,7 +368,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
   // Extract attribute name
   const auto name = ExtractAttributeName(&content);
   if (!name.has_value()) {
-    return ParseStatusCode::kMalformedAttributeList;
+    return base::unexpected(ParseStatusCode::kMalformedAttributeList);
   }
 
   // Whitespace is allowed following the attribute name
@@ -364,7 +376,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
 
   // Next character must be '='
   if (content.Consume(1).Str() != "=") {
-    return ParseStatusCode::kMalformedAttributeList;
+    return base::unexpected(ParseStatusCode::kMalformedAttributeList);
   }
 
   // Whitespace is allowed preceding the attribute value
@@ -373,7 +385,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
   // Extract attribute value
   const auto value = ExtractAttributeValue(&content);
   if (!value.has_value()) {
-    return ParseStatusCode::kMalformedAttributeList;
+    return base::unexpected(ParseStatusCode::kMalformedAttributeList);
   }
 
   // Whitespace is allowed following attribute value
@@ -383,7 +395,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
   // Trailing commas are allowed (not explicitly by the spec, but supported by
   // Safari).
   if (!content.Empty() && content.Consume(1).Str() != ",") {
-    return ParseStatusCode::kMalformedAttributeList;
+    return base::unexpected(ParseStatusCode::kMalformedAttributeList);
   }
 
   remaining_content_ = content;
@@ -402,7 +414,7 @@ AttributeMap::AttributeMap(base::span<Item> sorted_items)
       std::ranges::is_sorted(items_, std::less(), &AttributeMap::Item::first));
 }
 
-ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
+base::expected<AttributeListIterator::Item, ParseStatus> AttributeMap::Fill(
     AttributeListIterator* iter) {
   while (true) {
     // Cache iter to stack, in case we hit a duplicate
@@ -431,7 +443,7 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
     if (entry->second.has_value()) {
       // Rewind iterator
       *iter = iter_backup;
-      return ParseStatusCode::kAttributeListHasDuplicateNames;
+      return base::unexpected(ParseStatusCode::kAttributeListHasDuplicateNames);
     }
     entry->second = item.value;
   }
@@ -453,33 +465,36 @@ ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
 AttributeMap::~AttributeMap() = default;
 
 // static
-ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
+base::expected<VariableName, ParseStatus> VariableName::Parse(
+    SourceString source_str) {
   static const base::NoDestructor<re2::RE2> variable_name_regex(
       "[a-zA-Z0-9_-]+");
 
   // This source_str must match completely
   if (!re2::RE2::FullMatch(source_str.Str(), *variable_name_regex)) {
-    return ParseStatusCode::kMalformedVariableName;
+    return base::unexpected(ParseStatusCode::kMalformedVariableName);
   }
 
   return VariableName(source_str.Str());
 }
 
 // static
-ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
+base::expected<StableId, ParseStatus> StableId::Parse(
+    ResolvedSourceString str) {
   const auto is_char_valid = [](char c) -> bool {
     return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "+/=.-_");
   };
 
   if (str.Empty() || !std::ranges::all_of(str.Str(), is_char_valid)) {
-    return ParseStatusCode::kFailedToParseStableId;
+    return base::unexpected(ParseStatusCode::kFailedToParseStableId);
   }
 
   return StableId(std::string{str.Str()});
 }
 
 // static
-ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
+base::expected<InstreamId, ParseStatus> InstreamId::Parse(
+    ResolvedSourceString str) {
   constexpr std::string_view kCcStr = "CC";
   constexpr std::string_view kServiceStr = "SERVICE";
 
@@ -495,17 +510,17 @@ ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
     max = 63;
     str.Consume(kServiceStr.size());
   } else {
-    return ParseStatusCode::kFailedToParseInstreamId;
+    return base::unexpected(ParseStatusCode::kFailedToParseInstreamId);
   }
 
   // Parse the number, max allowed value depends on the type
   auto number_result = ParseDecimalInteger(str);
   if (!number_result.has_value()) {
-    return ParseStatusCode::kFailedToParseInstreamId;
+    return base::unexpected(ParseStatusCode::kFailedToParseInstreamId);
   }
   auto number = std::move(number_result).value();
   if (number < 1 || number > max) {
-    return ParseStatusCode::kFailedToParseInstreamId;
+    return base::unexpected(ParseStatusCode::kFailedToParseInstreamId);
   }
 
   return InstreamId(type, static_cast<uint8_t>(number));
@@ -527,13 +542,15 @@ AudioChannels& AudioChannels::operator=(AudioChannels&&) = default;
 AudioChannels::~AudioChannels() = default;
 
 // static
-ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
+base::expected<AudioChannels, ParseStatus> AudioChannels::Parse(
+    ResolvedSourceString str) {
   // First parameter is a decimal-integer indicating the number of channels
   const auto max_channels_str = str.ConsumeDelimiter('/');
   auto max_channels_result = ParseDecimalInteger(max_channels_str);
   if (!max_channels_result.has_value()) {
-    return ParseStatus(ParseStatusCode::kFailedToParseAudioChannels)
-        .AddCause(std::move(max_channels_result).error());
+    return base::unexpected(
+        ParseStatus(ParseStatusCode::kFailedToParseAudioChannels)
+            .AddCause(std::move(max_channels_result).error()));
   }
   const auto max_channels = std::move(max_channels_result).value();
 
@@ -552,7 +569,7 @@ ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
     if (identifier.Empty() ||
         !std::ranges::all_of(identifier.Str(),
                              is_valid_coding_identifier_char)) {
-      return ParseStatusCode::kFailedToParseAudioChannels;
+      return base::unexpected(ParseStatusCode::kFailedToParseAudioChannels);
     }
 
     audio_coding_identifiers.emplace_back(identifier.Str());

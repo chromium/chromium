@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
@@ -33,13 +34,13 @@ class TagItem;
 // Represents the contents of the #EXTM3U tag
 struct MEDIA_EXPORT M3uTag {
   static constexpr auto kName = CommonTagName::kM3u;
-  static ParseStatus::Or<M3uTag> Parse(TagItem);
+  static base::expected<M3uTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-DEFINE tag
 struct MEDIA_EXPORT XDefineTag {
   static constexpr auto kName = CommonTagName::kXDefine;
-  static ParseStatus::Or<XDefineTag> Parse(TagItem);
+  static base::expected<XDefineTag, ParseStatus> Parse(TagItem);
 
   // Constructs an XDefineTag representing a variable definition.
   static XDefineTag CreateDefinition(types::VariableName name,
@@ -59,13 +60,13 @@ struct MEDIA_EXPORT XDefineTag {
 // Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
 struct MEDIA_EXPORT XIndependentSegmentsTag {
   static constexpr auto kName = CommonTagName::kXIndependentSegments;
-  static ParseStatus::Or<XIndependentSegmentsTag> Parse(TagItem);
+  static base::expected<XIndependentSegmentsTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-VERSION tag
 struct MEDIA_EXPORT XVersionTag {
   static constexpr auto kName = CommonTagName::kXVersion;
-  static ParseStatus::Or<XVersionTag> Parse(TagItem);
+  static base::expected<XVersionTag, ParseStatus> Parse(TagItem);
 
   types::DecimalInteger version;
 };
@@ -81,7 +82,7 @@ enum class MediaType {
 struct MEDIA_EXPORT XMediaTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXMedia;
   DECLARE_FAILURE_STATUS(Media);
-  static ParseStatus::Or<XMediaTag> Parse(
+  static base::expected<XMediaTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer);
@@ -154,7 +155,7 @@ struct MEDIA_EXPORT XMediaTag {
 // Represents the contents of the #EXT-X-STREAM-INF tag
 struct MEDIA_EXPORT XStreamInfTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXStreamInf;
-  static ParseStatus::Or<XStreamInfTag> Parse(
+  static base::expected<XStreamInfTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer);
@@ -206,7 +207,7 @@ struct MEDIA_EXPORT XStreamInfTag {
 // Represents the contents of the #EXTINF tag
 struct MEDIA_EXPORT InfTag {
   static constexpr auto kName = MediaPlaylistTagName::kInf;
-  static ParseStatus::Or<InfTag> Parse(TagItem);
+  static base::expected<InfTag, ParseStatus> Parse(TagItem);
 
   // Target duration of the media segment.
   base::TimeDelta duration;
@@ -218,7 +219,7 @@ struct MEDIA_EXPORT InfTag {
 // Represents the contents of the #EXT-X-BITRATE tag.
 struct MEDIA_EXPORT XBitrateTag {
   static constexpr auto kName = MediaPlaylistTagName::kXBitrate;
-  static ParseStatus::Or<XBitrateTag> Parse(TagItem);
+  static base::expected<XBitrateTag, ParseStatus> Parse(TagItem);
 
   // The approximate bitrate of the following media segments, (except those that
   // have the EXT-X-BYTERANGE tag) expressed in kilobits per second. The value
@@ -229,7 +230,7 @@ struct MEDIA_EXPORT XBitrateTag {
 // Represents the contents of the #EXT-X-BYTERANGE tag.
 struct MEDIA_EXPORT XByteRangeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
-  static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+  static base::expected<XByteRangeTag, ParseStatus> Parse(TagItem);
   explicit XByteRangeTag(types::parsing::ByteRangeExpression range)
       : range(std::move(range)) {}
   XByteRangeTag(const XByteRangeTag& other) = default;
@@ -243,13 +244,13 @@ struct MEDIA_EXPORT XByteRangeTag {
 // Represents the contents of the #EXT-X-DISCONTINUITY tag
 struct MEDIA_EXPORT XDiscontinuityTag {
   static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuity;
-  static ParseStatus::Or<XDiscontinuityTag> Parse(TagItem);
+  static base::expected<XDiscontinuityTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-DISCONTINUITY-SEQUENCE tag.
 struct MEDIA_EXPORT XDiscontinuitySequenceTag {
   static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuitySequence;
-  static ParseStatus::Or<XDiscontinuitySequenceTag> Parse(TagItem);
+  static base::expected<XDiscontinuitySequenceTag, ParseStatus> Parse(TagItem);
 
   // Indicates the discontinuity sequence number to assign to the first media
   // segment in this playlist. These numbers are useful for synchronizing
@@ -260,25 +261,25 @@ struct MEDIA_EXPORT XDiscontinuitySequenceTag {
 // Represents the contents of the #EXT-X-ENDLIST tag
 struct MEDIA_EXPORT XEndListTag {
   static constexpr auto kName = MediaPlaylistTagName::kXEndList;
-  static ParseStatus::Or<XEndListTag> Parse(TagItem);
+  static base::expected<XEndListTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-GAP tag
 struct MEDIA_EXPORT XGapTag {
   static constexpr auto kName = MediaPlaylistTagName::kXGap;
-  static ParseStatus::Or<XGapTag> Parse(TagItem);
+  static base::expected<XGapTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-I-FRAMES-ONLY tag
 struct MEDIA_EXPORT XIFramesOnlyTag {
   static constexpr auto kName = MediaPlaylistTagName::kXIFramesOnly;
-  static ParseStatus::Or<XIFramesOnlyTag> Parse(TagItem);
+  static base::expected<XIFramesOnlyTag, ParseStatus> Parse(TagItem);
 };
 
 // Represents the contents of the #EXT-X-MAP tag.
 struct MEDIA_EXPORT XMapTag {
   static constexpr auto kName = MediaPlaylistTagName::kXMap;
-  static ParseStatus::Or<XMapTag> Parse(
+  static base::expected<XMapTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer);
@@ -294,7 +295,7 @@ struct MEDIA_EXPORT XMapTag {
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
 struct MEDIA_EXPORT XMediaSequenceTag {
   static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;
-  static ParseStatus::Or<XMediaSequenceTag> Parse(TagItem);
+  static base::expected<XMediaSequenceTag, ParseStatus> Parse(TagItem);
 
   // Indicates the media sequence number to assign to the first media segment in
   // this playlist. These numbers are useful for validating the same media
@@ -307,7 +308,7 @@ struct MEDIA_EXPORT XMediaSequenceTag {
 struct MEDIA_EXPORT XPartTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPart;
   DECLARE_FAILURE_STATUS(Part);
-  static ParseStatus::Or<XPartTag> Parse(
+  static base::expected<XPartTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer);
@@ -333,7 +334,7 @@ struct MEDIA_EXPORT XPartTag {
 // Represents the contents of the #EXT-PART-INF tag.
 struct MEDIA_EXPORT XPartInfTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPartInf;
-  static ParseStatus::Or<XPartInfTag> Parse(TagItem);
+  static base::expected<XPartInfTag, ParseStatus> Parse(TagItem);
 
   // This value indicates the target duration for partial media segments.
   base::TimeDelta target_duration;
@@ -352,7 +353,7 @@ enum class PlaylistType {
 // Represents the contents of the #EXT-X-PLAYLIST-TYPE tag
 struct MEDIA_EXPORT XPlaylistTypeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPlaylistType;
-  static ParseStatus::Or<XPlaylistTypeTag> Parse(TagItem);
+  static base::expected<XPlaylistTypeTag, ParseStatus> Parse(TagItem);
 
   PlaylistType type;
 };
@@ -360,7 +361,7 @@ struct MEDIA_EXPORT XPlaylistTypeTag {
 // Represents the contents of the #EXT-X-SERVER-CONTROL tag.
 struct MEDIA_EXPORT XServerControlTag {
   static constexpr auto kName = MediaPlaylistTagName::kXServerControl;
-  static ParseStatus::Or<XServerControlTag> Parse(TagItem);
+  static base::expected<XServerControlTag, ParseStatus> Parse(TagItem);
 
   // This value (given by the 'CAN-SKIP-UNTIL' attribute) represents the
   // distance from the last media segment that the server is able
@@ -389,7 +390,7 @@ struct MEDIA_EXPORT XServerControlTag {
 // Represents the contents of the #EXT-X-TARGETDURATION tag.
 struct MEDIA_EXPORT XTargetDurationTag {
   static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
-  static ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
+  static base::expected<XTargetDurationTag, ParseStatus> Parse(TagItem);
 
   // The upper bound on the duration of all media segments in the
   // media playlist. The EXTINF duration of each Media Segment in a Playlist
@@ -400,7 +401,7 @@ struct MEDIA_EXPORT XTargetDurationTag {
 
 struct MEDIA_EXPORT XSkipTag {
   static constexpr auto kName = MediaPlaylistTagName::kXSkip;
-  static ParseStatus::Or<XSkipTag> Parse(
+  static base::expected<XSkipTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer);
@@ -428,7 +429,7 @@ struct MEDIA_EXPORT XSkipTag {
 // added. Doing so reduces the size of the Rendition Report.
 struct MEDIA_EXPORT XRenditionReportTag {
   static constexpr auto kName = MediaPlaylistTagName::kXRenditionReport;
-  static ParseStatus::Or<XRenditionReportTag> Parse(
+  static base::expected<XRenditionReportTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary&,
       VariableDictionary::SubstitutionBuffer&);
@@ -454,7 +455,7 @@ struct MEDIA_EXPORT XRenditionReportTag {
 // Media Segment.
 struct MEDIA_EXPORT XProgramDateTimeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXProgramDateTime;
-  static ParseStatus::Or<XProgramDateTimeTag> Parse(TagItem);
+  static base::expected<XProgramDateTimeTag, ParseStatus> Parse(TagItem);
 
   base::Time time;
 };
@@ -474,7 +475,7 @@ enum class XPreloadHintType {
 struct MEDIA_EXPORT XPreloadHintTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPreloadHint;
   DECLARE_FAILURE_STATUS(PreloadHint);
-  static ParseStatus::Or<XPreloadHintTag> Parse(
+  static base::expected<XPreloadHintTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary&,
       VariableDictionary::SubstitutionBuffer&);
@@ -532,7 +533,7 @@ struct MEDIA_EXPORT XKeyTag {
   static constexpr auto kName = MediaPlaylistTagName::kXKey;
   DECLARE_FAILURE_STATUS(Key);
   static constexpr bool kAllowEmptyMethod = true;
-  static ParseStatus::Or<XKeyTag> Parse(
+  static base::expected<XKeyTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary&,
       VariableDictionary::SubstitutionBuffer&);
@@ -571,7 +572,7 @@ struct MEDIA_EXPORT XKeyTag {
 struct MEDIA_EXPORT XSessionKeyTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXSessionKey;
   static constexpr bool kAllowEmptyMethod = false;
-  static ParseStatus::Or<XSessionKeyTag> Parse(
+  static base::expected<XSessionKeyTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary&,
       VariableDictionary::SubstitutionBuffer&);
@@ -635,7 +636,7 @@ struct MEDIA_EXPORT XDateRangeTag {
 
   static constexpr auto kName = MediaPlaylistTagName::kXDateRange;
   DECLARE_FAILURE_STATUS(DateRange);
-  static ParseStatus::Or<XDateRangeTag> Parse(
+  static base::expected<XDateRangeTag, ParseStatus> Parse(
       TagItem,
       const VariableDictionary&,
       VariableDictionary::SubstitutionBuffer&);
@@ -671,7 +672,7 @@ struct MEDIA_EXPORT XSessionDataTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXSessionData;
   DECLARE_FAILURE_STATUS(SessionData);
 
-  static ParseStatus::Or<XSessionDataTag> Parse(
+  static base::expected<XSessionDataTag, ParseStatus> Parse(
       TagItem item,
       const VariableDictionary& variables,
       VariableDictionary::SubstitutionBuffer& buffer);
@@ -698,7 +699,7 @@ struct MEDIA_EXPORT XIFrameStreamInfTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXIFrameStreamInf;
   DECLARE_FAILURE_STATUS(IFrameStreamInf);
 
-  static ParseStatus::Or<XIFrameStreamInfTag> Parse(
+  static base::expected<XIFrameStreamInfTag, ParseStatus> Parse(
       TagItem item,
       const VariableDictionary& vars,
       VariableDictionary::SubstitutionBuffer& subs);
@@ -747,7 +748,7 @@ struct MEDIA_EXPORT XStartTag {
   static constexpr auto kName = CommonTagName::kXStart;
   DECLARE_FAILURE_STATUS(Start);
 
-  static ParseStatus::Or<XStartTag> Parse(
+  static base::expected<XStartTag, ParseStatus> Parse(
       TagItem item,
       const VariableDictionary& vars,
       VariableDictionary::SubstitutionBuffer& subs);
@@ -763,7 +764,7 @@ struct MEDIA_EXPORT XContentSteeringTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXContentSteering;
   DECLARE_FAILURE_STATUS(ContentSteering);
 
-  static ParseStatus::Or<XContentSteeringTag> Parse(
+  static base::expected<XContentSteeringTag, ParseStatus> Parse(
       TagItem item,
       const VariableDictionary& vars,
       VariableDictionary::SubstitutionBuffer& subs);

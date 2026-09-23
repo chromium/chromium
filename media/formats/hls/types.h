@@ -48,7 +48,7 @@ using SignedDecimalFloatingPoint = double;
 // height.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
 struct MEDIA_EXPORT DecimalResolution {
-  static ParseStatus::Or<DecimalResolution> Parse(
+  static base::expected<DecimalResolution, ParseStatus> Parse(
       ResolvedSourceString source_str);
 
   types::DecimalInteger width;
@@ -74,19 +74,19 @@ template <typename Subtype, typename T, typename... ParseArgs>
 struct MEDIA_EXPORT SubstitutingParser {
   using ParseInto = T;
 
-  static ParseStatus::Or<ParseInto> ParseWithSubstitution(
+  static base::expected<ParseInto, ParseStatus> ParseWithSubstitution(
       SourceString str,
       const VariableDictionary& variable_dict,
       VariableDictionary::SubstitutionBuffer& sub_buffer,
       ParseArgs&&... args) {
     return variable_dict.Resolve(str, sub_buffer)
-        .MapValue([... args = std::forward<ParseArgs>(args)](
+        .and_then([... args = std::forward<ParseArgs>(args)](
                       ResolvedSourceString str) {
           return Subtype::Parse(str, std::forward<ParseArgs>(args)...);
         });
   }
 
-  static ParseStatus::Or<ParseInto> ParseWithoutSubstitution(
+  static base::expected<ParseInto, ParseStatus> ParseWithoutSubstitution(
       SourceString str,
       ParseArgs&&... args) {
     return Subtype::Parse(str.SkipVariableSubstitution(),
@@ -101,22 +101,22 @@ struct MEDIA_EXPORT SubstitutingParser {
 template <typename T>
 struct MEDIA_EXPORT Quoted
     : public SubstitutingParser<Quoted<T>, typename T::ParseInto> {
-  static ParseStatus::Or<typename T::ParseInto> Parse(
+  static base::expected<typename T::ParseInto, ParseStatus> Parse(
       ResolvedSourceString str,
       bool allow_empty = false) {
     if (str.Size() < 2) {
-      return ParseStatusCode::kFailedToParseQuotedString;
+      return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
     }
     if (*str.Str().begin() != '"') {
-      return ParseStatusCode::kFailedToParseQuotedString;
+      return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
     }
     if (*str.Str().rbegin() != '"') {
-      return ParseStatusCode::kFailedToParseQuotedString;
+      return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
     }
 
     ResolvedSourceString unquoted = str.Substr(1, str.Size() - 2);
     if (!allow_empty && unquoted.Empty()) {
-      return ParseStatusCode::kFailedToParseQuotedString;
+      return base::unexpected(ParseStatusCode::kFailedToParseQuotedString);
     }
 
     return T::Parse(unquoted);
@@ -126,36 +126,41 @@ struct MEDIA_EXPORT Quoted
 // Parser struct for a plain ResolvedSourceString. This is usually used
 // for things like URIs.
 struct MEDIA_EXPORT RawStr : SubstitutingParser<RawStr, ResolvedSourceString> {
-  static ParseStatus::Or<ResolvedSourceString> Parse(ResolvedSourceString str);
+  static base::expected<ResolvedSourceString, ParseStatus> Parse(
+      ResolvedSourceString str);
 };
 
 struct MEDIA_EXPORT RawInt : SubstitutingParser<RawInt, DecimalInteger> {
-  static ParseStatus::Or<DecimalInteger> Parse(ResolvedSourceString str);
+  static base::expected<DecimalInteger, ParseStatus> Parse(
+      ResolvedSourceString str);
 };
 
 struct MEDIA_EXPORT RawFloat
     : SubstitutingParser<RawFloat, DecimalFloatingPoint> {
-  static ParseStatus::Or<DecimalFloatingPoint> Parse(ResolvedSourceString str);
+  static base::expected<DecimalFloatingPoint, ParseStatus> Parse(
+      ResolvedSourceString str);
 };
 
 struct MEDIA_EXPORT YesOrNo : SubstitutingParser<YesOrNo, bool> {
-  static ParseStatus::Or<bool> Parse(ResolvedSourceString str);
+  static base::expected<bool, ParseStatus> Parse(ResolvedSourceString str);
 };
 
 // Parser struct for floating point representations of TimeDelta instances.
 struct MEDIA_EXPORT TimeDelta : SubstitutingParser<TimeDelta, base::TimeDelta> {
-  static ParseStatus::Or<base::TimeDelta> Parse(ResolvedSourceString str);
+  static base::expected<base::TimeDelta, ParseStatus> Parse(
+      ResolvedSourceString str);
 };
 
 struct MEDIA_EXPORT ISO8601Date : SubstitutingParser<ISO8601Date, base::Time> {
-  static ParseStatus::Or<base::Time> Parse(ResolvedSourceString str);
+  static base::expected<base::Time, ParseStatus> Parse(
+      ResolvedSourceString str);
 };
 
 struct MEDIA_EXPORT DecimalResolution
     : SubstitutingParser<DecimalResolution,
                          ::media::hls::types::DecimalResolution> {
-  static ParseStatus::Or<::media::hls::types::DecimalResolution> Parse(
-      ResolvedSourceString str);
+  static base::expected<::media::hls::types::DecimalResolution, ParseStatus>
+  Parse(ResolvedSourceString str);
 };
 
 // A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
@@ -170,7 +175,7 @@ struct MEDIA_EXPORT ByteRangeExpression
   ByteRangeExpression& operator=(const ByteRangeExpression& other);
   ByteRangeExpression& operator=(ByteRangeExpression&& other);
 
-  static ParseStatus::Or<ByteRangeExpression> Parse(
+  static base::expected<ByteRangeExpression, ParseStatus> Parse(
       ResolvedSourceString source_str);
 
   // The length of the sub-range, in bytes.
@@ -187,11 +192,11 @@ template <typename T>
 struct MEDIA_EXPORT EnumeratedStringList
     : SubstitutingParser<EnumeratedStringList<T>,
                          std::vector<typename T::ParseInto>> {
-  static ParseStatus::Or<std::vector<typename T::ParseInto>> Parse(
+  static base::expected<std::vector<typename T::ParseInto>, ParseStatus> Parse(
       ResolvedSourceString str) {
     auto maybe_unquoted = Quoted<RawStr>::Parse(str);
     if (!maybe_unquoted.has_value()) {
-      return std::move(maybe_unquoted).error();
+      return base::unexpected(std::move(maybe_unquoted).error());
     }
     std::vector<typename T::ParseInto> result;
     auto unquoted = std::move(maybe_unquoted).value();
@@ -199,7 +204,7 @@ struct MEDIA_EXPORT EnumeratedStringList
       const auto value = unquoted.ConsumeDelimiter(',');
       auto maybe_parse = T::Parse(value);
       if (!maybe_parse.has_value()) {
-        return std::move(maybe_parse).error();
+        return base::unexpected(std::move(maybe_parse).error());
       }
       result.emplace_back(std::move(maybe_parse).value());
     }
@@ -247,19 +252,20 @@ struct MEDIA_EXPORT HexRepr
 
   template <size_t reps>
   struct ParserImpl {
-    static ParseStatus::Or<typename repeat_t<reps, Unit>::type> Parse(
-        ResolvedSourceString str,
-        bool extrapolate_leading_zeros) {
+    static base::expected<typename repeat_t<reps, Unit>::type, ParseStatus>
+    Parse(ResolvedSourceString str, bool extrapolate_leading_zeros) {
       if constexpr (reps == 0) {
         if (str.Size() != 0) {
-          return ParseStatusCode::kFailedToParseHexadecimalString;
+          return base::unexpected(
+              ParseStatusCode::kFailedToParseHexadecimalString);
         }
         return std::make_tuple();
       } else {
         Unit chunk = 0;
         for (size_t i = 0; i < sizeof(Unit) * 2; i++) {
           if (!extrapolate_leading_zeros && !str.Size()) {
-            return ParseStatusCode::kFailedToParseHexadecimalString;
+            return base::unexpected(
+                ParseStatusCode::kFailedToParseHexadecimalString);
           }
           if (str.Size()) {
             auto bits4 = str.Str()[str.Size() - 1];
@@ -271,7 +277,8 @@ struct MEDIA_EXPORT HexRepr
             } else if (bits4 >= 'a' && bits4 <= 'f') {
               num4 = bits4 - 'a' + 10;
             } else {
-              return ParseStatusCode::kFailedToParseHexadecimalString;
+              return base::unexpected(
+                  ParseStatusCode::kFailedToParseHexadecimalString);
             }
             chunk += (num4 << (4 * i));
             str = str.Substr(0, str.Size() - 1);
@@ -279,22 +286,22 @@ struct MEDIA_EXPORT HexRepr
         }
         auto rest = ParserImpl<reps - 1>::Parse(str, extrapolate_leading_zeros);
         if (!rest.has_value()) {
-          return std::move(rest).error();
+          return base::unexpected(std::move(rest).error());
         }
         return std::tuple_cat(std::move(rest).value(), std::make_tuple(chunk));
       }
     }
   };
 
-  static ParseStatus::Or<Container> Parse(
+  static base::expected<Container, ParseStatus> Parse(
       ResolvedSourceString str,
       bool extrapolate_leading_zeros = false,
       bool has_prefix = true) {
     if (has_prefix && str.Consume(2).Str() != "0x") {
-      return ParseStatusCode::kFailedToParseHexadecimalString;
+      return base::unexpected(ParseStatusCode::kFailedToParseHexadecimalString);
     }
     if (!str.Size()) {
-      return ParseStatusCode::kFailedToParseHexadecimalString;
+      return base::unexpected(ParseStatusCode::kFailedToParseHexadecimalString);
     }
     return ParserImpl<bits / UnitSize>::Parse(str, extrapolate_leading_zeros);
   }
@@ -302,15 +309,14 @@ struct MEDIA_EXPORT HexRepr
 
 }  // namespace parsing
 
-MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
+MEDIA_EXPORT base::expected<DecimalInteger, ParseStatus> ParseDecimalInteger(
     ResolvedSourceString source_str);
 
-MEDIA_EXPORT ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    ResolvedSourceString source_str);
+MEDIA_EXPORT base::expected<DecimalFloatingPoint, ParseStatus>
+ParseDecimalFloatingPoint(ResolvedSourceString source_str);
 
-MEDIA_EXPORT ParseStatus::Or<SignedDecimalFloatingPoint>
+MEDIA_EXPORT base::expected<SignedDecimalFloatingPoint, ParseStatus>
 ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str);
-
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:
 // - `length` is non-zero
@@ -341,20 +347,20 @@ class MEDIA_EXPORT ByteRange {
 // substitution. `sub_buffer` must outlive the returned string.
 // `allow_empty` determines whether an empty quoted string is accepted, (after
 // variable substitution) which isn't the case for most attributes.
-MEDIA_EXPORT ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
-    SourceString source_str,
-    const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer,
-    bool allow_empty = false);
+MEDIA_EXPORT base::expected<ResolvedSourceString, ParseStatus>
+ParseQuotedString(SourceString source_str,
+                  const VariableDictionary& variable_dict,
+                  VariableDictionary::SubstitutionBuffer& sub_buffer,
+                  bool allow_empty = false);
 
 // Parses a string surrounded by double-quotes ("), returning the interior
 // string. These appear in the context of attribute-lists, however certain tags
 // disallow variable substitution so this function exists to serve those.
 // `allow_empty` determines whether an empty quoted string is accepted, which
 // isn't the case for most attributes.
-MEDIA_EXPORT ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
-    SourceString source_str,
-    bool allow_empty = false);
+MEDIA_EXPORT base::expected<SourceString, ParseStatus>
+ParseQuotedStringWithoutSubstitution(SourceString source_str,
+                                     bool allow_empty = false);
 
 // Provides an iterator-style interface over attribute-lists.
 // Since the number of attributes expected in an attribute-list for a tag varies
@@ -372,7 +378,7 @@ struct MEDIA_EXPORT AttributeListIterator {
 
   // Parses the next item in the attribute-list, and returns it, or an error.
   // Returns `ParseStatusCode::kReachedEOF` if no further items exist.
-  ParseStatus::Or<Item> Next();
+  base::expected<Item, ParseStatus> Next();
 
  private:
   SourceString remaining_content_;
@@ -399,7 +405,7 @@ struct MEDIA_EXPORT AttributeMap {
   // function will return `kReachedEOF`. The caller may then verify that
   // required keys have been filled, and mutually exclusive keys have not been
   // simultaneously filled.
-  ParseStatus::Or<AttributeListIterator::Item> Fill(
+  base::expected<AttributeListIterator::Item, ParseStatus> Fill(
       AttributeListIterator* iter);
 
   // Like `Fill`, but doesn't stop to report unknown keys to the caller.
@@ -423,7 +429,8 @@ struct MEDIA_EXPORT AttributeMap {
 // case-sensitive.
 class MEDIA_EXPORT VariableName {
  public:
-  static ParseStatus::Or<VariableName> Parse(SourceString source_str);
+  static base::expected<VariableName, ParseStatus> Parse(
+      SourceString source_str);
 
   std::string_view GetName() const { return name_; }
 
@@ -439,7 +446,7 @@ class MEDIA_EXPORT VariableName {
 // of the EXT-X-STREAM-INF and EXT-X-MEDIA tags, respectively.
 class MEDIA_EXPORT StableId {
  public:
-  static ParseStatus::Or<StableId> Parse(ResolvedSourceString str);
+  static base::expected<StableId, ParseStatus> Parse(ResolvedSourceString str);
   static StableId CreateForTesting(std::string_view str) {
     return Parse(ResolvedSourceString::CreateForTesting(str)).value();
   }
@@ -474,7 +481,7 @@ class MEDIA_EXPORT InstreamId {
     kService,
   };
 
-  static ParseStatus::Or<InstreamId> Parse(ResolvedSourceString);
+  static base::expected<InstreamId, ParseStatus> Parse(ResolvedSourceString);
 
   Type GetType() const { return type_; }
   uint8_t GetNumber() const { return number_; }
@@ -497,7 +504,7 @@ class MEDIA_EXPORT AudioChannels {
   AudioChannels& operator=(AudioChannels&&);
   ~AudioChannels();
 
-  static ParseStatus::Or<AudioChannels> Parse(ResolvedSourceString);
+  static base::expected<AudioChannels, ParseStatus> Parse(ResolvedSourceString);
 
   // Returns the max number of independent, simultaneous audio channels present
   // in any media segment in the associated rendition.

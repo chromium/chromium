@@ -72,7 +72,7 @@ class MEDIA_EXPORT VariableDictionary {
   // If a given sequence doesn't exactly match that format then it's ignored,
   // rather than treated as an error. However, if it does match that format and
   // the variable name is undefined, it's treated as an error.
-  ParseStatus::Or<ResolvedSourceString> Resolve(
+  base::expected<ResolvedSourceString, ParseStatus> Resolve(
       SourceString input,
       SubstitutionBuffer& buffer) const;
 

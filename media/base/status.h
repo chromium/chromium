@@ -534,20 +534,6 @@ class MEDIA_EXPORT TypedStatus {
       return error_ ? error_->code() : *helper::OkEnumValue();
     }
 
-    template <typename Fn,
-              typename R = decltype(std::declval<Fn>()(std::declval<O>()))>
-    typename OrTypeUnwrapper<R>::Type MapValue(Fn&& lambda) && {
-      CHECK(error_ || value_);
-      if (!has_value()) {
-        auto error = std::move(*error_);
-        error_.reset();
-        return error;
-      }
-      auto value = std::move(std::get<0>(*value_));
-      value_.reset();
-      return std::invoke(std::forward<Fn>(lambda), std::move(value));
-    }
-
    private:
     std::optional<TypedStatus<T>> error_;
 
