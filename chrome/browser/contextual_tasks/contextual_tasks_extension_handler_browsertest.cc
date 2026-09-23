@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -515,6 +516,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   message.SerializeToArray(serialized_message.data(), size);
 
   handler_->OnWebviewMessage(serialized_message);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       OnLensThumbnailCreated_EmitsInjectChromeInput) {
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+
+        auto model = handler_->GetOrCreateInputStateModelForTesting();
+        ASSERT_TRUE(model && model->lens_crop().has_value());
+        EXPECT_EQ("data:image/png;base64,test_crop",
+                  model->lens_crop()->data_uri);
+
+        run_loop.Quit();
+      });
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
   run_loop.Run();
 }
 

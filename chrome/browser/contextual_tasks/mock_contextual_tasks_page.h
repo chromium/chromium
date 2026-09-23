@@ -9,6 +9,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,6 +98,10 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
   MOCK_METHOD(void,
               PostAimMessage,
               (const std::vector<uint8_t>& message),
+              (override));
+  MOCK_METHOD(void,
+              PostSearchMessage,
+              (mojo_base::ProtoWrapper message),
               (override));
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));

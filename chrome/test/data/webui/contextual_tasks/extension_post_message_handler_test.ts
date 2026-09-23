@@ -176,6 +176,85 @@ suite('ExtensionPostMessageHandlerTest', () => {
     assertDeepEquals([9, 8, 7], Array.from(aimMessage.message));
   });
 
+  test(
+      'postSearchMessage forwards message to parent window when target ' +
+          'origin is set',
+      async () => {
+        postedMessages = [];
+        messageResolver = new PromiseResolver<void>();
+
+        const testBytes = [10, 4, 1, 2, 3, 4];
+        testProxy.callbackRouterRemote.postSearchMessage({
+          protoName: 'lens.chrome.ClientToSearchMessage',
+          smuggled: {bytes: testBytes},
+        });
+        await messageResolver.promise;
+
+        assertEquals(1, postedMessages.length);
+        const searchMessage = postedMessages[0]!;
+        assertEquals('https://www.google.com', searchMessage.targetOrigin);
+        assertTrue(searchMessage.message instanceof Uint8Array);
+        assertDeepEquals(testBytes, Array.from(searchMessage.message));
+      });
+
+  test(
+      'postSearchMessage queues message until target origin is set',
+      async () => {
+        handler.setTargetOriginForTesting(null);
+        postedMessages = [];
+
+        const testBytes = [10, 4, 1, 2, 3, 4];
+        testProxy.callbackRouterRemote.postSearchMessage({
+          protoName: 'lens.chrome.ClientToSearchMessage',
+          smuggled: {bytes: testBytes},
+        });
+        await microtasksFinished();
+
+        // Message should be queued, not dispatched to wildcard.
+        assertEquals(0, postedMessages.length);
+
+        // Setting a valid allowlisted origin flushes the queued message.
+        messageResolver = new PromiseResolver<void>();
+        handler.setTargetOriginForTesting('https://www.google.com');
+        await messageResolver.promise;
+
+        assertEquals(1, postedMessages.length);
+        const searchMessage = postedMessages[0]!;
+        assertEquals('https://www.google.com', searchMessage.targetOrigin);
+        assertDeepEquals(testBytes, Array.from(searchMessage.message));
+      });
+
+  test('postSearchMessage rejects untrusted target origin', async () => {
+    handler.setTargetOriginForTesting(null);
+    postedMessages = [];
+
+    const testBytes = [10, 4, 1, 2, 3, 4];
+    testProxy.callbackRouterRemote.postSearchMessage({
+      protoName: 'lens.chrome.ClientToSearchMessage',
+      smuggled: {bytes: testBytes},
+    });
+    await microtasksFinished();
+
+    // Setting an untrusted origin should be rejected by setTargetOrigin_.
+    handler.setTargetOriginForTesting('https://evil.com');
+    await microtasksFinished();
+
+    assertEquals(0, postedMessages.length);
+  });
+
+  test('Cleans up postSearchMessage listener on destroy', async () => {
+    handler.destroy();
+    postedMessages = [];
+
+    testProxy.callbackRouterRemote.postSearchMessage({
+      protoName: 'lens.chrome.ClientToSearchMessage',
+      smuggled: {bytes: [1, 2, 3]},
+    });
+    await microtasksFinished();
+
+    assertEquals(0, postedMessages.length);
+  });
+
   test('Sets isDestroyed on destroy', () => {
     assertFalse(handler.isDestroyed);
     handler.destroy();

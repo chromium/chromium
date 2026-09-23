@@ -448,6 +448,11 @@ interface ExtensionPage {
   // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
   PostAimMessage(array<uint8> message);
 
+  // Sends a search communication message (e.g.
+  // lens.chrome.ClientToSearchMessage) from the browser to the extension to be
+  // forwarded to the search page.
+  PostSearchMessage(mojo_base.mojom.ProtoWrapper message);
+
   // Signals to the extension that the handshake with GWS is complete.
   // Called by C++ after the browser processes the handshake response.
   OnHandshakeComplete();

@@ -28,8 +28,8 @@ message ClientToSearchMessage {
     }
     InputType input_type = 2;
 
-    // Whether the injected input should be mounted/visible.
-    bool is_visible = 3;
+    // Whether the injected input is currently active/visible.
+    bool is_active = 3;
   }
 
   oneof event_message {

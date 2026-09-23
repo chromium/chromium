@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ExtensionPageInterface} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {getArrayBufferFromBigBuffer, HANDSHAKE_INTERVAL_MS, MAX_HANDSHAKE_ATTEMPTS} from 'chrome://contextual-tasks/utils.js';
+
+type ProtoWrapper = Parameters<ExtensionPageInterface['postSearchMessage']>[0];
 
 const MAX_MESSAGE_BYTES = 1024 * 1024;  // 1MB
 
@@ -31,11 +34,13 @@ export function urlMatchesAllowList(origin: string): boolean {
 export class ExtensionPostMessageHandler {
   private browserProxy_: ExtensionBrowserProxy;
   private targetOrigin_: string|null = null;
+  private pendingSearchMessages_: Uint8Array[] = [];
   private handshakeIntervalId_: number|null = null;
   private handshakeCompleted_: boolean = false;
   private messageListener_: ((event: MessageEvent) => void)|null = null;
   private onHandshakeCompleteListenerId_: number|null = null;
   private postAimMessageListenerId_: number|null = null;
+  private postSearchMessageListenerId_: number|null = null;
   private isDestroyed_: boolean = false;
 
   constructor(browserProxy?: ExtensionBrowserProxy) {
@@ -58,6 +63,25 @@ export class ExtensionPostMessageHandler {
     return this.isDestroyed_;
   }
 
+  private setTargetOrigin_(origin: string) {
+    if (!urlMatchesAllowList(origin)) {
+      return;
+    }
+    this.targetOrigin_ = origin;
+    while (this.pendingSearchMessages_.length > 0) {
+      const msg = this.pendingSearchMessages_.shift()!;
+      window.parent.postMessage(msg, this.targetOrigin_);
+    }
+  }
+
+  setTargetOriginForTesting(origin: string|null) {
+    if (origin) {
+      this.setTargetOrigin_(origin);
+    } else {
+      this.targetOrigin_ = null;
+    }
+  }
+
   async initHandshake(): Promise<void> {
     let messageArray: Uint8Array;
     try {
@@ -77,9 +101,7 @@ export class ExtensionPostMessageHandler {
     if (referrer) {
       try {
         const url = new URL(referrer);
-        if (urlMatchesAllowList(url.origin)) {
-          this.targetOrigin_ = url.origin;
-        }
+        this.setTargetOrigin_(url.origin);
       } catch {
         // Ignore
       }
@@ -130,7 +152,7 @@ export class ExtensionPostMessageHandler {
       }
 
       if (!this.targetOrigin_) {
-        this.targetOrigin_ = event.origin;
+        this.setTargetOrigin_(event.origin);
       } else if (this.targetOrigin_ !== event.origin) {
         console.warn(
             'Origin mismatch. Expected:', this.targetOrigin_,
@@ -187,10 +209,23 @@ export class ExtensionPostMessageHandler {
               const messageArray = new Uint8Array(message);
               window.parent.postMessage(messageArray, this.targetOrigin_);
             });
+
+    this.postSearchMessageListenerId_ =
+        this.browserProxy_.callbackRouter.postSearchMessage.addListener(
+            (message: ProtoWrapper) => {
+              const buffer = getArrayBufferFromBigBuffer(message.smuggled);
+              const messageArray = new Uint8Array(buffer);
+              if (this.targetOrigin_) {
+                window.parent.postMessage(messageArray, this.targetOrigin_);
+              } else {
+                this.pendingSearchMessages_.push(messageArray);
+              }
+            });
   }
 
   destroy() {
     this.isDestroyed_ = true;
+    this.pendingSearchMessages_ = [];
     if (this.handshakeIntervalId_ !== null) {
       clearInterval(this.handshakeIntervalId_);
       this.handshakeIntervalId_ = null;
@@ -208,6 +243,11 @@ export class ExtensionPostMessageHandler {
       this.browserProxy_.callbackRouter.removeListener(
           this.postAimMessageListenerId_);
       this.postAimMessageListenerId_ = null;
+    }
+    if (this.postSearchMessageListenerId_ !== null) {
+      this.browserProxy_.callbackRouter.removeListener(
+          this.postSearchMessageListenerId_);
+      this.postSearchMessageListenerId_ = null;
     }
   }
 }

@@ -47,6 +47,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace lens {
+class ClientToSearchMessage;
+}  // namespace lens
+
 class LensSearchController;
 class ContextualTasksExtensionHandler
     : public content::DocumentUserData<ContextualTasksExtensionHandler>,
@@ -70,6 +74,9 @@ class ContextualTasksExtensionHandler
 
   // contextual_tasks::AimMessagePoster:
   void PostAimMessage(const lens::ClientToAimMessage& message) override;
+
+  // Sends a search communication message to the extension page.
+  void PostSearchMessage(const lens::ClientToSearchMessage& message);
 
   void BindContextualTasksFactory(
       mojo::PendingReceiver<

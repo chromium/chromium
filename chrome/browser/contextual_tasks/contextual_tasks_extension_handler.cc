@@ -184,9 +184,17 @@ void ContextualTasksExtensionHandler::GetLensCropPreview(
 void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
     const std::string& thumbnail_uri) {
   auto model = GetOrCreateInputStateModel();
-  if (model) {
-    model->SetLensCrop(thumbnail_uri);
+  if (!model) {
+    return;
   }
+  model->SetLensCrop(thumbnail_uri);
+
+  lens::ClientToSearchMessage search_message;
+  auto* inject_input = search_message.mutable_inject_chrome_input();
+  inject_input->set_input_type(
+      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+  inject_input->set_is_active(true);
+  PostSearchMessage(search_message);
 }
 
 // composebox::mojom::PageHandler stubs:
@@ -431,6 +439,14 @@ void ContextualTasksExtensionHandler::PostAimMessage(
     std::vector<uint8_t> serialized_message(size);
     message.SerializeToArray(serialized_message.data(), size);
     contextual_tasks_page_->PostAimMessage(std::move(serialized_message));
+  }
+}
+
+void ContextualTasksExtensionHandler::PostSearchMessage(
+    const lens::ClientToSearchMessage& message) {
+  // Route the search message directly to the extension page's bound remote.
+  if (contextual_tasks_page_.is_bound()) {
+    contextual_tasks_page_->PostSearchMessage(mojo_base::ProtoWrapper(message));
   }
 }
 
