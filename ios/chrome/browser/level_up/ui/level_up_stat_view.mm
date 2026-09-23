@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/level_up/ui/level_up_stat_view.h"
 
+#import "ios/chrome/browser/level_up/model/task_types.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/gfx/color_palette.h"
 
 namespace {
 
@@ -40,8 +43,12 @@ const CGFloat kCardShadowAlpha = 0.05;
   UILabel* _subtitleLabel;
   // The stack view containing the card contents.
   UIStackView* _cardStack;
+  // The Lottie animation wrapper.
+  id<LottieAnimation> _lottieAnimation;
   // The Lottie view.
   UIView* _lottieView;
+  // The stat type represented by the card.
+  LevelUpTaskStatType _statType;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -94,6 +101,9 @@ const CGFloat kCardShadowAlpha = 0.05;
         _cardStack, self.contentView,
         NSDirectionalEdgeInsetsMake(kLayoutSpacing, kLayoutSpacing,
                                     kLayoutSpacing, kLayoutSpacing));
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(configureAnimationColors)];
   }
   return self;
 }
@@ -112,24 +122,29 @@ const CGFloat kCardShadowAlpha = 0.05;
   _subtitleLabel.text = nil;
   [_lottieView removeFromSuperview];
   _lottieView = nil;
+  _lottieAnimation = nil;
 }
 
 - (void)setStatTitle:(NSString*)title
             subtitle:(NSString*)subtitle
-     imageLottieName:(NSString*)imageLottieName {
+     imageLottieName:(NSString*)imageLottieName
+            statType:(LevelUpTaskStatType)statType {
   _titleLabel.text = title;
   _subtitleLabel.text = subtitle;
+  _statType = statType;
 
   [_lottieView removeFromSuperview];
   _lottieView = nil;
+  _lottieAnimation = nil;
 
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = imageLottieName;
 
-  id<LottieAnimation> lottieAnimation =
-      ios::provider::GenerateLottieAnimation(config);
-  _lottieView = lottieAnimation.animationView;
+  _lottieAnimation = ios::provider::GenerateLottieAnimation(config);
+  [self configureAnimationColors];
+
+  _lottieView = _lottieAnimation.animationView;
   _lottieView.translatesAutoresizingMaskIntoConstraints = NO;
   _lottieView.contentMode = UIViewContentModeScaleAspectFit;
 
@@ -138,6 +153,82 @@ const CGFloat kCardShadowAlpha = 0.05;
     [_lottieView.widthAnchor constraintEqualToConstant:kIllustrationSize],
     [_lottieView.heightAnchor constraintEqualToConstant:kIllustrationSize],
   ]];
+}
+
+#pragma mark - Private
+
+// Configures the Lottie animation with semantic colors for light and dark
+// themes.
+- (void)configureAnimationColors {
+  if (!_lottieAnimation) {
+    return;
+  }
+
+  switch (_statType) {
+    case LevelUpTaskStatType::kTabsDecluttered:
+      [self configureTabsDeclutteredAnimationColors];
+      break;
+    case LevelUpTaskStatType::kPasswordsAutofilled:
+      [self configurePasswordsAutofilledAnimationColors];
+      break;
+    case LevelUpTaskStatType::kPasswordsVerified:
+      [self configurePasswordsVerifiedAnimationColors];
+      break;
+    case LevelUpTaskStatType::kPhotoSearchesPerformed:
+      [self configurePhotoSearchesPerformedAnimationColors];
+      break;
+  }
+}
+
+// Configures colors for the `kTabsDecluttered` animation.
+- (void)configureTabsDeclutteredAnimationColors {
+  ConfigureAnimationCustomColor(_lottieAnimation, @"yellow_800_color",
+                                gfx::kGoogleYellow800, gfx::kGoogleYellow100);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kYellow500Color,
+                                  kYellow500Color);
+  ConfigureAnimationCustomColor(_lottieAnimation, @"yellow_100_color",
+                                gfx::kGoogleYellow100, gfx::kGoogleYellow800);
+  ConfigureAnimationSemanticColor(_lottieAnimation,
+                                  kAimComposeboxButtonBackgroundColor,
+                                  kAimComposeboxButtonBackgroundColor);
+  ConfigureAnimationCustomColor(_lottieAnimation, @"blue_800_color",
+                                gfx::kGoogleBlue800, gfx::kGoogleBlue100);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kBlue100Color,
+                                  kBlue100Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGreen800Color,
+                                  kGreen800Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGreen100Color,
+                                  kGreen100Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGrey100Color,
+                                  kGrey100Color);
+}
+
+// Configures colors for the `kPasswordsAutofilled` animation.
+- (void)configurePasswordsAutofilledAnimationColors {
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGrey300Color,
+                                  kGrey300Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kYellow600Color,
+                                  kYellow600Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGrey700Color,
+                                  kGrey700Color);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kBackgroundColor,
+                                  kBackgroundColor);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kYellow500Color,
+                                  kYellow500Color);
+}
+
+// Configures colors for the `kPasswordsVerified` animation.
+- (void)configurePasswordsVerifiedAnimationColors {
+  ConfigureAnimationSemanticColor(_lottieAnimation, kGreen500Color,
+                                  kGreen500Color);
+}
+
+// Configures colors for the `kPhotoSearchesPerformed` animation.
+- (void)configurePhotoSearchesPerformedAnimationColors {
+  ConfigureAnimationSemanticColor(_lottieAnimation, kBackgroundColor,
+                                  kBackgroundColor);
+  ConfigureAnimationSemanticColor(_lottieAnimation, kPurple500Color,
+                                  kPurple500Color);
 }
 
 @end

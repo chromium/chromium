@@ -37,6 +37,7 @@ source_set("ui") {
     "//ios/chrome/browser/level_up/coordinator:view_models",
     "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
     "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -44,6 +45,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
+    "//ui/gfx",
   ]
 
   public_deps = [ ":lottie_resources" ]

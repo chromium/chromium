@@ -175,7 +175,8 @@ const CGFloat kTasksCellHeight = 350.0;
     if ([statIdentifier isEqualToString:itemIdentifier]) {
       [cell setStatTitle:stat.title
                  subtitle:stat.subtitle
-          imageLottieName:stat.imageLottieName];
+          imageLottieName:stat.imageLottieName
+                 statType:stat.type];
       break;
     }
   }

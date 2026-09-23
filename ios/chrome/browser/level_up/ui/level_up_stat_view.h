@@ -7,13 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+enum class LevelUpTaskStatType;
+
 // A card view displaying stats metrics achieved by completed level-up tasks.
 @interface LevelUpStatView : UICollectionViewCell
 
 // Sets or updates the stat data displayed in the card.
 - (void)setStatTitle:(NSString*)title
             subtitle:(NSString*)subtitle
-     imageLottieName:(NSString*)imageLottieName;
+     imageLottieName:(NSString*)imageLottieName
+            statType:(LevelUpTaskStatType)statType;
 
 @end
 

@@ -33,5 +33,6 @@ source_set("utils") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//skia",
   ]
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_UTILS_H_
 
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "third_party/skia/include/core/SkColor.h"
 
 // Configures the animation with the given semantic color.
 // Sets the color value for the keypath `**key.**.Color`.
@@ -20,5 +21,13 @@ void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
                                    NSString* key,
                                    UIColor* light_color,
                                    UIColor* dark_color);
+
+// Configures the animation with a custom `SkColor` for a specific key.
+// Set the color value for the keypath `**KEY.**.Color` based on the
+// `UIUserInterfaceStyle`.
+void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
+                                   NSString* key,
+                                   SkColor light_color,
+                                   SkColor dark_color);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ANIMATED_PROMO_ANIMATED_PROMO_UTILS_H_

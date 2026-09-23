@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "skia/ext/skia_utils_ios.h"
 
 void ConfigureAnimationSemanticColor(id<LottieAnimation> animation,
                                      NSString* key,
@@ -30,4 +31,13 @@ void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
       }];
   NSString* keypath = [NSString stringWithFormat:@"**%@.**.Color", key];
   [animation setColorValue:selected_color forKeypath:keypath];
+}
+
+void ConfigureAnimationCustomColor(id<LottieAnimation> animation,
+                                   NSString* key,
+                                   SkColor light_color,
+                                   SkColor dark_color) {
+  ConfigureAnimationCustomColor(animation, key,
+                                skia::UIColorFromSkColor(light_color),
+                                skia::UIColorFromSkColor(dark_color));
 }
