@@ -75,6 +75,8 @@ source_set("picture_in_picture") {
   ]
 
   if (enable_extensions_core) {
+    public += [ "document_pip_base_window.h" ]
+    sources += [ "document_pip_base_window.cc" ]
     deps += [
       "//extensions/browser",
       "//extensions/common",
@@ -116,6 +118,7 @@ source_set("unit_tests") {
     "//components/web_modal",
     "//content/public/browser",
     "//content/test:test_support",
+    "//extensions/buildflags",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base",
