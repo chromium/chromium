@@ -874,6 +874,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/on_device_model_validator_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
       "model_execution/performance_class_unittest.cc",
+      "model_execution/remote_model_execution_common_unittest.cc",
       "model_execution/remote_model_execution_session_impl_unittest.cc",
       "model_execution/repetition_checker_unittest.cc",
       "model_execution/response_parser_factory_unittest.cc",
