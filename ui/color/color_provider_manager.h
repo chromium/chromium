@@ -54,6 +54,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     return num_providers_initialized_;
   }
 
+  size_t num_cached_providers_for_testing() const {
+    return color_providers_.size();
+  }
+
  protected:
   ColorProviderManager();
   virtual ~ColorProviderManager();

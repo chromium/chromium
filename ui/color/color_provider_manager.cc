@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -110,6 +111,19 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
 
     RecordTimeSpentInitializingColorProvider(timer.Elapsed());
     ++num_providers_initialized_;
+
+    // Evict obsolete system_theme_version entries for this system_theme to
+    // prevent unbounded cache growth across repeated theme updates while
+    // retaining recent versions for in-flight asynchronous updates.
+    constexpr size_t kMaxRetainedSystemThemeVersions = 4;
+    if (key.system_theme_version >= kMaxRetainedSystemThemeVersions) {
+      base::EraseIf(color_providers_, [&](const auto& entry) {
+        return entry.first.system_theme == key.system_theme &&
+               entry.first.system_theme_version +
+                       kMaxRetainedSystemThemeVersions <=
+                   key.system_theme_version;
+      });
+    }
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
     RecordColorProviderCacheSize(static_cast<int>(color_providers_.size()));

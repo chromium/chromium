@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -24,6 +26,7 @@
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -97,7 +100,15 @@ void EnsureColorProviderCacheWillBeResetWhenAccentColorStateChanges() {
       ui::AccentColorObserver::Get()->Subscribe(base::BindRepeating(
           // CAUTION: Do not bind directly to `ui::ColorProviderManager::Get()`
           // here, as tests may reset that value!
-          [] { ui::ColorProviderManager::Get().ResetColorProviderCache(); })));
+          [] {
+            if (base::FeatureList::IsEnabled(
+                    features::kThemeChangeOptimization)) {
+              ui::NativeTheme::GetInstanceForNativeUi()
+                  ->IncrementSystemColorVersion();
+            } else {
+              ui::ColorProviderManager::Get().ResetColorProviderCache();
+            }
+          })));
 }
 
 SkColor GetAccentBorderColor() {

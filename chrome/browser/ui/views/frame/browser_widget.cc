@@ -505,8 +505,11 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   }
 
   // Apply BrowserWidget overrides:
-  key.app_controller =
-      web_app::AppBrowserController::From(browser_view_->browser());
+  if (auto* app_controller =
+          web_app::AppBrowserController::From(browser_view_->browser())) {
+    key.app_controller = app_controller;
+    key.app_background_color = app_controller->GetBackgroundColor();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS SystemWebApps use the OS theme all the time.

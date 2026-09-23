@@ -235,16 +235,19 @@ TEST_F(NativeThemeTest, SystemColorVersionAndCacheReset) {
     ColorProviderKey key1 = native_theme->GetColorProviderKey(nullptr);
     ColorProvider* provider1 = manager.GetColorProviderFor(key1);
     EXPECT_EQ(provider1, manager.GetColorProviderFor(key1));
+    const size_t initialized_before = manager.num_providers_initialized();
 
     const size_t version_before = native_theme->system_color_version();
     native_theme->NotifyOnNativeThemeUpdated();
     EXPECT_EQ(version_before, native_theme->system_color_version());
+    EXPECT_EQ(0u, manager.num_cached_providers_for_testing());
 
     ColorProviderKey key2 = native_theme->GetColorProviderKey(nullptr);
     EXPECT_EQ(key1, key2);
     ColorProvider* provider2 = manager.GetColorProviderFor(key2);
-    // Because the cache was reset, a new ColorProvider was created.
-    EXPECT_NE(provider1, provider2);
+    EXPECT_NE(nullptr, provider2);
+    // Because the cache was reset, a new ColorProvider was initialized.
+    EXPECT_EQ(initialized_before + 1, manager.num_providers_initialized());
   }
 
   // Test with kThemeChangeOptimization enabled.
@@ -270,6 +273,15 @@ TEST_F(NativeThemeTest, SystemColorVersionAndCacheReset) {
 
     // Old key should still be cached in manager without needing re-creation.
     EXPECT_EQ(provider1, manager.GetColorProviderFor(key1));
+
+    // Triggering additional theme updates beyond the retention window (4)
+    // should evict stale versions and bound the cache size.
+    for (int i = 0; i < 6; ++i) {
+      native_theme->NotifyOnNativeThemeUpdated();
+      ColorProviderKey key = native_theme->GetColorProviderKey(nullptr);
+      manager.GetColorProviderFor(key);
+    }
+    EXPECT_LE(manager.num_cached_providers_for_testing(), 4u);
   }
 }
 
