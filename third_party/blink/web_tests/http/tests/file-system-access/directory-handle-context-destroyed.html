@@ -7,8 +7,12 @@
 <script>
 'use strict';
 
-for (const method of
-     ['getFileHandle', 'getDirectoryHandle', 'removeEntry', 'resolve']) {
+for (const method of [
+  'getFileHandle',
+  'getDirectoryHandle',
+  'removeEntry',
+  'resolve',
+]) {
   promise_test(async t => {
     const frame = document.body.appendChild(document.createElement('iframe'));
     t.add_cleanup(() => frame.remove());
