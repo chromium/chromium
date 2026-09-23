@@ -183,6 +183,7 @@ source_set("base") {
     "device_enumeration_outcome.h",
     "djb2.cc",
     "djb2.h",
+    "eme_constants.cc",
     "eme_constants.h",
     "encoder_status.cc",
     "encoder_status.h",

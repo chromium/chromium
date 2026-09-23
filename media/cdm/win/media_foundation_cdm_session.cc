@@ -14,6 +14,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/win/scoped_co_mem.h"
 #include "media/base/cdm_key_information.h"
+#include "media/base/eme_constants.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -32,20 +33,6 @@ MF_MEDIAKEYSESSION_TYPE ToMFSessionType(CdmSessionType session_type) {
       return MF_MEDIAKEYSESSION_TYPE_TEMPORARY;
     case CdmSessionType::kPersistentLicense:
       return MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE;
-  }
-}
-
-// The strings are defined in https://www.w3.org/TR/eme-initdata-registry/
-LPCWSTR InitDataTypeToString(EmeInitDataType init_data_type) {
-  switch (init_data_type) {
-    case EmeInitDataType::UNKNOWN:
-      return L"unknown";
-    case EmeInitDataType::WEBM:
-      return L"webm";
-    case EmeInitDataType::CENC:
-      return L"cenc";
-    case EmeInitDataType::KEYIDS:
-      return L"keyids";
   }
 }
 
@@ -202,11 +189,13 @@ HRESULT MediaFoundationCdmSession::GenerateRequest(
 
   session_id_cb_ = std::move(session_id_cb);
 
-  RETURN_IF_FAILED(WithUmaReported(
-      mf_cdm_session_->GenerateRequest(
-          InitDataTypeToString(init_data_type), init_data.data(),
-          base::checked_cast<DWORD>(init_data.size())),
-      "GenerateRequest"));
+  std::wstring init_data_type_str =
+      base::ASCIIToWide(EmeInitDataTypeToString(init_data_type));
+  RETURN_IF_FAILED(
+      WithUmaReported(mf_cdm_session_->GenerateRequest(
+                          init_data_type_str.c_str(), init_data.data(),
+                          base::checked_cast<DWORD>(init_data.size())),
+                      "GenerateRequest"));
   return S_OK;
 }
 

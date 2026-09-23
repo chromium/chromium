@@ -26,34 +26,20 @@ const char kPersistentLicense[] = "persistent-license";
 // static
 media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
     const String& init_data_type) {
-  if (init_data_type == "cenc")
-    return media::EmeInitDataType::CENC;
-  if (init_data_type == "keyids")
-    return media::EmeInitDataType::KEYIDS;
-  if (init_data_type == "webm")
-    return media::EmeInitDataType::WEBM;
-
   // |initDataType| is not restricted in the idl, so anything is possible.
-  return media::EmeInitDataType::UNKNOWN;
+  return media::StringToEmeInitDataType(init_data_type.Ascii());
 }
 
 // static
 String EncryptedMediaUtils::ConvertFromInitDataType(
     media::EmeInitDataType init_data_type) {
-  switch (init_data_type) {
-    case media::EmeInitDataType::CENC:
-      return "cenc";
-    case media::EmeInitDataType::KEYIDS:
-      return "keyids";
-    case media::EmeInitDataType::WEBM:
-      return "webm";
-    case media::EmeInitDataType::UNKNOWN:
-      // Chromium should not use Unknown, but we use it in Blink when the
-      // actual value has been blocked for non-same-origin or mixed content.
-      return String();
+  if (init_data_type == media::EmeInitDataType::UNKNOWN) {
+    // Chromium should not use Unknown, but we use it in Blink when the
+    // actual value has been blocked for non-same-origin or mixed content.
+    return String();
   }
 
-  NOTREACHED();
+  return String(media::EmeInitDataTypeToString(init_data_type));
 }
 
 // static

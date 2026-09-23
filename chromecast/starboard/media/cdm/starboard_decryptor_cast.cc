@@ -184,26 +184,17 @@ void StarboardDecryptorCast::HandleCreateSessionAndGenerateRequest(
   DCHECK(!pending_session_setup_);
 
   pending_session_setup_ = true;
-  std::string init_type;
-  switch (init_data_type) {
-    case ::media::EmeInitDataType::WEBM:
-      init_type = "webm";
-      break;
-    case ::media::EmeInitDataType::CENC:
-      init_type = "cenc";
-      break;
-    case ::media::EmeInitDataType::KEYIDS:
-      init_type = "keyids";
-      break;
-    default:
-      // Covers the case of the UNKOWN type, or any unrecognized types.
-      promise->reject(
-          ::media::CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
-          "Unsupported init_data_type: " +
-              base::NumberToString(static_cast<int>(init_data_type)));
-      return;
+  // Covers the case of the UNKNOWN type, or any unrecognized types.
+  if (init_data_type != ::media::EmeInitDataType::WEBM &&
+      init_data_type != ::media::EmeInitDataType::CENC &&
+      init_data_type != ::media::EmeInitDataType::KEYIDS) {
+    promise->reject(::media::CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+                    "Unsupported init_data_type: " +
+                        base::NumberToString(static_cast<int>(init_data_type)));
+    return;
   }
 
+  std::string init_type = ::media::EmeInitDataTypeToString(init_data_type);
   const int ticket = current_ticket_++;
   ticket_to_new_session_promise_[ticket] = std::move(promise);
   StarboardDrmWrapper::GetInstance().GenerateSessionUpdateRequest(

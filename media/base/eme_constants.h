@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
@@ -24,6 +25,18 @@ enum class EmeInitDataType {
   KEYIDS,
   kMaxValue = KEYIDS,
 };
+
+// Returns the canonical string representation of |init_data_type| as defined
+// by the EME Initialization Data Registry:
+// https://www.w3.org/TR/eme-initdata-registry/
+// Returns "unknown" for EmeInitDataType::UNKNOWN.
+MEDIA_EXPORT const char* EmeInitDataTypeToString(
+    EmeInitDataType init_data_type);
+
+// Converts a string to the corresponding EmeInitDataType. Returns
+// EmeInitDataType::UNKNOWN if the string is not recognized.
+MEDIA_EXPORT EmeInitDataType
+StringToEmeInitDataType(std::string_view init_data_type);
 
 // Defines bitmask values that specify codecs used in Encrypted Media Extensions
 // (EME). Generally codec profiles are not specified and it is assumed that the
