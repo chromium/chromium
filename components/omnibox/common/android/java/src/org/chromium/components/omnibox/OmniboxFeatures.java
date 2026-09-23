@@ -188,26 +188,16 @@ public class OmniboxFeatures {
 
     /**
      * Whether the bottom sheet popup should be shown for fusebox popup variations.
-     *
-     * <p>Defaults to true: the bottom sheet is the pre-variations behavior on mobile, so it must
-     * remain in place both when {@link #sOmniboxFuseboxPopupVariations} is disabled and when an arm
-     * of that study leaves this param unset. Arms that want the anchored context menu must opt out
-     * explicitly. Desktop is unaffected, as {@link #shouldShowBottomSheetPopup()} returns early
-     * there and always shows the context menu.
      */
     private static final BooleanCachedFeatureParam sFuseboxPopupShowBottomSheet =
-            newBooleanParam(sOmniboxFuseboxPopupVariations, "show_bottom_sheet_popup", true);
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "show_bottom_sheet_popup", false);
 
     /**
      * Whether the popup should use a horizontal carousel for attachments. This is private to ensure
      * that callers use {@link #shouldUseCarousel()} which also checks if the platform is desktop.
-     *
-     * <p>Defaults to true: the carousel is the pre-variations behavior, so it must remain in place
-     * both when {@link #sOmniboxFuseboxPopupVariations} is disabled and when an arm of that study
-     * leaves this param unset. Arms that want the vertical list must opt out explicitly.
      */
     private static final BooleanCachedFeatureParam sFuseboxPopupCarousel =
-            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_carousel", true);
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_carousel", false);
 
     /**
      * Whether the horizontal attachments carousel should be scrollable. This is private to ensure
