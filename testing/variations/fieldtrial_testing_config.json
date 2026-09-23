@@ -8955,6 +8955,7 @@
     "GlicNoWebview": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
