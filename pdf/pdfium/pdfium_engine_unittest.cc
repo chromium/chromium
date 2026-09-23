@@ -5180,10 +5180,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 class PDFiumEngineInkDrawTextLineDecorationTest
     : public PDFiumEngineInkDrawTextTest {
  protected:
-  void TestDrawTextStrikethrough(int orientation,
-                                 float font_size,
-                                 float expected_stroke_width,
-                                 float expected_line_y) {
+  void TestDrawTextLineDecoration(bool is_strikethrough,
+                                  int orientation,
+                                  float font_size,
+                                  float expected_stroke_width,
+                                  float expected_line_y) {
     TestClient client(/*use_skia_renderer=*/GetParam());
     std::unique_ptr<PDFiumEngine> engine =
         InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
@@ -5199,11 +5200,15 @@ class PDFiumEngineInkDrawTextLineDecorationTest
     attributes.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f);
     attributes.css_font_size = font_size;
     attributes.orientation = orientation;
-    attributes.is_strikethrough = true;
+    if (is_strikethrough) {
+      attributes.is_strikethrough = true;
+    } else {
+      attributes.is_underline = true;
+    }
 
     DrawSingleTextLine(engine.get(), kPageIndex, attributes);
 
-    // Strikethrough generates 2 page objects: text object and path object.
+    // Line decoration generates 2 page objects: text object and path object.
     int new_obj_count = FPDFPage_CountObjects(page.GetPage());
     ASSERT_EQ(new_obj_count, initial_obj_count + 2);
 
@@ -5214,7 +5219,9 @@ class PDFiumEngineInkDrawTextLineDecorationTest
     FPDF_PAGEOBJECTMARK mark = FPDFPageObj_GetMark(text_obj, 0);
     ASSERT_EQ(kInkTextAnnotationIdentifierKey,
               base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
-    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsStrikethrough"),
+    const std::string expected_mark_param =
+        is_strikethrough ? "IsStrikethrough" : "IsUnderline";
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, expected_mark_param),
                 Optional(1));
 
     FPDF_PAGEOBJECT path_obj =
@@ -5222,7 +5229,7 @@ class PDFiumEngineInkDrawTextLineDecorationTest
     VerifyLineDecorationPath(path_obj, expected_stroke_width, expected_line_y);
 
     // Discarding the text annotation must remove both the text object and the
-    // strikethrough path object from the page.
+    // line decoration path object from the page.
     engine->DiscardText(InkTextId(0));
     EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
   }
@@ -5298,8 +5305,9 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughBasic) {
 #else
   constexpr float kExpectedLineY = 2.32f;
 #endif
-  TestDrawTextStrikethrough(/*orientation=*/0, /*font_size=*/10.0f,
-                            /*expected_stroke_width=*/0.75f, kExpectedLineY);
+  TestDrawTextLineDecoration(/*is_strikethrough=*/true, /*orientation=*/0,
+                             /*font_size=*/10.0f,
+                             /*expected_stroke_width=*/0.75f, kExpectedLineY);
 }
 
 TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughRotated) {
@@ -5310,8 +5318,9 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughRotated) {
 #else
   constexpr float kExpectedLineY = 2.32f;
 #endif
-  TestDrawTextStrikethrough(/*orientation=*/1, /*font_size=*/10.0f,
-                            /*expected_stroke_width=*/0.75f, kExpectedLineY);
+  TestDrawTextLineDecoration(/*is_strikethrough=*/true, /*orientation=*/1,
+                             /*font_size=*/10.0f,
+                             /*expected_stroke_width=*/0.75f, kExpectedLineY);
 }
 
 TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughSmallFontSize) {
@@ -5322,8 +5331,9 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughSmallFontSize) {
 #else
   constexpr float kExpectedLineY = 1.392f;
 #endif
-  TestDrawTextStrikethrough(/*orientation=*/0, /*font_size=*/6.0f,
-                            /*expected_stroke_width=*/0.45f, kExpectedLineY);
+  TestDrawTextLineDecoration(/*is_strikethrough=*/true, /*orientation=*/0,
+                             /*font_size=*/6.0f,
+                             /*expected_stroke_width=*/0.45f, kExpectedLineY);
 }
 
 TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughLargeFontSize) {
@@ -5334,8 +5344,9 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughLargeFontSize) {
 #else
   constexpr float kExpectedLineY = 11.136f;
 #endif
-  TestDrawTextStrikethrough(/*orientation=*/0, /*font_size=*/48.0f,
-                            /*expected_stroke_width=*/3.60f, kExpectedLineY);
+  TestDrawTextLineDecoration(/*is_strikethrough=*/true, /*orientation=*/0,
+                             /*font_size=*/48.0f,
+                             /*expected_stroke_width=*/3.60f, kExpectedLineY);
 }
 
 TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
@@ -5396,6 +5407,167 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
                                /*is_horizontal=*/true, u"\U0001F603"))},
       /*ascent=*/8.0f, /*pdf_zoom=*/1.0, attributes);
 
+  EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineBasic) {
+  TestDrawTextLineDecoration(/*is_strikethrough=*/false, /*orientation=*/0,
+                             /*font_size=*/10.0f,
+                             /*expected_stroke_width=*/0.75f,
+                             /*expected_line_y=*/-0.75f);
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineRotated) {
+  TestDrawTextLineDecoration(/*is_strikethrough=*/false, /*orientation=*/1,
+                             /*font_size=*/10.0f,
+                             /*expected_stroke_width=*/0.75f,
+                             /*expected_line_y=*/-0.75f);
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineSmallFontSize) {
+  TestDrawTextLineDecoration(/*is_strikethrough=*/false, /*orientation=*/0,
+                             /*font_size=*/6.0f,
+                             /*expected_stroke_width=*/0.45f,
+                             /*expected_line_y=*/-0.45f);
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineLargeFontSize) {
+  TestDrawTextLineDecoration(/*is_strikethrough=*/false, /*orientation=*/0,
+                             /*font_size=*/48.0f,
+                             /*expected_stroke_width=*/3.60f,
+                             /*expected_line_y=*/-3.60f);
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineEmptyLineSkipped) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  DrawTextData text_data = GetGlyphsForText("Hello!", /*font_size=*/10.0f);
+
+  InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  attributes.is_underline = true;
+
+  // 1 line with text, 1 line without text.
+  std::vector<InkTextLine> lines;
+  lines.push_back(InkTextLine(InkTextInfo(
+      font_id, text_data.glyphs, text_data.glyph_positions,
+      gfx::RectF(100.0f, 20.0f), /*is_horizontal=*/true, text_data.text)));
+  lines.push_back(InkTextLine(gfx::RectF(50.0f, 20.0f), /*text_info=*/{}));
+
+  int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+  engine->DrawText(kPageIndex, InkTextId(0), lines,
+                   FontAscent(engine.get(), font_id, attributes.css_font_size),
+                   /*pdf_zoom=*/1.0, attributes);
+
+  // 2 objects added: 1 text object and 1 underline path.
+  EXPECT_EQ(initial_obj_count + 2, FPDFPage_CountObjects(page.GetPage()));
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
+       EmojiWithoutFontDoesNotDrawUnderline) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  TestFont emoji_font = GetTestEmojiFont();
+  ASSERT_TRUE(emoji_font.serialized_font);
+  FontId id = emoji_font.font_id;
+  engine->AddFont(id, "NotoColorEmoji",
+                  gfx::SkDataToSpan(emoji_font.serialized_font));
+
+  DrawTextData text_data = GetGlyphsForText("?", /*font_size=*/10.0f);
+  InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  attributes.is_underline = true;
+
+  int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+  engine->DrawText(
+      kPageIndex, InkTextId(0),
+      {InkTextLine(InkTextInfo(id, text_data.glyphs, text_data.glyph_positions,
+                               gfx::RectF(100.0f, 20.0f),
+                               /*is_horizontal=*/true, u"\U0001F603"))},
+      /*ascent=*/8.0f, /*pdf_zoom=*/1.0, attributes);
+
+  EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
+}
+
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
+       SimultaneousStrikethroughAndUnderline) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr float kFontSize = 10.0f;
+  DrawTextData text_data = GetGlyphsForText("Hello!", kFontSize);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+
+  const gfx::RectF location(100.0f, 20.0f);
+
+  InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  attributes.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f);
+  attributes.css_font_size = kFontSize;
+  attributes.orientation = 0;
+  attributes.is_strikethrough = true;
+  attributes.is_underline = true;
+
+  engine->DrawText(
+      kPageIndex, InkTextId(0),
+      {InkTextLine(InkTextInfo(font_id, text_data.glyphs,
+                               text_data.glyph_positions, location,
+                               /*is_horizontal=*/true, text_data.text))},
+      FontAscent(engine.get(), font_id, attributes.css_font_size),
+      /*pdf_zoom=*/1.0, attributes);
+
+  // 3 page objects generated: 1 text object + 2 path objects (strikethrough and
+  // underline).
+  int new_obj_count = FPDFPage_CountObjects(page.GetPage());
+  ASSERT_EQ(new_obj_count, initial_obj_count + 3);
+
+  FPDF_PAGEOBJECT text_obj =
+      FPDFPage_GetObject(page.GetPage(), initial_obj_count);
+  ASSERT_EQ(FPDF_PAGEOBJ_TEXT, FPDFPageObj_GetType(text_obj));
+
+  FPDF_PAGEOBJECTMARK mark = FPDFPageObj_GetMark(text_obj, 0);
+  ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+            base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
+  EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsStrikethrough"), Optional(1));
+  EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsUnderline"), Optional(1));
+
+  FPDF_PAGEOBJECT path_obj1 =
+      FPDFPage_GetObject(page.GetPage(), initial_obj_count + 1);
+  ASSERT_EQ(FPDF_PAGEOBJ_PATH, FPDFPageObj_GetType(path_obj1));
+
+  FPDF_PAGEOBJECT path_obj2 =
+      FPDFPage_GetObject(page.GetPage(), initial_obj_count + 2);
+  ASSERT_EQ(FPDF_PAGEOBJ_PATH, FPDFPageObj_GetType(path_obj2));
+
+  // Both path objects must have the mark attached.
+  ASSERT_EQ(1, FPDFPageObj_CountMarks(path_obj1));
+  FPDF_PAGEOBJECTMARK path_mark1 = FPDFPageObj_GetMark(path_obj1, 0);
+  ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+            base::UTF16ToUTF8(GetPageObjectMarkName(path_mark1)));
+
+  ASSERT_EQ(1, FPDFPageObj_CountMarks(path_obj2));
+  FPDF_PAGEOBJECTMARK path_mark2 = FPDFPageObj_GetMark(path_obj2, 0);
+  ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+            base::UTF16ToUTF8(GetPageObjectMarkName(path_mark2)));
+
+  // Discarding the annotation removes all 3 objects.
+  engine->DiscardText(InkTextId(0));
   EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
 }
 

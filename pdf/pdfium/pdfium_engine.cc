@@ -207,6 +207,8 @@ void AddMetadataToTextObject(FPDF_DOCUMENT doc,
                                     attributes.is_italic));
   CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsStrikethrough",
                                     attributes.is_strikethrough));
+  CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsUnderline",
+                                    attributes.is_underline));
 
   CHECK(FPDFPageObjMark_SetStringParam(doc, text_object, mark, "Text",
                                        attributes.text.c_str()));
@@ -340,6 +342,22 @@ ScopedFPDFPageObject CreateStrikethroughPath(
   // snaps the line to the nearest integer pixel boundary, whereas the PDF
   // stores exact float vector coordinates.
   const float line_y = CSSFontSizeToPdfFontSize(ascent) / 3.0f;
+  return CreateLineDecorationPath(text_line_rect, pdf_zoom, attributes,
+                                  stroke_width, line_y);
+}
+
+// Creates an underline path page object for a single text line at
+// `text_line_rect` in local coordinates (relative to the baseline origin) in
+// PDF points.
+ScopedFPDFPageObject CreateUnderlinePath(
+    const gfx::RectF& text_line_rect,
+    double pdf_zoom,
+    const InkTextBoxAttributes& attributes) {
+  const float stroke_width =
+      GetLineDecorationStrokeWidth(attributes.css_font_size);
+
+  // Position line_y below the baseline in baseline-relative PDF points.
+  const float line_y = -stroke_width;
   return CreateLineDecorationPath(text_line_rect, pdf_zoom, attributes,
                                   stroke_width, line_y);
 }
@@ -5652,9 +5670,12 @@ void PDFiumEngine::DrawText(int page_index,
   for (const InkTextLine& line : text_lines) {
     num_page_objects += line.text_info.size();
   }
-  // Strikethrough generates one path page object per line in addition to the
-  // text objects.
+  // Strikethrough and underline each generate one path page object per line in
+  // addition to the text objects.
   if (attributes.is_strikethrough) {
+    num_page_objects += text_lines.size();
+  }
+  if (attributes.is_underline) {
     num_page_objects += text_lines.size();
   }
 
@@ -5714,21 +5735,32 @@ void PDFiumEngine::DrawText(int page_index,
     }
   }
 
-  // 2. Create line decorations (strikethrough).
-  if (attributes.is_strikethrough && !page_objects.empty()) {
+  // 2. Create line decorations (strikethrough and underline).
+  if ((attributes.is_strikethrough || attributes.is_underline) &&
+      !page_objects.empty()) {
     for (const InkTextLine& line : text_lines) {
       if (line.text_info.empty()) {
         continue;
       }
 
-      ScopedFPDFPageObject strikethrough_path =
-          CreateStrikethroughPath(line.location, pdf_zoom, attributes, ascent);
       FS_MATRIX line_origin_matrix = CalculateTextObjectOriginTransform(
           line.location, pdf_zoom, attributes, ascent);
-      TransformAndMarkLineDecoration(strikethrough_path.get(),
-                                     line_origin_matrix, textbox_matrix, mark);
-      page_objects.push_back(strikethrough_path.get());
-      CHECK(FPDFPage_InsertObject(page, strikethrough_path.release()));
+      if (attributes.is_strikethrough) {
+        ScopedFPDFPageObject strikethrough_path = CreateStrikethroughPath(
+            line.location, pdf_zoom, attributes, ascent);
+        TransformAndMarkLineDecoration(
+            strikethrough_path.get(), line_origin_matrix, textbox_matrix, mark);
+        page_objects.push_back(strikethrough_path.get());
+        CHECK(FPDFPage_InsertObject(page, strikethrough_path.release()));
+      }
+      if (attributes.is_underline) {
+        ScopedFPDFPageObject underline_path =
+            CreateUnderlinePath(line.location, pdf_zoom, attributes);
+        TransformAndMarkLineDecoration(underline_path.get(), line_origin_matrix,
+                                       textbox_matrix, mark);
+        page_objects.push_back(underline_path.get());
+        CHECK(FPDFPage_InsertObject(page, underline_path.release()));
+      }
     }
   }
 
