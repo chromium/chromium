@@ -300,8 +300,7 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   // Calculate the bounds of the "content area" which includes the location bar
   // and any results, plus the alignment insets to cover the focus ring.
   gfx::Rect widget_bounds = location_bar()->BoundsInScreen();
-  widget_bounds.Inset(
-      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  widget_bounds.Inset(-FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets());
 
   const int default_height = widget_bounds.height();
 

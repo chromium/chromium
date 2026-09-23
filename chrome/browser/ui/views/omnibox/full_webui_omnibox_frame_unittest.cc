@@ -67,10 +67,9 @@ TEST_F(FullWebUIOmniboxFrameTest, WindowTargeterInsets) {
   // bottom shadow insets remain active.
   frame->SetForwardMouseEvents(true);
   window->targeter()->GetHitTestRects(window, &mouse_rect, &touch_rect);
-  int top_inset =
-      frame->GetInsets().top() +
-      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().top() +
-      GetLayoutConstant(LayoutConstant::kLocationBarHeight);
+  int top_inset = frame->GetInsets().top() +
+                  FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().top() +
+                  GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   gfx::Insets expected_forwarding_insets = gfx::Insets::TLBR(
       top_inset, frame->GetInsets().left(), frame->GetInsets().bottom(),
       frame->GetInsets().right());
@@ -130,10 +129,9 @@ TEST_F(FullWebUIOmniboxFrameTest, ViewTargeterHitTesting) {
   widget_->SetBounds(gfx::Rect(0, 0, 500, 500));
   widget_->Show();
 
-  int top_inset =
-      frame->GetInsets().top() +
-      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().top() +
-      GetLayoutConstant(LayoutConstant::kLocationBarHeight);
+  int top_inset = frame->GetInsets().top() +
+                  FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().top() +
+                  GetLayoutConstant(LayoutConstant::kLocationBarHeight);
 
   // When forwarding is disabled (normal state), points in top area target
   // child contents rather than the frame itself.

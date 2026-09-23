@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/layout_provider.h"
@@ -127,6 +129,16 @@ void FullWebUIOmniboxFrame::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 #endif  // !USE_AURA
+
+// static
+gfx::Insets FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets() {
+#if BUILDFLAG(IS_MAC)
+  if (!ui::TouchUiController::Get()->touch_ui()) {
+    return gfx::Insets::TLBR(5, 5, 4, 5);
+  }
+#endif
+  return RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets();
+}
 
 gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() const {
   // The widget is always expanded by the shadow margin, whether the shadow is

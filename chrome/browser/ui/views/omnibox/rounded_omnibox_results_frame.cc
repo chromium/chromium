@@ -13,7 +13,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
@@ -323,26 +322,7 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
   if (ui::TouchUiController::Get()->touch_ui()) {
     return gfx::Insets::TLBR(6, 1, 5, 1);
   }
-#if BUILDFLAG(IS_MAC)
-  // On macOS, the popup is hosted in a separate native window. Differences in
-  // visual border rendering thickness (1px CSS outline in WebUI vs 0.5px native
-  // retina border) require a slightly tighter horizontal fit (5px instead of
-  // 6px).
-  //
-  // When WebUIOmniboxFullPopup is enabled:
-  // - Top inset is kept at 5px so the widget anchors flush with the bottom of
-  //   the tab line (y = LocationBar_y - 5 = 0).
-  // - Horizontal insets are 5px (1px tighter) to align visual boundaries with
-  //   the native location bar.
-  // - Bottom inset is 4px to accommodate the 32px WebUI searchbox.
-  // When disabled, we fall back to standard (5, 6) insets.
-  if (omnibox::IsWebUIOmniboxFullPopupEnabled()) {
-    return gfx::Insets::TLBR(5, 5, 4, 5);
-  }
   return gfx::Insets::VH(5, 6);
-#else
-  return gfx::Insets::VH(5, 6);
-#endif
 }
 
 // static

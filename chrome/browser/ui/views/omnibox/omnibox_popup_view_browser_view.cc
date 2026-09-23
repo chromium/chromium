@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -202,7 +203,7 @@ void OmniboxPopupViewBrowserView::UpdateLayout() {
   // Calculate bounds for the frame.
   gfx::Rect frame_bounds = bounds;
   gfx::Insets alignment_insets =
-      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets();
+      FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets();
   // Only outset vertically to keep exact width.
   frame_bounds.Inset(gfx::Insets::TLBR(-alignment_insets.top(), 0,
                                        -alignment_insets.bottom(), 0));
