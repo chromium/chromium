@@ -4903,10 +4903,11 @@ void TabStripModel::InsertTabAtIndexImpl(
                     SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 
-  // If a tab is added that does not belong to the focused group (and is not
-  // a pinned tab allowed in focus mode), drop focus mode so the tab is visible.
+  // If an active tab is added that does not belong to the focused group (and
+  // is not a pinned tab allowed in focus mode), drop focus mode so the tab is
+  // visible.
   const std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
-  if (focused_group.has_value() && group != focused_group && !pin) {
+  if (active && focused_group.has_value() && group != focused_group && !pin) {
     ExitFocusMode(TabGroupFocusExitReason::kActiveTabGroupOperation);
   }
 
@@ -4962,15 +4963,6 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
 
   if (tab_detach_reason == tabs::TabInterface::DetachReason::kDelete) {
     tab_to_remove->DestroyTabFeatures();
-  }
-
-  // If a tab is removed that does not belong to the focused group (and is not
-  // a pinned tab allowed in focus mode), drop focus mode.
-  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
-  if (focused_group.has_value() &&
-      !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
-          tab_to_remove, focused_group)) {
-    ExitFocusMode(TabGroupFocusExitReason::kTabOutsideGroupClosed);
   }
 
   tabs::TabInterface* old_active_tab = GetActiveTab();

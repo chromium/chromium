@@ -2799,7 +2799,7 @@ TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
-TEST_F(TabStripModelTest, NewBackgroundTabWithoutGroupUnsetsFocus) {
+TEST_F(TabStripModelTest, NewBackgroundTabWithoutGroupPreservesFocus) {
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
   tabstrip()->EnterFocusMode(group_id);
@@ -2809,13 +2809,29 @@ TEST_F(TabStripModelTest, NewBackgroundTabWithoutGroupUnsetsFocus) {
   tabstrip()->AddWebContents(CreateWebContents(), -1, ui::PAGE_TRANSITION_TYPED,
                              AddTabTypes::ADD_NONE);
 
-  // The tab is ungrouped, and adding a tab outside the focused group unsets
-  // focus.
+  // The tab is ungrouped, and adding an inactive tab outside the focused group
+  // preserves focus mode.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(4));
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest, NewForegroundTabWithoutGroupUnsetsFocus) {
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->EnterFocusMode(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Add a foreground tab without specifying a group.
+  tabstrip()->AddWebContents(CreateWebContents(), -1, ui::PAGE_TRANSITION_TYPED,
+                             AddTabTypes::ADD_ACTIVE);
+
+  // The tab is ungrouped, and adding an active tab outside the focused group
+  // unsets focus mode.
   EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(4));
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
-TEST_F(TabStripModelTest, DeletingTabOutsideFocusedGroupUnsetsFocus) {
+TEST_F(TabStripModelTest, DeletingTabOutsideFocusedGroupPreservesFocus) {
   base::HistogramTester histogram_tester;
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
@@ -2825,11 +2841,10 @@ TEST_F(TabStripModelTest, DeletingTabOutsideFocusedGroupUnsetsFocus) {
   // Close tab at index 0 (an ungrouped tab outside the focused group).
   tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
 
-  // Focus mode should be dropped so the strip is unfocused.
-  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
-  histogram_tester.ExpectUniqueSample(
-      "TabGroups.Focus.ExitReason",
-      TabGroupFocusExitReason::kTabOutsideGroupClosed, 1);
+  // Focus mode should be retained when a tab outside the focused group is
+  // closed.
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
 }
 
 TEST_F(TabStripModelTest, NewPinnedTabInFocusedGroupDoesNotJoinFocusedGroup) {

@@ -539,17 +539,3 @@ TEST_F(NonGroupFocusDissolutionTest,
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), std::nullopt);
 }
-
-TEST_F(NonGroupFocusDissolutionTest,
-       ClosingTabOutsideEphemeralGroupDissolvesIt) {
-  const tab_groups::TabGroupId ephemeral_group =
-      StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
-
-  tab_strip_model()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
-
-  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
-  EXPECT_FALSE(
-      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
-  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
-  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
-}
