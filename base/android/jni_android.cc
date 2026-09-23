@@ -102,8 +102,8 @@ const char kOomInGetJavaExceptionInfoMessage[] =
 
 void InitVM(JavaVM* vm) {
   jni_zero::SetRawPtrHooks(&WrapRawPtrImpl, &ReleaseWrappedPtrImpl);
-  jni_zero::InitVM(vm);
   jni_zero::SetExceptionHandler(CheckException);
+  jni_zero::InitVM(vm);
   JNIEnv* env = jni_zero::AttachCurrentThread();
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
