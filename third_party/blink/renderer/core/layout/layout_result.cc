@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -47,10 +48,12 @@ const LayoutResult* LayoutResult::Clone(const LayoutResult& other) {
 
 // static
 const LayoutResult* LayoutResult::CloneWithPostLayoutFragments(
-    const LayoutResult& other) {
+    const LayoutResult& other,
+    const std::optional<PhysicalRect> new_scrollable_overflow) {
   return MakeGarbageCollected<LayoutResult>(
       other, PhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<PhysicalBoxFragment>(other.GetPhysicalFragment())));
+                 To<PhysicalBoxFragment>(other.GetPhysicalFragment()),
+                 new_scrollable_overflow));
 }
 
 LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,

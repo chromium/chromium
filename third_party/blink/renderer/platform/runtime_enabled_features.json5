@@ -3891,6 +3891,10 @@
       public: true,
     },
     {
+      name: "LayoutCloneForScrollableOverflowChange",
+      status: "stable",
+    },
+    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {

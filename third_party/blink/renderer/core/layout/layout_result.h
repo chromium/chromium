@@ -72,7 +72,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // Same as Clone(), but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
   static const LayoutResult* CloneWithPostLayoutFragments(
-      const LayoutResult& other);
+      const LayoutResult& other,
+      const std::optional<PhysicalRect> new_scrollable_overflow = std::nullopt);
 
   // Create a copy of LayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is

@@ -46,7 +46,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // Creates a shallow copy of |other| but uses the "post-layout" fragments to
   // ensure fragment-tree consistency.
   static const PhysicalBoxFragment* CloneWithPostLayoutFragments(
-      const PhysicalBoxFragment& other);
+      const PhysicalBoxFragment& other,
+      const std::optional<PhysicalRect> new_scrollable_overflow = std::nullopt);
 
   using PassKey = base::PassKey<PhysicalBoxFragment>;
   PhysicalBoxFragment(PassKey,

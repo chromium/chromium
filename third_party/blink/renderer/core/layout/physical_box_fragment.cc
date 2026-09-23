@@ -272,9 +272,12 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Clone(
 
 // static
 const PhysicalBoxFragment* PhysicalBoxFragment::CloneWithPostLayoutFragments(
-    const PhysicalBoxFragment& other) {
-  PhysicalRect scrollable_overflow = other.ScrollableOverflow();
-  bool has_scrollable_overflow = other.HasScrollableOverflow();
+    const PhysicalBoxFragment& other,
+    const std::optional<PhysicalRect> new_scrollable_overflow) {
+  const PhysicalRect scrollable_overflow =
+      new_scrollable_overflow.value_or(other.ScrollableOverflow());
+  const bool has_scrollable_overflow =
+      scrollable_overflow != PhysicalRect({}, other.Size());
 
   // The size of the new fragment shouldn't differ from the old one.
   size_t byte_size = AdditionalByteSize(other.HasItems());
@@ -479,6 +482,12 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   if (other.rare_data_) {
     rare_data_ =
         MakeGarbageCollected<PhysicalFragmentRareData>(*other.rare_data_);
+  }
+  if (has_scrollable_overflow) {
+    EnsureRareField(FieldId::kScrollableOverflow).scrollable_overflow =
+        scrollable_overflow;
+  } else if (GetRareField(FieldId::kScrollableOverflow)) {
+    rare_data_->RemoveField(FieldId::kScrollableOverflow);
   }
 }
 

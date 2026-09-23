@@ -3275,9 +3275,17 @@ RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflow() {
         }
       }
 
-      if (scrollable_overflow) {
-        fragment.GetMutableForStyleRecalc().SetScrollableOverflow(
-            *scrollable_overflow);
+      if (RuntimeEnabledFeatures::
+              LayoutCloneForScrollableOverflowChangeEnabled()) {
+        if (rebuild_fragment_tree || scrollable_overflow) {
+          layout_result = LayoutResult::CloneWithPostLayoutFragments(
+              *layout_result, scrollable_overflow);
+        }
+      } else {
+        if (scrollable_overflow) {
+          fragment.GetMutableForStyleRecalc().SetScrollableOverflow(
+              *scrollable_overflow);
+        }
       }
     }
     SetScrollableOverflowFromLayoutResults();
