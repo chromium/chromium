@@ -39,6 +39,7 @@ class CORE_EXPORT DisplayAdElementMonitor final
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(
       const LocalFrameView& local_frame_view) override;
+  void WillDisposeView() override;
 
   // Performs a hit-test on `element_` to determine if it's the topmost element
   // at its center. This check can be skipped due to frequency-capping or if the

@@ -172,6 +172,10 @@ class CORE_EXPORT LocalFrameView final
     // be clean but don't need to update state that is pushed further in the
     // rendering pipeline.
     virtual void DidFinishPostLifecycleSteps(const LocalFrameView&) {}
+
+    // Called when the LocalFrameView is being disposed (e.g. during
+    // Document::Shutdown).
+    virtual void WillDisposeView() {}
   };
 
   explicit LocalFrameView(LocalFrame&);

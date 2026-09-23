@@ -587,6 +587,13 @@ void LocalFrameView::Dispose() {
   }
   layout_shift_tracker_->Dispose();
 
+  // Make a copy before notifying in case observers unregister themselves.
+  auto lifecycle_observers = lifecycle_observers_;
+  for (LifecycleNotificationObserver* observer : lifecycle_observers) {
+    observer->WillDisposeView();
+  }
+  lifecycle_observers_.clear();
+
 #if DCHECK_IS_ON()
   has_been_disposed_ = true;
 #endif
