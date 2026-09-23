@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -77,6 +78,7 @@ public class LocationBarNavigatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
     @Mock private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     @Mock private LocaleManager mLocaleManager;
     @Mock private OmniboxUma mOmniboxUma;
@@ -109,6 +111,7 @@ public class LocationBarNavigatorUnitTest {
         mProfileSupplier.set(mProfile);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         mTabModelSelectorSupplier.set(mTabModelSelector);
+        lenient().doReturn(mTabModel).when(mTabModelSelector).getModel(anyBoolean());
 
         mNavigator =
                 new LocationBarNavigator(
@@ -316,7 +319,7 @@ public class LocationBarNavigatorUnitTest {
 
     private void testLoadUrl_openInNewTab_base() {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        doReturn(false).when(mTab).isIncognito();
+        doReturn(false).when(mTab).isIncognitoBranded();
 
         mNavigator.loadUrl(
                 new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
@@ -346,6 +349,25 @@ public class LocationBarNavigatorUnitTest {
     @EnableFeatures({OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB})
     public void testLoadUrl_openInNewTabPostDelayedTaskFocusTab() {
         testLoadUrl_openInNewTab_base();
+    }
+
+    @Test
+    public void testLoadUrl_openInBackground() {
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(false).when(mTab).isIncognitoBranded();
+
+        mNavigator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(/* openInNewTab= */ true)
+                        .setOpenInBackground(true)
+                        .build());
+
+        verify(mTabModelSelector)
+                .openNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_OMNIBOX_BACKGROUND),
+                        eq(null),
+                        /* incognito= */ eq(false));
     }
 
     @Test

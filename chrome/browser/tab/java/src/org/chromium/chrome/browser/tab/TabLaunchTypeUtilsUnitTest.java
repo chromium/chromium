@@ -27,7 +27,8 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
                     TabLaunchType.FROM_REPARENTING_BACKGROUND,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
-                    TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND);
+                    TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                    TabLaunchType.FROM_OMNIBOX_BACKGROUND);
 
     private static final Set<Integer> RESTORE_TYPES =
             Set.of(
@@ -58,7 +59,7 @@ public class TabLaunchTypeUtilsUnitTest {
 
     @Test
     public void testEnumSizeConstant() {
-        assertEquals("TabLaunchType.SIZE is expected to be 36", 36, TabLaunchType.SIZE);
+        assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
     }
 
     @Test

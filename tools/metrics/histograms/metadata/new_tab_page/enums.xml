@@ -774,6 +774,7 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="From Tips Notifications"/>
   <int value="34" label="From Tab List Interface Background"/>
   <int value="35" label="From Session Startup With Urls Pref"/>
+  <int value="36" label="From Omnibox Background"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->

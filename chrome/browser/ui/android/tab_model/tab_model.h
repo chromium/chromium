@@ -194,6 +194,8 @@ class TabModel : public TabListInterface {
     // Opened to load the first URL specified in the session startup URLs user
     // preference.
     FROM_SESSION_STARTUP_WITH_URLS_PREF,
+    // Opened to load an omnibox search query in a new tab in the background.
+    FROM_OMNIBOX_BACKGROUND,
     // Must be last.
     SIZE
   };

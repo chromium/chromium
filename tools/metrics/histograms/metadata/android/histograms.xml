@@ -292,6 +292,8 @@ chromium-metrics-reviews@google.com.
       summary="tabs opened by an external application launching a new Chrome
                incognito tab"/>
   <variant name="Omnibox" summary="tabs opened from omnibox"/>
+  <variant name="OmniboxBackground"
+      summary="tabs opened from omnibox in a background tab"/>
   <variant name="ReadingList" summary="tabs opened from the reading list"/>
   <variant name="RecentTabs"
       summary="tabs opened in background from recent tabs"/>

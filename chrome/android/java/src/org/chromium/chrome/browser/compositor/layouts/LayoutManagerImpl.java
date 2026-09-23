@@ -309,6 +309,7 @@ public class LayoutManagerImpl
                 case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND:
                 case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
                 case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                case TabLaunchType.FROM_OMNIBOX_BACKGROUND:
                     isBackgroundLaunch = true;
                     break;
                 default:

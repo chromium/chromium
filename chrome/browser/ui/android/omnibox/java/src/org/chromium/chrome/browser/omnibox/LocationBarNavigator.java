@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -85,7 +87,10 @@ class LocationBarNavigator {
             String url = omniboxLoadUrlParams.url;
             if (currentTab != null) {
                 url = handleNtpNavigationAndGetUrl(currentTab, omniboxLoadUrlParams);
-                attachTabLoadObserver(currentTab, omniboxLoadUrlParams);
+                // The navigation will happen in a different tab in these cases.
+                if (!omniboxLoadUrlParams.openInNewTab && !omniboxLoadUrlParams.openInNewWindow) {
+                    attachTabLoadObserver(currentTab, omniboxLoadUrlParams);
+                }
             }
 
             if (currentTab != null && !url.isEmpty()) {
@@ -181,6 +186,24 @@ class LocationBarNavigator {
             OmniboxLoadUrlParams omniboxLoadUrlParams) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         boolean processed = false;
+        if (omniboxLoadUrlParams.openInNewWindow || omniboxLoadUrlParams.openInNewTab) {
+            // The navigation will happen in a different tab in these cases. We need to attach our
+            // observer in time to receive the call to loadUrl, which happens synchronously in the
+            // flow of openNewTab/openUrlInOtherWindow.
+            if (tabModelSelector != null) {
+                TabModel tabModel = tabModelSelector.getModel(currentTab.isIncognitoBranded());
+                TabModelObserver modelObserver =
+                        new TabModelObserver() {
+                            @Override
+                            public void willAddTab(Tab tab, @TabLaunchType int type) {
+                                attachTabLoadObserver(tab, omniboxLoadUrlParams);
+                                tabModel.removeObserver(this);
+                            }
+                        };
+                tabModel.addObserver(modelObserver);
+            }
+        }
+
         if (omniboxLoadUrlParams.openInNewWindow) {
             Context tabContext = currentTab.getContext();
             if (tabContext instanceof Activity sourceActivity) {
@@ -194,11 +217,14 @@ class LocationBarNavigator {
                                         currentTab.isIncognitoBranded());
             }
         } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
+            @TabLaunchType
+            int launchType =
+                    omniboxLoadUrlParams.openInBackground
+                            ? TabLaunchType.FROM_OMNIBOX_BACKGROUND
+                            : TabLaunchType.FROM_OMNIBOX;
+            Tab parentTab = omniboxLoadUrlParams.openInBackground ? null : currentTab;
             tabModelSelector.openNewTab(
-                    loadUrlParams,
-                    TabLaunchType.FROM_OMNIBOX,
-                    currentTab,
-                    currentTab.isIncognito());
+                    loadUrlParams, launchType, parentTab, currentTab.isIncognitoBranded());
             processed = true;
         }
         if (!processed) {

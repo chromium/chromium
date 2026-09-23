@@ -304,6 +304,21 @@ public class TabModelOrderControllerImplUnitTest {
     }
 
     @Test
+    public void testDetermineInsertionIndex_FromOmniboxBackground_InsertsAtEnd() {
+        addTab(mTabModel, 1, /* isPinned= */ false);
+        addTab(mTabModel, 2, /* isPinned= */ false);
+        addTab(mTabModel, 3, /* isPinned= */ false);
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER);
+
+        MockTab newTab = new MockTab(4, mProfile);
+
+        int position =
+                mOrderController.determineInsertionIndex(
+                        TabLaunchType.FROM_OMNIBOX_BACKGROUND, /* position= */ 1, newTab);
+        assertEquals("Should insert at end of model", 3, position);
+    }
+
+    @Test
     public void testWillOpenInForeground() {
         assertTrue(
                 TabModelOrderControllerImpl.willOpenInForeground(
@@ -357,16 +372,26 @@ public class TabModelOrderControllerImplUnitTest {
         assertFalse(
                 TabModelOrderControllerImpl.willOpenInForeground(
                         TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND, false, false));
+        assertFalse(
+                TabModelOrderControllerImpl.willOpenInForeground(
+                        TabLaunchType.FROM_OMNIBOX_BACKGROUND, false, false));
 
         assertTrue(
                 "Opening background tab with model mismatch opens in foreground",
                 TabModelOrderControllerImpl.willOpenInForeground(
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND, true, false));
+        assertTrue(
+                "Opening background tab with model mismatch opens in foreground",
+                TabModelOrderControllerImpl.willOpenInForeground(
+                        TabLaunchType.FROM_OMNIBOX_BACKGROUND, true, false));
 
         assertTrue(mOrderController.willOpenInForeground(TabLaunchType.FROM_LINK, false));
         assertFalse(
                 mOrderController.willOpenInForeground(
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND, false));
+        assertFalse(
+                mOrderController.willOpenInForeground(
+                        TabLaunchType.FROM_OMNIBOX_BACKGROUND, false));
     }
 
     @Test

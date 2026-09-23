@@ -33,7 +33,8 @@ public final class TabLaunchTypeUtils {
                     TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
                     TabLaunchType.FROM_REPARENTING_BACKGROUND,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
-                    TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND ->
+                    TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                    TabLaunchType.FROM_OMNIBOX_BACKGROUND ->
                     true;
             default -> false;
         };

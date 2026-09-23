@@ -19,6 +19,7 @@ public class OmniboxLoadUrlParams {
     public final long inputStartTimestamp;
     public final boolean openInNewTab;
     public final boolean openInNewWindow;
+    public final boolean openInBackground;
     public final byte @Nullable [] postData;
     public final Map<String, String> extraHeaders;
     public final @Nullable AutocompleteLoadCallback callback;
@@ -29,6 +30,7 @@ public class OmniboxLoadUrlParams {
             long inputStartTimestamp,
             boolean openInNewTab,
             boolean openInNewWindow,
+            boolean openInBackground,
             byte @Nullable [] postData,
             Map<String, String> extraHeaders,
             @Nullable AutocompleteLoadCallback callback) {
@@ -37,6 +39,7 @@ public class OmniboxLoadUrlParams {
         this.inputStartTimestamp = inputStartTimestamp;
         this.openInNewTab = openInNewTab;
         this.openInNewWindow = openInNewWindow;
+        this.openInBackground = openInBackground;
         this.postData = postData;
         this.extraHeaders = extraHeaders;
         this.callback = callback;
@@ -49,6 +52,7 @@ public class OmniboxLoadUrlParams {
         public long inputStartTimestamp;
         public boolean openInNewTab;
         public boolean openInNewWindow;
+        public boolean openInBackground;
         public byte @Nullable [] postData;
         public Map<String, String> extraHeaders = Map.of();
         public @Nullable AutocompleteLoadCallback callback;
@@ -95,6 +99,17 @@ public class OmniboxLoadUrlParams {
         }
 
         /**
+         * Sets whether the URL will be loaded in the background.
+         *
+         * @param openInBackground Whether the URL will be loaded in the background.
+         * @return This builder instance.
+         */
+        public Builder setOpenInBackground(boolean openInBackground) {
+            this.openInBackground = openInBackground;
+            return this;
+        }
+
+        /**
          * Set the post data of this load, and its type.
          *
          * @param postData Post data for this http post load.
@@ -135,6 +150,7 @@ public class OmniboxLoadUrlParams {
                     inputStartTimestamp,
                     openInNewTab,
                     openInNewWindow,
+                    openInBackground,
                     postData,
                     extraHeaders,
                     callback);

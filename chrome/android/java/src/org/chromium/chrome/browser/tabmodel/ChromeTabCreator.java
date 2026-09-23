@@ -151,6 +151,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 return "RestoreTabsUI";
             case TabLaunchType.FROM_OMNIBOX:
                 return "Omnibox";
+            case TabLaunchType.FROM_OMNIBOX_BACKGROUND:
+                return "OmniboxBackground";
             case TabLaunchType.UNSET:
                 return "Unset";
             case TabLaunchType.FROM_SYNC_BACKGROUND:
@@ -829,6 +831,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         int transition = PageTransition.LINK;
         switch (tabLaunchType) {
             case TabLaunchType.FROM_OMNIBOX:
+            case TabLaunchType.FROM_OMNIBOX_BACKGROUND:
                 transition = originalTransitionType;
                 break;
             case TabLaunchType.FROM_RESTORE:

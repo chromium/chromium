@@ -575,7 +575,9 @@ public class LocationBarMediator
                         if (mAutocompleteCoordinator == null) return;
                         @AutocompleteCoordinator.NavigationTarget
                         int target = AutocompleteCoordinator.NavigationTarget.CURRENT_TAB;
-                        if (event.isAltPressed()) {
+                        if (event.isAltPressed() && event.isShiftPressed()) {
+                            target = AutocompleteCoordinator.NavigationTarget.NEW_BACKGROUND_TAB;
+                        } else if (event.isAltPressed()) {
                             target = AutocompleteCoordinator.NavigationTarget.NEW_TAB;
                         } else if (event.isShiftPressed()) {
                             target = AutocompleteCoordinator.NavigationTarget.NEW_WINDOW;

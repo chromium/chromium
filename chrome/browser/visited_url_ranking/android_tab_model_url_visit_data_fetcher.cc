@@ -54,6 +54,7 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_READING_LIST:
     case TabModel::TabLaunchType::FROM_TAB_SWITCHER_UI:
     case TabModel::TabLaunchType::FROM_OMNIBOX:
+    case TabModel::TabLaunchType::FROM_OMNIBOX_BACKGROUND:
     case TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND:
     case TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND:
     case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_BACKGROUND:

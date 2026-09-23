@@ -421,7 +421,8 @@ public class AutocompleteMediatorUnitTest {
                 url,
                 /* inputStart= */ 0,
                 /* openInNewTab= */ false,
-                /* openInNewWindow= */ false);
+                /* openInNewWindow= */ false,
+                /* openInBackground= */ false);
     }
 
     private void setUpSessionAndMatch(
@@ -2957,7 +2958,8 @@ public class AutocompleteMediatorUnitTest {
                 extensionUrl,
                 /* inputStart= */ 0,
                 /* openInNewTab= */ true,
-                /* openInNewWindow= */ false);
+                /* openInNewWindow= */ false,
+                /* openInBackground= */ false);
 
         // Verify that extension matches are dispatched to the extension system via
         // ExtensionUi rather than triggering a normal tab navigation via
@@ -2984,9 +2986,25 @@ public class AutocompleteMediatorUnitTest {
                 extensionUrl,
                 /* inputStart= */ 0,
                 /* openInNewTab= */ false,
-                /* openInNewWindow= */ false);
+                /* openInNewWindow= */ false,
+                /* openInBackground= */ false);
 
         verify(mAutocompleteDelegate).loadUrl(any());
+    }
+
+    @Test
+    public void loadUrlForOmniboxMatch_inBackground() {
+        setUpSessionAndMatch(AutocompleteRequestType.SEARCH, OmniboxSuggestionType.SEARCH_SUGGEST);
+        mMediator.loadUrlForOmniboxMatch(
+                /* matchIndex= */ 0,
+                mAutocompleteMatch,
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* inputStart= */ 0,
+                /* openInNewTab= */ true,
+                /* openInNewWindow= */ false,
+                /* openInBackground= */ true);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInBackground);
     }
 
     @Test

@@ -4189,6 +4189,12 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
         verify(mAutocompleteCoordinator)
                 .loadTypedOmniboxText(eq(9999L), eq(NavigationTarget.NEW_WINDOW));
+
+        // Open in background tab. alt + shift + enter case
+        doReturn(true).when(mKeyEvent).isAltPressed();
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(eq(9999L), eq(NavigationTarget.NEW_BACKGROUND_TAB));
     }
 
     @Test

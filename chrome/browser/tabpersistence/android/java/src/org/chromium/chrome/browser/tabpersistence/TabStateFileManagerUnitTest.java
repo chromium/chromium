@@ -193,12 +193,13 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(33, TabLaunchTypeAtCreation.FROM_TIPS_NOTIFICATIONS);
         Assert.assertEquals(34, TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE_BACKGROUND);
         Assert.assertEquals(35, TabLaunchTypeAtCreation.FROM_SESSION_STARTUP_WITH_URLS_PREF);
+        Assert.assertEquals(36, TabLaunchTypeAtCreation.FROM_OMNIBOX_BACKGROUND);
         // Note this should be the total number of TabLaunchTypeAtCreation values including
         // SIZE and UNKNOWN so it should be equal to the last value +3.
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                38,
+                39,
                 TabLaunchTypeAtCreation.names.length);
     }
 
@@ -209,7 +210,7 @@ public class TabStateFileManagerUnitTest {
                         + " FlatBufferTabStateSerializer#getLaunchTypeFromFlatBuffer,"
                         + " FlatBufferTabStateSerializer#getLaunchTypeToFlatBuffer"
                         + " and this test file.",
-                36,
+                37,
                 TabLaunchType.SIZE);
     }
 
@@ -380,6 +381,10 @@ public class TabStateFileManagerUnitTest {
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_SESSION_STARTUP_WITH_URLS_PREF));
         Assert.assertEquals(
+                TabLaunchType.FROM_OMNIBOX_BACKGROUND,
+                FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
+                        TabLaunchTypeAtCreation.FROM_OMNIBOX_BACKGROUND));
+        Assert.assertEquals(
                 TabLaunchType.UNSET,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.UNKNOWN));
@@ -527,6 +532,10 @@ public class TabStateFileManagerUnitTest {
                 TabLaunchTypeAtCreation.FROM_SESSION_STARTUP_WITH_URLS_PREF,
                 FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(
                         TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF));
+        Assert.assertEquals(
+                TabLaunchTypeAtCreation.FROM_OMNIBOX_BACKGROUND,
+                FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(
+                        TabLaunchType.FROM_OMNIBOX_BACKGROUND));
         Assert.assertEquals(
                 TabLaunchTypeAtCreation.UNSET,
                 FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(TabLaunchType.UNSET));

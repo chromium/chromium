@@ -71,12 +71,18 @@ import java.util.function.Supplier;
 /** Coordinator that handles the interactions with the autocomplete system. */
 @NullMarked
 public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
-    @IntDef({NavigationTarget.CURRENT_TAB, NavigationTarget.NEW_TAB, NavigationTarget.NEW_WINDOW})
+    @IntDef({
+        NavigationTarget.CURRENT_TAB,
+        NavigationTarget.NEW_TAB,
+        NavigationTarget.NEW_BACKGROUND_TAB,
+        NavigationTarget.NEW_WINDOW
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NavigationTarget {
         int CURRENT_TAB = 0;
         int NEW_TAB = 1;
-        int NEW_WINDOW = 2;
+        int NEW_BACKGROUND_TAB = 2;
+        int NEW_WINDOW = 3;
     }
 
     private final ViewGroup mParent;
