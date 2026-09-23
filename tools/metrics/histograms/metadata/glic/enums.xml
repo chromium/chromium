@@ -695,6 +695,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Cancelled"/>
   <int value="18" label="Superseded by another invocation"/>
   <int value="19" label="Instance is in live mode"/>
+  <int value="20" label="Client load error"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError) -->
@@ -719,6 +720,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="ClipboardPolicy"/>
   <int value="15" label="CopyPolicy"/>
   <int value="16" label="PastePolicy"/>
+  <int value="17" label="WaitForClientReady"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_invoke_task.h:GlicTaskType) -->

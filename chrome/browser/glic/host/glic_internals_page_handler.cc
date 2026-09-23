@@ -896,6 +896,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
           case GlicInvokeError::kLiveModeActive:
             error_msg = "Instance Is In Live Mode";
             break;
+          case GlicInvokeError::kClientLoadError:
+            error_msg = "Client Load Error";
+            break;
           default:
             error_msg = "Unknown Error";
             break;

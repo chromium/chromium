@@ -52,7 +52,8 @@ enum class GlicTaskType : int {
   kClipboardPolicy = 14,
   kCopyPolicy = 15,
   kPastePolicy = 16,
-  kMaxValue = kPastePolicy,
+  kWaitForClientReady = 17,
+  kMaxValue = kWaitForClientReady,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeTimeoutStage)
 
@@ -219,6 +220,29 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
   // GlicInstanceCoordinatorImpl and its lifetime is tied to the instance,
   // which owns the Host.
   const base::raw_ref<Host> host_;
+  base::ScopedObservation<Host, Host::Observer> observation_{this};
+  base::OnceClosure done_callback_;
+};
+
+// Task that waits for the client load state to reach kReady.
+class WaitForClientReadyTask : public GlicInvokeTask, public Host::Observer {
+ public:
+  std::optional<GlicTaskType> GetType() const override;
+
+  WaitForClientReadyTask(
+      Host& host,
+      base::OnceCallback<void(GlicInvokeError)> error_callback);
+  ~WaitForClientReadyTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+  // Host::Observer:
+  void ClientLoadStateChanged(ClientLoadState state) override;
+
+ private:
+  void CheckState(ClientLoadState state);
+
+  const base::raw_ref<Host> host_;
+  base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::ScopedObservation<Host, Host::Observer> observation_{this};
   base::OnceClosure done_callback_;
 };

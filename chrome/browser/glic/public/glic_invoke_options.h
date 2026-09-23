@@ -243,7 +243,9 @@ enum class GlicInvokeError {
   // The invocation targeted an instance that is in live mode, and
   // `Target::live_mode_behavior` asked for it to fail.
   kLiveModeActive = 19,
-  kMaxValue = kLiveModeActive,
+  // The Glic client failed to load or reach a ready state.
+  kClientLoadError = 20,
+  kMaxValue = kClientLoadError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
 

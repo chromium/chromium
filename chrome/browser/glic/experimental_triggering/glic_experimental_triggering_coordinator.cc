@@ -293,6 +293,8 @@ std::string_view GlicInvokeErrorToString(GlicInvokeError error) {
       return "Invocation was superseded";
     case GlicInvokeError::kLiveModeActive:
       return "Glic instance is in live mode";
+    case GlicInvokeError::kClientLoadError:
+      return "Client load error";
   }
   NOTREACHED();
 }

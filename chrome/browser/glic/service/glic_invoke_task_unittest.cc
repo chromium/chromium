@@ -16,9 +16,15 @@ namespace {
 
 class MockTask : public GlicInvokeTask {
  public:
-  explicit MockTask(base::OnceClosure on_start, bool complete_sync = true)
-      : on_start_(std::move(on_start)), complete_sync_(complete_sync) {}
+  explicit MockTask(base::OnceClosure on_start,
+                    bool complete_sync = true,
+                    std::optional<GlicTaskType> type = std::nullopt)
+      : on_start_(std::move(on_start)),
+        complete_sync_(complete_sync),
+        type_(type) {}
   ~MockTask() override = default;
+
+  std::optional<GlicTaskType> GetType() const override { return type_; }
 
   void Start(base::OnceClosure done_callback) override {
     std::move(on_start_).Run();
@@ -34,6 +40,7 @@ class MockTask : public GlicInvokeTask {
  private:
   base::OnceClosure on_start_;
   bool complete_sync_;
+  std::optional<GlicTaskType> type_;
   base::OnceClosure done_callback_;
 };
 
@@ -212,6 +219,36 @@ TEST(GlicInvokeTaskTest, PostCallbackTask) {
 
   EXPECT_CALL(mock_callback, Run()).Times(1);
   run_loop.Run();
+}
+
+TEST(GlicInvokeTaskTest, SequentialTaskGroupLastActiveTaskType) {
+  auto task1 =
+      std::make_unique<MockTask>(base::DoNothing(), /*complete_sync=*/false,
+                                 GlicTaskType::kWaitForClientConnected);
+  auto task2 = std::make_unique<MockTask>(base::DoNothing(),
+                                          /*complete_sync=*/false,
+                                          GlicTaskType::kWaitForClientReady);
+  MockTask* task1_ptr = task1.get();
+  MockTask* task2_ptr = task2.get();
+
+  std::vector<std::unique_ptr<GlicInvokeTask>> tasks;
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
+  SequentialTaskGroup seq(std::move(tasks));
+
+  EXPECT_EQ(seq.GetLastActiveTaskType(), std::nullopt);
+
+  base::MockCallback<base::OnceClosure> done_cb;
+  seq.Start(done_cb.Get());
+
+  EXPECT_EQ(seq.GetLastActiveTaskType(), GlicTaskType::kWaitForClientConnected);
+
+  task1_ptr->Complete();
+  EXPECT_EQ(seq.GetLastActiveTaskType(), GlicTaskType::kWaitForClientReady);
+
+  EXPECT_CALL(done_cb, Run()).Times(1);
+  task2_ptr->Complete();
+  EXPECT_EQ(seq.GetLastActiveTaskType(), GlicTaskType::kWaitForClientReady);
 }
 
 }  // namespace glic

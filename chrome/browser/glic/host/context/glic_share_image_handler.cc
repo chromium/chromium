@@ -297,6 +297,9 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
     case GlicInvokeError::kLiveModeActive:
       ShareComplete(ShareImageResult::kFailedLiveModeActive);
       break;
+    case GlicInvokeError::kClientLoadError:
+      ShareComplete(ShareImageResult::kFailedUnknown);
+      break;
   }
 }
 

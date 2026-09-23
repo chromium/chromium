@@ -325,8 +325,13 @@ void GlicInvokeHandler::Invoke() {
   }
   tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
       &*instance_, options_.GetInvocationSource(), options_.fre_override));
-  tasks.push_back(
-      std::make_unique<WaitForClientConnectedTask>(instance_->host()));
+  // Waiting for the client to be ready subsumes waiting for it to connect:
+  // `client_load_state()` is `kReady` exactly while the client is connected and
+  // responsive. Unlike a bare connection wait, this fails the invocation if the
+  // client never loads instead of hanging until the invocation times out.
+  tasks.push_back(std::make_unique<WaitForClientReadyTask>(
+      instance_->host(), base::BindOnce(&GlicInvokeHandler::OnError,
+                                        weak_ptr_factory_.GetWeakPtr())));
   if (options_.on_client_connected) {
     tasks.push_back(std::make_unique<PostCallbackTask>(base::BindOnce(
         [](base::WeakPtr<GlicInstanceImpl> instance,
