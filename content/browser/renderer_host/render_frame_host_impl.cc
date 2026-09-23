@@ -17563,6 +17563,16 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
     return;
   }
 
+  // Only generate crash reports for active documents (and not documents in
+  // BackForwardCache, Prerendering, PendingCommit, Speculative, or
+  // PendingDeletion states). When a renderer process terminates in those
+  // states, the browser silently evicts the BFCached page, cancels
+  // prerendering, or completes frame deletion in the background; the user is
+  // not interacting with the document and never observes a crash.
+  if (!IsActive()) {
+    return;
+  }
+
   // Only generate reports for local root frames that are in a different
   // process than their parent.
   if (!is_main_frame() && !IsCrossProcessSubframe()) {
