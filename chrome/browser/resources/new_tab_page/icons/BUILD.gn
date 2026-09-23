@@ -27,6 +27,7 @@ generate_grd("build_grdp") {
     "facebook.svg",
     "generic_globe.svg",
     "google_logo.svg",
+    "image_create.svg",
     "info.svg",
     "ink_pen.svg",
     "lightbulb.svg",
