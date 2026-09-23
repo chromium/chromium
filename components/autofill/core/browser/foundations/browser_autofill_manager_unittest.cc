@@ -17,6 +17,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
@@ -1379,7 +1380,6 @@ class BrowserAutofillManagerTest
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   syncer::TestSyncService sync_service_;
 };
-
 
 class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
  public:
@@ -6888,8 +6888,6 @@ TEST_F(BrowserAutofillManagerTest,
               Optional(credit_card_form->form_signature()));
 }
 
-
-
 // Test that the BAM queries the password delegate as soon as it's present.
 TEST_F(BrowserAutofillManagerTest, QueriesDelegateWhenGeneratingSuggestions) {
   FormData form = CreateTestAddressFormData();
@@ -6923,6 +6921,21 @@ class BrowserAutofillManagerOtpSuggestionsTest
   }
 
   MockOtpManager& otp_manager() { return *otp_manager_; }
+
+  FormData CreateAndSeeOtpForm() {
+    FormData form = test::GetFormData(
+        {.fields = {
+             {.label = u"Enter one time code",
+              .form_control_type = FormControlType::kInputText},
+         }});
+    auto form_structure = std::make_unique<FormStructure>(form);
+    form_structure->field(0)->set_heuristic_type(
+        HeuristicSource::kPasswordManagerMachineLearning,
+        FieldType::ONE_TIME_CODE);
+    test_api(autofill_manager())
+        .AddSeenFormStructure(std::move(form_structure));
+    return form;
+  }
 
  private:
   raw_ptr<MockOtpManager> otp_manager_ = nullptr;
@@ -6958,16 +6971,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
 }
 
 TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
-  FormData form = test::GetFormData(
-      {.fields = {{.label = u"Enter one time code",
-                   .form_control_type = FormControlType::kInputText}}});
-
-  // Simulate form parsing results.
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->field(0)->set_heuristic_type(
-      HeuristicSource::kPasswordManagerMachineLearning,
-      FieldType::ONE_TIME_CODE);
-  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+  FormData form = CreateAndSeeOtpForm();
 
   std::u16string otp_value = u"123456";
   OtpFillData otp_fill_data = {{form.fields()[0].global_id(), otp_value}};
@@ -7001,18 +7005,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("http://example.com"));
 
-  FormData form =
-      test::GetFormData({.fields = {
-                             {.label = u"Enter one time code",
-                              .form_control_type = FormControlType::kInputText},
-                         }});
-
-  // Simulate form parsing results.
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->field(0)->set_heuristic_type(
-      HeuristicSource::kPasswordManagerMachineLearning,
-      FieldType::ONE_TIME_CODE);
-  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+  FormData form = CreateAndSeeOtpForm();
 
   // We should NOT call GetOtpSuggestions on the manager.
   EXPECT_CALL(otp_manager(), GetOtpSuggestions).Times(0);
@@ -7031,6 +7024,132 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
 
   // We expect no suggestions.
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
+}
+
+// Tests that triggering suggestions with `kGmailOneTimePasswordAvailable`
+// queries the `OtpManager` and returns OTP suggestions.
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
+       GmailOneTimePasswordAvailable_GeneratesOtpSuggestions) {
+  FormData form = CreateAndSeeOtpForm();
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
+  EXPECT_EQ(external_delegate()->suggestions()[0].type,
+            SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+}
+
+// Tests that triggering suggestions with `kGmailOneTimePasswordAvailable`
+// routes to `FillingProduct::kOneTimePassword` in
+// `GetFillingProductsToSuggest()` when `kAutofillNewSuggestionGeneration` is
+// enabled.
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
+       GmailOneTimePasswordAvailable_NewSuggestionGeneration) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillNewSuggestionGeneration};
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateAndSeeOtpForm();
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
+  EXPECT_EQ(external_delegate()->suggestions()[0].type,
+            SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SuggestionGeneration.GeneratedFillingProduct",
+      FillingProduct::kOneTimePassword, 1);
+}
+
+// Tests that `kGmailOneTimePasswordAvailable` can replace currently showing
+// suggestions (i.e. `CanReplaceCurrentSuggestions()` returns true).
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
+       GmailOneTimePasswordAvailable_CanReplaceCurrentSuggestions) {
+  const FormData address_form = CreateTestAddressFormData();
+  ASSERT_FALSE(address_form.fields().empty());
+  FormsSeen({address_form});
+
+  // Trigger address suggestions and verify popup is showing.
+  OnAskForValuesToFill(
+      address_form, address_form.fields()[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  ASSERT_TRUE(autofill_client().IsShowingAutofillPopup());
+  ASSERT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  // Now an OTP arrives in the background for an OTP field.
+  FormData otp_form = CreateAndSeeOtpForm();
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+
+  OnAskForValuesToFill(
+      otp_form, otp_form.fields()[0],
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+
+  EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
+  EXPECT_EQ(external_delegate()->suggestions()[0].type,
+            SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+}
+
+// Tests that when Gmail OTP suggestions are showing, lower-priority nudges
+// like `kComposeDelayedProactiveNudge` cannot replace them.
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
+       GmailOneTimePasswordAvailable_ComposeDelayedNudgeDoesNotHide) {
+  FormData form = CreateAndSeeOtpForm();
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+
+  // Trigger suggestions with Gmail OTP.
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+
+  EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
+  EXPECT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
+  EXPECT_EQ(external_delegate()->suggestions()[0].type,
+            SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+
+  // Trigger suggestions with `kComposeDelayedProactiveNudge`.
+  // This should be ignored because Gmail OTP suggestions are already showing
+  // and `CanReplaceCurrentSuggestions()` returns false for this nudge.
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge);
+
+  EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
+  EXPECT_EQ(external_delegate()->trigger_source(),
+            AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
+  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
+  EXPECT_EQ(external_delegate()->suggestions()[0].type,
+            SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
 }
 
 // Tests that FillOrPreviewForm correctly passes the blocked_fields to the
@@ -7136,8 +7255,6 @@ TEST_F(BrowserAutofillManagerSuggestionMergingTest, AddressOnly) {
                                      SuggestionType::kSeparator,
                                      SuggestionType::kManageAddress));
 }
-
-
 
 // Tests that address and passkey suggestions can be merged, with address
 // suggestions coming first.
