@@ -42,15 +42,6 @@
 
 namespace blink {
 
-namespace {
-
-// Killswitch for removing MetadataOverride (alpha_type and color_space) in
-// ImageBitmapRenderingContext::PrepareTransferableResource.
-BASE_FEATURE(kImageBitmapUseMetadataOverride,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 // static
 scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
     const scoped_refptr<StaticBitmapImage>& source,
@@ -288,15 +279,10 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
       return false;
     }
 
-    viz::TransferableResource::MetadataOverride overrides = {};
-    if (base::FeatureList::IsEnabled(kImageBitmapUseMetadataOverride)) {
-      overrides = {.color_space = gfx::ColorSpace(),
-                   .alpha_type = kPremul_SkAlphaType};
-    }
     *out_resource = viz::TransferableResource::Make(
         shared_image,
         viz::TransferableResource::ResourceSource::kImageLayerBridge,
-        image_for_compositor->GetSyncToken(), overrides);
+        image_for_compositor->GetSyncToken());
 
     auto func = blink::BindOnce(
         &ImageBitmapRenderingContext::ResourceReleasedGpu,

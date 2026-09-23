@@ -54,9 +54,6 @@ bool IsValidSize(const gfx::Size& coded_size,
   return true;
 }
 
-BASE_FEATURE(kNativePixmapResourceUseCorrectColorSpace,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -508,8 +505,7 @@ NativePixmapFrameResource::CreateMappableSharedImageVideoFrame(
   }
   gfx::ColorSpace color_space_to_use = ColorSpace();
   // Pass a default color space for mappable frame.
-  if (!color_space_to_use.IsValid() &&
-      base::FeatureList::IsEnabled(kNativePixmapResourceUseCorrectColorSpace)) {
+  if (!color_space_to_use.IsValid()) {
     color_space_to_use = si_format->is_multi_plane()
                              ? gfx::ColorSpace::CreateREC709()
                              : gfx::ColorSpace::CreateSRGB();
