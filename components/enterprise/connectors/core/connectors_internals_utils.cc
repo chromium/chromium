@@ -22,11 +22,8 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/device_trust/core/common_types.h"  // nogncheck
 #include "components/enterprise/device_trust/core/device_trust_connector_service.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/prefs/pref_service.h"
 #include "crypto/sha2.h"
 
@@ -282,7 +279,6 @@ std::string GetStringFromTimestamp(base::Time timestamp) {
                            DateTimeFormatterOptions::TimePrecision::kMinute)));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::string ConvertPolicyLevelToString(
     enterprise_connectors::DTCPolicyLevel level) {
   switch (level) {
@@ -306,7 +302,6 @@ std::vector<std::string> GetPolicyEnabledLevels(
   }
   return policy_enabled_levels;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 connectors_internals::mojom::DeviceTrustStatePtr
 CreateUnsupportedDeviceTrustState() {

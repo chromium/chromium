@@ -27,9 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/device_trust/core/common_types.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
@@ -72,7 +70,6 @@ TEST_F(ConnectorsInternalsUtilsTest, GetStringFromTimestamp) {
   EXPECT_FALSE(GetStringFromTimestamp(time).empty());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ConnectorsInternalsUtilsTest, ConvertPolicyLevelToString) {
   EXPECT_EQ(ConvertPolicyLevelToString(DTCPolicyLevel::kBrowser),
             kBrowserLevel);
@@ -82,7 +79,6 @@ TEST_F(ConnectorsInternalsUtilsTest, ConvertPolicyLevelToString) {
 TEST_F(ConnectorsInternalsUtilsTest, GetPolicyEnabledLevels_NullService) {
   EXPECT_TRUE(GetPolicyEnabledLevels(nullptr).empty());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ConnectorsInternalsUtilsTest, CreateUnsupportedDeviceTrustState) {
   auto state = CreateUnsupportedDeviceTrustState();

@@ -61,11 +61,9 @@ class ConnectorsInternalsPageHandler
       base::expected<enterprise_reporting::ReportRequestQueue,
                      enterprise_reporting::ReportGenerationError> result);
 
-#if !BUILDFLAG(IS_ANDROID)
   void OnSignalsCollected(GetDeviceTrustStateCallback callback,
                           bool is_device_trust_enabled,
                           const base::DictValue signals);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;

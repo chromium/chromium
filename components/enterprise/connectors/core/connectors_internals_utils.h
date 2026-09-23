@@ -39,12 +39,10 @@ namespace client_certificates {
 class CertificateProvisioningService;
 }  // namespace client_certificates
 
-#if !BUILDFLAG(IS_ANDROID)
 namespace enterprise_connectors {
 class DeviceTrustConnectorService;
 enum class DTCPolicyLevel;
 }  // namespace enterprise_connectors
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_reporting {
 class ReportRequest;
@@ -117,7 +115,6 @@ std::string GetJsonForReportRequest(
 // if `timestamp` is null.
 std::string GetStringFromTimestamp(base::Time timestamp);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Converts `level` to its string representation ("Browser" or "User").
 std::string ConvertPolicyLevelToString(
     enterprise_connectors::DTCPolicyLevel level);
@@ -127,7 +124,6 @@ std::string ConvertPolicyLevelToString(
 std::vector<std::string> GetPolicyEnabledLevels(
     const enterprise_connectors::DeviceTrustConnectorService*
         connector_service);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Creates a DeviceTrustState indicating that Device Trust is unsupported.
 connectors_internals::mojom::DeviceTrustStatePtr

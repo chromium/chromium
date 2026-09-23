@@ -13,11 +13,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
@@ -27,19 +30,19 @@
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/enterprise/connectors/core/connectors_internals_utils.h"
+#include "components/enterprise/device_trust/core/device_trust_connector_service.h"
+#include "components/enterprise/device_trust/core/device_trust_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/x509_certificate.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #else
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
-#include "components/enterprise/device_trust/core/device_trust_service.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -71,8 +74,12 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 void ConnectorsInternalsPageHandler::GetDeviceTrustState(
     GetDeviceTrustStateCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
+  if (!base::FeatureList::IsEnabled(kDeviceTrustConnectorAndroid)) {
+    std::move(callback).Run(utils::CreateUnsupportedDeviceTrustState());
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   auto* device_trust_service =
       DeviceTrustServiceFactory::GetForProfile(profile_);
 
@@ -89,7 +96,6 @@ void ConnectorsInternalsPageHandler::GetDeviceTrustState(
       base::BindOnce(&ConnectorsInternalsPageHandler::OnSignalsCollected,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      device_trust_service->IsEnabled()));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
@@ -225,7 +231,6 @@ void ConnectorsInternalsPageHandler::RefreshProvisioningDomainConfigs(
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
     GetDeviceTrustStateCallback callback,
     bool is_device_trust_enabled,
@@ -255,7 +260,6 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
       std::move(consent_metadata));
   std::move(callback).Run(std::move(state));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ConnectorsInternalsPageHandler::OnReportGenerated(
     GetSignalsReportingStateCallback callback,
