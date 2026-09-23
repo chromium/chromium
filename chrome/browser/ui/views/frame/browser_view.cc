@@ -5922,10 +5922,14 @@ void BrowserView::ShowEmojiPanel() {
   // the emoji panel is non-modal UI that can interfere with the fullscreen
   // bubble. Drop fullscreen when showing the emoji panel to prevent UI
   // spoofing.
+  base::WeakPtr<BrowserView> weak_this = GetAsWeakPtr();
   if (content::WebContents* web_contents = GetActiveWebContents()) {
     if (!web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId)) {
       return;
     }
+  }
+  if (!weak_this || !GetWidget() || GetWidget()->IsClosed()) {
+    return;
   }
   GetWidget()->ShowEmojiPanel();
 }

@@ -4229,10 +4229,18 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_EMOJI: {
       // The emoji dialog is UI that can interfere with the fullscreen bubble,
       // so drop fullscreen when it is shown. https://crbug.com/40054574
+      // Note: BrowserView::ShowEmojiPanel() also drops fullscreen when a
+      // browser is present; this drop ensures fullscreen is exited on the
+      // fallback ui::ShowEmojiPanel() path when !browser as well.
       // TODO(avi): Do we need to attach the fullscreen block to the emoji
       // panel?
+      base::WeakPtr<RenderViewContextMenu> weak_this =
+          weak_pointer_factory_.GetWeakPtr();
       if (!source_web_contents_->ForSecurityDropFullscreen(
               /*display_id=*/display::kInvalidDisplayId)) {
+        return;
+      }
+      if (!weak_this) {
         return;
       }
 
