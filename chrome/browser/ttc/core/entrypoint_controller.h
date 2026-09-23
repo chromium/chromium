@@ -18,7 +18,8 @@ class TtcKeyedService;
 
 enum class EntrypointType {
   kToolbarButton = 0,
-  kMaxValue = kToolbarButton,
+  kAppMenu = 1,
+  kMaxValue = kAppMenu,
 };
 
 // Window-scoped controller for TTC's entrypoints. Routes entrypoint activations
@@ -40,6 +41,7 @@ class EntrypointController {
 
  private:
   void ToolbarButtonHandler();
+  void AppMenuHandler();
   void OnTtcStateChanged(ServiceState state);
   void UpdateUi(ServiceState state);
   void UpdateToolbarButton(ServiceState state);

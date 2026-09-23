@@ -54,6 +54,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1495,6 +1496,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_OPEN_GLIC);
       break;
+    case IDC_SHOW_TTC_MENU:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.TtcAppMenu",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_TTC_APP_MENU);
+      break;
 
     case IDC_SHOW_TRANSLATE:
       if (!uma_action_recorded_) {
@@ -2297,6 +2305,21 @@ void AppMenuModel::Build() {
         GetIndexOfCommandId(IDC_OPEN_GLIC).value(),
         BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
             features::kGlicAppMenuNewBadge));
+  }
+
+  if (ttc::TtcKeyedService* service =
+          ttc::TtcKeyedService::Get(browser_->GetProfile());
+      service && service->IsEnabled()) {
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kAudioSparkIcon;
+#else
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kMicFilledIcon
+            : vector_icons::kMicChromeRefreshOldIcon;
+#endif
+    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TTC_MENU,
+                                     IDS_TTC_ENTRYPOINT_LABEL, icon);
   }
 
   if (auto* controller = lens::LensOverlayEntryPointController::From(browser());

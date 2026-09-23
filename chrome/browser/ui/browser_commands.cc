@@ -59,6 +59,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ttc/core/entrypoint_controller.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
@@ -2393,6 +2394,13 @@ void ScreenshotCapture(BrowserWindowInterface* browser) {
   sharing_hub::ScreenshotCapturedBubbleController* controller =
       sharing_hub::ScreenshotCapturedBubbleController::Get(web_contents);
   controller->Capture(browser);
+}
+
+void ShowTtcMenuItem(BrowserWindowInterface* browser) {
+  if (ttc::EntrypointController* controller =
+          ttc::EntrypointController::From(browser)) {
+    controller->EntrypointHandler(ttc::EntrypointType::kAppMenu);
+  }
 }
 
 void SavePage(BrowserWindowInterface* browser) {

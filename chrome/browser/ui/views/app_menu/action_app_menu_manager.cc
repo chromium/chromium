@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -671,6 +672,11 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
           section.AddAction(
               kActionOpenGlic,
               {.new_badge_feature = &features::kGlicAppMenuNewBadge});
+        }
+
+        if (ttc::TtcKeyedService* service = ttc::TtcKeyedService::Get(profile);
+            service && service->IsEnabled()) {
+          section.AddAction(kActionShowTtcMenu);
         }
 
         if (auto* controller = lens::LensOverlayEntryPointController::From(

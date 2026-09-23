@@ -1674,6 +1674,7 @@ features through Chrome Labs. -->
     <variant name=".SiteSettings"/>
     <variant name=".SwitchToAnotherProfile"/>
     <variant name=".TaskManager"/>
+    <variant name=".TtcAppMenu"/>
     <variant name=".ViewSource"/>
     <variant name=".VisitChromeWebStore"/>
     <variant name=".Win8MetroRestart"/>

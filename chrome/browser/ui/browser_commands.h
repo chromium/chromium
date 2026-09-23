@@ -275,6 +275,7 @@ bool CanGenerateQrCode(BrowserWindowInterface* browser);
 void GenerateQRCode(BrowserWindowInterface* browser);
 void SharingHub(BrowserWindowInterface* browser);
 void ScreenshotCapture(BrowserWindowInterface* browser);
+void ShowTtcMenuItem(BrowserWindowInterface* browser);
 void SavePage(BrowserWindowInterface* browser);
 bool CanSavePage(const BrowserWindowInterface* browser);
 void Print(BrowserWindowInterface* browser);

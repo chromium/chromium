@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -344,6 +345,42 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelGlicTest, GlicItem) {
   model.Init();
   model.ExecuteCommand(IDC_OPEN_GLIC, 0);
   EXPECT_EQ(1, model.log_metrics_count_);
+}
+
+class AppMenuModelTtcTest : public AppMenuModelTest {
+ protected:
+  AppMenuModelTtcTest() { feature_list_.InitAndEnableFeature(ttc::kTtc); }
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelTtcTest, TtcItem) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const std::optional<size_t> index =
+      model.GetIndexOfCommandId(IDC_SHOW_TTC_MENU);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_FALSE(model.GetIconAt(index.value()).IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelTtcTest, TtcItemLogsMetrics) {
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(IDC_SHOW_TTC_MENU, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
+}
+
+class AppMenuModelTtcDisabledTest : public AppMenuModelTest {
+ protected:
+  AppMenuModelTtcDisabledTest() {
+    feature_list_.InitAndDisableFeature(ttc::kTtc);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelTtcDisabledTest, TtcItemAbsent) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  EXPECT_FALSE(model.GetIndexOfCommandId(IDC_SHOW_TTC_MENU).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {

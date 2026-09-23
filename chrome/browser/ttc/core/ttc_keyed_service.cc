@@ -46,6 +46,7 @@ ServiceState TtcKeyedService::GetState() const {
 }
 
 void TtcKeyedService::StartSession() {
+  CHECK(IsEnabled());
   CHECK(!session_controller_);
   session_controller_ = std::make_unique<SessionControllerImpl>(*this);
   state_changed_callbacks_.Notify(GetState());

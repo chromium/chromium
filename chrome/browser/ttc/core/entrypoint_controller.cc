@@ -52,11 +52,19 @@ void EntrypointController::EntrypointHandler(EntrypointType type) {
     case EntrypointType::kToolbarButton:
       ToolbarButtonHandler();
       break;
+    case EntrypointType::kAppMenu:
+      AppMenuHandler();
+      break;
   }
 }
 
 void EntrypointController::ToolbarButtonHandler() {
   ToggleSession();
+}
+
+void EntrypointController::AppMenuHandler() {
+  CHECK(!service_->is_session_active());
+  service_->StartSession();
 }
 
 void EntrypointController::OnTtcStateChanged(ServiceState state) {

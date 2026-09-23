@@ -224,6 +224,7 @@
   E(kActionSpellcheckMultiLingual, IDC_SPELLCHECK_MULTI_LINGUAL) \
   E(kActionSpellcheckRemoveFromDictionary, \
     IDC_SPELLCHECK_REMOVE_FROM_DICTIONARY) \
+  E(kActionShowTtcMenu, IDC_SHOW_TTC_MENU) \
   /* Writing direction */ \
   E(kActionWritingDirectionLtr, IDC_WRITING_DIRECTION_LTR) \
   E(kActionWritingDirectionRtl, IDC_WRITING_DIRECTION_RTL) \

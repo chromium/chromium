@@ -1768,6 +1768,30 @@ void BrowserActions::InitializeChromeMenuActions() {
               features::IsRoundedIconsEnabled() ? kExploreIcon
                                                 : kTravelExploreOldIcon))
           .Build());
+
+  if (ttc::TtcKeyedService* service =
+          ttc::TtcKeyedService::Get(bwi->GetProfile());
+      service && service->IsEnabled()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::ShowTtcMenuItem(bwi);
+                },
+                bwi),
+            kActionShowTtcMenu, IDS_TTC_ENTRYPOINT_LABEL,
+            IDS_TTC_ENTRYPOINT_LABEL,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kAudioSparkIcon,
+#else
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kMicFilledIcon
+                : vector_icons::kMicChromeRefreshOldIcon,
+#endif
+            /*is_pinnable=*/false)
+            .Build());
+  }
 }
 
 void BrowserActions::InitializeToolbarAndMiscActions() {
@@ -4925,8 +4949,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             vector_icons::kAudioSparkIcon,
 #else
-            features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
-                                              : vector_icons::kMicOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kMicFilledIcon
+                : vector_icons::kMicChromeRefreshOldIcon,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
             /*is_pinnable=*/true)
             .Build());
