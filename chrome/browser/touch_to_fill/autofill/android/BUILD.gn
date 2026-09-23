@@ -36,9 +36,7 @@ source_set("android") {
     "//components/autofill/android:main_autofill_jni_headers",
     "//components/autofill/android:payments_autofill_cc",
     "//components/autofill/android:payments_jni_headers",
-    "//components/autofill/core/common:features",
     "//content/public/browser",
-    "//third_party/libaddressinput:util",
     "//ui/android",
   ]
 }
@@ -62,14 +60,12 @@ source_set("impl") {
   ]
 
   deps = [
-    ":android",
     "//base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/android:resource_mapper",
     "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill/payments",
-    "//components/affiliations/core/browser:affiliations",
     "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
@@ -93,7 +89,6 @@ source_set("unit_tests") {
 
   deps = [
     ":impl",
-    ":public",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui/android/tab_model:test_support",
@@ -126,7 +121,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    ":android",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -135,11 +129,8 @@ source_set("test_support") {
 android_library("public_java") {
   deps = [
     "//chrome/browser/autofill/android:java",
-    "//chrome/browser/touch_to_fill/common/android:java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-    "//ui/android:ui_java",
+    "//components/autofill/android:main_autofill_java",
+    "//components/autofill/android:payments_autofill_java",
   ]
 
   sources = [
