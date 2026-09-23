@@ -324,7 +324,6 @@ inline LayoutStateToolbarPassKey PassKey() {
                                          locationBar:_topLocationBarCoordinator
                                  textOnlyLocationBar:
                                      _topTextOnlyLocationBarCoordinator
-                                         .locationBarViewController
                                          topPosition:YES];
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
         initWithBaseViewController:self.baseViewController
@@ -363,7 +362,6 @@ inline LayoutStateToolbarPassKey PassKey() {
                                    locationBar:_bottomLocationBarCoordinator
                            textOnlyLocationBar:
                                _bottomTextOnlyLocationBarCoordinator
-                                   .locationBarViewController
                                    topPosition:NO];
     if (!IsFullscreenRefactoringEnabled()) {
       _bottomToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
@@ -1406,7 +1404,7 @@ inline LayoutStateToolbarPassKey PassKey() {
     createToolbarViewControllerForMediator:(ToolbarMediator*)mediator
                                locationBar:(LocationBarCoordinator*)locationBar
                        textOnlyLocationBar:
-                           (UIViewController*)textOnlyLocationBar
+                           (LocationBarCoordinator*)textOnlyLocationBar
                                topPosition:(BOOL)topPosition {
   CHECK(IsChromeNextIaEnabled());
 
@@ -1441,7 +1439,11 @@ inline LayoutStateToolbarPassKey PassKey() {
       setLocationBarViewController:locationBar.locationBarViewController
           andSteadyViewLayoutGuide:locationBar.steadyViewLayoutGuide];
   [toolbarViewController
-      setTextOnlyLocationBarViewController:textOnlyLocationBar];
+      setTextOnlyLocationBarViewController:textOnlyLocationBar
+                                               .locationBarViewController];
+  // The toolbar measures the text-only location bar to size the collapsed
+  // glass pill, so it must be told when that content changes.
+  textOnlyLocationBar.contentSizeDelegate = toolbarViewController;
   toolbarViewController.bannerPromoDelegate = mediator;
 
   if (incognito) {

@@ -11,6 +11,7 @@
 
 @protocol BadgeViewVisibilityDelegate;
 @protocol IncognitoBadgeViewVisibilityDelegate;
+@protocol LocationBarContentSizeDelegate;
 @protocol PageActionMenuCommands;
 @protocol ReaderModeChipVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
@@ -128,6 +129,11 @@
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 // Whether the browser is in incognito mode.
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
+// Delegate notified when the content of this view changed, as this changes the
+// width the location bar needs. This view also re-publishes the changes coming
+// from its badges container.
+@property(nonatomic, weak) id<LocationBarContentSizeDelegate>
+    contentSizeDelegate;
 
 @end
 

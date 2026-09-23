@@ -24,6 +24,7 @@
 @class LayoutGuideCenter;
 @protocol LensCommands;
 @protocol LensOverlayCommands;
+@protocol LocationBarContentSizeDelegate;
 @protocol LocationBarMutator;
 @protocol LocationBarOffsetProvider;
 @class LocationBarViewController;
@@ -171,6 +172,11 @@ enum class CustomLeadingViewType;
 // The layout guide constrained to the steady view. Only available when non-text
 // only.
 @property(nonatomic, readonly) UILayoutGuide* steadyViewLayoutGuide;
+
+// Delegate notified when the content displayed by this location bar changed, as
+// this changes the width the location bar needs.
+@property(nonatomic, weak) id<LocationBarContentSizeDelegate>
+    contentSizeDelegate;
 
 // Initializes the view controller, optionally configured as text-only with
 // icons.

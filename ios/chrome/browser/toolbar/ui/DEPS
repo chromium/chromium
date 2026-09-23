@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/composebox/public/composebox_entrypoint.h",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/location_bar/ui_bundled/location_bar_content_size_delegate.h",
   "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",

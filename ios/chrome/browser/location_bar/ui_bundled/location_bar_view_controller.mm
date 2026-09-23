@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_content_size_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
@@ -119,7 +120,8 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 @end
 
-@interface LocationBarViewController () <UIContextMenuInteractionDelegate,
+@interface LocationBarViewController () <LocationBarContentSizeDelegate,
+                                         UIContextMenuInteractionDelegate,
                                          UIIndirectScribbleInteractionDelegate>
 // The injected edit view.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
@@ -217,6 +219,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     _textOnly = textOnly;
     _locationBarSteadyView =
         [[LocationBarSteadyView alloc] initWithTextOnly:textOnly];
+    _locationBarSteadyView.contentSizeDelegate = self;
     if (!_textOnly && IsGlassToolbarEnabled()) {
       _steadyViewLayoutGuide = [[UILayoutGuide alloc] init];
     }
@@ -561,6 +564,14 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       _defaultSearchEngineIconView.accessibilityIdentifier = nil;
     }
   }
+}
+
+#pragma mark - LocationBarContentSizeDelegate
+
+- (void)locationBarContentSizeDidChange {
+  // Received from the steady view; re-publish it to the owner of this location
+  // bar, which is the only one able to react to a width change.
+  [self.contentSizeDelegate locationBarContentSizeDidChange];
 }
 
 #pragma mark - LocationBarSteadyViewConsumer

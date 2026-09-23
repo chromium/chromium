@@ -22,6 +22,7 @@ source_set("ui_bundled") {
   deps = [
     ":badges",
     ":constants",
+    ":content_size_delegate",
     ":fakebox_buttons_snapshot",
     ":location_bar_model_delegate",
     ":metrics",
@@ -154,6 +155,7 @@ source_set("badges") {
   ]
   deps = [
     ":constants",
+    ":content_size_delegate",
     ":metrics",
     ":utils",
     "//ios/chrome/app/strings",
@@ -193,6 +195,10 @@ source_set("metrics") {
     "//base",
     "//ios/chrome/browser/location_bar/badge/model",
   ]
+}
+
+source_set("content_size_delegate") {
+  sources = [ "location_bar_content_size_delegate.h" ]
 }
 
 source_set("protocols") {

@@ -17,6 +17,7 @@
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol LocationBarAnimatee;
 @class LocationBarCoordinator;
+@protocol LocationBarContentSizeDelegate;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
 @protocol ReaderModeChipCommands;
@@ -40,6 +41,12 @@
 
 // Handler for Reader Mode chip commands.
 @property(nonatomic, readonly) id<ReaderModeChipCommands> readerModeChipHandler;
+
+// Delegate notified when the content displayed by the location bar changed, as
+// this changes the width the location bar needs. Can be set before or after
+// `start`.
+@property(nonatomic, weak) id<LocationBarContentSizeDelegate>
+    contentSizeDelegate;
 
 // Delegate for this coordinator.
 // TODO(crbug.com/41363340): Change this.

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_content_size_delegate.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -148,6 +149,9 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 @end
 
 #pragma mark - LocationBarSteadyView
+
+@interface LocationBarSteadyView () <LocationBarContentSizeDelegate>
+@end
 
 @implementation LocationBarSteadyView {
   // The different X anchor constraints that can apply to the location label at
@@ -339,6 +343,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   // container view.
   _badgesContainerView = [[LocationBarBadgesContainerView alloc] init];
   _badgesContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _badgesContainerView.contentSizeDelegate = self;
   [_locationButton addSubview:_badgesContainerView];
 }
 
@@ -754,6 +759,14 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   return [self.accessibleElements indexOfObject:element];
 }
 
+#pragma mark - LocationBarContentSizeDelegate
+
+- (void)locationBarContentSizeDidChange {
+  // Received from the badges container; re-publish it as a change of this
+  // view, as the badges are part of its content.
+  [self.contentSizeDelegate locationBarContentSizeDidChange];
+}
+
 #pragma mark - private
 
 // Configures the view to display location text, security icon, and incognito
@@ -903,6 +916,11 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
   _containerActiveConstraints = constraints;
   [NSLayoutConstraint activateConstraints:_containerActiveConstraints];
+
+  // Every content change of this view (location text, location icon, incognito
+  // badge, custom leading view) ends up here, so this is the single place from
+  // which the new width requirement can be published.
+  [self.contentSizeDelegate locationBarContentSizeDidChange];
 }
 
 // Whether the incognito badge should be visible or not.

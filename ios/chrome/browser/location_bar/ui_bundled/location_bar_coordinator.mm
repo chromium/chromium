@@ -231,6 +231,14 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   return self.viewController.steadyViewLayoutGuide;
 }
 
+- (void)setContentSizeDelegate:
+    (id<LocationBarContentSizeDelegate>)contentSizeDelegate {
+  _contentSizeDelegate = contentSizeDelegate;
+  // The view controller only exists once started; `start` re-applies the
+  // delegate for the case where it was set before.
+  self.viewController.contentSizeDelegate = contentSizeDelegate;
+}
+
 - (instancetype)initWithBrowser:(Browser*)browser textOnly:(BOOL)textOnly {
   CHECK(browser);
   self = [super initWithBaseViewController:nil browser:browser];
@@ -262,6 +270,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self.viewController =
       [[LocationBarViewController alloc] initWithTextOnly:_textOnly];
   self.viewController.incognito = isIncognito;
+  self.viewController.contentSizeDelegate = _contentSizeDelegate;
   _prefService = self.profile->GetPrefs();
   self.viewController.profilePrefs = _prefService;
   self.viewController.delegate = self;

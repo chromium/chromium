@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 
+@protocol LocationBarContentSizeDelegate;
 @protocol PageActionMenuCommands;
 
 // Location bar badges container view, it contains location bar accessories such
@@ -42,6 +43,10 @@
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 // Transparent overlay button for unified badge interaction.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+// Delegate notified when the visibility of the badges changed, as this changes
+// the width needed by the location bar.
+@property(nonatomic, weak) id<LocationBarContentSizeDelegate>
+    contentSizeDelegate;
 
 @end
 

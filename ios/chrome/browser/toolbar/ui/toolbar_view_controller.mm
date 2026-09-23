@@ -588,13 +588,12 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
     return;
   }
 
-  // The collapsed pill is sized from the text-only location bar, whose content
+  // The collapsed pill is sized from the text-only location bar. Its content
   // can change with no fullscreen progress update at all (navigation, badge or
-  // reader mode chip animating in). Only trust the measurement within a single
-  // layout cycle, and re-apply the interpolation while collapsed so the new
-  // content is taken into account. The setters below ignore unchanged values,
-  // so this cannot loop.
-  _locationBarCollapsedWidth.reset();
+  // reader mode chip appearing); in that case the measurement was dropped in
+  // `-locationBarContentSizeDidChange`, which also requested this layout pass.
+  // Re-apply the interpolation so the new content is taken into account. The
+  // setters below ignore unchanged values, so this cannot loop.
   if (_fullscreenProgress < kFullscreenProgressThreshold) {
     [self updateGlassBackgroundInsetsForFullscreenProgress:_fullscreenProgress];
     [self updateStackViewMarginsForFullscreenProgress:_fullscreenProgress];
@@ -1005,6 +1004,19 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   }
 
   _collapsedToolbarButton.hidden = progress > kFullscreenCollapsedThreshold;
+}
+
+#pragma mark - LocationBarContentSizeDelegate
+
+- (void)locationBarContentSizeDidChange {
+  _locationBarCollapsedWidth.reset();
+  // Deliberately no measurement here: this is called from the middle of the
+  // location bar's own constraint updates. Only request a layout pass, which
+  // re-applies the interpolation with the new content, and only while
+  // collapsed, as the pill geometry is otherwise unaffected.
+  if (_fullscreenProgress < kFullscreenProgressThreshold) {
+    [self.view setNeedsLayout];
+  }
 }
 
 #pragma mark - Fullscreen private helpers
