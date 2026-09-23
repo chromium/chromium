@@ -441,6 +441,13 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
                         kFireEventsAndWaitForTransitions,
                     /*exception_state=*/nullptr);
                 next->Focus(focus_params);
+                if (auto* next_menuitem =
+                        DynamicTo<HTMLMenuItemElement>(next)) {
+                  if (auto* submenu = next_menuitem->GetInvokedSubmenu()) {
+                    submenu->InvokePopover(*next_menuitem,
+                                           PopoverInvokedVia::kCommand);
+                  }
+                }
                 event.SetDefaultHandled();
                 return;
               }
@@ -455,6 +462,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       Element* invoker = owning_menu_element_->GetPopoverData()->invoker();
       if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
         Element* next_focus = nullptr;
+        bool open_new_submenu = false;
         if (auto* invoker_menubar = DynamicTo<HTMLMenuBarElement>(
                 invoker_menuitem->OwningMenuElement())) {
           MenuItemList invoker_menuitems = invoker_menubar->ItemList();
@@ -462,8 +470,9 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
                   *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true);
               previous && previous != invoker_menuitem) {
             // This menulist was opened from a menuitem in a menubar, and that
-            // menubar has multiple items.  Focus the previous menulist.
+            // menubar has multiple items.  Focus the previous menuitem.
             next_focus = previous;
+            open_new_submenu = true;
           }
         } else if (IsA<HTMLMenuListElement>(
                        invoker_menuitem->OwningMenuElement())) {
@@ -472,17 +481,20 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
           next_focus = invoker;
         }
         if (next_focus) {
-          bool can_hide = owning_menu_element_->IsPopoverReady(
-              PopoverTriggerAction::kHide,
-              /*exception_state=*/nullptr,
-              /*include_event_handler_text=*/false, &GetDocument());
-          if (can_hide) {
-            owning_menu_element_->HidePopoverInternal(
-                invoker, HidePopoverFocusBehavior::kNone,
-                HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-                /*exception_state=*/nullptr);
-          }
+          owning_menu_element_->HidePopoverInternal(
+              invoker, HidePopoverFocusBehavior::kNone,
+              HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+              /*exception_state=*/nullptr);
           next_focus->Focus(focus_params);
+          if (open_new_submenu) {
+            if (auto* next_menuitem =
+                    DynamicTo<HTMLMenuItemElement>(next_focus)) {
+              if (auto* submenu = next_menuitem->GetInvokedSubmenu()) {
+                submenu->InvokePopover(*next_menuitem,
+                                       PopoverInvokedVia::kCommand);
+              }
+            }
+          }
           event.SetDefaultHandled();
           return;
         }
@@ -502,15 +514,48 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     CHECK(IsA<HTMLMenuBarElement>(*owning_menu_element_));
     if (key == keywords::kArrowLeft) {
       if (auto* previous = menuitems.PreviousFocusableElement(
-              *this, /*inclusive=*/false, /*wrap=*/true)) {
+              *this, /*inclusive=*/false, /*wrap=*/true);
+          previous && previous != this) {
+        bool old_submenu_was_open = IsSubmenuOpen();
+        if (old_submenu_was_open) {
+          GetInvokedSubmenu()->HidePopoverInternal(
+              this, HidePopoverFocusBehavior::kNone,
+              HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+              /*exception_state=*/nullptr);
+        }
         previous->Focus(focus_params);
+        if (old_submenu_was_open) {
+          if (auto* previous_menuitem =
+                  DynamicTo<HTMLMenuItemElement>(previous)) {
+            if (auto* submenu = previous_menuitem->GetInvokedSubmenu()) {
+              submenu->InvokePopover(*previous_menuitem,
+                                     PopoverInvokedVia::kCommand);
+            }
+          }
+        }
       }
       event.SetDefaultHandled();
       return;
     } else if (key == keywords::kArrowRight) {
       if (auto* next = menuitems.NextFocusableElement(
-              *this, /*inclusive=*/false, /*wrap=*/true)) {
+              *this, /*inclusive=*/false, /*wrap=*/true);
+          next && next != this) {
+        bool old_submenu_was_open = IsSubmenuOpen();
+        if (old_submenu_was_open) {
+          GetInvokedSubmenu()->HidePopoverInternal(
+              this, HidePopoverFocusBehavior::kNone,
+              HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+              /*exception_state=*/nullptr);
+        }
         next->Focus(focus_params);
+        if (old_submenu_was_open) {
+          if (auto* next_menuitem = DynamicTo<HTMLMenuItemElement>(next)) {
+            if (auto* submenu = next_menuitem->GetInvokedSubmenu()) {
+              submenu->InvokePopover(*next_menuitem,
+                                     PopoverInvokedVia::kCommand);
+            }
+          }
+        }
       }
       event.SetDefaultHandled();
       return;
