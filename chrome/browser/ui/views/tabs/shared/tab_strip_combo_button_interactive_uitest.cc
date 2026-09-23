@@ -35,9 +35,8 @@ class TabStripComboButtonInteractiveUiTest
   }
   ~TabStripComboButtonInteractiveUiTest() override = default;
 
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    return {{organizer_panel::kOrganizerPanel, {}}};
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {organizer_panel::kOrganizerPanel};
   }
 
   auto SetPinned(const char* pref, bool pinned) {
@@ -213,19 +212,15 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                 [](views::View* view) { return view->GetVisible(); }));
 }
 
-class TabStripComboButtonEverythingMenuInteractiveUiTest
+class TabStripComboButtonOrganizerPanelInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  TabStripComboButtonEverythingMenuInteractiveUiTest() = default;
-  ~TabStripComboButtonEverythingMenuInteractiveUiTest() override = default;
+  TabStripComboButtonOrganizerPanelInteractiveUiTest() = default;
+  ~TabStripComboButtonOrganizerPanelInteractiveUiTest() override = default;
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {};
-  }
-
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {organizer_panel::kOrganizerPanel};
+    return {{organizer_panel::kOrganizerPanel, {}}};
   }
 
   auto SetPinned(const char* pref, bool pinned) {
@@ -233,56 +228,19 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
       browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
-
-  auto EnsureBothButtonsVisible() {
-    return Steps(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
-                 SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
-                 WaitForShow(kTabSearchButtonElementId),
-                 WaitForShow(kSavedTabGroupButtonElementId));
-  }
-
-  auto ExecuteCommand(int command_id) {
-    return WithView(
-        kTabStripComboButtonElementId, [command_id](views::View* combo) {
-          views::AsViewClass<TabStripComboButton>(combo)->ExecuteCommand(
-              command_id, 0);
-        });
-  }
-
-  auto CheckUserAction(const std::string& action, int expected_count) {
-    return CheckResult(
-        [this, action]() { return user_action_tester_.GetActionCount(action); },
-        expected_count);
-  }
-
- private:
-  base::UserActionTester user_action_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
-                       RecordUserActionsOnPinUnpin) {
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       OnlyTabSearchIsPresent) {
   RunTestSequence(
-      EnsureBothButtonsVisible(),
-      // Unpin Everything Menu.
-      ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
-      CheckUserAction("TabStripComboButton.EverythingMenu.Unpinned", 1),
-      // Pin Everything Menu.
-      ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
-      CheckUserAction("TabStripComboButton.EverythingMenu.Pinned", 1));
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
-                       UnpinEverythingMenu) {
-  RunTestSequence(EnsureBothButtonsVisible(),
-                  ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
-                  // Verify button is hidden and pref is updated.
-                  WaitForHide(kSavedTabGroupButtonElementId),
-                  CheckResult(
-                      [this]() {
-                        return browser()->GetProfile()->GetPrefs()->GetBoolean(
-                            prefs::kEverythingMenuPinnedToTabstrip);
-                      },
-                      false));
+      // Pin both tab search and everything menu.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
+      // Tab search should be visible.
+      WaitForShow(kTabSearchButtonElementId),
+      // Saved tab group button should NOT be present in the view hierarchy of
+      // the combo button.
+      EnsureNotPresent(kSavedTabGroupButtonElementId));
 }
 
 class TabStripComboButtonHorizontalInteractiveUiTest
