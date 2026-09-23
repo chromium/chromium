@@ -17,7 +17,6 @@ ci.defaults.set(
     executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.android.desktop.fyi",
     pool = ci_constants.DEFAULT_POOL,
-    builderless = False,
     os = os.LINUX_DEFAULT,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
