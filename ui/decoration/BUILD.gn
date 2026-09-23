@@ -4,7 +4,11 @@
 
 source_set("decoration") {
   sources = [
+    "decoration.cc",
+    "decoration.h",
     "decoration_details.h",
+    "decoration_source.cc",
+    "decoration_source.h",
     "decoration_util.cc",
     "decoration_util.h",
     "shadow.cc",
@@ -19,5 +23,6 @@ source_set("decoration") {
     "//ui/compositor",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 }
