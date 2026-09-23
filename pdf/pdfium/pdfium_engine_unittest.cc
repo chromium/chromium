@@ -5177,7 +5177,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PDFiumEngineInkDrawTextTest,
                          testing::Values(false));
 
-class PDFiumEngineInkDrawTextStrikethroughTest
+class PDFiumEngineInkDrawTextLineDecorationTest
     : public PDFiumEngineInkDrawTextTest {
  protected:
   void TestDrawTextStrikethrough(int orientation,
@@ -5290,7 +5290,7 @@ class PDFiumEngineInkDrawTextStrikethroughTest
   }
 };
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, Basic) {
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughBasic) {
 #if BUILDFLAG(IS_WIN)
   constexpr float kExpectedLineY = 2.6975f;
 #elif BUILDFLAG(IS_MAC)
@@ -5302,7 +5302,7 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, Basic) {
                             /*expected_stroke_width=*/0.75f, kExpectedLineY);
 }
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, Rotated) {
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughRotated) {
 #if BUILDFLAG(IS_WIN)
   constexpr float kExpectedLineY = 2.6975f;
 #elif BUILDFLAG(IS_MAC)
@@ -5314,7 +5314,7 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, Rotated) {
                             /*expected_stroke_width=*/0.75f, kExpectedLineY);
 }
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, SmallFontSize) {
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughSmallFontSize) {
 #if BUILDFLAG(IS_WIN)
   constexpr float kExpectedLineY = 1.6185f;
 #elif BUILDFLAG(IS_MAC)
@@ -5326,7 +5326,7 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, SmallFontSize) {
                             /*expected_stroke_width=*/0.45f, kExpectedLineY);
 }
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, LargeFontSize) {
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, StrikethroughLargeFontSize) {
 #if BUILDFLAG(IS_WIN)
   constexpr float kExpectedLineY = 12.948f;
 #elif BUILDFLAG(IS_MAC)
@@ -5338,7 +5338,8 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, LargeFontSize) {
                             /*expected_stroke_width=*/3.60f, kExpectedLineY);
 }
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, EmptyLineSkipped) {
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
+       StrikethroughEmptyLineSkipped) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
@@ -5368,7 +5369,7 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest, EmptyLineSkipped) {
   EXPECT_EQ(initial_obj_count + 2, FPDFPage_CountObjects(page.GetPage()));
 }
 
-TEST_P(PDFiumEngineInkDrawTextStrikethroughTest,
+TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
        EmojiWithoutFontDoesNotDrawStrikethrough) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
@@ -5399,7 +5400,7 @@ TEST_P(PDFiumEngineInkDrawTextStrikethroughTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PDFiumEngineInkDrawTextStrikethroughTest,
+                         PDFiumEngineInkDrawTextLineDecorationTest,
                          testing::Bool());
 
 using PDFiumEngineInkPrintTest = PDFiumTestBase;
