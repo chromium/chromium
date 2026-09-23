@@ -15,15 +15,7 @@
 }
 
 :host(:not([is-active])) {
-  -webkit-app-region: no-drag;
   opacity: 0.7;
-}
-
-:host(:not([is-active])) #searchbox,
-:host(:not([is-active])) #composebox,
-:host(:not([is-active])) #mostVisitedContainer,
-:host(:not([is-active])) cr-most-visited {
-  -webkit-app-region: no-drag;
 }
 
 :host(:not([is-active]):hover) {

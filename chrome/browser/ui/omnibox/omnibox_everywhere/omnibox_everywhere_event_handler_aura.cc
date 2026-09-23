@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
+#include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -20,10 +21,15 @@ namespace {
 
 gfx::Point GetEventScreenPoint(const ui::LocatedEvent* event,
                                views::Widget* widget) {
+  gfx::Point location = event->location();
+  if (auto* target_window = static_cast<aura::Window*>(event->target());
+      target_window && widget->GetNativeView()) {
+    aura::Window::ConvertPointToTarget(target_window, widget->GetNativeView(),
+                                       &location);
+  }
   views::View* root_view = widget->GetRootView();
-  return root_view
-             ? views::View::ConvertPointToScreen(root_view, event->location())
-             : event->root_location();
+  return root_view ? views::View::ConvertPointToScreen(root_view, location)
+                   : event->root_location();
 }
 
 }  // namespace

@@ -44,12 +44,6 @@ int OmniboxEverywhereWidgetDelegate::NonClientHitTest(
   return HTNOWHERE;
 }
 
-bool OmniboxEverywhereWidgetDelegate::ShouldDescendIntoChildForEventHandling(
-    gfx::NativeView child,
-    const gfx::Point& location) {
-  return !IsPointInDraggableRegion(location);
-}
-
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
   return ui::ImageModel::FromImageSkia(GetOmniboxEverywhereIcon());
 }

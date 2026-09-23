@@ -1317,23 +1317,27 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   ui_manager->DraggableRegionsChanged(regions, nullptr);
 
-  // Background point (draggable region) -> should NOT descend into child (claim
-  // for drag).
-  EXPECT_FALSE(
+  // Background point (draggable region).
+  EXPECT_TRUE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(10, 10)));
+  EXPECT_TRUE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(600, 40)));
+
+  // Points inside search input (non-draggable region).
+  EXPECT_FALSE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(200, 40)));
+  EXPECT_FALSE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(400, 50)));
+
+  // Event targeting should descend into child views for both draggable and
+  // non-draggable regions so WebUI receives :hover and click events while
+  // OmniboxEverywhereEventHandlerAura intercepts drags as a pre-target handler.
+  EXPECT_TRUE(
       ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
           gfx::NativeView(), gfx::Point(10, 10)));
-  EXPECT_FALSE(
-      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
-          gfx::NativeView(), gfx::Point(600, 40)));
-
-  // Points inside search input (non-draggable region) -> SHOULD descend into
-  // child for button/input clicks.
   EXPECT_TRUE(
       ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
           gfx::NativeView(), gfx::Point(200, 40)));
-  EXPECT_TRUE(
-      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
-          gfx::NativeView(), gfx::Point(400, 50)));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -1358,15 +1362,13 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   ui_manager->DraggableRegionsChanged(regions, nullptr);
 
-  // Inner non-draggable area should remain non-draggable and receive clicks.
-  EXPECT_TRUE(
-      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
-          gfx::NativeView(), gfx::Point(150, 150)));
+  // Inner non-draggable area should remain non-draggable.
+  EXPECT_FALSE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(150, 150)));
 
   // Draggable background area outside should remain draggable.
-  EXPECT_FALSE(
-      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
-          gfx::NativeView(), gfx::Point(10, 10)));
+  EXPECT_TRUE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(10, 10)));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, EarlyDraggableRegionsChangedPreserved) {
@@ -1386,9 +1388,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, EarlyDraggableRegionsChangedPreserved) {
   ASSERT_TRUE(ui_manager->widget_delegate());
 
   // Cached region should be applied to widget_delegate_.
-  EXPECT_FALSE(
-      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
-          gfx::NativeView(), gfx::Point(10, 10)));
+  EXPECT_TRUE(ui_manager->widget_delegate()->IsPointInDraggableRegion(
+      gfx::Point(10, 10)));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {

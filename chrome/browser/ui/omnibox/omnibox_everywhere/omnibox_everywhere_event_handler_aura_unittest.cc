@@ -51,6 +51,15 @@ TEST_F(OmniboxEverywhereEventHandlerAuraTest, DraggableRegionsAndHitTesting) {
   EXPECT_FALSE(widget_delegate.IsPointInDraggableRegion(gfx::Point(200, 40)));
   EXPECT_FALSE(widget_delegate.IsPointInDraggableRegion(gfx::Point(400, 50)));
 
+  // Event targeting should always descend into child windows (such as
+  // RenderWidgetHostViewAura) even inside draggable regions so that WebUI
+  // receives mouse-move (:hover) and click events while
+  // OmniboxEverywhereEventHandlerAura intercepts drags as a pre-target handler.
+  EXPECT_TRUE(widget_delegate.ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView(), gfx::Point(10, 10)));
+  EXPECT_TRUE(widget_delegate.ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView(), gfx::Point(200, 40)));
+
   // Test event_handler processes mouse events cleanly without crashing when
   // widget is null.
   ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(10, 10),

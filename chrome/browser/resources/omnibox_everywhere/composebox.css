@@ -232,8 +232,3 @@ cr-composebox-dropdown::part(match-icon-container) {
 cr-composebox-dropdown::part(match-text-container) {
   padding-inline-start: 8px;
 }
-
-:host(:not([is-active])),
-:host(:not([is-active])) cr-composebox-input::part(icon-container) {
-  -webkit-app-region: no-drag;
-}

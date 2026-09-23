@@ -35,10 +35,6 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   ui::ImageModel GetWindowAppIcon() override;
   std::u16string GetWindowTitle() const override;
 
-  bool ShouldDescendIntoChildForEventHandling(
-      gfx::NativeView child,
-      const gfx::Point& location) override;
-
  private:
   std::optional<SkRegion> draggable_region_;
 };

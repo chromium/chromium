@@ -370,12 +370,6 @@ cr-searchbox-input::part(icon),
   -webkit-user-drag: none;
 }
 
-:host(:not([is-active])),
-:host(:not([is-active])) cr-searchbox-input::part(icon),
-:host(:not([is-active])) #composeButton {
-  -webkit-app-region: no-drag;
-}
-
 :host([multi-line-enabled]) cr-searchbox-input::part(icon) {
   align-self: flex-start;
   height: var(--cr-searchbox-height, 48px);
