@@ -18,7 +18,6 @@
 // OEMCrypto v15.
 // Version 4 maintains backwards compatibility and supports OEMCrypto v16.
 // Version 5 adds the v16 CopyBuffer variant.
-
 module arc.mojom;
 
 [Stable, Extensible]
@@ -214,8 +213,8 @@ enum OemCryptoRsaPaddingScheme {
 [Stable, Extensible]
 enum OemCryptoHdcpCapability {
   HDCP_NONE = 0,
-  HDCP_V1   = 1,
-  HDCP_V2   = 2,
+  HDCP_V1 = 1,
+  HDCP_V2 = 2,
   HDCP_V2_1 = 3,
   HDCP_V2_2 = 4,
   HDCP_V2_3 = 5,
@@ -250,230 +249,369 @@ struct SubSampleDescription {
 [Stable, Uuid="ed3807bc-7bce-472d-be4f-68774e613ace"]
 interface OemCryptoService {
   InitializeDeprecated@0() => (OemCryptoResult result);
-  [MinVersion=2] Initialize@36(uint32 oemcrypto_version)
-      => (OemCryptoResult result);
+
+  [MinVersion=2]
+  Initialize@36(uint32 oemcrypto_version) => (OemCryptoResult result);
+
   Terminate@1() => (OemCryptoResult result);
+
   OpenSession@2() => (OemCryptoResult result, uint32 session);
+
   CloseSession@3(uint32 session) => (OemCryptoResult result);
-  GenerateDerivedKeys@4(uint32 session, array<uint8> mac_key_context,
+
+  GenerateDerivedKeys@4(uint32 session,
+                        array<uint8> mac_key_context,
                         array<uint8> enc_key_context)
       => (OemCryptoResult result);
+
   GenerateNonce@5(uint32 session) => (OemCryptoResult result, uint32 nonce);
+
   GenerateSignature@6(uint32 session, array<uint8> message)
       => (OemCryptoResult result, array<uint8>? signature);
+
   // The offset values are offsets into the message parameter for those values.
   // If they have a length and it's zero, then they are NULL; if there is no
   // length param then a bool param is there to indicate presence.
-  LoadKeysV11OrV12@7(uint32 session, array<uint8> message,
-                     array<uint8> signature, bool has_enc_mac_keys,
+  LoadKeysV11OrV12@7(uint32 session,
+                     array<uint8> message,
+                     array<uint8> signature,
+                     bool has_enc_mac_keys,
                      uint32 enc_mac_keys_iv_offset,
                      uint32 enc_mac_keys_offset,
                      array<OemCryptoKeyObjectV14> key_array,
-                     uint32 pst_offset, uint32 pst_length)
-      => (OemCryptoResult result);
-  RefreshKeysV14@8(uint32 session, array<uint8> message,
+                     uint32 pst_offset,
+                     uint32 pst_length) => (OemCryptoResult result);
+
+  RefreshKeysV14@8(uint32 session,
+                   array<uint8> message,
                    array<uint8> signature,
                    array<OemCryptoKeyRefreshObjectV14> key_array)
       => (OemCryptoResult result);
+
   QueryKeyControl@9(uint32 session, array<uint8> key_id)
       => (OemCryptoResult result, array<uint8>? key_control_block);
+
   SelectKeyV13@10(uint32 session, array<uint8> key_id)
       => (OemCryptoResult result);
-  DecryptCencV15@11(uint32 session, array<uint8> data, bool is_encrypted,
-                    array<uint8, 16> iv, uint32 block_offset,
+
+  DecryptCencV15@11(uint32 session,
+                    array<uint8> data,
+                    bool is_encrypted,
+                    array<uint8, 16> iv,
+                    uint32 block_offset,
                     OemCryptoSecureBuffer? secure_buffer,
                     OemCryptoCencEncryptPatternDesc pattern)
       => (OemCryptoResult result, array<uint8>? decrypted_data);
-  GenericEncrypt@12(uint32 session, array<uint8> data, array<uint8, 16> iv,
-                    OemCryptoAlgorithm algorithm) =>
-                    (OemCryptoResult result, array<uint8>? encrypted_data);
-  GenericDecrypt@13(uint32 session, array<uint8> data, array<uint8, 16> iv,
-                    OemCryptoAlgorithm algorithm) =>
-                    (OemCryptoResult result, array<uint8>? decrypted_data);
-  GenericSign@14(uint32 session, array<uint8> data,
-                 OemCryptoAlgorithm algorithm) =>
-                 (OemCryptoResult result, array<uint8>? signature);
-  GenericVerify@15(uint32 session, array<uint8> data,
-                   OemCryptoAlgorithm algorithm, array<uint8> signature) =>
-                  (OemCryptoResult result);
+
+  GenericEncrypt@12(uint32 session,
+                    array<uint8> data,
+                    array<uint8, 16> iv,
+                    OemCryptoAlgorithm algorithm)
+      => (OemCryptoResult result, array<uint8>? encrypted_data);
+
+  GenericDecrypt@13(uint32 session,
+                    array<uint8> data,
+                    array<uint8, 16> iv,
+                    OemCryptoAlgorithm algorithm)
+      => (OemCryptoResult result, array<uint8>? decrypted_data);
+
+  GenericSign@14(
+      uint32 session, array<uint8> data, OemCryptoAlgorithm algorithm)
+      => (OemCryptoResult result, array<uint8>? signature);
+
+  GenericVerify@15(uint32 session,
+                   array<uint8> data,
+                   OemCryptoAlgorithm algorithm,
+                   array<uint8> signature) => (OemCryptoResult result);
+
   CopyBufferV14@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
       => (OemCryptoResult result);
+
   LoadTestKeyboxV13@17() => (OemCryptoResult result);
+
   IsRootKeyCertificateValid@18() => (OemCryptoResult result);
+
   GetDeviceId@19() => (OemCryptoResult result, array<uint8>? device_id);
+
   GetKeyData@20() => (OemCryptoResult result, array<uint8>? key_data);
+
   GetRandom@21(uint32 length) => (OemCryptoResult result, array<uint8>? data);
+
   GetNumberOfOpenSessions@22() => (OemCryptoResult result, uint32 num);
+
   GetMaxNumberOfSessions@23() => (OemCryptoResult result, uint32 max);
-  RewrapDeviceRsaKey@24(uint32 session, array<uint8> message,
-                        array<uint8> signature, uint32 nonce_offset,
-                        uint32 enc_rsa_key_offset, uint32 enc_rsa_key_length,
+
+  RewrapDeviceRsaKey@24(uint32 session,
+                        array<uint8> message,
+                        array<uint8> signature,
+                        uint32 nonce_offset,
+                        uint32 enc_rsa_key_offset,
+                        uint32 enc_rsa_key_length,
                         uint32 enc_rsa_key_iv_offset)
       => (OemCryptoResult result, array<uint8>? wrapped_key);
+
   LoadDeviceRsaKey@25(uint32 session, array<uint8> wrapped_rsa_key)
       => (OemCryptoResult result);
-  GenerateRsaSignature@26(uint32 session, array<uint8> message,
+
+  GenerateRsaSignature@26(uint32 session,
+                          array<uint8> message,
                           OemCryptoRsaPaddingScheme padding_scheme)
       => (OemCryptoResult result, array<uint8>? signature);
-  DeriveKeysFromSessionKey@27(uint32 session, array<uint8> enc_session_key,
+
+  DeriveKeysFromSessionKey@27(uint32 session,
+                              array<uint8> enc_session_key,
                               array<uint8> mac_key_context,
                               array<uint8> enc_key_context)
       => (OemCryptoResult result);
+
   SecurityPatchLevel@28() => (uint8 security_patch_level);
+
   GetHdcpCapability@29() => (OemCryptoResult result,
                              OemCryptoHdcpCapability current,
                              OemCryptoHdcpCapability maximum);
+
   UpdateUsageTable@30() => (OemCryptoResult result);
+
   DeactivateUsageEntryV12@31(array<uint8> pst) => (OemCryptoResult result);
+
   ReportUsage@32(uint32 session, array<uint8> pst)
       => (OemCryptoResult result, OemCryptoPstReport? report);
-  DeleteUsageEntry@33(uint32 session, uint32 pst_offset, uint32 pst_length,
-                      array<uint8> message, array<uint8> signature) =>
-                      (OemCryptoResult result);
+
+  DeleteUsageEntry@33(uint32 session,
+                      uint32 pst_offset,
+                      uint32 pst_length,
+                      array<uint8> message,
+                      array<uint8> signature) => (OemCryptoResult result);
+
   ForceDeleteUsageEntry@34(array<uint8> pst) => (OemCryptoResult result);
+
   DeleteOldUsageTable@35() => (OemCryptoResult result);
-  [MinVersion=2] GetProvisioningMethod@37()
-      => (OemCryptoProvisioningMethod result);
-  [MinVersion=2] SupportedCertificates@38() => (uint32 result);
-  [MinVersion=2] IsSrmUpdateSupported@39() => (bool result);
-  [MinVersion=2] GetCurrentSrmVersion@40()
-      => (OemCryptoResult result, uint16 version);
-  [MinVersion=2] LoadSrm@41(array<uint8> buffer) => (OemCryptoResult result);
-  [MinVersion=2] RemoveSrm@42() => (OemCryptoResult result);
+
+  [MinVersion=2]
+  GetProvisioningMethod@37() => (OemCryptoProvisioningMethod result);
+
+  [MinVersion=2]
+  SupportedCertificates@38() => (uint32 result);
+
+  [MinVersion=2]
+  IsSrmUpdateSupported@39() => (bool result);
+
+  [MinVersion=2]
+  GetCurrentSrmVersion@40() => (OemCryptoResult result, uint16 version);
+
+  [MinVersion=2]
+  LoadSrm@41(array<uint8> buffer) => (OemCryptoResult result);
+
+  [MinVersion=2]
+  RemoveSrm@42() => (OemCryptoResult result);
+
   // |avail_header_length| is the buffer size this was called with from Android.
   // We need to specify that so we know if we can complete this call for real or
   // instead just need to return the needed buffer size because execution of
   // this call has side effects.
-  [MinVersion=2] CreateUsageTableHeader@43(uint32 avail_header_length)
+  [MinVersion=2]
+  CreateUsageTableHeader@43(uint32 avail_header_length)
       => (OemCryptoResult result, array<uint8>? header);
-  [MinVersion=2] LoadUsageTableHeader@44(array<uint8> buffer)
-      => (OemCryptoResult result);
-  [MinVersion=2] CreateNewUsageEntry@45(uint32 session)
+
+  [MinVersion=2]
+  LoadUsageTableHeader@44(array<uint8> buffer) => (OemCryptoResult result);
+
+  [MinVersion=2]
+  CreateNewUsageEntry@45(uint32 session)
       => (OemCryptoResult result, uint32 usage_entry_number);
-  [MinVersion=2] LoadUsageEntry@46(uint32 session, uint32 index,
-                                   array<uint8> buffer) =>
-                                   (OemCryptoResult result);
+
+  [MinVersion=2]
+  LoadUsageEntry@46(uint32 session, uint32 index, array<uint8> buffer)
+      => (OemCryptoResult result);
+
   // |avail_header_length| and |avail_entry_length| are the buffer sizes this
   // was called with from Android. We need to specify that so we know if we can
   // complete this call for real or instead just need to return the needed
   // buffer size because execution of this call has side effects.
-  [MinVersion=2] UpdateUsageEntry@47(uint32 session, uint32 avail_header_length,
-                                     uint32 avail_entry_length)
+  [MinVersion=2]
+  UpdateUsageEntry@47(
+      uint32 session, uint32 avail_header_length, uint32 avail_entry_length)
       => (OemCryptoResult result, array<uint8>? header, array<uint8>? entry);
-  [MinVersion=2] DeactivateUsageEntry@48(uint32 session, array<uint8> pst)
+
+  [MinVersion=2]
+  DeactivateUsageEntry@48(uint32 session, array<uint8> pst)
       => (OemCryptoResult result);
+
   // |avail_header_length| is the buffer size this was called with from Android.
   // We need to specify that so we know if we can complete this call for real or
   // instead just need to return the needed buffer size because execution of
   // this call has side effects.
-  [MinVersion=2] ShrinkUsageTableHeader@49(uint32 new_entry_count,
-                                           uint32 avail_header_length)
+  [MinVersion=2]
+  ShrinkUsageTableHeader@49(
+      uint32 new_entry_count, uint32 avail_header_length)
       => (OemCryptoResult result, array<uint8>? header);
-  [MinVersion=2] MoveEntry@50(uint32 session, uint32 new_index)
+
+  [MinVersion=2]
+  MoveEntry@50(uint32 session, uint32 new_index) => (OemCryptoResult result);
+
+  [MinVersion=2]
+  CopyOldUsageEntry@51(uint32 session, array<uint8> pst)
       => (OemCryptoResult result);
-  [MinVersion=2] CopyOldUsageEntry@51(uint32 session, array<uint8> pst)
-      => (OemCryptoResult result);
-  [MinVersion=2] CreateOldUsageEntry@52(uint64 time_since_license_received,
-                                        uint64 time_since_first_decrypt,
-                                        uint64 time_since_last_decrypt,
-                                        OemCryptoUsageEntryStatus status,
-                                        array<uint8> server_mac_key,
-                                        array<uint8> client_mac_key,
-                                        array<uint8> pst) =>
-                                        (OemCryptoResult result);
-  [MinVersion=2] GetAnalogOutputFlags@53() => (uint32 result);
-  [MinVersion=2] LoadTestKeybox@54(array<uint8> buffer) =>
-                                   (OemCryptoResult result);
+
+  [MinVersion=2]
+  CreateOldUsageEntry@52(uint64 time_since_license_received,
+                         uint64 time_since_first_decrypt,
+                         uint64 time_since_last_decrypt,
+                         OemCryptoUsageEntryStatus status,
+                         array<uint8> server_mac_key,
+                         array<uint8> client_mac_key,
+                         array<uint8> pst) => (OemCryptoResult result);
+
+  [MinVersion=2]
+  GetAnalogOutputFlags@53() => (uint32 result);
+
+  [MinVersion=2]
+  LoadTestKeybox@54(array<uint8> buffer) => (OemCryptoResult result);
+
   [MinVersion=2]
   LoadEntitledContentKeysV14@55(
       uint32 session, array<OemCryptoEntitledContentKeyObjectV14> key_array)
       => (OemCryptoResult result);
-  [MinVersion=2] SelectKey@56(uint32 session, array<uint8> content_key_id,
-                              OemCryptoCipherMode cipher_mode) =>
-                              (OemCryptoResult result);
-  [MinVersion=2] LoadKeysV14@57(uint32 session, array<uint8> message,
-                                 array<uint8> signature, bool has_enc_mac_keys,
-                                 uint32 enc_mac_keys_iv_offset,
-                                 uint32 enc_mac_keys_offset,
-                                 array<OemCryptoKeyObjectV14> key_array,
-                                 uint32 pst_offset, uint32 pst_length,
-                                 array<uint8> srm_requirement,
-                                 OemCryptoLicenseType license_type) =>
-                             (OemCryptoResult result);
-  [MinVersion=3] LoadKeys@58(uint32 session, array<uint8> message,
-                             array<uint8> signature,
-                             OemCryptoSubstring enc_mac_keys_iv,
-                             OemCryptoSubstring enc_mac_keys,
-                             array<OemCryptoKeyObject> key_array,
-                             OemCryptoSubstring pst,
-                             OemCryptoSubstring srm_restriction_data,
-                             OemCryptoLicenseType license_type) =>
-                         (OemCryptoResult result);
-  [MinVersion=3] ResourceRatingTier@59() => (uint32 rating_tier);
-  [MinVersion=3] BuildInformation@60() => (string build_information);
-  [MinVersion=3] RefreshKeys@61(uint32 session, array<uint8> message,
-                                array<uint8> signature,
-                                array<OemCryptoKeyRefreshObject> key_array)
-                         => (OemCryptoResult result);
-  [MinVersion=3] LoadEntitledContentKeys@62(
-      uint32 session, array<uint8> message,
+
+  [MinVersion=2]
+  SelectKey@56(uint32 session,
+               array<uint8> content_key_id,
+               OemCryptoCipherMode cipher_mode) => (OemCryptoResult result);
+
+  [MinVersion=2]
+  LoadKeysV14@57(uint32 session,
+                 array<uint8> message,
+                 array<uint8> signature,
+                 bool has_enc_mac_keys,
+                 uint32 enc_mac_keys_iv_offset,
+                 uint32 enc_mac_keys_offset,
+                 array<OemCryptoKeyObjectV14> key_array,
+                 uint32 pst_offset,
+                 uint32 pst_length,
+                 array<uint8> srm_requirement,
+                 OemCryptoLicenseType license_type)
+      => (OemCryptoResult result);
+
+  [MinVersion=3]
+  LoadKeys@58(uint32 session,
+              array<uint8> message,
+              array<uint8> signature,
+              OemCryptoSubstring enc_mac_keys_iv,
+              OemCryptoSubstring enc_mac_keys,
+              array<OemCryptoKeyObject> key_array,
+              OemCryptoSubstring pst,
+              OemCryptoSubstring srm_restriction_data,
+              OemCryptoLicenseType license_type) => (OemCryptoResult result);
+
+  [MinVersion=3]
+  ResourceRatingTier@59() => (uint32 rating_tier);
+
+  [MinVersion=3]
+  BuildInformation@60() => (string build_information);
+
+  [MinVersion=3]
+  RefreshKeys@61(uint32 session,
+                 array<uint8> message,
+                 array<uint8> signature,
+                 array<OemCryptoKeyRefreshObject> key_array)
+      => (OemCryptoResult result);
+
+  [MinVersion=3]
+  LoadEntitledContentKeys@62(
+      uint32 session,
+      array<uint8> message,
       array<OemCryptoEntitledContentKeyObject> key_array)
       => (OemCryptoResult result);
-  [MinVersion=4] GetOemPublicCertificate@63()
+
+  [MinVersion=4]
+  GetOemPublicCertificate@63()
       => (OemCryptoResult result, array<uint8>? public_cert);
-  [MinVersion=4] MaximumUsageTableHeaderSize@64() => (uint32 size);
-  [MinVersion=4] IsAntiRollbackHwPresent@65() => (bool result);
-  [MinVersion=4] MinorApiVersion@66() => (uint32 version);
-  [MinVersion=4] PrepAndSignLicenseRequest@67(uint32 session,
-                                              array<uint8> message,
-                                              uint32 core_message_size,
-                                              uint32 avail_signature_size)
-      => (OemCryptoResult result, uint32 core_message_size,
-          array<uint8>? message, array<uint8>? signature);
-  [MinVersion=4] PrepAndSignRenewalRequest@68(uint32 session,
-                                              array<uint8> message,
-                                              uint32 core_message_size,
-                                              uint32 avail_signature_size)
-      => (OemCryptoResult result, uint32 core_message_size,
-          array<uint8>? message, array<uint8>? signature);
-  [MinVersion=4] PrepAndSignProvisioningRequest@69(uint32 session,
-                                                   array<uint8> message,
-                                                   uint32 core_message_size,
-                                                   uint32 avail_signature_size)
-      => (OemCryptoResult result, uint32 core_message_size,
-          array<uint8>? message, array<uint8>? signature);
-  [MinVersion=4] LoadLicense@70(uint32 session, array<uint8> message,
-                                uint32 core_message_length,
-                                array<uint8> signature)
-      => (OemCryptoResult result);
-  [MinVersion=4] LoadRenewal@71(uint32 session, array<uint8> message,
-                                uint32 core_message_length,
-                                array<uint8> signature)
-      => (OemCryptoResult result);
-  [MinVersion=4] LoadProvisioning@72(uint32 session, array<uint8> message,
-                                     uint32 core_message_length,
-                                     array<uint8> signature,
-                                     uint32 avail_wrapped_private_key_size)
+
+  [MinVersion=4]
+  MaximumUsageTableHeaderSize@64() => (uint32 size);
+
+  [MinVersion=4]
+  IsAntiRollbackHwPresent@65() => (bool result);
+
+  [MinVersion=4]
+  MinorApiVersion@66() => (uint32 version);
+
+  [MinVersion=4]
+  PrepAndSignLicenseRequest@67(uint32 session,
+                               array<uint8> message,
+                               uint32 core_message_size,
+                               uint32 avail_signature_size)
+      => (OemCryptoResult result,
+          uint32 core_message_size,
+          array<uint8>? message,
+          array<uint8>? signature);
+
+  [MinVersion=4]
+  PrepAndSignRenewalRequest@68(uint32 session,
+                               array<uint8> message,
+                               uint32 core_message_size,
+                               uint32 avail_signature_size)
+      => (OemCryptoResult result,
+          uint32 core_message_size,
+          array<uint8>? message,
+          array<uint8>? signature);
+
+  [MinVersion=4]
+  PrepAndSignProvisioningRequest@69(uint32 session,
+                                    array<uint8> message,
+                                    uint32 core_message_size,
+                                    uint32 avail_signature_size)
+      => (OemCryptoResult result,
+          uint32 core_message_size,
+          array<uint8>? message,
+          array<uint8>? signature);
+
+  [MinVersion=4]
+  LoadLicense@70(uint32 session,
+                 array<uint8> message,
+                 uint32 core_message_length,
+                 array<uint8> signature) => (OemCryptoResult result);
+
+  [MinVersion=4]
+  LoadRenewal@71(uint32 session,
+                 array<uint8> message,
+                 uint32 core_message_length,
+                 array<uint8> signature) => (OemCryptoResult result);
+
+  [MinVersion=4]
+  LoadProvisioning@72(uint32 session,
+                      array<uint8> message,
+                      uint32 core_message_length,
+                      array<uint8> signature,
+                      uint32 avail_wrapped_private_key_size)
       => (OemCryptoResult result, array<uint8>? wrapped_private_key);
-  [MinVersion=4] LoadOemPrivateKey@73(uint32 session)
+
+  [MinVersion=4]
+  LoadOemPrivateKey@73(uint32 session) => (OemCryptoResult result);
+
+  [MinVersion=4]
+  LoadDrmPrivateKey@74(uint32 session,
+                       OemCryptoPrivateKey key_type,
+                       array<uint8> wrapped_private_key)
       => (OemCryptoResult result);
-  [MinVersion=4] LoadDrmPrivateKey@74(uint32 session,
-                                      OemCryptoPrivateKey key_type,
-                                      array<uint8> wrapped_private_key)
-      => (OemCryptoResult result);
+
   // For decrypting to a secure buffer, pass in the secure_buffer parameter,
   // otherwise it will return the contents decrypted into a clear buffer in the
   // returned array. It will only do that if the drm policy allows it.
-  [MinVersion=4] DecryptCenc@75(uint32 session, array<uint8> data,
-                                array<uint8, 16> iv,
-                                array<SubSampleDescription> sub_samples,
-                                OemCryptoCencEncryptPatternDesc pattern,
-                                OemCryptoSecureBuffer? secure_buffer)
+  [MinVersion=4]
+  DecryptCenc@75(uint32 session,
+                 array<uint8> data,
+                 array<uint8, 16> iv,
+                 array<SubSampleDescription> sub_samples,
+                 OemCryptoCencEncryptPatternDesc pattern,
+                 OemCryptoSecureBuffer? secure_buffer)
       => (OemCryptoResult result, array<uint8>? decrypted_data);
-  [MinVersion=5] CopyBuffer@76(uint32 session, array<uint8> data,
-                               OemCryptoSecureBuffer out_buffer,
-                               uint8 subsample_flags)
-      => (OemCryptoResult result);
+
+  [MinVersion=5]
+  CopyBuffer@76(uint32 session,
+                array<uint8> data,
+                OemCryptoSecureBuffer out_buffer,
+                uint8 subsample_flags) => (OemCryptoResult result);
 };
 
 // OemCryptoService is implemented as another service outside of the Browser
@@ -491,5 +629,6 @@ interface OemCryptoHost {
 // Next Method ID: 2
 interface OemCryptoInstance {
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(pending_remote<OemCryptoHost> host_remote) => ();
+  [MinVersion=1]
+  Init@1(pending_remote<OemCryptoHost> host_remote) => ();
 };

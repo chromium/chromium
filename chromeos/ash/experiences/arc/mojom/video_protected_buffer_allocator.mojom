@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Next MinVersion: 1
-
 module arc.mojom;
 
 import "chromeos/ash/experiences/arc/mojom/gfx.mojom";
@@ -17,15 +16,16 @@ interface VideoProtectedBufferAllocator {
   // |size| is the size of allocated protected shared memory.
   // Returns true on success, false on allocation failure or if |handle_fd| is
   // already associated with an existing protected buffer.
-  AllocateProtectedSharedMemory@0(handle handle_fd,
-                                  uint64 size) => (bool result);
+  AllocateProtectedSharedMemory@0(handle handle_fd, uint64 size)
+      => (bool result);
 
   // Allocates protected native pixmap associated with |handle_fd|.
   // |pixel_format| and |picture_size| are parameters to allocate native pixmap.
   // Returns true on success, false on allocation failure or if |handle_fd| is
   // already associated with an existing protected buffer.
-  AllocateProtectedNativePixmap@1(handle handle_fd, HalPixelFormat pixel_format,
-                                  Size picture_size) => (bool result);
+  AllocateProtectedNativePixmap@1(
+      handle handle_fd, HalPixelFormat pixel_format, Size picture_size)
+      => (bool result);
 
   // Releases protected buffer associated with |handle_fd|, regardless of
   // the type of protected memory.

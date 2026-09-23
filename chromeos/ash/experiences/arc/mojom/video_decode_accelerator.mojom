@@ -14,7 +14,6 @@
 // correlated.
 // Please don't use this design as a good reference, it is strongly recommended
 // in mojom that all the function results are reported by passed callbacks.
-
 module arc.mojom;
 
 import "chromeos/ash/experiences/arc/mojom/gfx.mojom";
@@ -119,8 +118,10 @@ interface VideoDecodeAccelerator {
   // Calls VDA::ImportBufferForPicture() with |format| and a
   // gfx::GpuMemoryBufferHandle created from |handle_fd| and |planes|.
   [MinVersion=2]
-  ImportBufferForPicture@9(int32 picture_buffer_id, HalPixelFormat format,
-                           handle handle_fd, array<VideoFramePlane> planes,
+  ImportBufferForPicture@9(int32 picture_buffer_id,
+                           HalPixelFormat format,
+                           handle handle_fd,
+                           array<VideoFramePlane> planes,
                            [MinVersion=4] BufferModifier? modifier);
 
   // Returns picture buffer with specified |picture_buffer_id| to be reused by
@@ -141,7 +142,6 @@ interface VideoDecodeAccelerator {
 // Deprecated method IDs: 0, 4
 // Next method ID: 6
 interface VideoDecodeClient {
-
   // Called to notify the client that |picture| is ready to be displayed.
   // The calls to PictureReady() are in display order and Picture should
   // be displayed in that order.

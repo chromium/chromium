@@ -5,8 +5,8 @@
 // The original version of this file lives in the Chromium repository at:
 // src/components/arc/mojom/protected_buffer_manager.mojom
 // Next Version: 3
-
 module arc.mojom;
+
 import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -16,7 +16,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // Next Method ID: 5
 // Removed method ID: 1
 [Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495",
- ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
+    ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface ProtectedBufferManager {
   // This is deprecated! Please use GetProtectedSharedMemoryFromHandle() which
   // allows returning a null value.
