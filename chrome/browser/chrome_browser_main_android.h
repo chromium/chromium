@@ -7,9 +7,14 @@
 
 #include <memory>
 
+#include "base/android/application_status_listener.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/chrome_browser_main.h"
+
+namespace base::android {
+class ScudoPurgeCoordinator;
+}  // namespace base::android
 
 namespace crash_reporter {
 class ChildExitObserver;
@@ -36,10 +41,20 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
   void ShowMissingLocaleMessageBox() override;
 
  private:
+  void OnApplicationStateChange(base::android::ApplicationState state);
+
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
   // Owns the Java ChromeBackupWatcher object and invokes destroy() on
   // destruction.
   base::ScopedClosureRunner backup_watcher_runner_;
+
+  // `scudo_purge_coordinator_` must be declared before `app_status_listener_`
+  // so that `app_status_listener_` is destroyed first during member teardown,
+  // preventing callbacks from firing during or after coordinator destruction.
+  std::unique_ptr<base::android::ScudoPurgeCoordinator>
+      scudo_purge_coordinator_;
+  std::unique_ptr<base::android::ApplicationStatusListener>
+      app_status_listener_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_

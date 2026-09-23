@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
+#include "base/android/scudo_features.h"
+#include "base/android/scudo_purge_coordinator.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
@@ -113,10 +117,46 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
       base::BindOnce(&ReportSeccompSupport), base::Minutes(1));
 
   RegisterChromeJavaMojoInterfaces();
+
+  scudo_purge_coordinator_ =
+      base::android::ScudoPurgeCoordinator::CreateIfEnabled();
+
+  if (scudo_purge_coordinator_) {
+    scudo_purge_coordinator_->Start();
+
+    // `base::Unretained(this)` is safe because `app_status_listener_` is owned
+    // by `this` and unregisters the listener upon destruction, ensuring the
+    // callback cannot be invoked after `this` is destroyed.
+    app_status_listener_ = base::android::ApplicationStatusListener::New(
+        base::BindRepeating(
+            &ChromeBrowserMainPartsAndroid::OnApplicationStateChange,
+            base::Unretained(this)));
+
+    OnApplicationStateChange(
+        base::android::ApplicationStatusListener::GetState());
+  }
 }
 
 void ChromeBrowserMainPartsAndroid::ShowMissingLocaleMessageBox() {
   NOTREACHED();
+}
+
+void ChromeBrowserMainPartsAndroid::OnApplicationStateChange(
+    base::android::ApplicationState state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(scudo_purge_coordinator_);
+  switch (state) {
+    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+      scudo_purge_coordinator_->OnForegrounded();
+      break;
+    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+      scudo_purge_coordinator_->OnBackgrounded();
+      break;
+    case base::android::APPLICATION_STATE_UNKNOWN:
+      break;
+  }
 }
 
 DEFINE_JNI(ChromeBackupWatcher)
