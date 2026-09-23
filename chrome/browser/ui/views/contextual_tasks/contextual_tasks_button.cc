@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -204,14 +206,40 @@ class ContextualTasksButtonHighlightPathGenerator
   const raw_ptr<ContextualTasksButton> button_;
 };
 
+enum ContextualTasksButtonMenuCommand {
+  kCommandRemoveForCurrentTask = 1,
+};
+
+std::unique_ptr<ui::SimpleMenuModel> CreateContextualTasksButtonMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) {
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(delegate);
+  menu_model->AddItemWithStringId(
+      kCommandRemoveForCurrentTask,
+      IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE);
+  menu_model->SetElementIdentifierAt(
+      0,
+      ContextualTasksButton::
+          kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
+  return menu_model;
+}
+
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    ContextualTasksButton,
+    kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
 
 ContextualTasksButton::ContextualTasksButton(
     BrowserWindowInterface* browser_window_interface)
-    : ToolbarButton(base::BindRepeating(&ContextualTasksButton::OnButtonPress,
-                                        base::Unretained(this)),
-                    nullptr,
-                    nullptr),
+    : ToolbarButton(
+          base::BindRepeating(&ContextualTasksButton::OnButtonPress,
+                              base::Unretained(this)),
+          base::FeatureList::IsEnabled(
+              contextual_tasks::kContextualTasksEphemeralButtonContextMenu)
+              ? CreateContextualTasksButtonMenuModel(this)
+              : nullptr,
+          nullptr,
+          /*trigger_menu_on_long_press=*/false),
       browser_window_interface_(browser_window_interface) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -294,6 +322,25 @@ ContextualTasksButton::ContextualTasksButton(
 
 ContextualTasksButton::~ContextualTasksButton() {
   ClearDropShadow();
+}
+
+void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksEphemeralButtonContextMenu)) {
+    return;
+  }
+  auto* controller = ContextualTasksEphemeralButtonController::From(
+      browser_window_interface_);
+  if (!controller) {
+    return;
+  }
+  switch (command_id) {
+    case kCommandRemoveForCurrentTask:
+      controller->RemoveEphemeralButtonForCurrentTask();
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 float ContextualTasksButton::GetCornerRadiusFor(

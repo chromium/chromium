@@ -88,6 +88,7 @@ class ContextualTasksEphemeralButtonController
       ShouldUpdateButtonPositionCallbackList::CallbackType callback);
 
   bool ShouldShowEphemeralButton();
+  void RemoveEphemeralButtonForCurrentTask();
 
  private:
   // content::WebContentsObserver:

@@ -12260,6 +12260,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned)},
 
+    {"contextual-tasks-ephemeral-button-context-menu",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralButtonContextMenuName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksEphemeralButtonContextMenuDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralButtonContextMenu)},
+
     {"contextual-tasks-private-api-no-animation",
      contextual_tasks::flag_descriptions::
          kContextualTasksPrivateApiNoAnimationName,

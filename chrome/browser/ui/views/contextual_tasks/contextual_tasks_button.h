@@ -27,11 +27,14 @@ class LayerOwner;
 
 class ContextualTasksButton
     : public ToolbarButton,
+      public ui::SimpleMenuModel::Delegate,
       public contextual_tasks::ContextualTasksPanelController::Observer,
       public ImmersiveModeController::Observer {
   METADATA_HEADER(ContextualTasksButton, ToolbarButton)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
   enum class Shape {
     kCircle,
     kFlatEdgeLeft,
@@ -49,6 +52,9 @@ class ContextualTasksButton
   bool IsTrailing() const;
   bool IsSidePanelRightAligned() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
       contextual_tasks::ContextualTasksPanelHost::SurfaceState state,

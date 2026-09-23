@@ -281,6 +281,34 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   return should_show_button;
 }
 
+void ContextualTasksEphemeralButtonController::
+    RemoveEphemeralButtonForCurrentTask() {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksEphemeralButtonContextMenu)) {
+    return;
+  }
+
+  std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
+  if (!current_tab_session_id.has_value()) {
+    return;
+  }
+
+  contextual_tasks::ContextualTasksService* service =
+      GetContextualTasksService();
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      service->GetContextualTaskForTab(current_tab_session_id.value());
+  if (current_task.has_value()) {
+    const std::vector<SessionID> task_tabs =
+        service->GetTabsAssociatedWithTask(current_task->GetTaskId());
+    std::erase_if(ephemeral_button_eligible_tabs_, [&task_tabs](SessionID id) {
+      return std::ranges::contains(task_tabs, id);
+    });
+  }
+
+  std::erase(ephemeral_button_eligible_tabs_, current_tab_session_id.value());
+  MaybeNotifyVisibilityShouldChange();
+}
+
 contextual_tasks::ContextualTasksService*
 ContextualTasksEphemeralButtonController::GetContextualTasksService() {
   return contextual_tasks::ContextualTasksServiceFactory::GetForProfile(

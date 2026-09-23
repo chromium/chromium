@@ -10436,6 +10436,8 @@ from previous Chrome versions.
       label="DeviceBoundSessionsFederatedRegistration:disabled"/>
   <int value="-1361493814" label="FCMInvalidations:disabled"/>
   <int value="-1359862112" label="AccessibilityCanvas:enabled"/>
+  <int value="-1359521947"
+      label="ContextualTasksEphemeralButtonContextMenu:enabled"/>
   <int value="-1359250244" label="AutomaticUsbDetach:disabled"/>
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
@@ -18324,6 +18326,8 @@ from previous Chrome versions.
   <int value="1072444165" label="ToolbarProfileChipResizing:enabled"/>
   <int value="1072517479" label="ImprovedCookieControls:enabled"/>
   <int value="1073143086" label="TopControlsRefactor:disabled"/>
+  <int value="1073422314"
+      label="ContextualTasksEphemeralButtonContextMenu:disabled"/>
   <int value="1073699828" label="ScrollUpdateOptimizations:enabled"/>
   <int value="1074310931" label="OmniboxMobileParityUpdateV2:disabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
