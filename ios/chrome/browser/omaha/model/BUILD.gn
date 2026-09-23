@@ -42,6 +42,8 @@ source_set("backend") {
     ":unit_tests",
   ]
   sources = [
+    "omaha_backend.h",
+    "omaha_backend.mm",
     "omaha_persistent_state.h",
     "omaha_persistent_state.mm",
     "omaha_ping.h",
@@ -51,8 +53,12 @@ source_set("backend") {
   ]
   deps = [
     "//base",
+    "//components/version_info",
     "//ios/chrome/browser/upgrade/model:public",
+    "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
     "//third_party/libxml:xml_writer",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -61,6 +67,7 @@ source_set("backend") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "omaha_backend_unittest.mm",
     "omaha_persistent_state_unittest.mm",
     "omaha_ping_unittest.mm",
     "omaha_response_unittest.mm",
