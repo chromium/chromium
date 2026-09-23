@@ -125,7 +125,7 @@ img {
       var(--cr-primary-font-family, Roboto, sans-serif);
   font-size: 20px;
   font-weight: 500;
-  line-height: 25px;
+  line-height: 24px;
   text-align: center;
 }
 
@@ -171,6 +171,10 @@ img {
   gap: 16px;
 }
 
+:host([small-loomnibox]) .mac-row {
+  gap: 12px;
+}
+
 .mac-row .primary-text {
   white-space: nowrap;
 }
@@ -183,6 +187,10 @@ img {
   width: 190px;
 }
 
+:host([small-loomnibox]) .mac-illustration {
+  width: 166px;
+}
+
 .mac-menubar-img {
   display: block;
   height: 48px;
@@ -190,6 +198,10 @@ img {
   position: absolute;
   top: -11px;
   width: 190px;
+}
+
+:host([small-loomnibox]) .mac-menubar-img {
+  width: 166px;
 }
 
 .windows-row {

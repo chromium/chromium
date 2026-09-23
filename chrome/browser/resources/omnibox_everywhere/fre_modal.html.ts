@@ -46,7 +46,7 @@ export function getHtml(this: FreModalElement) {
                   </div>
                   <div class="mac-illustration">
                     <img class="mac-menubar-img"
-                        src="images/mac_menu_bar.png"
+                        src="${this.getMacMenubarImgSrc_()}"
                         alt="">
                   </div>
                 </div>
