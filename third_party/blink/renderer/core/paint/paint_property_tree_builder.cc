@@ -195,7 +195,21 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   PaintPropertyTreeBuilderFragmentContext& context =
       full_context.fragment_context;
 
-  // Disable svg filters applied to restricted local frames.
+  // Disable SVG reference filters on in-process cross-origin frames (e.g.,
+  // sandboxed iframes without `allow-same-origin`, `data:` URLs, or when Site
+  // Isolation is disabled).
+  //
+  // Because a LocalFrameView paints a full subtree of LayoutObjects that each
+  // switch the PaintController to their own pre-computed paint properties
+  // (`FragmentData::LocalBorderBoxProperties()`), the filter must be stripped
+  // from `current_effect` here during PrePaint so that all descendant effect
+  // nodes in the child frame inherit an unfiltered ancestor.
+  //
+  // Note: Out-of-process frames (`RemoteFrameView`) and plugins
+  // (`WebPluginContainerImpl`) are not walked by PrePaint and instead have SVG
+  // filters stripped at paint time in
+  // `EmbeddedContentPainter::RemoveSvgFilterPaint` (which also records the
+  // deprecation counter for both local and remote frames).
   if (frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument()) {
     const blink::EffectPaintPropertyNode* candidate_effect =
         GetFirstParentEffectWithoutReferenceFilter(context.current_effect);

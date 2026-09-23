@@ -137,11 +137,18 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
                .IsCrossOriginToParentOrOuterDocument()) {
         return std::nullopt;
       }
-      // We cannot remove the filter here as that must be done during pre-paint
-      // in PaintPropertyTreeBuilder::SetupContextForFrame, but we still want to
-      // call CountDeprecation below, so we keep kUninitializedType as the type.
+      // For in-process cross-origin frames (`LocalFrameView`), each descendant
+      // LayoutObject paints using its own `LocalBorderBoxProperties()`, so the
+      // filter cannot be removed via `ScopedPaintChunkProperties` here and was
+      // already stripped during PrePaint in
+      // `PaintPropertyTreeBuilder::SetupContextForFrame`. However, we still
+      // fall through with `kUninitializedType` to record `CountDeprecation`
+      // below when the frame is actually painted.
       break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnRemoteFrame:
+      // Out-of-process frames (`RemoteFrameView`) are not walked by PrePaint
+      // and instead emit a single `kForeignLayerRemoteFrame` display item using
+      // the parent's current paint chunk properties, which we override below.
       display_item_type = DisplayItem::kForeignLayerRemoteFrame;
       break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnWebPlugin:

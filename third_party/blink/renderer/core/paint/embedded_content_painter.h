@@ -23,8 +23,12 @@ class EmbeddedContentPainter {
 
   void PaintReplaced(const PaintInfo&, const PhysicalOffset& paint_offset);
 
-  // Returns scoped paint properties that omit SVG filter effects for security,
-  // when painting remote frames and plugins.
+  // Strips SVG reference filter effects when painting out-of-process frames
+  // (`RemoteFrameView`) and plugins (`WebPluginContainerImpl`), and records the
+  // deprecation counter for all cross-origin embedded content (including
+  // in-process cross-origin `LocalFrameView`s, whose filters are already
+  // stripped during PrePaint in
+  // `PaintPropertyTreeBuilder::SetupContextForFrame`).
   [[nodiscard]] static std::optional<ScopedPaintChunkProperties>
   RemoveSvgFilterPaint(const LayoutEmbeddedContent& layout_embedded_content,
                        const PaintInfo& paint_info);
