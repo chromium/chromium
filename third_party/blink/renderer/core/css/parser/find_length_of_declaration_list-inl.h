@@ -17,9 +17,10 @@
 //  b) It is allowed to error out if there are some cases that are
 //     too complicated for it to understand (e.g. cases that would
 //     require simulating the entire block stack).
-//  c) It knows to detect nested rules, and also similarly error out.
-//     All of them have to involve { in some shape or form, so that
-//     is a fairly easy check (except that we ignore it within strings).
+//  c) It knows to detect nested rules and at-rules, and also similarly error
+//     out. Block-like nested rules involve {, while nested at-rules
+//     (e.g. @apply in mixins, which may or may not contain a { } block)
+//     involve @ (outside of strings).
 //
 // We _don't_ support these cases (i.e., we just error out), which
 // we've empirically found to be rare within declaration blocks:
@@ -30,6 +31,7 @@
 //   - Extraneous ) (possible, but adds complications and would be rare)
 //   - CSS comments (would require interactions with string parsing).
 //   - ' within " or " within ' (complex, see below).
+//   - @ (nested at-rules, or unquoted @ in URLs or custom properties).
 //
 // The entry point is FindLengthOfDeclarationList(), which returns
 // the number of bytes until the block's ending }, exclusive.
@@ -239,12 +241,15 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
     // Right braces mean (successful) EOF.
     const __m128i eq_rightbrace = _mm_cmpeq_epi8(x, _mm_set1_epi8('}'));
 
+    // Nested at-rules (e.g. @apply in mixins) cannot be lazily parsed.
+    const __m128i eq_at = _mm_cmpeq_epi8(x, _mm_set1_epi8('@'));
+
     // We generally combine all of the end-parsing situations together
     // and figure out afterwards what the first one was, to determine
     // the return value.
-    const __m128i must_end = eq_backslash | mixed_quote | quoted_newline |
-                             opening_block | comment_start | eq_rightbrace |
-                             parens;
+    const __m128i must_end = eq_backslash | eq_at | mixed_quote |
+                             quoted_newline | opening_block | comment_start |
+                             eq_rightbrace | parens;
     if (_mm_movemask_epi8(must_end) != 0) {
       unsigned idx = __builtin_ctz(_mm_movemask_epi8(must_end));
       UNSAFE_BUFFERS(ptr += idx);
@@ -427,8 +432,10 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
     const __m256i opening_block =
         _mm256_cmpeq_epi8(x | _mm256_set1_epi8(0x20), _mm256_set1_epi8('{'));
     const __m256i eq_rightbrace = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('}'));
+    const __m256i eq_at = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('@'));
     uint64_t must_end =
-        (_mm256_movemask_epi8(opening_block | comment_start | eq_rightbrace) &
+        (_mm256_movemask_epi8(opening_block | comment_start | eq_rightbrace |
+                              eq_at) &
          ~quoted_bitmask) |
         mixed_quote |
         _mm256_movemask_epi8(parens | eq_backslash | quoted_newline);
@@ -587,7 +594,8 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
 
     const uint8x16_t opening_block = (x | vdupq_n_u8(0x20)) == '{';
     const uint8x16_t eq_rightbrace = x == '}';
-    uint8x16_t must_end = eq_backslash | mixed_quote | quoted_newline |
+    const uint8x16_t eq_at = x == '@';
+    uint8x16_t must_end = eq_backslash | eq_at | mixed_quote | quoted_newline |
                           opening_block | comment_start | eq_rightbrace |
                           parens_overflow;
 

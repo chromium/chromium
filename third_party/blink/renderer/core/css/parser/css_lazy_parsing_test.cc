@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -149,6 +150,41 @@ TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedRules) {
   EXPECT_TRUE(HasParsedProperties(rule));
   EXPECT_EQ("color: green;", rule->Properties().AsText());
   EXPECT_TRUE(HasParsedProperties(rule));
+}
+
+TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedAtRules) {
+  ScopedCSSMixinsForTest mixins(true);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = "body { color: green; @apply --m1; } div { color: red; }";
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kYes);
+  StyleRule* rule = RuleAt(style_sheet, 0);
+  EXPECT_TRUE(HasParsedProperties(rule));
+  EXPECT_EQ("color: green;", rule->Properties().AsText());
+  ASSERT_TRUE(rule->ChildRules());
+  EXPECT_EQ(1u, rule->ChildRules()->size());
+  EXPECT_TRUE((*rule->ChildRules())[0]->IsApplyMixinRule());
+}
+
+TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedAtRulesWithBlock) {
+  ScopedCSSMixinsForTest mixins(true);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text =
+      "body { color: green; @apply --m1 { color: blue; } } div { color: red; }";
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kYes);
+  StyleRule* rule = RuleAt(style_sheet, 0);
+  EXPECT_TRUE(HasParsedProperties(rule));
+  EXPECT_EQ("color: green;", rule->Properties().AsText());
+  ASSERT_TRUE(rule->ChildRules());
+  EXPECT_EQ(1u, rule->ChildRules()->size());
+  EXPECT_TRUE((*rule->ChildRules())[0]->IsApplyMixinRule());
 }
 
 #endif  // SIMD

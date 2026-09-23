@@ -109,6 +109,10 @@ TEST_P(FindLengthOfDeclarationListTest, NoSubBlocksAccepted) {
   EXPECT_FALSE(BlockAccepted(".a { --nested-rule: nope; }"));
   EXPECT_FALSE(BlockAccepted("--foo: []"));
   EXPECT_FALSE(BlockAccepted("--foo: {}"));
+  EXPECT_FALSE(BlockAccepted("@apply --m1;"));
+  EXPECT_FALSE(BlockAccepted("@apply --m1 { color: green; }"));
+  // Unquoted @ (e.g. in URLs) is not supported and will cause fallback.
+  EXPECT_FALSE(BlockAccepted("background: url(foo@2x.png)"));
 }
 
 TEST_P(FindLengthOfDeclarationListTest, NoCommentsAccepted) {
@@ -134,6 +138,8 @@ TEST_P(FindLengthOfDeclarationListTest, String) {
   EXPECT_TRUE(BlockAccepted("--foo: '}'"));
   EXPECT_TRUE(BlockAccepted("--foo: '[]'"));
   EXPECT_TRUE(BlockAccepted("--foo: '/* comment */'"));
+  EXPECT_TRUE(BlockAccepted("--foo: \"@apply --m1;\""));
+  EXPECT_TRUE(BlockAccepted("--foo: '@apply --m1;'"));
 
   EXPECT_TRUE(BlockAccepted("--foo: \"this is fine\" 'it really is'"));
   EXPECT_FALSE(BlockAccepted("--foo: \"don't\" } \"accept'this!\""));
