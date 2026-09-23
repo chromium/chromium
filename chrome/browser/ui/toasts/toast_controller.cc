@@ -285,6 +285,8 @@ void ToastController::ShowToast(ToastParams params) {
       toast_registry_->GetToastSpecification(params.toast_id);
   CHECK(current_toast_spec);
   CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
+  CHECK_EQ(current_toast_spec->has_action_button_data_callback(),
+           params.action_button_callback_data.has_value());
   CHECK(current_toast_spec->body_string_id() != 0 ||
         params.body_string_override.has_value());
 
@@ -362,8 +364,10 @@ void ToastController::CreateToast(ToastParams params,
         FormatString(spec->action_button_string_id().value(),
                      params.action_button_string_replacement_params,
                      std::nullopt),
-        spec->action_button_callback().Then(base::BindRepeating(
-            &RecordToastActionButtonClicked, params.toast_id)));
+        spec->GetActionButtonCallback(
+                std::move(params.action_button_callback_data))
+            .Then(base::BindRepeating(&RecordToastActionButtonClicked,
+                                      params.toast_id)));
   }
 
   if (spec->has_menu()) {

@@ -58,6 +58,11 @@ void ToastService::RegisterToast(BrowserWindowInterface* interface) {
 }
 ```
 
+If the action button callback needs to know which item/toast is being acted on,
+you can register a `base::RepeatingCallback<void(const base::Value&)>` and
+supply the identifier via `params.action_button_callback_data = base::Value(id)`
+when invoking the toast.
+
 Note: there are a couple restrictions when declaring a toast specification with
 an action button:
 1. A toast with an action button must also have a "X" close button.

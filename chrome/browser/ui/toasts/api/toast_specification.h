@@ -5,13 +5,17 @@
 #ifndef CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_
 #define CHROME_BROWSER_UI_TOASTS_API_TOAST_SPECIFICATION_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "ui/gfx/vector_icon_types.h"
 
 // ToastSpecification details what the toast should contain when shown.
@@ -37,6 +41,17 @@ class ToastSpecification {
     // button.
     Builder& AddActionButton(int action_button_string_id,
                              base::RepeatingClosure closure);
+
+    // Adds a rounded action button whose `callback` receives the identifier
+    // passed in `ToastParams::action_button_callback_data` when the toast is
+    // invoked. All toasts with an action button must also have a close button.
+    template <std::same_as<base::Value> T = base::Value>
+    Builder& AddActionButton(int action_button_string_id,
+                             base::RepeatingCallback<void(const T&)> callback) {
+      toast_specification_->AddActionButton(action_button_string_id,
+                                            std::move(callback));
+      return *this;
+    }
 
     // Adds a three dot menu to the toast. Toasts with an action button are not
     // allowed to have menu because they must have an "X" close button instead.
@@ -94,6 +109,11 @@ class ToastSpecification {
   base::RepeatingClosure action_button_callback() const {
     return action_button_closure_;
   }
+  bool has_action_button_data_callback() const {
+    return !action_button_data_callback_.is_null();
+  }
+  base::RepeatingClosure GetActionButtonCallback(
+      std::optional<base::Value> data = std::nullopt) const;
 
   bool has_menu() const { return has_menu_; }
   bool is_global_scope() const { return is_global_scope_; }
@@ -106,6 +126,9 @@ class ToastSpecification {
 
   void AddCloseButton();
   void AddActionButton(int string_id, base::RepeatingClosure closure);
+  void AddActionButton(
+      int string_id,
+      base::RepeatingCallback<void(const base::Value&)> callback);
   void AddMenu();
   void AddGlobalScope();
   void SetPersistOnNavigation();
@@ -119,6 +142,8 @@ class ToastSpecification {
   bool has_menu_ = false;
   std::optional<int> action_button_string_id_;
   base::RepeatingClosure action_button_closure_;
+  base::RepeatingCallback<void(const base::Value&)>
+      action_button_data_callback_;
   bool is_global_scope_ = false;
   bool persist_on_navigation_ = false;
   bool has_throbber_ = false;

@@ -339,3 +339,36 @@ TEST_F(ToastControllerUnitTest,
   EXPECT_TRUE(controller->IsShowingToast());
   EXPECT_TRUE(controller->GetToastCloseTimerForTesting()->IsRunning());
 }
+
+TEST_F(ToastControllerUnitTest, ShowToastWithActionButtonCallbackData) {
+  ToastRegistry* const registry = toast_registry();
+  int received_id = 0;
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
+          .AddActionButton(kTestStringResId,
+                           base::BindRepeating(
+                               [](int* out, const base::Value& data) {
+                                 *out = data.GetInt();
+                               },
+                               &received_id))
+          .AddCloseButton()
+          .Build());
+
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  EXPECT_CALL(*controller, CreateToast)
+      .WillOnce([](ToastParams params, const ToastSpecification* spec) {
+        base::RepeatingClosure action_callback = spec->GetActionButtonCallback(
+            std::move(params.action_button_callback_data));
+        action_callback.Run();
+      });
+
+  ToastParams params(ToastId::kLinkCopied);
+  params.action_button_callback_data = base::Value(42);
+  EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
+  EXPECT_EQ(42, received_id);
+}

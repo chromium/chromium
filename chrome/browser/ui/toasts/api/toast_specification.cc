@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "ui/menus/simple_menu_model.h"
@@ -133,6 +136,16 @@ ToastSpecification::ToastSpecification(
 
 ToastSpecification::~ToastSpecification() = default;
 
+base::RepeatingClosure ToastSpecification::GetActionButtonCallback(
+    std::optional<base::Value> data) const {
+  CHECK_EQ(has_action_button_data_callback(), data.has_value());
+  if (has_action_button_data_callback()) {
+    return base::BindRepeating(action_button_data_callback_,
+                               base::OwnedRef(std::move(*data)));
+  }
+  return action_button_closure_;
+}
+
 void ToastSpecification::AddCloseButton() {
   has_close_button_ = true;
 }
@@ -140,8 +153,18 @@ void ToastSpecification::AddCloseButton() {
 void ToastSpecification::AddActionButton(int string_id,
                                          base::RepeatingClosure closure) {
   CHECK(!closure.is_null());
+  CHECK(!action_button_string_id_.has_value());
   action_button_string_id_ = string_id;
   action_button_closure_ = std::move(closure);
+}
+
+void ToastSpecification::AddActionButton(
+    int string_id,
+    base::RepeatingCallback<void(const base::Value&)> callback) {
+  CHECK(!callback.is_null());
+  CHECK(!action_button_string_id_.has_value());
+  action_button_string_id_ = string_id;
+  action_button_data_callback_ = std::move(callback);
 }
 
 void ToastSpecification::AddMenu() {

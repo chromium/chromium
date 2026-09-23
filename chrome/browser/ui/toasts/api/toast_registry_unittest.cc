@@ -90,6 +90,40 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
                "");
 }
 
+TEST_F(ToastRegistryTest, ToastWithActionButtonData) {
+  const int body_string_id = 0;
+  const int action_button_string_id = 1;
+  std::string received_id;
+
+  std::unique_ptr<ToastSpecification> spec =
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  body_string_id)
+          .AddActionButton(action_button_string_id,
+                           base::BindRepeating(
+                               [](std::string* out, const base::Value& data) {
+                                 *out = data.GetString();
+                               },
+                               &received_id))
+          .AddCloseButton()
+          .Build();
+
+  EXPECT_EQ(body_string_id, spec->body_string_id());
+  EXPECT_TRUE(spec->has_close_button());
+  EXPECT_TRUE(spec->action_button_string_id().has_value());
+  EXPECT_EQ(action_button_string_id, spec->action_button_string_id().value());
+  EXPECT_TRUE(spec->has_action_button_data_callback());
+
+  base::RepeatingClosure bound_callback =
+      spec->GetActionButtonCallback(base::Value("toast-123"));
+  bound_callback.Run();
+  EXPECT_EQ("toast-123", received_id);
+
+  // Missing data should hit a CHECK.
+  EXPECT_DEATH(spec->GetActionButtonCallback(), "");
+}
+
 TEST_F(ToastRegistryTest, ToastWithMenu) {
   const int body_string_id = 0;
   std::unique_ptr<ToastSpecification> spec =

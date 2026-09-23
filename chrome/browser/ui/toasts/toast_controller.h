@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -16,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
@@ -68,6 +70,7 @@ struct ToastParams {
   std::optional<ui::ImageModel> image_override;
   std::unique_ptr<ui::MenuModel> menu_model;
   base::ScopedClosureRunner toast_close_callback;
+  std::optional<base::Value> action_button_callback_data;
 };
 
 // Manages the toast that is displayed for a particular browser. Only one toast
