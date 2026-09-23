@@ -631,10 +631,6 @@ class MockAutofillClient : public TestAutofillClient {
                std::optional<FillingProduct> product),
               (override));
   MOCK_METHOD(void,
-              TriggerUserPerceptionOfAutofillSurvey,
-              (FillingProduct, const HatsSurveyStringData&),
-              (override));
-  MOCK_METHOD(void,
               TriggerPersonalizationAndTrustSurveys,
               (FillingProduct filling_product,
                const HatsSurveyStringData& field_filling_stats_data),
@@ -2834,120 +2830,6 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   // cannot be used.
   ASSERT_EQ(adm.GetProfiles().size(), 1u);
   EXPECT_TRUE(adm.GetProfiles()[0]->Compare(filled_profile));
-}
-
-// Test that the user perception of autofill for address filling survey is
-// triggered after a form submission.
-TEST_F(BrowserAutofillManagerTest,
-       UserPerceptionOfAddressAutofillSurvey_MinFormSizeReached_TriggerSurvey) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillAddressUserPerceptionSurvey);
-  // Set up a form with 4 fields (minimum form size to trigger a survey) and
-  // fill them. The specific field types do not matter.
-  const size_t n_fields = 4;
-  FormData form = test::GetFormData(
-      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
-                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
-                  {.role = ADDRESS_HOME_LINE1,
-                   .autocomplete_attribute = "address-line1"},
-                  {.role = ADDRESS_HOME_LINE2,
-                   .autocomplete_attribute = "address-line2"}}});
-  FormsSeen({form});
-  // Fill the form.
-  FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
-  const HatsSurveyStringData expected_field_filling_stats_data = {
-      {"Accepted fields", base::NumberToString(n_fields)},
-      {"Corrected to same type", "0"},
-      {"Corrected to a different type", "0"},
-      {"Corrected to an unknown type", "0"},
-      {"Corrected to empty", "0"},
-      {"Manually filled to same type", "0"},
-      {"Manually filled to a different type", "0"},
-      {"Manually filled to an unknown type", "0"},
-      {"Total corrected", "0"},
-      {"Total filled", base::NumberToString(n_fields)},
-      {"Total unfilled", "0"},
-      {"Total manually filled", "0"},
-      {"Total number of fields", base::NumberToString(n_fields)}};
-
-  EXPECT_CALL(autofill_client(),
-              TriggerUserPerceptionOfAutofillSurvey(
-                  FillingProduct::kAddress, expected_field_filling_stats_data));
-  EXPECT_CALL(autofill_client(), TriggerUserPerceptionOfAutofillSurvey(
-                                     FillingProduct::kCreditCard, _))
-      .Times(0);
-
-  // Simulate form submission.
-  FormSubmitted(response_data);
-}
-
-TEST_F(
-    BrowserAutofillManagerTest,
-    UserPerceptionOfAutofillSurvey_MinFormSizeNotReached_DoNotTriggerSurvey) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillAddressUserPerceptionSurvey);
-  // Set up a form with only one field and fill it.
-  FormData form =
-      test::GetFormData({.fields = {{.role = NAME_FIRST,
-                                     .autocomplete_attribute = "given-name"}}});
-  FormsSeen({form});
-  // Fill the form.
-  FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
-
-  EXPECT_CALL(autofill_client(), TriggerUserPerceptionOfAutofillSurvey)
-      .Times(0);
-
-  // Simulate form submission.
-  FormSubmitted(response_data);
-}
-
-// Test that the user perception of autofill for credit card filling survey is
-// triggered after a form submission.
-TEST_F(BrowserAutofillManagerTest,
-       UserPerceptionOfCreditCardAutofillSurvey_TriggerSurvey) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillCreditCardUserPerceptionSurvey);
-  constexpr size_t n_fields = 3;
-  // Set up a CC form.
-  FormData form = test::GetFormData(
-      {.fields = {{.label = u"Name on Card", .name = u"nameoncard"},
-                  {.label = u"Card Number", .name = u"cardnumber"},
-                  {.label = u"Expiration date", .name = u"exp_date"}}});
-
-  // Notify BrowserAutofillManager of the form.
-  FormsSeen({form});
-
-  // Fill the form.
-  FormData response_data =
-      AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
-
-  const HatsSurveyStringData expected_field_filling_stats_data = {
-      {"Accepted fields", base::NumberToString(n_fields)},
-      {"Corrected to same type", "0"},
-      {"Corrected to a different type", "0"},
-      {"Corrected to an unknown type", "0"},
-      {"Corrected to empty", "0"},
-      {"Manually filled to same type", "0"},
-      {"Manually filled to a different type", "0"},
-      {"Manually filled to an unknown type", "0"},
-      {"Total corrected", "0"},
-      {"Total filled", base::NumberToString(n_fields)},
-      {"Total unfilled", "0"},
-      {"Total manually filled", "0"},
-      {"Total number of fields", base::NumberToString(n_fields)}};
-
-  EXPECT_CALL(autofill_client(), TriggerUserPerceptionOfAutofillSurvey(
-                                     FillingProduct::kCreditCard,
-                                     expected_field_filling_stats_data));
-  EXPECT_CALL(autofill_client(),
-              TriggerUserPerceptionOfAutofillSurvey(
-                  FillingProduct::kAddress, expected_field_filling_stats_data))
-      .Times(0);
-
-  // Simulate form submission.
-  FormSubmitted(response_data);
 }
 
 TEST_F(BrowserAutofillManagerTest, FormEvents_NotifiesSaveAndFillManager) {

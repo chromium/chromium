@@ -226,9 +226,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
                        std::optional<FillingProduct> product) final;
   void OpenGeminiInSidebar(const std::u16string& prompt) final;
   bool IsGlicEnabled() const final;
-  void TriggerUserPerceptionOfAutofillSurvey(
-      FillingProduct filling_product,
-      const HatsSurveyStringData& field_filling_stats_data) final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
   void TriggerPersonalizationAndTrustSurveys(
       FillingProduct filling_product,

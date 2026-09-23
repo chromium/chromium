@@ -701,19 +701,6 @@ class AutofillClient {
   virtual void HideSuggestions(SuggestionHidingReason reason,
                                std::optional<FillingProduct> product) = 0;
 
-  // Maybe triggers a hats survey that measures the user's perception of
-  // Autofill. When triggering happens, the survey dialog will be displayed with
-  // a 5s delay. Note:  This survey should be triggered after form submissions.
-  // `field_filling_stats_data` contains a key-value string representation of
-  // `autofill_metrics::FormGroupFillingStats`. See
-  // chrome/browser/ui/hats/survey_config.cc for details on what values should
-  // be present.
-  // `filling_product` defines whether an address or payments survey will be
-  // displayed.
-  virtual void TriggerUserPerceptionOfAutofillSurvey(
-      FillingProduct filling_product,
-      const HatsSurveyStringData& field_filling_stats_data);
-
   // Triggers a survey to ask the user why they declined saving an address.
   virtual void TriggerDeclinedSaveAddressReasonSurvey();
 

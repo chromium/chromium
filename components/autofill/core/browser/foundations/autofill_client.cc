@@ -308,12 +308,6 @@ void AutofillClient::DismissAutofillAiLoadingDialog() {
 }
 #endif
 
-void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
-    FillingProduct filling_product,
-    const HatsSurveyStringData& field_filling_stats_data) {
-  NOTIMPLEMENTED();
-}
-
 void AutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
   NOTIMPLEMENTED();
 }

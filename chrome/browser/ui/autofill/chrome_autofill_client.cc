@@ -974,34 +974,6 @@ void ChromeAutofillClient::HideSuggestions(
   suggestion_controller_->Hide(reason);
 }
 
-void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
-    FillingProduct filling_product,
-    const HatsSurveyStringData& field_filling_stats_data) {
-#if !BUILDFLAG(IS_ANDROID)
-  CHECK(filling_product == FillingProduct::kAddress ||
-        filling_product == FillingProduct::kCreditCard);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-  CHECK(hats_service);
-  if (filling_product == FillingProduct::kAddress) {
-    // Also add information about whether the granular filling feature is
-    // available". The goal is to correlate the user's perception of autofill
-    // with the feature.
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
-        /*timeout_ms=*/5000, /*product_specific_bits_data=*/{},
-        field_filling_stats_data);
-  } else {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerAutofillCreditCardUserPerception, web_contents(),
-        /*timeout_ms=*/5000, /*product_specific_bits_data=*/
-        {}, field_filling_stats_data);
-  }
-#endif
-}
-
 void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile =

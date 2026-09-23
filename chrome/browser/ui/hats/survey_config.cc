@@ -51,16 +51,12 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
-constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
-    "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillAiSavePrompt[] =
     "autofill-ai-walletable-entity-save-prompt";
 constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[] =
     "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[] =
     "autofill-address-user-declined-save";
-constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
-    "autofill-credit-card-users-perception";
 constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
     "autofill-password-users-perception";
 constexpr char kHatsSurveyTriggerManageYourSavedInfoPerception[] =
@@ -491,19 +487,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   // Autofill surveys.
   survey_configs.emplace_back(
-      &::autofill::features::kAutofillAddressUserPerceptionSurvey,
-      kHatsSurveyTriggerAutofillAddressUserPerception,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          "Accepted fields", "Corrected to same type",
-          "Corrected to a different type", "Corrected to an unknown type",
-          "Corrected to empty", "Manually filled to same type",
-          "Manually filled to a different type",
-          "Manually filled to an unknown type", "Total corrected",
-          "Total filled", "Total unfilled", "Total manually filled",
-          "Total number of fields"});
-
-  survey_configs.emplace_back(
       &::autofill::features::kAutofillAiSavePromptSurvey,
       kHatsSurveyTriggerAutofillAiSavePrompt,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
@@ -518,18 +501,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &::autofill::features::kAutofillAddressUserDeclinedSaveSurvey,
       kHatsSurveyTriggerAutofillAddressUserDeclinedSave);
 
-  survey_configs.emplace_back(
-      &::autofill::features::kAutofillCreditCardUserPerceptionSurvey,
-      kHatsSurveyTriggerAutofillCreditCardUserPerception,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          "Accepted fields", "Corrected to same type",
-          "Corrected to a different type", "Corrected to an unknown type",
-          "Corrected to empty", "Manually filled to same type",
-          "Manually filled to a different type",
-          "Manually filled to an unknown type", "Total corrected",
-          "Total filled", "Total unfilled", "Total manually filled",
-          "Total number of fields"});
   survey_configs.emplace_back(
       &password_manager::features::kAutofillPasswordUserPerceptionSurvey,
       kHatsSurveyTriggerAutofillPasswordUserPerception,
