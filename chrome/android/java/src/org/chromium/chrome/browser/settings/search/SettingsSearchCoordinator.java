@@ -1307,7 +1307,10 @@ public class SettingsSearchCoordinator
             View detailPane = findViewById(R.id.preferences_detail);
             if (searchBox == null || query == null || detailPane == null) return;
 
-            int detailPaneWidth = detailPane.getWidth();
+            int detailPaneWidth =
+                    detailPane.getMeasuredWidth() > 0
+                            ? detailPane.getMeasuredWidth()
+                            : detailPane.getWidth();
             if (detailPaneWidth == 0) {
                 // If the detail pane is not laid out yet, defer until onDetailLayoutUpdated()
                 // is called by MultiColumnSettings. Don't post to mHandler to prevent a busy loop.
