@@ -148,16 +148,23 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   }
 
   const ComputedStyle& style = box_.StyleRef();
+  const bool check_content_box =
+      !RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled() ||
+      box_.HavePhysicalFragmentsChanged();
 
-  if (style.MaskLayers().AnyLayerUsesContentBox() &&
-      box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
-    return PaintInvalidationReason::kLayout;
-
-  if (const auto* layout_replaced = DynamicTo<LayoutReplaced>(box_)) {
-    if (layout_replaced->ReplacedContentRect() !=
-        layout_replaced->ReplacedContentRectFrom(
-            box_.PreviousPhysicalContentBoxRect())) {
+  if (check_content_box) {
+    if (style.MaskLayers().AnyLayerUsesContentBox() &&
+        box_.PreviousPhysicalContentBoxRect() !=
+            box_.PhysicalContentBoxRect()) {
       return PaintInvalidationReason::kLayout;
+    }
+
+    if (const auto* layout_replaced = DynamicTo<LayoutReplaced>(box_)) {
+      if (layout_replaced->ReplacedContentRect() !=
+          layout_replaced->ReplacedContentRectFrom(
+              box_.PreviousPhysicalContentBoxRect())) {
+        return PaintInvalidationReason::kLayout;
+      }
     }
   }
 
@@ -314,6 +321,9 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
         // It also uses the root element's content box in case the background
         // comes from the root element and positioned in content box.
         if (background_layers.AnyLayerUsesContentBox() &&
+            (!RuntimeEnabledFeatures::
+                 PrePaintBoxInvalidatorUsesFragmentsEnabled() ||
+             root_box->HavePhysicalFragmentsChanged()) &&
             root_box->PreviousPhysicalContentBoxRect() !=
                 root_box->PhysicalContentBoxRect()) {
           return BackgroundInvalidationType::kFull;
@@ -359,8 +369,11 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   }
 
   if (background_layers.AnyLayerUsesContentBox() &&
-      box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
+      (!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled() ||
+       box_.HavePhysicalFragmentsChanged()) &&
+      box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect()) {
     return BackgroundInvalidationType::kFull;
+  }
 
   bool scrollable_overflow_change_causes_invalidation =
       (BackgroundGeometryDependsOnScrollableOverflowRect() ||
@@ -475,6 +488,7 @@ void BoxPaintInvalidator::InvalidatePaint() {
 }
 
 bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
+  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   // Replaced elements are clipped to the content box thus we need to check
   // for its size.
   if (box_.IsLayoutReplaced())
@@ -605,14 +619,13 @@ void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
     } else {
       mutable_box.ClearPreviousOverflowData();
     }
-  }
 
-  if (NeedsToSavePreviousContentBoxRect())
-    mutable_box.SavePreviousContentBoxRect();
-  else
-    mutable_box.ClearPreviousContentBoxRect();
+    if (NeedsToSavePreviousContentBoxRect()) {
+      mutable_box.SavePreviousContentBoxRect();
+    } else {
+      mutable_box.ClearPreviousContentBoxRect();
+    }
 
-  if (!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
     if (NeedsToSavePreviousGapGeometries()) {
       mutable_box.SavePreviousGapGeometries();
     } else {

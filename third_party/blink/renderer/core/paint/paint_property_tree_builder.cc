@@ -4159,6 +4159,8 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   const LayoutBox& box = To<LayoutBox>(object_);
 
   if (box.IsLayoutReplaced() &&
+      (!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled() ||
+       box.HavePhysicalFragmentsChanged()) &&
       box.PreviousPhysicalContentBoxRect() != box.PhysicalContentBoxRect()) {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     if (box.IsLayoutEmbeddedContent()) {

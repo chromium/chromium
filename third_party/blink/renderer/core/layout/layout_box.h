@@ -284,17 +284,24 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     kContractToPaddingEdge,
     kContractToContentEdge,
   };
-  PhysicalRect PhysicalContractedBoxRect(ContractionEdge) const;
+  class PhysicalFragmentList;
+  static PhysicalRect PhysicalContractedBoxRect(
+      ContractionEdge edge,
+      const ComputedStyle& style,
+      const PhysicalFragmentList& fragments,
+      const PhysicalSize& size);
 
   // Get the padding box rectangle (same as "client rect").
   PhysicalRect PhysicalPaddingBoxRect() const {
     NOT_DESTROYED();
-    return PhysicalContractedBoxRect(kContractToPaddingEdge);
+    return PhysicalContractedBoxRect(kContractToPaddingEdge, StyleRef(),
+                                     PhysicalFragments(), StitchedSize());
   }
   // Get the content box rectangle.
   PhysicalRect PhysicalContentBoxRect() const {
     NOT_DESTROYED();
-    return PhysicalContractedBoxRect(kContractToContentEdge);
+    return PhysicalContractedBoxRect(kContractToContentEdge, StyleRef(),
+                                     PhysicalFragments(), StitchedSize());
   }
 
   LayoutUnit ContentLogicalWidth() const {
@@ -361,7 +368,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Sets the scrollable-overflow from the current set of layout-results.
   void SetScrollableOverflowFromLayoutResults();
 
-  class PhysicalFragmentList;
   PhysicalRect ComputeScrollableOverflowFromFragments(
       const PhysicalFragmentList& fragments) const;
 
@@ -536,6 +542,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
     wtf_size_t size() const { return layout_results_.size(); }
     bool empty() const { return layout_results_.empty(); }
+    const PhysicalBoxFragment& operator[](wtf_size_t i) const;
 
     bool MayHaveFragmentItems() const;
     bool HasFragmentItems() const {
@@ -951,12 +958,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       }
     }
     void SavePreviousContentBoxRect() {
+      DCHECK(!RuntimeEnabledFeatures::
+                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
       auto& rare_data = GetLayoutBox().EnsureRareData();
       rare_data.has_previous_content_box_rect_ = true;
       rare_data.previous_physical_content_box_rect_ =
           GetLayoutBox().PhysicalContentBoxRect();
     }
     void ClearPreviousContentBoxRect() {
+      DCHECK(!RuntimeEnabledFeatures::
+                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
       if (auto* rare_data = GetLayoutBox().rare_data_.Get())
         rare_data->has_previous_content_box_rect_ = false;
     }
@@ -999,6 +1010,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PreviousPhysicalContentBoxRect() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+      return PhysicalContractedBoxRect(kContractToContentEdge, StyleRef(),
+                                       PreviousPhysicalFragments(),
+                                       PreviousSize());
+    }
     return rare_data_ && rare_data_->has_previous_content_box_rect_
                ? rare_data_->previous_physical_content_box_rect_
                : PhysicalRect(PhysicalOffset(), PreviousSize());

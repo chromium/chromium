@@ -468,52 +468,60 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
                                   box.StyleRef().UsedScrollbarWidth());
 }
 
-const PhysicalBoxFragment* FragmentForEdge(const LayoutBox& box,
-                                           const PhysicalBoxSides& edges) {
+const PhysicalBoxFragment& FragmentForEdge(
+    const LayoutBox::PhysicalFragmentList& fragments,
+    WritingDirectionMode writing_direction,
+    const PhysicalBoxSides& edges) {
   // Should only be here if there are multiple fragments. There's a fast-path
   // otherwise.
-  DCHECK_GT(box.PhysicalFragmentCount(), 1u);
+  DCHECK_GT(fragments.size(), 1u);
 
   // One, and only one, edge should be set.
   DCHECK_EQ(edges.top + edges.right + edges.bottom + edges.left, 1);
 
-  LogicalBoxSides logical_edges =
-      edges.ToLogical(box.StyleRef().GetWritingDirection());
+  LogicalBoxSides logical_edges = edges.ToLogical(writing_direction);
   if (logical_edges.block_end) {
     // The edge we're looking for is the block-end. It is found in the last
     // non-overflowing fragment.
-    for (wtf_size_t idx = box.PhysicalFragmentCount() - 1; idx > 0; idx--) {
-      const PhysicalBoxFragment* fragment = box.GetPhysicalFragment(idx);
-      if (!FindPreviousBreakToken(*fragment)->IsAtBlockEnd()) {
-        return fragment;
+    for (wtf_size_t idx = fragments.size() - 1; idx > 0; idx--) {
+      if (!fragments[idx - 1].GetBreakToken()->IsAtBlockEnd()) {
+        return fragments[idx];
       }
     }
   }
-  return box.GetPhysicalFragment(0);
+  return fragments.front();
 }
 
-const PhysicalBoxFragment* FragmentForLeftEdge(const LayoutBox& box) {
+const PhysicalBoxFragment& FragmentForLeftEdge(
+    const LayoutBox::PhysicalFragmentList& fragments,
+    WritingDirectionMode writing_direction) {
   PhysicalBoxSides edges(false);
   edges.left = true;
-  return FragmentForEdge(box, edges);
+  return FragmentForEdge(fragments, writing_direction, edges);
 }
 
-const PhysicalBoxFragment* FragmentForRightEdge(const LayoutBox& box) {
+const PhysicalBoxFragment& FragmentForRightEdge(
+    const LayoutBox::PhysicalFragmentList& fragments,
+    WritingDirectionMode writing_direction) {
   PhysicalBoxSides edges(false);
   edges.right = true;
-  return FragmentForEdge(box, edges);
+  return FragmentForEdge(fragments, writing_direction, edges);
 }
 
-const PhysicalBoxFragment* FragmentForTopEdge(const LayoutBox& box) {
+const PhysicalBoxFragment& FragmentForTopEdge(
+    const LayoutBox::PhysicalFragmentList& fragments,
+    WritingDirectionMode writing_direction) {
   PhysicalBoxSides edges(false);
   edges.top = true;
-  return FragmentForEdge(box, edges);
+  return FragmentForEdge(fragments, writing_direction, edges);
 }
 
-const PhysicalBoxFragment* FragmentForBottomEdge(const LayoutBox& box) {
+const PhysicalBoxFragment& FragmentForBottomEdge(
+    const LayoutBox::PhysicalFragmentList& fragments,
+    WritingDirectionMode writing_direction) {
   PhysicalBoxSides edges(false);
   edges.bottom = true;
-  return FragmentForEdge(box, edges);
+  return FragmentForEdge(fragments, writing_direction, edges);
 }
 
 }  // namespace
@@ -2775,6 +2783,11 @@ LayoutBox::PhysicalFragmentList::Iterator::operator*() const {
   return To<PhysicalBoxFragment>((*iterator_)->GetPhysicalFragment());
 }
 
+const PhysicalBoxFragment& LayoutBox::PhysicalFragmentList::operator[](
+    wtf_size_t i) const {
+  return To<PhysicalBoxFragment>(layout_results_[i]->GetPhysicalFragment());
+}
+
 const PhysicalBoxFragment& LayoutBox::PhysicalFragmentList::front() const {
   return To<PhysicalBoxFragment>(
       layout_results_.front()->GetPhysicalFragment());
@@ -3794,40 +3807,47 @@ LayoutBox* LayoutBox::LocationContainer() const {
 }
 
 DISABLE_CFI_PERF
-PhysicalRect LayoutBox::PhysicalContractedBoxRect(ContractionEdge edge) const {
-  NOT_DESTROYED();
-  PhysicalRect rect(PhysicalOffset(), StitchedSize());
+PhysicalRect LayoutBox::PhysicalContractedBoxRect(
+    ContractionEdge edge,
+    const ComputedStyle& style,
+    const PhysicalFragmentList& fragments,
+    const PhysicalSize& size) {
+  PhysicalRect rect(PhysicalOffset(), size);
   PhysicalBoxStrut inset;
-  if (PhysicalFragmentCount() == 1u) {
+  if (fragments.size() == 1u) {
     // Optimize for the common case - one fragment.
-    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
-    if (fragment->HasBorders()) {
-      inset += fragment->Borders();
+    const PhysicalBoxFragment& fragment = fragments.front();
+    if (fragment.HasBorders()) {
+      inset += fragment.Borders();
     }
-    if (fragment->HasScrollbar()) {
-      inset += fragment->Scrollbar();
+    if (fragment.HasScrollbar()) {
+      inset += fragment.Scrollbar();
     }
-    if (edge == kContractToContentEdge && fragment->HasPadding()) {
-      inset += fragment->Padding();
+    if (edge == kContractToContentEdge && fragment.HasPadding()) {
+      inset += fragment.Padding();
     }
-  } else if (PhysicalFragmentCount()) {
-    const PhysicalBoxFragment* top_fragment = FragmentForTopEdge(*this);
-    const PhysicalBoxFragment* right_fragment = FragmentForRightEdge(*this);
-    const PhysicalBoxFragment* bottom_fragment = FragmentForBottomEdge(*this);
-    const PhysicalBoxFragment* left_fragment = FragmentForLeftEdge(*this);
-    inset.top += top_fragment->Borders().top + top_fragment->Scrollbar().top;
+  } else if (!fragments.empty()) {
+    const WritingDirectionMode writing_direction = style.GetWritingDirection();
+    const PhysicalBoxFragment& top_fragment =
+        FragmentForTopEdge(fragments, writing_direction);
+    const PhysicalBoxFragment& right_fragment =
+        FragmentForRightEdge(fragments, writing_direction);
+    const PhysicalBoxFragment& bottom_fragment =
+        FragmentForBottomEdge(fragments, writing_direction);
+    const PhysicalBoxFragment& left_fragment =
+        FragmentForLeftEdge(fragments, writing_direction);
+    inset.top += top_fragment.Borders().top + top_fragment.Scrollbar().top;
     inset.right +=
-        right_fragment->Borders().right + right_fragment->Scrollbar().right;
+        right_fragment.Borders().right + right_fragment.Scrollbar().right;
     inset.bottom +=
-        bottom_fragment->Borders().bottom + bottom_fragment->Scrollbar().bottom;
-    inset.left +=
-        left_fragment->Borders().left + left_fragment->Scrollbar().left;
+        bottom_fragment.Borders().bottom + bottom_fragment.Scrollbar().bottom;
+    inset.left += left_fragment.Borders().left + left_fragment.Scrollbar().left;
 
     if (edge == kContractToContentEdge) {
-      inset.top += top_fragment->Padding().top;
-      inset.right += right_fragment->Padding().right;
-      inset.bottom += bottom_fragment->Padding().bottom;
-      inset.left += left_fragment->Padding().left;
+      inset.top += top_fragment.Padding().top;
+      inset.right += right_fragment.Padding().right;
+      inset.bottom += bottom_fragment.Padding().bottom;
+      inset.left += left_fragment.Padding().left;
     }
   }
 
