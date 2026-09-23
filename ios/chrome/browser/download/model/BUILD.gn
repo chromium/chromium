@@ -69,6 +69,7 @@ source_set("model") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/keyed_service/core",

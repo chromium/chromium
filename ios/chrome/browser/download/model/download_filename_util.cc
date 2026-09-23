@@ -4,7 +4,10 @@
 
 #include "ios/chrome/browser/download/model/download_filename_util.h"
 
-#include "third_party/icu/source/common/unicode/normalizer2.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -15,15 +18,14 @@ std::string NormalizeFileName(std::string_view file_name) {
   if (file_name.empty()) {
     return std::string();
   }
-  icu::UnicodeString u16 = icu::UnicodeString::fromUTF8(file_name);
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* nfd = icu::Normalizer2::getNFDInstance(status);
-  if (U_SUCCESS(status) && nfd) {
-    icu::UnicodeString decomposed = nfd->normalize(u16, status);
-    if (U_SUCCESS(status)) {
-      u16 = decomposed;
-    }
-  }
+  // If normalization is unavailable the bridge returns the input unchanged,
+  // in which case the steps below still run on the un-decomposed text.
+  const std::u16string decomposed =
+      base::i18n::IcuBridge::GetInstance().normalizer().Normalize(
+          base::i18n::IcuBridge::Normalizer::NormalizationForm::NFD,
+          base::UTF8ToUTF16(file_name));
+  icu::UnicodeString u16(decomposed.data(),
+                         base::checked_cast<int32_t>(decomposed.length()));
   // Strip Non-Spacing Marks (Mn) in place.
   icu::UnicodeString stripped;
   for (int32_t i = 0; i < u16.length();) {
