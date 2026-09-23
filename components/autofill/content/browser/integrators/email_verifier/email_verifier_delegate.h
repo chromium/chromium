@@ -129,6 +129,8 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       AutofillManager& manager,
       const FormData& form,
       const FieldGlobalId& email_field_id) override;
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             const FormData& form) override;
   void OnAfterFocusOnFormField(AutofillManager& manager,
                                FormGlobalId form_id,
                                FieldGlobalId field_id) override;
@@ -139,6 +141,7 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  void CancelPendingRequests();
   class MetricsObserver : public Observer {
    public:
     MetricsObserver();

@@ -451,27 +451,33 @@ void EmailVerifierDelegate::NotifyFlowCompleted(FieldGlobalId field_id,
   }
 }
 
+void EmailVerifierDelegate::CancelPendingRequests() {
+  if (!pending_request_metrics_.empty()) {
+    // Create a copy of keys and flow results because NotifyFlowCompleted
+    // erases from the map.
+    std::vector<std::pair<FieldGlobalId, EvpAutofillFlowResult>>
+        pending_requests;
+    pending_requests.reserve(pending_request_metrics_.size());
+    for (const auto& [email_field_id, metrics] : pending_request_metrics_) {
+      EvpAutofillFlowResult flow_result =
+          metrics.is_verifiable_status.has_value()
+              ? EvpAutofillFlowResult::kPageNavigatedDuringVerification
+              : EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable;
+      pending_requests.emplace_back(email_field_id, flow_result);
+    }
+    for (const auto& [email_field_id, flow_result] : pending_requests) {
+      NotifyFlowCompleted(email_field_id, flow_result);
+    }
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void EmailVerifierDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->HasCommitted()) {
-    if (!navigation_handle->IsSameDocument() &&
-        !pending_request_metrics_.empty()) {
-      // Create a copy of keys and flow results because NotifyFlowCompleted
-      // erases from the map.
-      std::vector<std::pair<FieldGlobalId, EvpAutofillFlowResult>>
-          pending_requests;
-      pending_requests.reserve(pending_request_metrics_.size());
-      for (const auto& [email_field_id, metrics] : pending_request_metrics_) {
-        EvpAutofillFlowResult flow_result =
-            metrics.is_verifiable_status.has_value()
-                ? EvpAutofillFlowResult::kPageNavigatedDuringVerification
-                : EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable;
-        pending_requests.emplace_back(email_field_id, flow_result);
-      }
-      for (const auto& [email_field_id, flow_result] : pending_requests) {
-        NotifyFlowCompleted(email_field_id, flow_result);
-      }
+    if (!navigation_handle->IsSameDocument()) {
+      CancelPendingRequests();
     }
     // `HasCommitted` returns true even for same document commits, e.g.
     // if the state is cleared on pushState() or #anchor navigations.
@@ -565,6 +571,11 @@ void EmailVerifierDelegate::OnBeforeFormWithEmailVerificationTokenSubmitted(
         .SetAutofill_FormSubmitted(true)
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+void EmailVerifierDelegate::OnBeforeFormSubmitted(AutofillManager& manager,
+                                                  const FormData& form) {
+  CancelPendingRequests();
 }
 
 void EmailVerifierDelegate::OnAfterFocusOnFormField(AutofillManager& manager,

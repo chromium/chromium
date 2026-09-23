@@ -2273,4 +2273,77 @@ TEST_F(EmailVerifierDelegateTest, HideEmailVerificationPopupOnTokenFailure) {
   TriggerDefaultFormFill(*form);
 }
 
+// Verifies that if the form is submitted while the async nonce query is still
+// in-flight (before TriggerVerification runs), the pending callback is
+// invalidated and CheckIfVerifiable is never triggered.
+TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringNonceQuery) {
+  FormStructure* form = SetUpValidForm();
+
+  base::OnceCallback<void(const std::optional<std::string>&)>
+      saved_nonce_callback;
+  EXPECT_CALL(driver(),
+              GetNonceForEmailVerification(form->field(0)->global_id(), _))
+      .WillOnce(
+          [&](FieldGlobalId,
+              base::OnceCallback<void(const std::optional<std::string>&)> cb) {
+            saved_nonce_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  form->field(0)->set_value(u"user@example.com");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
+  ASSERT_TRUE(saved_nonce_callback);
+
+  delegate().OnBeforeFormSubmitted(manager(), form->ToFormData());
+
+  // When the renderer replies with the nonce after form submission, it should
+  // be a no-op because weak pointers were invalidated.
+  std::move(saved_nonce_callback).Run("test_nonce");
+}
+
+// Verifies that if the form is submitted (e.g. clicking a "Continue" button
+// after manually entering an email address) while CheckIfVerifiable is
+// in-flight, the request is terminated and the permission UI is not shown.
+TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringCheckIfVerifiable) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  EmailVerifier::IsVerifiableCallback saved_is_verifiable_callback;
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("user@example.com", _, _))
+      .WillOnce([&](const std::string&, base::OnceClosure,
+                    EmailVerifier::IsVerifiableCallback callback) {
+        saved_is_verifiable_callback = std::move(callback);
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+
+  // Simulate manual typing into the email field, then clicking the submit
+  // button (which blurs the field and submits the form).
+  form->field(0)->set_value(u"user@example.com");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
+  ASSERT_TRUE(saved_is_verifiable_callback);
+
+  delegate().OnBeforeFormSubmitted(manager(), form->ToFormData());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable, 1);
+
+  std::move(saved_is_verifiable_callback)
+      .Run(CreateVerifiableResult("user@example.com"),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(100));
+
+  histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 1);
+}
+
 }  // namespace autofill
