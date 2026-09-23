@@ -1145,8 +1145,7 @@ CorsURLLoader::GetStorageAccessStatus() const {
       isolation_info_.top_frame_origin(),
       url_loader_util::CalculateCookieSettingOverrides(
           factory_cookie_setting_overrides_, devtools_cookie_setting_overrides_,
-          request_,
-          /*emit_metrics=*/false),
+          request_),
       /*cookie_partition_key=*/std::nullopt, request_.permissions_policy);
 }
 

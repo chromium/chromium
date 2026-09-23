@@ -64,13 +64,11 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     base::SequencedTaskRunner* file_task_runner);
 
 // Computes the CookieSettingOverrides to use for a given `ResourceRequest`.
-// May also emit to histograms.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 net::CookieSettingOverrides CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
     net::CookieSettingOverrides devtools_overrides,
-    const ResourceRequest& request,
-    bool emit_metrics);
+    const ResourceRequest& request);
 
 // Determines the IsolationInfo for a request, checking sources in priority:
 // 1. `factory_isolation_info` (if non-empty).

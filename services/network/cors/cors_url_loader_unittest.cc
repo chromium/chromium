@@ -3862,8 +3862,7 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
             request.trusted_params->isolation_info.top_frame_origin(),
             url_loader_util::CalculateCookieSettingOverrides(
                 /*factory_overrides=*/net::CookieSettingOverrides(),
-                /*devtools_overrides=*/net::CookieSettingOverrides(), request,
-                /*emit_metrics=*/false),
+                /*devtools_overrides=*/net::CookieSettingOverrides(), request),
             /*cookie_partition_key=*/std::nullopt, request.permissions_policy);
   }
 

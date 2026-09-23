@@ -398,8 +398,7 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
 net::CookieSettingOverrides CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
     net::CookieSettingOverrides devtools_overrides,
-    const ResourceRequest& request,
-    bool emit_metrics) {
+    const ResourceRequest& request) {
   net::CookieSettingOverrides overrides(factory_overrides);
   if (request.is_outermost_main_frame &&
       network::cors::IsCorsEnabledRequestMode(request.mode)) {
@@ -592,8 +591,7 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   // `url_request.storage_access_status()`.
   url_request.cookie_setting_overrides() = CalculateCookieSettingOverrides(
       factory_params.cookie_setting_overrides,
-      factory_params.devtools_cookie_setting_overrides, request,
-      /*emit_metrics=*/true);
+      factory_params.devtools_cookie_setting_overrides, request);
   url_request.SetLoadFlags(request.load_flags);
   SetRequestCredentials(request.url, factory_params.client_security_state,
                         request.mode, request.credentials_mode,
