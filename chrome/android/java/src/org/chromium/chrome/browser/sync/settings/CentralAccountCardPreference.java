@@ -17,7 +17,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -28,7 +27,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 @NullMarked
 public class CentralAccountCardPreference extends Preference
         implements ProfileDataCache.Observer, ContainmentItem {
-    private CoreAccountInfo mAccountInfo;
+    private DisplayableProfileData mPrimaryAccount;
     private ProfileDataCache mProfileDataCache;
 
     public CentralAccountCardPreference(Context context, AttributeSet attrs) {
@@ -49,8 +48,8 @@ public class CentralAccountCardPreference extends Preference
      * settings screen's onViewCreated method.
      */
     @Initializer
-    public void initialize(CoreAccountInfo accountInfo, ProfileDataCache profileDataCache) {
-        mAccountInfo = accountInfo;
+    public void initialize(CoreAccountInfo primaryAccountInfo, ProfileDataCache profileDataCache) {
+        mPrimaryAccount = profileDataCache.getById(primaryAccountInfo.getId());
         mProfileDataCache = profileDataCache;
     }
 
@@ -72,18 +71,10 @@ public class CentralAccountCardPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        @Nullable DisplayableProfileData profileData =
-                mProfileDataCache.tryGetById(mAccountInfo.getId());
-        if (profileData == null) {
-            // onBindViewHolder can be triggered after the account has been removed but before the
-            // preference page is closed. Skip the binding to avoid crashes in the meantime.
-            return;
-        }
-
         ImageView imageView = (ImageView) holder.findViewById(R.id.central_account_image);
-        imageView.setImageDrawable(profileData.getImage());
+        imageView.setImageDrawable(mPrimaryAccount.getImage());
 
-        Pair<String, String> primaryAndSecondaryText = getPrimaryAndSecondaryText(profileData);
+        Pair<String, String> primaryAndSecondaryText = getPrimaryAndSecondaryText(mPrimaryAccount);
 
         TextView primaryText = (TextView) holder.findViewById(R.id.central_account_primary_text);
         primaryText.setText(primaryAndSecondaryText.first);
@@ -101,6 +92,10 @@ public class CentralAccountCardPreference extends Preference
     /** ProfileDataCache.Observer implementation. */
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
+        if (!profileData.getAccountId().equals(mPrimaryAccount.getAccountId())) {
+            return;
+        }
+        mPrimaryAccount = profileData;
         notifyChanged();
     }
 
