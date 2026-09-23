@@ -466,6 +466,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/notifications/chime/android:java",
       "//chrome/browser/ntp_customization:java",
       "//chrome/browser/ntp_customization:public_java",
+      "//chrome/browser/omaha/android:java",
       "//chrome/browser/omaha/android:ui_java",
       "//chrome/browser/open_in_app/android:java",
       "//chrome/browser/optimization_guide/android:java",
@@ -947,7 +948,6 @@ if (_is_default_toolchain) {
       # TODO(crbug.com/40167648): This is temporary to not break downstream
       # targets.
       "//chrome/browser/notifications:java",
-      "//chrome/browser/omaha/android:java",
     ]
 
     if (password_manager_use_internal_android_resources) {
