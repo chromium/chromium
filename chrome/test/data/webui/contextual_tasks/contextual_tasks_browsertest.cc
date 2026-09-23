@@ -69,15 +69,27 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
+// TODO(crbug.com/565086795): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_App_TracksFinishedTopLevelNavigation \
+  DISABLED_App_TracksFinishedTopLevelNavigation
+#define MAYBE_App_TracksFinishedTopLevelNavigationRace \
+  DISABLED_App_TracksFinishedTopLevelNavigationRace
+#else
+#define MAYBE_App_TracksFinishedTopLevelNavigation \
+  App_TracksFinishedTopLevelNavigation
+#define MAYBE_App_TracksFinishedTopLevelNavigationRace \
+  App_TracksFinishedTopLevelNavigationRace
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       App_TracksFinishedTopLevelNavigation) {
+                       MAYBE_App_TracksFinishedTopLevelNavigation) {
   RunTest("contextual_tasks/app_test.js",
           "runMochaTest('ContextualTasksAppTest', "
           "'tracks finished top level navigation')");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       App_TracksFinishedTopLevelNavigationRace) {
+                       MAYBE_App_TracksFinishedTopLevelNavigationRace) {
   RunTest(
       "contextual_tasks/app_test.js",
       "runMochaTest('ContextualTasksAppTest', "
@@ -332,22 +344,36 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
+// TODO(crbug.com/565086795): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PostMessageHandler DISABLED_PostMessageHandler
+#define MAYBE_TopToolbarTest DISABLED_TopToolbarTest
+#define MAYBE_OverflowMenu DISABLED_OverflowMenu
+#define MAYBE_Toolbar DISABLED_Toolbar
+#define MAYBE_OnboardingTooltip DISABLED_OnboardingTooltip
+#else
+#define MAYBE_PostMessageHandler PostMessageHandler
+#define MAYBE_TopToolbarTest TopToolbarTest
+#define MAYBE_OverflowMenu OverflowMenu
+#define MAYBE_Toolbar Toolbar
+#define MAYBE_OnboardingTooltip OnboardingTooltip
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_PostMessageHandler) {
   RunTest("contextual_tasks/post_message_handler_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TopToolbarTest) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_TopToolbarTest) {
   RunTest("contextual_tasks/top_toolbar_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OverflowMenu) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_OverflowMenu) {
   RunTest("contextual_tasks/overflow_menu_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Toolbar) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Toolbar) {
   RunTest("contextual_tasks/toolbar_test.js", "mocha.run();");
 }
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OnboardingTooltip) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_OnboardingTooltip) {
   RunTest("contextual_tasks/onboarding_tooltip_test.js", "mocha.run();");
 }
 
@@ -367,14 +393,24 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_WebView) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ClipPath) {
+// TODO(crbug.com/565086795): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ClipPath DISABLED_ClipPath
+#define MAYBE_WindowManager DISABLED_WindowManager
+#define MAYBE_Utils DISABLED_Utils
+#else
+#define MAYBE_ClipPath ClipPath
+#define MAYBE_WindowManager WindowManager
+#define MAYBE_Utils Utils
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_ClipPath) {
   RunTest("contextual_tasks/utils/clip_path_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WindowManager) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_WindowManager) {
   RunTest("contextual_tasks/window_manager_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Utils) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Utils) {
   RunTest("contextual_tasks/utils_test.js", "mocha.run();");
 }

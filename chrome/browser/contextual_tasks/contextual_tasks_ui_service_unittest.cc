@@ -3770,8 +3770,16 @@ TEST_F(
       std::nullopt, blink::mojom::WindowFeatures()));
 }
 
+// TODO(crbug.com/565086795): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_HandleNavigation_WebUI_NotSignedIn_Redirects \
+  DISABLED_HandleNavigation_WebUI_NotSignedIn_Redirects
+#else
+#define MAYBE_HandleNavigation_WebUI_NotSignedIn_Redirects \
+  HandleNavigation_WebUI_NotSignedIn_Redirects
+#endif
 TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_WebUI_NotSignedIn_Redirects) {
+       MAYBE_HandleNavigation_WebUI_NotSignedIn_Redirects) {
   base::test::ScopedFeatureList scoped_feature_list(
       contextual_tasks::kContextualTasks);
   GURL webui_url(chrome::kChromeUIContextualTasksURL);
