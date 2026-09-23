@@ -383,6 +383,7 @@ final class SideUiCoordinatorImpl
     // BrowserControlsStateProvider.Observer implementation:
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        ThreadUtils.assertOnUiThread();
         updateUiInternal(
                 new UiUpdateRequest(
                         /* sideUiId= */ null,
@@ -400,6 +401,7 @@ final class SideUiCoordinatorImpl
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
+        ThreadUtils.assertOnUiThread();
         updateUiInternal(
                 new UiUpdateRequest(
                         /* sideUiId= */ null,
@@ -410,6 +412,7 @@ final class SideUiCoordinatorImpl
     // ConfigurationChangedObserver Implementation
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        ThreadUtils.assertOnUiThread();
         updateUiInternal(
                 new UiUpdateRequest(
                         /* sideUiId= */ null,
@@ -420,6 +423,7 @@ final class SideUiCoordinatorImpl
     // FullscreenManager.Observer implementation:
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        ThreadUtils.assertOnUiThread();
         updateUiInternal(
                 new UiUpdateRequest(
                         /* sideUiId= */ null,
@@ -429,6 +433,7 @@ final class SideUiCoordinatorImpl
 
     @Override
     public void onExitFullscreen(Tab tab) {
+        ThreadUtils.assertOnUiThread();
         updateUiInternal(
                 new UiUpdateRequest(
                         /* sideUiId= */ null,
