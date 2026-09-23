@@ -55,8 +55,8 @@ UNIVERSAL_MAC_BINARIES_TAG = 'c5txl4HTukDs4xiCybqz3zK9jxr4N4PwzHRNOhjBDOQC'
 # part after the colon. Or check the CIPD site
 # (https://chrome-infra-packages.appspot.com/) at the path given in
 # MAC_BINARIES_LABEL.
-MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-arm64'
-MAC_BINARIES_TAG = 'p1RIygQsQJfynptWeh8NP28H6JnUn3OhhinU9uAl2mYC'
+MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
+MAC_BINARIES_TAG = 'c5txl4HTukDs4xiCybqz3zK9jxr4N4PwzHRNOhjBDOQC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the Darwin major version number for macOS 10.15. Xcode 26.4 17E192 only
