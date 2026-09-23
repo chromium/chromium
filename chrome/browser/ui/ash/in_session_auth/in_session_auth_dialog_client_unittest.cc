@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,8 @@ namespace {
 const char kPassword[] = "password";
 const char kWrongPassword[] = "wrong_password";
 
-const AccountId kAccountId = AccountId::FromUserEmail("testemail@example.com");
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmail("testemail@example.com");
 
 // InSessionAuthDialogClient's constructor expects to find an instance of
 // ash::InSessionAuthDialogController, so provide a fake that does nothing.

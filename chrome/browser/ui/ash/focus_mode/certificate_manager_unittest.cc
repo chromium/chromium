@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +33,9 @@ using testing::_;
 using testing::Eq;
 using testing::Ne;
 
-const AccountId kTestAccount = AccountId::FromUserEmail("user@example.com");
-const base::TimeDelta kTestBuffer = base::Hours(1);
+constexpr AccountId::Literal kTestAccount =
+    AccountId::Literal::FromUserEmail("user@example.com");
+constexpr base::TimeDelta kTestBuffer = base::Hours(1);
 
 class CertificateManagerTest : public testing::Test {
  public:
