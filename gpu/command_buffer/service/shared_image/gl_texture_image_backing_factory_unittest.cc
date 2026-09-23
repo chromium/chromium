@@ -409,7 +409,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ,
                                SHARED_IMAGE_USAGE_RASTER_READ,
                                SHARED_IMAGE_USAGE_RASTER_WRITE};
@@ -548,7 +548,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
   std::vector<uint8_t> initial_data(required_size);
@@ -653,7 +653,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
@@ -697,7 +697,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;

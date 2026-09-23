@@ -147,6 +147,9 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
       (handle_to_populate->type ==
        gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
     si_info.format.ClearPrefersExternalSampler();
+    if (si_info.alpha_type == kPremul_SkAlphaType) {
+      si_info.alpha_type = kUnpremul_SkAlphaType;
+    }
   }
 
   // Call existing SI method to create a SI from handle. Note that we are doing

@@ -46,13 +46,26 @@ struct SharedImageInfo : public SharedImageMetadata {
                   SharedImageUsageSet usage_in,
                   std::string_view debug_label,
                   uint32_t array_layers_in = 1)
-      : SharedImageMetadata{format_in,           size_in,
-                            color_space_in,      kTopLeft_GrSurfaceOrigin,
-                            kPremul_SkAlphaType, usage_in,
-                            array_layers_in},
+      : SharedImageMetadata{
+            format_in,
+            size_in,
+            color_space_in,
+            kTopLeft_GrSurfaceOrigin,
+            format_in.PrefersExternalSampler() || format_in.is_single_plane()
+                ? kPremul_SkAlphaType
+                : kUnpremul_SkAlphaType,
+            usage_in,
+            array_layers_in},
         debug_label(debug_label) {}
   SharedImageInfo(const SharedImageMetadata& meta, std::string_view debug_label)
-      : SharedImageMetadata(meta), debug_label(debug_label) {}
+      : SharedImageInfo(meta.format,
+                        meta.size,
+                        meta.color_space,
+                        meta.surface_origin,
+                        meta.alpha_type,
+                        meta.usage,
+                        debug_label,
+                        meta.array_layers) {}
 
   std::string debug_label;
 };

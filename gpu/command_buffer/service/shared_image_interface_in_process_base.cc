@@ -187,6 +187,9 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
       (handle_info.handle.type ==
        gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
     si_info_copy.format.ClearPrefersExternalSampler();
+    if (si_info_copy.alpha_type == kPremul_SkAlphaType) {
+      si_info_copy.alpha_type = kUnpremul_SkAlphaType;
+    }
   }
 
   return base::MakeRefCounted<ClientSharedImage>(

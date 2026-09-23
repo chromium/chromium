@@ -809,7 +809,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
   const auto format = viz::MultiPlaneFormat::kNV12;
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   const SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT,
                                      SHARED_IMAGE_USAGE_WEBGPU_READ};
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
@@ -1063,7 +1063,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage{SHARED_IMAGE_USAGE_SCANOUT,
                             SHARED_IMAGE_USAGE_RASTER_READ,
                             SHARED_IMAGE_USAGE_RASTER_WRITE};
@@ -1231,7 +1231,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   auto gr_context_type = get_gr_context_type();
   if (gr_context_type == GrContextType::kGL) {
@@ -1316,7 +1316,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   auto gr_context_type = get_gr_context_type();
   if (gr_context_type == GrContextType::kGL) {
@@ -1396,7 +1396,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   const size_t expected_size = format.EstimatedSizeInBytes(size);
   std::vector<uint8_t> initial_data_small(expected_size / 2);
@@ -1424,7 +1424,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   std::vector<uint8_t> initial_data(format.EstimatedSizeInBytes(size));
   auto backing = backing_factory_->CreateSharedImage(
@@ -1441,7 +1441,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidSize) {
   gfx::Size size(0, 0);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   auto backing = backing_factory_->CreateSharedImage(
@@ -1470,7 +1470,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
 
@@ -1581,7 +1581,7 @@ class IOSurfaceImageBackingFactoryGMBTest
     const bool should_succeed = can_create_gmb_shared_image(get_format());
     auto mailbox = Mailbox::Generate();
     GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-    SkAlphaType alpha_type = kPremul_SkAlphaType;
+    SkAlphaType alpha_type = GetAlphaType(format);
     bool override_rgba_to_bgra = get_gr_context_type() == GrContextType::kGL;
 
     gfx::GpuMemoryBufferHandle handle(gfx::CreateIOSurface(
@@ -1617,7 +1617,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneSize) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ};
 
   // Create an IOSurface with inconsistent plane height. For NV12, the UV plane
@@ -1648,7 +1648,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneStride) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ};
 
   // Create an IOSurface with correct plane dimensions but an explicitly

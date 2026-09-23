@@ -380,7 +380,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    SHARED_IMAGE_USAGE_GLES2_READ |
                                    SHARED_IMAGE_USAGE_GLES2_WRITE;
@@ -516,7 +516,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   gfx::Size size(30, 30);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
@@ -548,7 +548,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, ReadbackToMemory) {
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;

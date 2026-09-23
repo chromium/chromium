@@ -36,7 +36,6 @@ namespace gpu {
 namespace {
 
 constexpr GrSurfaceOrigin kSurfaceOrigin = kTopLeft_GrSurfaceOrigin;
-constexpr SkAlphaType kAlphaType = kPremul_SkAlphaType;
 constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
 
 // NOTE: The factory verifies that the usage for SIs created from empty GMBs
@@ -103,7 +102,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
-      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+      {format, size, kColorSpace, kSurfaceOrigin, GetAlphaType(format), kUsage,
        "TestLabel"},
       gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
@@ -170,7 +169,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
-      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+      {format, size, kColorSpace, kSurfaceOrigin, GetAlphaType(format), kUsage,
        "TestLabel"},
       gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
@@ -208,7 +207,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, InitialData) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
-      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+      {format, size, kColorSpace, kSurfaceOrigin, GetAlphaType(format), kUsage,
        "TestLabel"},
       /*is_thread_safe=*/false, initial_data);
   ASSERT_TRUE(backing);
@@ -243,7 +242,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, InitialDataUploadFailure) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
-      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+      {format, size, kColorSpace, kSurfaceOrigin, GetAlphaType(format), kUsage,
        "TestLabel"},
       /*is_thread_safe=*/false, initial_data);
   EXPECT_FALSE(backing);
@@ -256,7 +255,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, ReadbackToMemory) {
   gfx::Size size(9, 9);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage = kUsage;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 

@@ -218,7 +218,9 @@ class NdkVideoEncoderAcceleratorTest
     auto mailbox = gpu::Mailbox::Generate();
     auto color_space = software_frame->ColorSpace();
     GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-    SkAlphaType alpha_type = kPremul_SkAlphaType;
+    SkAlphaType alpha_type = software_frame->format() == PIXEL_FORMAT_NV12
+                                 ? kUnpremul_SkAlphaType
+                                 : kPremul_SkAlphaType;
     auto sync_token = gpu::SyncToken();
     gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

@@ -80,6 +80,13 @@ void InsertRecordingAndSubmit(gpu::SharedContextState* context,
 namespace gpu {
 
 // static
+SkAlphaType SharedImageTestBase::GetAlphaType(viz::SharedImageFormat format) {
+  return (format.is_multi_plane() && !format.PrefersExternalSampler())
+             ? kUnpremul_SkAlphaType
+             : kPremul_SkAlphaType;
+}
+
+// static
 SkBitmap SharedImageTestBase::MakeRedBitmap(SkColorType color_type,
                                             const gfx::Size& size,
                                             size_t added_stride) {

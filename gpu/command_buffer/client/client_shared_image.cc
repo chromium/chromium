@@ -1012,6 +1012,9 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   // https://issues.chromium.org/339546249.
   if (info.format.PrefersExternalSampler()) {
     info.format.ClearPrefersExternalSampler();
+    if (info.alpha_type == kPremul_SkAlphaType) {
+      info.alpha_type = kUnpremul_SkAlphaType;
+    }
   }
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(

@@ -362,7 +362,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   // NOTE: The specific usage here doesn't matter - the only important thing is
   // that it be a usage that the factory supports so that the test is exercising
@@ -383,7 +383,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest,
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType(format);
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 

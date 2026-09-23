@@ -411,8 +411,8 @@ TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
   }
 }
 
-#if BUILDFLAG(IS_OZONE)
-// On Ozone, the target for native buffers should be used if a
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
+// On Ozone/Android, the target for native buffers should be used if a
 // multiplanar format with external sampling is passed.
 TEST(ClientSharedImageTest,
      GetTextureTarget_MultiplanarFormatsWithExternalSampling) {
@@ -439,6 +439,29 @@ TEST(ClientSharedImageTest,
               static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
 #endif
   }
+}
+
+TEST(ClientSharedImageTest,
+     MultiplanarFormatWithExternalSamplerSharedMemoryHandle) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto format = viz::MultiPlaneFormat::kNV12;
+  format.SetPrefersExternalSampler();
+  SharedImageInfo si_info(format, gfx::Size(100, 100), gfx::ColorSpace(),
+                          kUsage, "TestClearExternalSamplerHandle");
+  EXPECT_EQ(si_info.alpha_type, kPremul_SkAlphaType);
+
+  gfx::GpuMemoryBufferHandle handle =
+      TestSharedImageInterface::CreateGMBHandle(format, gfx::Size(100, 100));
+  auto client_si =
+      sii->CreateSharedImage(si_info, kNullSurfaceHandle,
+                             gfx::BufferUsage::GPU_READ, std::move(handle));
+  ASSERT_TRUE(client_si);
+  EXPECT_FALSE(client_si->format().PrefersExternalSampler());
+  EXPECT_EQ(client_si->alpha_type(), kUnpremul_SkAlphaType);
 }
 #endif
 

@@ -1531,7 +1531,7 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
     shared_image_backing = shared_image_factory_->CreateSharedImage(
         mailbox,
         {viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel"},
+         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage, "TestLabel"},
         /*is_thread_safe=*/false, std::move(gmb_handle));
     if (!shared_image_backing) {
       return {};
@@ -1547,7 +1547,7 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
     shared_image_backing = D3DImageBacking::Create(
         mailbox,
         SharedImageInfo(viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-                        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                        kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
                         "TestLabel"),
         d3d11_texture, std::move(dxgi_shared_handle_state),
         context_state_->GetGLFormatCaps(), GL_TEXTURE_EXTERNAL_OES,
@@ -1562,7 +1562,7 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
   EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kNV12);
   EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
   EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
-  EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
+  EXPECT_EQ(backing->alpha_type(), kUnpremul_SkAlphaType);
   EXPECT_EQ(backing->usage(), usage);
   EXPECT_TRUE(backing->IsCleared());
 
@@ -1862,7 +1862,7 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
       shared_image_factory_.get(), copy_manager_, mailbox,
       std::move(shm_gmb_handle),
       SharedImageInfo(viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                      kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
                       "TestLabel"));
   EXPECT_NE(backing, nullptr);
 
@@ -1871,7 +1871,7 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
   EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kNV12);
   EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
   EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
-  EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
+  EXPECT_EQ(backing->alpha_type(), kUnpremul_SkAlphaType);
   EXPECT_EQ(backing->usage(), usage);
   EXPECT_TRUE(backing->IsCleared());
 
@@ -1998,7 +1998,7 @@ TEST_P(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanarAsyncCopy) {
 void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback() {
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
-  constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
+  constexpr SkAlphaType alpha_type = kOpaque_SkAlphaType;
   constexpr gfx::ColorSpace color_space;
   constexpr gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_RASTER_READ |

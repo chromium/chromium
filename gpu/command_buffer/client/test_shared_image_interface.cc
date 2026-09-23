@@ -207,6 +207,9 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   // sampling is set only with a native GMB handle.
   if (si_info_copy.format.PrefersExternalSampler()) {
     si_info_copy.format.ClearPrefersExternalSampler();
+    if (si_info_copy.alpha_type == kPremul_SkAlphaType) {
+      si_info_copy.alpha_type = kUnpremul_SkAlphaType;
+    }
   }
 
   auto gmb_handle = CreateGMBHandle(si_info.format, si_info_copy.size);
@@ -242,6 +245,9 @@ TestSharedImageInterface::CreateSharedImage(
   if (buffer_handle.type == gfx::SHARED_MEMORY_BUFFER &&
       si_info_copy.format.PrefersExternalSampler()) {
     si_info_copy.format.ClearPrefersExternalSampler();
+    if (si_info_copy.alpha_type == kPremul_SkAlphaType) {
+      si_info_copy.alpha_type = kUnpremul_SkAlphaType;
+    }
   }
 
   return base::MakeRefCounted<ClientSharedImage>(

@@ -607,9 +607,14 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {
       // Clear the external sampler prefs for shared memory case if it is set.
       // https://issues.chromium.org/339546249.
+      SharedImageInfo si_info_copy = si_info;
       viz::SharedImageFormat format_copy = format;
+      SkAlphaType alpha_type_copy = si_info.alpha_type;
       if (format_copy.PrefersExternalSampler()) {
         format_copy.ClearPrefersExternalSampler();
+        if (alpha_type_copy == kPremul_SkAlphaType) {
+          alpha_type_copy = kUnpremul_SkAlphaType;
+        }
       }
       auto* factory =
           GetFactoryByUsage(usage, format_copy, size,
@@ -621,9 +626,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         // Check if CompoundImageBacking can be created. CompoundImageBacking
         // holds a shared memory buffer plus another GPU backing type to satisfy
         // the requirements.
-        SharedImageInfo si_info_copy(format_copy, size, si_info.color_space,
-                                     si_info.surface_origin, si_info.alpha_type,
-                                     usage, debug_label);
+        si_info_copy.format = format_copy;
+        si_info_copy.alpha_type = alpha_type_copy;
         backing = CompoundImageBacking::Create(this, copy_manager(), mailbox,
                                                si_info_copy, buffer_usage);
         use_compound = backing != nullptr;
@@ -631,9 +635,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
       if (!use_compound) {
         if (factory) {
-          SharedImageInfo si_info_copy(format_copy, size, si_info.color_space,
-                                       si_info.surface_origin,
-                                       si_info.alpha_type, usage, debug_label);
+          si_info_copy.format = format_copy;
+          si_info_copy.alpha_type = alpha_type_copy;
           auto temp_backing = factory->CreateSharedImage(
               mailbox, si_info_copy, surface_handle,
               IsSharedBetweenThreads(usage), buffer_usage);

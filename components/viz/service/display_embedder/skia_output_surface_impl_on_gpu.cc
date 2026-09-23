@@ -818,8 +818,7 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = shared_image_factory_->CreateSharedImage(
       mailbox,
-      gpu::SharedImageInfo(format, size, color_space, kTopLeft_GrSurfaceOrigin,
-                           kPremul_SkAlphaType,
+      gpu::SharedImageInfo(format, size, color_space,
                            CopyOutputResult::kDefaultSharedImageUsage,
                            debug_label),
       gpu::kNullSurfaceHandle);
