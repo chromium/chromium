@@ -5069,7 +5069,7 @@
             ]
         }
     ],
-    "ComposeboxDriveContextMenuOptionDesktop": [
+    "ComposeboxDriveContextMenuOptionDesktop_AimTeamfood": [
         {
             "platforms": [
                 "chromeos",
@@ -5079,10 +5079,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Beta_M154",
+                    "name": "Enabled_Aim_Teamfood",
                     "enable_features": [
                         "ComposeboxDriveContextMenuOption",
-                        "ComposeboxDriveContextMenuOptionDisclaimer"
+                        "ComposeboxDriveContextMenuOptionDisclaimer",
+                        "ForceDriveDisclaimerAccepted"
                     ]
                 }
             ]
