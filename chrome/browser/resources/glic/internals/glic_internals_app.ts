@@ -886,6 +886,10 @@ export class GlicInternalsAppElement extends CrLitElement {
         value: debugInfo.glicTieredRolloutV2FeatureEnabled,
       },
       {
+        label: 'GlicSubscriptionBenefitsEligibility Feature Flag',
+        value: debugInfo.glicSubscriptionBenefitsEligibilityFeatureEnabled,
+      },
+      {
         label: 'Platform',
         value: this.getPlatformString_(debugInfo.platform),
       },

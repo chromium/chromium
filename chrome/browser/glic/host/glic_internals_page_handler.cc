@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -562,6 +565,9 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
       base::FeatureList::IsEnabled(features::kGlicTieredRollout);
   debug_info->glic_tiered_rollout_v2_feature_enabled =
       base::FeatureList::IsEnabled(features::kGlicTieredRolloutV2);
+  debug_info->glic_subscription_benefits_eligibility_feature_enabled =
+      base::FeatureList::IsEnabled(
+          features::kGlicSubscriptionBenefitsEligibility);
 
   // Platform and form factor
   debug_info->platform = state->platform;
@@ -657,12 +663,17 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   payload->debug_info = std::move(debug_info);
 
   auto tiered_rollout_info = mojom::TieredRolloutInfo::New();
+  const bool use_subscription_benefits = base::FeatureList::IsEnabled(
+      features::kGlicSubscriptionBenefitsEligibility);
   subscription_eligibility::SubscriptionEligibilityService*
       subscription_eligibility_service = subscription_eligibility::
           SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+  base::flat_set<std::string> subscription_benefits;
   if (subscription_eligibility_service) {
     tiered_rollout_info->ai_subscription_tier =
         subscription_eligibility_service->GetAiSubscriptionTier();
+    subscription_benefits =
+        subscription_eligibility_service->GetSubscriptionBenefits();
   }
   tiered_rollout_info->is_eligible_for_tiered_rollout_v1 =
       base::FeatureList::IsEnabled(features::kGlicTieredRollout) &&
@@ -672,12 +683,22 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
       subscription_eligibility_service &&
       features::GetGlicTieredRolloutV2EligibleTiers().contains(
           subscription_eligibility_service->GetAiSubscriptionTier());
+  tiered_rollout_info->is_eligible_for_benefit_based_rollout =
+      use_subscription_benefits && subscription_eligibility_service &&
+      features::HasAnyEligibleGlicBenefit(
+          subscription_benefits, features::GetGlicEligibleBenefits());
   tiered_rollout_info->is_eligible_overall =
       GlicEnabling::IsEligibleForGlicTieredRollout(profile);
   tiered_rollout_info->glic_rollout_eligibility_pref =
       profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility);
   tiered_rollout_info->tiered_rollout_v2_eligible_tiers =
       features::kGlicTieredRolloutV2EligibleTiers.Get();
+  tiered_rollout_info->subscription_benefits.assign_range(
+      subscription_benefits);
+  tiered_rollout_info->eligible_benefits =
+      features::kGlicEligibleBenefits.Get();
+  tiered_rollout_info->actor_eligible_benefits =
+      features::kGlicActorEligibleBenefits.Get();
 
   std::string sync_status = "Sync Service Not Found";
   if (syncer::SyncService* sync_service =

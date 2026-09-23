@@ -4,7 +4,12 @@
 
 #include "chrome/browser/glic/public/features.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/feature.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/android_buildflags.h"
@@ -141,6 +146,40 @@ const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers() {
     return tiers;
   }());
   return *eligible_tiers;
+}
+
+namespace {
+
+base::flat_set<std::string> ParseBenefitList(const std::string& benefit_list) {
+  std::vector<std::string> benefits = base::SplitString(
+      benefit_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return base::flat_set<std::string>(std::move(benefits));
+}
+
+}  // namespace
+
+BASE_FEATURE(kGlicSubscriptionBenefitsEligibility,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicEligibleBenefits{
+    &kGlicSubscriptionBenefitsEligibility, "glic-eligible-benefits", ""};
+const base::FeatureParam<std::string> kGlicActorEligibleBenefits{
+    &kGlicSubscriptionBenefitsEligibility, "glic-actor-eligible-benefits", ""};
+
+base::flat_set<std::string> GetGlicEligibleBenefits() {
+  return ParseBenefitList(kGlicEligibleBenefits.Get());
+}
+
+base::flat_set<std::string> GetGlicActorEligibleBenefits() {
+  return ParseBenefitList(kGlicActorEligibleBenefits.Get());
+}
+
+bool HasAnyEligibleGlicBenefit(
+    const base::flat_set<std::string>& profile_benefits,
+    const base::flat_set<std::string>& eligible_benefits) {
+  return std::ranges::any_of(eligible_benefits,
+                             [&profile_benefits](const std::string& benefit) {
+                               return profile_benefits.contains(benefit);
+                             });
 }
 
 BASE_FEATURE(kGlicHorizontalTabToolbarButton,

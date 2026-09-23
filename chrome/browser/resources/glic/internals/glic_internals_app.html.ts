@@ -45,6 +45,9 @@ export function getHtml(this: GlicInternalsAppElement) {
               ` : ''}
               ${this.data_?.tieredRolloutInfo ? html`
                 <span class="badge badge-neutral">Tier: ${this.data_.tieredRolloutInfo.aiSubscriptionTier ?? 'N/A'}</span>
+                ${this.data_.tieredRolloutInfo.subscriptionBenefits.length > 0 ? html`
+                  <span class="badge badge-neutral">Benefits: ${this.data_.tieredRolloutInfo.subscriptionBenefits.join(', ')}</span>
+                ` : ''}
               ` : ''}
             </div>
           </div>
@@ -156,7 +159,7 @@ export function getHtml(this: GlicInternalsAppElement) {
       </div>
 
       <div class="card">
-        <div class="card-header">Tiered Rollout / User Tier</div>
+        <div class="card-header">Rollout / User Tier & Benefits</div>
         ${this.data_?.tieredRolloutInfo ? html`
           <table>
             <thead>
@@ -192,6 +195,14 @@ export function getHtml(this: GlicInternalsAppElement) {
               </tr>
               <tr>
                 <td class="status-cell-left">
+                  <span class="badge ${this.data_.tieredRolloutInfo.isEligibleForBenefitBasedRollout ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.tieredRolloutInfo.isEligibleForBenefitBasedRollout ? 'Eligible' : 'Ineligible'}
+                  </span>
+                </td>
+                <td class="property-name">Is Eligible for Benefit-Based Rollout (C++)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
                   <span class="badge ${this.data_.tieredRolloutInfo.glicRolloutEligibilityPref ? 'badge-success' : 'badge-error'}">
                     ${this.data_.tieredRolloutInfo.glicRolloutEligibilityPref ? 'Enabled' : 'Disabled'}
                   </span>
@@ -217,6 +228,32 @@ export function getHtml(this: GlicInternalsAppElement) {
                   <code>${this.data_.tieredRolloutInfo.tieredRolloutV2EligibleTiers || 'None'}</code>
                 </td>
                 <td class="property-name">Eligible Tiers for V2 Rollout (Param)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.debugInfo?.glicSubscriptionBenefitsEligibilityFeatureEnabled ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.debugInfo?.glicSubscriptionBenefitsEligibilityFeatureEnabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                </td>
+                <td class="property-name">Subscription Benefits Eligibility Flag (kGlicSubscriptionBenefitsEligibility)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <code>${this.data_.tieredRolloutInfo.subscriptionBenefits.join(', ') || 'None'}</code>
+                </td>
+                <td class="property-name">Subscription Benefits (sync.subscription_benefits)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <code>${this.data_.tieredRolloutInfo.eligibleBenefits || 'None'}</code>
+                </td>
+                <td class="property-name">Eligible Benefits for Glic (Param)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <code>${this.data_.tieredRolloutInfo.actorEligibleBenefits || 'None'}</code>
+                </td>
+                <td class="property-name">Eligible Benefits for Autobrowse (Param)</td>
               </tr>
             </tbody>
           </table>` :

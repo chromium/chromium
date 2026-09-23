@@ -624,6 +624,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // subscription_eligibility::SubscriptionEligibilityService::Observer:
   void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+  void OnSubscriptionBenefitsUpdated(
+      const base::flat_set<std::string>& subscription_benefits) override;
 
   // Detects changes to capabilities.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;

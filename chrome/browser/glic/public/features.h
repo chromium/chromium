@@ -100,6 +100,28 @@ BASE_DECLARE_FEATURE(kGlicTieredRolloutV2);
 extern const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers;
 const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers();
 
+// When enabled, Glic and Autobrowse (web actuation) entitlement is determined
+// by the synced subscription benefits priority pref
+// (`subscription_eligibility::prefs::kSubscriptionBenefits`) instead of the AI
+// subscription tier (`kAiSubscriptionTier`).
+BASE_DECLARE_FEATURE(kGlicSubscriptionBenefitsEligibility);
+// Comma separated list of subscription benefit values which make a profile
+// eligible for Glic.
+extern const base::FeatureParam<std::string> kGlicEligibleBenefits;
+// Comma separated list of subscription benefit values which make a profile
+// eligible for Autobrowse (web actuation).
+extern const base::FeatureParam<std::string> kGlicActorEligibleBenefits;
+// These parse the params on each call, so that experiment configurations
+// applied after startup (e.g. in tests) are respected.
+base::flat_set<std::string> GetGlicEligibleBenefits();
+base::flat_set<std::string> GetGlicActorEligibleBenefits();
+
+// Returns true if `profile_benefits`, the benefits stored in the subscription
+// benefits priority pref, contains at least one of `eligible_benefits`.
+bool HasAnyEligibleGlicBenefit(
+    const base::flat_set<std::string>& profile_benefits,
+    const base::flat_set<std::string>& eligible_benefits);
+
 BASE_DECLARE_FEATURE(kGlicHorizontalTabToolbarButton);
 
 enum class GlicToolbarButtonLocation {

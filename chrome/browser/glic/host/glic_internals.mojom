@@ -112,13 +112,24 @@ struct TieredRolloutInfo {
   bool is_eligible_for_tiered_rollout_v1;
   // Eligible for V2 (feature flag + tier).
   bool is_eligible_for_tiered_rollout_v2;
-  // Combined eligibility (V1 or V2).
+  // Eligible for benefit-based rollout (feature flag + subscription benefits).
+  bool is_eligible_for_benefit_based_rollout;
+  // Combined eligibility (V1, V2, or benefit-based).
   bool is_eligible_overall;
   // Value of the kGlicRolloutEligibility pref.
   bool glic_rollout_eligibility_pref;
   // Comma separated integers set from experiment config, eligible tiers
   // configured for V2.
   string tiered_rollout_v2_eligible_tiers;
+  // The user's synced subscription benefits (the `sync.subscription_benefits`
+  // priority pref).
+  array<string> subscription_benefits;
+  // Comma separated benefit names set from experiment config, benefits which
+  // make the profile eligible for Glic.
+  string eligible_benefits;
+  // Comma separated benefit names set from experiment config, benefits which
+  // make the profile eligible for Autobrowse (web actuation).
+  string actor_eligible_benefits;
   // Text status of syncing the preference.
   string preference_sync_status;
 };
@@ -139,6 +150,7 @@ struct InternalsDebugInfo {
   bool glic_rollout_feature_enabled;
   bool glic_tiered_rollout_feature_enabled;
   bool glic_tiered_rollout_v2_feature_enabled;
+  bool glic_subscription_benefits_eligibility_feature_enabled;
 
   // Platform and form factor
   Platform platform;

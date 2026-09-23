@@ -1081,6 +1081,15 @@ bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
   if (!subscription_eligibility_service) {
     return false;
   }
+  // When `kGlicSubscriptionBenefitsEligibility` is enabled, rollout eligibility
+  // is determined by the synced subscription benefits priority pref instead of
+  // the AI subscription tier.
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSubscriptionBenefitsEligibility)) {
+    return features::HasAnyEligibleGlicBenefit(
+        subscription_eligibility_service->GetSubscriptionBenefits(),
+        features::GetGlicEligibleBenefits());
+  }
   return base::FeatureList::IsEnabled(features::kGlicTieredRolloutV2) &&
          features::GetGlicTieredRolloutV2EligibleTiers().contains(
              subscription_eligibility_service->GetAiSubscriptionTier());
@@ -1130,11 +1139,18 @@ bool GlicEnabling::ShouldShowWebActuationToggle() const {
   }
 
   // Google one User
-  // If not managed, we check consumer subscription tiers.
+  // If not managed, we check consumer subscription eligibility.
+  const bool use_subscription_benefits = base::FeatureList::IsEnabled(
+      features::kGlicSubscriptionBenefitsEligibility);
   const base::flat_set<int32_t>& allowed_tiers =
       glic::GlicActorPolicyChecker::GetActorEligibleTiers();
-  // If no tiers are allowed, the toggle should never be shown.
-  if (allowed_tiers.empty()) {
+  base::flat_set<std::string> allowed_benefits;
+  if (use_subscription_benefits) {
+    allowed_benefits = features::GetGlicActorEligibleBenefits();
+  }
+  // If nothing is configured as eligible, the toggle should never be shown.
+  if (use_subscription_benefits ? allowed_benefits.empty()
+                                : allowed_tiers.empty()) {
     return false;
   }
 
@@ -1152,6 +1168,10 @@ bool GlicEnabling::ShouldShowWebActuationToggle() const {
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(profile_);
     CHECK(subscription_service);
+    if (use_subscription_benefits) {
+      return features::HasAnyEligibleGlicBenefit(
+          subscription_service->GetSubscriptionBenefits(), allowed_benefits);
+    }
     return allowed_tiers.contains(
         subscription_service->GetAiSubscriptionTier());
   }
@@ -1712,6 +1732,11 @@ void GlicEnabling::OnTieredRolloutStatusMaybeChanged() {
 }
 
 void GlicEnabling::OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) {
+  UpdateEnabledStatus();
+}
+
+void GlicEnabling::OnSubscriptionBenefitsUpdated(
+    const base::flat_set<std::string>& subscription_benefits) {
   UpdateEnabledStatus();
 }
 

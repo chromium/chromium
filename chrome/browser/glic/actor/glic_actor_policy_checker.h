@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_POLICY_CHECKER_H_
 #define CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_POLICY_CHECKER_H_
 
+#include <string>
+
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
@@ -74,6 +77,8 @@ class GlicActorPolicyChecker : public actor::EnterprisePolicyChecker,
 
   // `subscription_eligibility::SubscriptionEligibilityService::Observer`:
   void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+  void OnSubscriptionBenefitsUpdated(
+      const base::flat_set<std::string>& subscription_benefits) override;
 
   // Allows tests to synchronize on allow/blocklist updates.
   base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(

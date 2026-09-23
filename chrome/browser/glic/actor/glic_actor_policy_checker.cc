@@ -5,14 +5,20 @@
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 
 #include <ostream>
+#include <string>
 #include <string_view>
 #include <variant>
+#include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
@@ -20,6 +26,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -173,6 +180,28 @@ bool AccountHasChromeBenefits(Profile& profile,
       subscription_service = subscription_eligibility::
           SubscriptionEligibilityServiceFactory::GetForProfile(&profile);
   CHECK(subscription_service);
+
+  const base::flat_set<std::string> subscription_benefits =
+      subscription_service->GetSubscriptionBenefits();
+  const std::string subscription_benefits_str = base::JoinString(
+      base::span<const std::string>(subscription_benefits), ",");
+
+  // When `kGlicSubscriptionBenefitsEligibility` is enabled, entitlement is
+  // derived from the synced subscription benefits priority pref instead of the
+  // AI subscription tier.
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSubscriptionBenefitsEligibility)) {
+    const bool has_eligible_benefit = features::HasAnyEligibleGlicBenefit(
+        subscription_benefits, features::GetGlicActorEligibleBenefits());
+    journal.Log(GURL(), actor::TaskId(), "AccountHasChromeBenefits",
+                actor::JournalDetailsBuilder()
+                    .Add("subscription_benefits", subscription_benefits_str)
+                    .Add("eligible_benefits",
+                         features::kGlicActorEligibleBenefits.Get())
+                    .Build());
+    return has_eligible_benefit;
+  }
+
   const base::flat_set<int32_t>& eligible_tiers =
       GlicActorPolicyChecker::GetActorEligibleTiers();
   int32_t subscription_tier = subscription_service->GetAiSubscriptionTier();
@@ -181,6 +210,7 @@ bool AccountHasChromeBenefits(Profile& profile,
       actor::JournalDetailsBuilder()
           .Add("subscription_tier", subscription_tier)
           .Add("eligible_tiers", features::kGlicActorEligibleTiers.Get())
+          .Add("subscription_benefits", subscription_benefits_str)
           .Build());
   return eligible_tiers.contains(subscription_tier);
 }
@@ -290,6 +320,11 @@ void GlicActorPolicyChecker::OnExtendedAccountInfoRemoved(
 
 void GlicActorPolicyChecker::OnAiSubscriptionTierUpdated(
     int32_t new_subscription_tier) {
+  OnPrefOrAccountChanged();
+}
+
+void GlicActorPolicyChecker::OnSubscriptionBenefitsUpdated(
+    const base::flat_set<std::string>& subscription_benefits) {
   OnPrefOrAccountChanged();
 }
 
