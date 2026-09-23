@@ -4964,6 +4964,11 @@ message BrowserPublicKeyUploadRequest {
   // Whether the server should create a client certificate for that public key
   // and return it as part of the response or not.
   optional bool provision_certificate = 5;
+
+  // The requested Subject Common Name (CN) for the client certificate.
+  // Populated by the client according to its configured policy (e.g. local
+  // computer name, or profile/device ID). Max length: 64 UTF-8 bytes.
+  optional string common_name = 6;
 }
 
 // Response from server to device for cert upload request.
