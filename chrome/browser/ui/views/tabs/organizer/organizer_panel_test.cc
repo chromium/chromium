@@ -169,8 +169,7 @@ void OrganizerPanelTestBase::SetUp() {
   // to be reset later as it will be torn down with its parent view.
   auto panel = std::make_unique<views::View>();
   panel_ = panel.get();
-  panel_->SetProperty(views::kElementIdentifierKey,
-                      kOrganizerPanelViewElementId);
+  panel_->SetProperty(views::kElementIdentifierKey, kOrganizerPanelElementId);
   SetContextWidget(widget_.get());
 
   BeforeSetPanel();
@@ -227,7 +226,7 @@ OrganizerPanelTestBase::ShowPanel() {
       EnsureNotPresent(OrganizerTrayView::kTrayElementId), TogglePanel(),
       InParallel(RunSubsequence(SetAnimationValue(1.0)),
                  RunSubsequence(WaitForShow(OrganizerTrayView::kTrayElementId),
-                                WaitForShow(kOrganizerPanelViewElementId))));
+                                WaitForShow(kOrganizerPanelElementId))));
   AddDescriptionPrefix(steps, "ShowPanel()");
   return steps;
 }
@@ -238,7 +237,7 @@ OrganizerPanelTestBase::HidePanel() {
       TogglePanel(),
       InParallel(RunSubsequence(SetAnimationValue(0.0)),
                  RunSubsequence(WaitForHide(OrganizerTrayView::kTrayElementId),
-                                WaitForHide(kOrganizerPanelViewElementId))));
+                                WaitForHide(kOrganizerPanelElementId))));
   AddDescriptionPrefix(steps, "HidePanel()");
   return steps;
 }

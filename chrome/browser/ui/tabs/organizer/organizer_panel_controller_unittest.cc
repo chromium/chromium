@@ -197,9 +197,9 @@ class OrganizerPanelControllerMovePanelTest
 
   auto ExpectPanel(bool in_tab_strip) {
     auto steps = Steps(
-        WaitForShow(kOrganizerPanelViewElementId),
+        WaitForShow(kOrganizerPanelElementId),
         CheckView(
-            kOrganizerPanelViewElementId,
+            kOrganizerPanelElementId,
             [this, in_tab_strip](views::View* view) {
               return (in_tab_strip ? static_cast<views::View*>(tab_strip())
                                    : tray_view())
@@ -237,21 +237,21 @@ class OrganizerPanelControllerMovePanelTest
 };
 
 TEST_F(OrganizerPanelControllerMovePanelTest, HorizontalTabStrip) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(false), TogglePanel(),
                   SetAnimationValue(1.0), ExpectPanel(false));
 }
 
 TEST_F(OrganizerPanelControllerMovePanelTest,
        LargeUncollapsedVerticalTabStrip) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(true), TogglePanel(),
                   SetAnimationValue(1.0), ExpectPanel(true));
 }
 
 TEST_F(OrganizerPanelControllerMovePanelTest,
        SmallUncollapsedVerticalTabStrip) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(
                       true, false, true,
                       organizer_panel::kOrganizerPanelMinWidth -
@@ -261,14 +261,14 @@ TEST_F(OrganizerPanelControllerMovePanelTest,
 
 TEST_F(OrganizerPanelControllerMovePanelTest,
        CollapsedVerticalTabStripWithExpandOnHover) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(true, true, true), TogglePanel(),
                   SetAnimationValue(1.0), ExpectPanel(true));
 }
 
 TEST_F(OrganizerPanelControllerMovePanelTest,
        CollapsedVerticalTabStripWithoutExpandOnHover) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(true, true, false), TogglePanel(),
                   SetAnimationValue(1.0), ExpectPanel(false));
 }
@@ -296,13 +296,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 TEST_P(OrganizerPanelControllerConfigurationTest, PanelStartsInCorrectPlace) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId), TogglePanel(),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId), TogglePanel(),
                   SetAnimationValue(1.0),
                   ExpectPanel(flag_enabled() && StartInVerticalTabStrip()));
 }
 
 TEST_P(OrganizerPanelControllerConfigurationTest, PanelMoved) {
-  RunTestSequence(EnsureNotPresent(kOrganizerPanelViewElementId),
+  RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(!StartInVerticalTabStrip()),
                   TogglePanel(), SetAnimationValue(1.0),
                   ExpectPanel(flag_enabled() && !StartInVerticalTabStrip()));

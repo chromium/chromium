@@ -86,7 +86,7 @@ OrganizerPanelView::OrganizerPanelView(BrowserWindowInterface& browser)
   layer()->SetIsFastRoundedCorner(true);
 
   SetPreferredSize(gfx::Size(organizer_panel::kOrganizerPanelMinWidth, 0));
-  SetProperty(views::kElementIdentifierKey, kOrganizerPanelViewElementId);
+  SetProperty(views::kElementIdentifierKey, kOrganizerPanelElementId);
 
   auto& accessibility = GetViewAccessibility();
   accessibility.SetRole(ax::mojom::Role::kPane);

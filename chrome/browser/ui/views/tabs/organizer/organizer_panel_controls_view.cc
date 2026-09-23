@@ -53,13 +53,12 @@ OrganizerPanelControlsView::OrganizerPanelControlsView(
                                          : kCloseChromeRefreshOldIcon,
                                      ui::kColorIcon));
   organizer_button_->SetProperty(views::kElementIdentifierKey,
-                                 kOrganizerPanelButtonElementId);
+                                 kOrganizerPanelCloseButtonElementId);
   UpdateTooltipText();
 
   ConfigureInkDrop(organizer_button_);
 
-  SetProperty(views::kElementIdentifierKey,
-              kOrganizerPanelControlsViewElementId);
+  SetProperty(views::kElementIdentifierKey, kOrganizerPanelControlsElementId);
 }
 
 OrganizerPanelControlsView::~OrganizerPanelControlsView() = default;

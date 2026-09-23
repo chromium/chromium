@@ -20,15 +20,15 @@ TEST_F(OrganizerTrayViewTest, AnimatesOpen) {
   RunTestSequence(
       ShowPanel(),
       CheckView(
-          kOrganizerPanelViewElementId,
+          kOrganizerPanelElementId,
           [](views::View* view) { return view->width(); },
           tray_view()->target_width()),
       CheckView(
-          kOrganizerPanelViewElementId,
-          [](views::View* view) { return view->x(); }, 0),
+          kOrganizerPanelElementId, [](views::View* view) { return view->x(); },
+          0),
       CheckView(
-          kOrganizerPanelViewElementId,
-          [](views::View* view) { return view->y(); }, testing::Gt(0)));
+          kOrganizerPanelElementId, [](views::View* view) { return view->y(); },
+          testing::Gt(0)));
 }
 
 TEST_F(OrganizerTrayViewTest, AnimatesClosed) {
@@ -39,14 +39,14 @@ TEST_F(OrganizerTrayViewTest, PositionsElementsDuringAnimation) {
   RunTestSequence(
       ShowPanel(), SetAnimationValue(0.5),
       CheckView(
-          kOrganizerPanelViewElementId,
+          kOrganizerPanelElementId,
           [](views::View* view) { return view->width(); },
           tray_view()->target_width()),
       CheckView(
-          kOrganizerPanelViewElementId,
-          [](views::View* view) { return view->x(); }, testing::Lt(0)),
+          kOrganizerPanelElementId, [](views::View* view) { return view->x(); },
+          testing::Lt(0)),
       CheckView(
-          kOrganizerPanelViewElementId,
+          kOrganizerPanelElementId,
           [](views::View* view) {
             return view->bounds().right() - view->parent()->width();
           },
@@ -59,15 +59,15 @@ TEST_F(OrganizerTrayViewTest, CloseButtonFade) {
       SetExclusion(organizer_panel::kOrganizerPanelMinWidth / 2, 0),
       SetAnimationValue(0.25),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) { return view->layer()->opacity(); }, 0.0),
       SetAnimationValue(0.5),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) { return view->layer()->opacity(); }, 0.0),
       SetAnimationValue(0.75),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) {
             // Note: this will be less than 50% because the close button has
             // nonzero size and must fade out before it touches the exclusion
@@ -77,7 +77,7 @@ TEST_F(OrganizerTrayViewTest, CloseButtonFade) {
           testing::AllOf(testing::Gt(0.0), testing::Le(0.5))),
       SetAnimationValue(1.0),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) { return view->layer()->opacity(); }, 1.0));
 }
 
@@ -88,7 +88,7 @@ TEST_F(OrganizerTrayViewTest, SizeControlsToExclusionHeight) {
       // Tall exclusion.
       SetExclusion(10, 100),
       CheckView(
-          kOrganizerPanelControlsViewElementId,
+          kOrganizerPanelControlsElementId,
           [](views::View* view) {
             return view->height() +
                    view->GetProperty(views::kMarginsKey)->height();
@@ -96,18 +96,18 @@ TEST_F(OrganizerTrayViewTest, SizeControlsToExclusionHeight) {
           100)
           .SetDescription("Controls area should match exclusion height."),
       CheckView(
-          kOrganizerPanelViewElementId,
-          [](views::View* view) { return view->y(); }, 100)
+          kOrganizerPanelElementId, [](views::View* view) { return view->y(); },
+          100)
           .SetDescription("Controls area should match exclusion height."),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) { return view->y(); }, testing::Gt(0))
           .SetDescription(
               "Button should float down to center in larger header."),
       // Short exclusion.
       SetExclusion(10, 1),
       CheckView(
-          kOrganizerPanelControlsViewElementId,
+          kOrganizerPanelControlsElementId,
           [&expected_top](views::View* view) {
             expected_top = view->bounds().bottom() +
                            view->GetProperty(views::kMarginsKey)->bottom();
@@ -117,11 +117,11 @@ TEST_F(OrganizerTrayViewTest, SizeControlsToExclusionHeight) {
           .SetDescription("For small exclusion, controls height should match "
                           "preferred height."),
       CheckView(
-          kOrganizerPanelButtonElementId,
+          kOrganizerPanelCloseButtonElementId,
           [](views::View* view) { return view->y(); }, 0)
           .SetDescription("For small exclusion, button should be top-aligned."),
       CheckView(
-          kOrganizerPanelViewElementId,
+          kOrganizerPanelElementId,
           [&expected_top](views::View* view) {
             return view->y() - expected_top;
           },
@@ -142,7 +142,7 @@ TEST_F(OrganizerTrayViewTest, ClearingPanelHandledGracefully) {
         panel_ = nullptr;
         state_controller_->SetPanelViewForTesting(nullptr);
       }),
-      WaitForHide(kOrganizerPanelViewElementId),
+      WaitForHide(kOrganizerPanelElementId),
       CheckView(
           OrganizerTrayView::kTrayElementId,
           [](OrganizerTrayView* tray) {

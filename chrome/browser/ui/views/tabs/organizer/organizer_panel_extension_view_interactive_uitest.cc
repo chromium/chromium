@@ -60,10 +60,9 @@ class OrganizerPanelExtensionInteractiveUiTest
     : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   OrganizerPanelExtensionInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{organizer_panel::kOrganizerPanel,
-          {{organizer_panel::kOrganizerPanelInVerticalTabStrip.name, "false"}}},
-         {organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel, {}}},
+    scoped_feature_list_.InitWithFeatures(
+        {organizer_panel::kOrganizerPanel,
+         organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel},
         {});
   }
 
@@ -76,10 +75,6 @@ class OrganizerPanelExtensionInteractiveUiTest
 
     browser()->GetWindow()->SetBounds(
         gfx::Rect(0, 0, kBrowserWindowWidth, kBrowserWindowHeight));
-
-    tabs::VerticalTabStripStateController::From(browser())
-        ->SetVerticalTabsEnabled(true);
-    RunScheduledLayouts();
 
     animation_subscription_ = SubscribeToAnimations(browser());
   }
@@ -112,14 +107,14 @@ class OrganizerPanelExtensionInteractiveUiTest
   auto WaitForPanelOpen() {
     return InParallel(RunSubsequence(WaitForEvent(kBrowserViewElementId,
                                                   kShowAnimationComplete)),
-                      RunSubsequence(WaitForShow(kOrganizerPanelViewElementId)))
+                      RunSubsequence(WaitForShow(kOrganizerPanelElementId)))
         .SetDescription("WaitForPanelOpen()");
   }
 
   auto WaitForPanelClose() {
     return InParallel(RunSubsequence(WaitForEvent(kBrowserViewElementId,
                                                   kHideAnimationComplete)),
-                      RunSubsequence(WaitForHide(kOrganizerPanelViewElementId)))
+                      RunSubsequence(WaitForHide(kOrganizerPanelElementId)))
         .SetDescription("WaitForPanelClose()");
   }
 
