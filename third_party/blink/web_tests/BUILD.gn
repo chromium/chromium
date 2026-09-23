@@ -14,6 +14,9 @@ group("web_tests") {
   data = [
     "VirtualTestSuites",
 
+    # Shared helpers used by legacy tests in webaudio/.
+    "external/wpt/webaudio/resources/",
+
     # === List Test Cases folders here ===
     "accessibility/",
     "animations/",
