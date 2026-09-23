@@ -1335,6 +1335,7 @@ source_set("browser_tests") {
       ":verdict_cache_manager_factory",
       "//base",
       "//base/test:test_support",
+      "//build:branding_buildflags",
       "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/optimization_guide:test_support",

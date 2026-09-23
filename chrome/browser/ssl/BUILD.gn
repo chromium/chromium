@@ -319,6 +319,7 @@ if (!is_android) {
       ":ssl",
       ":test_support",
       "//base",
+      "//build:branding_buildflags",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/captive_portal",
       "//chrome/browser/interstitials:idn_test_support",

@@ -195,6 +195,7 @@ source_set("browser_tests") {
     ":impl",
     ":webui_browser",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//chrome/browser/devtools",
     "//chrome/browser/ui",
     "//chrome/browser/ui/side_panel",
