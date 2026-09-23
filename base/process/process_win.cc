@@ -9,9 +9,13 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/features.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -109,7 +113,42 @@ Process Process::Duplicate() const {
     return Current();
   }
 
+  if (!IsValid()) {
+    return Process();
+  }
+
+  // Duplicating a process handle is not a cheap user-mode operation. Windows
+  // serializes handle operations on locks that are effectively global: the
+  // per-process handle table lock, and for process objects the system-wide
+  // process table lock. Duplication therefore contends with file creation,
+  // process creation and every other handle operation on the machine, and is
+  // prone to priority inversion when a lock holder is descheduled or running at
+  // background priority. Third-party security software compounds this by
+  // registering ObRegisterCallbacks() callbacks for PsProcessType covering
+  // OB_OPERATION_HANDLE_DUPLICATE, which run inline on the calling thread.
+  // Browser UI thread stalls of ~1.4s, and in older reports 12-20s, have been
+  // attributed to this call. See https://crbug.com/40716800 and
+  // https://crbug.com/41439736.
+  //
+  // Measure the cost so that callers on latency-sensitive threads can be found,
+  // and so that removing them can be verified in the field. Threads running a
+  // UI message pump are reported separately because that is where the resulting
+  // stall is user visible as jank or a hang.
+  const ElapsedTimer timer;
   win::ScopedHandle duplicate = process_.Duplicate();
+  const TimeDelta elapsed = timer.Elapsed();
+  // The maximum has to cover the multi-second stalls described above, since
+  // finding those is the whole point of this metric.
+  if (CurrentUIThread::IsSet()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Windows.DuplicateProcess.Duration.UIThread", elapsed, Microseconds(1),
+        Seconds(30), 100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Windows.DuplicateProcess.Duration.OtherThread", elapsed,
+        Microseconds(1), Seconds(30), 100);
+  }
+
   if (!duplicate.is_valid()) {
     return Process();
   }

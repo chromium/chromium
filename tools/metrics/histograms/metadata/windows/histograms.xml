@@ -126,6 +126,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.DuplicateProcess.Duration.{Thread}"
+    units="microseconds" expires_after="2027-09-01">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrdavis@microsoft.com</owner>
+  <owner>src/base/OWNERS</owner>
+  <summary>
+    Time spent inside ::DuplicateHandle() while duplicating a process handle in
+    base::Process::Duplicate(). Recorded on every call that reaches the system
+    call, which excludes duplication of the current process' pseudo handle.
+    Handle operations serialize on the per-process handle table lock and, for
+    process objects, the system-wide process table lock, so duplication contends
+    with file and process creation machine-wide and is prone to priority
+    inversion; third-party security software registering ObRegisterCallbacks()
+    callbacks for PsProcessType adds further inline work. Used to find callers
+    on latency-sensitive threads and to verify in the field that removing them
+    helps. See https://crbug.com/40716800.
+
+    Recorded on {Thread}.
+
+    Warning: this metric may include reports from clients with low resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution.
+  </summary>
+  <token key="Thread">
+    <variant name="OtherThread"
+        summary="threads not running a UI message pump"/>
+    <variant name="UIThread"
+        summary="threads running a UI message pump, where the resulting stall
+                 is visible to the user as jank or a hang"/>
+  </token>
+</histogram>
+
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
     expires_after="2027-02-07">
   <owner>ajgo@chromium.org</owner>

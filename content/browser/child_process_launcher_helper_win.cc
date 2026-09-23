@@ -216,8 +216,9 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
 }
 
-void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
-    base::Process process,
+// static
+void ChildProcessLauncherHelper::ApplyProcessPriorityOnLauncherThread(
+    base::Process& process,
     base::Process::Priority priority) {
   CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   if (process.CanSetPriority()) {

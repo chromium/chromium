@@ -69,8 +69,9 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   NOTREACHED();
 }
 
-void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
-    base::Process process,
+// static
+void ChildProcessLauncherHelper::ApplyProcessPriorityOnLauncherThread(
+    base::Process& process,
     base::Process::Priority priority) {
   NOTREACHED();
 }

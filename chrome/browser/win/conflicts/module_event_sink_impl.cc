@@ -99,7 +99,7 @@ bool GetModuleTimeDateStamp(base::ProcessHandle process,
 // time date stamp of the remote process and forwards the event to the callback
 // on the task runner where the ModuleEventSinkImpl lives.
 void HandleModuleEvent(
-    base::Process process,
+    scoped_refptr<base::RefCountedData<base::Process>> process,
     content::ProcessType process_type,
     uint64_t load_address,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -120,15 +120,17 @@ void HandleModuleEvent(
   // Look up the various pieces of module metadata in the remote process.
 
   base::FilePath module_path;
-  if (!GetModulePath(process.Handle(), module, &module_path))
+  if (!GetModulePath(process->data.Handle(), module, &module_path)) {
     return;
+  }
 
   uint32_t module_size = 0;
-  if (!GetModuleSize(process.Handle(), module, &module_size))
+  if (!GetModuleSize(process->data.Handle(), module, &module_size)) {
     return;
+  }
 
   uint32_t module_time_date_stamp = 0;
-  if (!GetModuleTimeDateStamp(process.Handle(), load_address,
+  if (!GetModuleTimeDateStamp(process->data.Handle(), load_address,
                               &module_time_date_stamp)) {
     return;
   }
@@ -145,7 +147,8 @@ ModuleEventSinkImpl::ModuleEventSinkImpl(
     base::Process process,
     content::ProcessType process_type,
     const OnModuleLoadCallback& on_module_load_callback)
-    : process_(std::move(process)),
+    : process_(base::MakeRefCounted<base::RefCountedData<base::Process>>(
+          std::move(process))),
       process_type_(process_type),
       on_module_load_callback_(on_module_load_callback) {}
 
@@ -172,12 +175,19 @@ void ModuleEventSinkImpl::OnModuleEvents(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (uint64_t load_address : module_load_addresses) {
-    // Handle the event on a background sequence.
+    // Handle the event on a background sequence. `process_` is shared with the
+    // task rather than duplicated: duplicating a process handle contends on the
+    // system's handle and process table locks and is prone to priority
+    // inversion. This method receives a batch of load addresses and is called
+    // repeatedly while a child process starts up, so duplicating per event put
+    // a large number of handle operations on the UI thread. Browser main thread
+    // janks of 12-20s were attributed to this exact call in
+    // https://crbug.com/41439736. See base::Process::Duplicate().
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-        base::BindOnce(&HandleModuleEvent, process_.Duplicate(), process_type_,
+        base::BindOnce(&HandleModuleEvent, process_, process_type_,
                        load_address,
                        base::SequencedTaskRunner::GetCurrentDefault(),
                        on_module_load_callback_));

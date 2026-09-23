@@ -302,26 +302,30 @@ ChildProcessLauncherHelper::GetEffectiveChildBindingState() {
           env, java_peer_));
 }
 
-void ChildProcessLauncherHelper::DumpProcessStack(
-    const base::Process& process) {
+void ChildProcessLauncherHelper::DumpProcessStack() {
+  if (!child_process_.IsValid()) {
+    return;
+  }
   JNIEnv* env = AttachCurrentThread();
   CHECK(env, base::NotFatalUntil::M159);
-  return Java_ChildProcessLauncherHelperImpl_dumpProcessStack(env, java_peer_,
-                                                              process.Handle());
+  return Java_ChildProcessLauncherHelperImpl_dumpProcessStack(
+      env, java_peer_, child_process_.Handle());
 }
 
 void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
-    base::Process process,
     const RenderProcessPriority& priority,
     base::TimeTicks post_from_ui_thread_time) {
+  if (!child_process_.IsValid()) {
+    return;
+  }
   TRACE_EVENT(
       "content",
       "ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread",
-      "pid", process.Handle());
+      "pid", child_process_.Handle());
   JNIEnv* env = AttachCurrentThread();
   CHECK(env, base::NotFatalUntil::M159);
   int32_t result = Java_ChildProcessLauncherHelperImpl_setPriority(
-      env, java_peer_, process.Handle(), priority.visible,
+      env, java_peer_, child_process_.Handle(), priority.visible,
       priority.has_media_stream, priority.has_immersive_xr_session,
       priority.has_foreground_service_worker, priority.frame_depth,
       priority.intersects_viewport, priority.boost_for_pending_views,

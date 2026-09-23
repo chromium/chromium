@@ -109,6 +109,17 @@ class BASE_EXPORT Process {
   ProcessHandle Handle() const;
 
   // Returns a second object that represents this process.
+  //
+  // Warning: on Windows this duplicates the process handle, which is not a
+  // cheap user-mode operation. Handle duplication takes the per-process handle
+  // table lock and, for process objects, the system-wide process table lock, so
+  // it contends with handle and process operations machine-wide and is prone to
+  // priority inversion. Third-party security software compounds this by
+  // registering ObRegisterCallbacks() callbacks that run inline on the calling
+  // thread. Stalls of seconds have been observed. Avoid calling this on the UI
+  // thread or any other latency-sensitive thread: pass an existing Process by
+  // reference where possible, or duplicate it off of the critical path. See
+  // https://crbug.com/40716800.
   Process Duplicate() const;
 
   // Relinquishes ownership of the handle and sets this to kNullProcessHandle.

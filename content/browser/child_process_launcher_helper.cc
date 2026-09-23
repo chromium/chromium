@@ -429,6 +429,13 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
           std::move(invitation), process.process.Handle(),
           mojo_channel_->TakeLocalEndpoint(), process_error_callback_);
     }
+
+    // Keep a launcher thread copy of the handle so that later operations on
+    // the child don't have to duplicate it on the client thread. See
+    // `child_process_`. If this fails the copy is left invalid and those
+    // operations are skipped, which at worst means the child keeps its launch
+    // priority; nothing here depends on the copy for correctness.
+    child_process_ = process.process.Duplicate();
   }
 
   client_task_runner_->PostTask(
@@ -465,6 +472,22 @@ void ChildProcessLauncherHelper::PostLaunchOnClientThread(
 
 std::string ChildProcessLauncherHelper::GetProcessType() {
   return command_line()->GetSwitchValueASCII(switches::kProcessType);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
+    base::Process::Priority priority) {
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
+  if (!child_process_.IsValid()) {
+    return;
+  }
+  ApplyProcessPriorityOnLauncherThread(child_process_, priority);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+void ChildProcessLauncherHelper::CloseProcessOnLauncherThread() {
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M160);
+  child_process_.Close();
 }
 
 // static
