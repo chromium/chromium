@@ -683,11 +683,17 @@ Response PageHandler::Enable(
     FrameTreeNode* frame_tree_node = host_->frame_tree_node();
     NavigationRequest* navigation_request =
         host_->frame_tree_node()->navigation_request();
+    // A client that is not allowed to navigate the page to a URL must not
+    // learn it either (see GetNavigationHistory()). Redact the URL rather
+    // than omitting the event, so that navigation bookkeeping in clients
+    // keeps working.
+    const GURL& pending_url = navigation_request->common_params().url;
+    const bool may_disclose = !CheckNavigationAllowed(pending_url).IsError();
     frontend_->FrameStartedNavigating(
         frame_tree_node->current_frame_host()
             ->devtools_frame_token()
             .ToString(),
-        navigation_request->common_params().url.spec(),
+        may_disclose ? pending_url.spec() : std::string(),
         navigation_request->devtools_navigation_token().ToString(),
         GetFrameStartedNavigatingNavigationTypeString(
             navigation_request->common_params().navigation_type));
@@ -1188,9 +1194,16 @@ void PageHandler::DidStartNavigating(
     return;
   }
 
+  // A client that is not allowed to navigate the page to a URL must not
+  // learn it either (see GetNavigationHistory()). Redact the URL rather than
+  // omitting the event, so that navigation bookkeeping in clients keeps
+  // working. This event fires at FrameTreeNode::TakeNavigationRequest() time,
+  // BEFORE NavigationRequest::OnStartChecksComplete() force-detaches sessions
+  // whose client fails MayAttachToURL(), so it must gate disclosure itself.
+  const bool may_disclose = host_ && !CheckNavigationAllowed(url).IsError();
   frontend_->FrameStartedNavigating(
-      ftn.current_frame_host()->devtools_frame_token().ToString(), url.spec(),
-      loader_id.ToString(),
+      ftn.current_frame_host()->devtools_frame_token().ToString(),
+      may_disclose ? url.spec() : std::string(), loader_id.ToString(),
       GetFrameStartedNavigatingNavigationTypeString(navigation_type));
 }
 

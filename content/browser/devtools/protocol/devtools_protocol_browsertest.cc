@@ -2116,6 +2116,59 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       FrameStartedNavigatingRedactsInaccessibleUrls) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL file_url = GetTestUrl("devtools", "navigation.html");
+  const GURL http_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL allowed_url = embedded_test_server()->GetURL("/title2.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/title1.html");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), http_url, 1);
+
+  set_agent_host_can_close();
+  SetMayReadLocalFiles(false);
+  SetNotAttachableHosts({"disallowed.test"});
+  Attach();
+  SendCommandSync("Page.enable");
+
+  // Accessible URLs are disclosed in Page.frameStartedNavigating.
+  NavigateToURLBlockUntilNavigationsComplete(shell(), allowed_url, 1);
+  base::DictValue notification =
+      WaitForNotification("Page.frameStartedNavigating", true);
+  EXPECT_EQ(allowed_url.spec(), *notification.FindString("url"));
+
+  // Navigating to a file:// URL without local file access still emits
+  // Page.frameStartedNavigating, but redacts the URL.
+  ClearNotifications();
+  NavigateToURLBlockUntilNavigationsComplete(shell(), file_url, 1);
+  notification = WaitForNotification("Page.frameStartedNavigating", true);
+  EXPECT_EQ("", *notification.FindString("url"));
+  EXPECT_FALSE(notification.FindString("loaderId")->empty());
+
+  // Calling Page.enable while a navigation to an inaccessible URL is already
+  // pending also redacts the URL in the catch-up FrameStartedNavigating event.
+  Detach();
+  NavigateToURLBlockUntilNavigationsComplete(shell(), http_url, 1);
+  TestNavigationManager pending_file_nav(shell()->web_contents(), file_url);
+  shell()->LoadURL(file_url);
+  ASSERT_TRUE(pending_file_nav.WaitForRequestStart());
+
+  Attach();
+  SendCommandAsync("Page.enable");
+  notification = WaitForNotification("Page.frameStartedNavigating", true);
+  EXPECT_EQ("", *notification.FindString("url"));
+  ASSERT_TRUE(pending_file_nav.WaitForNavigationFinished());
+
+  // Navigating to a host that fails MayAttachToURL() fires DidStartNavigating()
+  // before the session is force-detached; the URL must be redacted there too.
+  ClearNotifications();
+  shell()->LoadURL(disallowed_url);
+  notification = WaitForNotification("Page.frameStartedNavigating", true);
+  EXPECT_EQ("", *notification.FindString("url"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NavigateToHistoryEntryWithFileUrlRequiresFileAccess) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL file_url = GetTestUrl("devtools", "navigation.html");
