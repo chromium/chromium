@@ -58,6 +58,7 @@ public class NextTabSelectionUtil {
      *   <li>If the current tab is not closing, stay on the current tab.
      *   <li>If closing upon exit, return the most recent active tab.
      *   <li>If hierarchical next tab policy is active, prefer the parent tab (if expanded).
+     *   <li>Prefer a non-closing tab in the same expanded tab group as the closing tab.
      *   <li>Fall back to finding the nearest expanded non-closing tab (or collapsed if no expanded
      *       tab exists).
      * </ol>
@@ -121,24 +122,12 @@ public class NextTabSelectionUtil {
 
         // Select a nearby tab if one exists.
         if (tabCloseType != TabCloseType.ALL) {
-            int anchorIndex = -1;
+            int anchorIndex = findAnchorIndex(model, currentTab, closingTabs);
 
-            // Search for the first closing tab that is not a new tab.
-            for (Tab tab : closingTabs) {
-                if (isNotNewTab(tab)) {
-                    anchorIndex = model.indexOf(tab);
-                    break;
-                }
-            }
-
-            // Fallback to the active tab if all closing tabs were blank new tabs.
-            if (anchorIndex == -1 && currentTab != null) {
-                anchorIndex = model.indexOf(currentTab);
-            }
-
-            // Ultimate fallback to the first closing tab if all else fails.
-            if (anchorIndex == -1) {
-                anchorIndex = model.indexOf(closingTabs.get(0));
+            // Prefer a tab in the same tab group as the anchor tab.
+            Tab sameGroupTab = findNotClosingTabInSameGroup(model, anchorIndex, closingTabs);
+            if (validNextTab(sameGroupTab)) {
+                return sameGroupTab;
             }
 
             Tab nearbyTab = findNearbyNotClosingTab(model, anchorIndex, closingTabs);
@@ -206,6 +195,75 @@ public class NextTabSelectionUtil {
         if (expandedLeftCandidate != null) return expandedLeftCandidate;
         if (collapsedRightCandidate != null) return collapsedRightCandidate;
         return collapsedLeftCandidate;
+    }
+
+    /**
+     * Returns the index that nearby tab selection is anchored on: the current tab if it is closing
+     * and is not a blank new tab, else the first closing tab that is not a blank new tab, else the
+     * current tab, else the first closing tab.
+     *
+     * <p>The current tab is preferred because its selection is the one being replaced, so staying
+     * near it is less disruptive than moving to wherever an unrelated closing tab happened to be.
+     *
+     * @param model The {@link TabModel} to act on.
+     * @param currentTab The currently selected tab, or null if there is none.
+     * @param closingTabs The list of tabs that are closing.
+     * @return The index to anchor selection on.
+     */
+    private static int findAnchorIndex(
+            TabModel model, @Nullable Tab currentTab, List<Tab> closingTabs) {
+        // Prefer the current tab, as its selection is the one being replaced.
+        if (currentTab != null && isNotNewTab(currentTab) && closingTabs.contains(currentTab)) {
+            int currentIndex = model.indexOf(currentTab);
+            if (currentIndex != TabModel.INVALID_TAB_INDEX) return currentIndex;
+        }
+
+        // Search for the first closing tab that is not a new tab.
+        for (Tab tab : closingTabs) {
+            if (isNotNewTab(tab)) {
+                int index = model.indexOf(tab);
+                if (index != TabModel.INVALID_TAB_INDEX) return index;
+            }
+        }
+
+        // Fallback to the active tab if all closing tabs were blank new tabs.
+        if (currentTab != null) {
+            int currentIndex = model.indexOf(currentTab);
+            if (currentIndex != TabModel.INVALID_TAB_INDEX) return currentIndex;
+        }
+
+        // Ultimate fallback to the first closing tab if all else fails.
+        return model.indexOf(closingTabs.get(0));
+    }
+
+    /**
+     * Returns the nearest non-closing tab that shares a tab group with the tab at {@code
+     * anchorIndex}. This mirrors the desktop behavior in {@code
+     * TabStripModel::DetermineNewSelectedIndex}, which prefers a tab in the closing tab's parent
+     * collection before falling back to the nearest tab overall.
+     *
+     * @param model The {@link TabModel} to act on.
+     * @param anchorIndex The index that selection is anchored on.
+     * @param closingTabs The list of tabs that are closing.
+     * @return The nearest non-closing tab in the same tab group, or null if the anchor tab is not
+     *     grouped, its group is collapsed, or every tab in the group is closing.
+     */
+    private static @Nullable Tab findNotClosingTabInSameGroup(
+            TabModel model, int anchorIndex, List<Tab> closingTabs) {
+        if (anchorIndex == TabModel.INVALID_TAB_INDEX) return null;
+
+        Tab anchorTab = model.getTabAt(anchorIndex);
+        if (anchorTab == null) return null;
+
+        // Don't keep selection inside a collapsed tab group.
+        Token groupId = anchorTab.getTabGroupId();
+        if (groupId == null || model.getTabGroupCollapsed(groupId)) return null;
+
+        List<Tab> tabsInGroup = model.getTabsInGroup(groupId);
+        int indexInGroup = tabsInGroup.indexOf(anchorTab);
+        if (indexInGroup == -1) return null;
+
+        return findNearbyNotClosingTab(tabsInGroup, indexInGroup, closingTabs);
     }
 
     private static boolean isTabGroupCollapsed(TabModel model, Tab tab) {
