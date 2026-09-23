@@ -349,9 +349,12 @@ export class PageActionIconElement extends PageActionIconElementBase {
     }
   }
 
-  protected onPointerdown_() {
+  protected onPointerdown_(e: Event) {
     this.browserProxy_.toolbarUIHandler.onPageActionPointerDown(
         this.state.pageActionId);
+    // Prevent us from taking focus, since that may cause the omnibox popup
+    // to close, and disable the AIM button in turn.
+    e.preventDefault();
   }
 
   // TODO(crbug.com/489109708): Deduplicate help bubble tracking logic across
