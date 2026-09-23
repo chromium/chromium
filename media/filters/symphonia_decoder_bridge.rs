@@ -774,8 +774,14 @@ pub fn create_audio_buffer(
     mut sample_buffer: SymphoniaRawSampleBuffer,
 ) -> Result<SymphoniaRawSampleBuffer, String> {
     let sample_rate = buffer_ref.spec().rate();
-    let num_frames = buffer_ref.frames();
+    if sample_rate == 0 {
+        return Err("invalid sample rate: 0".to_string());
+    }
     let channel_count = buffer_ref.spec().channels().count();
+    if channel_count == 0 {
+        return Err("invalid channel count: 0".to_string());
+    }
+    let num_frames = buffer_ref.frames();
     let channel_mask = match buffer_ref.spec().channels() {
         Channels::Positioned(pos) => pos.bits(),
         _ => 0,
@@ -932,8 +938,20 @@ impl SymphoniaDecoder {
             .map_err(|e| (ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat, e))?;
 
         let sample_rate = buffer.spec().rate();
-        let num_frames = buffer.frames();
+        if sample_rate == 0 {
+            return Err((
+                ffi::SymphoniaDecodeStatus::DecodeError,
+                "invalid sample rate: 0".to_string(),
+            ));
+        }
         let channel_count = buffer.spec().channels().count();
+        if channel_count == 0 {
+            return Err((
+                ffi::SymphoniaDecodeStatus::DecodeError,
+                "invalid channel count: 0".to_string(),
+            ));
+        }
+        let num_frames = buffer.frames();
         let channel_mask = match buffer.spec().channels() {
             Channels::Positioned(pos) => pos.bits(),
             _ => 0,

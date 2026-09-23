@@ -283,4 +283,36 @@ TEST(SymphoniaAudioDecoderTest, MidstreamSampleRateAndChannelChange) {
   EXPECT_EQ(out2->channel_layout(), CHANNEL_LAYOUT_STEREO);
 }
 
+TEST(SymphoniaAudioDecoderTest, RejectsInvalidDecodedParameters) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding}, {});
+
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
+                            ChannelLayoutConfig::Stereo(), 48000,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  base::test::TestFuture<DecoderStatus> init_future;
+  base::test::TestFuture<scoped_refptr<AudioBuffer>> output_future;
+  decoder->Initialize(config, nullptr, init_future.GetCallback(),
+                      output_future.GetRepeatingCallback(), base::DoNothing());
+  EXPECT_TRUE(init_future.Get().is_ok());
+
+  // Corrupted frame with invalid header.
+  const uint8_t corrupted_data[] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
+  auto buf = DecoderBuffer::CopyFrom(corrupted_data);
+  buf->set_timestamp(base::Microseconds(0));
+
+  base::test::TestFuture<DecoderStatus> decode_future;
+  decoder->Decode(std::move(buf), decode_future.GetCallback());
+  // First corrupted buffer is dropped gracefully.
+  EXPECT_TRUE(decode_future.Get().is_ok());
+  EXPECT_FALSE(output_future.IsReady());
+}
+
 }  // namespace media

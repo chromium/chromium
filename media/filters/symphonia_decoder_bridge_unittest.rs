@@ -1089,3 +1089,20 @@ fn test_reset_required_reinstantiates_decoder() {
     expect_true!(result.decoder.copy_decoded_samples(&mut dst));
     expect_eq!(&dst, &pcm_data);
 }
+
+// Verify that create_audio_buffer rejects invalid zero sample rate or channels.
+#[gtest(SymphoniaDecoderBridgeTest, RejectsZeroSampleRateAndChannels)]
+fn test_rejects_zero_sample_rate_and_channels() {
+    let spec_zero_rate = AudioSpec::new(0, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut buf_zero_rate = AudioBuffer::<i16>::new(spec_zero_rate, 4);
+    buf_zero_rate.render_uninit(Some(4));
+    let sample_buf = SymphoniaRawSampleBuffer::new_buffer_for(
+        &GenericAudioBufferRef::S16(&buf_zero_rate),
+        ffi::SymphoniaAudioCodec::Flac,
+        2,
+    )
+    .unwrap();
+    expect_true!(
+        create_audio_buffer(GenericAudioBufferRef::S16(&buf_zero_rate), sample_buf).is_err()
+    );
+}

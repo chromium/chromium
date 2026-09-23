@@ -200,19 +200,25 @@ DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
   }
 }
 
+bool IsValidChannelLayout(ChannelLayout layout, int channel_count) {
+  return layout != CHANNEL_LAYOUT_UNSUPPORTED &&
+         layout != CHANNEL_LAYOUT_NONE &&
+         (layout == CHANNEL_LAYOUT_DISCRETE ||
+          ChannelLayoutToChannelCount(layout) == channel_count);
+}
+
 // Resolves the channel layout for a decoded frame, taking into account any
 // midstream changes to channel count.
 ChannelLayout ResolveChannelLayout(ChannelLayout current_layout,
                                    int current_channels,
                                    uint32_t channel_mask,
                                    int new_channels) {
-  if (new_channels == current_channels) {
+  if (new_channels == current_channels &&
+      IsValidChannelLayout(current_layout, current_channels)) {
     return current_layout;
   }
   ChannelLayout layout = ChannelMaskToLayout(channel_mask);
-  if (layout != CHANNEL_LAYOUT_UNSUPPORTED &&
-      (layout == CHANNEL_LAYOUT_DISCRETE ||
-       ChannelLayoutToChannelCount(layout) == new_channels)) {
+  if (IsValidChannelLayout(layout, new_channels)) {
     return layout;
   }
   if (current_layout == CHANNEL_LAYOUT_DISCRETE) {
@@ -506,6 +512,12 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   const ChannelLayout channel_layout =
       ResolveChannelLayout(config_.channel_layout(), config_.channels(),
                            result.buffer.channel_mask, channels);
+  if (!IsValidChannelLayout(channel_layout, channels)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Unsupported channel layout for " << channels << " channels.";
+    return DecoderStatus::Codes::kFailed;
+  }
+
   MaybeUpdateConfig(buffer, sample_rate,
                     ChannelLayoutConfig(channel_layout, channels));
 
@@ -538,9 +550,10 @@ scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
     base::TimeDelta timestamp) {
   const SampleFormat sample_format =
       ToSampleFormat(symphonia_buffer.sample_format);
-  const int channel_count = symphonia_buffer.channel_count;
-  const int sample_rate = symphonia_buffer.sample_rate;
-  const int num_frames = symphonia_buffer.num_frames;
+  const int channel_count =
+      base::checked_cast<int>(symphonia_buffer.channel_count);
+  const int sample_rate = base::checked_cast<int>(symphonia_buffer.sample_rate);
+  const int num_frames = base::checked_cast<int>(symphonia_buffer.num_frames);
 
   scoped_refptr<AudioBuffer> decoded_audio =
       AudioBuffer::CreateBuffer(sample_format, config_.channel_layout(),
@@ -554,13 +567,21 @@ scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
       auto channel_span = decoded_audio->planar_channel(ch);
       const bool copied = symphonia_decoder_.value()->copy_decoded_channel(
           ch, rust::Slice<uint8_t>(channel_span.data(), channel_span.size()));
-      CHECK(copied);
+      if (!copied) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "Failed to copy planar decoded audio channel " << ch;
+        return nullptr;
+      }
     }
   } else {
     auto data_span = decoded_audio->interleaved_data();
     const bool copied = symphonia_decoder_.value()->copy_decoded_samples(
         rust::Slice<uint8_t>(data_span.data(), data_span.size()));
-    CHECK(copied);
+    if (!copied) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Failed to copy interleaved decoded audio samples";
+      return nullptr;
+    }
   }
 
   decoded_audio->set_timestamp(timestamp);
