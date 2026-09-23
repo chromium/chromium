@@ -12,6 +12,9 @@ import androidx.annotation.DrawableRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
+
+import java.util.List;
 
 /**
  * {@link TintedCompositorTextButton} is a {@link TintedCompositorButton} that can also display text
@@ -63,9 +66,17 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
     }
 
     @Override
+    public void getVirtualViews(List<VirtualView> views) {
+        super.getVirtualViews(views);
+        if (mDismissButton != null && mDismissButton.isVisible()) {
+            mDismissButton.getVirtualViews(views);
+        }
+    }
+
+    @Override
     public boolean checkClickedOrHovered(float x, float y) {
         if (mDismissButton != null && mDismissButton.checkClickedOrHovered(x, y)) {
-            return true;
+            return false;
         }
 
         return super.checkClickedOrHovered(x, y);

@@ -23,7 +23,6 @@ public class StaticResourcePreloads {
     private static final int[] sSynchronousResources =
             new int[] {
                 TabUiThemeUtil.getTabResource(),
-                R.drawable.btn_tab_close_normal,
                 R.drawable.spinner,
                 R.drawable.spinner_white,
                 R.drawable.ic_tab_close_tabstrip_24dp,
