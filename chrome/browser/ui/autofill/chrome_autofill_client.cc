@@ -1701,6 +1701,19 @@ void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
+    base::OnceClosure on_undo_clicked) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSuppressionUI)) {
+    return;
+  }
+  GetAutofillSnackbarController()->Show(
+      AutofillSnackbarType::kAutofillAiSuppressionUndo,
+      std::move(on_undo_clicked));
+#endif
+}
+
 ToastController* ChromeAutofillClient::GetToastController() {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;

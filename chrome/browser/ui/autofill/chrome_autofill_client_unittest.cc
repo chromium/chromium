@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -86,6 +87,8 @@
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
@@ -1390,6 +1393,28 @@ TEST_F(ChromeAutofillClientTest, GetAffiliationService) {
   EXPECT_EQ(AffiliationServiceFactory::GetForProfile(profile()),
             client()->GetAffiliationService());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeAutofillClientTest,
+       ShowAutofillAiSuggestionRemovedNotification_ActionCallbackTriggered) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAmbientAutofillSuppressionUI);
+
+  base::MockCallback<base::OnceClosure> on_undo_clicked;
+  EXPECT_CALL(on_undo_clicked, Run);
+
+  client()->ShowAutofillAiSuggestionRemovedNotification(on_undo_clicked.Get());
+
+  AutofillSnackbarControllerImpl* snackbar_controller =
+      client()->GetAutofillSnackbarController();
+  ASSERT_TRUE(snackbar_controller);
+  EXPECT_EQ(snackbar_controller->GetSnackbarType(),
+            AutofillSnackbarType::kAutofillAiSuppressionUndo);
+
+  // Triggering the action callback should invoke on_undo_clicked.
+  snackbar_controller->OnActionClicked();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

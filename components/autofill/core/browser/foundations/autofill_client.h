@@ -914,6 +914,11 @@ class AutofillClient {
   // default.
   virtual void ShowAutofillAiPrivateInferenceNotice();
 
+  // Displays a notification informing the user that an Autofill AI suggestion
+  // was removed, offering an undo action that runs `on_undo_clicked`.
+  virtual void ShowAutofillAiSuggestionRemovedNotification(
+      base::OnceClosure on_undo_clicked);
+
   // Shows a yes/no prompt asking the user to confirm that they want to verify
   // their email. The prompt is anchored on the field at `element_bounds`.
   // `issuer_site` is the site that issued the assertion.

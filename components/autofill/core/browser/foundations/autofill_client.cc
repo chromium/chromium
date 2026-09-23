@@ -460,6 +460,11 @@ void AutofillClient::ShowAutofillAiPrivateInferenceNotice() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAutofillAiSuggestionRemovedNotification(
+    base::OnceClosure on_undo_clicked) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
     const net::SchemefulSite& issuer_site,
