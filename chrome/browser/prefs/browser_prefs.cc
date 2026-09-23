@@ -358,7 +358,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "base/check_deref.h"
-#include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -1021,6 +1020,9 @@ inline constexpr char kHatsOnboardingSurveyCycleEndTs[] =
     "hats_onboarding_cycle_end_timestamp";
 inline constexpr char kHatsOnboardingDeviceIsSelected[] =
     "hats_onboarding_device_is_selected";
+// TODO(b:558334457): Remove deprecated pref after 09/2027.
+constexpr char kLastLauncherAppAlmanacCallTimestamp[] =
+    "app_discovery_service.last_launcher_app_almanac_call_timestamp";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1421,6 +1423,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsEntDeviceIsSelected, false);
   registry->RegisterInt64Pref(kHatsOnboardingSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsOnboardingDeviceIsSelected, false);
+  registry->RegisterTimePref(kLastLauncherAppAlmanacCallTimestamp,
+                             base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2107,7 +2111,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // BUILDFLAG(USE_CUPS)
 
   app_list::AppListSyncableService::RegisterProfilePrefs(registry);
-  apps::AlmanacFetcher::RegisterProfilePrefs(registry);
   apps::AppPlatformMetricsService::RegisterProfilePrefs(registry);
   apps::AppPreloadService::RegisterProfilePrefs(registry);
   apps::webapk_prefs::RegisterProfilePrefs(registry);
@@ -2775,6 +2778,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsEntDeviceIsSelected);
   profile_prefs->ClearPref(kHatsOnboardingSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsOnboardingDeviceIsSelected);
+  profile_prefs->ClearPref(kLastLauncherAppAlmanacCallTimestamp);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

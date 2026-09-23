@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
-#include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,10 +32,7 @@ AppFetcher* AppFetcherManager::g_test_fetcher_ = nullptr;
 AppFetcherManager::AppFetcherManager(Profile* profile)
     : profile_(profile),
       recommended_arc_app_fetcher_(
-          std::make_unique<RecommendedArcAppFetcher>(profile_)),
-      almanac_fetcher_(std::make_unique<AlmanacFetcher>(
-          profile_,
-          std::make_unique<AlmanacIconCache>(profile->GetProfileKey()))) {}
+          std::make_unique<RecommendedArcAppFetcher>(profile_)) {}
 
 AppFetcherManager::~AppFetcherManager() = default;
 
@@ -53,9 +48,7 @@ void AppFetcherManager::GetApps(ResultType result_type,
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
     case ResultType::kGameSearchCatalog:
-      DCHECK(almanac_fetcher_);
-      almanac_fetcher_->GetApps(std::move(callback));
-      return;
+      NOTREACHED();
   }
 }
 
@@ -69,8 +62,7 @@ base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
       DCHECK(g_test_fetcher_);
       return g_test_fetcher_->RegisterForAppUpdates(std::move(callback));
     case ResultType::kGameSearchCatalog:
-      DCHECK(almanac_fetcher_);
-      return almanac_fetcher_->RegisterForAppUpdates(std::move(callback));
+      NOTREACHED();
   }
 }
 
@@ -84,9 +76,7 @@ void AppFetcherManager::GetIcon(const std::string& icon_id,
     case ResultType::kTestType:
       NOTREACHED();
     case ResultType::kGameSearchCatalog:
-      DCHECK(almanac_fetcher_);
-      almanac_fetcher_->GetIcon(icon_id, size_hint_in_dip, std::move(callback));
-      return;
+      NOTREACHED();
   }
 }
 

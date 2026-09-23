@@ -22,9 +22,6 @@ BASE_FEATURE(kCachedLocationProvider, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables MPS to push payload to chrome devices.
-BASE_FEATURE(kAlmanacLauncherPayload, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables ChromeOS Apps APIs.
 BASE_FEATURE(kBlinkExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -123,10 +120,6 @@ bool IsCachedLocationProviderEnabled() {
 
 bool IsCloudGamingDeviceEnabled() {
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
-}
-
-bool IsAlmanacLauncherPayloadEnabled() {
-  return base::FeatureList::IsEnabled(kAlmanacLauncherPayload);
 }
 
 bool IsBlinkExtensionEnabled() {
