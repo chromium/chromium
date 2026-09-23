@@ -14,10 +14,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Bottom sheet content of the default browser promo card. */
 @NullMarked
 public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final View mContentView;
 
     public DefaultBrowserPromoBottomSheetContent(View view) {
@@ -41,6 +45,11 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
