@@ -23,7 +23,8 @@ struct HostOverride {
   std::string host;
   std::optional<uint16_t> port = std::nullopt;
 
-  // Deserializer: parses "<host>[:<port>]" from string inputs.
+  // Deserializer: parses "<host>[:<port>]", full URLs, or host strings from
+  // string inputs.
   static std::optional<HostOverride> FromString(std::string_view str);
 
   // Serializer: formats as "host" or "host:port" for string outputs.

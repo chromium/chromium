@@ -27,6 +27,15 @@ std::optional<HostOverride> HostOverride::FromString(std::string_view str) {
     }
   }
 
+  GURL url(str);
+  if (url.is_valid() && url.has_host()) {
+    std::optional<uint16_t> port;
+    if (url.has_port()) {
+      port = static_cast<uint16_t>(url.EffectiveIntPort());
+    }
+    return HostOverride{std::string(url.HostNoBracketsPiece()), port};
+  }
+
   std::string parsed_host;
   int parsed_port = -1;
   if (!net::ParseHostAndPort(str, &parsed_host, &parsed_port)) {

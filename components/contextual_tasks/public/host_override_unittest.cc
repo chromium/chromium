@@ -54,6 +54,56 @@ TEST(HostOverrideTest, FromString_UnbracketedIPv6) {
   EXPECT_FALSE(override->port.has_value());
 }
 
+TEST(HostOverrideTest, FromString_UrlWithScheme) {
+  auto override_no_port =
+      HostOverride::FromString("https://localhost.corp.google.com");
+  ASSERT_TRUE(override_no_port.has_value());
+  EXPECT_EQ("localhost.corp.google.com", override_no_port->host);
+  EXPECT_FALSE(override_no_port->port.has_value());
+
+  auto override_with_port =
+      HostOverride::FromString("https://localhost.corp.google.com:8888");
+  ASSERT_TRUE(override_with_port.has_value());
+  EXPECT_EQ("localhost.corp.google.com", override_with_port->host);
+  ASSERT_TRUE(override_with_port->port.has_value());
+  EXPECT_EQ(8888, *override_with_port->port);
+
+  auto override_http =
+      HostOverride::FromString("http://localhost.corp.google.com:8080");
+  ASSERT_TRUE(override_http.has_value());
+  EXPECT_EQ("localhost.corp.google.com", override_http->host);
+  ASSERT_TRUE(override_http->port.has_value());
+  EXPECT_EQ(8080, *override_http->port);
+}
+
+TEST(HostOverrideTest, FromString_UrlWithTrailingSlash) {
+  auto override_trailing_slash =
+      HostOverride::FromString("https://localhost.corp.google.com/");
+  ASSERT_TRUE(override_trailing_slash.has_value());
+  EXPECT_EQ("localhost.corp.google.com", override_trailing_slash->host);
+  EXPECT_FALSE(override_trailing_slash->port.has_value());
+
+  auto override_with_path = HostOverride::FromString(
+      "https://localhost.corp.google.com:8888/search?q=test#hash");
+  ASSERT_TRUE(override_with_path.has_value());
+  EXPECT_EQ("localhost.corp.google.com", override_with_path->host);
+  ASSERT_TRUE(override_with_path->port.has_value());
+  EXPECT_EQ(8888, *override_with_path->port);
+}
+
+TEST(HostOverrideTest, FromString_IPv6Url) {
+  auto override1 = HostOverride::FromString("https://[::1]:8888/");
+  ASSERT_TRUE(override1.has_value());
+  EXPECT_EQ("::1", override1->host);
+  ASSERT_TRUE(override1->port.has_value());
+  EXPECT_EQ(8888, *override1->port);
+
+  auto override2 = HostOverride::FromString("https://[::1]/");
+  ASSERT_TRUE(override2.has_value());
+  EXPECT_EQ("::1", override2->host);
+  EXPECT_FALSE(override2->port.has_value());
+}
+
 TEST(HostOverrideTest, FromString_InvalidPort) {
   EXPECT_FALSE(
       HostOverride::FromString("localhost.corp.google.com:99999").has_value());

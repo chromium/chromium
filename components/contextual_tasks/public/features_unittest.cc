@@ -34,6 +34,27 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHostWithPort) {
             GetForcedEmbeddedPageHost());
 }
 
+TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHost_WithHttps) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"contextual-tasks-forced-embedded-page-host",
+                          "https://localhost.corp.google.com"}});
+
+  EXPECT_EQ((HostOverride{"localhost.corp.google.com", std::nullopt}),
+            GetForcedEmbeddedPageHost());
+}
+
+TEST(FeaturesTest,
+     ForcedEmbeddedPageHost_OverrideToGoogleHost_WithHttpsAndPort) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"contextual-tasks-forced-embedded-page-host",
+                          "https://localhost.corp.google.com:8888"}});
+
+  EXPECT_EQ((HostOverride{"localhost.corp.google.com", 8888}),
+            GetForcedEmbeddedPageHost());
+}
+
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
