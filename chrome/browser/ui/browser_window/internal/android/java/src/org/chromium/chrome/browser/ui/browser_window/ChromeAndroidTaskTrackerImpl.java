@@ -428,7 +428,10 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         var context = ContextUtils.getApplicationContext();
         Rect bounds = createParams.getInitialBoundsInDp();
         WindowFeatures features =
-                new WindowFeatures(bounds.left, bounds.top, bounds.width(), bounds.height());
+                bounds.isEmpty()
+                        ? new WindowFeatures()
+                        : new WindowFeatures(
+                                bounds.left, bounds.top, bounds.width(), bounds.height());
 
         Bundle extrasBundle = new Bundle();
         extrasBundle.putInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);

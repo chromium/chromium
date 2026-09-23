@@ -15,12 +15,13 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.media.AudioManager;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
@@ -779,15 +780,11 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
      * Checks if Document Picture-in-Picture is enabled. This is true if we both have the permission
      * to enter Picture-in-Picture mode and the Android API to go into pinned mode is supported.
      */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected boolean isDocumentPictureInPictureEnabled() {
-        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            Log.w(TAG, "isDocumentPictureInPictureEnabled: AconfigFlaggedApiDelegate is null");
-            return false;
-        }
-
-        return isPictureInPictureEnabled() && delegate.isRequestPinnedWindowingLayerSupported();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                && isPictureInPictureEnabled();
     }
 
     @Override

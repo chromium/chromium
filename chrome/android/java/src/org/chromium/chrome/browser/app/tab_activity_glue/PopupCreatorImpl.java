@@ -9,12 +9,12 @@ import static android.view.Display.INVALID_DISPLAY;
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
+import android.app.InfeasibleActivityOptionsException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.AndroidRuntimeException;
 import android.util.Pair;
 
 import androidx.core.graphics.Insets;
@@ -364,14 +364,9 @@ public class PopupCreatorImpl implements PopupCreator {
                 }
             }
             return false;
-        } catch (AndroidRuntimeException e) {
-            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate == null) {
-                Log.w(TAG, "tryStartActivity: AconfigFlaggedApiDelegate is null");
-                return false;
-            }
-
-            if (delegate.isInfeasibleActivityOptionsException(e)) {
+        } catch (Throwable e) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                    && e instanceof InfeasibleActivityOptionsException) {
                 Log.w(
                         TAG,
                         "tryStartActivity: startActivity threw InfeasibleActivityOptionsException");
@@ -484,6 +479,11 @@ public class PopupCreatorImpl implements PopupCreator {
         ResettersForTesting.register(() -> sInsetsForecastForTesting = null);
     }
 
+    public static void setMoveTabToNewPopupResultForTesting(boolean result) {
+        sMoveTabToNewPopupResultForTesting = result;
+        ResettersForTesting.register(() -> sMoveTabToNewPopupResultForTesting = null);
+    }
+
     /**
      * If this is set to {@code false}, contextual popups will be launched without specifying the
      * {@link android.app.ActivityOptions#setMovableTaskRequired(boolean)} option.
@@ -592,19 +592,14 @@ public class PopupCreatorImpl implements PopupCreator {
 
         if (sSetMovableTaskRequiredForPopupsForTesting == null
                 || sSetMovableTaskRequiredForPopupsForTesting) {
-            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-            if (delegate == null) {
-                Log.w(TAG, "createPopupActivityOptions: AconfigFlaggedApiDelegate is null");
-                return null;
-            }
-
-            activityOptions = delegate.setMovableTaskRequired(activityOptions);
-            if (activityOptions == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                activityOptions.setMovableTaskRequired(true);
+            } else {
                 return null;
             }
         }
 
-        if (windowBounds == null) {
+        if (windowBounds == null || windowBounds.isEmpty()) {
             return activityOptions;
         }
 
@@ -639,6 +634,9 @@ public class PopupCreatorImpl implements PopupCreator {
 
         final int widthDp = windowFeatures.width;
         final int heightDp = windowFeatures.height;
+        if (widthDp <= 0 || heightDp <= 0) {
+            return null;
+        }
         final int leftDp = windowFeatures.left == null ? 0 : windowFeatures.left;
         final int topDp = windowFeatures.top == null ? 0 : windowFeatures.top;
 

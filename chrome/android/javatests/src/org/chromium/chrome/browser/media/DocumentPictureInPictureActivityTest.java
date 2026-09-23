@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.media;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -22,12 +18,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -58,8 +51,6 @@ public class DocumentPictureInPictureActivityTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    @Mock private AconfigFlaggedApiDelegate mAconfigMock;
-
     private Tab mTab;
     private WebContents mParentWebContents;
     private WebContents mWebContents;
@@ -87,10 +78,6 @@ public class DocumentPictureInPictureActivityTest {
                     DocumentPictureInPictureActivity.onActivityStartForTesting(
                             mParentWebContents, mWebContents);
                 });
-
-        Promise<Void> promise = ThreadUtils.runOnUiThreadBlocking(() -> Promise.fulfilled(null));
-        when(mAconfigMock.requestPinnedWindowingLayer(any(), any())).thenReturn(promise);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mAconfigMock);
     }
 
     @Test
@@ -99,7 +86,7 @@ public class DocumentPictureInPictureActivityTest {
         DocumentPictureInPictureActivity activity = launchActivity();
 
         CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
-        verify(mAconfigMock).requestPinnedWindowingLayer(any(), any());
+        CriteriaHelper.pollUiThread(activity::isWindowPinned);
     }
 
     @Test

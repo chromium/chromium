@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.OutcomeReceiver;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -274,16 +274,12 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     }
 
     private void goIntoPinnedMode() {
-        if (!sIgnoreSdkVersionForTesting && Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
-            Log.e(TAG, "SDK version is too low, minimum required is 36.");
-            finish();
+        if (sIgnoreSdkVersionForTesting) {
+            mIsPinned = true;
             return;
         }
-
-        final AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
-                AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.e(TAG, "AconfigFlaggedApiDelegate is null");
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            Log.e(TAG, "SDK version is too low, minimum required is 37.");
             finish();
             return;
         }
@@ -295,17 +291,25 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             return;
         }
 
-        aconfigFlaggedApiDelegate
-                .requestPinnedWindowingLayer(appTask, getMainExecutor())
-                .then(
-                        _ -> mIsPinned = true,
-                        (e) -> {
-                            Log.e(
-                                    TAG,
-                                    "Failed to request pinned windowing layer."
-                                            + (e == null ? "" : e.getMessage()));
+        OutcomeReceiver<Integer, Exception> receiver =
+                new OutcomeReceiver<Integer, Exception>() {
+                    @Override
+                    public void onResult(Integer result) {
+                        if (result == AppTask.WINDOWING_LAYER_REQUEST_GRANTED) {
+                            mIsPinned = true;
+                        } else {
+                            Log.e(TAG, "Failed to pin the task with result: %d", result);
                             finish();
-                        });
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e(TAG, "Failed to request pinned windowing layer.", e);
+                        finish();
+                    }
+                };
+        appTask.requestWindowingLayer(AppTask.WINDOWING_LAYER_PINNED, getMainExecutor(), receiver);
     }
 
     @Override
