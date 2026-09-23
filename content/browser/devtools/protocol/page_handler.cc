@@ -150,15 +150,25 @@ GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
   return protocol::Response::InvalidParams("Invalid image format");
 }
 
+// Returns the time at which |frame| was expected to be displayed, which the
+// capturer records as |reference_time|.
+base::TimeTicks ScreencastFrameTimestamp(const media::VideoFrame& frame) {
+  return frame.metadata().reference_time.value_or(base::TimeTicks::Now());
+}
+
 std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
     const gfx::Size& surface_size,
     float device_scale_factor,
     float page_scale_factor,
     const gfx::PointF& root_scroll_offset,
-    float top_controls_visible_height) {
+    float top_controls_visible_height,
+    base::TimeTicks timestamp) {
   if (surface_size.IsEmpty() || device_scale_factor == 0) {
     return nullptr;
   }
+
+  const base::Time wall_timestamp =
+      base::Time::Now() - (base::TimeTicks::Now() - timestamp);
 
   const gfx::SizeF content_size_dip =
       gfx::ScaleSize(gfx::SizeF(surface_size), 1 / device_scale_factor);
@@ -174,7 +184,8 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
           .SetDeviceHeight(content_size_dip.height())
           .SetScrollOffsetX(root_scroll_offset_dip.x())
           .SetScrollOffsetY(root_scroll_offset_dip.y())
-          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch())
+          .SetTimestamp(wall_timestamp.InSecondsFSinceUnixEpoch())
+          .SetMonotonicTimestamp(timestamp.since_origin().InSecondsF())
           .Build();
   return page_metadata;
 }
@@ -1909,7 +1920,8 @@ void PageHandler::OnFrameFromVideoConsumer(
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =
       BuildScreencastFrameMetadata(surface_size, device_scale_factor,
                                    page_scale_factor, root_scroll_offset,
-                                   top_controls_visible_height);
+                                   top_controls_visible_height,
+                                   ScreencastFrameTimestamp(*frame));
   if (!page_metadata) {
     return;
   }

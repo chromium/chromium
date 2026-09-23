@@ -1536,6 +1536,11 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, ScreencastSendsLastRepaint) {
   std::optional<int> session_id = frame.FindInt("sessionId");
   const std::string* data = frame.FindString("data");
   ASSERT_TRUE(session_id && data) << "Did not receive a screencast frame";
+  std::optional<double> timestamp =
+      frame.FindDoubleByDottedPath("metadata.timestamp");
+  ASSERT_TRUE(timestamp);
+  EXPECT_NEAR(*timestamp, base::Time::Now().InSecondsFSinceUnixEpoch(),
+              base::Minutes(1).InSecondsF());
   // Screencast frames go through video encoding, so the colors are not exact.
   constexpr int kMaxColorDiff = 20;
   SkBitmap bitmap = DecodePNG(*data);

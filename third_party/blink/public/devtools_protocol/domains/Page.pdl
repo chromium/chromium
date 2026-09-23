@@ -388,6 +388,8 @@ domain Page
       number scrollOffsetY
       # Frame swap timestamp.
       optional Network.TimeSinceEpoch timestamp
+      # Frame swap timestamp as monotonic time.
+      optional Network.MonotonicTime monotonicTimestamp
 
   # Javascript dialog type.
   type DialogType extends string
