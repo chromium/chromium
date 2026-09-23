@@ -43,12 +43,16 @@
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -103,7 +107,9 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -2433,6 +2439,40 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+std::string GetPeopleSignInPromptSecondaryWithAccount(Profile* profile) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccountFollowup)) {
+    if (auto* account_preview_data_service =
+            AccountPreviewDataServiceFactory::GetForProfile(profile)) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      std::vector<AccountInfo> ordered_accounts =
+          signin_ui_util::GetOrderedAccountsForDisplay(
+              identity_manager, account_preview_data_service,
+              /*restrict_to_accounts_eligible_for_signin=*/true);
+      std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+          preferred_account =
+              account_preview_data_service->GetPreferredAccountForPromo();
+      if (!ordered_accounts.empty() && preferred_account.has_value() &&
+          preferred_account->gaia_id == ordered_accounts[0].GetGaiaId()) {
+        if (std::optional<std::string> custom_subtitle =
+                signin::GetAccountPreviewSettingsPromoSubtitle(
+                    *preferred_account)) {
+          return *custom_subtitle;
+        }
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return l10n_util::GetStringUTF8(
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
+          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Top level people strings:
@@ -2506,11 +2546,10 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? IDS_SETTINGS_PEOPLE_SIGNIN_SECTION_SIGNED_OUT_TITLE
           : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT);
-  html_source->AddLocalizedString(
-      "peopleSignInPromptSecondaryWithAccount",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
-          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+  // Provided as a static string since it should not change when switching
+  // accounts in the dropdown.
+  html_source->AddString("peopleSignInPromptSecondaryWithAccount",
+                         GetPeopleSignInPromptSecondaryWithAccount(profile));
   html_source->AddLocalizedString(
       "peopleSignInPromptSecondaryWithNoAccount",
       syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
@@ -4625,6 +4664,13 @@ void AddShortcutInputStrings(content::WebUIDataSource* html_source) {
 
 extern void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                      Profile* profile);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(
+    Profile* profile) {
+  return GetPeopleSignInPromptSecondaryWithAccount(profile);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          Profile* profile,

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
+#include <string>
+
+#include "build/build_config.h"
+
 class Profile;
 
 namespace content {
@@ -20,6 +24,11 @@ namespace settings {
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          Profile* profile,
                          content::WebContents* web_contents);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(
+    Profile* profile);
+#endif
 
 }  // namespace settings
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
@@ -35,7 +36,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -45,6 +48,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1247,6 +1251,127 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
   ASSERT_TRUE(accounts[1].GetDict().FindString("email"));
   EXPECT_EQ("a@gmail.com", *accounts[0].GetDict().FindString("email"));
   EXPECT_EQ("b@gmail.com", *accounts[1].GetDict().FindString("email"));
+}
+
+TEST(PeopleHandlerDiceTest, AccountPromoSubtitleWithAccountPreviewFollowup) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{switches::kEnableAccountPreviewPreferredAccount,
+                            switches::
+                                kEnableAccountPreviewPreferredAccountFollowup},
+      /*disabled_features=*/{});
+
+  content::BrowserTaskEnvironment task_environment;
+
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   AccountPreviewDataServiceFactory::GetInstance(),
+                   base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+                     return std::make_unique<
+                         signin::TestAccountPreviewDataService>();
+                   })}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  ASSERT_EQ(true, AccountConsistencyModeManager::IsDiceEnabledForProfile(
+                      profile.get()));
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  auto account_1 = identity_test_env->MakeAccountAvailable(
+      "a@gmail.com", {.set_cookie = true});
+  auto account_2 = identity_test_env->MakeAccountAvailable(
+      "b@gmail.com", {.set_cookie = true});
+
+  auto* data_service = static_cast<signin::TestAccountPreviewDataService*>(
+      AccountPreviewDataServiceFactory::GetForProfile(profile.get()));
+  ASSERT_TRUE(data_service);
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.gaia_id = account_2.GetGaiaId();
+  pref.preferred_data_types = {
+      {.data_type = syncer::BOOKMARKS,
+       .quartile = signin::SyncDataQuartile::kMedianToQ3}};
+  data_service->SetPreferredAccountForPromo(pref);
+
+  std::optional<std::string> expected_subtitle =
+      signin::GetAccountPreviewSettingsPromoSubtitle(pref);
+  ASSERT_TRUE(expected_subtitle.has_value());
+  EXPECT_EQ(*expected_subtitle,
+            GetPeopleSignInPromptSecondaryWithAccountForTesting(profile.get()));
+}
+
+TEST(PeopleHandlerDiceTest,
+     AccountPromoSubtitleWithAccountPreviewFollowupDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{switches::kEnableAccountPreviewPreferredAccount},
+      /*disabled_features=*/{
+          switches::kEnableAccountPreviewPreferredAccountFollowup});
+
+  content::BrowserTaskEnvironment task_environment;
+
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   AccountPreviewDataServiceFactory::GetInstance(),
+                   base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+                     return std::make_unique<
+                         signin::TestAccountPreviewDataService>();
+                   })}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  ASSERT_EQ(true, AccountConsistencyModeManager::IsDiceEnabledForProfile(
+                      profile.get()));
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  auto account_1 = identity_test_env->MakeAccountAvailable(
+      "a@gmail.com", {.set_cookie = true});
+  auto account_2 = identity_test_env->MakeAccountAvailable(
+      "b@gmail.com", {.set_cookie = true});
+
+  auto* data_service = static_cast<signin::TestAccountPreviewDataService*>(
+      AccountPreviewDataServiceFactory::GetForProfile(profile.get()));
+  ASSERT_TRUE(data_service);
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.gaia_id = account_2.GetGaiaId();
+  pref.preferred_data_types = {
+      {.data_type = syncer::BOOKMARKS,
+       .quartile = signin::SyncDataQuartile::kMedianToQ3}};
+  data_service->SetPreferredAccountForPromo(pref);
+
+  // But GetPeopleSignInPromptSecondaryWithAccountForTesting() should return the
+  // default string because the followup flag is disabled.
+  EXPECT_NE(*signin::GetAccountPreviewSettingsPromoSubtitle(pref),
+            GetPeopleSignInPromptSecondaryWithAccountForTesting(profile.get()));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
