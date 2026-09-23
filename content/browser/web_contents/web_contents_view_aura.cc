@@ -849,7 +849,8 @@ void WebContentsViewAura::EndDrag(
   // |client_loc| is in the root coordinate space, for non-root
   // RenderWidgetHosts it needs to be transformed.
   gfx::PointF transformed_point = client_loc;
-  if (source_rwh && web_contents_->GetRenderWidgetHostView()) {
+  if (source_rwh && web_contents_->GetRenderWidgetHostView() &&
+      source_rwh->GetView() != web_contents_->GetRenderWidgetHostView()) {
     static_cast<RenderWidgetHostViewBase*>(
         web_contents_->GetRenderWidgetHostView())
         ->TransformPointToCoordSpaceForView(

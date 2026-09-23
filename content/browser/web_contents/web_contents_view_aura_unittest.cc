@@ -22,6 +22,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1246,10 +1248,7 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   EXPECT_TRUE(exchange_data->IsFromPrivileged());
 }
 
-// Disabled because these tests CHECK fail if EndDrag is called, and
-// drags from hidden web contents trigger an EndDrag.
-// TODO(https://crbug.com/522564418): Figure out how to test this.
-TEST_F(WebContentsViewAuraTest, DISABLED_RejectDragFromHiddenWebContents) {
+TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
   const char kGoogleUrl[] = "https://google.com/";
 
   std::u16string url_string = u"https://google.com/";
@@ -1599,6 +1598,100 @@ TEST_F(WebContentsViewAuraTest, StartDragAllowedByPolicy) {
                       blink::mojom::DragEventSourceInfo());
 
   EXPECT_TRUE(drag_drop_client.GetDragDropData());
+}
+
+class TestDragEndedWebContentsDelegate : public WebContentsDelegate {
+ public:
+  void HandleDragEnded() override { handle_drag_ended_called_ = true; }
+  bool handle_drag_ended_called() const { return handle_drag_ended_called_; }
+
+ private:
+  bool handle_drag_ended_called_ = false;
+};
+
+class TestDragEndedFrameWidget : public FakeFrameWidget {
+ public:
+  explicit TestDragEndedFrameWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver)
+      : FakeFrameWidget(std::move(receiver)) {}
+
+  void DragSourceEndedAt(const gfx::PointF& client_point,
+                         const gfx::PointF& screen_point,
+                         ui::mojom::DragOperation operation,
+                         base::OnceClosure callback) override {
+    drag_source_ended_at_called_ = true;
+    operation_ = operation;
+    std::move(callback).Run();
+  }
+
+  void DragSourceSystemDragEnded() override {
+    system_drag_ended_called_ = true;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+  bool drag_source_ended_at_called() const {
+    return drag_source_ended_at_called_;
+  }
+  bool system_drag_ended_called() const { return system_drag_ended_called_; }
+  ui::mojom::DragOperation operation() const { return operation_; }
+
+ private:
+  bool drag_source_ended_at_called_ = false;
+  bool system_drag_ended_called_ = false;
+  ui::mojom::DragOperation operation_ = ui::mojom::DragOperation::kCopy;
+  base::OnceClosure quit_closure_;
+};
+
+// Tests that if the user releases the mouse before WebContentsViewAura::
+// StartDragging is called, the drag is aborted and WebContents is notified via
+// SystemDragEnded and DragSourceEndedAt.
+TEST_F(WebContentsViewAuraTest, StartDraggingMouseReleasedEndsDrag) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  TestDragEndedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  base::RunLoop run_loop;
+  frame_widget.set_quit_closure(run_loop.QuitClosure());
+
+  WebContentsViewAura* view = GetView();
+
+  DropData drop_data;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
+
+  // Simulate the user releasing the mouse button before StartDragging is
+  // called on the browser side.
+  aura::Env::GetInstance()->set_mouse_button_flags(0);
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
+
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(
+                          gfx::Point(), ui::mojom::DragEventSource::kMouse));
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+  EXPECT_TRUE(delegate.handle_drag_ended_called());
+
+  run_loop.Run();
+  EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_EQ(ui::mojom::DragOperation::kNone, frame_widget.operation());
+  EXPECT_TRUE(frame_widget.system_drag_ended_called());
+
+  web_contents()->SetDelegate(nullptr);
 }
 
 }  // namespace content

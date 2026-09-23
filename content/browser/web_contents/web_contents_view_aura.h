@@ -201,6 +201,8 @@ class CONTENT_EXPORT WebContentsViewAura
                            IgnoreInputs_OngoingDropGetsCleared);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            EndDragIsCalledAfterAsyncDrop);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           StartDraggingMouseReleasedEndsDrag);
 
   class WindowObserver;
 
