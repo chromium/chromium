@@ -103,7 +103,7 @@ public class ProfileDataCache
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
     private final @Px int mRingThicknessPx;
     private final @Nullable SubscriptionTierBrandingDelegate mBrandingDelegate;
-    private @Nullable Drawable mPlaceholderImageWithAiTierRingPadding;
+    private @Nullable Drawable mAccountCirclePlaceholderImage;
 
     @VisibleForTesting
     ProfileDataCache(
@@ -242,33 +242,28 @@ public class ProfileDataCache
     }
 
     /**
-     * @return A {@link Drawable} containing the placeholder (padded for the AI tier ring if
-     *     enabled).
+     * @return A {@link Drawable} containing the placeholder image. Note that the generated image
+     *     size will strictly be the image size this cache was created with.
      */
     public Drawable getPlaceholderImage() {
-        Drawable accountCircle =
-                AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
-        if (!mAiTierRingEnabled) {
-            return accountCircle;
-        }
-        if (mPlaceholderImageWithAiTierRingPadding == null) {
-            Bitmap paddedPicture =
-                    Bitmap.createBitmap(mImageSize, mImageSize, Bitmap.Config.ARGB_8888);
-            paddedPicture.setDensity(mContext.getResources().getDisplayMetrics().densityDpi);
-            Canvas canvas = new Canvas(paddedPicture);
+        // TODO(crbug.com/543773382): Consider deduplicating with getScaledPlaceholderImage().
+        if (mAccountCirclePlaceholderImage == null) {
+            Drawable accountCircle =
+                    AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
+            assert accountCircle != null;
+            Bitmap output = Bitmap.createBitmap(mImageSize, mImageSize, Bitmap.Config.ARGB_8888);
+            output.setDensity(mContext.getResources().getDisplayMetrics().densityDpi);
+            Canvas canvas = new Canvas(output);
 
-            Rect oldBounds = accountCircle.getBounds();
             accountCircle.setBounds(
                     mTotalPadding,
                     mTotalPadding,
                     mImageSize - mTotalPadding,
                     mImageSize - mTotalPadding);
             accountCircle.draw(canvas);
-            accountCircle.setBounds(oldBounds);
-            mPlaceholderImageWithAiTierRingPadding =
-                    new BitmapDrawable(mContext.getResources(), paddedPicture);
+            mAccountCirclePlaceholderImage = new BitmapDrawable(mContext.getResources(), output);
         }
-        return mPlaceholderImageWithAiTierRingPadding;
+        return mAccountCirclePlaceholderImage;
     }
 
     /**

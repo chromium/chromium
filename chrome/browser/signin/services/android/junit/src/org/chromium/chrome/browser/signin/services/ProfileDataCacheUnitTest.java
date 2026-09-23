@@ -59,6 +59,7 @@ public class ProfileDataCacheUnitTest {
     }
 
     private static final int RING_THICKNESS = 3;
+    private static final int IMAGE_SIZE = 100;
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
@@ -632,7 +633,7 @@ public class ProfileDataCacheUnitTest {
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         mSubscriptionEligibilityServiceMock,
-                        100,
+                        IMAGE_SIZE,
                         RING_THICKNESS);
 
         DisplayableProfileData profileData =
@@ -653,7 +654,7 @@ public class ProfileDataCacheUnitTest {
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         mSubscriptionEligibilityServiceMock,
-                        100,
+                        IMAGE_SIZE,
                         RING_THICKNESS);
 
         DisplayableProfileData primaryProfileData =
@@ -681,7 +682,7 @@ public class ProfileDataCacheUnitTest {
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         mSubscriptionEligibilityServiceMock,
-                        100,
+                        IMAGE_SIZE,
                         RING_THICKNESS);
         mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), errorBadge);
 
@@ -702,7 +703,7 @@ public class ProfileDataCacheUnitTest {
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         mSubscriptionEligibilityServiceMock,
-                        100,
+                        IMAGE_SIZE,
                         RING_THICKNESS);
 
         // Before sign-in, neither is primary, so no ring
@@ -746,7 +747,7 @@ public class ProfileDataCacheUnitTest {
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager(),
                         mSubscriptionEligibilityServiceMock,
-                        100,
+                        IMAGE_SIZE,
                         RING_THICKNESS);
 
         mProfileDataCache.addObserver(mObserverMock);
@@ -754,5 +755,35 @@ public class ProfileDataCacheUnitTest {
 
         mProfileDataCache.removeObserver(mObserverMock);
         verify(mSubscriptionEligibilityServiceMock).removeObserver(mProfileDataCache);
+    }
+
+    @Test
+    public void testPlaceholderImageMatchesImageSize() {
+        mProfileDataCache =
+                ProfileDataCache.createWithoutBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager(),
+                        R.dimen.user_picture_size);
+
+        int expectedSize =
+                RuntimeEnvironment.application
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.user_picture_size);
+        Assert.assertEquals(
+                expectedSize, mProfileDataCache.getPlaceholderImage().getIntrinsicWidth());
+    }
+
+    @Test
+    public void testPlaceholderImageMatchesImageSizeWithAiTierRing() {
+        mProfileDataCache =
+                ProfileDataCache.createWithAiTierRing(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager(),
+                        mSubscriptionEligibilityServiceMock,
+                        IMAGE_SIZE,
+                        RING_THICKNESS);
+
+        Assert.assertEquals(
+                IMAGE_SIZE, mProfileDataCache.getPlaceholderImage().getIntrinsicWidth());
     }
 }
