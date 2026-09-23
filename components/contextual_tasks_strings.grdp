@@ -102,4 +102,10 @@
   <message name="IDS_CONTEXTUAL_TASKS_CHAT_HIDDEN_DESCRIPTION" desc="Subtitle description of the message shown when the contextual tasks panel is hidden due to window resizing.">
     Resize window to continue chatting
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_LABEL" desc="Accessible label for the Lens region selection thumbnail chip.">
+    Selected region
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_DISMISS_LABEL" desc="Accessible tooltip and label for the close button on the Lens region selection chip.">
+    Remove selected region
+  </message>
 </grit-part>

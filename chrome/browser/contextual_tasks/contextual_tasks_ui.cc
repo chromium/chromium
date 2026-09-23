@@ -507,6 +507,11 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       {"composeboxHintTextLensOverlay",
        IDS_LENS_COMPOSEBOX_HINT_TEXT_SELECT_PAGE},
 #endif
+      {"lensRegionChipLabel", IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_LABEL},
+      {"lensRegionChipDismissLabel",
+       IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_DISMISS_LABEL},
+      {"lensRegionChipDismissA11yLabel",
+       IDS_CONTEXTUAL_TASKS_LENS_REGION_CHIP_DISMISS_LABEL},
   };
 
   for (const auto& str : kLocalizedStrings) {
