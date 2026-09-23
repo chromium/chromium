@@ -4,11 +4,17 @@
 
 #include "components/enterprise/connectors/core/uploader_test_utils.h"
 
+#include <utility>
+
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
@@ -19,28 +25,34 @@ namespace enterprise_connectors {
 
 namespace {
 
+class DataPipeReader : public mojo::DataPipeDrainer::Client {
+ public:
+  DataPipeReader(mojo::ScopedDataPipeConsumerHandle data_pipe_consumer,
+                 base::test::TestFuture<std::string>& future)
+      : future_(future), drainer_(this, std::move(data_pipe_consumer)) {}
+
+  // mojo::DataPipeDrainer::Client:
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    body_.append(base::as_string_view(data));
+  }
+  void OnDataComplete() override { future_->SetValue(std::move(body_)); }
+
+ private:
+  const raw_ref<base::test::TestFuture<std::string>> future_;
+  std::string body_;
+  mojo::DataPipeDrainer drainer_;
+};
+
 std::string ReadDataPipe(
     mojo::ScopedDataPipeConsumerHandle data_pipe_consumer) {
-  EXPECT_TRUE(data_pipe_consumer.is_valid());
-  std::string body;
-  // Write data from `data_pipe_consumer` to `buffer`, and ultimately to `body`.
-  while (true) {
-    std::string buffer(1024, '\0');
-    size_t read_size = 0;
-    MojoResult result = data_pipe_consumer->ReadData(
-        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
-        read_size);
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      base::RunLoop().RunUntilIdle();
-      continue;
-    }
-    if (result != MOJO_RESULT_OK) {
-      break;
-    }
-    body.append(std::string_view(buffer).substr(0, read_size));
-  }
+  CHECK(data_pipe_consumer.is_valid());
 
-  return body;
+  // Nestable tasks are allowed because callers may read from the pipe within
+  // a mock callback while an outer test RunLoop is active.
+  base::test::TestFuture<std::string> future;
+  DataPipeReader reader(std::move(data_pipe_consumer), future);
+  CHECK(future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+  return future.Take();
 }
 
 }  // namespace
