@@ -10,35 +10,42 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_preview_test.h"
+#include "chrome/browser/printing/print_view_manager_base.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/test/browser_test_utils.h"
+#include "printing/print_settings.h"
+#include "printing/printed_document.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/auto_reset.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/print_test_utils.h"
-#include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/print_settings.h"
 #include "printing/print_settings_conversion.h"
-#include "printing/printed_document.h"
 #include "printing/units.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/point.h"
@@ -459,5 +466,214 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   PrintViewManager::SetReceiverImplForTesting(nullptr);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+namespace {
+
+class TestPrintJobForContentAnalysis : public PrintJob {
+ public:
+  TestPrintJobForContentAnalysis() = default;
+  TestPrintJobForContentAnalysis(const TestPrintJobForContentAnalysis&) =
+      delete;
+  TestPrintJobForContentAnalysis& operator=(
+      const TestPrintJobForContentAnalysis&) = delete;
+
+  void SetDocument(scoped_refptr<PrintedDocument> doc) {
+    UpdatePrintedDocument(std::move(doc));
+  }
+
+  void StartPrinting() override { set_job_pending_for_testing(true); }
+  void Stop() override { set_job_pending_for_testing(false); }
+  void Cancel() override { set_job_pending_for_testing(false); }
+
+#if BUILDFLAG(IS_WIN)
+  void StartPdfToEmfConversion(scoped_refptr<base::RefCountedMemory> bytes,
+                               const gfx::Size& page_size,
+                               const gfx::Rect& content_area,
+                               const GURL& url) override {
+    printed_data_ = bytes;
+  }
+  scoped_refptr<base::RefCountedMemory> printed_data() const {
+    return printed_data_;
+  }
+#endif
+
+ protected:
+  ~TestPrintJobForContentAnalysis() override {
+    set_job_pending_for_testing(false);
+  }
+
+#if BUILDFLAG(IS_WIN)
+ private:
+  scoped_refptr<base::RefCountedMemory> printed_data_;
+#endif
+};
+
+class FakePrintAnalysisDelegate
+    : public enterprise_connectors::ContentAnalysisDelegate {
+ public:
+  FakePrintAnalysisDelegate(
+      content::WebContents* contents,
+      Data data,
+      CompletionCallback callback,
+      enterprise_connectors::DeepScanAccessPoint access_point,
+      base::OnceCallback<void(CompletionCallback)> save_callback)
+      : ContentAnalysisDelegate(contents,
+                                ClearPageRegion(std::move(data)),
+                                base::DoNothing(),
+                                access_point) {
+    std::move(save_callback).Run(std::move(callback));
+  }
+  FakePrintAnalysisDelegate(const FakePrintAnalysisDelegate&) = delete;
+  FakePrintAnalysisDelegate& operator=(const FakePrintAnalysisDelegate&) =
+      delete;
+  ~FakePrintAnalysisDelegate() override = default;
+
+ private:
+  static Data ClearPageRegion(Data data) {
+    data.page = base::ReadOnlySharedMemoryRegion();
+    return data;
+  }
+};
+
+class TestPrintViewManagerForContentAnalysis : public PrintViewManagerBase {
+ public:
+  explicit TestPrintViewManagerForContentAnalysis(
+      content::WebContents* web_contents)
+      : PrintViewManagerBase(web_contents) {}
+  TestPrintViewManagerForContentAnalysis(
+      const TestPrintViewManagerForContentAnalysis&) = delete;
+  TestPrintViewManagerForContentAnalysis& operator=(
+      const TestPrintViewManagerForContentAnalysis&) = delete;
+  ~TestPrintViewManagerForContentAnalysis() override { print_job_ = nullptr; }
+
+  void SetPrintJobForTesting(scoped_refptr<PrintJob> print_job) {
+    print_job_ = print_job;
+  }
+
+  using PrintViewManagerBase::ContentAnalysisBeforePrintingDocument;
+
+ protected:
+  void GetPrintPreviewParams(GetPrintPreviewParamsCallback callback) override {
+    NOTREACHED();
+  }
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override {
+    NOTREACHED();
+  }
+  void ShowScriptedPrintPreview() override { NOTREACHED(); }
+  void RequestPrintPreview(
+      mojom::RequestPrintPreviewParamsPtr params) override {
+    NOTREACHED();
+  }
+  void CheckForCancel(const base::UnguessableToken& preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override {
+    NOTREACHED();
+  }
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override {
+    NOTREACHED();
+  }
+};
+
+}  // namespace
+
+using PrintViewManagerBaseTest = PrintPreviewTest;
+
+TEST_F(PrintViewManagerBaseTest,
+       ContentAnalysisBeforePrintingDocumentSnapshotProtectsAgainstMutation) {
+  base::ScopedClosureRunner reset_factory(base::BindOnce(
+      &enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting));
+  enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+
+  auto print_view_manager =
+      std::make_unique<TestPrintViewManagerForContentAnalysis>(web_contents());
+
+  auto test_job = base::MakeRefCounted<TestPrintJobForContentAnalysis>();
+  auto settings = std::make_unique<PrintSettings>();
+  settings->set_device_name(u"TestPrinter");
+  auto document =
+      base::MakeRefCounted<PrintedDocument>(std::move(settings), u"Doc", 123);
+  test_job->SetDocument(document);
+  print_view_manager->SetPrintJobForTesting(test_job);
+
+  // Set up shared memory with initial benign data.
+  constexpr std::string_view kBenignData = "BENIGN_DATA_FOR_TESTING";
+  constexpr std::string_view kMutatedData = "MUTATED_SENSITIVE_DATA!";
+  static_assert(kBenignData.size() == kMutatedData.size());
+
+  base::MappedReadOnlyRegion region =
+      base::ReadOnlySharedMemoryRegion::Create(kBenignData.size());
+  ASSERT_TRUE(region.IsValid());
+  region.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(
+      base::as_byte_span(kBenignData));
+
+  auto shared_data =
+      base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region.region);
+  ASSERT_TRUE(shared_data);
+
+  // Intercept the content analysis completion callback using the testing
+  // factory.
+  enterprise_connectors::ContentAnalysisDelegate::CompletionCallback
+      saved_callback;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindLambdaForTesting(
+          [&](content::WebContents* contents,
+              enterprise_connectors::ContentAnalysisDelegate::Data data,
+              enterprise_connectors::ContentAnalysisDelegate::CompletionCallback
+                  callback,
+              enterprise_connectors::DeepScanAccessPoint access_point)
+              -> std::unique_ptr<
+                  enterprise_connectors::ContentAnalysisDelegate> {
+            return std::make_unique<FakePrintAnalysisDelegate>(
+                contents, std::move(data), std::move(callback), access_point,
+                base::BindLambdaForTesting(
+                    [&](enterprise_connectors::ContentAnalysisDelegate::
+                            CompletionCallback cb) {
+                      saved_callback = std::move(cb);
+                    }));
+          }));
+
+  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
+  print_view_manager->ContentAnalysisBeforePrintingDocument(
+      std::move(scanning_data), shared_data, gfx::Size(100, 100),
+      gfx::Rect(0, 0, 100, 100), gfx::Point(0, 0));
+
+  // The analysis scan has been initiated. In production, DidPrintDocument would
+  // now return and unblock the renderer.
+  // Now simulate a compromised renderer modifying the shared memory before the
+  // scan verdict arrives.
+  region.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(
+      base::as_byte_span(kMutatedData));
+
+  // The scan completes with an ALLOW verdict.
+  ASSERT_TRUE(saved_callback);
+  enterprise_connectors::ContentAnalysisDelegate::Data result_data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+  result.page_result = true;
+  std::move(saved_callback).Run(result_data, result);
+
+  // Verify that the data sent to the printer matches the benign snapshot taken
+  // before the mutation, NOT the mutated data.
+  std::string_view printed_data;
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(test_job->printed_data());
+  printed_data = std::string_view(
+      reinterpret_cast<const char*>(test_job->printed_data()->data()),
+      kBenignData.size());
+#else
+  auto doc_data = document->GetDocumentData();
+  ASSERT_TRUE(doc_data.data.IsValid());
+  base::ReadOnlySharedMemoryMapping mapping = doc_data.data.Map();
+  ASSERT_TRUE(mapping.IsValid());
+  printed_data = std::string_view(mapping.GetMemoryAsSpan<const char>().data(),
+                                  kBenignData.size());
+#endif
+  EXPECT_EQ(kBenignData, printed_data);
+  EXPECT_NE(kMutatedData, printed_data);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace printing

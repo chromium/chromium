@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -1181,13 +1182,17 @@ void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(
   scanning_data.printer_name =
       base::UTF16ToUTF8(print_job_->document()->settings().device_name());
 
+  // Create an immutable, browser-owned copy of the print data so a compromised
+  // renderer cannot mutate the backing shared memory while analysis is running.
+  auto safe_print_data =
+      base::MakeRefCounted<base::RefCountedBytes>(*print_data);
   auto on_verdict = base::BindOnce(
       &PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis,
-      weak_ptr_factory_.GetWeakPtr(), print_data, page_size, content_area,
+      weak_ptr_factory_.GetWeakPtr(), safe_print_data, page_size, content_area,
       offsets);
 
   enterprise_data_protection::PrintIfAllowedByPolicy(
-      print_data, web_contents()->GetOutermostWebContents(),
+      std::move(safe_print_data), web_contents()->GetOutermostWebContents(),
       std::move(scanning_data), std::move(on_verdict));
 }
 
