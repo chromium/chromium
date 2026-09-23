@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/browser_context_delegate.h"
 #include "chrome/browser/enterprise/client_certificates/cert_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/android/device_trust_key_manager_android.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -278,6 +279,12 @@ ChromeBrowserCloudManagementControllerAndroid::
   return client_certificates::CreateBrowserCertificateProvisioningService(
       g_browser_process->local_state(), certificate_store_.get(),
       GetDeviceManagementService(), GetSharedURLLoaderFactory());
+}
+
+std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+ChromeBrowserCloudManagementControllerAndroid::CreateDeviceTrustKeyManager() {
+  return std::make_unique<
+      enterprise_connectors::DeviceTrustKeyManagerAndroid>();
 }
 
 }  // namespace policy

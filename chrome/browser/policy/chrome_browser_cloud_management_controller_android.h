@@ -65,6 +65,8 @@ class ChromeBrowserCloudManagementControllerAndroid
   void DeferInitialization(base::OnceClosure callback) override;
   std::unique_ptr<client_certificates::CertificateProvisioningService>
   CreateCertificateProvisioningService() override;
+  std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+  CreateDeviceTrustKeyManager() override;
 
  private:
   // Active while it can't be determined if enrollment token is set by non-CBCM

@@ -10,8 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
@@ -22,7 +20,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_context.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
@@ -39,7 +37,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -57,7 +55,7 @@ bool IsProfileManaged(Profile* profile) {
   return management_service && management_service->IsManaged();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
 policy::CloudPolicyStore* GetUserCloudPolicyStore(Profile* profile) {
   policy::CloudPolicyManager* user_policy_manager =
       profile->GetCloudPolicyManager();
@@ -69,7 +67,7 @@ policy::CloudPolicyStore* GetUserCloudPolicyStore(Profile* profile) {
   }
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -109,13 +107,13 @@ DeviceTrustServiceFactory::DeviceTrustServiceFactory()
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Depends on this service via the SignalsService having a dependency on it.
   DependsOn(enterprise_signals::SignalsAggregatorFactory::GetInstance());
   // Depends on this service via the ProfileAttester having a dependency on it
   // which is used to construct the BrowserAttestationService.
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool DeviceTrustServiceFactory::ServiceIsNULLWhileTesting() const {

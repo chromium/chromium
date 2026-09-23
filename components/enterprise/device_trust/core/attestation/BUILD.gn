@@ -5,12 +5,24 @@
 source_set("attestation") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [ "attestation_utils.cc" ]
+  sources = [
+    "attestation_switches.cc",
+    "attestation_utils.cc",
+    "browser_attestation_service.cc",
+    "crypto_utility.cc",
+    "google_keys.cc",
+    "profile_attester.cc",
+  ]
 
   public = [
     "attestation_service.h",
+    "attestation_switches.h",
     "attestation_utils.h",
     "attester.h",
+    "browser_attestation_service.h",
+    "crypto_utility.h",
+    "google_keys.h",
+    "profile_attester.h",
   ]
 
   public_deps = [
@@ -24,34 +36,14 @@ source_set("attestation") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  deps = []
+  deps = [
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//crypto",
+    "//third_party/boringssl",
+  ]
 
-  if (is_linux || is_win || is_mac || is_chromeos || is_ios) {
-    public += [
-      "attestation_switches.h",
-      "browser_attestation_service.h",
-      "crypto_utility.h",
-      "google_keys.h",
-      "profile_attester.h",
-    ]
-
-    sources += [
-      "attestation_switches.cc",
-      "browser_attestation_service.cc",
-      "crypto_utility.cc",
-      "google_keys.cc",
-      "profile_attester.cc",
-    ]
-
-    deps += [
-      "//components/enterprise/browser/identifiers",
-      "//components/policy/core/common",
-      "//crypto",
-      "//third_party/boringssl",
-    ]
-  }
-
-  if (is_linux || is_win || is_mac || is_ios) {
+  if (!is_chromeos) {
     public += [ "device_attester.h" ]
     sources += [ "device_attester.cc" ]
 
@@ -106,14 +98,14 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_linux || is_win || is_mac || is_chromeos || is_ios) {
+  if (!is_fuchsia) {
     sources += [
       "browser_attestation_service_unittest.cc",
       "profile_attester_unittest.cc",
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_ios) {
+  if (!is_chromeos && !is_fuchsia) {
     sources += [ "device_attester_unittest.cc" ]
   }
 }

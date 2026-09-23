@@ -16,6 +16,8 @@ source_set("enterprise") {
     "connectors/analysis/analysis_service_settings.h",
     "connectors/connectors_manager.h",
     "connectors/connectors_service.h",
+    "connectors/device_trust/device_trust_connector_service_factory.h",
+    "connectors/device_trust/device_trust_service_factory.h",
     "connectors/device_trust/signals/signals_service_factory.h",
     "connectors/interstitials/delayed_interstitial_reporter.h",
     "connectors/interstitials/enterprise_block_controller_client.h",
@@ -57,7 +59,6 @@ source_set("enterprise") {
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/enterprise/browser_management:management_identity",
-    "//chrome/browser/enterprise/connectors/device_trust/signals",
     "//chrome/browser/enterprise/core",
     "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/profiles",
@@ -147,8 +148,6 @@ source_set("enterprise") {
       "//ui/views",
     ]
     public += [
-      "connectors/device_trust/device_trust_connector_service_factory.h",
-      "connectors/device_trust/device_trust_service_factory.h",
       "connectors/device_trust/navigation_throttle.h",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
       "data_protection/data_protection_ui_controller.h",
@@ -163,6 +162,8 @@ source_set("enterprise") {
   }
 
   if (is_chromeos) {
+    public_deps += [ "//components/enterprise/device_trust/core/signals" ]
+
     public += [
       "connectors/analysis/file_transfer_analysis_delegate.h",
       "connectors/analysis/source_destination_matcher_ash.h",
@@ -412,6 +413,8 @@ source_set("impl") {
     "connectors/analysis/analysis_service_settings.cc",
     "connectors/connectors_manager.cc",
     "connectors/connectors_service.cc",
+    "connectors/device_trust/device_trust_connector_service_factory.cc",
+    "connectors/device_trust/device_trust_service_factory.cc",
     "connectors/interstitials/delayed_interstitial_reporter.cc",
     "connectors/interstitials/enterprise_block_controller_client.cc",
     "connectors/interstitials/enterprise_block_page.cc",
@@ -506,7 +509,12 @@ source_set("impl") {
     "//components/enterprise/content",
     "//components/enterprise/core",
     "//components/enterprise/data_protection",
+    "//components/enterprise/device_trust",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
     "//components/enterprise/device_trust/core:metrics",
+    "//components/enterprise/device_trust/core/attestation",
+    "//components/enterprise/device_trust/core/attestation:types",
+    "//components/enterprise/device_trust/core/signals",
     "//components/enterprise/encryption/cache",
     "//components/enterprise/net",
     "//components/guest_view/browser",
@@ -541,19 +549,15 @@ source_set("impl") {
     deps += [
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android:tabs_public",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/android",
       "//chrome/browser/enterprise/util:jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//components/enterprise/browser/reporting/android:jni_headers",
       "//components/enterprise/browser/reporting/android:signals_reporting_scheduler",
       "//components/enterprise/device_attestation/android",
       "//components/enterprise/device_attestation/android:jni_headers",
-      "//components/enterprise/device_trust/core/signals/decorators/common",
     ]
   } else {
     sources += [
-      "connectors/device_trust/device_trust_connector_service_factory.cc",
-      "connectors/device_trust/device_trust_service_factory.cc",
       "connectors/device_trust/navigation_throttle.cc",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.cc",
       "connectors/device_trust/signals/signals_service_factory.cc",
@@ -586,12 +590,7 @@ source_set("impl") {
       "//components/constrained_window",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
-      "//components/enterprise/device_trust",
-      "//components/enterprise/device_trust/core:device_trust_connector_service",
       "//components/enterprise/device_trust/core:device_trust_service",
-      "//components/enterprise/device_trust/core:metrics",
-      "//components/enterprise/device_trust/core/attestation",
-      "//components/enterprise/device_trust/core/attestation:types",
       "//components/web_modal",
     ]
   }
