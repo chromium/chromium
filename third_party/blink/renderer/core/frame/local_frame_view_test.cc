@@ -1680,5 +1680,75 @@ TEST_F(LocalFrameViewPresentationTimeTest,
   histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
+TEST_F(LocalFrameViewSimTest, ResizeObserverErrorMutatesAncestorFrame) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <iframe srcdoc="
+      <div id='target' style='width: 10px'></div>
+      <script>
+        window.onerror = () => {
+          // Mutate style in the ancestor frame when the ResizeObserver loop
+          // limit error fires, while leaving this child frame clean.
+          parent.document.body.style.width = '200px';
+        };
+        new ResizeObserver(() => {
+          target.style.width = '20px';
+        }).observe(target);
+      </script>
+    "></iframe>
+  )HTML");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  EXPECT_EQ(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPaintClean);
+}
+
+TEST_F(LocalFrameViewSimTest, ResizeObserverErrorMutatesAncestorFrameLayout) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <div id="text">hello</div>
+    <iframe srcdoc="
+      <div id='target' style='width: 10px'></div>
+      <script>
+        window.onerror = () => {
+          // Mutate text data in the ancestor frame (dirties layout without
+          // lowering DocumentLifecycle state below kPrePaintClean).
+          parent.document.getElementById('text').firstChild.data = 'world';
+        };
+        new ResizeObserver(() => {
+          target.style.width = '20px';
+        }).observe(target);
+      </script>
+    "></iframe>
+  )HTML");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  EXPECT_FALSE(GetDocument().View()->NeedsLayout());
+}
+
+TEST_F(LocalFrameViewSimTest, ResizeObserverErrorMutatesScrollOffset) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <div id="scroller" style="height: 100px; overflow: scroll;">
+      <div style="height: 500px;"></div>
+    </div>
+    <script>
+      window.onerror = () => {
+        scroller.scrollTop = 50;
+      };
+      new ResizeObserver(() => {
+        scroller.style.width = '20px';
+      }).observe(scroller);
+    </script>
+  )HTML");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  EXPECT_FALSE(
+      GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
+}
+
 }  // namespace
 }  // namespace blink

@@ -2307,42 +2307,46 @@ void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
 }
 
 bool LocalFrameView::NotifyResizeObservers() {
-  // Return true if lifecycles need to be re-run
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::NotifyResizeObservers");
 
   // Controller exists only if ResizeObserver was created.
   ResizeObserverController* resize_controller =
       ResizeObserverController::FromIfExists(*GetFrame().DomWindow());
-  if (!resize_controller)
+  if (!resize_controller) {
     return false;
+  }
 
   size_t min_depth = resize_controller->GatherObservations();
 
+  bool needs_to_repeat_lifecycle = false;
   if (min_depth != ResizeObserverController::kDepthBottom) {
     resize_controller->DeliverObservations();
-  } else {
-    // Observation depth limit reached
-    if (resize_controller->SkippedObservations() &&
-        !resize_controller->IsLoopLimitErrorDispatched()) {
-      resize_controller->ClearObservations();
+    // Delivering active observations can dirty state, and another pass is
+    // needed to gather any deeper observations and check for skipped
+    // observations.
+    needs_to_repeat_lifecycle = true;
+  } else if (resize_controller->SkippedObservations()) {
+    // Observation depth limit reached.
+    resize_controller->ClearObservations();
+    if (!resize_controller->IsLoopLimitErrorDispatched()) {
       ErrorEvent* error = ErrorEvent::Create(
           "ResizeObserver loop completed with undelivered notifications.",
           CaptureSourceLocation(frame_->DomWindow()), nullptr);
-      // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is made
-      // by blink itself.
+      // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is
+      // made by blink itself.
       // TODO(yhirano): Reconsider this.
       frame_->DomWindow()->DispatchErrorEvent(
           error, SanitizeScriptErrors::kDoNotSanitize);
       // Ensure notifications will get delivered in next cycle.
       ScheduleAnimation();
       resize_controller->SetLoopLimitErrorDispatched(true);
+      // Dispatching the error event can run script that dirties state, so
+      // re-run the lifecycle.
+      needs_to_repeat_lifecycle = true;
     }
-    if (Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean)
-      return false;
   }
 
-  // Lifecycle needs to be run again because Resize Observer affected layout
-  return true;
+  return needs_to_repeat_lifecycle;
 }
 
 bool LocalFrameView::LocalFrameTreeAllowsThrottling() const {
@@ -2534,14 +2538,11 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   auto old_force_commit_criteria = ForceCommitCriteria();
 
-  // Run style, layout, compositing and prepaint lifecycle phases and deliver
-  // resize observations if required. Resize observer callbacks/delegates have
-  // the potential to dirty layout (until loop limit is reached) and therefore
-  // the above lifecycle phases need to be re-run until the limit is reached
-  // or no layout is pending.
-  // Note that after ResizeObserver has settled, we also run intersection
-  // observations that need to be delievered in post-layout. This process can
-  // also dirty layout, which will run this loop again.
+  // Run style, layout, compositing, and prepaint lifecycle phases, followed by
+  // post-layout steps (such as post-layout intersection observations, resize
+  // observations, container query list notifications, and view transitions).
+  // Any of these steps can dirty style or layout and require repeating the
+  // lifecycle phases.
 
   // A LocalFrameView can be unthrottled at this point, but become throttled as
   // it advances through lifecycle stages. If that happens, it will prevent
@@ -2556,8 +2557,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   while (true) {
     for (LocalFrameView* frame_view : unthrottled_frame_views) {
-      // RunResizeObserverSteps may run arbitrary script, which can cause a
-      // frame to become detached.
+      // Steps in this loop (such as ResizeObserver and ContainerQueryList) may
+      // run arbitrary script, which can cause a frame to become detached.
       if (frame_view->GetFrame().IsAttached()) {
         frame_view->Lifecycle().EnsureStateAtMost(
             DocumentLifecycle::kVisualUpdatePending);
@@ -2632,8 +2633,11 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     bool needs_to_repeat_lifecycle = false;
 
     // ResizeObserver and post-layout IntersectionObserver observation
-    // deliveries may dirty style and layout. RunResizeObserverSteps will return
-    // true if any observer ran that may have dirtied style or layout;
+    // deliveries may require repeating the lifecycle. RunResizeObserverSteps
+    // returns true if any resize observations were delivered or a loop limit
+    // error event was dispatched (requiring another pass to update any dirtied
+    // state, gather deeper observations, or check for skipped observations), or
+    // if anchor position fallback updates invalidated layout;
     // RunPostLayoutIntersectionObserverSteps will return true if any
     // observations led to content-visibility intersection changing visibility
     // state synchronously (which happens on the first intersection
