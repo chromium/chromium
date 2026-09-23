@@ -928,7 +928,16 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
             switches::kHandleMdmErrorsForDasherAccounts)) {
       return UserActionableError::kDeviceManagementError;
     }
-#endif  // BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/530541220): Merge with the iOS section during the feature
+    // flag cleanup.
+    if (GetAuthError().state() ==
+            GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR &&
+        base::FeatureList::IsEnabled(
+            switches::kHandleMdmErrorsForDasherAccountsOnAndroid)) {
+      return UserActionableError::kDeviceManagementError;
+    }
+#endif
     return UserActionableError::kSignInNeedsUpdate;
   }
   if (last_actionable_error_.action == UPGRADE_CLIENT) {

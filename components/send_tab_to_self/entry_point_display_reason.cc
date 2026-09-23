@@ -82,7 +82,7 @@ bool HasUserActionableErrorBlockingSendTabToSelf(
     case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
     case syncer::SyncService::UserActionableError::kUnrecoverableError:
 #endif
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     case syncer::SyncService::UserActionableError::kDeviceManagementError:
 #endif
       return true;
