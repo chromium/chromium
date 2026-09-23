@@ -759,10 +759,11 @@ PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
       lookup_key, enacting_predictor, confidence, eagerness_to_exclude);
 
   // Iterate through all suitable candidates and merge their tags.
-  for (const auto& candidate_pair : suitable_candidates) {
-    for (const auto& tag : candidate_pair.second->tags) {
+  // Note: This loop is O(n^2) in the number of tags.
+  for (auto& [_, candidate] : suitable_candidates) {
+    for (auto& tag : candidate->tags) {
       if (!std::ranges::contains(merged_tags, tag)) {
-        merged_tags.push_back(tag);
+        merged_tags.emplace_back(std::move(tag));
       }
     }
   }
@@ -788,7 +789,7 @@ bool PreloadingDecider::MaybePrefetch(
   }
 
   key = matched_candidate_pair.value().first;
-  matched_candidate_pair.value().second->tags = merged_tags;
+  matched_candidate_pair.value().second->tags = std::move(merged_tags);
   bool result = prefetcher_.MaybePrefetch(
       std::move(matched_candidate_pair.value().second), enacting_predictor);
 
@@ -931,7 +932,7 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerenderForAction(
   }
 
   key = matched_candidate_pair.value().first;
-  matched_candidate_pair.value().second->tags = merged_tags;
+  matched_candidate_pair.value().second->tags = std::move(merged_tags);
   blink::mojom::SpeculationCandidatePtr candidate =
       std::move(matched_candidate_pair.value().second);
   result.first =

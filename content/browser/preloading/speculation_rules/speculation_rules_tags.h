@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_TAGS_H_
 #define CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_TAGS_H_
 
-#include <set>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
-#include "net/http/structured_headers.h"
 
 namespace content {
 
@@ -20,22 +20,21 @@ namespace content {
 class CONTENT_EXPORT SpeculationRulesTags {
  public:
   SpeculationRulesTags();
-  // TODO(crbug.com/381687257): Use std::set instead of std::vector.
-  explicit SpeculationRulesTags(std::vector<std::optional<std::string>> tags);
+  explicit SpeculationRulesTags(
+      const std::vector<std::optional<std::string>>& tags);
   ~SpeculationRulesTags();
 
   // Copyable and movable.
   SpeculationRulesTags(const SpeculationRulesTags&);
   SpeculationRulesTags& operator=(const SpeculationRulesTags&);
-  SpeculationRulesTags(SpeculationRulesTags&& tags) noexcept;
+  SpeculationRulesTags(SpeculationRulesTags&&) noexcept;
   SpeculationRulesTags& operator=(SpeculationRulesTags&&) noexcept;
 
   std::optional<std::string> ConvertStringToHeaderString() const;
 
  private:
-  net::structured_headers::List ConvertStringToStructuredHeader() const;
-
-  std::set<std::optional<std::string>> tags_;
+  base::flat_set<std::string> tags_;
+  bool has_null_{false};
 };
 
 }  // namespace content
