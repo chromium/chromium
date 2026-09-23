@@ -18,6 +18,7 @@ using intelligence::actor::kSpacingLarge;
 using intelligence::actor::kSpacingMedium;
 using intelligence::actor::kSpacingSmall;
 using intelligence::actor::kSpacingTiny;
+using intelligence::actor::kTimelineGutterWidth;
 
 // Layout dimensions.
 const CGFloat kInnerContentSize = 32.0;
@@ -42,6 +43,7 @@ UIImage* DefaultGeminiLogo() {
 }  // namespace
 
 @implementation ActuationHeaderView {
+  UIView* _iconContainer;
   UIImageView* _imageView;
   GradientActivityIndicatorView* _activityIndicator;
 
@@ -140,13 +142,18 @@ UIImage* DefaultGeminiLogo() {
 
 // Creates and configures the subviews including the root horizontal stack.
 - (void)setupSubviews {
+  _iconContainer = [[UIView alloc] init];
+  _iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
   _imageView = [[UIImageView alloc] initWithImage:DefaultGeminiLogo()];
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
-  [_imageView setContentHuggingPriority:UILayoutPriorityRequired
-                                forAxis:UILayoutConstraintAxisHorizontal];
-  [_imageView
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
+  _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_iconContainer addSubview:_imageView];
+
+  _activityIndicator =
+      [[GradientActivityIndicatorView alloc] initWithFrame:CGRectZero];
+  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  [_iconContainer addSubview:_activityIndicator];
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.font =
@@ -180,22 +187,17 @@ UIImage* DefaultGeminiLogo() {
   _accessoryStackView.hidden = YES;
 
   _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _imageView, _textStackView, _accessoryStackView
+    _iconContainer, _textStackView, _accessoryStackView
   ]];
   _contentStackView.axis = UILayoutConstraintAxisHorizontal;
   _contentStackView.alignment = UIStackViewAlignmentCenter;
-  _contentStackView.spacing = kSpacingMedium;
+  _contentStackView.spacing = 0.0;
   [_contentStackView setCustomSpacing:kSpacingSmall afterView:_textStackView];
   _contentStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kSpacingSmall, kSpacingLarge, kSpacingSmall, kSpacingLarge);
+      kSpacingSmall, 0.0, kSpacingSmall, kSpacingLarge);
   _contentStackView.layoutMarginsRelativeArrangement = YES;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_contentStackView];
-
-  _activityIndicator =
-      [[GradientActivityIndicatorView alloc] initWithFrame:CGRectZero];
-  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  [self insertSubview:_activityIndicator belowSubview:_contentStackView];
 }
 
 // Configures layout constraints.
@@ -203,6 +205,9 @@ UIImage* DefaultGeminiLogo() {
   AddSameConstraints(_contentStackView, self);
   [self.heightAnchor constraintGreaterThanOrEqualToConstant:kHeaderMinHeight]
       .active = YES;
+  [_iconContainer.widthAnchor constraintEqualToConstant:kTimelineGutterWidth]
+      .active = YES;
+  AddSameCenterConstraints(_imageView, _iconContainer);
   AddSquareConstraints(_imageView, kLogoSize);
   AddSameCenterConstraints(_activityIndicator, _imageView);
   AddSquareConstraints(_activityIndicator, kSpinnerSize);
