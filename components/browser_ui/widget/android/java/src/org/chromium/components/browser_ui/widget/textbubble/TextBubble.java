@@ -165,17 +165,22 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                 new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         mPopupWindow =
-                new AnchoredPopupWindow(
-                        context, rootView, backgroundDrawable, mContentView, anchorRectProvider);
-        mPopupWindow.setMargin(
-                context.getResources().getDimensionPixelSize(R.dimen.text_bubble_margin));
-        mPopupWindow.setPreferredHorizontalOrientation(
-                AnchoredPopupWindow.HorizontalOrientation.CENTER);
-        mPopupWindow.setLayoutObserver(this);
+                new AnchoredPopupWindow.Builder(
+                                context,
+                                rootView,
+                                backgroundDrawable,
+                                () -> mContentView,
+                                anchorRectProvider)
+                        .setMargin(
+                                context.getResources()
+                                        .getDimensionPixelSize(R.dimen.text_bubble_margin))
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.CENTER)
+                        .setLayoutObserver(this)
+                        .setAnimationStyle(R.style.TextBubbleAnimation)
+                        .build();
 
         mHandler = new Handler();
-
-        mPopupWindow.setAnimationStyle(R.style.TextBubbleAnimation);
 
         addOnDismissListener(mDismissListener);
         if (AccessibilityState.isTouchExplorationEnabled()) setDismissOnTouchInteraction(true);
