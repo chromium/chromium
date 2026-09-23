@@ -159,10 +159,6 @@ namespace {
 // Deprecated 12/2025.
 inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 
-// Deprecated 12/2025.
-inline constexpr char kFingerprintingProtectionEnabled[] =
-    "tracking_protection.fingerprinting_protection_enabled";
-
 // Deprecated 01/2026.
 inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
     "ios.home_customization.magic_stack.safety_check.notifications_shown";
@@ -225,6 +221,8 @@ inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
     "ios.home_customization.magic_stack.set_up_list.enabled";
 inline constexpr char kNTPFollowingFeedSortType[] =
     "ios.ntp.following_feed.sort_type";
+inline constexpr char kFingerprintingProtectionEnabled[] =
+    "tracking_protection.fingerprinting_protection_enabled";
 
 // Deprecated 09/2026.
 inline constexpr char kSigninHasAcceptedManagementDialog[] =
@@ -882,34 +880,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
 
-  // Deprecated 10/2025. Use
-  // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
-  registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
-
-  // Deprecated 10/2025. Use
-  // `ntp_tiles::prefs::kTipsHomeModuleEnabled` instead.
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
-                                true);
-
-  // Deprecated 10/2025. Use `ntp_tiles::prefs::kMagicStackHomeModuleEnabled`
-  // instead.
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackEnabled,
-                                true);
-
-  // Deprecated 10/2025. Use `commerce::kPriceTrackingHomeModuleEnabled`
-  // instead.
-  registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
-
-  // Deprecated 10/2025. Use `ntp_tiles::prefs::kMostVisitedHomeModuleEnabled`
-  // instead.
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMostVisitedEnabled,
-                                true);
-
-  // Deprecated 10/2025.
-  registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, true);
-
   // Deprecated 11/2025.
   registry->RegisterListPref(kReaderModeRecentlyUsedTimestampsPref);
 
@@ -951,9 +921,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
                                 false);
   registry->RegisterIntegerPref(kNTPFollowingFeedSortType, 0);
-
   // Deprecated 09/2026.
   registry->RegisterDictionaryPref(kSigninHasAcceptedManagementDialog);
+  registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -999,19 +969,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
                     prefs);
-  RenameBooleanPref(ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
-                    prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
-                    prefs);
-  RenameBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled,
-                    prefs::kHomeCustomizationMagicStackTipsEnabled, prefs);
-  RenameBooleanPref(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
-                    prefs::kHomeCustomizationMagicStackEnabled, prefs);
-  RenameBooleanPref(
-      commerce::kPriceTrackingHomeModuleEnabled,
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, prefs);
-  RenameBooleanPref(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
-                    prefs::kHomeCustomizationMostVisitedEnabled, prefs);
-  prefs->ClearPref(kFingerprintingProtectionEnabled);
 
   // Added 11/2025.
   prefs->ClearPref(kReaderModeRecentlyUsedTimestampsPref);
@@ -1049,9 +1006,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kMigratedToQuickDeletePrefValues);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
   prefs->ClearPref(kNTPFollowingFeedSortType);
-
   // Deprecated 09/2026.
   prefs->ClearPref(kSigninHasAcceptedManagementDialog);
+  prefs->ClearPref(kFingerprintingProtectionEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

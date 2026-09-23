@@ -6,8 +6,6 @@
 
 #import <string_view>
 
-#import "components/commerce/core/pref_names.h"
-#import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/personal_context/core/personal_context_prefs.h"
@@ -15,7 +13,6 @@
 #import "components/safety_check/safety_check_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -83,130 +80,6 @@ TEST_F(BrowserPrefsTest, RenameSafetyCheckModuleEnabledProfilePref) {
                   ->IsDefaultValue());
   EXPECT_EQ(profile_prefs()->GetBoolean(
                 safety_check::prefs::kSafetyCheckHomeModuleEnabled),
-            test_value);
-}
-
-TEST_F(BrowserPrefsTest, RenameTabResumptionModuleEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(
-      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, test_value);
-
-  ASSERT_EQ(profile_prefs()->GetBoolean(
-                prefs::kHomeCustomizationMagicStackTabResumptionEnabled),
-            test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(ntp_tiles::prefs::kTabResumptionHomeModuleEnabled)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(profile_prefs()
-                  ->FindPreference(
-                      prefs::kHomeCustomizationMagicStackTabResumptionEnabled)
-                  ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetBoolean(
-                ntp_tiles::prefs::kTabResumptionHomeModuleEnabled),
-            test_value);
-}
-
-TEST_F(BrowserPrefsTest, RenameTipsModuleEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled,
-                              test_value);
-
-  ASSERT_EQ(profile_prefs()->GetBoolean(
-                prefs::kHomeCustomizationMagicStackTipsEnabled),
-            test_value);
-  ASSERT_TRUE(profile_prefs()
-                  ->FindPreference(ntp_tiles::prefs::kTipsHomeModuleEnabled)
-                  ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      profile_prefs()
-          ->FindPreference(prefs::kHomeCustomizationMagicStackTipsEnabled)
-          ->IsDefaultValue());
-  EXPECT_EQ(
-      profile_prefs()->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled),
-      test_value);
-}
-
-TEST_F(BrowserPrefsTest, RenameMagicStackEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(prefs::kHomeCustomizationMagicStackEnabled,
-                              test_value);
-
-  ASSERT_EQ(
-      profile_prefs()->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled),
-      test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(ntp_tiles::prefs::kMagicStackHomeModuleEnabled)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(profile_prefs()
-                  ->FindPreference(prefs::kHomeCustomizationMagicStackEnabled)
-                  ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetBoolean(
-                ntp_tiles::prefs::kMagicStackHomeModuleEnabled),
-            test_value);
-}
-
-TEST_F(BrowserPrefsTest, RenamePriceTrackingModuleEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
-      test_value);
-
-  ASSERT_EQ(
-      profile_prefs()->GetBoolean(
-          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled),
-      test_value);
-  ASSERT_TRUE(profile_prefs()
-                  ->FindPreference(commerce::kPriceTrackingHomeModuleEnabled)
-                  ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      profile_prefs()
-          ->FindPreference(
-              prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)
-          ->IsDefaultValue());
-  EXPECT_EQ(
-      profile_prefs()->GetBoolean(commerce::kPriceTrackingHomeModuleEnabled),
-      test_value);
-}
-
-TEST_F(BrowserPrefsTest, RenameMostVisitedModuleEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled,
-                              test_value);
-
-  ASSERT_EQ(
-      profile_prefs()->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled),
-      test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(profile_prefs()
-                  ->FindPreference(prefs::kHomeCustomizationMostVisitedEnabled)
-                  ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetBoolean(
-                ntp_tiles::prefs::kMostVisitedHomeModuleEnabled),
             test_value);
 }
 

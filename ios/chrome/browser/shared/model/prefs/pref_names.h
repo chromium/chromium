@@ -747,22 +747,9 @@ inline constexpr char kUserAgentWasChanged[] = "UserAgentWasChanged";
 inline constexpr char kLastApplicationStorageMetricsLogTime[] =
     "LastApplicationStorageMetricsLogTime";
 
-// Prefs indicating whether Home surface modules are enabled.
-inline constexpr char kHomeCustomizationMostVisitedEnabled[] =
-    "ios.home_customization.most_visited.enabled";
-inline constexpr char kHomeCustomizationMagicStackEnabled[] =
-    "ios.home_customization.magic_stack.enabled";
-
 // Prefs indicating whether Magic Stack cards are enabled.
 inline constexpr char kHomeCustomizationMagicStackSafetyCheckEnabled[] =
     "ios.home_customization.magic_stack.safety_check.enabled";
-inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
-    "ios.home_customization.magic_stack.tab_resumption.enabled";
-inline constexpr char kHomeCustomizationMagicStackTipsEnabled[] =
-    "ios.home_customization.magic_stack.tips.enabled";
-inline constexpr char
-    kHomeCustomizationMagicStackShopCardPriceTrackingEnabled[] =
-        "ios.home_customization.magic_stack.shop_card_price_tracking.enabled";
 inline constexpr char kHomeCustomizationMagicStackShopCardReviewsEnabled[] =
     "ios.home_customization.magic_stack.shop_card_price_reviews.enabled";
 
