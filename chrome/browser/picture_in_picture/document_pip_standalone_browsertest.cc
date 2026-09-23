@@ -21,6 +21,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
@@ -169,18 +170,32 @@ IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest, ExitClosesWindow) {
 }
 
 // Regression test for crbug.com/544038274: a renderer-initiated same-window
-// navigation from the standalone PiP child must not synchronously destroy the
+// navigation from the PiP child must not synchronously destroy the
 // child WebContents while content::WebContentsImpl::OpenURL() is still using
 // source-frame state on the stack.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest,
                        ChildCurrentTabNavigationClosesWindowWithoutCrashing) {
-  OpenDocumentPipWindow();
+  const bool is_standalone = GetParam();
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
 
-  auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
-  content::WebContents* child = host->GetChildWebContents();
+  auto* manager = PictureInPictureWindowManager::GetInstance();
+  content::WebContents* child = manager->GetChildWebContents();
   ASSERT_NE(nullptr, child);
+  ASSERT_NE(OpenerWebContents(), child);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_NE(nullptr, widget);
   content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(widget);
+  auto* host = GetDocumentPipHost();
+  ASSERT_EQ(is_standalone, host != nullptr);
+  base::WeakPtr<DocumentPipHost> host_weak =
+      host ? host->GetWeakPtr() : nullptr;
+
+  // Exercise OpenURLFromTab rather than the usual BeginNavigation path.
+  child->GetMutableRendererPrefs()->browser_handles_all_top_level_requests =
+      true;
+  child->SyncRendererPrefs();
 
   content::ExecuteScriptAsync(
       child, content::JsReplace("location.href = $1;",
@@ -188,12 +203,14 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
                                     "example.test", "/title1.html")));
 
   child_destroyed_watcher.Wait();
+  widget_destroyed_waiter.Wait();
 
-  EXPECT_EQ(nullptr, host->GetWidget());
-  EXPECT_EQ(nullptr, host->GetChildWebContents());
-  EXPECT_EQ(
-      nullptr,
-      PictureInPictureWindowManager::GetInstance()->GetChildWebContents());
+  EXPECT_EQ(nullptr, manager->GetChildWebContents());
+  if (is_standalone) {
+    ASSERT_TRUE(host_weak);
+    EXPECT_EQ(nullptr, host_weak->GetWidget());
+    EXPECT_EQ(nullptr, host_weak->GetChildWebContents());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest,
