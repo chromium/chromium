@@ -131,14 +131,26 @@ public class PrivacySettingsFragmentTest {
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
 
-    private void waitForOptionsMenu() {
+    /**
+     * Waits until the settings UI is ready to be captured by a render test.
+     *
+     * <p>The toolbar and its menu are inflated before the preference list is populated, and
+     * RecyclerView cross-fades rows as preferences are updated, so taking a screenshot as soon as
+     * the menu exists can capture an empty list. Wait for the rows, then drop the item animator,
+     * which ends any in-flight fade and keeps later preference updates from starting a new one.
+     */
+    private void waitForSettingsToRender() {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mSettingsActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.menu_id_targeted_help)
-                            != null;
+                    Activity activity = mSettingsActivityTestRule.getActivity();
+                    if (activity.findViewById(R.id.menu_id_targeted_help) == null) {
+                        return false;
+                    }
+                    RecyclerView listView = mSettingsActivityTestRule.getFragment().getListView();
+                    return listView != null && listView.getChildCount() > 0;
                 });
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.getListView().setItemAnimator(null));
     }
 
     private void scrollToSetting(Matcher<View> matcher) {
@@ -226,7 +238,7 @@ public class PrivacySettingsFragmentTest {
     @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         View view =
                 mSettingsActivityTestRule
                         .getActivity()
@@ -241,7 +253,7 @@ public class PrivacySettingsFragmentTest {
     @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -263,7 +275,7 @@ public class PrivacySettingsFragmentTest {
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         View view =
                 mSettingsActivityTestRule
                         .getActivity()
@@ -279,7 +291,7 @@ public class PrivacySettingsFragmentTest {
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         View view =
                 mSettingsActivityTestRule
                         .getActivity()
@@ -296,7 +308,7 @@ public class PrivacySettingsFragmentTest {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
 
         mRenderTestRule.render(
@@ -313,7 +325,7 @@ public class PrivacySettingsFragmentTest {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
+        waitForSettingsToRender();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
 
         mRenderTestRule.render(
