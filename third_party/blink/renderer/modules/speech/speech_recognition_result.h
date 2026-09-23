@@ -44,28 +44,31 @@ class MODULES_EXPORT SpeechRecognitionResult final : public ScriptWrappable {
   static SpeechRecognitionResult* Create(
       const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
       bool final,
-      std::optional<base::TimeDelta> audio_start_time = std::nullopt,
-      std::optional<base::TimeDelta> audio_end_time = std::nullopt);
+      std::optional<base::TimeDelta> speech_start_time = std::nullopt,
+      std::optional<base::TimeDelta> speech_end_time = std::nullopt);
 
   SpeechRecognitionResult(
       const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
       bool final,
-      std::optional<base::TimeDelta> audio_start_time,
-      std::optional<base::TimeDelta> audio_end_time);
+      std::optional<base::TimeDelta> speech_start_time,
+      std::optional<base::TimeDelta> speech_end_time);
 
   unsigned length() { return alternatives_.size(); }
   SpeechRecognitionAlternative* item(unsigned index);
   bool isFinal() { return final_; }
-  std::optional<double> audioStartTime() const;
-  std::optional<double> audioEndTime() const;
+  // Reported in seconds, relative to the audiostart event, per
+  // https://webaudio.github.io/web-speech-api/#speechreco-result
+  // Returns 0.0 when the recognizer did not report a timing for this result.
+  double speechStartTime() const;
+  double speechEndTime() const;
 
   void Trace(Visitor*) const override;
 
  private:
   bool final_;
   HeapVector<Member<SpeechRecognitionAlternative>> alternatives_;
-  std::optional<base::TimeDelta> audio_start_time_;
-  std::optional<base::TimeDelta> audio_end_time_;
+  std::optional<base::TimeDelta> speech_start_time_;
+  std::optional<base::TimeDelta> speech_end_time_;
 };
 
 }  // namespace blink
