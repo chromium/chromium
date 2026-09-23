@@ -248,9 +248,8 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   }
 }
 
-// TODO(crbug.com/40919714): After determine exactly how we support initiator
-// for resource timing on worker threads, consider merging this function with
-// FrameFetchContext::FillInitiatorInfo().
+// Unlike FrameFetchContext::FillInitiatorInfo(), a fetch that reaches here is
+// always initiated by JavaScript.
 void WorkerFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
   CHECK(RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled());
   // Top-level worker scripts loaded by WorkerMainScriptLoader bypass this
@@ -263,15 +262,24 @@ void WorkerFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
     return;
   }
 
-  v8::Isolate* isolate = ResourceInitiatorHelper::GetIsolateIfRunningScript();
-  if (isolate) {
-    // It is the currently executing JavaScript that is fetching the resource.
-    // The initiator is the JavaScript that originally dispatched currently
-    // executing JavaScript.
-    initiator_info.initiator_url =
-        ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate);
+  // The initiator URL is not needed in worklets, so skip the task attribution
+  // lookup below.
+  if (!global_scope_->IsWorkerGlobalScope()) {
     return;
   }
+
+  // The fetch is made by JavaScript running in the worker, so the initiator
+  // is taken from the task attribution.
+  v8::Isolate* isolate = global_scope_->GetIsolate();
+  // |isolate| is not null because:
+  // 1) |global_scope_| is a WorkerGlobalScope.
+  // 2) WorkerGlobalScope is created in worker_thread.cc, and for workers a
+  //    valid isolate is set in
+  //    GetWorkerBackingThread().InitializeOnBackingThread() before the
+  //    global scope is created.
+  CHECK(isolate);
+  initiator_info.initiator_url =
+      ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate);
 }
 
 void WorkerFetchContext::AddResourceTiming(
