@@ -105,8 +105,8 @@ class FcpHttpResponse : public fcp::client::http::HttpResponse {
   }
 
  private:
-  int code_;
-  fcp::client::http::HeaderList headers_;
+  const int code_;
+  const fcp::client::http::HeaderList headers_;
 };
 
 }  // namespace
@@ -335,7 +335,12 @@ FcpHttpRequestHandle::FcpHttpRequestHandle(
     std::unique_ptr<fcp::client::http::HttpRequest> request)
     : manager_(std::move(manager)),
       request_id_(request_id),
-      request_(std::move(request)) {}
+      request_(std::move(request)) {
+  // `FcpHttpRequestHandle` is constructed on the FCP worker sequence in
+  // `EnqueueRequest()`, whereas `ui_sequence_checker_` guards `set_response()`
+  // on the UI sequence. Detach here so it binds on the first UI-sequence call.
+  DETACH_FROM_SEQUENCE(ui_sequence_checker_);
+}
 
 FcpHttpRequestHandle::~FcpHttpRequestHandle() = default;
 

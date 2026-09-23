@@ -151,7 +151,7 @@ class FcpHttpRequestManager
                          FcpHttpRequestRunner* runner,
                          CountdownLatch* latch);
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
@@ -192,6 +192,7 @@ class FcpHttpRequestHandle : public fcp::client::http::HttpRequestHandle {
   std::atomic<int64_t>* received_bytes() { return &received_bytes_; }
 
   void set_response(std::unique_ptr<fcp::client::http::HttpResponse> response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     response_ = std::move(response);
   }
 
@@ -200,14 +201,18 @@ class FcpHttpRequestHandle : public fcp::client::http::HttpRequestHandle {
   void Cancel() override;
 
  private:
-  scoped_refptr<FcpHttpRequestManager> manager_;
-  uint64_t request_id_;
-  std::unique_ptr<fcp::client::http::HttpRequest> request_;
-  std::unique_ptr<fcp::client::http::HttpResponse> response_;
+  const scoped_refptr<FcpHttpRequestManager> manager_;
+  const uint64_t request_id_;
+  const std::unique_ptr<fcp::client::http::HttpRequest> request_;
+  std::unique_ptr<fcp::client::http::HttpResponse> response_
+      GUARDED_BY_CONTEXT(ui_sequence_checker_);
+
   std::atomic<bool> was_performed_{false};
   std::atomic<bool> was_canceled_{false};
   std::atomic<int64_t> sent_bytes_{0};
   std::atomic<int64_t> received_bytes_{0};
+
+  SEQUENCE_CHECKER(ui_sequence_checker_);
 };
 
 class FcpHttpClient : public fcp::client::http::HttpClient {
@@ -229,7 +234,7 @@ class FcpHttpClient : public fcp::client::http::HttpClient {
       override;
 
  private:
-  scoped_refptr<FcpHttpRequestManager> request_manager_;
+  const scoped_refptr<FcpHttpRequestManager> request_manager_;
 };
 
 }  // namespace private_insights

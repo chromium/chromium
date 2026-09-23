@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -67,6 +68,42 @@ class FcpHttpClientTest : public testing::Test {
     absl::Status status;
     std::atomic<bool> done{false};
     PostPerformRequestsTask(client, std::move(requests), &status, &done);
+    EXPECT_TRUE(base::test::RunUntil([&]() { return done.load(); }));
+    return status;
+  }
+
+  // Enqueues and performs a single GET request off the UI sequence, so that
+  // the handle is constructed on the worker thread as it is in production.
+  absl::Status EnqueueAndPerformRequestOffUiSequence(
+      FcpHttpClient* client,
+      const std::string& url,
+      fcp::client::http::HttpRequestCallback* callback) {
+    absl::Status status;
+    std::atomic<bool> done{false};
+    auto main_thread = task_environment_.GetMainThreadTaskRunner();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::BindOnce(
+            [](FcpHttpClient* client, std::string url,
+               fcp::client::http::HttpRequestCallback* callback,
+               absl::Status* status, std::atomic<bool>* done,
+               scoped_refptr<base::SequencedTaskRunner> main_thread) {
+              auto request =
+                  fcp::client::http::InMemoryHttpRequest::Create(
+                      url, fcp::client::http::HttpRequest::Method::kGet,
+                      /*extra_headers=*/{}, /*body=*/"",
+                      /*use_compression=*/false)
+                      .value();
+              auto handle = client->EnqueueRequest(std::move(request));
+              *status = client->PerformRequests({{handle.get(), callback}});
+              // Destroy the handle here, as FCP does, before the test returns.
+              handle.reset();
+              *done = true;
+              // Wake up the main thread's RunLoop to evaluate the RunUntil
+              // condition.
+              main_thread->PostTask(FROM_HERE, base::DoNothing());
+            },
+            client, url, callback, &status, &done, main_thread));
     EXPECT_TRUE(base::test::RunUntil([&]() { return done.load(); }));
     return status;
   }
@@ -286,6 +323,27 @@ TEST_F(FcpHttpClientTest, PerformRequestsSuccessfulBatch) {
   EXPECT_EQ(callback2.body_received_, "resp2");
   histogram_tester.ExpectUniqueSample(kFcpHttpClientBatchSizeHistogram, 2, 1);
   histogram_tester.ExpectTotalCount(kFcpHttpClientRunnerCountHistogram, 2);
+}
+
+// Regression test for the DETACH_FROM_SEQUENCE() in FcpHttpRequestHandle's
+// constructor: the handle is created off the UI sequence, but its response is
+// set on it. The other tests enqueue on the main thread, which hides this.
+TEST_F(FcpHttpClientTest, EnqueueOffUiSequenceThenRespondOnUiSequence) {
+  FcpHttpClient client(request_manager_);
+  TestHttpRequestCallback callback;
+
+  test_url_loader_factory_.AddResponse("https://example.com/off-sequence",
+                                       "off sequence payload");
+
+  absl::Status status = EnqueueAndPerformRequestOffUiSequence(
+      &client, "https://example.com/off-sequence", &callback);
+
+  EXPECT_TRUE(status.ok());
+  EXPECT_TRUE(callback.response_started_called_);
+  EXPECT_EQ(callback.status_code_, 200);
+  EXPECT_TRUE(callback.response_body_called_);
+  EXPECT_EQ(callback.body_received_, "off sequence payload");
+  EXPECT_TRUE(callback.response_completed_called_);
 }
 
 TEST_F(FcpHttpClientTest, PerformRequestsNetError) {
