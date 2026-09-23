@@ -5,6 +5,17 @@
         <meta name="theme-color" content="#ff0000">
     </head>
     <body>
-        Chromium theme colors!
+        Chromium theme colors! This test page includes more than two hundred characters of visible text content so that Blink's LocalFrameView exceeds kVisualCharacterThreshold (200) during initial text layout and deterministically triggers DidFirstVisuallyNonEmptyPaint and DidChangeThemeColor.
+        <span id="tick">0</span>
+        <script>
+            let frame = 0;
+            function step() {
+                document.getElementById('tick').textContent = String(++frame);
+                if (frame < 120) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        </script>
     </body>
 </html>
