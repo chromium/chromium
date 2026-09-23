@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<title>Per-world event dispatch rules across the MAIN/isolated world boundary</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="target"></div>
+<script>
+// Blink stamps certain events with the DOMWrapperWorld they were created in
+// (`ErrorEvent`, `PromiseRejectionEvent`, and the device-connection events).
+// `Event::CanBeDispatchedInWorld()` then gates delivery, and the *only* place
+// that gate is consulted on the dispatch path is
+// `JSBasedEventListener::Invoke()`.
+//
+// These tests pin down the resulting matrix, including the `EventTarget.when()`
+// hole tracked by crbug.com/553845833.
+
+const ISOLATED_WORLD_ID = 1;
+
+function inIsolatedWorld(script) {
+  return testRunner.evaluateScriptInIsolatedWorldAndReturnValue(
+      ISOLATED_WORLD_ID, script);
+}
+
+setup(() => {
+  assert_implements(
+      window.testRunner, 'This test requires testRunner (isolated worlds).');
+  assert_implements(
+      window.when, 'This test requires EventTarget.when().');
+
+  // Install the isolated world's listeners once, up front:
+  //   - a cancelling "error" listener on #target, used by the first two tests
+  //     to detect whether a MAIN-world-dispatched event reached it.
+  //   - a helper that dispatches an isolated-world-stamped ErrorEvent on
+  //     window, used by the last two tests.
+  inIsolatedWorld(`
+    window.targetListenerRunCount = 0;
+    document.getElementById('target').addEventListener('error', e => {
+      window.targetListenerRunCount++;
+      e.preventDefault();
+    });
+
+    // Constructed in this world, so ErrorEvent::world_ is the isolated world.
+    window.dispatchIsolatedErrorEvent = () => {
+      window.dispatchEvent(new ErrorEvent('error', {
+        message: 'isolated-world-private',
+        filename: 'isolated-world-private.js',
+        lineno: 42,
+        colno: 7,
+      }));
+    };
+  `);
+});
+
+function isolatedTargetListenerRunCount() {
+  return inIsolatedWorld('window.targetListenerRunCount');
+}
+
+const target = document.getElementById('target');
+
+// ---------------------------------------------------------------------------
+// MAIN -> isolated.
+// ---------------------------------------------------------------------------
+
+test(() => {
+  const before = isolatedTargetListenerRunCount();
+  const notCanceled =
+      target.dispatchEvent(new Event('error', {cancelable: true}));
+
+  assert_equals(isolatedTargetListenerRunCount(), before + 1,
+                'isolated-world listener should have run');
+  assert_false(notCanceled,
+               'the isolated-world listener\'s preventDefault() is observable ' +
+               'from the main world');
+}, 'A main-world plain Event reaches an isolated-world listener, because the ' +
+   'base Event has no world stamp.');
+
+test(() => {
+  const before = isolatedTargetListenerRunCount();
+  const notCanceled =
+      target.dispatchEvent(new ErrorEvent('error', {cancelable: true}));
+
+  assert_equals(isolatedTargetListenerRunCount(), before,
+                'isolated-world listener must not run');
+  assert_true(notCanceled, 'nothing should have canceled the event');
+}, 'A main-world ErrorEvent does not reach an isolated-world listener, ' +
+   'because its constructor stamps it with the main world.');
+
+// ---------------------------------------------------------------------------
+// isolated -> MAIN.
+// ---------------------------------------------------------------------------
+
+test(() => {
+  let listenerRunCount = 0;
+  const listener = () => { listenerRunCount++; };
+  window.addEventListener('error', listener);
+
+  try {
+    inIsolatedWorld('window.dispatchIsolatedErrorEvent();');
+    assert_equals(listenerRunCount, 0,
+                  'main-world listener must not observe an isolated-world ' +
+                  'ErrorEvent');
+  } finally {
+    window.removeEventListener('error', listener);
+  }
+}, 'An isolated-world ErrorEvent does not reach a main-world ' +
+   'addEventListener() listener.');
+
+test(() => {
+  let subscriberRunCount = 0;
+  const controller = new AbortController();
+  window.when('error').subscribe(() => { subscriberRunCount++; },
+                                 {signal: controller.signal});
+
+  try {
+    inIsolatedWorld('window.dispatchIsolatedErrorEvent();');
+    assert_equals(subscriberRunCount, 0,
+                  'when() must apply the same per-world filter that ' +
+                  'addEventListener() applies');
+  } finally {
+    controller.abort();
+  }
+}, 'An isolated-world ErrorEvent does not reach a main-world when() ' +
+   'subscriber.');
+
+// The filter is symmetric, because `ObservableEventListener::Invoke()` checks
+// the event against the *subscriber's* world: an isolated-world `when()`
+// subscriber must no more observe main-world-stamped events than the reverse.
+test(() => {
+  inIsolatedWorld(`
+    window.targetSubscriberRunCount = 0;
+    window.targetSubscriberController = new AbortController();
+    document.getElementById('target').when('error').subscribe(
+        () => { window.targetSubscriberRunCount++; },
+        {signal: window.targetSubscriberController.signal});
+  `);
+
+  try {
+    target.dispatchEvent(new ErrorEvent('error', {cancelable: true}));
+    assert_equals(inIsolatedWorld('window.targetSubscriberRunCount'), 0,
+                  'isolated-world when() subscriber must not observe a ' +
+                  'main-world-stamped ErrorEvent');
+  } finally {
+    inIsolatedWorld('window.targetSubscriberController.abort();');
+  }
+}, 'A main-world ErrorEvent does not reach an isolated-world when() ' +
+   'subscriber.');
+</script>
+

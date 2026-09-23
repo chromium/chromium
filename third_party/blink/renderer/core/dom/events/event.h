@@ -286,6 +286,12 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
   // Events that must not leak across isolated world, similar to how
   // ErrorEvent behaves, can override this method.
+  //
+  // Every path that surfaces an `Event` to script must consult this. Ordinary
+  // event listeners do so in `JSBasedEventListener::Invoke()`, but
+  // `EventTarget::FireEventListeners()` itself does not, so a
+  // `NativeEventListener` that forwards the raw `Event` on to script (e.g. the
+  // one backing `EventTarget#when()`) is responsible for checking it directly.
   virtual bool CanBeDispatchedInWorld(const DOMWrapperWorld&) const {
     return true;
   }

@@ -281,6 +281,21 @@ void ObservableEventListener::Invoke(ExecutionContext* execution_context,
   // `EventTarget::FireEventListeners()` early-returns if its `ExecutionContext`
   // is detached.
   DCHECK(script_state_->ContextIsValid());
+
+  // Some events are bound to the `DOMWrapperWorld` they were created in (see
+  // `Event::CanBeDispatchedInWorld()`), and must not be surfaced to script in
+  // any other world. Ordinary event listeners enforce this in
+  // `JSBasedEventListener::Invoke()`; since `this` is a `NativeEventListener`,
+  // it does not go through that path and must perform the same check itself.
+  //
+  // This must happen before `ScriptValue::From()` below: creating the wrapper
+  // in the subscriber's world is itself the leak, not merely invoking the
+  // subscriber. Note that this filters in both directions, since
+  // `script_state_` is the *subscriber's* script state.
+  if (!event->CanBeDispatchedInWorld(script_state_->World())) {
+    return;
+  }
+
   ScriptState::Scope scope(script_state_);
   ScriptValue script_value = ScriptValue::From(script_state_, event);
 
