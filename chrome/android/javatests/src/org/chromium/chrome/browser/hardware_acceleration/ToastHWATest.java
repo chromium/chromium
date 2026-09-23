@@ -170,23 +170,20 @@ public class ToastHWATest {
 
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // We are using Toast.makeText(context, ...) instead of new Toast(context)
-                        // because that Toast constructor is unused and is deleted by proguard.
-                        Toast toast = Toast.makeText(context, "Test", Toast.LENGTH_SHORT);
-                        toast.setView(
-                                new View(context) {
-                                    @Override
-                                    public void onAttachedToWindow() {
-                                        super.onAttachedToWindow();
-                                        accelerated.set(isHardwareAccelerated());
-                                        listenerCalled.notifyCalled();
-                                    }
-                                });
-                        toast.show();
-                    }
+                () -> {
+                    // We are using Toast.makeText(context, ...) instead of new Toast(context)
+                    // because that Toast constructor is unused and is deleted by proguard.
+                    Toast toast = Toast.makeText(context, "Test", Toast.LENGTH_SHORT);
+                    toast.setView(
+                            new View(context) {
+                                @Override
+                                public void onAttachedToWindow() {
+                                    super.onAttachedToWindow();
+                                    accelerated.set(isHardwareAccelerated());
+                                    listenerCalled.notifyCalled();
+                                }
+                            });
+                    toast.show();
                 });
 
         listenerCalled.waitForCallback(0);

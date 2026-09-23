@@ -91,15 +91,12 @@ public class NewTabPageLoadTest {
                 GURL pageUrl, int desiredSizePx, final LargeIconBridge.LargeIconCallback callback) {
             new Handler()
                     .postDelayed(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onLargeIconAvailable(
-                                            Bitmap.createBitmap(148, 148, Bitmap.Config.ALPHA_8),
-                                            0,
-                                            false,
-                                            IconType.INVALID);
-                                }
+                            () -> {
+                                callback.onLargeIconAvailable(
+                                        Bitmap.createBitmap(148, 148, Bitmap.Config.ALPHA_8),
+                                        0,
+                                        false,
+                                        IconType.INVALID);
                             },
                             0);
 

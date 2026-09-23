@@ -83,22 +83,19 @@ public class Utils {
 
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        final Dialog dialog = new Dialog(activity);
-                        dialog.setContentView(
-                                new View(activity) {
-                                    @Override
-                                    public void onAttachedToWindow() {
-                                        super.onAttachedToWindow();
-                                        accelerated.set(isHardwareAccelerated());
-                                        listenerCalled.notifyCalled();
-                                        dialog.dismiss();
-                                    }
-                                });
-                        dialog.show();
-                    }
+                () -> {
+                    final Dialog dialog = new Dialog(activity);
+                    dialog.setContentView(
+                            new View(activity) {
+                                @Override
+                                public void onAttachedToWindow() {
+                                    super.onAttachedToWindow();
+                                    accelerated.set(isHardwareAccelerated());
+                                    listenerCalled.notifyCalled();
+                                    dialog.dismiss();
+                                }
+                            });
+                    dialog.show();
                 });
 
         listenerCalled.waitForCallback(0);
