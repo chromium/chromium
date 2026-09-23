@@ -64,6 +64,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/experiences/arc",
     "//components/user_manager",
     "//content/test:test_support",

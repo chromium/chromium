@@ -99,6 +99,7 @@ if (!is_android) {
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/views/controls",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//testing/gtest",
     ]
   }

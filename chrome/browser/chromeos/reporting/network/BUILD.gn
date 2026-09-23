@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/util:test_callbacks_support",
     "//content/test:test_support",

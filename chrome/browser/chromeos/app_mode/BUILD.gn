@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/dbus/power",
     "//components/services/app_service",

@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/android",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/webapps/common",
     "//content/test:test_support",
     "//testing/gmock",

@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/settings",
     "//components/account_id",

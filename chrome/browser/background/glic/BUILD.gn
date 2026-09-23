@@ -115,6 +115,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//testing/gtest",
     ]
   }
