@@ -210,8 +210,8 @@ void ParentAccessUiHandlerImpl::GetParentAccessUrl(
   }
 
   std::string platform_version = base::SysInfo::OperatingSystemVersion();
-  std::string language_code =
-      google_util::GetGoogleLocale(application_locale_storage_->Get());
+  std::string language_code = google_util::GetGoogleLocale(
+      std::string(application_locale_storage_->GetTag().tag_string()));
 
   std::string url;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

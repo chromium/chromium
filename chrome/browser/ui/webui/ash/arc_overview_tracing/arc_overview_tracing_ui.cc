@@ -237,7 +237,7 @@ std::unique_ptr<content::WebUIController>
 ArcOverviewTracingUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                   const GURL& url) {
   return std::make_unique<ArcOverviewTracingUI>(
-      web_ui, application_locale_storage_->Get());
+      web_ui, std::string(application_locale_storage_->GetTag().tag_string()));
 }
 
 ArcOverviewTracingUI::ArcOverviewTracingUI(

@@ -265,7 +265,8 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     params.Set("ssoProfile", sso_profile);
   }
 
-  const std::string& app_locale = application_locale_storage_->Get();
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
   DCHECK(!app_locale.empty());
   params.Set("hl", app_locale);
   params.Set("email", context.email);

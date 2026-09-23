@@ -331,7 +331,8 @@ std::unique_ptr<content::WebUIConfig> MakeOSFeedbackUIConfig(
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
         auto delegate = std::make_unique<ChromeOsFeedbackDelegate>(web_ui);
         return std::make_unique<OSFeedbackUI>(
-            web_ui, std::move(delegate), application_locale_storage->Get());
+            web_ui, std::move(delegate),
+            std::string(application_locale_storage->GetTag().tag_string()));
       },
       base::Unretained(application_locale_storage));
 

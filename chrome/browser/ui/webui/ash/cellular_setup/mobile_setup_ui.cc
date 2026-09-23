@@ -264,7 +264,9 @@ void MobileSetupUIHTMLSource::StartDataRequest(
   strings.Set("cancel_button", l10n_util::GetStringUTF16(IDS_CANCEL));
   strings.Set("ok_button", l10n_util::GetStringUTF16(IDS_OK));
 
-  webui::SetLoadTimeDataDefaults(application_locale_storage_->Get(), &strings);
+  webui::SetLoadTimeDataDefaults(
+      std::string(application_locale_storage_->GetTag().tag_string()),
+      &strings);
 
   // mobile_setup_ui.cc will only be triggered from the detail page for
   // activated cellular network.

@@ -289,7 +289,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   DCHECK(initialize_edu_args_callback_.has_value());
   base::DictValue params;
 
-  params.Set("hl", application_locale_storage_->Get());
+  params.Set("hl", application_locale_storage_->GetTag().tag_string());
 
   params.Set("url", GetEduCoexistenceURL());
 

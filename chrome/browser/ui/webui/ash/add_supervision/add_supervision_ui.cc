@@ -166,8 +166,8 @@ AddSupervisionUIConfig::~AddSupervisionUIConfig() = default;
 std::unique_ptr<content::WebUIController>
 AddSupervisionUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                               const GURL& url) {
-  return std::make_unique<AddSupervisionUI>(web_ui,
-                                            application_locale_storage_->Get());
+  return std::make_unique<AddSupervisionUI>(
+      web_ui, std::string(application_locale_storage_->GetTag().tag_string()));
 }
 
 // AddSupervisionUI implementations.

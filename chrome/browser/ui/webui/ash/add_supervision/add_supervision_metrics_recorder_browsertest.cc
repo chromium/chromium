@@ -60,8 +60,10 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver;
     AddSupervisionUI add_supervision_ui(
-        &test_web_ui_,
-        g_browser_process->GetFeatures()->application_locale_storage()->Get());
+        &test_web_ui_, std::string(g_browser_process->GetFeatures()
+                                       ->application_locale_storage()
+                                       ->GetTag()
+                                       .tag_string()));
     AddSupervisionHandler add_supervision_handler(
         std::move(receiver), &test_web_ui_,
         identity_test_env_->identity_manager(), &add_supervision_ui);

@@ -50,7 +50,7 @@ std::unique_ptr<content::WebUIController>
 ArcPowerControlUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                const GURL& url) {
   return std::make_unique<ArcPowerControlUI>(
-      web_ui, application_locale_storage_->Get());
+      web_ui, std::string(application_locale_storage_->GetTag().tag_string()));
 }
 
 ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui,
