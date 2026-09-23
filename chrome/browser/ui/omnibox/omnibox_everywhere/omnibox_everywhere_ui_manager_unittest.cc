@@ -283,6 +283,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsHidden) {
 #define MAYBE_InitialBoundsMatchRestingHeight InitialBoundsMatchRestingHeight
 #endif
 TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_InitialBoundsMatchRestingHeight) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
   display::test::TestScreen test_screen(/*create_display=*/false,
                                         /*register_screen=*/false);
   ScopedScreenOverride screen_override(&test_screen);
@@ -307,7 +309,90 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_InitialBoundsMatchRestingHeight) {
   ui_manager->Shutdown();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InitialBoundsMatchFreModalRestingHeight \
+  DISABLED_InitialBoundsMatchFreModalRestingHeight
+#else
+#define MAYBE_InitialBoundsMatchFreModalRestingHeight \
+  InitialBoundsMatchFreModalRestingHeight
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_InitialBoundsMatchFreModalRestingHeight) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  const int expected_width =
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth();
+  const int expected_x = (1920 - expected_width) / 2;
+
+  // 1. Fresh profile with kOmniboxEverywhereFre enabled starts at
+  // FreStage::kIntroModal and uses kFreModalRestingHeight.
+  ASSERT_EQ(omnibox_everywhere::prefs::GetCurrentFreStage(&profile_),
+            omnibox_everywhere::prefs::FreStage::kIntroModal);
+  {
+    auto ui_manager = CreateUIManager();
+    ui_manager->ShowForProfile(&profile_, GetContext());
+    views::Widget* widget = ui_manager->widget();
+    ASSERT_TRUE(widget);
+
+    const int expected_fre_y =
+        (1080 - omnibox_everywhere::OmniboxEverywhereUIManager::
+                    kFreModalRestingHeight) /
+        2;
+    EXPECT_EQ(widget->GetWindowBoundsInScreen(),
+              gfx::Rect(expected_x, expected_fre_y, expected_width,
+                        omnibox_everywhere::OmniboxEverywhereUIManager::
+                            kFreModalRestingHeight));
+    ui_manager->Shutdown();
+  }
+
+  // 2. When FreStage transitions to kShortcutSetupChin (intro modal dismissed),
+  // initial bounds use kDefaultRestingHeight.
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreIntroDismissed,
+                                  true);
+  ASSERT_EQ(omnibox_everywhere::prefs::GetCurrentFreStage(&profile_),
+            omnibox_everywhere::prefs::FreStage::kShortcutSetupChin);
+  {
+    auto ui_manager = CreateUIManager();
+    ui_manager->ShowForProfile(&profile_, GetContext());
+    views::Widget* widget = ui_manager->widget();
+    ASSERT_TRUE(widget);
+
+    EXPECT_EQ(widget->GetWindowBoundsInScreen(),
+              gfx::Rect(expected_x, 464, expected_width,
+                        omnibox_everywhere::OmniboxEverywhereUIManager::
+                            kDefaultRestingHeight));
+    ui_manager->Shutdown();
+  }
+
+  // 3. When kOmniboxEverywhereFre feature is disabled on a fresh profile,
+  // initial bounds use kDefaultRestingHeight.
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreIntroDismissed,
+                                  false);
+  base::test::ScopedFeatureList disable_fre;
+  disable_fre.InitAndDisableFeature(omnibox::kOmniboxEverywhereFre);
+  {
+    auto ui_manager = CreateUIManager();
+    ui_manager->ShowForProfile(&profile_, GetContext());
+    views::Widget* widget = ui_manager->widget();
+    ASSERT_TRUE(widget);
+
+    EXPECT_EQ(widget->GetWindowBoundsInScreen(),
+              gfx::Rect(expected_x, 464, expected_width,
+                        omnibox_everywhere::OmniboxEverywhereUIManager::
+                            kDefaultRestingHeight));
+    ui_manager->Shutdown();
+  }
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kOmniboxEverywhere, {{"smallLoomnibox", "true"}});
@@ -352,6 +437,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
 #endif
 TEST_F(OmniboxEverywhereUIManagerTest,
        MAYBE_CalculateBoundsClampsToSmallDisplays) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
   display::test::TestScreen test_screen(/*create_display=*/false,
                                         /*register_screen=*/false);
   ScopedScreenOverride screen_override(&test_screen);
