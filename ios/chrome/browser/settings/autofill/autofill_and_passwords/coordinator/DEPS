@@ -6,3 +6,9 @@ include_rules = [
   "+ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h",
   "+ios/chrome/common/ui/elements/popover_label_view_controller.h",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.mm": [
+    "+components/account_settings",
+  ],
+}

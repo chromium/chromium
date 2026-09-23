@@ -5,10 +5,17 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
+#import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_mediator.h"
@@ -80,6 +87,7 @@
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
+  [self preloadVehicleDisclosureIfNeeded];
 }
 
 - (void)stop {
@@ -139,9 +147,34 @@
 - (void)autofillAIEntityEditCoordinatorDidFinish:
     (AutofillAIEntityEditCoordinator*)coordinator {
   [self stopEntityEditCoordinator];
+  // Re-trigger preloading for vehicle passes in case the previous cached
+  // response was consumed or cleared during editing.
+  [self preloadVehicleDisclosureIfNeeded];
 }
 
 #pragma mark - Private
+
+// Preloads Google Wallet upsert details for vehicle passes so the disclosure
+// notice and single-use context token are ready if the user adds/edits a
+// vehicle.
+- (void)preloadVehicleDisclosureIfNeeded {
+  autofill::EntityType vehicleType(autofill::EntityTypeName::kVehicle);
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!autofill::IsWalletPublicPassStorageEnabled(profile) ||
+      !autofill::IsEligibleForWalletNotice(
+          vehicleType, autofill::EntityInstance::RecordType::kServerWallet) ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletDisclosureNoticePublicPass)) {
+    return;
+  }
+
+  autofill::WalletPassAccessManager* walletPassManager =
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile);
+  if (walletPassManager) {
+    walletPassManager->PreloadDetailsForUpsertPass(vehicleType);
+  }
+}
 
 // Starts the coordinator responsible for displaying and editing the travel info
 // entity with the specified ID.
