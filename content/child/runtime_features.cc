@@ -422,9 +422,9 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // content. See HTMLElement::showUnboundedElement().
   if (base::android::android_info::sdk_int() <
       base::android::android_info::SDK_VERSION_U) {
-    // UnboundedElement is implied_by UnboundedElementOnTheOpenWeb, so both have
-    // to be disabled for UnboundedElementEnabled() to return false.
-    WebRuntimeFeatures::EnableUnboundedElementOnTheOpenWeb(false);
+    // UnboundedElement is implied_by UnsafeUnboundedElementOnTheOpenWeb, so
+    // both have to be disabled for UnboundedElementEnabled() to return false.
+    WebRuntimeFeatures::EnableUnsafeUnboundedElementOnTheOpenWeb(false);
     WebRuntimeFeatures::EnableUnboundedElement(false);
   }
 #endif

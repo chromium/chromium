@@ -4977,7 +4977,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/html/rendering/unbounded-element"],
     "args": [
-      "--enable-features=UnboundedElement,UnboundedElementOnTheOpenWeb",
+      "--enable-features=UnboundedElement,UnsafeUnboundedElementOnTheOpenWeb",
       "--disable-features=TreesInViz",
       "--force-device-scale-factor=1.5"
     ],
@@ -4991,7 +4991,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/html/rendering/unbounded-element"],
     "args": [
-      "--enable-features=UnboundedElement,UnboundedElementOnTheOpenWeb,TreesInViz",
+      "--enable-features=UnboundedElement,UnsafeUnboundedElementOnTheOpenWeb,TreesInViz",
       "--force-device-scale-factor=1.5"
     ],
     "owners": [

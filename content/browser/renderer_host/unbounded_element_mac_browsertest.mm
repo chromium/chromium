@@ -40,7 +40,7 @@ class RenderWidgetHostViewMacUnboundedZOrderTest : public ContentBrowserTest {
   RenderWidgetHostViewMacUnboundedZOrderTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kUnboundedElement,
-         blink::features::kUnboundedElementOnTheOpenWeb},
+         blink::features::kUnsafeUnboundedElementOnTheOpenWeb},
         {::features::kTreesInViz});
   }
 

@@ -247,6 +247,10 @@ static const std::variant<const base::Feature*, const char*>
         // This feature enables the test root store, which can contain roots
         // that are not actually trusted.
         &net::features::kTestRootStore,
+
+        // This feature allows open web content to use the Unbounded Element
+        // API, which lets a page paint outside the bounds of its window.
+        &blink::features::kUnsafeUnboundedElementOnTheOpenWeb,
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,

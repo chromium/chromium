@@ -4976,7 +4976,7 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
         GetContentClient()->renderer()->IsUnboundedElementAllowed(this);
     bool is_unbounded_allowed =
         base::FeatureList::IsEnabled(
-            blink::features::kUnboundedElementOnTheOpenWeb) ||
+            blink::features::kUnsafeUnboundedElementOnTheOpenWeb) ||
         is_privileged;
     if (is_unbounded_allowed) {
       blink::WebV8Features::EnableUnboundedElement(context, is_privileged);

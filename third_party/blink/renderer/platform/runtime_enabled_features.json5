@@ -6569,19 +6569,13 @@
       // Note that this flag is enabled by default, to enable WebUI and other
       // privileged UI to depend on this feature. The flag is here as a kill
       // switch. Importantly, open web content still requires
-      // UnboundedElementOnTheOpenWeb to be enabled.
+      // UnsafeUnboundedElementOnTheOpenWeb to be enabled.
       // There is an override in SetCustomizedRuntimeFeaturesFromCombinedArgs to ensure this
       // is only enabled for Android U+, which is the minimum version the platform supports.
       name: "UnboundedElement",
       public: true,
       status: "stable",
-      implied_by: ["UnboundedElementOnTheOpenWeb"],
-    },
-    {
-      // The Unbounded Element API. See crbug.com/508672616.
-      // Enable Unbounded Element on the open web without privileged context.
-      name: "UnboundedElementOnTheOpenWeb",
-      public: true,
+      implied_by: ["UnsafeUnboundedElementOnTheOpenWeb"],
     },
     {
       name: "UnclosedFormControlIsInvalid",
@@ -6613,6 +6607,12 @@
       name: "UnrestrictedUsb",
       status: "stable",
       depends_on: ["WebUSB"],
+    },
+    {
+      // The Unbounded Element API. See crbug.com/508672616.
+      // Enable Unbounded Element on the open web without privileged context.
+      name: "UnsafeUnboundedElementOnTheOpenWeb",
+      public: true,
     },
     // If enabled, notify the associated DisplayCutoutHost of changes in
     // complex safe area constraint usage on the page.

@@ -174,7 +174,7 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,
     SkipTestsForUnsupportedPlatforms();
     std::vector<base::test::FeatureRef> enabled_features = {
         blink::features::kUnboundedElement,
-        blink::features::kUnboundedElementOnTheOpenWeb};
+        blink::features::kUnsafeUnboundedElementOnTheOpenWeb};
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
       enabled_features.push_back(::features::kTreesInViz);
@@ -1588,10 +1588,10 @@ class UnboundedElementPermutationBrowserTest
 
     if (params.open_web_base_feature) {
       enabled_features.push_back(
-          blink::features::kUnboundedElementOnTheOpenWeb);
+          blink::features::kUnsafeUnboundedElementOnTheOpenWeb);
     } else {
       disabled_features.push_back(
-          blink::features::kUnboundedElementOnTheOpenWeb);
+          blink::features::kUnsafeUnboundedElementOnTheOpenWeb);
     }
 
     disabled_features.push_back(::features::kTreesInViz);
@@ -1615,9 +1615,9 @@ class UnboundedElementPermutationBrowserTest
     }
 
     if (params.open_web_runtime_feature) {
-      enabled_blink_features.push_back("UnboundedElementOnTheOpenWeb");
+      enabled_blink_features.push_back("UnsafeUnboundedElementOnTheOpenWeb");
     } else {
-      disabled_blink_features.push_back("UnboundedElementOnTheOpenWeb");
+      disabled_blink_features.push_back("UnsafeUnboundedElementOnTheOpenWeb");
     }
 
     if (!enabled_blink_features.empty()) {
@@ -1655,7 +1655,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
   }
 
   // Blink's UnboundedElement runtime feature is implied if
-  // UnboundedElementOnTheOpenWeb runtime feature is enabled.
+  // UnsafeUnboundedElementOnTheOpenWeb runtime feature is enabled.
   bool effective_unbounded_runtime = params.unbounded_element_runtime_feature ||
                                      params.open_web_runtime_feature;
 
