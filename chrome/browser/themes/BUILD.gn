@@ -176,6 +176,7 @@ if (!is_android) {
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/frame",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/color",
       "//components/pref_registry",
       "//components/sync:test_support",

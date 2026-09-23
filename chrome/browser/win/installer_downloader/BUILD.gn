@@ -128,6 +128,7 @@ source_set("unit_tests") {
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/prefs",

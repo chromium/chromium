@@ -338,6 +338,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/task_manager/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
@@ -369,6 +370,7 @@ source_set("browser_tests") {
     ":task_manager",
     ":test_support",
     "//base",
+    "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",
   ]

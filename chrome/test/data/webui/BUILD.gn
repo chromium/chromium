@@ -44,6 +44,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs/tab_group_home:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:test_switches",
+    "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:web_ui_mocha_browser_test",
     "//components/commerce/core:commerce_constants",
     "//components/contextual_tasks/public",
