@@ -762,7 +762,7 @@ AX_TEST_F('ChromeVoxMV2EditingTest', 'RichTextSelectByLine', async function() {
 AX_TEST_F(
     'ChromeVoxMV2EditingTest', 'RichTextSelectComplexStructure',
     async function() {
-      const mockFeedback = this.createMockFeedback();
+      new MockFeedback().install();
       const root = await this.runWithLoadedTree(`
     <div>
       <button id="go">Go</button>
@@ -771,7 +771,7 @@ AX_TEST_F(
       <h1>11111 line</h1>
       <a href=#>22222 line</a>
       <ol><li>33333 line</li></ol>
-    </p>
+    </div>
     <script>
       let commands = [
         ['extend', 'forward', 'character'],
@@ -800,72 +800,90 @@ AX_TEST_F(
       }, true);
     </script>
   `);
+      const selectionChanged =
+          this.waitForEvent(root, EventType.DOCUMENT_SELECTION_CHANGED);
       await this.focusFirstTextField(root, {role: RoleType.TEXT_FIELD});
+      await selectionChanged;
+
+      const speech = [];
+      const braille = [];
+      ChromeVox.tts.speak = text => speech.push(text);
+      ChromeVox.braille.write = value => braille.push({
+        text: value.text.toString(),
+        startIndex: value.startIndex,
+        endIndex: value.endIndex,
+      });
 
       const go = root.find({role: RoleType.BUTTON});
-      const move = go.doDefault.bind(go);
+      const moveAndExpect = async (expectedSpeech, expectedBraille) => {
+        speech.length = 0;
+        braille.length = 0;
+        // ChromeVox handles this event even when no feedback is produced.
+        const selectionChanged =
+            this.waitForEvent(root, EventType.DOCUMENT_SELECTION_CHANGED);
+        go.doDefault();
+        await selectionChanged;
+        assertEqualsJSON(expectedSpeech, speech);
+        assertEqualsJSON(expectedBraille, braille);
+      };
 
-      // By character.
-      mockFeedback.call(move)
-          .expectSpeech('1', 'Heading 1', 'selected')
-          .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 1})
-          .call(move)
-          .expectSpeech('1', 'Heading 1', 'selected')
-          .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
+      // Select the first character, then the second, in "11111 line".
+      await moveAndExpect(
+          ['1', 'Heading 1', 'selected'],
+          [{text: '11111 line h1 mled', startIndex: 0, endIndex: 1}]);
+      await moveAndExpect(
+          ['1', 'Heading 1', 'selected'],
+          [{text: '11111 line h1 mled', startIndex: 0, endIndex: 2}]);
 
-          // Forward selection by line (notice the partial selections from the
-          // first and second lines).
-          .call(move)
-          .expectSpeech('111 line', 'Heading 1', '222', 'Link', 'selected')
-          .expectBraille('22222 line lnk', {startIndex: 0, endIndex: 3})
+      // Extend from "11|111 line" to "222|22 line" in the link.
+      await moveAndExpect(
+          ['111 line', 'Heading 1', '222', 'Link', 'selected'],
+          [{text: '22222 line lnk', startIndex: 0, endIndex: 3}]);
 
-          .call(move)
-          .expectSpeech('22 line', 'Link', 'selected')
-          .expectBraille(
-              '33333 line 1. lstitm lst +1', {startIndex: 0, endIndex: 0})
+      // Extend to the start of "33333 line", adding the rest of the link.
+      await moveAndExpect(
+          ['22 line', 'Link', 'selected'],
+          [{text: '33333 line 1. lstitm lst +1', startIndex: 0, endIndex: 0}]);
 
-          // Shrinking.
-          .call(move)
-          .expectSpeech('22 line', 'Link', 'unselected')
-          .expectBraille('22222 line lnk', {startIndex: 0, endIndex: 3})
+      // Shrink back to "222|22 line", then to "11|111 line".
+      await moveAndExpect(
+          ['22 line', 'Link', 'unselected'],
+          [{text: '22222 line lnk', startIndex: 0, endIndex: 3}]);
+      await moveAndExpect(
+          ['111 line', 'Heading 1', '222', 'Link', 'unselected'],
+          [{text: '11111 line h1 mled', startIndex: 0, endIndex: 2}]);
 
-          .call(move)
-          .expectSpeech('111 line', 'Heading 1', '222', 'Link', 'unselected')
-          .expectBraille('11111 line h1 mled', {startIndex: 0, endIndex: 2})
+      // Extend to the end of the editable, selecting all three lines.
+      await moveAndExpect(
+          [
+            '111 line', 'Heading 1', '22222 line', 'Link', '1. ', '33333 line',
+            'List item', 'List', 'with 1 item', 'selected'
+          ],
+          [{text: '33333 line 1. lstitm lst +1', startIndex: 0, endIndex: 10}]);
 
-          // Document boundary.
-          .call(move)
-          .expectSpeech(
-              '111 line', 'Heading 1', '22222 line', 'Link', '33333 line',
-              'List item', 'selected')
-          .expectBraille(
-              '33333 line 1. lstitm lst +1', {startIndex: 0, endIndex: 10})
+      // Collapse at "33333 line|", then move back two characters.
+      await moveAndExpect(['End of text'], [
+        {text: '33333 line 1. lstitm lst +1', startIndex: 10, endIndex: 10}
+      ]);
+      await moveAndExpect(
+          ['e', 'Size 16', 'Black, 100% opacity.', 'Font Tinos'],
+          [{text: '33333 line 1. lstitm lst +1', startIndex: 9, endIndex: 9}]);
+      await moveAndExpect(
+          ['n'],
+          [{text: '33333 line 1. lstitm lst +1', startIndex: 8, endIndex: 8}]);
 
-          // The script repositions the caret to the end of the last line.
-          .call(move)
-          .expectSpeech('End of text')
-          .expectBraille(
-              '33333 line 1. lstitm lst +1', {startIndex: 10, endIndex: 10})
-          .call(move)
-          .expectSpeech('e')
-          .expectBraille(
-              '33333 line 1. lstitm lst +1', {startIndex: 9, endIndex: 9})
-          .call(move)
-          .expectSpeech('n')
-          .expectBraille(
-              '33333 line 1. lstitm lst +1', {startIndex: 8, endIndex: 8})
+      // Extend backward from "33333 li|ne" to whitespace after the link.
+      // Blink reports no selection here, so there is no speech or braille.
+      await moveAndExpect([], []);
 
-          // Backward selection.
-          // Some bugs exist in Blink where we don't get all selection events
-          // in this complex structure via extending selection, so we do it
-          // twice.
-          .call(move)
-          .call(move)
-          .expectSpeech('ine', 'Link')
-          .expectSpeech('33333 li', 'List item', 'selected')
-          .expectBraille('11111 line h1', {startIndex: 7, endIndex: 10});
-
-      await mockFeedback.replay();
+      // Extend to "11111 l|ine". The entire selection is announced because
+      // the previous move did not expose its selection to ChromeVox.
+      await moveAndExpect(
+          [
+            'ine', 'Heading 1', '22222 line', 'Link', '33333 li', 'List item',
+            'selected'
+          ],
+          [{text: '11111 line h1', startIndex: 7, endIndex: 10}]);
     });
 
 AX_TEST_F(
