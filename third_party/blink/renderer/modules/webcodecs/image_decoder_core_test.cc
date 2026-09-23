@@ -19,13 +19,15 @@ class ImageDecoderCoreTest : public testing::Test {
   ~ImageDecoderCoreTest() override = default;
 
  protected:
-  std::unique_ptr<ImageDecoderCore> CreateDecoder(const char* file_name,
-                                                  const char* mime_type) {
+  std::unique_ptr<ImageDecoderCore> CreateDecoder(
+      const char* file_name,
+      const char* mime_type,
+      const gfx::Size& desired_size = gfx::Size()) {
     auto data = ReadFile(file_name);
     DCHECK(data->size()) << "Missing file: " << file_name;
     return std::make_unique<ImageDecoderCore>(
         mime_type, std::move(data),
-        /*data_complete=*/true, ColorBehavior::kTag, SkISize::MakeEmpty(),
+        /*data_complete=*/true, ColorBehavior::kTag, desired_size,
         ImageDecoder::AnimationOption::kPreferAnimation);
   }
 
@@ -86,6 +88,29 @@ TEST_F(ImageDecoderCoreTest, InOrderDecodePreservesMemory) {
     if (i >= 2)
       EXPECT_TRUE(decoder->FrameIsDecodedAtIndexForTesting(i - 2));
   }
+}
+
+// Regression test for crbug.com/562384494.
+TEST_F(ImageDecoderCoreTest, SmallDesiredSizeUsesLowestSupportedSize) {
+  constexpr char kImageType[] = "image/jpeg";
+  // gracehopper.jpg is 256x256. Requesting 10x10 is smaller than 1/64 of the
+  // image area, which previously caused JPEG decoding to permanently fail.
+  // Now it should decode to the lowest supported size (32x32).
+  auto decoder = CreateDecoder("images/resources/gracehopper.jpg", kImageType,
+                               gfx::Size(10, 10));
+  ASSERT_TRUE(decoder);
+
+  const auto metadata = decoder->DecodeMetadata();
+  EXPECT_FALSE(metadata.failed);
+  EXPECT_TRUE(metadata.has_size);
+  EXPECT_EQ(metadata.frame_count, 1u);
+
+  base::AtomicFlag abort_flag;
+  auto result = decoder->Decode(0, /*complete_frames_only=*/true, &abort_flag);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, ImageDecoderCore::Status::kOk);
+  ASSERT_TRUE(result->frame);
+  EXPECT_EQ(result->frame->coded_size(), gfx::Size(32, 32));
 }
 
 }  // namespace

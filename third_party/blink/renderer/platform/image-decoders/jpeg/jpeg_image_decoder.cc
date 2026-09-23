@@ -823,12 +823,14 @@ void term_source(j_decompress_ptr jd) {
 JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
                                    ColorBehavior color_behavior,
                                    cc::AuxImage aux_image,
-                                   wtf_size_t max_decoded_bytes)
+                                   wtf_size_t max_decoded_bytes,
+                                   const gfx::Size& desired_size)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
                    aux_image,
-                   max_decoded_bytes) {}
+                   max_decoded_bytes,
+                   desired_size) {}
 
 JPEGImageDecoder::~JPEGImageDecoder() = default;
 
@@ -937,8 +939,15 @@ wtf_size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
 unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
   wtf_size_t original_bytes = Size().width() * Size().height() * 4;
 
-  return JPEGImageDecoder::DesiredScaleNumerator(
-      max_decoded_bytes_, original_bytes, g_scale_denominator);
+  wtf_size_t target_bytes = max_decoded_bytes_;
+  if (!desired_size_.IsEmpty()) {
+    wtf_size_t desired_bytes =
+        desired_size_.width() * desired_size_.height() * 4;
+    target_bytes = std::min(target_bytes, desired_bytes);
+  }
+
+  return JPEGImageDecoder::DesiredScaleNumerator(target_bytes, original_bytes,
+                                                 g_scale_denominator);
 }
 
 // static
@@ -952,9 +961,14 @@ unsigned JPEGImageDecoder::DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
   // Downsample according to the maximum decoded size. Use double to prevent
   // precision loss that can trigger redundant decoder creation
   // (crbug.com/500104917).
-  return static_cast<unsigned>(
-      floor(sqrt(static_cast<double>(max_decoded_bytes) / original_bytes) *
-            scale_denominator));
+  //
+  // Use the lowest supported size (numerator of 1) if `max_decoded_bytes`
+  // would result in a scale factor smaller than the lowest supported scale
+  // factor (1/8) (crbug.com/562384494).
+  return std::max(
+      1u, static_cast<unsigned>(floor(
+              sqrt(static_cast<double>(max_decoded_bytes) / original_bytes) *
+              scale_denominator)));
 }
 
 bool JPEGImageDecoder::ShouldGenerateAllSizes() const {

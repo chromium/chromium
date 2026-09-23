@@ -170,7 +170,7 @@ class PLATFORM_EXPORT ImageDecoder {
       ColorBehavior,
       cc::AuxImage aux_image,
       const size_t platform_max_decoded_bytes,
-      const SkISize& desired_size = SkISize::MakeEmpty(),
+      const gfx::Size& desired_size = gfx::Size(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
   static std::unique_ptr<ImageDecoder> Create(
       scoped_refptr<SharedBuffer> data,
@@ -180,7 +180,7 @@ class PLATFORM_EXPORT ImageDecoder {
       ColorBehavior color_behavior,
       cc::AuxImage aux_image,
       size_t platform_max_decoded_bytes,
-      const SkISize& desired_size = SkISize::MakeEmpty(),
+      const gfx::Size& desired_size = gfx::Size(),
       AnimationOption animation_option = AnimationOption::kUnspecified) {
     return Create(SegmentReader::CreateFromSharedBuffer(std::move(data)),
                   data_complete, alpha_option, high_bit_depth_decoding_option,
@@ -199,7 +199,7 @@ class PLATFORM_EXPORT ImageDecoder {
       ColorBehavior color_behavior,
       cc::AuxImage aux_image,
       size_t platform_max_decoded_bytes,
-      const SkISize& desired_size = SkISize::MakeEmpty(),
+      const gfx::Size& desired_size = gfx::Size(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
 
   virtual String FilenameExtension() const = 0;
@@ -443,7 +443,8 @@ class PLATFORM_EXPORT ImageDecoder {
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                ColorBehavior color_behavior,
                cc::AuxImage aux_image,
-               wtf_size_t max_decoded_bytes);
+               wtf_size_t max_decoded_bytes,
+               const gfx::Size& desired_size = gfx::Size());
 
   // Calculates the most recent frame whose image data may be needed in
   // order to decode frame |frame_index|, based on frame disposal methods
@@ -547,6 +548,14 @@ class PLATFORM_EXPORT ImageDecoder {
   // this limit can cause excessive memory use or even crashes on low-
   // memory devices.
   const wtf_size_t max_decoded_bytes_;
+
+  // The desired size of the decoded image, if specified (e.g. via WebCodecs).
+  // Is empty (0, 0) if not specified. When empty, the image is decoded at its
+  // native size. Decoders that support downsampling (such as JPEGImageDecoder)
+  // use this as a target size to choose the closest supported downscale factor
+  // without failing if the requested size is smaller than the lowest supported
+  // factor.
+  const gfx::Size desired_size_;
 
   // While decoding, we may learn that there are so many animation frames that
   // we would go beyond our cache budget.

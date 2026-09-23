@@ -18,7 +18,8 @@ PLATFORM_EXPORT std::unique_ptr<ImageDecoder> CreateJpegImageDecoder(
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior color_behavior,
     cc::AuxImage aux_image,
-    wtf_size_t max_decoded_bytes);
+    wtf_size_t max_decoded_bytes,
+    const gfx::Size& desired_size = gfx::Size());
 
 }  // namespace blink
 

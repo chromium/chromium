@@ -246,7 +246,7 @@ ImageDecoderCore::ImageDecoderCore(
     scoped_refptr<SegmentReader> data,
     bool data_complete,
     ColorBehavior color_behavior,
-    const SkISize& desired_size,
+    const gfx::Size& desired_size,
     ImageDecoder::AnimationOption animation_option)
     : mime_type_(mime_type),
       color_behavior_(color_behavior),

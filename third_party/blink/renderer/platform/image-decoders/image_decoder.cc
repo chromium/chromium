@@ -98,25 +98,6 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
   return cc::ImageType::kInvalid;
 }
 
-wtf_size_t CalculateMaxDecodedBytes(
-    ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const SkISize& desired_size,
-    size_t platform_max_decoded_bytes) {
-  const wtf_size_t max_decoded_bytes =
-      base::saturated_cast<wtf_size_t>(platform_max_decoded_bytes);
-  if (desired_size.isEmpty()) {
-    return max_decoded_bytes;
-  }
-
-  const wtf_size_t num_pixels = desired_size.width() * desired_size.height();
-  if (high_bit_depth_decoding_option == ImageDecoder::kDefaultBitDepth) {
-    return std::min(4 * num_pixels, max_decoded_bytes);
-  }
-
-  // ImageDecoder::kHighBitDepthToHalfFloat
-  return std::min(8 * num_pixels, max_decoded_bytes);
-}
-
 // Compute the density corrected size based on |metadata| and the physical size
 // of the associated image.
 gfx::Size ExtractDensityCorrectedSize(const SkExif::Metadata& metadata,
@@ -277,17 +258,29 @@ ImageDecoder::ImageDecoder(
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior,
     cc::AuxImage aux_image,
-    wtf_size_t max_decoded_bytes)
+    wtf_size_t max_decoded_bytes,
+    const gfx::Size& desired_size)
     : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
       high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
       color_behavior_(color_behavior),
       aux_image_(aux_image),
       max_decoded_bytes_(max_decoded_bytes),
+      desired_size_(desired_size),
       allow_decode_to_yuv_(false),
       purge_aggressively_(false),
       sk_image_color_space_(color_behavior == ColorBehavior::kIgnore
                                 ? nullptr
-                                : SkColorSpace::MakeSRGB()) {}
+                                : SkColorSpace::MakeSRGB()) {
+  if (!desired_size_.IsEmpty()) {
+    const unsigned decoded_bytes_per_pixel =
+        high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat ? 8 : 4;
+    if (SizeCalculationMayOverflow(desired_size_.width(),
+                                   desired_size_.height(),
+                                   decoded_bytes_per_pixel)) {
+      SetFailed();
+    }
+  }
+}
 
 ImageDecoder::~ImageDecoder() = default;
 
@@ -299,7 +292,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     ColorBehavior color_behavior,
     cc::AuxImage aux_image,
     size_t platform_max_decoded_bytes,
-    const SkISize& desired_size,
+    const gfx::Size& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data, data_complete);
   if (type.empty()) {
@@ -321,10 +314,10 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     ColorBehavior color_behavior,
     cc::AuxImage aux_image,
     size_t platform_max_decoded_bytes,
-    const SkISize& desired_size,
+    const gfx::Size& desired_size,
     AnimationOption animation_option) {
-  const wtf_size_t max_decoded_bytes = CalculateMaxDecodedBytes(
-      high_bit_depth_decoding_option, desired_size, platform_max_decoded_bytes);
+  const wtf_size_t max_decoded_bytes =
+      base::saturated_cast<wtf_size_t>(platform_max_decoded_bytes);
 
   // Note: The mime types below should match those supported by
   // MimeUtil::IsSupportedImageMimeType() (which forces lowercase).
@@ -333,7 +326,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
   if (mime_type == "image/jpeg" || mime_type == "image/pjpeg" ||
       mime_type == "image/jpg") {
     decoder = CreateJpegImageDecoder(alpha_option, color_behavior, aux_image,
-                                     max_decoded_bytes);
+                                     max_decoded_bytes, desired_size);
   } else if (mime_type == "image/png" || mime_type == "image/x-png" ||
              mime_type == "image/apng") {
     decoder = std::make_unique<PngImageDecoder>(

@@ -39,7 +39,8 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   JPEGImageDecoder(AlphaOption,
                    ColorBehavior,
                    cc::AuxImage,
-                   wtf_size_t max_decoded_bytes);
+                   wtf_size_t max_decoded_bytes,
+                   const gfx::Size& desired_size = gfx::Size());
   JPEGImageDecoder(const JPEGImageDecoder&) = delete;
   JPEGImageDecoder& operator=(const JPEGImageDecoder&) = delete;
   ~JPEGImageDecoder() override;

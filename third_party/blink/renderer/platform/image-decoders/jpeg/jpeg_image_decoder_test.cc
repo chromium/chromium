@@ -40,10 +40,12 @@ static const size_t kLargeEnoughSize = 1000 * 1000;
 
 namespace {
 
-std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(size_t max_decoded_bytes) {
+std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(
+    wtf_size_t max_decoded_bytes,
+    const gfx::Size& desired_size = gfx::Size()) {
   return std::make_unique<JPEGImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      cc::AuxImage::kDefault, max_decoded_bytes);
+      cc::AuxImage::kDefault, max_decoded_bytes, desired_size);
 }
 
 std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
@@ -214,8 +216,9 @@ void TestJpegBppHistogram(const char* image_name,
 
 // Tests failure on a too big image.
 TEST(JPEGImageDecoderTest, tooBig) {
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(100);
-  EXPECT_FALSE(decoder->SetSize(10000u, 10000u));
+  std::unique_ptr<ImageDecoder> decoder =
+      CreateJPEGDecoder(std::numeric_limits<wtf_size_t>::max());
+  EXPECT_FALSE(decoder->SetSize(100000u, 100000u));
   EXPECT_TRUE(decoder->Failed());
 }
 
@@ -917,6 +920,43 @@ TEST(JPEGImageDecoderTest, SupportedScaleNumeratorBound) {
   auto numerator_overflow =
       JPEGImageDecoder::DesiredScaleNumerator(0x4000000, 0x4100000, 8);
   ASSERT_EQ(numerator_overflow, static_cast<unsigned>(7));
+
+  // When max_decoded_bytes is smaller than 1/64 of original_bytes, numerator
+  // should clamp to 1 (the lowest supported size) instead of 0.
+  auto numerator_small = JPEGImageDecoder::DesiredScaleNumerator(1, 1000, 8);
+  ASSERT_EQ(numerator_small, 1u);
+}
+
+// Regression test for crbug.com/562384494.
+TEST(JPEGImageDecoderTest,
+     SupportedSizesSmallDesiredSizeUsesLowestSupportedSize) {
+  const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
+  ASSERT_TRUE(data);
+
+  // Request a desired size so small that floor(sqrt(desired/orig)*8) would be
+  // 0.
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(
+      ImageDecoder::kNoDecodedImageByteLimit, gfx::Size(10, 10));
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(gfx::Size(32, 32), decoder->DecodedSize());
+  Vector<SkISize> expected_sizes = {SkISize::Make(32, 32)};
+  auto sizes = decoder->GetSupportedDecodeSizes();
+  ASSERT_EQ(expected_sizes.size(), sizes.size());
+  EXPECT_EQ(expected_sizes[0], sizes[0]);
+
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_EQ(SkISize::Make(32, 32), frame->Bitmap().dimensions());
+}
+
+TEST(JPEGImageDecoderTest, TooBigDesiredSize) {
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(
+      ImageDecoder::kNoDecodedImageByteLimit, gfx::Size(100000, 100000));
+  EXPECT_TRUE(decoder->Failed());
 }
 
 // Regression test for crbug.com/500104917.

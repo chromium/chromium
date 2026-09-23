@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 namespace {
@@ -308,7 +309,8 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   return ImageDecoder::Create(
       data_, all_data_received_, PixmapAlphaOption(pixmap_),
       high_bit_depth_decoding_option, decoder_color_behavior_, aux_image_,
-      Platform::GetMaxDecodedImageBytes(), pixmap_.dimensions());
+      Platform::GetMaxDecodedImageBytes(),
+      gfx::SkISizeToSize(pixmap_.dimensions()));
 }
 
 }  // namespace blink

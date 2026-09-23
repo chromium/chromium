@@ -25,7 +25,7 @@ class MODULES_EXPORT ImageDecoderCore {
                    scoped_refptr<SegmentReader> data,
                    bool data_complete,
                    ColorBehavior color_behavior,
-                   const SkISize& desired_size,
+                   const gfx::Size& desired_size,
                    ImageDecoder::AnimationOption animation_option);
   ~ImageDecoderCore();
 
@@ -108,7 +108,7 @@ class MODULES_EXPORT ImageDecoderCore {
 
   const String mime_type_;
   const ColorBehavior color_behavior_;
-  const SkISize desired_size_;
+  const gfx::Size desired_size_;
 
   ImageDecoder::AnimationOption animation_option_;
 

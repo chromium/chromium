@@ -1310,7 +1310,7 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTag, cc::AuxImage::kDefault,
-      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      Platform::GetMaxDecodedImageBytes(), gfx::Size(),
       ImageDecoder::AnimationOption::kUnspecified);
   EXPECT_FALSE(decoder->IsSizeAvailable());
 
@@ -1336,7 +1336,7 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTag, cc::AuxImage::kDefault,
-      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      Platform::GetMaxDecodedImageBytes(), gfx::Size(),
       ImageDecoder::AnimationOption::kUnspecified);
 
   Vector<char> data = ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
@@ -1403,7 +1403,7 @@ TEST(StaticAVIFTests, IncrementalDecoding) {
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTag, cc::AuxImage::kDefault,
-      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      Platform::GetMaxDecodedImageBytes(), gfx::Size(),
       ImageDecoder::AnimationOption::kUnspecified);
 
   Vector<char> data =

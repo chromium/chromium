@@ -174,9 +174,10 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     color_behavior = ColorBehavior::kIgnore;
   }
 
-  auto desired_size = SkISize::MakeEmpty();
-  if (init->hasDesiredWidth() && init->hasDesiredHeight())
-    desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
+  gfx::Size desired_size;
+  if (init->hasDesiredWidth() && init->hasDesiredHeight()) {
+    desired_size = gfx::Size(init->desiredWidth(), init->desiredHeight());
+  }
 
   mime_type_ = init->type().ToAsciiLower();
   if (!IsTypeSupportedInternal(mime_type_)) {
