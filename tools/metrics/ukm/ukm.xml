@@ -3187,6 +3187,49 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.DoubleCtrlPressed">
+  <owner>picarella@google.com</owner>
+  <owner>autofill-internal@google.com</owner>
+  <summary>
+    Recorded whenever the user presses Ctrl (or Cmd on macOS) twice in quick
+    succession inside an editable form field or contenteditable element. This is
+    recorded regardless of whether AtMemory is enabled.
+  </summary>
+  <metric name="AtMemoryTriggerRequested" enum="Boolean">
+    <summary>
+      Whether the renderer requested AtMemory suggestions in response to this
+      double Ctrl/Cmd press. It does not guarantee the popup was shown, as
+      browser-side eligibility checks may still suppress it.
+    </summary>
+  </metric>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The field signature of the field where double Ctrl/Cmd was pressed (value
+      taken modulo 1021).
+    </summary>
+  </metric>
+  <metric name="FormControlType" enum="AutofillFormControlType2">
+    <summary>
+      The form control type of the field where double Ctrl/Cmd was pressed.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The form signature of the form where double Ctrl/Cmd was pressed (value
+      taken modulo 1021).
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.EditedAutofilledFieldAtSubmission">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>

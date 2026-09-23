@@ -27,6 +27,11 @@ class WebNode;
 struct RendererPreferences;
 }  // namespace blink
 
+namespace ukm {
+class MojoUkmRecorder;
+class UkmRecorder;
+}  // namespace ukm
+
 namespace autofill {
 
 class AutofillAgent;
@@ -103,6 +108,16 @@ class AtMemoryHandler {
   std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
       const blink::WebElement& field);
 
+  // Returns true if a completed double Ctrl sequence actually triggers
+  // AtMemory, i.e. both features and the user's preference are enabled.
+  bool IsDoubleCtrlTriggerEnabled() const;
+
+  // Records a UKM event when the user pressed Ctrl (or Cmd on macOS) twice in
+  // quick succession.
+  void RecordDoubleCtrl(const blink::WebElement& field);
+
+  ukm::UkmRecorder* GetUkmRecorder();
+
   const raw_ref<AutofillAgent> agent_;
   base::circular_deque<AskForValuesToFillInfo>
       last_at_memory_ask_for_values_to_fills_;
@@ -120,6 +135,8 @@ class AtMemoryHandler {
     // The target of the last keydown event.
     FieldRendererId last_field_id{};
   } ctrl_state_;
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   base::WeakPtrFactory<AtMemoryHandler> weak_ptr_factory_{this};
 };
