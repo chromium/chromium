@@ -66,6 +66,18 @@ class Project {
   virtual std::string_view GetUnsafeTodoMacroName() const {
     return "UNSAFE_TODO";
   }
+  // The UNSAFE_TODO and UNSAFE_BUFFERS spellings both exist in real code, so
+  // both have to be recognized. This name is only ever matched against
+  // existing source; rewrites always emit GetUnsafeTodoMacroName() instead.
+  virtual std::string_view GetUnsafeBuffersMacroName() const {
+    return "UNSAFE_BUFFERS";
+  }
+  // We use this predicate to identify code that is already wrapped in an
+  // unsafe-buffers macro, so that a rewrite does not double-wrap it.
+  bool IsUnsafeBufferMacroName(llvm::StringRef name) const {
+    return name == llvm::StringRef(GetUnsafeTodoMacroName()) ||
+           name == llvm::StringRef(GetUnsafeBuffersMacroName());
+  }
   virtual std::string_view GetUnsafeTodoIncludePath() const {
     return "base/compiler_specific.h";
   }

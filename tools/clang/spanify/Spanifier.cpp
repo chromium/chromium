@@ -1348,6 +1348,7 @@ SubspanExprReplacement GetSubspanExprReplacement(
 //     #define MACRO() (will_be_span + offset)
 //
 // See test: 'tests/chrome/span-frontier-macro-original.cc'
+// See test: 'tests/angle/unsafe-todo-no-double-wrap-original.cc'
 void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
                           const std::string& key) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -1372,6 +1373,24 @@ void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 
   clang::CharSourceRange macro_range =
       source_manager.getExpansionRange(decl_ref->getBeginLoc());
+
+  // Normally we wrap the rewrite in the unsafe-todo macro, because the result
+  // is still pointer arithmetic. But the expression may already be an argument
+  // of an unsafe-buffers macro, as in
+  //     UNSAFE_TODO(c_array + 1)
+  // Emitting a second one would nest `#pragma clang unsafe_buffer_usage`, which
+  // Clang rejects with "already inside '#pragma unsafe_buffer_usage'". The
+  // existing macro already guards the pointer arithmetic, so the `.data()`
+  // emitted above is all that is needed:
+  //     UNSAFE_TODO(c_array.data() + 1)
+  const llvm::StringRef enclosing_macro_name = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(macro_range.getBegin(),
+                                            macro_range.getBegin()),
+      source_manager, lang_opts);
+  if (GetProject()->IsUnsafeBufferMacroName(enclosing_macro_name)) {
+    return;
+  }
+
   std::string macro_replacement =
       std::string(GetProject()->GetUnsafeTodoMacroName()) + "(";
   EmitReplacement(

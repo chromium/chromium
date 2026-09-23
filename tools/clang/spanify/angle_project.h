@@ -59,6 +59,9 @@ class AngleProject : public Project {
   std::string_view GetUnsafeTodoMacroName() const override {
     return "ANGLE_UNSAFE_TODO";
   }
+  std::string_view GetUnsafeBuffersMacroName() const override {
+    return "ANGLE_UNSAFE_BUFFERS";
+  }
   std::string_view GetUnsafeTodoIncludePath() const override {
     return "common/unsafe_buffers.h";
   }
