@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/view_class_properties.h"
 
 AppMenuBlockView::AppMenuBlockView(
     actions::ActionItem* block_action_item,
@@ -48,6 +49,11 @@ AppMenuBlockView::AppMenuBlockView(
 
     button->SetCallback(
         base::BindRepeating(execute_command_callback, action_id.value()));
+
+    if (const ui::ElementIdentifier element_id =
+            block_child->GetProperty(views::kElementIdentifierKey)) {
+      button->SetProperty(views::kElementIdentifierKey, element_id);
+    }
 
     if (std::u16string* text_override =
             block_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {

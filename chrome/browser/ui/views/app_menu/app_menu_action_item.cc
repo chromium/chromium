@@ -14,6 +14,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
+#include "ui/views/view_class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
@@ -108,6 +109,10 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
   action->SetProperty(kNewBadgeFeatureKey, params.new_badge_feature.get());
 
   auto item = std::make_unique<actions::IndirectActionItem>(action);
+
+  if (params.element_id) {
+    item->SetProperty(views::kElementIdentifierKey, params.element_id);
+  }
 
   if (params.text_override.has_value()) {
     item->SetProperty(kTextOverrideKey, std::make_unique<std::u16string>(

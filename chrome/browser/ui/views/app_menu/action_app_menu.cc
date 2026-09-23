@@ -359,7 +359,7 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   }
 
   const ui::ElementIdentifier element_id =
-      action_item->GetProperty(views::kElementIdentifierKey);
+      child_base->GetProperty(views::kElementIdentifierKey);
   if (element_id) {
     menu_item->SetProperty(views::kElementIdentifierKey, element_id);
   }

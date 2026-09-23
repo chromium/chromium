@@ -112,6 +112,11 @@ AppMenuFooterView::AppMenuFooterView(
           base::BindRepeating(execute_command_callback, action_id.value()));
     }
 
+    if (const ui::ElementIdentifier element_id =
+            footer_child->GetProperty(views::kElementIdentifierKey)) {
+      button->SetProperty(views::kElementIdentifierKey, element_id);
+    }
+
     if (std::u16string* text_override =
             footer_child->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
       button->SetText(*text_override);

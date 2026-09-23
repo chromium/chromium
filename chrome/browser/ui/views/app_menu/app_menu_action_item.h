@@ -14,6 +14,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
@@ -49,6 +50,7 @@ class AppMenuActionItem {
     std::optional<ItemHeight> item_height;
     std::optional<std::u16string> minor_text;
     raw_ptr<const base::Feature> new_badge_feature;
+    ui::ElementIdentifier element_id;
   };
 
   static const ui::ClassProperty<DisplayType>* const kDisplayTypeKey;
