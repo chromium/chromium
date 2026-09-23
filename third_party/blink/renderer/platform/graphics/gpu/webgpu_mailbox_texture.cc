@@ -98,7 +98,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
                           .RasterInterface()
                           ->CopySharedImage(
                               shared_image, image->GetSyncToken(),
-                              dest_shared_image, lease->GetSyncToken(),
+                              dest_shared_image, lease->sync_token(),
                               copy_rect, gfx::Point());
         lease->SetSyncToken(result.dest_sync_token);
         lease->SetCleared();
@@ -119,7 +119,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
           lease->SetSyncToken(context_provider_wrapper->ContextProvider()
                                   .RasterInterface()
                                   ->WritePixels(dest_shared_image,
-                                                lease->GetSyncToken(),
+                                                lease->sync_token(),
                                                 /*dst_x_offset=*/0,
                                                 /*dst_y_offset=*/0, subset));
           lease->SetCleared();
@@ -149,7 +149,7 @@ WebGPUMailboxTexture::FromWebGpuSharedImageLease(
     std::unique_ptr<WebGpuSharedImageLease> lease) {
   CHECK(lease);
   scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
-  gpu::SyncToken sync_token = lease->GetSyncToken();
+  gpu::SyncToken sync_token = lease->sync_token();
 
   gfx::Size size = shared_image->size();
 
