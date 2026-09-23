@@ -145,10 +145,10 @@ cr-searchbox-input::part(searchbox-input) {
   padding-inline-end: 8px;
 }
 
-:host([multi-line-enabled][is-fusebox-enabled])
+:host([multi-line-enabled])
     cr-searchbox-input::part(searchbox-input) {
   padding-bottom: 10px;
-  padding-top: 16px;
+  padding-top: 12px;
 }
 
 :host([searchbox-chrome-refresh-theming])
