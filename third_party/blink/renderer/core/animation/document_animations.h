@@ -148,8 +148,13 @@ class CORE_EXPORT DocumentAnimations final
   void UpdateCompositorAnimationTriggers(
       const PaintArtifactCompositor* paint_artifact_compositor);
 
+  DeferredTimeline& GetGlobalDeferredTimeline(const TreeScope&,
+                                              const AtomicString&);
+  DeferredTimeline* FindExistingGlobalDeferredTimeline(
+      const TreeScope&,
+      const AtomicString&) const;
   DeferredTimeline& GetGlobalDeferredTimeline(const AtomicString& name) {
-    return *global_deferred_timelines_.Find(*document_, name);
+    return GetGlobalDeferredTimeline(*document_, name);
   }
 
   uint64_t current_transition_generation_;
@@ -161,6 +166,22 @@ class CORE_EXPORT DocumentAnimations final
   void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
 
  private:
+  class TreeScopeDeferredTimelineMap
+      : public GarbageCollected<TreeScopeDeferredTimelineMap> {
+   public:
+    TreeScopeDeferredTimelineMap()
+        : map_(StyleTimelineScope{StyleTimelineScope::Type::kAll,
+                                  Vector<AtomicString>()}) {}
+
+    CSSDeferredTimelineMap& Map() { return map_; }
+    const CSSDeferredTimelineMap& Map() const { return map_; }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(map_); }
+
+   private:
+    CSSDeferredTimelineMap map_;
+  };
+
   void MarkPendingIfCompositorPropertyAnimationChanges(
       const PaintArtifactCompositor*);
 
@@ -177,8 +198,8 @@ class CORE_EXPORT DocumentAnimations final
   // as a last resort.
   //
   // Only used when the CSSTimelineScopeGlobal flag is enabled.
-  CSSDeferredTimelineMap global_deferred_timelines_{StyleTimelineScope{
-      StyleTimelineScope::Type::kAll, /*names=*/Vector<AtomicString>()}};
+  HeapHashMap<WeakMember<const TreeScope>, Member<TreeScopeDeferredTimelineMap>>
+      global_deferred_timelines_by_scope_;
 };
 
 }  // namespace blink

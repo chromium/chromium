@@ -1317,8 +1317,12 @@ void CSSAnimations::CalculateChangedTimelineAttachments(
       timeline_data, &update,
       [&animating_element, &update, &existing_attachments, &result](
           const AtomicString& name, TimelineType* attaching_timeline) {
-        DeferredTimeline* new_deferred_timeline =
-            FindAncestorDeferredTimeline(name, &animating_element, &update);
+        const TreeScope* tree_scope = attaching_timeline->GetTreeScope();
+        if (!tree_scope) {
+          tree_scope = &animating_element.GetTreeScope();
+        }
+        DeferredTimeline* new_deferred_timeline = FindAncestorDeferredTimeline(
+            name, &animating_element, &update, tree_scope);
         DeferredTimeline* existing_deferred_timeline =
             GetTimelineAttachment(existing_attachments, attaching_timeline);
         if (existing_deferred_timeline == new_deferred_timeline) {
@@ -1467,6 +1471,32 @@ DeferredTimeline* CSSAnimations::FindDeferredTimelineForElement(
 
 // Find a ScrollSnapshotTimeline in inclusive ancestors.
 //
+namespace {
+
+ScrollSnapshotTimeline* FindGlobalTimeline(const ScopedCSSName* target_name,
+                                           Document& document) {
+  const TreeScope* ref_scope =
+      target_name ? target_name->GetTreeScope() : nullptr;
+  if (!ref_scope) {
+    ref_scope = &document;
+  }
+  DocumentAnimations& doc_animations = document.GetDocumentAnimations();
+  for (const TreeScope* scope = ref_scope; scope;
+       scope = scope->ParentTreeScope()) {
+    if (DeferredTimeline* deferred =
+            doc_animations.FindExistingGlobalDeferredTimeline(
+                *scope, target_name->GetName())) {
+      if (deferred->ExposedTimeline()) {
+        return deferred;
+      }
+    }
+  }
+  return &doc_animations.GetGlobalDeferredTimeline(*ref_scope,
+                                                   target_name->GetName());
+}
+
+}  // namespace
+
 // The reason `update` is provided from the outside rather than just fetching
 // it from ElementAnimations, is that for the current node we're resolving style
 // for, the update hasn't actually been stored on ElementAnimations yet.
@@ -1487,9 +1517,7 @@ ScrollSnapshotTimeline* CSSAnimations::FindAncestorTimeline(
     UseCounter::Count(node->GetDocument(),
                       WebFeature::kCSSTimelineLookupFoundNothing);
     if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
-      return &node->GetDocument()
-                  .GetDocumentAnimations()
-                  .GetGlobalDeferredTimeline(target_name->GetName());
+      return FindGlobalTimeline(target_name, node->GetDocument());
     }
     return nullptr;
   }
@@ -1503,24 +1531,29 @@ ScrollSnapshotTimeline* CSSAnimations::FindAncestorTimeline(
 DeferredTimeline* CSSAnimations::FindAncestorDeferredTimeline(
     const AtomicString& name,
     Element* element,
-    const CSSAnimationUpdate* update) {
+    const CSSAnimationUpdate* update,
+    const TreeScope* tree_scope) {
   DCHECK(element);
   const TimelineData* timeline_data = GetTimelineData(*element);
-  if (DeferredTimeline* timeline = FindDeferredTimelineForElement(
-          element->GetDocument(), name, timeline_data, update)) {
-    return timeline;
+  if (!tree_scope || &element->GetTreeScope() == tree_scope) {
+    if (DeferredTimeline* timeline = FindDeferredTimelineForElement(
+            element->GetDocument(), name, timeline_data, update)) {
+      return timeline;
+    }
   }
   Element* parent_element = ParentElementForTimelineTraversal(*element);
   if (!parent_element) {
     if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
       return &element->GetDocument()
                   .GetDocumentAnimations()
-                  .GetGlobalDeferredTimeline(name);
+                  .GetGlobalDeferredTimeline(
+                      tree_scope ? *tree_scope : element->GetTreeScope(), name);
     }
     return nullptr;
   }
   return FindAncestorDeferredTimeline(
-      name, parent_element, GetPendingAnimationUpdate(*parent_element));
+      name, parent_element, GetPendingAnimationUpdate(*parent_element),
+      tree_scope);
 }
 
 namespace {

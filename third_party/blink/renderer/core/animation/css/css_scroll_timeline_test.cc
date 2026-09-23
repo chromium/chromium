@@ -223,7 +223,12 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   observer->observe(element);
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, GetPostLayoutSnapshotClientsForTesting().size());
+
+  // There are now 2 clients registered:
+  //   1. The global DeferredTimeline created when #element looked up
+  //      --timeline.
+  //   2. The CSSScrollTimeline created on #scroller.
+  EXPECT_EQ(2u, GetPostLayoutSnapshotClientsForTesting().size());
 }
 
 }  // namespace blink

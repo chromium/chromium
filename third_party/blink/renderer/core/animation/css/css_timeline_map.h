@@ -61,6 +61,9 @@ class CORE_EXPORT CSSDeferredTimelineMap {
   // (for the same key) over time.
   DeferredTimeline* Find(Document&, const AtomicString& name) const;
 
+  // Find an existing DeferredTimeline with `name` if one was already created.
+  DeferredTimeline* FindExisting(const AtomicString& name) const;
+
   bool IsEmpty() const { return filter_.IsNone(); }
 
   const StyleTimelineScope& GetFilter() const { return filter_; }

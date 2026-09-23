@@ -31,4 +31,10 @@ DeferredTimeline* CSSDeferredTimelineMap::Find(Document& document,
   return result.stored_value->value;
 }
 
+DeferredTimeline* CSSDeferredTimelineMap::FindExisting(
+    const AtomicString& name) const {
+  auto it = map_.find(name);
+  return it != map_.end() ? it->value.Get() : nullptr;
+}
+
 }  // namespace blink

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -397,7 +398,29 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(timelines_);
   visitor->Trace(triggers_);
   visitor->Trace(css_animations_needing_trigger_attachment_);
-  visitor->Trace(global_deferred_timelines_);
+  visitor->Trace(global_deferred_timelines_by_scope_);
+}
+
+DeferredTimeline& DocumentAnimations::GetGlobalDeferredTimeline(
+    const TreeScope& tree_scope,
+    const AtomicString& name) {
+  auto result =
+      global_deferred_timelines_by_scope_.insert(&tree_scope, nullptr);
+  if (result.is_new_entry) {
+    result.stored_value->value =
+        MakeGarbageCollected<TreeScopeDeferredTimelineMap>();
+  }
+  return *result.stored_value->value->Map().Find(*document_, name);
+}
+
+DeferredTimeline* DocumentAnimations::FindExistingGlobalDeferredTimeline(
+    const TreeScope& tree_scope,
+    const AtomicString& name) const {
+  auto it = global_deferred_timelines_by_scope_.find(&tree_scope);
+  if (it == global_deferred_timelines_by_scope_.end() || !it->value) {
+    return nullptr;
+  }
+  return it->value->Map().FindExisting(name);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

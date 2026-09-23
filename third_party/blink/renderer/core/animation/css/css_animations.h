@@ -435,7 +435,8 @@ class CORE_EXPORT CSSAnimations final {
   static DeferredTimeline* FindAncestorDeferredTimeline(
       const AtomicString& name,
       Element*,
-      const CSSAnimationUpdate*);
+      const CSSAnimationUpdate*,
+      const TreeScope*);
 
   static AnimationTimeline* ComputeTimeline(
       Element*,

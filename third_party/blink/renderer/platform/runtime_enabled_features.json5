@@ -2168,6 +2168,8 @@
       //
       // https://github.com/w3c/csswg-drafts/issues/12581
       name: "CSSTimelineScopeGlobal",
+      depends_on: ["CSSTreeScopedScrollTimeline"],
+      status: "experimental",
     },
     {
       // Support tree-scoped scroll and view timeline names according to the
