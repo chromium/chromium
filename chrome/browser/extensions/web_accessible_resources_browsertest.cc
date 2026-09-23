@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -921,9 +922,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
   // 4. Subframe navigation: Verify that a different extension's DNR redirect to
   // the target's static URL is not rewritten to the target's dynamic URL and
-  // is blocked by ExtensionNavigationThrottle. Note that failed cross-origin
-  // subframe redirects sanitize the URL to its origin
-  // (target_extension->url()).
+  // is blocked by ExtensionNavigationThrottle.
   {
     GURL cross_subframe_trigger =
         embedded_test_server()->GetURL("example.com", "/cross_subframe.html");
@@ -933,7 +932,23 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     nav_observer.Wait();
     EXPECT_FALSE(nav_observer.last_navigation_succeeded());
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
-    EXPECT_EQ(target_extension->url(), nav_observer.last_navigation_url());
+
+    // The failed navigation's URL is only reduced to its origin when the error
+    // page commits in the initiator's process, per
+    // https://crbug.com/517156678. With subframe error page isolation, the
+    // error page commits in a dedicated error page process instead, and the
+    // full URL is committed.
+    // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error
+    // Page Isolation ships.
+    GURL expected_url =
+        content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+            /*in_main_frame=*/false)
+            ? target_extension->GetResourceURL("dynamic_page.html")
+            : target_extension->url();
+    EXPECT_EQ(expected_url, nav_observer.last_navigation_url());
+
+    // Either way, the URL must not have been rewritten to the target's
+    // dynamic URL.
     EXPECT_NE(target_extension->dynamic_url(),
               nav_observer.last_navigation_url());
   }
