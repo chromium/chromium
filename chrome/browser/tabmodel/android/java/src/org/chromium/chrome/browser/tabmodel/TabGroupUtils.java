@@ -69,6 +69,20 @@ public class TabGroupUtils {
     }
 
     /**
+     * Returns the ID of the first tab in the tab group with {@code tabGroupId}, or {@link
+     * Tab#INVALID_TAB_ID} if the group does not exist or is empty.
+     *
+     * @param tabModel The {@link TabModel} that owns the tab group.
+     * @param tabGroupId The {@link Token} of the tab group.
+     * @return The ID of the first {@link Tab} in the group, or {@link Tab#INVALID_TAB_ID}.
+     */
+    public static @TabId int getFirstTabIdInGroup(TabModel tabModel, @Nullable Token tabGroupId) {
+        if (tabGroupId == null) return Tab.INVALID_TAB_ID;
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
+        return tabsInGroup.isEmpty() ? Tab.INVALID_TAB_ID : tabsInGroup.get(0).getId();
+    }
+
+    /**
      * This method gets the index in TabModel of the first tab in {@code tabs}.
      *
      * @param tabModel The tabModel that owns the {@code tab}.

@@ -33,6 +33,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
@@ -2763,7 +2764,6 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
         when(mTabModel.getTabCountForGroup(newGroupId)).thenReturn(1);
         when(mTabModel.tabGroupExists(newGroupId)).thenReturn(true);
-        when(mTabModel.getGroupLastShownTabId(newGroupId)).thenReturn(TAB2_ID);
         mockRepresentativeTabs(mTab1, mTab2);
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
@@ -3728,6 +3728,47 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetPriceWelcomeMessageInsertionIndex() {
         initWithThreeTabs();
+
+        when(mGridLayoutManager.getSpanCount())
+                .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
+
+        when(mGridLayoutManager.getSpanCount())
+                .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(3));
+    }
+
+    @Test
+    public void testGetPriceWelcomeMessageInsertionIndex_GroupedTab() {
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        createTabGroup(List.of(mTab2, tab3), TAB_GROUP_ID);
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2, tab4), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+
+        when(mGridLayoutManager.getSpanCount())
+                .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
+
+        when(mGridLayoutManager.getSpanCount())
+                .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(3));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testGetPriceWelcomeMessageInsertionIndex_GroupedTab_featureDisabled() {
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        createTabGroup(List.of(mTab2, tab3), TAB_GROUP_ID);
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2, tab4), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
 
         when(mGridLayoutManager.getSpanCount())
                 .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
@@ -5348,9 +5389,8 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mIncognitoTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         when(mIncognitoTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        mMediator.onMenuItemClicked(
+        mMediator.onTabGroupMenuItemClicked(
                 R.id.ungroup_tab,
                 TAB_GROUP_ID,
                 /* collaborationId= */ null,
@@ -5378,8 +5418,8 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mIncognitoTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
-        mMediator.onMenuItemClicked(
+        when(mIncognitoTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        mMediator.onTabGroupMenuItemClicked(
                 R.id.delete_tab_group,
                 TAB_GROUP_ID,
                 /* collaborationId= */ null,
@@ -5409,8 +5449,7 @@ public class TabListMediatorUnitTest {
 
         // Assert that the callback performs as expected.
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
-        mMediator.onMenuItemClicked(
+        mMediator.onTabGroupMenuItemClicked(
                 R.id.share_group,
                 TAB_GROUP_ID,
                 /* collaborationId= */ null,
@@ -5434,8 +5473,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
-        mMediator.onMenuItemClicked(
+        mMediator.onTabGroupMenuItemClicked(
                 R.id.close_tab_group,
                 TAB_GROUP_ID,
                 /* collaborationId= */ null,
@@ -5449,6 +5487,19 @@ public class TabListMediatorUnitTest {
                                         .build()),
                         /* allowDialog= */ eq(true),
                         any());
+    }
+
+    @Test
+    public void testOnTabGroupMenuItemClicked_GroupDoesNotExist() {
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+
+        mMediator.onTabGroupMenuItemClicked(
+                R.id.edit_group_name,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+
+        verifyNoInteractions(mModalDialogManager);
     }
 
     @Test
@@ -6475,7 +6526,6 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(groupTabs);
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
-        when(mTabModel.getGroupLastShownTabId(any())).thenReturn(TAB1_ID);
         when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(groupTabs);
 
@@ -7372,13 +7422,14 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
 
         // Act
-        mMediator.onMenuItemClicked(
+        mMediator.onTabGroupMenuItemClicked(
                 menuId, TAB_GROUP_ID, /* collaborationId= */ null, listViewTouchTracker);
 
         // Assert
+        assertTrue(mModelList.get(POSITION1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+        verify(mTabModel, never()).getGroupLastShownTabId(any());
         verify(mTabRemover)
                 .closeTabs(
                         eq(

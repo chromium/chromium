@@ -125,6 +125,20 @@ public class TabGroupUtilsUnitTest {
     }
 
     @Test
+    public void testGetFirstTabIdInGroup() {
+        createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+
+        assertThat(TabGroupUtils.getFirstTabIdInGroup(mTabModel, TAB_GROUP_ID1), equalTo(TAB1_ID));
+        assertThat(
+                TabGroupUtils.getFirstTabIdInGroup(mTabModel, TAB_GROUP_ID2),
+                equalTo(Tab.INVALID_TAB_ID));
+        assertThat(
+                TabGroupUtils.getFirstTabIdInGroup(mTabModel, /* tabGroupId= */ null),
+                equalTo(Tab.INVALID_TAB_ID));
+    }
+
+    @Test
     public void testGetFirstTabModelIndexForList() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
 

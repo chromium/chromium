@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
@@ -69,7 +68,6 @@ public class TabListGroupMenuCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -90,10 +88,9 @@ public class TabListGroupMenuCoordinatorUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
 
-        when(mTab.getId()).thenReturn(TAB_ID);
-        when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mTabModel.tabGroupExists(TAB_GROUP_TOKEN)).thenReturn(true);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
@@ -101,8 +98,6 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
 
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
-        when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
         mSavedTabGroup = new SavedTabGroup();
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
 
@@ -269,7 +264,9 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
 
-        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID, /* triggeringMotion= */ null);
+        mMenuCoordinator
+                .getTabGroupActionListener(TAB_GROUP_TOKEN)
+                .run(mView, TAB_ID, /* triggeringMotion= */ null);
 
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)
@@ -292,7 +289,9 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
 
-        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID, /* triggeringMotion= */ null);
+        mMenuCoordinator
+                .getTabGroupActionListener(TAB_GROUP_TOKEN)
+                .run(mView, TAB_ID, /* triggeringMotion= */ null);
 
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(TAB_GROUP_TOKEN));
         verify(mMenuCoordinator)

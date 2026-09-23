@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -358,7 +359,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final Callback<@Nullable TabModel> mOnTabModelChanged =
             new ValueChangedCallback<>(this::onTabModelChanged);
     private final TabOverflowMenuCoordinator.OnItemClickedCallback<Token>
-            mOnMenuItemClickedCallback = this::onMenuItemClicked;
+            mOnTabGroupMenuItemClickedCallback = this::onTabGroupMenuItemClicked;
     private final Activity mActivity;
     private final TabListModel mModelList;
     private final @Nullable ModalDialogManager mModalDialogManager;
@@ -1578,12 +1579,13 @@ public class TabListMediator implements TabListNotificationHandler {
                     TabActionButtonType.SELECT, mSelectableTabOnClickListener);
         }
         if (TabProperties.isTabGroupHeader(model)) {
+            Token tabGroupId = assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
             if (mTabListItemOnClickListenerProvider != null) {
                 return mTabListItemOnClickListenerProvider.getTabGroupActionButtonData(
-                        tab, model, this::getTabGroupOverflowMenuClickListener);
+                        tab, model, () -> getTabGroupOverflowMenuClickListener(tabGroupId));
             }
             return new TabActionButtonData(
-                    TabActionButtonType.OVERFLOW, getTabGroupOverflowMenuClickListener());
+                    TabActionButtonType.OVERFLOW, getTabGroupOverflowMenuClickListener(tabGroupId));
         }
 
         if (tab.getIsPinned()) {
@@ -1593,7 +1595,7 @@ public class TabListMediator implements TabListNotificationHandler {
         return new TabActionButtonData(TabActionButtonType.CLOSE, mTabClosedListener);
     }
 
-    private TabActionListener getTabGroupOverflowMenuClickListener() {
+    private TabActionListener getTabGroupOverflowMenuClickListener(Token tabGroupId) {
         if (mTabListGroupMenuCoordinator == null) {
             TabModel tabModel = getCurrentTabModelChecked();
             boolean isIncognito = tabModel.isIncognitoBranded();
@@ -1606,13 +1608,13 @@ public class TabListMediator implements TabListNotificationHandler {
                             : mCollaborationService;
             mTabListGroupMenuCoordinator =
                     new TabListGroupMenuCoordinator(
-                            mOnMenuItemClickedCallback,
+                            mOnTabGroupMenuItemClickedCallback,
                             this::getCurrentTabModelChecked,
                             tabGroupSyncService,
                             collaborationService,
                             mActivity);
         }
-        return mTabListGroupMenuCoordinator.getTabActionListener();
+        return mTabListGroupMenuCoordinator.getTabGroupActionListener(tabGroupId);
     }
 
     private @Nullable TabActionListener getTabClickListener(
@@ -2391,10 +2393,13 @@ public class TabListMediator implements TabListNotificationHandler {
         assert mGridLayoutManager != null;
         int spanCount = mGridLayoutManager.getSpanCount();
         int selectedTabIndex =
-                mModelList.indexOfNthTabCard(
-                        getCurrentTabModelChecked().getCurrentRepresentativeTabIndex());
-        int indexBelowSelectedTab = (selectedTabIndex / spanCount + 1) * spanCount;
+                mTabListLayoutDelegate.getUiIndexForTab(
+                        TabModelUtils.getCurrentTabId(getCurrentTabModelChecked()));
         int indexAfterLastTab = mModelList.getTabIndexBefore(mModelList.size()) + 1;
+        if (selectedTabIndex == TabModel.INVALID_TAB_INDEX) {
+            return indexAfterLastTab;
+        }
+        int indexBelowSelectedTab = (selectedTabIndex / spanCount + 1) * spanCount;
         return Math.min(indexBelowSelectedTab, indexAfterLastTab);
     }
 
@@ -2529,22 +2534,6 @@ public class TabListMediator implements TabListNotificationHandler {
             }
         }
         return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
-     * Ensures the GROUP_HEADER for the given group has a valid TAB_ID. If the previous
-     * representative tab was moved or closed, this updates the header to point to another valid tab
-     * currently in the group to prevent ID hijacking.
-     */
-    void updateTabGroupHeaderId(Token tabGroupId) {
-        int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
-        if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        List<Tab> tabs = getCurrentTabModelChecked().getTabsInGroup(tabGroupId);
-        if (tabs != null && !tabs.isEmpty()) {
-            PropertyModel headerModel = mModelList.get(headerIndex).model;
-            headerModel.set(TabProperties.TAB_ID, tabs.get(0).getId());
-        }
     }
 
     @Nullable Tab getTabForIndex(int index) {
@@ -2820,18 +2809,33 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    /**
+     * Handles item selections from the 3-dot overflow menu on a tab group card (via {@link
+     * TabListGroupMenuCoordinator}).
+     *
+     * @param menuId The resource ID of the selected menu item.
+     * @param tabGroupId The {@link Token} of the target tab group.
+     * @param collaborationId The collaboration ID if the group is shared, or null.
+     * @param listViewTouchTracker Tracker for touch/mouse interaction metadata on the menu list.
+     */
     @VisibleForTesting
-    void onMenuItemClicked(
+    void onTabGroupMenuItemClicked(
             @IdRes int menuId,
             Token tabGroupId,
             @Nullable String collaborationId,
             @Nullable ListViewTouchTracker listViewTouchTracker) {
         TabModel tabModel = getCurrentTabModelChecked();
-        int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
+        if (!tabModel.tabGroupExists(tabGroupId)) return;
+
         EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
-        if (tabId == Tab.INVALID_TAB_ID) return;
 
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
+            int tabId =
+                    TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()
+                            ? TabGroupUtils.getFirstTabIdInGroup(tabModel, tabGroupId)
+                            : tabModel.getGroupLastShownTabId(tabGroupId);
+            if (tabId == Tab.INVALID_TAB_ID) return;
+
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
                 RecordUserAction.record("TabGroupItemMenu.Close");
@@ -2854,7 +2858,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     getOnMaybeTabClosedCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
-            renameTabGroup(tabId);
+            renameTabGroup(tabGroupId);
         } else if (menuId == R.id.ungroup_tab) {
             RecordUserAction.record("TabGroupItemMenu.Ungroup");
             TabUiUtils.ungroupTabGroup(tabModel, tabGroupId);
@@ -2880,14 +2884,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void renameTabGroup(int tabId) {
+    private void renameTabGroup(Token tabGroupId) {
         assert mModalDialogManager != null;
 
         TabModel tabModel = getCurrentTabModelChecked();
-        Tab tab = tabModel.getTabById(tabId);
-        assumeNonNull(tab);
-        Token tabGroupId = tab.getTabGroupId();
-        assumeNonNull(tabGroupId);
 
         var tabGroupVisualDataDialogManager =
                 new TabGroupVisualDataDialogManager(
@@ -2953,7 +2953,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     }
                 };
 
-        tabGroupVisualDataDialogManager.showDialog(tab.getTabGroupId(), tabModel, dialogController);
+        tabGroupVisualDataDialogManager.showDialog(tabGroupId, tabModel, dialogController);
     }
 
     /**
