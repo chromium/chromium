@@ -6,6 +6,7 @@
 #define REMOTING_HOST_LINUX_PORTAL_REMOTE_DESKTOP_SESSION_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
@@ -14,9 +15,12 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "remoting/base/loggable.h"
+#include "remoting/host/clipboard.h"
 #include "remoting/host/desktop_display_info_monitor.h"
+#include "remoting/host/linux/clipboard_portal.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
+#include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
 #include "remoting/host/linux/portal_capture_stream_manager.h"
 #include "remoting/host/linux/portal_desktop_resizer.h"
@@ -94,6 +98,11 @@ class PortalRemoteDesktopSession {
     return display_info_monitor_->GetWeakPtr();
   }
 
+  std::unique_ptr<Clipboard> CreateClipboard() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return ClipboardPortal::CreateClientProxy(clipboard_.get());
+  }
+
  private:
   friend class base::NoDestructor<PortalRemoteDesktopSession>;
 
@@ -126,6 +135,8 @@ class PortalRemoteDesktopSession {
   void OnConnectionCreated(GDBusConnectionRef connection);
   void OnCreateSessionResponse(gvariant::GVariantRef<"a{sv}"> result);
   void OnSelectDevicesResponse(gvariant::GVariantRef<"a{sv}"> result);
+  void OnRequestClipboardResponse(
+      base::expected<std::tuple<>, Loggable> result);
   void ConnectToEIS(
       GDBusConnectionRef::CallCallback<
           std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList>> callback);
@@ -159,6 +170,8 @@ class PortalRemoteDesktopSession {
   std::unique_ptr<PipewireMouseCursorCapturer> mouse_cursor_capturer_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<EiSenderSession> ei_session_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ClipboardPortal> clipboard_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PortalRemoteDesktopSession> weak_ptr_factory_{this};

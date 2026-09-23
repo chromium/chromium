@@ -5,6 +5,9 @@
 #ifndef REMOTING_BASE_CONSTANTS_H_
 #define REMOTING_BASE_CONSTANTS_H_
 
+#include <array>
+#include <string_view>
+
 #include "build/build_config.h"
 
 namespace remoting {
@@ -30,6 +33,13 @@ constexpr int kTargetFrameRate = 30;
 #if BUILDFLAG(IS_LINUX)
 inline constexpr char kChromeRemoteDesktopSessionEnvVar[] =
     "CHROME_REMOTE_DESKTOP_SESSION";
+
+// This list was created by looking at the MIME types claimed by some Wayland
+// and XWayland apps that put text onto the clipboard. It is ordered by
+// priority, preferring modern explicit UTF-8 formats over legacy string
+// formats.
+inline constexpr std::array<std::string_view, 5> kTextMimeTypes = {
+    "text/plain;charset=utf-8", "UTF8_STRING", "text/plain", "STRING", "TEXT"};
 #endif
 
 }  // namespace remoting

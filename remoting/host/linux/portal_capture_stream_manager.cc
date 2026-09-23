@@ -55,6 +55,7 @@ void PortalCaptureStreamManager::Init(
     gvariant::ObjectPath remote_desktop_session_handle,
     InitCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  clipboard_enabled_ = false;
   connection_ = connection;
   remote_desktop_session_handle_ = std::move(remote_desktop_session_handle);
   init_callback_ = std::move(callback);
@@ -231,6 +232,9 @@ void PortalCaptureStreamManager::OnSelectSourcesResponse(
 void PortalCaptureStreamManager::OnStartResponse(GVariantRef<"a{sv}"> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "RemoteDesktop.Start succeeded.";
+
+  clipboard_enabled_ =
+      ReadGVariantDictValue<bool>(result, "clipboard_enabled").value_or(false);
 
   // Array of {pipewire_node_id, options}. See
   // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.ScreenCast.html#org-freedesktop-portal-screencast-start

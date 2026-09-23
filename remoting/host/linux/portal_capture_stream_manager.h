@@ -71,6 +71,11 @@ class PortalCaptureStreamManager final : public CaptureStreamManager {
   base::flat_map<webrtc::ScreenId, const webrtc::DesktopRect*>
   GetActiveStreamInitialRects();
 
+  bool clipboard_enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return clipboard_enabled_;
+  }
+
   base::WeakPtr<PortalCaptureStreamManager> GetWeakPtr();
 
  private:
@@ -129,6 +134,8 @@ class PortalCaptureStreamManager final : public CaptureStreamManager {
   base::ScopedFD pipewire_fd_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool clipboard_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   std::unique_ptr<ScopedPortalRequest> select_sources_request_;
   std::unique_ptr<ScopedPortalRequest> start_request_;

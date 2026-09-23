@@ -22,13 +22,6 @@ namespace {
 
 constexpr char kRemoteDesktopBusName[] = "org.gnome.Mutter.RemoteDesktop";
 
-// This list was created by looking at the MIME types claimed by some Wayland
-// and XWayland apps that put text onto the clipboard. It is ordered by
-// priority, preferring modern explicit UTF-8 formats over legacy string
-// formats.
-constexpr std::array<std::string_view, 5> kTextMimeTypes = {
-    "text/plain;charset=utf-8", "UTF8_STRING", "text/plain", "STRING", "TEXT"};
-
 }  // namespace
 
 ClipboardGnome::ClipboardGnome(GDBusConnectionRef connection,
