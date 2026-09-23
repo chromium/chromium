@@ -994,7 +994,6 @@ void AudioRendererImpl::SetPlayDelayCBForTesting(PlayDelayCBForTesting cb) {
 
 void AudioRendererImpl::DecodedAudioReady(
     AudioDecoderStream::ReadResult result) {
-  DVLOG(2) << __func__ << "(" << static_cast<int>(result.code()) << ")";
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
@@ -1005,10 +1004,11 @@ void AudioRendererImpl::DecodedAudioReady(
 
   if (!result.has_value()) {
     auto status = PIPELINE_ERROR_DECODE;
-    if (result.code() == DecoderStatus::Codes::kAborted)
+    if (result.error().code() == DecoderStatus::Codes::kAborted) {
       status = PIPELINE_OK;
-    else if (result.code() == DecoderStatus::Codes::kDisconnected)
+    } else if (result.error().code() == DecoderStatus::Codes::kDisconnected) {
       status = PIPELINE_ERROR_DISCONNECTED;
+    }
 
     HandleAbortedReadOrDecodeError(status);
     return;

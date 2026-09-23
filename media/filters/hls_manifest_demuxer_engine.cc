@@ -390,7 +390,7 @@ void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
     // The pipeline can call Seek just after an error was surfaced. The error
     // handler resets |network_access_|, so we should just reply with
     // another error here.
-    std::move(cb).Run(PIPELINE_ERROR_ABORT);
+    std::move(cb).Run(base::unexpected(PIPELINE_ERROR_ABORT));
     return;
   }
 
@@ -415,7 +415,8 @@ void HlsManifestDemuxerEngine::ContinueSeekInternal(
   for (auto& [_, rendition] : renditions_) {
     auto response = rendition->Seek(time);
     if (!response.has_value()) {
-      std::move(cb).Run(std::move(response).error().AddHere());
+      std::move(cb).Run(
+          base::unexpected(std::move(response).error().AddHere()));
       return;
     }
     buffers_needed |=

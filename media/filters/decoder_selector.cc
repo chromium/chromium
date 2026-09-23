@@ -284,7 +284,7 @@ void DecoderSelector<StreamType>::ReturnSelectionError(DecoderStatus error) {
   decrypting_demuxer_stream_.reset();
   decoders_.clear();
   prefer_prepended_platform_decoder_ = false;
-  RunSelectDecoderCB(std::move(error));
+  RunSelectDecoderCB(base::unexpected(std::move(error)));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -341,7 +341,7 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB(
       base::StringPrintf(
           "%s (%s)",
           decoder_or_error.has_value()
-              ? GetDecoderName(decoder_or_error->GetDecoderType())
+              ? GetDecoderName(decoder_or_error.value()->GetDecoderType())
               : "null",
           decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
   TRACE_EVENT_END("media",

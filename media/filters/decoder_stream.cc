@@ -93,15 +93,16 @@ const char* GetPrepareTraceString<DemuxerStream::AUDIO>() {
   return "AudioDecoderStream::PrepareOutput";
 }
 
-const char* GetStatusString(const DecoderStatus& status) {
+template <DemuxerStream::Type Type>
+const char* GetStatusString(
+    const typename DecoderStream<Type>::ReadResult& result) {
   // TODO(crbug.com/40149493): Replace this with generic Status-to-string.
-  switch (status.code()) {
-    case DecoderStatus::Codes::kOk:
-      return "okay";
-    case DecoderStatus::Codes::kAborted:
-      return "aborted";
-    default:
-      return "decode_error";
+  if (result.has_value()) {
+    return "okay";
+  } else if (result.error().code() == DecoderStatus::Codes::kAborted) {
+    return "aborted";
+  } else {
+    return "decode_error";
   }
 }
 
@@ -143,7 +144,7 @@ DecoderStream<StreamType>::~DecoderStream() {
   }
   if (read_cb_) {
     read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb_));
-    SatisfyRead(DecoderStatus::Codes::kAborted);
+    SatisfyRead(base::unexpected(DecoderStatus::Codes::kAborted));
   }
   if (reset_cb_)
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb_));
@@ -207,7 +208,8 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
     read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
     // OnDecodeDone, OnBufferReady, and CompleteDecoderReinitialization all set
     // kStateError and call SatisfyRead, passing the error back to a ReadCB.
-    SatisfyRead(DecoderStatus::Codes::kDecoderStreamInErrorState);
+    SatisfyRead(
+        base::unexpected(DecoderStatus::Codes::kDecoderStreamInErrorState));
     return;
   }
 
@@ -243,7 +245,7 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
 
   if (read_cb_) {
     read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb_));
-    SatisfyRead(DecoderStatus::Codes::kAborted);
+    SatisfyRead(base::unexpected(DecoderStatus::Codes::kAborted));
   }
 
   ClearOutputs();
@@ -389,11 +391,12 @@ void DecoderStream<StreamType>::ResumeDecoderSelection(
 
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnDecoderSelected(
-    DecoderStatus::Or<std::unique_ptr<Decoder>> decoder_or_error,
+    base::expected<std::unique_ptr<Decoder>, DecoderStatus> decoder_or_error,
     std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream) {
   FUNCTION_DVLOG(1) << ": "
                     << (decoder_or_error.has_value()
-                            ? GetDecoderName(decoder_or_error->GetDecoderType())
+                            ? GetDecoderName(
+                                  decoder_or_error.value()->GetDecoderType())
                             : "No decoder selected.");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == State::kStateInitializing ||
@@ -494,7 +497,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::SatisfyRead(ReadResult result) {
   DCHECK(read_cb_);
   TRACE_EVENT_END("media", GetTracingTrack(this), "status",
-                  GetStatusString(result.code()));
+                  GetStatusString<StreamType>(result));
   std::move(read_cb_).Run(std::move(result));
 }
 
@@ -689,7 +692,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
         state_ = State::kStateError;
         ClearOutputs();
         if (read_cb_)
-          SatisfyRead(std::move(status));
+          SatisfyRead(base::unexpected(std::move(status)));
       }
       return;
   }
@@ -855,7 +858,8 @@ void DecoderStream<StreamType>::OnBuffersReady(
     // TODO(crbug.com/c/1326324): Convert |status| into a typed status so that
     // it can be set as a cause here.
     if (read_cb_) {
-      SatisfyRead(DecoderStatus::Codes::kDecoderStreamDemuxerError);
+      SatisfyRead(
+          base::unexpected(DecoderStatus::Codes::kDecoderStreamDemuxerError));
     }
   }
 
@@ -936,7 +940,7 @@ void DecoderStream<StreamType>::OnBuffersReady(
 
   if (status == DemuxerStream::kAborted) {
     if (read_cb_) {
-      SatisfyRead(DecoderStatus::Codes::kAborted);
+      SatisfyRead(base::unexpected(DecoderStatus::Codes::kAborted));
     }
     return;
   }
@@ -1009,7 +1013,7 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(
     return;
 
   if (state_ == State::kStateError) {
-    SatisfyRead(std::move(status));
+    SatisfyRead(base::unexpected(std::move(status)));
     return;
   }
 

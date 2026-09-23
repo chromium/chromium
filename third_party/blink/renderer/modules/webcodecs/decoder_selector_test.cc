@@ -193,7 +193,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
     last_set_decoder_config_ = config;
     decoder_selector_->SelectDecoder(
         config, low_delay_,
-        BindOnce(&Self::OnDecoderSelectedThunk, Unretained(this)));
+        blink::BindOnce(&Self::OnDecoderSelectedThunk, Unretained(this)));
     RunUntilIdle();
   }
 

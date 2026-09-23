@@ -318,7 +318,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_stopped_for_shutdown_) {
-    return PIPELINE_ERROR_ABORT;
+    return base::unexpected(PIPELINE_ERROR_ABORT);
   }
 
   if (set_stream_end_) {

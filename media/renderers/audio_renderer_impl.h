@@ -120,7 +120,7 @@ class MEDIA_EXPORT AudioRendererImpl
   bool was_unmuted_for_testing() const { return was_unmuted_; }
 
   void decoded_audio_ready_for_testing() {
-    DecodedAudioReady(DecoderStatus::Codes::kFailed);
+    DecodedAudioReady(base::unexpected(DecoderStatus::Codes::kFailed));
   }
 
  private:

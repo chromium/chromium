@@ -122,7 +122,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
     kIsReady,
     kNeedsData,
   };
-  using SeekResponse = PipelineStatus::Or<SeekState>;
+  using SeekResponse = base::expected<SeekState, PipelineStatus>;
   using SeekCallback = base::OnceCallback<void(SeekResponse)>;
 
   class Engine {

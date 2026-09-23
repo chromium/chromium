@@ -359,7 +359,10 @@ class VideoDecoderStreamTest
   // Callback for VideoDecoderStream::Read().
   void FrameReady(VideoDecoderStream::ReadResult result) {
     DCHECK(pending_read_);
-    last_read_status_code_ = result.code();
+    last_read_status_code_ = DecoderStatus::Codes::kOk;
+    if (!result.has_value()) {
+      last_read_status_code_ = result.error().code();
+    }
     scoped_refptr<VideoFrame> frame =
         last_read_status_code_ == DecoderStatus::Codes::kOk
             ? std::move(result).value()

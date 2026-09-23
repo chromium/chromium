@@ -251,12 +251,12 @@ class DecoderSelectorTest : public ::testing::Test {
     // Report only the type or id of the decoder, since that's what the tests
     // care about. The decoder will be destructed immediately.
     if (decoder.has_value() &&
-        decoder->GetDecoderType() == DecoderType::kTesting) {
+        decoder.value()->GetDecoderType() == DecoderType::kTesting) {
       OnDecoderSelected(
           static_cast<MockDecoder*>(std::move(decoder).value().get())
               ->GetDecoderId());
     } else if (decoder.has_value()) {
-      OnDecoderSelected(decoder->GetDecoderType());
+      OnDecoderSelected(decoder.value()->GetDecoderType());
     } else {
       NoDecoderSelected(std::move(decoder).error().code());
     }
