@@ -1046,6 +1046,185 @@ TEST(AuthenticationCredentialsContainerTest,
             "An allowCredentials is not allowed with immediate mediation.");
 }
 
+TEST(AuthenticationCredentialsContainerTest,
+     WebAuthenticationConditionalMediationWithRemoteClientDataJsonRejected) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationRemoteClientDataJsonForTest webauthn_rcdj(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* request_options = CredentialRequestOptions::Create();
+  request_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  public_key_request_options->setRpId("https://www.example.com");
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setRemoteClientDataJSON("{}");
+  public_key_request_options->setExtensions(extensions);
+  request_options->setPublicKey(public_key_request_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), request_options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotAllowedError");
+  EXPECT_EQ(exception->message(),
+            "Conditional mediation cannot be used with a remoteClientDataJSON "
+            "request.");
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     WebAuthenticationAmbientMediationWithRemoteClientDataJsonRejected) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationAmbientForTest webauthn_ambient(true);
+  ScopedWebAuthenticationRemoteClientDataJsonForTest webauthn_rcdj(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* request_options = CredentialRequestOptions::Create();
+  request_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
+  request_options->setUiMode(V8CredentialUiModeRequirement::Enum::kPassive);
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  public_key_request_options->setRpId("https://www.example.com");
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setRemoteClientDataJSON("{}");
+  public_key_request_options->setExtensions(extensions);
+  request_options->setPublicKey(public_key_request_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), request_options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotAllowedError");
+  EXPECT_EQ(exception->message(),
+            "Conditional mediation cannot be used with a remoteClientDataJSON "
+            "request.");
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     WebAuthenticationUiModeImmediateWithRemoteClientDataJsonRejected) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationRemoteClientDataJsonForTest webauthn_rcdj(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* request_options = CredentialRequestOptions::Create();
+  request_options->setUiMode(V8CredentialUiModeRequirement::Enum::kImmediate);
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  public_key_request_options->setRpId("https://www.example.com");
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setRemoteClientDataJSON("{}");
+  public_key_request_options->setExtensions(extensions);
+  request_options->setPublicKey(public_key_request_options);
+
+  // Provide a user activation so the request is rejected for the
+  // remoteClientDataJSON extension rather than for a missing activation.
+  LocalFrame::NotifyUserActivation(
+      context.DomWindow().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), request_options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotAllowedError");
+  EXPECT_EQ(exception->message(),
+            "Immediate mediation cannot be used with a remoteClientDataJSON "
+            "request.");
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     WebAuthenticationConditionalCreateWithRemoteClientDataJsonRejected) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationRemoteClientDataJsonForTest webauthn_rcdj(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* creation_options = CredentialCreationOptions::Create();
+  creation_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
+  auto* public_key_creation_options =
+      PublicKeyCredentialCreationOptions::Create();
+  auto* rp = PublicKeyCredentialRpEntity::Create();
+  rp->setId("example.test");
+  rp->setName("Example");
+  public_key_creation_options->setRp(rp);
+  auto* user = PublicKeyCredentialUserEntity::Create();
+  user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+  user->setName("user");
+  user->setDisplayName("User");
+  public_key_creation_options->setUser(user);
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_creation_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  auto* extensions = AuthenticationExtensionsClientInputs::Create();
+  extensions->setRemoteClientDataJSON("{}");
+  public_key_creation_options->setExtensions(extensions);
+  creation_options->setPublicKey(public_key_creation_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->create(context.GetScriptState(), creation_options,
+                              IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotAllowedError");
+  EXPECT_EQ(exception->message(),
+            "Conditional mediation cannot be used with a remoteClientDataJSON "
+            "request.");
+}
 TEST(AuthenticationCredentialsContainerTest, PublicKeyCspMetric) {
   test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;

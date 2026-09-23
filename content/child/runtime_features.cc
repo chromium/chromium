@@ -205,6 +205,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebAuthenticationAmbient, device::kWebAuthnAmbientSignin},
           {wf::EnableWebAuthenticationCrossDeviceFallbackUrl,
            device::kWebAuthnCrossDeviceFallbackUrl},
+          {wf::EnableWebAuthenticationRemoteClientDataJson,
+           device::kWebAuthnRemoteClientDataJson},
           {wf::EnableWebBluetooth, features::kWebBluetooth,
            kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothGetDevices,

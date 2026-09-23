@@ -715,6 +715,9 @@ void OnMakePublicKeyCredentialComplete(
     }
     extension_outputs->setPrf(prf_outputs);
   }
+  if (credential->echo_remote_client_data_json) {
+    extension_outputs->setRemoteClientDataJSON(true);
+  }
   resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
       credential->info->id, raw_id, authenticator_response,
       credential->authenticator_attachment, extension_outputs));
@@ -2115,6 +2118,14 @@ AuthenticationCredentialsContainer::create(
     Mediation mediation = Mediation::MODAL;
     if (options->mediation() ==
         V8CredentialMediationRequirement::Enum::kConditional) {
+      if (options->publicKey()->hasExtensions() &&
+          options->publicKey()->extensions()->hasRemoteClientDataJSON()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "Conditional mediation cannot be used with a remoteClientDataJSON "
+            "request."));
+        return promise;
+      }
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalCreate);
       mediation = Mediation::CONDITIONAL;
       mojo_options->is_conditional = true;
@@ -2187,6 +2198,16 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
         MakeGarbageCollected<PublicKeyRequestAbortAlgorithm>(script_state));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
+  if (options->mediation() ==
+          V8CredentialMediationRequirement::Enum::kConditional &&
+      options->hasPublicKey() && options->publicKey()->hasExtensions() &&
+      options->publicKey()->extensions()->hasRemoteClientDataJSON()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Conditional mediation cannot be used with a remoteClientDataJSON "
+        "request."));
+    return;
+  }
 
   Mediation mediation = Mediation::MODAL;
   if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
@@ -2232,6 +2253,14 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "Immediate mediation cannot be used with a remote desktop override "
+          "request."));
+      return;
+    }
+    if (options->hasPublicKey() && options->publicKey()->hasExtensions() &&
+        options->publicKey()->extensions()->hasRemoteClientDataJSON()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Immediate mediation cannot be used with a remoteClientDataJSON "
           "request."));
       return;
     }

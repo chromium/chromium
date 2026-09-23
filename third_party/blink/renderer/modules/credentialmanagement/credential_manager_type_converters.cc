@@ -279,6 +279,9 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
         ConvertTo<blink::AuthenticationExtensionsCmtgKeyOutputs*>(
             extensions->cmtg_key));
   }
+  if (extensions->echo_remote_client_data_json) {
+    extension_outputs->setRemoteClientDataJSON(true);
+  }
   if (extensions->cross_device_fallback_url.has_value()) {
     extension_outputs->setCrossDeviceFallbackUrl(
         *extensions->cross_device_fallback_url);
@@ -748,6 +751,10 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
           RemoteDesktopClientOverride::From(
               *extensions->remoteDesktopClientOverride());
     }
+    if (extensions->hasRemoteClientDataJSON()) {
+      mojo_options->remote_client_data_json =
+          extensions->remoteClientDataJSON();
+    }
     if (extensions->hasPayment() &&
         extensions->payment()->hasBrowserBoundPubKeyCredParams()) {
       mojo_options->payment_browser_bound_key_parameters =
@@ -851,6 +858,9 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
     mojo_inputs->remote_desktop_client_override =
         RemoteDesktopClientOverride::From(
             *inputs.remoteDesktopClientOverride());
+  }
+  if (inputs.hasRemoteClientDataJSON()) {
+    mojo_inputs->remote_client_data_json = inputs.remoteClientDataJSON();
   }
   if (inputs.hasPayment() &&
       inputs.payment()->hasBrowserBoundPubKeyCredParams()) {

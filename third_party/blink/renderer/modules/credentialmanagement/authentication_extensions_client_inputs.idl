@@ -45,6 +45,11 @@ dictionary AuthenticationExtensionsClientInputs {
   // `sameOriginWithAncestors` internal arguments for a request.
   [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
 
+  // Allows a remote desktop client to provide a complete clientDataJSON
+  // for the request, overriding the browser-constructed version.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  [RuntimeEnabled=WebAuthenticationRemoteClientDataJson] DOMString remoteClientDataJSON;
+
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension
   AuthenticationExtensionsPRFInputs prf;

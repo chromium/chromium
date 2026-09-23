@@ -455,6 +455,35 @@ TEST(CredentialManagerTypeConvertersTest,
           &*expected->origin));
 }
 
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientInputsTest_remoteClientDataJSON) {
+  blink::AuthenticationExtensionsClientInputs* blink_type =
+      blink::AuthenticationExtensionsClientInputs::Create();
+  const char kTestJson[] =
+      R"({"type":"webauthn.get","challenge":"dGVzdA","origin":"https://example.com","crossOrigin":false})";
+  blink_type->setRemoteClientDataJSON(kTestJson);
+
+  blink::mojom::blink::AuthenticationExtensionsClientInputsPtr mojo_type =
+      ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
+          *blink_type);
+
+  ASSERT_EQ(mojo_type->remote_client_data_json, kTestJson);
+}
+
+// When `remoteClientDataJSON` is not set, the Mojo field must be null.
+TEST(CredentialManagerTypeConvertersTest,
+     AuthenticationExtensionsClientInputsTest_remoteClientDataJSONUnset) {
+  blink::AuthenticationExtensionsClientInputs* blink_type =
+      blink::AuthenticationExtensionsClientInputs::Create();
+  // Note: `setRemoteClientDataJSON` not called.
+
+  blink::mojom::blink::AuthenticationExtensionsClientInputsPtr mojo_type =
+      ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
+          *blink_type);
+
+  EXPECT_TRUE(mojo_type->remote_client_data_json.IsNull());
+}
+
 static ::testing::Matcher<const mojo::InlinedStructPtr<
     blink::mojom::blink::PublicKeyCredentialParameters>>
 EqPublicKeyCredentialParameters(blink::mojom::PublicKeyCredentialType type,

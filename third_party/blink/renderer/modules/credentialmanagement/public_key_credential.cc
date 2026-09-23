@@ -91,6 +91,10 @@ void OnGetClientCapabilitiesComplete(
       "extension:crossDeviceFallbackUrl",
       RuntimeEnabledFeatures::WebAuthenticationCrossDeviceFallbackUrlEnabled(
           resolver->GetExecutionContext()));
+  if (RuntimeEnabledFeatures::WebAuthenticationRemoteClientDataJsonEnabled(
+          resolver->GetExecutionContext())) {
+    results.emplace_back("extension:remoteClientDataJSON", true);
+  }
 
   // Results should be sorted lexicographically based on the keys.
   std::sort(

@@ -38,4 +38,8 @@ dictionary AuthenticationExtensionsClientOutputs {
   // Cross-device fallback URL support.
   // https://github.com/w3c/webauthn/pull/2380
   [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] boolean crossDeviceFallbackUrl;
+
+  // RemoteClientDataJSON extension for remote desktop clients.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  [RuntimeEnabled=WebAuthenticationRemoteClientDataJson] boolean remoteClientDataJSON;
 };

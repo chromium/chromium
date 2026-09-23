@@ -717,6 +717,7 @@ struct ExtensionsClientOutputsValues {
   std::optional<Vector<uint8_t>> cmtg_key_data;
   std::optional<Vector<uint8_t>> cmtg_key_sig;
   std::optional<bool> cross_device_fallback_url;
+  std::optional<bool> remote_client_data_json;
 };
 
 AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
@@ -781,6 +782,9 @@ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
   }
   if (in.cross_device_fallback_url) {
     extensions->setCrossDeviceFallbackUrl(*in.cross_device_fallback_url);
+  }
+  if (in.remote_client_data_json) {
+    extensions->setRemoteClientDataJSON(*in.remote_client_data_json);
   }
   return extensions;
 }
@@ -864,6 +868,13 @@ void ExpectExtensionsJSONMatch(
               *values.cross_device_fallback_url);
   } else {
     EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
+  }
+  if (values.remote_client_data_json) {
+    ASSERT_TRUE(extensions.hasRemoteClientDataJSON());
+    EXPECT_EQ(extensions.remoteClientDataJSON(),
+              *values.remote_client_data_json);
+  } else {
+    EXPECT_FALSE(extensions.hasRemoteClientDataJSON());
   }
   if (values.prf_eval) {
     ASSERT_TRUE(extensions.hasPrf());
@@ -952,6 +963,8 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
       {.cred_blob = false},
       {.cross_device_fallback_url = true},
       {.cross_device_fallback_url = false},
+      {.remote_client_data_json = true},
+      {.remote_client_data_json = false},
       {.prf_eval =
            PRFEvalValues{
                .enabled = true,

@@ -6930,6 +6930,15 @@
       base_feature: "none",
       public: true,
     },
+    // Lets an authorized remote desktop client supply the clientDataJSON for a
+    // WebAuthn request. Can be enabled only in conjunction with
+    // the device::kWebAuthnRemoteClientDataJson base::Feature.
+    // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+    {
+      name: "WebAuthenticationRemoteClientDataJson",
+      base_feature: "none",
+      public: true,
+    },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
