@@ -111,6 +111,7 @@ enum class ItemIdentifier {
       [[UISearchController alloc] initWithSearchResultsController:nil];
   _searchController.obscuresBackgroundDuringPresentation = NO;
   _searchController.hidesNavigationBarDuringPresentation = NO;
+  _searchController.automaticallyShowsCancelButton = NO;
   _searchController.searchResultsUpdater = self;
   _searchController.searchBar.delegate = self;
   _searchController.searchBar.accessibilityIdentifier =
