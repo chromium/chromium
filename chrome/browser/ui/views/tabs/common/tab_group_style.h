@@ -27,6 +27,9 @@ class TabGroupStyle {
   // Returns the horizontal padding between adjacent tab group headers when
   // collapsed.
   static int GetPaddingBetweenCollapsedHeaders();
+  // Returns the leading padding for a tab group header when it is the first
+  // item in the tab strip.
+  static int GetLeadingGroupHeaderPadding();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_STYLE_H_

@@ -165,6 +165,13 @@ int GetChildOverlap(const views::View* prev_child,
   return tab_overlap;
 }
 
+int GetLeadingChildPadding(const views::View* child) {
+  if (child && views::IsViewClass<TabGroupView>(child)) {
+    return TabGroupStyle::GetLeadingGroupHeaderPadding();
+  }
+  return 0;
+}
+
 TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
     TabCollectionNode::ChildViews children,
     int container_height,
@@ -188,7 +195,9 @@ TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
         .min_width = min_width,
     });
 
-    if (collection.visible_children.size() > 1) {
+    if (collection.visible_children.size() == 1) {
+      collection.leading_padding = GetLeadingChildPadding(child);
+    } else {
       const size_t idx = collection.visible_children.size() - 1;
       collection.overlap_total +=
           GetChildOverlap(collection.visible_children[idx - 1].view,

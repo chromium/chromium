@@ -847,5 +847,57 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
             expected_padding);
 }
 
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       FirstGroupHeaderPaddingWithPinnedTab) {
+  // Tabs layout:
+  // Tab 0: Pinned tab
+  // Tab 1, 2: Group 1
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_NE(base_region_view, nullptr);
+
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  ASSERT_NE(tab_strip_view, nullptr);
+
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // In the unpinned container, group view is the first child and starts at
+  // TabGroupStyle::GetLeadingGroupHeaderPadding().
+  EXPECT_EQ(group_view->bounds().x(),
+            TabGroupStyle::GetLeadingGroupHeaderPadding());
+
+  auto* pinned_node =
+      root_node()->GetChildNodeOfType(TabCollectionNode::Type::PINNED);
+  ASSERT_NE(pinned_node, nullptr);
+  ASSERT_GE(pinned_node->children().size(), 1u);
+  auto* pinned_tab_view =
+      views::AsViewClass<TabView>(pinned_node->children()[0]->view());
+  ASSERT_NE(pinned_tab_view, nullptr);
+
+  auto* header_view = group_view->group_header();
+  ASSERT_NE(header_view, nullptr);
+
+  // Visually, the header overlaps the pinned tab by
+  // TabGroupStyle::GetTabGroupOverlapAdjustment() (2 DIPs).
+  const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+  EXPECT_EQ(pinned_tab_view->GetBoundsInScreen().right() -
+                header_view->GetBoundsInScreen().x(),
+            header_overlap);
+}
+
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group
 // Header w/ Editor Bubble Button.

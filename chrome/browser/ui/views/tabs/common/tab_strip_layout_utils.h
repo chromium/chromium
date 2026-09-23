@@ -35,6 +35,7 @@ struct TabStripCollectionLayoutInfo {
   int total_crossover_width = 0;
   int total_min_width = 0;
   int overlap_total = 0;
+  int leading_padding = 0;
 };
 
 using ChildVisibilityCallback =
@@ -70,6 +71,10 @@ int GetChildCrossoverWidth(const views::View* child);
 // Returns the horizontal overlap between `prev_child` and `next_child`.
 int GetChildOverlap(const views::View* prev_child,
                     const views::View* next_child);
+
+// Returns the leading padding for `child` when it is the first visible child in
+// a tab strip container.
+int GetLeadingChildPadding(const views::View* child);
 
 // Measures preferred, crossover, and minimum widths and accumulates total
 // layout info for all visible, non-hidden children matching `is_child_visible`.

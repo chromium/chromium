@@ -45,7 +45,7 @@ gfx::Point TabGroupStyle::GetTitleChipOffset(std::optional<int> text_height) {
   const int total_space =
       GetLayoutConstant(LayoutConstant::kTabStripHeight) - GetEmptyChipSize() -
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
-  return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
+  return gfx::Point(GetLeadingGroupHeaderPadding(), total_space / 2);
 }
 
 // static
@@ -59,4 +59,9 @@ gfx::Insets TabGroupStyle::GetInsetsForHeaderChip(
 // static
 int TabGroupStyle::GetPaddingBetweenCollapsedHeaders() {
   return TabStyle::Get()->GetTabOverlap() - 2 * GetTabGroupOverlapAdjustment();
+}
+
+// static
+int TabGroupStyle::GetLeadingGroupHeaderPadding() {
+  return TabStyle::Get()->GetTabOverlap() - GetTabGroupOverlapAdjustment();
 }

@@ -78,8 +78,12 @@ int UnpinnedTabContainerViewLayout::GetUnconstrainedPreferredWidth(
       base::BindRepeating(
           &UnpinnedTabContainerViewLayout::IsChildVisibleInContainer,
           base::Unretained(this), host, focused_group_id));
-  int unconstrained_width =
-      collection.total_preferred_width - collection.overlap_total;
+  if (collection.visible_children.empty()) {
+    return 0;
+  }
+  int unconstrained_width = collection.leading_padding +
+                            collection.total_preferred_width -
+                            collection.overlap_total;
   // If a tab is being dragged, expand the unconstrained preferred width to
   // accommodate the dragged tab's position. This allows TabStripView and parent
   // layouts to allocate space for the drag.
@@ -121,8 +125,10 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     return layouts;
   }
 
-  int available_width =
-      collection.total_preferred_width - collection.overlap_total;
+  const int net_preferred_width = collection.leading_padding +
+                                  collection.total_preferred_width -
+                                  collection.overlap_total;
+  int available_width = net_preferred_width;
   // If in tab closing mode, constrain the available width to the locked
   // override so remaining tabs do not expand under the cursor.
   if (std::optional<int> override_width =
@@ -140,15 +146,18 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     available_width = std::min(size_bounds.width().value(), available_width);
   }
 
-  int computed_width =
-      collection.total_preferred_width - collection.overlap_total;
+  const int min_layout_width = collection.leading_padding +
+                               collection.total_min_width -
+                               collection.overlap_total;
+  int computed_width = net_preferred_width;
   if (available_width > 0) {
-    computed_width = std::clamp(
-        available_width, collection.total_min_width - collection.overlap_total,
-        collection.total_preferred_width - collection.overlap_total);
+    computed_width =
+        std::clamp(available_width, min_layout_width, net_preferred_width);
   }
 
-  int available_for_allocation = computed_width + collection.overlap_total;
+  int available_for_allocation =
+      std::max(0, computed_width - collection.leading_padding) +
+      collection.overlap_total;
   std::vector<int> allocated_widths = CalculateProportionalChildWidths(
       available_for_allocation, collection.preferred_widths,
       collection.crossover_widths, collection.min_widths,
@@ -171,7 +180,7 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
   }
 
   const int host_width = std::max(computed_width, dragged_view_right);
-  int x = 0;
+  int x = collection.leading_padding;
   size_t visible_index = 0;
 
   for (views::View* child : children) {
@@ -320,12 +329,16 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
       visible_children.push_back(child);
     }
   }
+  if (visible_children.empty()) {
+    return gfx::Size();
+  }
   int overlap_total = 0;
   for (size_t i = 0; i + 1 < visible_children.size(); ++i) {
     overlap_total +=
         GetChildOverlap(visible_children[i], visible_children[i + 1]);
   }
-  min_width = std::max(0, min_width - overlap_total);
+  const int leading_padding = GetLeadingChildPadding(visible_children.front());
+  min_width = std::max(0, leading_padding + min_width - overlap_total);
 
   return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
 }
