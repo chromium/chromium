@@ -81,6 +81,8 @@ export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, co
 export {VoiceLanguageModel} from './read_aloud/voice_language_model.js';
 export type {BuildVoiceDropdownGroupsParams, BuildVoiceDropdownGroupsResult, VoiceDropdownGroup, VoiceDropdownItem} from './read_aloud/voice_menu_display.js';
 export {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceTitle, isVoicePreviewSpinning, stringToHtmlTestId, voiceQualityRankComparator} from './read_aloud/voice_menu_display.js';
+export type {VoiceNatureNaming} from './read_aloud/voice_nature_naming.js';
+export {getVoiceNatureNaming, VOICE_NATURE_NAMING_BY_LOCALE} from './read_aloud/voice_nature_naming.js';
 export type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
 export {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 export {VoiceSelectionDialogElement} from './read_aloud/voice_selection_dialog.js';

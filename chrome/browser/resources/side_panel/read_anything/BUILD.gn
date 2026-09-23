@@ -92,6 +92,7 @@ build_webui("build") {
     "read_aloud/voice_language_conversions.ts",
     "read_aloud/voice_language_model.ts",
     "read_aloud/voice_menu_display.ts",
+    "read_aloud/voice_nature_naming.ts",
     "read_aloud/voice_notification_manager.ts",
     "read_aloud/voice_selection_dialog.html.ts",
     "read_aloud/voice_selection_dialog.ts",

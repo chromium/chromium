@@ -170,6 +170,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceMenuDisplay) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceNatureNaming) {
+  RunSidePanelTest("side_panel/read_anything/voice_nature_naming_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, KeyboardUtil) {
   RunSidePanelTest("side_panel/read_anything/keyboard_util_test.js",
                    "mocha.run()");

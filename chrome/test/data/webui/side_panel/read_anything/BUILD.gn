@@ -75,6 +75,7 @@ build_webui_tests("build") {
     "voice_language_conversions_test.ts",
     "voice_language_model_test.ts",
     "voice_menu_display_test.ts",
+    "voice_nature_naming_test.ts",
     "voice_notification_manager_test.ts",
     "voice_selection_dialog_test.ts",
     "voice_selection_menu_test.ts",
