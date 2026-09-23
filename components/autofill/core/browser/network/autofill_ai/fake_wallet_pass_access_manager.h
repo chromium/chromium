@@ -8,7 +8,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -43,6 +45,7 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
   void GetUnmaskedWalletEntityInstance(
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
+  void PreloadDetailsForUpsertPass(EntityType entity_type) override;
   void GetDetailsForUpsertPass(
       EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) override;
@@ -57,6 +60,12 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
   // Chrome-upserted passes to their upserted unmasked value.
   absl::flat_hash_map<EntityInstance::EntityId, EntityInstance>
       fake_entities_cache_;
+
+  // Cache to store preloaded details for upserting passes.
+  // Populated by `PreloadDetailsForUpsertPass` and consumed on read by
+  // `GetDetailsForUpsertPass`.
+  absl::flat_hash_map<EntityType, GetDetailsForUpsertPassResponse>
+      fake_upsert_details_cache_;
 
   const raw_ref<EntityDataManager> data_manager_;
   base::WeakPtrFactory<FakeWalletPassAccessManager> weak_ptr_factory_{this};

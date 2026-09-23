@@ -77,9 +77,25 @@ class WalletPassAccessManager : public KeyedService {
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) = 0;
 
+  // Pre-fetches the legal disclosure messages and context token for
+  // `entity_type` in the background (typically called when entering an
+  // add settings flow) and populates an internal cache so that a subsequent
+  // call to `GetDetailsForUpsertPass` resolves immediately. If a request is
+  // already in flight or cached, this is a no-op.
+  virtual void PreloadDetailsForUpsertPass(EntityType entity_type) = 0;
+
   // Issues a `GetDetailsForUpsertPass` request to the Wallet backend to fetch
   // legal disclosure messages and a context token for audit logging prior to
   // upserting a public non-readonly pass of type `entity_type`.
+  //
+  // If cached details are available from a previous
+  // `PreloadDetailsForUpsertPass` call, the cached entry is consumed and
+  // `callback` is invoked immediately.
+  //
+  // If no cached details are present, a network request is dispatched to the
+  // Wallet backend, and the resulting token is handed directly to `callback`
+  // without being retained in the cache. If a background preload is already in
+  // flight, this request runs concurrently to obtain its own dedicated token.
   virtual void GetDetailsForUpsertPass(
       EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) = 0;

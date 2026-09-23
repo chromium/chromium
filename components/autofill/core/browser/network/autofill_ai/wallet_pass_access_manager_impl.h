@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -16,10 +17,12 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace wallet {
 class PrivatePass;
@@ -52,6 +55,7 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   void GetUnmaskedWalletEntityInstance(
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
+  void PreloadDetailsForUpsertPass(EntityType entity_type) override;
   void GetDetailsForUpsertPass(
       EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) override;
@@ -85,6 +89,18 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   // task that clears the cache entry again.
   void CacheUnmaskResult(EntityInstance entity);
 
+  // Helper to make the HTTP request via `http_client_` and transform the
+  // response to `GetDetailsForUpsertPassResponse`.
+  void FetchDetailsForUpsertPass(wallet::WalletHttpClient::PassType pass_type,
+                                 GetDetailsForUpsertPassCallback callback);
+
+  // Invoked when an asynchronous background preload request completes.
+  // Stores the successful response in `upsert_details_cache_`.
+  void OnPreloadDetailsForUpsertPassComplete(
+      wallet::WalletHttpClient::PassType pass_type,
+      base::expected<GetDetailsForUpsertPassResponse,
+                     wallet::WalletHttpClient::WalletRequestError> response);
+
   const std::unique_ptr<wallet::WalletHttpClient> http_client_;
   const raw_ref<EntityDataManager> data_manager_;
 
@@ -93,6 +109,20 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   // if the corresponding entity is changed.
   absl::flat_hash_map<EntityInstance::EntityId, EntityInstance>
       unmasked_entity_cache_;
+
+  // Cache of preloaded details for upserting passes.
+  // Entries are populated by `PreloadDetailsForUpsertPass` and consumed on
+  // read via `GetDetailsForUpsertPass` because Google Wallet `context_token`s
+  // are single-use. Because tokens and disclosure lines validate user consent
+  // for a given pass type and do not depend on client-side entity instances,
+  // entries are not affected by entity data changes.
+  absl::flat_hash_map<wallet::WalletHttpClient::PassType,
+                      GetDetailsForUpsertPassResponse>
+      upsert_details_cache_;
+
+  // Set of pass types with active in-flight background preloads to prevent
+  // duplicate network requests.
+  absl::flat_hash_set<wallet::WalletHttpClient::PassType> in_flight_preloads_;
 
   base::ScopedObservation<EntityDataManager, EntityDataManager::Observer>
       data_manager_observer_{this};
