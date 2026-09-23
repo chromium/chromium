@@ -45,7 +45,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
  * The appid is dependent on the variant of Chrome that is running.
  */
 @NullMarked
-public class ResponseParser {
+class ResponseParser {
     private static final String TAG = "ResponseParser";
 
     // Tags that we care to parse from the response.

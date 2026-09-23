@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /** Delegates calls out from the OmahaClient. */
 @NullMarked
-public abstract class OmahaDelegateBase extends OmahaDelegate {
+abstract class OmahaDelegateBase extends OmahaDelegate {
     private final ExponentialBackoffScheduler mScheduler;
 
     OmahaDelegateBase() {

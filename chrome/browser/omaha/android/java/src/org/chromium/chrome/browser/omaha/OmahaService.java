@@ -63,8 +63,8 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     }
 
     /**
-     * Trigger the {@link BackgroundTaskScheduler} immediately.
-     * Must only be called by {@link OmahaBase#onForegroundSessionStart}.
+     * Trigger the {@link BackgroundTaskScheduler} immediately. Must only be called by {@link
+     * OmahaBase#onForegroundSessionStart}.
      */
     static void startServiceImmediately() {
         if (sHasPendingJob) return;
@@ -108,6 +108,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
     /**
      * Schedules the Omaha code to run at the given time.
+     *
      * @param delayMs How long to wait until the job should be triggered.
      */
     static boolean scheduleJobService(long delayMs) {

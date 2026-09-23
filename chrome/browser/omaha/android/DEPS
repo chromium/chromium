@@ -1,4 +1,7 @@
 include_rules = [
+  "+components/background_task_scheduler",
+  "+components/embedder_support/android",
   "+content/public/android",
+  "+net/android",
   "+ui/android",
 ]

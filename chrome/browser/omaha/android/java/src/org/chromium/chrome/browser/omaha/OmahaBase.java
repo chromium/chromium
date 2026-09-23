@@ -154,6 +154,7 @@ public class OmahaBase {
 
     /**
      * Constructs a new OmahaBase.
+     *
      * @param delegate The {@link OmahaDelegate} used to interact with the system.
      */
     OmahaBase(OmahaDelegate delegate) {
@@ -162,6 +163,7 @@ public class OmahaBase {
 
     /**
      * Synchronously checks for updates.
+     *
      * @return UpdateStatus enum value corresponding to the update state.
      */
     public @UpdateStatus int checkForUpdates() {
@@ -243,7 +245,7 @@ public class OmahaBase {
     }
 
     /**
-     * Determines if a new request should be generated.  New requests are only generated if enough
+     * Determines if a new request should be generated. New requests are only generated if enough
      * time has passed between now and the last time a request was generated.
      */
     private void handleRegisterActiveRequest() {
@@ -375,8 +377,9 @@ public class OmahaBase {
     }
 
     /**
-     * Registers a new request with the current timestamp.  Internal timestamps are reset to start
+     * Registers a new request with the current timestamp. Internal timestamps are reset to start
      * fresh.
+     *
      * @param currentTimestamp Current time.
      */
     private void registerNewRequest(long currentTimestamp) {
@@ -417,6 +420,7 @@ public class OmahaBase {
 
     /**
      * Posts the request to the Omaha server.
+     *
      * @return the XML response as a String.
      * @throws RequestFailureException if the request fails.
      */
@@ -459,6 +463,19 @@ public class OmahaBase {
                             'communication. '
                             'A unique identifier for the device may be transmitted.'
                           destination: GOOGLE_OWNED_SERVICE
+                          internal {
+                            contacts {
+                              email: "clank-dev@google.com"
+                            }
+                            contacts {
+                              email: "wylieb@chromium.org"
+                            }
+                          }
+                          user_data {
+                            type: HW_OS_INFO
+                            type: DEVICE_ID
+                          }
+                          last_reviewed: "2026-09-22"
                         }
                         policy {
                           cookies_allowed: NO
@@ -482,7 +499,7 @@ public class OmahaBase {
     }
 
     /**
-     * Reads the data back from the file it was saved to.  Uses SharedPreferences to handle I/O.
+     * Reads the data back from the file it was saved to. Uses SharedPreferences to handle I/O.
      * Validity checks are performed on the timestamps to guard against clock changing.
      */
     private void restoreState() {

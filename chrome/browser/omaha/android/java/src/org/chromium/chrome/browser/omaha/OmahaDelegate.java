@@ -10,7 +10,7 @@ import org.chromium.chrome.browser.omaha.OmahaBase.PostResult;
 
 /** Delegates calls out from {@link OmahaBase}. */
 @NullMarked
-public abstract class OmahaDelegate {
+abstract class OmahaDelegate {
     private @Nullable RequestGenerator mRequestGenerator;
 
     OmahaDelegate() {}
@@ -33,7 +33,9 @@ public abstract class OmahaDelegate {
         return mRequestGenerator;
     }
 
-    /** @return A UUID that can be used to identify particular requests. */
+    /**
+     * @return A UUID that can be used to identify particular requests.
+     */
     abstract String generateUUID();
 
     /** Determine whether or not Chrome is currently being used actively. */
@@ -41,8 +43,9 @@ public abstract class OmahaDelegate {
 
     /**
      * Schedules the Omaha client to run again.
+     *
      * @param currentTimestampMs Current time.
-     * @param nextTimestampMs    When the service should be run again.
+     * @param nextTimestampMs When the service should be run again.
      */
     abstract void scheduleService(long currentTimestampMs, long nextTimestampMs);
 
@@ -59,21 +62,24 @@ public abstract class OmahaDelegate {
 
     /**
      * Called when {@link OmahaBase#handlePostRequest} finishes.
-     * @param result              See {@link PostResult}.
+     *
+     * @param result See {@link PostResult}.
      * @param installEventWasSent Whether or not an install event was sent.
      */
     void onHandlePostRequestDone(@PostResult int result, boolean installEventWasSent) {}
 
     /**
      * Called when {@link OmahaBase#generateAndPostRequest} finishes.
+     *
      * @param succeeded Whether or not the post was successfully received by the server.
      */
     void onGenerateAndPostRequestDone(boolean succeeded) {}
 
     /**
      * Called when {@link OmahaBase#saveState} finishes.
+     *
      * @param timestampRequestMs When the next active user request should be generated.
-     * @param timestampPostMs    Earliest time the next POST should be allowed.
+     * @param timestampPostMs Earliest time the next POST should be allowed.
      */
     void onSaveStateDone(long timestampRequestMs, long timestampPostMs) {}
 }

@@ -35,9 +35,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 @NullMarked
 public class ExponentialBackoffScheduler {
-    // TODO(crbug.com/40150188): remove and use OmahaBase.TAG when OmahaBase.java is modularized.
-    // Used in various org.chromium.chrome.browser.omaha files.
-    static final String TAG = "omaha";
 
     private static final String PREFERENCE_DELAY = "delay";
     private static final String PREFERENCE_FAILED_ATTEMPTS = "backoffFailedAttempts";
