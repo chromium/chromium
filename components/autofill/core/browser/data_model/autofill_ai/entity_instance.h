@@ -334,9 +334,15 @@ class EntityInstance final {
 
     // Captures the provenance of an entity (e.g., its product source and URL).
     struct Source {
+      // These values are persisted to logs. Entries should not be renumbered
+      // and numeric values should never be reused.
+      // GENERATED_JAVA_ENUM_PACKAGE: (
+      //   org.chromium.components.autofill.autofill_ai)
+      // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SourceType
       enum class Type {
-        kGmail,
-        kPhotos,
+        kGmail = 0,
+        kPhotos = 1,
+        kMaxValue = kPhotos,
       };
 
       GURL url;

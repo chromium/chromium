@@ -100,6 +100,31 @@ TEST_F(AutofillEntityInstanceTest, MaskedPersonalContextEntity) {
   EXPECT_FALSE(entity.IsUnmaskedEntity());
 }
 
+TEST_F(AutofillEntityInstanceTest, PersonalContextSource) {
+  using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
+  using GmailSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+  using PhotosSourceMetadata =
+      EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
+
+  base::Time kTestTime = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  Source gmail_source{
+      .url = GURL("https://mail.google.com"),
+      .metadata = GmailSourceMetadata{.title = "Flight confirmation"},
+  };
+  EXPECT_EQ(gmail_source.type(), Source::Type::kGmail);
+  EXPECT_EQ(std::get<GmailSourceMetadata>(gmail_source.metadata).title,
+            "Flight confirmation");
+
+  Source photos_source{
+      .url = GURL("https://photos.google.com"),
+      .metadata = PhotosSourceMetadata{.timestamp = kTestTime},
+  };
+  EXPECT_EQ(photos_source.type(), Source::Type::kPhotos);
+  EXPECT_EQ(std::get<PhotosSourceMetadata>(photos_source.metadata).timestamp,
+            kTestTime);
+}
+
 TEST_F(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedEntity) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
