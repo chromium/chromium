@@ -27,6 +27,14 @@
 
 namespace blink {
 
+namespace {
+
+constexpr char kContextDestroyedErrorMessage[] =
+    "The directory handle is no longer associated with an active execution "
+    "context.";
+
+}  // namespace
+
 class FileSystemDirectoryHandle::IterationSource final
     : public PairAsyncIterable<FileSystemDirectoryHandle>::IterationSource,
       public ExecutionContextClient,
@@ -139,8 +147,8 @@ ScriptPromise<FileSystemFileHandle> FileSystemDirectoryHandle::getFileHandle(
     const FileSystemGetFileOptions* options,
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
-    // TODO(crbug.com/1293949): Add an error message.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kContextDestroyedErrorMessage);
     return EmptyPromise();
   }
 
@@ -182,8 +190,8 @@ FileSystemDirectoryHandle::getDirectoryHandle(
     const FileSystemGetDirectoryOptions* options,
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
-    // TODO(crbug.com/1293949): Add an error message.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kContextDestroyedErrorMessage);
     return EmptyPromise();
   }
 
@@ -224,8 +232,8 @@ ScriptPromise<IDLUndefined> FileSystemDirectoryHandle::removeEntry(
     const FileSystemRemoveOptions* options,
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
-    // TODO(crbug.com/1293949): Add an error message.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kContextDestroyedErrorMessage);
     return EmptyPromise();
   }
 
@@ -254,8 +262,8 @@ FileSystemDirectoryHandle::resolve(ScriptState* script_state,
                                    FileSystemHandle* possible_child,
                                    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
-    // TODO(crbug.com/1293949): Add an error message.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kContextDestroyedErrorMessage);
     return ScriptPromise<IDLNullable<IDLSequence<IDLUSVString>>>();
   }
 

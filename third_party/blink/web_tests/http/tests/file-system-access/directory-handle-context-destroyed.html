@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Directory handle errors after context destruction</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+for (const method of
+     ['getFileHandle', 'getDirectoryHandle', 'removeEntry', 'resolve']) {
+  promise_test(async t => {
+    const frame = document.body.appendChild(document.createElement('iframe'));
+    t.add_cleanup(() => frame.remove());
+    const directory = await frame.contentWindow.navigator.storage.getDirectory();
+    frame.remove();
+
+    // Call from the live context using the handle from the destroyed context.
+    const argument = method === 'resolve' ? directory : 'entry';
+    const promise =
+        FileSystemDirectoryHandle.prototype[method].call(directory, argument);
+    await promise_rejects_dom(t, 'InvalidStateError', promise);
+    await promise.catch(error => {
+      assert_equals(
+          error.message,
+          `Failed to execute '${method}' on 'FileSystemDirectoryHandle': ` +
+              'The directory handle is no longer associated with an active ' +
+              'execution context.');
+    });
+  }, `${method}() rejects with a descriptive error after context destruction`);
+}
+</script>
