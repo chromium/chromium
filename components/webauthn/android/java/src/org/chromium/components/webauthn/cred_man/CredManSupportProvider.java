@@ -58,25 +58,8 @@ public class CredManSupportProvider {
         if (sCredManSupport != CredManSupport.NOT_EVALUATED) {
             return sCredManSupport;
         }
-        if (WebauthnFeatureMap.getInstance()
-                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV)) {
-            String mode =
-                    WebauthnFeatureMap.getInstance()
-                            .getFieldTrialParamByFeature(
-                                    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV, "mode");
-            if (mode.equals("full")) {
-                sCredManSupport = CredManSupport.FULL_UNLESS_INAPPLICABLE;
-                log(TAG, "Support is %d due to dev flag", sCredManSupport);
-                return sCredManSupport;
-            } else if (mode.equals("parallel")) {
-                sCredManSupport = CredManSupport.PARALLEL_WITH_FIDO_2;
-                log(TAG, "Support is %d due to dev flag", sCredManSupport);
-                return sCredManSupport;
-            } else if (mode.equals("disabled")) {
-                sCredManSupport = CredManSupport.DISABLED;
-                log(TAG, "Support is %d due to dev flag", sCredManSupport);
-                return sCredManSupport;
-            }
+        if (maybeApplyCredManSupportFromDevFlag()) {
+            return sCredManSupport;
         }
         if (getAndroidVersion() < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             sCredManSupport = CredManSupport.DISABLED;
@@ -122,6 +105,9 @@ public class CredManSupportProvider {
         if (sCredManSupport != CredManSupport.NOT_EVALUATED) {
             return sCredManSupport;
         }
+        if (maybeApplyCredManSupportFromDevFlag()) {
+            return sCredManSupport;
+        }
         if (getAndroidVersion() < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             sCredManSupport = CredManSupport.DISABLED;
             return sCredManSupport;
@@ -134,6 +120,28 @@ public class CredManSupportProvider {
         }
         sCredManSupport = CredManSupport.FULL_UNLESS_INAPPLICABLE;
         return sCredManSupport;
+    }
+
+    private static boolean maybeApplyCredManSupportFromDevFlag() {
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV)) {
+            String mode =
+                    WebauthnFeatureMap.getInstance()
+                            .getFieldTrialParamByFeature(
+                                    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV, "mode");
+            if (mode.equals("full")) {
+                sCredManSupport = CredManSupport.FULL_UNLESS_INAPPLICABLE;
+            } else if (mode.equals("parallel")) {
+                sCredManSupport = CredManSupport.PARALLEL_WITH_FIDO_2;
+            } else if (mode.equals("disabled")) {
+                sCredManSupport = CredManSupport.DISABLED;
+            }
+            if (sCredManSupport != CredManSupport.NOT_EVALUATED) {
+                log(TAG, "Support is %d due to dev flag", sCredManSupport);
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void recordCredManAvailability(boolean available) {
