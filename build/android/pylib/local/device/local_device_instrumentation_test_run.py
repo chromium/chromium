@@ -142,7 +142,6 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x64 emulator.
     'sdk_gphone64_x86_64': [32, 36],
-    'Pixel Desktop': [37],
 }
 
 _BATCH_SUFFIX = '_batch'
