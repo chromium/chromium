@@ -3919,6 +3919,7 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
 }
 
 void LayoutBox::MutableForPainting::SavePreviousGapGeometries() {
+  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   auto* previous_gap_geometries =
       MakeGarbageCollected<GCedHeapVector<Member<const GapGeometry>>>();
   for (const PhysicalBoxFragment& fragment :
@@ -3930,6 +3931,7 @@ void LayoutBox::MutableForPainting::SavePreviousGapGeometries() {
 }
 
 void LayoutBox::MutableForPainting::ClearPreviousGapGeometries() {
+  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   if (auto* rare_data = GetLayoutBox().rare_data_.Get()) {
     rare_data->previous_gap_geometries_ = nullptr;
   }

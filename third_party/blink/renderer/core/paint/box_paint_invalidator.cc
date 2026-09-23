@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -467,6 +468,7 @@ bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
 }
 
 bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
+  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   if (!box_.StyleRef().IsGapDecorationsContainer() ||
       !box_.StyleRef().HasGapRule()) {
     return false;
@@ -482,6 +484,30 @@ bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
 bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {
   if (!box_.StyleRef().IsGapDecorationsContainer() ||
       !box_.StyleRef().HasGapRule()) {
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+    if (!box_.HavePhysicalFragmentsChanged()) {
+      return false;
+    }
+
+    const auto& previous_fragments = box_.PreviousPhysicalFragments();
+    auto fragments = box_.PhysicalFragments();
+    if (previous_fragments.size() != fragments.size()) {
+      return true;
+    }
+
+    for (const auto [previous_fragment, fragment] :
+         std::views::zip(previous_fragments, fragments)) {
+      if (&previous_fragment == &fragment) {
+        continue;
+      }
+      if (!base::ValuesEquivalent(previous_fragment.GetGapGeometry(),
+                                  fragment.GetGapGeometry())) {
+        return true;
+      }
+    }
     return false;
   }
 
@@ -532,10 +558,12 @@ void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   else
     mutable_box.ClearPreviousContentBoxRect();
 
-  if (NeedsToSavePreviousGapGeometries()) {
-    mutable_box.SavePreviousGapGeometries();
-  } else {
-    mutable_box.ClearPreviousGapGeometries();
+  if (!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+    if (NeedsToSavePreviousGapGeometries()) {
+      mutable_box.SavePreviousGapGeometries();
+    } else {
+      mutable_box.ClearPreviousGapGeometries();
+    }
   }
 }
 

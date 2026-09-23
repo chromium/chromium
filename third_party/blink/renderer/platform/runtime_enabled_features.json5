@@ -4920,6 +4920,10 @@
       status: "stable",
     },
     {
+      name: "PrePaintBoxInvalidatorUsesFragments",
+      status: "stable",
+    },
+    {
       // Used to allow chrome://flags to turn off prerendering. (Without using
       // the user-facing preloading settings page to turn off other
       // preloading.) See https://crbug.com/1494471.
