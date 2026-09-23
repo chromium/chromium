@@ -230,3 +230,36 @@
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
+
+:host([small-loomnibox]) .chin-container {
+  gap: 12px;
+  height: 72px;
+  min-height: 72px;
+  padding: 16px;
+}
+
+:host([small-loomnibox]) .left-section {
+  flex: 1;
+}
+
+:host([small-loomnibox]) .text-container {
+  flex: 1;
+}
+
+:host([small-loomnibox]) .dropdown-wrapper,
+:host([small-loomnibox]) .hotkey-container {
+  flex-shrink: 0;
+}
+
+:host([small-loomnibox]) .to-search-label,
+:host([small-loomnibox]) .change-shortcut-label {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+:host([small-loomnibox]) .to-search-label {
+  flex: 1;
+  min-width: 0;
+}
+
