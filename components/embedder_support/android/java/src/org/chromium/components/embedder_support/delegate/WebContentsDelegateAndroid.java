@@ -71,6 +71,9 @@ public class WebContentsDelegateAndroid {
             int disposition,
             boolean isRendererInitiated) {}
 
+    /** Opens a file chooser dialog. */
+    public void openFile() {}
+
     @CalledByNative
     public void activateContents() {}
 

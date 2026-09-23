@@ -98,6 +98,25 @@ public class KeyboardShortcutsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE)
+    public void testOpenFile_CtrlO_TriggersOpenFileDialog() {
+        KeyEvent event =
+                new KeyEvent(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_O,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+
+        assertTrue(
+                KeyboardShortcuts.onKeyDown(
+                        event, true, true, mTabModelSelector, mController, mToolbarManager));
+
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.open_file_id), eq(false));
+    }
+
+    @Test
     public void testGamepadR1_WhenGamepadApiActive_DoesNotMoveTab() {
         GamepadList.setGamepadApiActiveForTesting(true);
 

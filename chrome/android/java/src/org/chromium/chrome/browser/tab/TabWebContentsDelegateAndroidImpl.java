@@ -173,6 +173,14 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
+    public void openFile() {
+        WebContents wc = mTab.getWebContents();
+        if (wc != null) {
+            TabWebContentsDelegateAndroidImplJni.get().openFile(wc);
+        }
+    }
+
+    @Override
     public void activateContents() {
         mDelegate.activateContents();
     }
@@ -625,5 +633,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(@JniType("content::WebContents*") WebContents webContents);
+
+        void openFile(@JniType("content::WebContents*") WebContents webContents);
     }
 }

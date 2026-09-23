@@ -31,6 +31,7 @@ import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,6 +81,11 @@ public class SelectFileDialogTest {
     public final CallbackHelper mOnActionCallback = new CallbackHelper();
 
     @Mock FileUtils.Natives mFileUtilsMocks;
+
+    @Before
+    public void setUp() {
+        SelectFileDialog.clearActiveDialogsForTesting();
+    }
 
     private void runAllAsyncTasks() {
         RobolectricUtil.runAllBackgroundAndUi();
@@ -141,6 +147,9 @@ public class SelectFileDialogTest {
         private void resetFileSelectionAttempts() {
             mFileSelectionAborted = 0;
             mFileSelectionSuccess = 0;
+            // Clear that state here so the next selectFile() is not rejected as a concurrent
+            // request.
+            SelectFileDialog.clearActiveDialogsForTesting();
         }
     }
 
@@ -1752,5 +1761,114 @@ public class SelectFileDialogTest {
         assertEquals(1, selectFileDialog.mFileSelectionAborted);
         Mockito.verify(windowAndroid, Mockito.never())
                 .showIntent(any(Intent.class), any(), anyInt());
+    }
+
+    @Test
+    public void testIsSelectingFile() {
+        WindowAndroid window1 = Mockito.mock(WindowAndroid.class);
+        WindowAndroid window2 = Mockito.mock(WindowAndroid.class);
+
+        assertFalse(SelectFileDialog.isSelectingFile(window1));
+        assertFalse(SelectFileDialog.isSelectingFile(window2));
+
+        // Setup WindowAndroid#showIntent to succeed, so that the dialog stays active while it is
+        // waiting for the result of the chooser intent.
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
+        doReturn(true)
+                .when(window1)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Note: This intentionally uses SelectFileDialog (as opposed to TestSelectFileDialog),
+        // because the test subclass stubs out the onFile*Selected functions, which is where the
+        // dialog unregisters itself as active.
+        SelectFileDialog dialog = new SelectFileDialog(0);
+        dialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"text/plain"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                window1);
+
+        assertTrue(SelectFileDialog.isSelectingFile(window1));
+        assertFalse(SelectFileDialog.isSelectingFile(window2));
+
+        // Simulate the user dismissing the picker without selecting a file.
+        dialog.onIntentCompleted(Activity.RESULT_CANCELED, null);
+        assertFalse(SelectFileDialog.isSelectingFile(window1));
+        assertFalse(SelectFileDialog.isSelectingFile(window2));
+
+        runAllAsyncTasks();
+    }
+
+    @Test
+    public void testSelectFileBlockedWhenAlreadySelectingFile() {
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
+        doReturn(true)
+                .when(window)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        SelectFileDialog dialog1 = new SelectFileDialog(0);
+        dialog1.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"text/plain"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                window);
+
+        assertTrue(SelectFileDialog.isSelectingFile(window));
+
+        // Second attempt to open a file dialog on the same window while dialog1 is active.
+        TestSelectFileDialog dialog2 = new TestSelectFileDialog(0);
+        dialog2.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"text/plain"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                window);
+
+        // Second dialog is immediately aborted without showing a second intent.
+        assertEquals(0, dialog2.mFileSelectionSuccess);
+        assertEquals(1, dialog2.mFileSelectionAborted);
+        Mockito.verify(window, Mockito.times(1))
+                .showIntent(any(Intent.class), (WindowAndroid.IntentCallback) any(), anyInt());
+
+        // The rejected request must not release the window: dialog1 is still showing, so further
+        // requests (including the Ctrl+O shortcut, which consults isSelectingFile()) stay blocked.
+        assertTrue(SelectFileDialog.isSelectingFile(window));
+
+        dialog1.onIntentCompleted(Activity.RESULT_CANCELED, null);
+        assertFalse(SelectFileDialog.isSelectingFile(window));
+
+        // Once the window is free again, a new request proceeds normally.
+        TestSelectFileDialog dialog3 = new TestSelectFileDialog(0);
+        dialog3.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"text/plain"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                window);
+        assertEquals(0, dialog3.mFileSelectionAborted);
+        assertTrue(SelectFileDialog.isSelectingFile(window));
+        Mockito.verify(window, Mockito.times(2))
+                .showIntent(any(Intent.class), (WindowAndroid.IntentCallback) any(), anyInt());
+
+        runAllAsyncTasks();
     }
 }

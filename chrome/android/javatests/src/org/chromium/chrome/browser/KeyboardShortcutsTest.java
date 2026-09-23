@@ -243,6 +243,18 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE)
+    public void testOpenFile() {
+        boolean isKeyEventHandled =
+                keyDown(KeyEvent.KEYCODE_O, KeyEvent.META_CTRL_ON, /* isCurrentTabVisible= */ true);
+
+        assertTrue("Expected key event to be handled", isKeyEventHandled);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(/* id= */ eq(R.id.open_file_id), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
     public void testCloseTab_singlePinnedTab_firstAttempt_tabShouldNotClose() {
         // Setup the first closure attempt of a pinned tab.
         setUpTabModelSelector(List.of(mTab));

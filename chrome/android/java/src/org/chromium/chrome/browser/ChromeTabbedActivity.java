@@ -413,6 +413,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
@@ -4815,6 +4816,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         this, LayoutSwitchEntryPoint.APP_MENU, isEnabling);
             }
             ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleTabStrip();
+        } else if (id == R.id.open_file_id) {
+            Tab tab = getActivityTab();
+            if (tab != null) {
+                WindowAndroid window = tab.getWindowAndroid();
+                if (window != null && !SelectFileDialog.isSelectingFile(window)) {
+                    tab.openFile();
+                }
+            }
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
         }

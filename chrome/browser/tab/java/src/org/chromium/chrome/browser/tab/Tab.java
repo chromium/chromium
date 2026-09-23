@@ -298,6 +298,9 @@ public interface Tab extends TabLifecycle {
      */
     LoadUrlResult loadUrl(LoadUrlParams params);
 
+    /** Opens a file chooser dialog for this tab. */
+    void openFile();
+
     /**
      * Discards the tab by saving its {@link WebContents} to an {@link WebContentsState} and
      * destroying the {@link WebContents}. If the tab is already frozen/discarded this is a no-op.

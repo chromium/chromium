@@ -61,7 +61,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -271,6 +273,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     private WindowAndroid mWindowAndroid;
 
+    /**
+     * Whether this dialog is the one registered in {@link #sWindowsSelectingFile} for {@link
+     * #mWindowAndroid}, and is therefore the one responsible for unregistering it.
+     */
+    private boolean mIsSelectingFileForWindow;
+
     /** Whether an Activity is available on the system to support capturing images (i.e. Camera). */
     private boolean mSupportsImageCapture;
 
@@ -296,8 +304,29 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /** The active photo picker, or null if none is active. */
     private static @Nullable PhotoPicker sPhotoPicker;
 
+    /** Set of {@link WindowAndroid}s that currently have a file selection dialog in progress. */
+    private static final Set<WindowAndroid> sWindowsSelectingFile = new HashSet<>();
+
+    /**
+     * Returns whether a file picker dialog is currently active for the given {@link WindowAndroid}.
+     *
+     * @param window The {@link WindowAndroid} to check.
+     * @return True if a file picker is currently running/active for the window, false otherwise.
+     */
+    public static boolean isSelectingFile(WindowAndroid window) {
+        ThreadUtils.assertOnUiThread();
+        return sWindowsSelectingFile.contains(window);
+    }
+
+    /** Clears the set of windows with an active file selection dialog, for testing. */
+    public static void clearActiveDialogsForTesting() {
+        sWindowsSelectingFile.clear();
+        ResettersForTesting.register(sWindowsSelectingFile::clear);
+    }
+
     /**
      * Allows setting a delegate to override the default Android stock photo picker.
+     *
      * @param delegate A {@link PhotoPickerDelegate} instance.
      */
     public static void setPhotoPickerDelegate(PhotoPickerDelegate delegate) {
@@ -364,6 +393,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         mCapture = capture;
         mAllowMultiple = multiple;
         mWindowAndroid = (sWindowAndroidForTesting == null) ? window : sWindowAndroidForTesting;
+
+        if (!sWindowsSelectingFile.add(mWindowAndroid)) {
+            onFileNotSelected();
+            return;
+        }
+        mIsSelectingFileForWindow = true;
 
         if (shouldBlockFilePicker(mWindowAndroid)) {
             onFileNotSelected();
@@ -1459,10 +1494,20 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 });
     }
 
+    private void onFileSelectionEnded() {
+        // Guarded on ownership: a request that was rejected because the window was already busy
+        // must not unregister the dialog that is still showing.
+        if (mIsSelectingFileForWindow) {
+            sWindowsSelectingFile.remove(mWindowAndroid);
+            mIsSelectingFileForWindow = false;
+        }
+    }
+
     protected void onFileSelected(
             long nativeSelectFileDialogImpl,
             @Nullable String filePath,
             @Nullable String displayName) {
+        onFileSelectionEnded();
         recordImageCountHistograms(new String[] {filePath});
         if (nativeSelectFileDialogImpl != 0) {
             SelectFileDialogJni.get()
@@ -1472,6 +1517,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     protected void onMultipleFilesSelected(
             long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray) {
+        onFileSelectionEnded();
         recordImageCountHistograms(filePathArray);
         if (nativeSelectFileDialogImpl != 0) {
             SelectFileDialogJni.get()
@@ -1481,6 +1527,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     protected void onFileNotSelected(long nativeSelectFileDialogImpl) {
+        onFileSelectionEnded();
         recordImageCountHistograms(new String[] {});
         if (nativeSelectFileDialogImpl != 0) {
             SelectFileDialogJni.get().onFileNotSelected(nativeSelectFileDialogImpl);
@@ -1797,6 +1844,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     @CalledByNative
     private void nativeDestroyed() {
+        onFileSelectionEnded();
         mNativeSelectFileDialog = 0;
     }
 

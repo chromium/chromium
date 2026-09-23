@@ -1166,6 +1166,13 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    public void openFile() {
+        if (mWebContentsDelegate != null) {
+            mWebContentsDelegate.openFile();
+        }
+    }
+
+    @Override
     public void stopLoading() {
         if (isLoading()) {
             for (TabObserver observer : getTabObservers()) {

@@ -79,6 +79,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "net/base/filename_util.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "skia/ext/region_ops.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -166,6 +167,42 @@ void ShowFramebustBlockMessageInternal(
 // successfully escapes from one lock request.
 constexpr base::TimeDelta kEffectiveUserEscapeDuration =
     base::Milliseconds(1250);
+
+class OpenFileSelectListener : public content::FileSelectListener {
+ public:
+  explicit OpenFileSelectListener(content::WebContents* web_contents)
+      : web_contents_(web_contents->GetWeakPtr()) {}
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    // The Ctrl+O shortcut requests Mode::kOpen, which never enables
+    // multi-selection in the Android file picker, so only one file is expected.
+    DCHECK_LE(files.size(), 1u);
+
+    if (!web_contents_ || files.empty() || !files[0]->is_native_file()) {
+      return;
+    }
+
+    const base::FilePath& file_path = files[0]->get_native_file()->file_path;
+    GURL url(file_path.value());
+    if (!url.is_valid() || !url.has_scheme()) {
+      url = net::FilePathToFileURL(file_path);
+    }
+    if (url.is_valid()) {
+      web_contents_->GetController().LoadURL(
+          url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+    }
+  }
+
+  void FileSelectionCanceled() override {}
+
+ protected:
+  ~OpenFileSelectListener() override = default;
+
+ private:
+  base::WeakPtr<content::WebContents> web_contents_;
+};
 
 }  // anonymous namespace
 
@@ -854,6 +891,27 @@ static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
       web_contents->GetPrimaryMainFrame()->GetProcess() &&
       base::RandDouble() < 0.01) {
     web_contents->GetPrimaryMainFrame()->GetProcess()->DumpProcessStack();
+  }
+}
+
+static void JNI_TabWebContentsDelegateAndroidImpl_OpenFile(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    return;
+  }
+
+  blink::mojom::FileChooserParams params;
+  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+
+  auto listener = base::MakeRefCounted<OpenFileSelectListener>(web_contents);
+  if (auto* delegate = web_contents->GetDelegate()) {
+    delegate->RunFileChooser(rfh, std::move(listener), params);
   }
 }
 
