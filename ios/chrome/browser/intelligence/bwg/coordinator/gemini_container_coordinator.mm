@@ -64,7 +64,6 @@
       initWithBrowser:self.browser
          actorService:actorService
          eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
-  [_mediator connect];
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
   _mediator.containerHandler = _containerHandler;
