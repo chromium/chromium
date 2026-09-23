@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -31,6 +33,10 @@ namespace autofill {
 namespace {
 
 using enum AttributeTypeName;
+using GmailSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+using PhotosSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
 
 std::u16string FormatDate(const personal_context::proto::Date& date) {
   if (date.year() <= 0 || date.month() <= 0 || date.day() <= 0) {
@@ -96,13 +102,23 @@ void AddStringAttribute(AttributeTypeName type,
   AddAttribute(type, base::UTF8ToUTF16(value), attributes, passkey);
 }
 
+bool IsSourceValid(
+    const EntityInstance::PersonalContextRecordTypePayload::Source& source) {
+  if (!source.url.is_valid()) {
+    return false;
+  }
+  return std::visit(absl::Overload{[](const GmailSourceMetadata& gmail) {
+                                     return !gmail.title.empty();
+                                   },
+                                   [](const PhotosSourceMetadata& photos) {
+                                     return !photos.timestamp.is_null();
+                                   }},
+                    source.metadata);
+}
+
 std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
 PersonalContextSourceReferenceToSource(
     const personal_context::proto::SourceReference& source_reference) {
-  using GmailSourceMetadata =
-      EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
-  using PhotosSourceMetadata =
-      EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
   std::optional<EntityInstance::PersonalContextRecordTypePayload::Source>
       source;
@@ -126,8 +142,7 @@ PersonalContextSourceReferenceToSource(
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       return std::nullopt;
   }
-  // TODO(crbug.com/551864564): Extend validation to include other metadata.
-  if (source.has_value() && !source->url.is_valid()) {
+  if (!source.has_value() || !IsSourceValid(*source)) {
     return std::nullopt;
   }
   return source;

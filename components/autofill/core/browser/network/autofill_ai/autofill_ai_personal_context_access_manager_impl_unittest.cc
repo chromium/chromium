@@ -2469,8 +2469,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       CreateOrderProto({.id = u"VALID_SOURCE",
                         .date = u"2025-06-01",
                         .merchant_name = u"Store"});
-  valid_order.add_source_references()->mutable_gmail()->set_message_url(
-      "https://mail.google.com/mail/u/0/#inbox/123");
+  personal_context::proto::GmailReference* valid_gmail =
+      valid_order.add_source_references()->mutable_gmail();
+  valid_gmail->set_message_url("https://mail.google.com/mail/u/0/#inbox/123");
+  valid_gmail->set_subject("Order Confirmation");
   *response.add_entities() = std::move(valid_order);
 
   std::vector<EntityInstance> entities;
