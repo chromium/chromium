@@ -2013,8 +2013,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
           return;
         }
       }
-      dest_shared_image->SetClearedRect(
-          gfx::Rect(src_info.width(), src_info.height()));
+      dest_shared_image->SetCleared();
     }
     return;
   }
@@ -2077,8 +2076,11 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
         return;
       }
     }
-    dest_shared_image->SetClearedRect(
-        gfx::Rect(x_offset, y_offset, src_width, src_height));
+
+    if (gfx::Rect(x_offset, y_offset, src_width, src_height)
+            .Contains(gfx::Rect(dest_shared_image->size()))) {
+      dest_shared_image->SetCleared();
+    }
   }
 }
 
