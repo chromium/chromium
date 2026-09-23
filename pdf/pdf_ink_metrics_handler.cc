@@ -248,6 +248,8 @@ void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes) {
                             attributes.is_italic);
   base::UmaHistogramBoolean("PDF.Ink2TextAnnotationStrikethrough",
                             attributes.is_strikethrough);
+  base::UmaHistogramBoolean("PDF.Ink2TextAnnotationUnderline",
+                            attributes.is_underline);
 
   CHECK_EQ(attributes.css_font_size, std::trunc(attributes.css_font_size));
   int size = static_cast<int>(attributes.css_font_size);
