@@ -342,6 +342,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     @SuppressWarnings("BooleanLiteral")
     public void testAddsClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
@@ -532,6 +533,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesCardInfoRetrievalBubbleOnFilling() throws InterruptedException {
         String descriptionText =
                 "You can autofill this card because your PayPay account is linked to Google";
