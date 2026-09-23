@@ -95,7 +95,7 @@ _TELEMETRY_STARTUP_BROWSER_ARGS = (
 # absent from this map keep crossbench's default (live) URL.
 _CROSSBENCH_LOCAL_BENCHMARK_DIRS = {
     'speedometer3': 'third_party/speedometer/v3.1',
-    'jetstream2': 'third_party/jetstream/v2.2',
+    'jetstream3': 'third_party/jetstream/v3.0',
 }
 
 # This is necessary to get proper logging on bots and locally. If this script is
@@ -282,15 +282,6 @@ def parse_args():
         help='Only run benchmarks that do not require any special access. See '
         'https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners '
         'for more information.',
-    )
-    # TODO(crbug.com/479547498): Remove this option and run
-    # jetstream3.crossbench by default after we finish testing.
-    parser.add_argument(
-        '--run-jetstream3',
-        '--run-js3',
-        action='store_true',
-        default=False,
-        help='Include JetStream 3 benchmark (using crossbench)',
     )
     parser.add_argument(
         '--temporal-trace-length',
@@ -1007,7 +998,7 @@ def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
         # a story, which drops the profiles collected by the preceding story. On
         # Android its benchmarks are therefore split into one run per story, so
         # that every story's profile is kept (see https://crrev.com/c/5718532).
-        # Crossbench benchmarks do not need this: speedometer3 and jetstream2
+        # Crossbench benchmarks do not need this: speedometer3 and jetstream3
         # run all their substories within a single page load, and the
         # chromium_pgo probe collects the profiles per run, before the browser
         # is torn down.
@@ -1205,16 +1196,13 @@ def main():
         ),
     ]
 
-    # JetStream2 is disabled on 32-bit Windows due to failures, see
+    # JetStream is disabled on 32-bit Windows due to failures, see
     # https://crbug.com/327040688.
     if not (
         not args.android_browser
         and sys.platform == 'win32'
         and args.target_arch == 'x86'
     ):
-        benchmarks.append(Benchmark('jetstream2.crossbench', ['jetstream2']))
-
-    if args.run_jetstream3:
         benchmarks.append(Benchmark('jetstream3.crossbench', ['jetstream3']))
 
     # These benchmarks require special access permissions:
