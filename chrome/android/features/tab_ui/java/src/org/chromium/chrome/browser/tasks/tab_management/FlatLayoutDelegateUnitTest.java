@@ -579,14 +579,6 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidCreateNewGroup_NoOp() {
-        mDelegate.didCreateNewGroup(mTab1, mTabModel);
-
-        // Flat layout does not display tab group headers, so no updates should occur.
-        verifyNoInteractions(mMediator);
-    }
-
-    @Test
     public void testDidRemoveTabGroup_NoOp() {
         mDelegate.didRemoveTabGroup(
                 1, TAB_GROUP_ID, TabGroupObserver.DidRemoveTabGroupReason.MERGE);

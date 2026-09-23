@@ -759,38 +759,6 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidCreateNewGroup() {
-        PropertyModel tab1Model = addTabToModelList(TAB1_ID, null);
-        // Add tab1Model a second time. This allows get(destUiIndex + 1) to return tab1Model
-        // when destUiIndex is 0, simulating the list shifting by one position after the group
-        // header is added.
-        mModelList.add(new ListItem(UiType.TAB, tab1Model));
-
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-
-        mDelegate.didCreateNewGroup(mTab1, mTabModel);
-
-        assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
-        verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
-        verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
-        assertEquals(2, mModelList.size());
-    }
-
-    @Test
-    public void testDidCreateNewGroup_AlreadyExists() {
-        addGroupHeaderToModelList(TAB1_ID);
-        addTabToModelList(TAB1_ID, TAB_GROUP_ID);
-
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-
-        mDelegate.didCreateNewGroup(mTab1, mTabModel);
-
-        verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
-        verify(mMediator, never()).updateTabGroupProperties(any(), any(), anyInt());
-        verify(mMediator, never()).clearTabGroupProperties(any());
-    }
-
-    @Test
     public void testDidRemoveTabGroup() {
         addGroupHeaderToModelList(TAB1_ID);
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);

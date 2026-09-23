@@ -252,6 +252,8 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+        // TODO(crbug.com/517544602): Pass previous tabGroupId in didMoveTabOutOfGroup instead of
+        // prevFilterIndex to avoid getRepresentativeTabAt.
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Tab previousGroupTab = tabModel.getRepresentativeTabAt(prevFilterIndex);
         assumeNonNull(previousGroupTab);
@@ -302,21 +304,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             for (int i = 0; i < itemsToMove; i++) {
                 mModelList.move(sourceUiIndex + i, destinationUiIndex + i);
             }
-        }
-    }
-
-    @Override
-    public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
-        Token tabGroupId = destinationTab.getTabGroupId();
-        if (tabGroupId == null) return;
-
-        int destUiIndex = getIndexFromTabId(destinationTab.getId());
-        if (destUiIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        if (ensureGroupHeaderExists(destinationTab, tabGroupId, destUiIndex)) {
-            // After adding the group header, the destination tab's model shifts by one position.
-            PropertyModel childModel = mModelList.get(destUiIndex + 1).model;
-            setupGroupPropertiesForChildTab(destinationTab, childModel);
         }
     }
 

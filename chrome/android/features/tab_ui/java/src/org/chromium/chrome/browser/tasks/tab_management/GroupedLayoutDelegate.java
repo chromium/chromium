@@ -415,23 +415,19 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
      */
     @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-        if (tabModelNewIndex == tabModelOldIndex) return;
-        if (mThumbnailProvider == null) {
-            return;
-        }
+        if (tabModelNewIndex == tabModelOldIndex || mThumbnailProvider == null) return;
+
         int indexInModel = getUiIndexForTab(movedTab.getId());
         if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        Tab lastShownTab =
-                tabModel.getRepresentativeTabAt(tabModel.representativeIndexOf(movedTab));
-        assumeNonNull(lastShownTab);
         PropertyModel model = mModelList.get(indexInModel).model;
-        mMediator.updateThumbnailFetcher(model, lastShownTab.getId());
+        mMediator.updateThumbnailFetcher(model, movedTab.getId());
     }
 
     @Override
     public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+        // TODO(crbug.com/517544602): Pass previous tabGroupId in didMoveTabOutOfGroup instead of
+        // prevFilterIndex to avoid getRepresentativeTabAt.
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Tab previousGroupTab = tabModel.getRepresentativeTabAt(prevFilterIndex);
         assumeNonNull(previousGroupTab);
@@ -631,24 +627,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             }
         }
         mModelList.moveItem(curPosition, newPosition);
-    }
-
-    @Override
-    public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
-        // On new group creation for the tab group representation in the GTS, update
-        // the tab group color icon.
-        int groupIndex = tabModel.representativeIndexOf(destinationTab);
-        Tab groupTab = tabModel.getRepresentativeTabAt(groupIndex);
-        assumeNonNull(groupTab);
-        PropertyModel model = getModelFromTabId(groupTab.getId());
-
-        if (model != null) {
-            Token tabGroupId = destinationTab.getTabGroupId();
-            assumeNonNull(tabGroupId);
-            @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
-            mMediator.updateTabGroupProperties(destinationTab, model, colorId);
-            mMediator.updateFaviconForTab(model, groupTab, null, null);
-        }
     }
 
     @Override

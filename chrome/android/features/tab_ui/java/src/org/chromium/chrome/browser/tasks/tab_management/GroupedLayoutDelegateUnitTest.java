@@ -805,7 +805,6 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testDidMoveWithinGroup() {
         PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        setupRepresentativeTab(mTab1, mTab1, 1);
 
         mDelegate.didMoveWithinGroup(mTab1, 0, 1);
 
@@ -1287,31 +1286,6 @@ public class GroupedLayoutDelegateUnitTest {
 
         // Verify it doesn't crash and we don't try to update a tab.
         verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
-    }
-
-    @Test
-    public void testDidCreateNewGroup() {
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        setupRepresentativeTab(mTab1, mTab1, 1);
-        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(TabGroupColorId.BLUE);
-
-        PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
-
-        mDelegate.didCreateNewGroup(mTab1, mTabModel);
-
-        verify(mMediator).updateTabGroupProperties(mTab1, model1, TabGroupColorId.BLUE);
-        verify(mMediator).updateFaviconForTab(model1, mTab1, null, null);
-    }
-
-    @Test
-    public void testDidCreateNewGroup_ModelNotFound() {
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        setupRepresentativeTab(mTab1, mTab1, 1);
-
-        mDelegate.didCreateNewGroup(mTab1, mTabModel);
-
-        verify(mMediator, never()).updateTabGroupProperties(any(), any(), anyInt());
-        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
 
     @Test
