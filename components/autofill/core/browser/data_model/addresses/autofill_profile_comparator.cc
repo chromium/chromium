@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
@@ -362,6 +363,7 @@ std::optional<FieldTypeSet>
 AutofillProfileComparator::NonMergeableSettingVisibleTypes(
     const AutofillProfile& a,
     const AutofillProfile& b) const {
+  using enum NameInfo::MergeFailureReason;
   if (a.GetAddressCountryCode() != b.GetAddressCountryCode()) {
     return std::nullopt;
   }
@@ -374,17 +376,47 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
       non_mergeable_types.insert(type);
     }
   };
-  // For most setting-visible types, a HaveMergeable* function exists. If these
+  // For most setting-visible types, a `Merge*()` function exists. If these
   // types ever become non-settings visible, the check in `maybe_add_type` will
   // fail in the unittest.
-  maybe_add_type(NAME_FULL, NameInfo::AreNamesMergeable(
-                                a.GetNameInfo(), a.GetAddressCountryCode(),
-                                b.GetNameInfo(), b.GetAddressCountryCode()));
+  const base::expected<NameInfo, NameInfo::MergeFailureReason> merged_name =
+      NameInfo::MergeNames(
+          a.GetNameInfo(), a.GetAddressCountryCode(), b.GetNameInfo(),
+          b.GetAddressCountryCode(),
+          b.usage_history().use_date() < a.usage_history().use_date());
+
+  auto is_name_component_mergeable = [&](FieldType component_type) {
+    CHECK(component_type == NAME_FULL ||
+          component_type == ALTERNATIVE_FULL_NAME);
+    if (merged_name.has_value()) {
+      return true;
+    }
+    // `NameInfo::MergeNames()` merges both `NAME_FULL` and
+    // `ALTERNATIVE_FULL_NAME` at once, so an error in `merged_name` only means
+    // that *at least one* of the two components could not be merged.
+    // A single-component failure (`kNameFullFailed` or
+    // `kAlternativeNameFailed`) implies that only that specific component
+    // failed to merge, while the other component *is* still mergeable.
+    switch (merged_name.error()) {
+      case kNameFullFailed:
+        // `NAME_FULL` failed to merge, but `ALTERNATIVE_FULL_NAME` is
+        // mergeable.
+        return component_type != NAME_FULL;
+      case kAlternativeNameFailed:
+        // `ALTERNATIVE_FULL_NAME` failed to merge, but `NAME_FULL` is
+        // mergeable.
+        return component_type != ALTERNATIVE_FULL_NAME;
+      case kBothFailed:
+        // Both failed to merge.
+        return false;
+    }
+    NOTREACHED();
+  };
+
+  maybe_add_type(NAME_FULL, is_name_component_mergeable(NAME_FULL));
   if (setting_visible_types.contains(ALTERNATIVE_FULL_NAME)) {
     maybe_add_type(ALTERNATIVE_FULL_NAME,
-                   NameInfo::AreAlternativeNamesMergeable(
-                       a.GetNameInfo(), a.GetAddressCountryCode(),
-                       b.GetNameInfo(), b.GetAddressCountryCode()));
+                   is_name_component_mergeable(ALTERNATIVE_FULL_NAME));
   }
   maybe_add_type(COMPANY_NAME, MergeCompanyNames(a, b).has_value());
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER, MergePhoneNumbers(a, b).has_value());

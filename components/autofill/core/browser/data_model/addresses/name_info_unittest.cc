@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -27,6 +29,8 @@ using base::UTF8ToUTF16;
 namespace autofill {
 namespace {
 
+using base::test::ErrorIs;
+using base::test::HasValue;
 using i18n_model_definition::kLegacyHierarchyCountryCode;
 using ::testing::IsEmpty;
 using ::testing::Message;
@@ -119,10 +123,12 @@ class NameInfoTest : public Test {
   void MergeNamesAndExpect(const NameInfo& a,
                            const NameInfo& b,
                            const NameInfo& expected) {
-    NameInfo actual(/*alternative_names_supported=*/false);
-    ASSERT_TRUE(NameInfo::MergeNames(
-        a, kLegacyHierarchyCountryCode, b, kLegacyHierarchyCountryCode,
-        /*newer_was_more_recently_used=*/true, actual));
+    base::expected<NameInfo, NameInfo::MergeFailureReason> merge_result =
+        NameInfo::MergeNames(a, kLegacyHierarchyCountryCode, b,
+                             kLegacyHierarchyCountryCode,
+                             /*newer_was_more_recently_used=*/true);
+    ASSERT_THAT(merge_result, HasValue());
+    const NameInfo& actual = *merge_result;
 
     // Is the "processed" data correct?
     EXPECT_EQ(expected.GetInfo(NAME_FULL, kLocale),
@@ -615,11 +621,12 @@ TEST_F(NameInfoTest, MergeNames_WithPermutation) {
                                          VerificationStatus::kObserved);
   name2.FinalizeAfterImport();
 
-  NameInfo merged_name(/*alternative_names_supported=*/false);
-  NameInfo::MergeNames(name1, kLegacyHierarchyCountryCode, name2,
-                       kLegacyHierarchyCountryCode,
-                       /*newer_was_more_recently_used=*/true, merged_name);
-
+  base::expected<NameInfo, NameInfo::MergeFailureReason> merge_result =
+      NameInfo::MergeNames(name1, kLegacyHierarchyCountryCode, name2,
+                           kLegacyHierarchyCountryCode,
+                           /*newer_was_more_recently_used=*/true);
+  ASSERT_THAT(merge_result, HasValue());
+  const NameInfo& merged_name = *merge_result;
   // The merged name should maintain the structure but use the observation of
   // the custom-formatted full name.
   EXPECT_EQ(merged_name.GetRawInfo(NAME_FULL), u"Anderson, Thomas A.");
@@ -897,14 +904,26 @@ TEST_F(NameInfoTest, HaveMergeableAlternativeNames) {
                      << ", expect: " << expect);
 
         // Test both merge orders.
-        EXPECT_EQ(NameInfo::AreAlternativeNamesMergeable(
-                      name1, AddressCountryCode("JP"), name2,
-                      AddressCountryCode("JP")),
-                  expect);
-        EXPECT_EQ(NameInfo::AreAlternativeNamesMergeable(
-                      name2, AddressCountryCode("JP"), name1,
-                      AddressCountryCode("JP")),
-                  expect);
+        const base::expected<NameInfo, NameInfo::MergeFailureReason> result1 =
+            NameInfo::MergeNames(name1, AddressCountryCode("JP"), name2,
+                                 AddressCountryCode("JP"),
+                                 /*newer_was_more_recently_used=*/true);
+        const base::expected<NameInfo, NameInfo::MergeFailureReason> result2 =
+            NameInfo::MergeNames(name2, AddressCountryCode("JP"), name1,
+                                 AddressCountryCode("JP"),
+                                 /*newer_was_more_recently_used=*/true);
+
+        if (expect) {
+          EXPECT_THAT(result1, HasValue());
+          EXPECT_THAT(result2, HasValue());
+        } else {
+          EXPECT_THAT(
+              result1,
+              ErrorIs(NameInfo::MergeFailureReason::kAlternativeNameFailed));
+          EXPECT_THAT(
+              result2,
+              ErrorIs(NameInfo::MergeFailureReason::kAlternativeNameFailed));
+        }
       };
 
   // Base cases for latin characters.
@@ -1130,12 +1149,24 @@ TEST_F(NameInfoTest, HaveMergeableNames) {
                            << ", expect: " << expect);
 
     // Test both orders.
-    EXPECT_EQ(NameInfo::AreNamesMergeable(name1, kLegacyHierarchyCountryCode,
-                                          name2, kLegacyHierarchyCountryCode),
-              expect);
-    EXPECT_EQ(NameInfo::AreNamesMergeable(name2, kLegacyHierarchyCountryCode,
-                                          name1, kLegacyHierarchyCountryCode),
-              expect);
+    const base::expected<NameInfo, NameInfo::MergeFailureReason> result1 =
+        NameInfo::MergeNames(name1, kLegacyHierarchyCountryCode, name2,
+                             kLegacyHierarchyCountryCode,
+                             /*newer_was_more_recently_used=*/true);
+    const base::expected<NameInfo, NameInfo::MergeFailureReason> result2 =
+        NameInfo::MergeNames(name2, kLegacyHierarchyCountryCode, name1,
+                             kLegacyHierarchyCountryCode,
+                             /*newer_was_more_recently_used=*/true);
+
+    if (expect) {
+      EXPECT_THAT(result1, HasValue());
+      EXPECT_THAT(result2, HasValue());
+    } else {
+      EXPECT_THAT(result1,
+                  ErrorIs(NameInfo::MergeFailureReason::kNameFullFailed));
+      EXPECT_THAT(result2,
+                  ErrorIs(NameInfo::MergeFailureReason::kNameFullFailed));
+    }
   };
 
   // `p1`, `p2`, `p3`, `p4` and `empty` should all be the mergeable with
@@ -1185,10 +1216,14 @@ TEST_F(NameInfoTest, HaveMergeableNamesWithGermanTransliteration) {
   NameInfo p1_us = CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u"");
   NameInfo p2_us = CreateNameInfo(u"Haensel", u"", u"Koehn", u"");
 
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1_de, AddressCountryCode("DE"),
-                                          p2_de, AddressCountryCode("AT")));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(p1_us, AddressCountryCode("US"),
-                                           p2_us, AddressCountryCode("US")));
+  EXPECT_THAT(NameInfo::MergeNames(p1_de, AddressCountryCode("DE"), p2_de,
+                                   AddressCountryCode("AT"),
+                                   /*newer_was_more_recently_used=*/true),
+              HasValue());
+  EXPECT_THAT(NameInfo::MergeNames(p1_us, AddressCountryCode("US"), p2_us,
+                                   AddressCountryCode("US"),
+                                   /*newer_was_more_recently_used=*/true),
+              ErrorIs(NameInfo::MergeFailureReason::kNameFullFailed));
 }
 
 // Tests that name info with additional last name is mergeable with the
@@ -1196,15 +1231,18 @@ TEST_F(NameInfoTest, HaveMergeableNamesWithGermanTransliteration) {
 TEST_F(NameInfoTest, NameInfoWithAdditionalLastNameIsMergeable) {
   NameInfo ni1 = CreateNameInfo(u"John", u"", u"", u"", u"", u"");
   NameInfo ni2 = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"");
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode, ni2,
-                                          kLegacyHierarchyCountryCode));
+  EXPECT_THAT(NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
+                                   kLegacyHierarchyCountryCode,
+                                   /*newer_was_more_recently_used=*/true),
+              HasValue());
 
   NameInfo expected = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"");
-  NameInfo actual(/*alternative_names_supported=*/false);
-  NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                       kLegacyHierarchyCountryCode,
-                       /*newer_was_more_recently_used=*/true, actual);
-  EXPECT_EQ(expected, actual);
+  base::expected<NameInfo, NameInfo::MergeFailureReason> actual =
+      NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
+                           kLegacyHierarchyCountryCode,
+                           /*newer_was_more_recently_used=*/true);
+  ASSERT_THAT(actual, HasValue());
+  EXPECT_EQ(expected, *actual);
 }
 
 // Tests that name info with an additional middle name is mergeable with
@@ -1213,16 +1251,19 @@ TEST_F(NameInfoTest, NameInfoWithExtraMiddleNameIsMergeable) {
   NameInfo ni1 = CreateNameInfo(u"John", u"", u"Kennedy", u"", u"", u"");
   NameInfo ni2 =
       CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode, ni2,
-                                          kLegacyHierarchyCountryCode));
+  EXPECT_THAT(NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
+                                   kLegacyHierarchyCountryCode,
+                                   /*newer_was_more_recently_used=*/true),
+              HasValue());
 
   NameInfo expected =
       CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
-  NameInfo actual(/*alternative_names_supported=*/false);
-  NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                       kLegacyHierarchyCountryCode,
-                       /*newer_was_more_recently_used=*/true, actual);
-  EXPECT_EQ(expected, actual);
+  base::expected<NameInfo, NameInfo::MergeFailureReason> actual =
+      NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
+                           kLegacyHierarchyCountryCode,
+                           /*newer_was_more_recently_used=*/true);
+  ASSERT_THAT(actual, HasValue());
+  EXPECT_EQ(expected, *actual);
 }
 
 TEST_F(NameInfoTest, SettingAndGettingNotSupportedAlternativeNames) {
@@ -1260,15 +1301,12 @@ TEST_F(NameInfoTest, MergingNotSupportedAlternativeNames) {
   NameInfo ni2 = CreateNameInfo(u"John", u"H.", u"Doe", u"", u"", u"", u"",
                                 /*should_support_alternative_name=*/false);
 
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode, ni2,
-                                          kLegacyHierarchyCountryCode));
-  EXPECT_TRUE(NameInfo::AreAlternativeNamesMergeable(
-      ni1, kLegacyHierarchyCountryCode, ni2, kLegacyHierarchyCountryCode));
-
-  NameInfo result(/*alternative_names_supported=*/false);
-  NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                       kLegacyHierarchyCountryCode,
-                       /*newer_was_more_recently_used=*/true, result);
+  base::expected<NameInfo, NameInfo::MergeFailureReason> merge_result =
+      NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
+                           kLegacyHierarchyCountryCode,
+                           /*newer_was_more_recently_used=*/true);
+  ASSERT_THAT(merge_result, HasValue());
+  const NameInfo& result = *merge_result;
   EXPECT_FALSE(result.GetRawInfo(NAME_FULL).empty());
   EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_GIVEN_NAME), IsEmpty());
   EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FAMILY_NAME), IsEmpty());

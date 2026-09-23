@@ -27,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
@@ -329,9 +330,20 @@ bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
 
 template <NameType T>
 bool AreNameComponentsMergeable(const NameInfo& name_1,
-                                const AddressCountryCode country_code_1,
+                                const AddressCountryCode& country_code_1,
                                 const NameInfo& name_2,
-                                const AddressCountryCode country_code_2) {
+                                const AddressCountryCode& country_code_2) {
+  if constexpr (std::same_as<T, AlternativeFullName>) {
+    if (!name_1.IsAlternativeNameSupported() &&
+        !name_2.IsAlternativeNameSupported()) {
+      return true;
+    }
+    if (name_1.IsAlternativeNameSupported() ^
+        name_2.IsAlternativeNameSupported()) {
+      return false;
+    }
+  }
+
   const AddressCountryCode common_country_code =
       AddressComponent::GetCommonCountry(country_code_1, country_code_2);
   const std::u16string comparison_name_1 =
@@ -362,21 +374,26 @@ bool AreNameComponentsMergeable(const NameInfo& name_1,
       country_code_2);
 
   // Is it reasonable to merge the names from `p1` and `p2`?
-  bool result =
-      IsNormalizedNameVariantOf(canon_full_name_1, canon_full_name_2) ||
-      IsNormalizedNameVariantOf(canon_full_name_2, canon_full_name_1);
-  return result;
+  return IsNormalizedNameVariantOf(canon_full_name_1, canon_full_name_2) ||
+         IsNormalizedNameVariantOf(canon_full_name_2, canon_full_name_1);
 }
 
 template <NameType T>
-void MergeNameComponents(const NameInfo& new_name_info,
-                         const AddressCountryCode new_country_code,
-                         const NameInfo& old_name_info,
-                         const AddressCountryCode old_country_code,
-                         T& name_component,
-                         bool newer_was_more_recently_used) {
-  constexpr FieldType kNameType = GetFieldType<T>();
+std::unique_ptr<T> MergeNameComponents(
+    const NameInfo& new_name_info,
+    const AddressCountryCode& new_country_code,
+    const NameInfo& old_name_info,
+    const AddressCountryCode& old_country_code,
+    bool newer_was_more_recently_used) {
+  static constexpr FieldType kNameType = GetFieldType<T>();
 
+  // At this stage, it has been already determined that the two names are
+  // mergeable. This can mean one of the following things:
+  // * One name is empty. In this scenario the non-empty name is used.
+  // * The names are token equivalent: In this scenario a merge of the tree
+  // structure should be possible.
+  // * One name is a variant of the other. In this scenario, use the non-variant
+  // name.
   const AddressCountryCode common_country_code =
       AddressComponent::GetCommonCountry(new_country_code, old_country_code);
   const std::u16string name_new = NormalizeForComparison(
@@ -386,39 +403,35 @@ void MergeNameComponents(const NameInfo& new_name_info,
       GetNameForComparison<T>(old_name_info, common_country_code),
       normalization::WhitespaceSpec::kRetain, old_country_code);
 
-  // At this state it is already determined that the two names are mergeable.
-  // This can mean of of the following things:
-  // * One name is empty. In this scenario the non-empty name is used.
-  // * The names are token equivalent: In this scenario a merge of the tree
-  // structure should be possible.
-  // * One name is a variant of the other. In this scenario, use the non-variant
-  // name.
+  std::unique_ptr<T> name_component = std::make_unique<T>();
+
   // First, set info to the original profile.
-  name_component.CopyFrom(*old_name_info.GetRootForType(kNameType));
+  name_component->CopyFrom(*old_name_info.GetRootForType(kNameType));
   // If the name of the `new_profile` is empty, just keep the state of
   // `old_profile`.
   if (normalization::HasOnlySkippableCharacters(name_new)) {
-    return;
+    return name_component;
   }
   // Vice versa set name to the one of `new_profile` if `old_profile` has an
   // empty name
   if (normalization::HasOnlySkippableCharacters(name_old)) {
-    name_component.CopyFrom(*new_name_info.GetRootForType(kNameType));
-    return;
+    name_component->CopyFrom(*new_name_info.GetRootForType(kNameType));
+    return name_component;
   }
   // Try to apply a direct merging.
-  if (name_component.MergeWithComponent(
+  if (name_component->MergeWithComponent(
           *new_name_info.GetRootForType(kNameType),
           newer_was_more_recently_used)) {
-    return;
+    return name_component;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
   // `new_profile`.
   if (IsNormalizedNameVariantOf(name_new, name_old)) {
-    name_component.CopyFrom(*new_name_info.GetRootForType(kNameType));
+    name_component->CopyFrom(*new_name_info.GetRootForType(kNameType));
   } else {
-    name_component.CopyFrom(*old_name_info.GetRootForType(kNameType));
+    name_component->CopyFrom(*old_name_info.GetRootForType(kNameType));
   }
+  return name_component;
 }
 
 }  // namespace
@@ -462,64 +475,39 @@ NameInfo& NameInfo::operator=(NameInfo&& info) noexcept = default;
 NameInfo::~NameInfo() = default;
 
 // static
-bool NameInfo::MergeNames(const NameInfo& new_name_info,
-                          const AddressCountryCode new_country_code,
-                          const NameInfo& old_name_info,
-                          const AddressCountryCode old_country_code,
-                          bool newer_was_more_recently_used,
-                          NameInfo& result_name_info) {
-  DCHECK(AreNamesMergeable(new_name_info, new_country_code, old_name_info,
-                           old_country_code));
-  DCHECK(AreAlternativeNamesMergeable(new_name_info, new_country_code,
-                                      old_name_info, old_country_code));
+base::expected<NameInfo, NameInfo::MergeFailureReason> NameInfo::MergeNames(
+    const NameInfo& new_name_info,
+    const AddressCountryCode& new_country_code,
+    const NameInfo& old_name_info,
+    const AddressCountryCode& old_country_code,
+    bool newer_was_more_recently_used) {
+  using enum MergeFailureReason;
+  const bool name_full_mergeable = AreNameComponentsMergeable<NameFull>(
+      new_name_info, new_country_code, old_name_info, old_country_code);
+  const bool alternative_name_mergeable =
+      AreNameComponentsMergeable<AlternativeFullName>(
+          new_name_info, new_country_code, old_name_info, old_country_code);
 
-  std::unique_ptr<NameFull> name_full = std::make_unique<NameFull>();
-  // If `new_name_info` does not support alternative names, the
-  // `alternative_full_name` will be `nullptr`.
-  std::unique_ptr<AlternativeFullName> alternative_full_name;
-
-  // TODO(crbug.com/375383124): Update `MergeNames` to provide meaningful
-  // return values.
-  MergeNameComponents<NameFull>(new_name_info, new_country_code, old_name_info,
-                                old_country_code, *name_full,
-                                newer_was_more_recently_used);
-  if (new_name_info.IsAlternativeNameSupported()) {
-    alternative_full_name = std::make_unique<AlternativeFullName>();
-    MergeNameComponents<AlternativeFullName>(
-        new_name_info, new_country_code, old_name_info, old_country_code,
-        *alternative_full_name, newer_was_more_recently_used);
-  }
-  result_name_info =
-      NameInfo(std::move(name_full), std::move(alternative_full_name));
-  return true;
-}
-
-// static
-bool NameInfo::AreNamesMergeable(const NameInfo& name_info_1,
-                                 const AddressCountryCode country_code_1,
-                                 const NameInfo& name_info_2,
-                                 const AddressCountryCode country_code_2) {
-  return AreNameComponentsMergeable<NameFull>(name_info_1, country_code_1,
-                                              name_info_2, country_code_2);
-}
-
-// static
-bool NameInfo::AreAlternativeNamesMergeable(
-    const NameInfo& name_info_1,
-    const AddressCountryCode country_code_1,
-    const NameInfo& name_info_2,
-    const AddressCountryCode country_code_2) {
-  if (!name_info_1.IsAlternativeNameSupported() &&
-      !name_info_2.IsAlternativeNameSupported()) {
-    return true;
-  }
-  if (name_info_1.IsAlternativeNameSupported() ^
-      name_info_2.IsAlternativeNameSupported()) {
-    return false;
+  if (!name_full_mergeable && !alternative_name_mergeable) {
+    return base::unexpected(kBothFailed);
   }
 
-  return AreNameComponentsMergeable<AlternativeFullName>(
-      name_info_1, country_code_1, name_info_2, country_code_2);
+  if (!alternative_name_mergeable) {
+    return base::unexpected(kAlternativeNameFailed);
+  }
+
+  if (!name_full_mergeable) {
+    return base::unexpected(kNameFullFailed);
+  }
+
+  return NameInfo(MergeNameComponents<NameFull>(new_name_info, new_country_code,
+                                                old_name_info, old_country_code,
+                                                newer_was_more_recently_used),
+                  new_name_info.IsAlternativeNameSupported()
+                      ? MergeNameComponents<AlternativeFullName>(
+                            new_name_info, new_country_code, old_name_info,
+                            old_country_code, newer_was_more_recently_used)
+                      : nullptr);
 }
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer,

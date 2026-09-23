@@ -103,9 +103,15 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::NAME_FULL)) {
       return false;
     }
-    if (!autofill::NameInfo::AreNamesMergeable(
-            sub.GetNameInfo(), sub.GetAddressCountryCode(), super.GetNameInfo(),
-            super.GetAddressCountryCode())) {
+    const base::expected<autofill::NameInfo,
+                         autofill::NameInfo::MergeFailureReason>
+        names_merge_result = autofill::NameInfo::MergeNames(
+            super.GetNameInfo(), super.GetAddressCountryCode(),
+            sub.GetNameInfo(), sub.GetAddressCountryCode(),
+            sub.usage_history().use_date() < super.usage_history().use_date());
+    if (!names_merge_result.has_value() &&
+        names_merge_result.error() !=
+            autofill::NameInfo::MergeFailureReason::kAlternativeNameFailed) {
       return false;
     }
   }

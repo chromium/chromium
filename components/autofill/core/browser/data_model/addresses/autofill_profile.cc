@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -728,19 +729,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     return kMergeFailed;
   }
 
-  // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
-  // it conforms to the other infos. The check logic should be embedded inside
-  // the merge method and the method should be returning
-  // `std::optional<NameInfo>` instead of taking a reference to a `NameInfo`
-  // object as a parameter.
-  if (!NameInfo::AreNamesMergeable(profile.GetNameInfo(),
-                                   profile.GetAddressCountryCode(),
-                                   GetNameInfo(), GetAddressCountryCode()) ||
-      !NameInfo::AreAlternativeNamesMergeable(
-          profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
-          GetAddressCountryCode())) {
-    return kMergeFailed;
-  }
   // The comparator's merge operations are biased to prefer the data in the
   // first profile parameter when the data is the same modulo case. We expect
   // the caller to pass the incoming profile in this position to prefer
@@ -748,6 +736,15 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
   AutofillProfileComparator comparator(app_locale);
+
+  base::expected<NameInfo, NameInfo::MergeFailureReason> merged_name =
+      NameInfo::MergeNames(
+          profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
+          GetAddressCountryCode(),
+          usage_history().use_date() < profile.usage_history().use_date());
+  if (!merged_name.has_value()) {
+    return kMergeFailed;
+  }
 
   std::optional<EmailInfo> merged_email =
       comparator.MergeEmailAddresses(profile, *this);
@@ -773,17 +770,6 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     return kMergeFailed;
   }
 
-  NameInfo merged_name(
-      /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
-      AddressCountryCode("JP"));
-  if (!NameInfo::MergeNames(
-          profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
-          GetAddressCountryCode(),
-          usage_history().use_date() < profile.usage_history().use_date(),
-          merged_name)) {
-    return kMergeFailed;
-  }
-
   set_language_code(profile.language_code());
 
   usage_history_information_.MergeUsageHistories(profile.usage_history());
@@ -794,9 +780,9 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
 
   bool modified = false;
 
-  if (name_ != merged_name) {
-    MergeFormGroupTokenQuality(merged_name, profile);
-    name_ = std::move(merged_name);
+  if (name_ != *merged_name) {
+    MergeFormGroupTokenQuality(*merged_name, profile);
+    name_ = std::move(*merged_name);
     modified = true;
   }
 

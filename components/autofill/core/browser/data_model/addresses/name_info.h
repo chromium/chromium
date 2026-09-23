@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -25,6 +26,16 @@ enum class VerificationStatus;
 // A form group that stores name information.
 class NameInfo : public FormGroup {
  public:
+  // Reason for a failure of a merge between two `NameInfo` objects.
+  enum class MergeFailureReason {
+    // The full name failed to merge but alternative was mergeable.
+    kNameFullFailed = 0,
+    // The full name was mergeable but the alternative name could not be merged.
+    kAlternativeNameFailed = 1,
+    // Both full and alternative names could not be merged.
+    kBothFailed = 2,
+  };
+
   // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
   // purpose of this constant.
   static constexpr FieldTypeSet kDatabaseStoredTypes{NAME_HONORIFIC_PREFIX,
@@ -47,42 +58,17 @@ class NameInfo : public FormGroup {
   NameInfo& operator=(NameInfo&& info) noexcept;
   ~NameInfo() override;
 
-  // Populates `result_name_info` with the result of merging the names in
-  // `new_name_info` and `old_name_info`. Returns true if successful. Expects
-  // that `new_name_info` and `old_name_info` have already been found to be
-  // mergeable. Regular names are merged first, after they are done, merging of
-  // alternative names starts.
+  // Populates and returns the result of merging the names in `new_name_info`
+  // and `old_name_info`. Returns `MergeFailureReason` outlining which
+  // part of the merge has failed (full, alternative, both) on failure.
   // TODO(crbug.com/359768803): Make this function non-static when NameInfo
   // becomes CountryCode aware.
-  static bool MergeNames(const NameInfo& new_name_info,
-                         AddressCountryCode new_country_code,
-                         const NameInfo& old_name_info,
-                         AddressCountryCode old_country_code,
-                         bool newer_was_more_recently_used,
-                         NameInfo& result_name_info);
-
-  // Returns true if `name_info_1` and `name_info_2` names are mergeable,
-  // that is one of the names is empty, the names are the same, or one name is a
-  // variation of the other. The comparison is insensitive to case, punctuation
-  // and diacritics.
-  // TODO(crbug.com/359768803): Make this function non-static when NameInfo
-  // becomes CountryCode aware.
-  static bool AreNamesMergeable(const NameInfo& name_info_1,
-                                const AddressCountryCode country_code_1,
-                                const NameInfo& name_info_2,
-                                const AddressCountryCode country_code_2);
-
-  // Returns true if `name_info_1` and `name_info_2` alternative names are
-  // mergeable, that is one of the alternative names is empty, alternative names
-  // are the same, or one alternative name is a variation of the other. The
-  // comparison is insensitive to case, punctuation and diacritics.
-  // TODO(crbug.com/359768803): Make this function non-static when NameInfo
-  // becomes CountryCode aware.
-  static bool AreAlternativeNamesMergeable(
-      const NameInfo& name_info_1,
-      const AddressCountryCode country_code_1,
-      const NameInfo& name_info_2,
-      const AddressCountryCode country_code_2);
+  static base::expected<NameInfo, MergeFailureReason> MergeNames(
+      const NameInfo& new_name_info,
+      const AddressCountryCode& new_country_code,
+      const NameInfo& old_name_info,
+      const AddressCountryCode& old_country_code,
+      bool newer_was_more_recently_used);
 
   bool operator==(const NameInfo& other) const;
 
@@ -167,14 +153,14 @@ class NameInfo : public FormGroup {
   // (depending on the support).
   void OnCountryChange(const AddressCountryCode& new_country_code);
 
+  // Returns if the `alternative_name_` tree exists.
+  bool IsAlternativeNameSupported() const;
+
  private:
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
   // This node is unique by definition.
   AddressComponent* GetRootForType(FieldType type);
-
-  // Returns if the `alternative_name_` tree exists.
-  bool IsAlternativeNameSupported() const;
 
   void CreateAlternativeNameTree();
   void DeleteAlternativeNameTree();
