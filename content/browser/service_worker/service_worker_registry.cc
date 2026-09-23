@@ -1600,7 +1600,9 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
   for (const auto& registration_data : registration_data_list) {
     const bool inserted =
         pushed_registrations.insert(registration_data->registration_id).second;
-    CHECK(inserted, base::NotFatalUntil::M159);
+    // TODO(crbug.com/562722393): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(inserted);
 
     scoped_refptr<ServiceWorkerRegistration> registration =
         context_->GetLiveRegistration(registration_data->registration_id);
