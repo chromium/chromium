@@ -156,8 +156,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   size_t GetSize() const override;
 
  private:
-  bool IsGpuContextLost() const;
-
   Resource resource_;
   base::WeakPtr<WebGpuSharedImageCache> cache_;
 };

@@ -55,10 +55,6 @@ scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageLease::GetSharedImage()
   return resource_.shared_image_;
 }
 
-bool WebGpuSharedImageLease::IsGpuContextLost() const {
-  return ::blink::IsGpuContextLost(resource_.context_provider_wrapper_.get());
-}
-
 void WebGpuSharedImageLease::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
