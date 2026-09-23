@@ -474,9 +474,43 @@ message TranslatePageAction {
   int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
+// Clicks a file upload target and attaches the specified files.
+// Next ID: 4
+message ClickToUploadAction {
+  // The file input element, or the control that opens the file chooser.
+  ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
+
+  // Files to attach.
+  repeated File files = 2;
+
+  // The id of the tab containing the target.
+  int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
+
+  // A file to attach.
+  // Next ID: 4
+  message File {
+    // Opaque server-assigned identifier for the file (e.g. "file_1"), used for
+    // logging and tracing.
+    string file_alias = 1 [features = { field_presence: EXPLICIT }];
+
+    // URL from which the client fetches the file contents.
+    // Access control: It only encodes the file's storage identifier, which is
+    // keyed to the uploading user's Gaia. The storage backend (ContribService)
+    // enforces the file's ACL against the fetching request's EUC. The client
+    // must fetch this URL with the end user's credentials (EUC/cookies): an
+    // anonymous fetch, or one by a Gaia other than the file's owner is denied.
+    string download_url = 2 [features = { field_presence: EXPLICIT }];
+
+    // The original name of the file as uploaded by the user (e.g.
+    // "resume.pdf"), for display in the client UI (e.g. the upload chip or
+    // file list). Not used to identify or fetch the file.
+    string file_name = 3 [features = { field_presence: EXPLICIT }];
+  }
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 26
+// Next ID: 27
 message Action {
 
   oneof action {
@@ -529,6 +563,8 @@ message Action {
     AttemptOtpFillingAction attempt_otp_filling = 24;
 
     TranslatePageAction translate_page = 25;
+
+    ClickToUploadAction click_to_upload = 26;
   }
 }
 
