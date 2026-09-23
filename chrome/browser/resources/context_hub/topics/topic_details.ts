@@ -199,8 +199,10 @@ export class TopicDetailsElement extends CrLitElement {
     const groupLabel = this.topic?.title || 'Related Tabs';
 
     // Attempt to open tabs in a tab group via the Mojo PageHandler.
-    if (loadTimeData.valueExists('kAutoTabGroups') &&
-        loadTimeData.getBoolean('kAutoTabGroups')) {
+    // `OpenUrlsInTabGroup()` is gated by the kTopics runtime feature, so fall
+    // through to opening individual tabs when it is off.
+    if (loadTimeData.valueExists('kTopics') &&
+        loadTimeData.getBoolean('kTopics')) {
       try {
         const {success} =
             await browserProxyFactory.getInstance().handler.openUrlsInTabGroup(

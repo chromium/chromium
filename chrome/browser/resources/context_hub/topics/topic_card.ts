@@ -35,6 +35,17 @@ const BADGE_SHAPES: readonly BadgeShape[] = [
 export const DEFAULT_BACKGROUND_COLOR =
     'var(--topic-card-fallback-bg, var(--google-blue-100))';
 
+// Badge background colors, rotated by card index the same way shapes are.
+// Deliberately a different count than BADGE_SHAPES so a given shape does not
+// always pair with the same color as you go down the list.
+export const BADGE_BACKGROUND_COLORS: readonly string[] = [
+  'var(--google-blue-100)',
+  'var(--google-green-200)',
+  'var(--google-yellow-100)',
+  'var(--google-red-100)',
+  'var(--google-purple-200)',
+];
+
 export const DEFAULT_ICON = 'cr:insert-drive-file';
 
 export const FLOWER_PATH =
@@ -61,6 +72,11 @@ export const DIAMOND_PATH =
 // Cycles through badge shapes by index rotation.
 function getBadgeShapeForIndex(index: number): BadgeShape {
   return BADGE_SHAPES[index % BADGE_SHAPES.length]!;
+}
+
+// Cycles through badge background colors by index rotation.
+function getBackgroundColorForIndex(index: number): string {
+  return BADGE_BACKGROUND_COLORS[index % BADGE_BACKGROUND_COLORS.length]!;
 }
 
 // TODO(crbug.com/558572977): Use internationalized strings once GRD
@@ -107,7 +123,8 @@ export class TopicCardElement extends CrLitElement {
   }
 
   protected getBackgroundColor_(): string {
-    return this.topic?.backgroundColor || DEFAULT_BACKGROUND_COLOR;
+    return this.topic?.backgroundColor ||
+        getBackgroundColorForIndex(this.index);
   }
 
   protected getFlowerPath_(): string {
@@ -138,11 +155,14 @@ export class TopicCardElement extends CrLitElement {
     if (!this.topic) {
       return;
     }
-    const topicWithShape: TopicItem = {
+    // Resolve the index-derived badge properties here: the details page has no
+    // list index, so it cannot work them out on its own.
+    const resolvedTopic: TopicItem = {
       ...this.topic,
       badgeShape: this.getBadgeShape_(),
+      backgroundColor: this.getBackgroundColor_(),
     };
-    this.fire('jump-back-in', {topic: topicWithShape});
+    this.fire('jump-back-in', {topic: resolvedTopic});
   }
 }
 

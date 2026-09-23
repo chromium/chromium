@@ -85,9 +85,12 @@ source_set("context_hub_page_handler") {
 
   deps = [
     "//chrome/browser/context_hub",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
     "//components/sessions",
   ]
 
@@ -141,10 +144,13 @@ source_set("unit_tests") {
     ":context_hub_page_handler",
     "//base/test:test_support",
     "//chrome/browser/context_hub",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/personal_context",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/personal_context/core:test_support",
     "//components/personal_context/proto:personal_context_proto",
     "//components/saved_tab_groups/test_support",

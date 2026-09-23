@@ -18,6 +18,7 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/prefs.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
@@ -25,7 +26,13 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/journeys/journey.h"
+#include "components/history/core/browser/journeys/journey_row.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
@@ -80,6 +87,25 @@ class MockTabProvider : public ContextHubPageHandler::TabProvider {
               (override));
 };
 #endif
+
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  ~MockHistoryService() override = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetAllJourneys,
+              (history::HistoryService::GetAllJourneysCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+};
+
+std::unique_ptr<KeyedService> BuildMockHistoryService(
+    content::BrowserContext* context) {
+  auto service = std::make_unique<testing::NiceMock<MockHistoryService>>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
+  return service;
+}
 
 class MockPage : public browser::context_hub::mojom::Page {
  public:
@@ -146,6 +172,8 @@ class ContextHubPageHandlerTest : public testing::Test {
                                     -> std::unique_ptr<KeyedService> {
               return std::make_unique<MockOptimizationGuideKeyedService>();
             }));
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context, base::BindRepeating(&BuildMockHistoryService));
   }
 
   void SetUp() override {
@@ -186,6 +214,7 @@ class ContextHubPageHandlerTest : public testing::Test {
          browser::context_hub::mojom::kAutoTabGroups,
          browser::context_hub::mojom::kAutoTodos,
          browser::context_hub::mojom::kSmartSearch,
+         browser::context_hub::mojom::kTopics,
          optimization_guide::features::kOptimizationHints},
         {});
     return feature_list;
@@ -199,6 +228,12 @@ class ContextHubPageHandlerTest : public testing::Test {
   MockOptimizationGuideKeyedService* GetMockOptimizationGuideService() {
     return static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(&profile_));
+  }
+
+  MockHistoryService* GetMockHistoryService() {
+    return static_cast<MockHistoryService*>(
+        HistoryServiceFactory::GetForProfile(
+            &profile_, ServiceAccessType::EXPLICIT_ACCESS));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -2297,6 +2332,63 @@ TEST_F(ContextHubPageHandlerTest, ExecuteSmartSearch_EmptyResults) {
 
   const auto& results = future.Get();
   EXPECT_TRUE(results.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
+  history::journeys::Journey journey(
+      "test-topic-id", "Test Topic Title", base::Time::FromTimeT(1000),
+      "Test Topic Emoji", "Test Topic Long Description",
+      "Test Topic Short Description",
+      {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
+                                       u"Test Visit Title")},
+      {history::journeys::JourneyContinuationQuery(
+          "Test Continuation Query Title", "Test Continuation Query Prompt")});
+
+  EXPECT_CALL(*GetMockHistoryService(), GetAllJourneys(_, _))
+      .WillOnce(
+          [&journey](history::HistoryService::GetAllJourneysCallback callback,
+                     base::CancelableTaskTracker* tracker) {
+            std::move(callback).Run({journey});
+            return base::CancelableTaskTracker::kBadTaskId;
+          });
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TopicPtr>>
+      future;
+  handler_->GetTopics(future.GetCallback());
+
+  const auto& topics = future.Get();
+  ASSERT_EQ(topics.size(), 1u);
+  EXPECT_EQ(topics[0]->id, "test-topic-id");
+  EXPECT_EQ(topics[0]->title, "Test Topic Title");
+  EXPECT_EQ(topics[0]->creation_time, base::Time::FromTimeT(1000));
+  EXPECT_EQ(topics[0]->emoji, "Test Topic Emoji");
+  EXPECT_EQ(topics[0]->overview, "Test Topic Long Description");
+  EXPECT_EQ(topics[0]->short_overview, "Test Topic Short Description");
+
+  ASSERT_EQ(topics[0]->visits.size(), 1u);
+  EXPECT_EQ(topics[0]->visits[0]->url, GURL("https://example.com/visit"));
+  EXPECT_EQ(topics[0]->visits[0]->title, "Test Visit Title");
+
+  ASSERT_EQ(topics[0]->continuation_queries.size(), 1u);
+  EXPECT_EQ(topics[0]->continuation_queries[0]->title,
+            "Test Continuation Query Title");
+  EXPECT_EQ(topics[0]->continuation_queries[0]->prompt,
+            "Test Continuation Query Prompt");
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTopics_NoJourneys) {
+  EXPECT_CALL(*GetMockHistoryService(), GetAllJourneys(_, _))
+      .WillOnce([](history::HistoryService::GetAllJourneysCallback callback,
+                   base::CancelableTaskTracker* tracker) {
+        std::move(callback).Run({});
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TopicPtr>>
+      future;
+  handler_->GetTopics(future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 }  // namespace

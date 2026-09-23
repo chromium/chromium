@@ -46,6 +46,8 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
   source->AddBoolean(
       "kSmartSearch",
       base::FeatureList::IsEnabled(browser::context_hub::mojom::kSmartSearch));
+  source->AddBoolean("kTopics", base::FeatureList::IsEnabled(
+                                    browser::context_hub::mojom::kTopics));
   source->AddInteger("kMaxTabGroupChatHistoryTurns",
                      context_hub::features::kMaxTabGroupChatHistoryTurns.Get());
   source->AddInteger(

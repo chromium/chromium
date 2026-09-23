@@ -21,12 +21,9 @@ export function getHtml(this: TopicDetailsElement) {
             <path class="hero-pattern-shape"
                 d="${this.getBadgePath_()}"></path>
           </g>
-          ${this.getTextIcon_() ? html`
-            <text class="hero-pattern-icon" x="32" y="34" font-size="22"
-                text-anchor="middle" dominant-baseline="central">
-              ${this.getTextIcon_()}
-            </text>
-          ` : ''}
+          <text class="hero-pattern-icon" x="32" y="34" font-size="22"
+              text-anchor="middle" dominant-baseline="central">${
+              this.getTextIcon_()}</text>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#topic-grid-pattern)" />
