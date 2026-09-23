@@ -13,23 +13,16 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_user_variation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 // TabUnderlineView currently resides in glic/browser_ui.
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
@@ -37,7 +30,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -51,12 +43,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
-#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -102,194 +94,31 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabledEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimUploadsCompleteEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimCoinsShownEvent);
 
-class TestTabContextualizationController
-    : public lens::TabContextualizationController {
- public:
-  explicit TestTabContextualizationController(tabs::TabInterface* tab)
-      : lens::TabContextualizationController(tab) {}
-  ~TestTabContextualizationController() override = default;
-
-  void CaptureScreenshot(
-      std::optional<lens::ImageEncodingOptions> image_options,
-      CaptureScreenshotCallback callback) override {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(100, 100, /*isOpaque=*/true);
-    bitmap.eraseColor(SK_ColorRED);
-    std::move(callback).Run(bitmap);
-  }
-
- protected:
-  bool IsPageContextEligible(
-      const GURL& url,
-      const std::vector<optimization_guide::FrameMetadata>& frame_metadata)
-      override {
-    return true;
-  }
-};
-
-class MockContextualTasksEligibilityManager
-    : public contextual_tasks::ContextualTasksEligibilityManager {
- public:
-  MockContextualTasksEligibilityManager(
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      AimEligibilityService* aim_eligibility_service)
-      : contextual_tasks::ContextualTasksEligibilityManager(
-            pref_service,
-            identity_manager,
-            aim_eligibility_service) {
-    MaybeNotifyEligibilityChanged();
-  }
-  ~MockContextualTasksEligibilityManager() override = default;
-
-  bool IsEligibleWithoutIdentity() const override { return true; }
-  bool CalculateEligibility() const override { return true; }
-};
-
-class MockContextualTasksUiService
-    : public contextual_tasks::ContextualTasksUiService {
- public:
-  MockContextualTasksUiService(
-      Profile* profile,
-      contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      AimEligibilityService* aim_eligibility_service,
-      signin::IdentityManager* identity_manager)
-      : contextual_tasks::ContextualTasksUiService(
-            profile,
-            std::make_unique<testing::NiceMock<
-                contextual_tasks::MockContextualTasksUiServiceDelegate>>(),
-            contextual_tasks_service,
-            identity_manager,
-            aim_eligibility_service,
-            std::make_unique<MockContextualTasksEligibilityManager>(
-                profile->GetPrefs(),
-                identity_manager,
-                aim_eligibility_service),
-            /*cookie_synchronizer=*/nullptr) {}
-  ~MockContextualTasksUiService() override = default;
-
-  bool IsSignedInToBrowserWithValidCredentials() override { return true; }
-  bool IsUrlForPrimaryAccount(const GURL& url) override { return true; }
-  void GetAccessToken(
-      GetAccessTokenCallback callback,
-      base::WeakPtr<content::WebContents> web_contents) override {
-    std::move(callback).Run("fake_access_token");
-  }
-};
-
 }  // namespace
 
-class ContextualTasksContextManagementInteractiveUiTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+class ContextualTasksContextManagementInteractiveTestBase
+    : public ContextualTasksInteractiveTestBase {
  public:
-  ContextualTasksContextManagementInteractiveUiTest() {
-    tab_context_override_ =
-        tabs::TabFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting<
-                lens::TabContextualizationController>(base::BindRepeating(
-                [](tabs::TabInterface& tab)
-                    -> std::unique_ptr<lens::TabContextualizationController> {
-                  return std::make_unique<TestTabContextualizationController>(
-                      &tab);
-                }));
-  }
+  ContextualTasksContextManagementInteractiveTestBase() = default;
+  ~ContextualTasksContextManagementInteractiveTestBase() override = default;
 
-  ~ContextualTasksContextManagementInteractiveUiTest() override = default;
-
-  // The feature list must be initialized before the browser process starts,
-  // hence before delegating to the base `SetUp()`. Doing this here rather than
-  // in the constructor lets subclasses override `InitializeFeatureList()`.
-  void SetUp() override {
-    InitializeFeatureList();
-    InteractiveBrowserTest::SetUp();
-  }
-
-  // Drives the side panel composebox. WebUI omnibox popups are disabled to
-  // avoid popup interference during side panel composebox focus and query
-  // submission.
-  virtual void InitializeFeatureList() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {
-            {kContextualTasks, {}},
-            {kContextualTasksForceEntryPointEligibility, {}},
-            {omnibox::kContextManagementInComposebox,
-             {{"enable_tab_deselection", "true"}}},
-            {omnibox::kTabFaviconChipsToCoins, {}},
-            {lens::features::kLensOverlay, {}},
-            {lens::features::kLensSidePanelUnification, {}},
-            {lens::features::kLensOverlayContextualSearchbox, {}},
-        },
-        /*disabled_features=*/{
-            omnibox::internal::kWebUIOmniboxPopup,
-            omnibox::internal::kWebUIOmniboxAimPopup,
-        });
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
-
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(&ContextualTasksContextManagementInteractiveUiTest::
-                                BuildMockAimServiceInstance,
-                            base::Unretained(this)));
-
-    ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(&ContextualTasksContextManagementInteractiveUiTest::
-                                BuildMockContextualTasksUiServiceInstance,
-                            base::Unretained(this)));
-  }
-
-  std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    auto mock = std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
-        CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
-        /*url_loader_factory=*/nullptr,
-        IdentityManagerFactory::GetForProfile(profile));
-
-    auto* config = &mock->config();
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_BROWSER_TAB);
-
-    ON_CALL(*mock, GetSearchboxConfig()).WillByDefault(testing::Return(config));
-    ON_CALL(*mock, IsAimUrl(testing::_, testing::_))
-        .WillByDefault(
-            [](const GURL& url,
-               std::optional<contextual_tasks::HostOverride> host_override) {
-              return url.host().find("www.google.com") != std::string::npos;
-            });
-    ON_CALL(*mock, HasAimUrlParams(testing::_))
-        .WillByDefault([](const GURL& url) {
-          return url.host().find("www.google.com") != std::string::npos;
-        });
-    ON_CALL(*mock, IsCobrowseEligible()).WillByDefault(testing::Return(true));
-    ON_CALL(*mock, IsAimEligible()).WillByDefault(testing::Return(true));
-    ON_CALL(*mock, RegisterEligibilityChangedCallback(testing::_))
-        .WillByDefault([](base::RepeatingClosure) {
-          return base::CallbackListSubscription();
-        });
-    return mock;
-  }
-
-  std::unique_ptr<KeyedService> BuildMockContextualTasksUiServiceInstance(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<MockContextualTasksUiService>(
-        profile, ContextualTasksServiceFactory::GetForProfile(profile),
-        AimEligibilityServiceFactory::GetForProfile(profile),
-        IdentityManagerFactory::GetForProfile(profile));
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetDefaultEnabledFeatures();
+    enabled_features.push_back(
+        {kContextualTasksForceEntryPointEligibility, {}});
+    enabled_features.push_back({omnibox::kContextManagementInComposebox,
+                                {{"enable_tab_deselection", "true"}}});
+    enabled_features.push_back({omnibox::kTabFaviconChipsToCoins, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                GetDefaultDisabledFeatures());
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    ContextualTasksInteractiveTestBase::SetUpOnMainThread();
     SidePanelUI::From(browser())->DisableAnimationsForTesting();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
 
+    url_loader_interceptor_.reset();
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [this](content::URLLoaderInterceptor::RequestParams* params) {
@@ -342,7 +171,7 @@ class ContextualTasksContextManagementInteractiveUiTest
 
   void TearDownOnMainThread() override {
     url_loader_interceptor_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
+    ContextualTasksInteractiveTestBase::TearDownOnMainThread();
   }
 
  protected:
@@ -723,21 +552,25 @@ class ContextualTasksContextManagementInteractiveUiTest
     stalled_upload_clients_.clear();
   }
 
- protected:
-  // Subclasses override `InitializeFeatureList()` and configure this directly.
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
-  std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
   bool fail_context_uploads_ = false;
   std::vector<mojo::Remote<network::mojom::URLLoaderClient>>
       stalled_upload_clients_;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+class ContextualTasksContextManagementInteractiveUiTest
+    : public ContextualTasksContextManagementInteractiveTestBase,
+      public testing::WithParamInterface<UserVariation> {
+ public:
+  ContextualTasksContextManagementInteractiveUiTest() = default;
+  ~ContextualTasksContextManagementInteractiveUiTest() override = default;
+
+  UserVariation GetUserVariation() const override { return GetParam(); }
 };
 
 // --- Test 1: Synchronous UI consistency for tab sign posting when attached and
 // detached ---
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
                        TabSignPostingConsistency_AttachAndDetach) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
@@ -792,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
 
 // --- Test 2: Turn 2 with no new tabs retains existing context across all
 // elements ---
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
                        MultiTurn_NoNewTabsAdded_PersistsAcrossTurns) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
@@ -824,12 +657,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
 // user switches to a tab in the window between attaching it and its upload
 // finishing.
 class ContextualTasksStalledUploadInteractiveUiTest
-    : public ContextualTasksContextManagementInteractiveUiTest {
- protected:
+    : public ContextualTasksContextManagementInteractiveTestBase,
+      public testing::WithParamInterface<UserVariation> {
+ public:
+  ContextualTasksStalledUploadInteractiveUiTest() = default;
+  ~ContextualTasksStalledUploadInteractiveUiTest() override = default;
+
+  UserVariation GetUserVariation() const override { return GetParam(); }
   bool ShouldStallContextUploads() const override { return true; }
 };
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksStalledUploadInteractiveUiTest,
                        PanelFollowsTabAttachedWhileUploadInFlight) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
@@ -866,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
           true, "Side panel should follow to a tab attached as context"));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksStalledUploadInteractiveUiTest,
                        TabDisassociatedWhenUploadFails) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
@@ -897,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksStalledUploadInteractiveUiTest,
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
                        ContextPersistsAfterSwitchingToAttachedTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAttachedTab);
@@ -964,14 +802,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextManagementInteractiveUiTest,
 // than the DeepQuery helpers used above.
 // -----------------------------------------------------------------------------
 class ContextualTasksOmniboxContextManagementInteractiveUiTest
-    : public ContextualTasksContextManagementInteractiveUiTest {
+    : public ContextualTasksContextManagementInteractiveTestBase {
  public:
   ContextualTasksOmniboxContextManagementInteractiveUiTest() = default;
   ~ContextualTasksOmniboxContextManagementInteractiveUiTest() override =
       default;
 
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
             {kContextualTasks, {}},
@@ -1010,7 +848,7 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
   }
 
   void SetUpOnMainThread() override {
-    ContextualTasksContextManagementInteractiveUiTest::SetUpOnMainThread();
+    ContextualTasksContextManagementInteractiveTestBase::SetUpOnMainThread();
 
     // The popup grows tall once the composebox is shown, and the native tabs
     // submenu is anchored to the right of the main menu. A default-sized window
@@ -1315,5 +1153,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
       VerifyUnderlinedTabs({0}),
       VerifyPlusButtonCoins(kSidePanelWebContentsId, 1));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksContextManagementInteractiveUiTest,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksStalledUploadInteractiveUiTest,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
 
 }  // namespace contextual_tasks
