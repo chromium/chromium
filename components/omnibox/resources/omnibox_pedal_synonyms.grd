@@ -223,7 +223,7 @@
 
       <!-- Pedal #4: LAUNCH_INCOGNITO -->
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_ENTER_INCOGNITO_MODE" is_accessibility_with_no_ui="true" desc="Whole phrases for the LAUNCH_INCOGNITO Pedal's solitary triggering group. Context: The user is typing into the search bar to find a way to 'Launch an incognito browser window' but the user is not sure how to describe this action. The input text is scanned for any phrases in this comma-separated list to determine whether the action button should appear. Do not translate the list 1:1 phrase for phrase. List several (~3-15) queries that users typing in the target language might search to perform this Pedal's action. Delimit each separate query phrase with a comma, including variations for the gender, plurals, etc. For other instructions, please see doc: https://docs.google.com/document/d/1cggNrwZvEbt9Hv_zMryByvgR8Vr4yal_V8Rxg1AOugw/edit">
-        enter incognito mode, new incognito window, open incognito tab
+        enter incognito mode, enter isolated mode, new incognito window, new isolated window, open incognito tab, open isolated tab
       </message>
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_OPTIONAL_GOOGLE_CHROME" translateable="false" is_accessibility_with_no_ui="true" desc="Synonyms for the LAUNCH_INCOGNITO Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL. Context: The user is typing into the omnibox to find a way to 'Launch an incognito browser window' but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Note: This string is not translated; it's used for triggering in English only.">
         google chrome, browser, chrome
@@ -232,7 +232,7 @@
         create, launch, enter, start, open, new
       </message>
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_INCOGNITO_WINDOW" translateable="false" is_accessibility_with_no_ui="true" desc="Synonyms for the LAUNCH_INCOGNITO Pedal's 'incognito window' group. To trigger, exactly ONE of this group is REQUIRED. Context: The user is typing into the omnibox to find a way to 'Launch an incognito browser window' but the user is not sure how to describe this action. The input text is scanned for any words included in this synonym group to determine whether this concept is present in the query. Note: This string is not translated; it's used for triggering in English only.">
-        incognito window, incognito mode, private window, incognito tab, private mode, private tab, incognito
+        isolated window, incognito window, isolated mode, incognito mode, private window, isolated tab, incognito tab, private mode, private tab, isolated, incognito
       </message>
 
       <!-- Pedal #5: TRANSLATE -->

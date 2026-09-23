@@ -206,7 +206,8 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
 
 class OmniboxPedalLaunchIncognito : public OmniboxPedal {
  public:
-  OmniboxPedalLaunchIncognito()
+  explicit OmniboxPedalLaunchIncognito(
+      OmniboxPedalOtrType otr_type = OmniboxPedalOtrType::kIncognito)
       : OmniboxPedal(
             OmniboxPedalId::LAUNCH_INCOGNITO,
 #if BUILDFLAG(IS_ANDROID)
@@ -216,10 +217,17 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
                 IDS_ANDROID_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
                 IDS_ANDROID_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
 #else
-            LabelStrings(IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
-                         IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
-                         IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
-                         IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
+            otr_type == OmniboxPedalOtrType::kIsolated
+                ? LabelStrings(
+                      IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_HINT,
+                      IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_SUGGESTION_CONTENTS,
+                      IDS_ACC_OMNIBOX_PEDAL_LAUNCH_ISOLATED_SUFFIX,
+                      IDS_ACC_OMNIBOX_PEDAL_LAUNCH_ISOLATED)
+                : LabelStrings(
+                      IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT,
+                      IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS,
+                      IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX,
+                      IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO),
 #endif  // BUILDFLAG(IS_ANDROID)
         // Fake URL to distinguish matches.
             GURL("chrome://newtab?incognito=true")) {
@@ -2054,7 +2062,7 @@ GetPedalImplementations(OmniboxPedalProfileType profile_type,
   }
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
-  add(new OmniboxPedalLaunchIncognito());
+  add(new OmniboxPedalLaunchIncognito(otr_type));
   if (!base::android::device_info::is_automotive()) {
     add(new OmniboxPedalRunChromeSafetyCheck());
   }
@@ -2071,7 +2079,7 @@ GetPedalImplementations(OmniboxPedalProfileType profile_type,
   }
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
-  add(new OmniboxPedalLaunchIncognito());
+  add(new OmniboxPedalLaunchIncognito(otr_type));
   add(new OmniboxPedalTranslate());
   add(new OmniboxPedalUpdateChrome());
   add(new OmniboxPedalRunChromeSafetyCheck());

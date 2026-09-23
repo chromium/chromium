@@ -18048,6 +18048,44 @@ TEST_F(OmniboxPedalImplementationsTest, PedalCloseIncognitoWindowsStrings) {
 #endif
 }
 
+TEST_F(OmniboxPedalImplementationsTest, PedalLaunchIncognitoStrings) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto pedals_regular = GetPedalImplementations(
+      OmniboxPedalProfileType::kRegular, OmniboxPedalOtrType::kIncognito,
+      /*testing=*/true);
+  auto it_regular = pedals_regular.find(OmniboxPedalId::LAUNCH_INCOGNITO);
+  ASSERT_NE(it_regular, pedals_regular.end());
+  EXPECT_EQ(it_regular->second->GetLabelStrings().hint,
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT));
+  EXPECT_EQ(it_regular->second->GetLabelStrings().suggestion_contents,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS));
+
+  auto pedals_isolated = GetPedalImplementations(
+      OmniboxPedalProfileType::kRegular, OmniboxPedalOtrType::kIsolated,
+      /*testing=*/true);
+  auto it_isolated = pedals_isolated.find(OmniboxPedalId::LAUNCH_INCOGNITO);
+  ASSERT_NE(it_isolated, pedals_isolated.end());
+  EXPECT_EQ(it_isolated->second->GetLabelStrings().hint,
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_HINT));
+  EXPECT_EQ(it_isolated->second->GetLabelStrings().suggestion_contents,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_SUGGESTION_CONTENTS));
+
+  auto pedals_otr_isolated =
+      GetPedalImplementations(OmniboxPedalProfileType::kOtrWithRegularParent,
+                              OmniboxPedalOtrType::kIsolated, /*testing=*/true);
+  auto it_otr_isolated =
+      pedals_otr_isolated.find(OmniboxPedalId::LAUNCH_INCOGNITO);
+  ASSERT_NE(it_otr_isolated, pedals_otr_isolated.end());
+  EXPECT_EQ(it_otr_isolated->second->GetLabelStrings().hint,
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_HINT));
+  EXPECT_EQ(it_otr_isolated->second->GetLabelStrings().suggestion_contents,
+            l10n_util::GetStringUTF16(
+                IDS_OMNIBOX_PEDAL_LAUNCH_ISOLATED_SUGGESTION_CONTENTS));
+#endif
+}
+
 TEST_F(OmniboxPedalImplementationsTest, MemoryUsageIsModerate) {
   // Note: This allowance is a soft limit that may be tweaked depending on
   // how usefulness is weighed against memory cost. The goal of the test is
