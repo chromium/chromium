@@ -20,22 +20,27 @@ LIBRARY  "apifw.dll"
 EXPORTS
 
 ;---------------------------------------------------------------------------
-; Forwarded directly to kernel32/ntdll/winmm (= module.Name).
+; Forwarded directly to kernel32/KernelBase/ntdll/winmm (= module.Name).
 ; The PE loader resolves the forward, so these calls are not logged. Every
 ; name here is on the basic-process allowlist (basic_sandbox.def).
 ;---------------------------------------------------------------------------
   AcquireSRWLockExclusive = kernel32.AcquireSRWLockExclusive
   AcquireSRWLockShared = kernel32.AcquireSRWLockShared
+  AddVectoredContinueHandler = kernel32.AddVectoredContinueHandler
   AddVectoredExceptionHandler = kernel32.AddVectoredExceptionHandler
   CloseHandle = kernel32.CloseHandle
   CreateRemoteThread = kernel32.CreateRemoteThread
+  CreateRemoteThreadEx = kernel32.CreateRemoteThreadEx
   CreateThread = kernel32.CreateThread
   DebugBreak = kernel32.DebugBreak
   DecodePointer = kernel32.DecodePointer
   DeleteCriticalSection = kernel32.DeleteCriticalSection
   DeleteProcThreadAttributeList = kernel32.DeleteProcThreadAttributeList
+  DeleteSynchronizationBarrier = kernel32.DeleteSynchronizationBarrier
+  DisableThreadLibraryCalls = kernel32.DisableThreadLibraryCalls
   EncodePointer = kernel32.EncodePointer
   EnterCriticalSection = kernel32.EnterCriticalSection
+  EnterSynchronizationBarrier = kernel32.EnterSynchronizationBarrier
   ExitProcess = kernel32.ExitProcess
   ExitThread = kernel32.ExitThread
   FileTimeToSystemTime = kernel32.FileTimeToSystemTime
@@ -50,13 +55,17 @@ EXPORTS
   GetCurrentProcess = kernel32.GetCurrentProcess
   GetCurrentProcessId = kernel32.GetCurrentProcessId
   GetCurrentProcessorNumber = kernel32.GetCurrentProcessorNumber
+  GetCurrentProcessorNumberEx = kernel32.GetCurrentProcessorNumberEx
   GetCurrentThread = kernel32.GetCurrentThread
   GetCurrentThreadId = kernel32.GetCurrentThreadId
+  GetCurrentThreadStackLimits = kernel32.GetCurrentThreadStackLimits
+  GetEnabledXStateFeatures = kernel32.GetEnabledXStateFeatures
   GetEnvironmentStringsW = kernel32.GetEnvironmentStringsW
   GetEnvironmentVariableW = kernel32.GetEnvironmentVariableW
   GetLastError = kernel32.GetLastError
   GetModuleFileNameW = kernel32.GetModuleFileNameW
   GetOverlappedResult = kernel32.GetOverlappedResult
+  GetOverlappedResultEx = kernel32.GetOverlappedResultEx
   GetProcessHeap = kernel32.GetProcessHeap
   GetStartupInfoW = kernel32.GetStartupInfoW
   GetStdHandle = kernel32.GetStdHandle
@@ -65,6 +74,7 @@ EXPORTS
   GetSystemTimePreciseAsFileTime = kernel32.GetSystemTimePreciseAsFileTime
   GetTickCount = kernel32.GetTickCount
   GetTickCount64 = kernel32.GetTickCount64
+  GetXStateFeaturesMask = kernel32.GetXStateFeaturesMask
   HeapAlloc = kernel32.HeapAlloc
   HeapCreate = kernel32.HeapCreate
   HeapDestroy = kernel32.HeapDestroy
@@ -80,15 +90,20 @@ EXPORTS
   InitializeProcThreadAttributeList = kernel32.InitializeProcThreadAttributeList
   InitializeSListHead = kernel32.InitializeSListHead
   InitializeSRWLock = kernel32.InitializeSRWLock
+  InitializeSynchronizationBarrier = kernel32.InitializeSynchronizationBarrier
   InitOnceBeginInitialize = kernel32.InitOnceBeginInitialize
   InitOnceComplete = kernel32.InitOnceComplete
   InitOnceExecuteOnce = kernel32.InitOnceExecuteOnce
+  InitOnceInitialize = kernel32.InitOnceInitialize
   InterlockedFlushSList = kernel32.InterlockedFlushSList
   InterlockedPopEntrySList = kernel32.InterlockedPopEntrySList
   InterlockedPushEntrySList = kernel32.InterlockedPushEntrySList
+  InterlockedPushListSList = kernel32.InterlockedPushListSList
+  InterlockedPushListSListEx = kernel32.InterlockedPushListSListEx
   IsDebuggerPresent = kernel32.IsDebuggerPresent
   IsProcessorFeaturePresent = kernel32.IsProcessorFeaturePresent
   LeaveCriticalSection = kernel32.LeaveCriticalSection
+  LocateXStateFeature = kernel32.LocateXStateFeature
   MapViewOfFile = kernel32.MapViewOfFile
   MapViewOfFileEx = kernel32.MapViewOfFileEx
   OutputDebugStringW = kernel32.OutputDebugStringW
@@ -98,8 +113,10 @@ EXPORTS
   RaiseException = kernel32.RaiseException
   RaiseFailFastException = kernel32.RaiseFailFastException
   ReadFile = kernel32.ReadFile
+  ReadFileEx = kernel32.ReadFileEx
   ReleaseSRWLockExclusive = kernel32.ReleaseSRWLockExclusive
   ReleaseSRWLockShared = kernel32.ReleaseSRWLockShared
+  RemoveVectoredContinueHandler = kernel32.RemoveVectoredContinueHandler
   RemoveVectoredExceptionHandler = kernel32.RemoveVectoredExceptionHandler
   ResetEvent = kernel32.ResetEvent
   RtlAddFunctionTable = kernel32.RtlAddFunctionTable
@@ -108,11 +125,16 @@ EXPORTS
   RtlCaptureStackBackTrace = kernel32.RtlCaptureStackBackTrace
   RtlDeleteFunctionTable = kernel32.RtlDeleteFunctionTable
   RtlDeleteGrowableFunctionTable = ntdll.RtlDeleteGrowableFunctionTable
+  RtlGrowFunctionTable = ntdll.RtlGrowFunctionTable
+  RtlInstallFunctionTableCallback = ntdll.RtlInstallFunctionTableCallback
   RtlLookupFunctionEntry = ntdll.RtlLookupFunctionEntry
   RtlPcToFileHeader = kernel32.RtlPcToFileHeader
+  RtlRaiseException = ntdll.RtlRaiseException
+  RtlUnhandledExceptionFilter = ntdll.RtlUnhandledExceptionFilter
   RtlUnwind = ntdll.RtlUnwind
   RtlUnwindEx = ntdll.RtlUnwindEx
   RtlVirtualUnwind = ntdll.RtlVirtualUnwind
+  SetCriticalSectionSpinCount = kernel32.SetCriticalSectionSpinCount
   SetEvent = kernel32.SetEvent
   SetLastError = kernel32.SetLastError
   SetUnhandledExceptionFilter = kernel32.SetUnhandledExceptionFilter
@@ -122,18 +144,23 @@ EXPORTS
   SleepEx = kernel32.SleepEx
   SystemTimeToFileTime = kernel32.SystemTimeToFileTime
   TerminateProcess = kernel32.TerminateProcess
+  TerminateThread = kernel32.TerminateThread
+  timeGetSystemTime = winmm.timeGetSystemTime
   timeGetTime = winmm.timeGetTime
   TlsAlloc = kernel32.TlsAlloc
   TlsFree = kernel32.TlsFree
   TlsGetValue = kernel32.TlsGetValue
   TlsSetValue = kernel32.TlsSetValue
   TryAcquireSRWLockExclusive = kernel32.TryAcquireSRWLockExclusive
+  TryAcquireSRWLockShared = kernel32.TryAcquireSRWLockShared
   TryEnterCriticalSection = kernel32.TryEnterCriticalSection
   UnhandledExceptionFilter = kernel32.UnhandledExceptionFilter
   UnmapViewOfFile = kernel32.UnmapViewOfFile
+  UnmapViewOfFileEx = kernel32.UnmapViewOfFileEx
   UpdateProcThreadAttribute = kernel32.UpdateProcThreadAttribute
   VirtualAlloc = kernel32.VirtualAlloc
   VirtualAllocEx = kernel32.VirtualAllocEx
+  VirtualAllocExNuma = kernel32.VirtualAllocExNuma
   VirtualFree = kernel32.VirtualFree
   VirtualFreeEx = kernel32.VirtualFreeEx
   VirtualProtect = kernel32.VirtualProtect
@@ -141,11 +168,16 @@ EXPORTS
   VirtualQuery = kernel32.VirtualQuery
   VirtualQueryEx = kernel32.VirtualQueryEx
   WaitForMultipleObjects = kernel32.WaitForMultipleObjects
+  WaitForMultipleObjectsEx = kernel32.WaitForMultipleObjectsEx
   WaitForSingleObject = kernel32.WaitForSingleObject
   WaitForSingleObjectEx = kernel32.WaitForSingleObjectEx
+  WaitOnAddress = KernelBase.WaitOnAddress
   WakeAllConditionVariable = kernel32.WakeAllConditionVariable
+  WakeByAddressAll = KernelBase.WakeByAddressAll
+  WakeByAddressSingle = KernelBase.WakeByAddressSingle
   WakeConditionVariable = kernel32.WakeConditionVariable
   WriteFile = kernel32.WriteFile
+  WriteFileEx = kernel32.WriteFileEx
 
 ;---------------------------------------------------------------------------
 ; Routed to a logging thunk (Apifw* in thunks_*.cc).
