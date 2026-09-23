@@ -121,14 +121,9 @@ class PannerHandler final : public AudioHandler {
                                   const gfx::Vector3dF& orientation,
                                   const gfx::Point3F& listener_position);
 
-  // The in-place version of `CalculateAzimuthElevation` above for k-rate.
-  void AzimuthElevation(double* out_azimuth, double* out_elevation);
-
   // Returns a combined gain attenuation for distance and sound cone in k-rate.
   float DistanceConeGain();
 
-  bool IsAzimuthElevationDirty() const { return is_azimuth_elevation_dirty_; }
-  bool IsDistanceConeGainDirty() const { return is_distance_cone_gain_dirty_; }
   void UpdateDirtyState();
 
   // True if any of this panner's AudioParams have automations.

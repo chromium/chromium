@@ -36,7 +36,12 @@
 
 namespace blink {
 
-EqualPowerPanner::EqualPowerPanner(float sample_rate) {}
+EqualPowerPanner::EqualPowerPanner(float sample_rate) {
+  // Initialize cache by passing reasonable default values.
+  constexpr double kDefaultAzimuth = 0.0;
+  constexpr int kDefaultNumberOfInputChannels = 1;
+  UpdateDesiredGain(kDefaultAzimuth, kDefaultNumberOfInputChannels);
+}
 
 void EqualPowerPanner::Pan(double azimuth,
                            double /*elevation*/,
@@ -48,13 +53,11 @@ void EqualPowerPanner::Pan(double azimuth,
   DCHECK_LE(frames_to_process, input_bus->length());
   DCHECK_GE(input_bus->NumberOfChannels(), 1u);
   DCHECK_LE(input_bus->NumberOfChannels(), 2u);
-
-  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
-
   DCHECK(output_bus);
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
   DCHECK_LE(frames_to_process, output_bus->length());
 
+  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
   base::span<const float> source_l = input_bus->Channel(0)->Span();
   base::span<const float> source_r =
       number_of_input_channels > 1 ? input_bus->Channel(1)->Span() : source_l;
@@ -68,16 +71,13 @@ void EqualPowerPanner::Pan(double azimuth,
     return;
   }
 
-  double desired_gain_l;
-  double desired_gain_r;
-  CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth,
-                       number_of_input_channels);
+  azimuth = UpdateDesiredGain(azimuth, number_of_input_channels);
 
   if (number_of_input_channels == 1) {  // For mono source case.
     for (size_t i = 0; i < frames_to_process; ++i) {
       const float input_l = source_l[i];
-      destination_l[i] = static_cast<float>(input_l * desired_gain_l);
-      destination_r[i] = static_cast<float>(input_l * desired_gain_r);
+      destination_l[i] = static_cast<float>(input_l * desired_gain_l_);
+      destination_r[i] = static_cast<float>(input_l * desired_gain_r_);
     }
   } else {               // For stereo source case.
     if (azimuth <= 0) {  // from -90 -> 0
@@ -85,16 +85,16 @@ void EqualPowerPanner::Pan(double azimuth,
         const float input_l = source_l[i];
         const float input_r = source_r[i];
         destination_l[i] =
-            static_cast<float>(input_l + input_r * desired_gain_l);
-        destination_r[i] = static_cast<float>(input_r * desired_gain_r);
+            static_cast<float>(input_l + input_r * desired_gain_l_);
+        destination_r[i] = static_cast<float>(input_r * desired_gain_r_);
       }
     } else {  // from 0 -> +90
       for (size_t i = 0; i < frames_to_process; ++i) {
         const float input_l = source_l[i];
         const float input_r = source_r[i];
-        destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+        destination_l[i] = static_cast<float>(input_l * desired_gain_l_);
         destination_r[i] =
-            static_cast<float>(input_r + input_l * desired_gain_r);
+            static_cast<float>(input_r + input_l * desired_gain_r_);
       }
     }
   }
@@ -111,13 +111,11 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
   DCHECK_LE(frames_to_process, input_bus->length());
   DCHECK_GE(input_bus->NumberOfChannels(), 1u);
   DCHECK_LE(input_bus->NumberOfChannels(), 2u);
-
-  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
-
   DCHECK(output_bus);
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
   DCHECK_LE(frames_to_process, output_bus->length());
 
+  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
   base::span<const float> source_l = input_bus->Channel(0)->Span();
   base::span<const float> source_r =
       number_of_input_channels > 1 ? input_bus->Channel(1)->Span() : source_l;
@@ -133,44 +131,32 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
 
   if (number_of_input_channels == 1) {  // For mono source case.
     for (size_t i = 0; i < frames_to_process; ++i) {
-      double desired_gain_l;
-      double desired_gain_r;
       const float input_l = source_l[i];
-      double clamped_azimuth = azimuth[i];
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, clamped_azimuth,
-                           number_of_input_channels);
-      destination_l[i] = static_cast<float>(input_l * desired_gain_l);
-      destination_r[i] = static_cast<float>(input_l * desired_gain_r);
+      UpdateDesiredGain(azimuth[i], number_of_input_channels);
+      destination_l[i] = static_cast<float>(input_l * desired_gain_l_);
+      destination_r[i] = static_cast<float>(input_l * desired_gain_r_);
     }
   } else {  // For stereo source case.
     for (size_t i = 0; i < frames_to_process; ++i) {
-      double desired_gain_l;
-      double desired_gain_r;
-      double clamped_azimuth = azimuth[i];
-
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, clamped_azimuth,
-                           number_of_input_channels);
+      const float input_l = source_l[i];
+      const float input_r = source_r[i];
+      const double clamped_azimuth =
+          UpdateDesiredGain(azimuth[i], number_of_input_channels);
       if (clamped_azimuth <= 0) {  // from -90 -> 0
-        const float input_l = source_l[i];
-        const float input_r = source_r[i];
         destination_l[i] =
-            static_cast<float>(input_l + input_r * desired_gain_l);
-        destination_r[i] = static_cast<float>(input_r * desired_gain_r);
+            static_cast<float>(input_l + input_r * desired_gain_l_);
+        destination_r[i] = static_cast<float>(input_r * desired_gain_r_);
       } else {  // from 0 -> +90
-        const float input_l = source_l[i];
-        const float input_r = source_r[i];
-        destination_l[i] = static_cast<float>(input_l * desired_gain_l);
+        destination_l[i] = static_cast<float>(input_l * desired_gain_l_);
         destination_r[i] =
-            static_cast<float>(input_r + input_l * desired_gain_r);
+            static_cast<float>(input_r + input_l * desired_gain_r_);
       }
     }
   }
 }
 
-void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
-                                            double& desired_gain_r,
-                                            double& azimuth,
-                                            int number_of_input_channels) {
+double EqualPowerPanner::UpdateDesiredGain(double azimuth,
+                                           int number_of_input_channels) {
   // Clamp azimuth to allowed range of -180 -> +180.
   azimuth = ClampTo(azimuth, -180.0, 180.0);
 
@@ -181,6 +167,13 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
   } else if (azimuth > 90.0) {
     azimuth = 180.0 - azimuth;
   }
+
+  if ((cached_azimuth_ == azimuth) &&
+      (cached_number_of_input_channels_ == number_of_input_channels)) {
+    return azimuth;
+  }
+  cached_azimuth_ = azimuth;
+  cached_number_of_input_channels_ = number_of_input_channels;
 
   double desired_pan_position;
 
@@ -202,8 +195,9 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
     }
   }
 
-  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_l_ = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r_ = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
+  return azimuth;
 }
 
 }  // namespace blink

@@ -28,10 +28,8 @@ namespace {
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 
-void FixNANs(double& x) {
-  if (!std::isfinite(x)) {
-    x = 0.0;
-  }
+double EnsureFinite(double x) {
+  return std::isfinite(x) ? x : 0.0;
 }
 
 }  // namespace
@@ -201,24 +199,33 @@ void PannerHandler::Process(uint32_t frames_to_process) {
          listener_handler_->HasSampleAccurateValues()) &&
         (IsAudioRate() || listener_handler_->IsAudioRate())) {
       // It's tempting to skip sample-accurate processing if
-      // isAzimuthElevationDirty() and isDistanceConeGain() both return false.
-      // But in general we can't because something may scheduled to start in the
-      // middle of the rendering quantum.  On the other hand, the audible effect
-      // may be small enough that we can afford to do this optimization.
+      // `is_azimuth_elevation_dirty_` and `is_distance_cone_gain_dirty_` both
+      // are false.  But in general we can't because something may scheduled to
+      // start in the middle of the rendering quantum.  On the other hand, the
+      // audible effect may be small enough that we can afford to do this
+      // optimization.
       ProcessSampleAccurateValues(destination, source.get(), frames_to_process);
     } else {
       // Apply the panning effect.
-      double azimuth;
-      double elevation;
 
       // Update dirty state in case something has moved; this can happen if the
       // AudioParam for the position or orientation component is set directly.
       UpdateDirtyState();
 
-      AzimuthElevation(&azimuth, &elevation);
+      // Calculate new azimuth and elevation if the panner or the listener
+      // changed position or orientation in any way.
+      if (is_azimuth_elevation_dirty_ || listener_handler_->IsListenerDirty()) {
+        CalculateAzimuthElevation(&cached_azimuth_, &cached_elevation_,
+                                  GetPosition(),
+                                  listener_handler_->GetPosition(),
+                                  listener_handler_->GetOrientation(),
+                                  listener_handler_->GetUpVector());
+        is_azimuth_elevation_dirty_ = false;
+      }
 
-      panner_->Pan(azimuth, elevation, source.get(), destination,
-                   frames_to_process, InternalChannelInterpretation());
+      panner_->Pan(cached_azimuth_, cached_elevation_, source.get(),
+                   destination, frames_to_process,
+                   InternalChannelInterpretation());
 
       // Get the distance and cone gain.
       const float total_gain = DistanceConeGain();
@@ -593,7 +600,7 @@ void PannerHandler::CalculateAzimuthElevation(
   // product is good enough.
   double azimuth = Rad2deg(acos(
       ClampTo(gfx::DotProduct(projected_source, listener_right), -1.0f, 1.0f)));
-  FixNANs(azimuth);  // avoid illegal values
+  azimuth = EnsureFinite(azimuth);  // avoid illegal values
 
   // Source  in front or behind the listener
   double front_back = gfx::DotProduct(projected_source, listener_forward_norm);
@@ -611,7 +618,7 @@ void PannerHandler::CalculateAzimuthElevation(
   // Elevation
   double elevation =
       90 - gfx::AngleBetweenVectorsInDegrees(source_listener, up);
-  FixNANs(elevation);  // avoid illegal values
+  elevation = EnsureFinite(elevation);  // avoid illegal values
 
   if (elevation > 90.0) {
     elevation = 180.0 - elevation;
@@ -639,31 +646,12 @@ float PannerHandler::CalculateDistanceConeGain(
   return static_cast<float>(distance_gain * cone_gain);
 }
 
-void PannerHandler::AzimuthElevation(double* out_azimuth,
-                                     double* out_elevation) {
-  DCHECK(Context()->IsAudioThread());
-
-  // Calculate new azimuth and elevation if the panner or the listener changed
-  // position or orientation in any way.
-  if (IsAzimuthElevationDirty() || listener_handler_->IsListenerDirty()) {
-    CalculateAzimuthElevation(
-        &cached_azimuth_, &cached_elevation_, GetPosition(),
-        listener_handler_->GetPosition(),
-        listener_handler_->GetOrientation(),
-        listener_handler_->GetUpVector());
-    is_azimuth_elevation_dirty_ = false;
-  }
-
-  *out_azimuth = cached_azimuth_;
-  *out_elevation = cached_elevation_;
-}
-
 float PannerHandler::DistanceConeGain() {
   DCHECK(Context()->IsAudioThread());
 
   // Calculate new distance and cone gain if the panner or the listener
   // changed position or orientation in any way.
-  if (IsDistanceConeGainDirty() || listener_handler_->IsListenerDirty()) {
+  if (is_distance_cone_gain_dirty_ || listener_handler_->IsListenerDirty()) {
     cached_distance_cone_gain_ = CalculateDistanceConeGain(
         GetPosition(), Orientation(), listener_handler_->GetPosition());
     is_distance_cone_gain_dirty_ = false;
@@ -734,25 +722,22 @@ void PannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
 }
 
 gfx::Point3F PannerHandler::GetPosition() const {
-  auto x = position_x_->IsAudioRate() ? position_x_->FinalValue()
-                                      : position_x_->Value();
-  auto y = position_y_->IsAudioRate() ? position_y_->FinalValue()
-                                      : position_y_->Value();
-  auto z = position_z_->IsAudioRate() ? position_z_->FinalValue()
-                                      : position_z_->Value();
-
-  return gfx::Point3F(x, y, z);
+  return gfx::Point3F(position_x_->IsAudioRate() ? position_x_->FinalValue()
+                                                 : position_x_->Value(),
+                      position_y_->IsAudioRate() ? position_y_->FinalValue()
+                                                 : position_y_->Value(),
+                      position_z_->IsAudioRate() ? position_z_->FinalValue()
+                                                 : position_z_->Value());
 }
 
 gfx::Vector3dF PannerHandler::Orientation() const {
-  auto x = orientation_x_->IsAudioRate() ? orientation_x_->FinalValue()
-                                         : orientation_x_->Value();
-  auto y = orientation_y_->IsAudioRate() ? orientation_y_->FinalValue()
-                                         : orientation_y_->Value();
-  auto z = orientation_z_->IsAudioRate() ? orientation_z_->FinalValue()
-                                         : orientation_z_->Value();
-
-  return gfx::Vector3dF(x, y, z);
+  return gfx::Vector3dF(
+      orientation_x_->IsAudioRate() ? orientation_x_->FinalValue()
+                                    : orientation_x_->Value(),
+      orientation_y_->IsAudioRate() ? orientation_y_->FinalValue()
+                                    : orientation_y_->Value(),
+      orientation_z_->IsAudioRate() ? orientation_z_->FinalValue()
+                                    : orientation_z_->Value());
 }
 
 bool PannerHandler::HasSampleAccurateValues() const {
@@ -773,13 +758,11 @@ bool PannerHandler::IsAudioRate() const {
 void PannerHandler::UpdateDirtyState() {
   DCHECK(Context()->IsAudioThread());
 
-  gfx::Point3F current_position = GetPosition();
-  gfx::Vector3dF current_orientation = Orientation();
+  const gfx::Point3F current_position = GetPosition();
+  const gfx::Vector3dF current_orientation = Orientation();
 
-  bool has_moved = current_position != last_position_ ||
-                   current_orientation != last_orientation_;
-
-  if (has_moved) {
+  if (current_position != last_position_ ||
+      current_orientation != last_orientation_) {
     last_position_ = current_position;
     last_orientation_ = current_orientation;
 

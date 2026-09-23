@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -337,8 +338,8 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateByInterpolatingSlices(
   }
 
   // Interpolate elevation angle.
-  const double angle = (1.0 - x) * hrtf_elevation1->elevation_angle_ +
-                       x * hrtf_elevation2->elevation_angle_;
+  const double angle = std::lerp(hrtf_elevation1->elevation_angle_,
+                                 hrtf_elevation2->elevation_angle_, x);
 
   std::unique_ptr<HRTFElevation> hrtf_elevation = base::WrapUnique(
       new HRTFElevation(std::move(kernel_list_l), std::move(kernel_list_r),
@@ -375,10 +376,8 @@ void HRTFElevation::GetKernelsFromAzimuth(double azimuth_blend,
   const double frame_delay2r = kernel_list_r_->at(azimuth_index2)->FrameDelay();
 
   // Linearly interpolate delays.
-  frame_delay_l =
-      (1.0 - azimuth_blend) * frame_delay_l + azimuth_blend * frame_delay2l;
-  frame_delay_r =
-      (1.0 - azimuth_blend) * frame_delay_r + azimuth_blend * frame_delay2r;
+  frame_delay_l = std::lerp(frame_delay_l, frame_delay2l, azimuth_blend);
+  frame_delay_r = std::lerp(frame_delay_r, frame_delay2r, azimuth_blend);
 }
 
 }  // namespace blink

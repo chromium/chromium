@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -111,20 +112,17 @@ std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
   DCHECK(kernel2);
   DCHECK_GE(x, 0.0);
   DCHECK_LT(x, 1.0);
+  DCHECK_EQ(kernel1->sample_rate_, kernel2->sample_rate_);
+
   x = ClampTo(x, 0.0f, 1.0f);
-
-  const float sample_rate1 = kernel1->sample_rate_;
-  const float sample_rate2 = kernel2->sample_rate_;
-  DCHECK_EQ(sample_rate1, sample_rate2);
-
   const float frame_delay =
-      (1 - x) * kernel1->FrameDelay() + x * kernel2->FrameDelay();
+      std::lerp(kernel1->FrameDelay(), kernel2->FrameDelay(), x);
 
   std::unique_ptr<FFTFrame> interpolated_frame =
       FFTFrame::CreateInterpolatedFrame(*kernel1->FftFrame(),
                                         *kernel2->FftFrame(), x);
   return std::make_unique<HRTFKernel>(std::move(interpolated_frame),
-                                      frame_delay, sample_rate1);
+                                      frame_delay, kernel1->sample_rate_);
 }
 
 }  // namespace blink

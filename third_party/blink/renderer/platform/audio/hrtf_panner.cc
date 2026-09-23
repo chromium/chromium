@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 
+#include <cmath>
+
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -61,16 +63,15 @@ int CalculateDesiredAzimuthIndexAndBlend(double azimuth,
 
   // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
   const double desired_azimuth_index_float = azimuth / angle_between_azimuths;
-  int desired_azimuth_index = static_cast<int>(desired_azimuth_index_float);
+  const int desired_azimuth_index =
+      static_cast<int>(desired_azimuth_index_float);
   azimuth_blend =
       desired_azimuth_index_float - static_cast<double>(desired_azimuth_index);
 
   // We don't immediately start using this azimuth index, but instead approach
   // this index from the last index we rendered at.  This minimizes the clicks
   // and graininess for moving sources which occur otherwise.
-  desired_azimuth_index =
-      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
-  return desired_azimuth_index;
+  return ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
 }
 
 }  // namespace
@@ -257,9 +258,9 @@ void HRTFPanner::Pan(double desired_azimuth,
 
     // Crossfade inter-aural delays based on transitions.
     const double frame_delay_l =
-        (1 - crossfade_x_) * frame_delay_l1 + crossfade_x_ * frame_delay_l2;
+        std::lerp(frame_delay_l1, frame_delay_l2, crossfade_x_);
     const double frame_delay_r =
-        (1 - crossfade_x_) * frame_delay_r1 + crossfade_x_ * frame_delay_r2;
+        std::lerp(frame_delay_r1, frame_delay_r2, crossfade_x_);
 
     // Calculate the source and destination pointers for the current segment.
     base::span<const float> segment_source_l =

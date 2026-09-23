@@ -57,10 +57,15 @@ class EqualPowerPanner final : public Panner {
   bool RequiresTailProcessing() const override { return false; }
 
  private:
-  void CalculateDesiredGain(double& desired_gain_l,
-                            double& desired_gain_r,
-                            double& azimuth,
-                            int number_of_input_channels);
+  // Returns the clamped and aliased azimuth.
+  double UpdateDesiredGain(double azimuth, int number_of_input_channels);
+
+  double desired_gain_l_ = 0.0;
+  double desired_gain_r_ = 0.0;
+  double cached_azimuth_ = 0.0;
+  // Initialize `cached_number_of_input_channels_` to an illegal value to force
+  // a cache refresh on the first call to `UpdateDesiredGain()`.
+  int cached_number_of_input_channels_ = 0;
 };
 
 }  // namespace blink
