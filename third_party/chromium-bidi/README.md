@@ -1,5 +1,5 @@
 > [!NOTE]
-> If you are viewing this on GitHub, the source was moved to [Chromium](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi). Please contribute there.
+> If you are viewing this on GitHub, the source was moved to [Chromium](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi). Please contribute there and [file issues on `crbug.com`](https://issues.chromium.org/issues/new?component=1608258).
 
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
@@ -448,6 +448,8 @@ There are 2 main components:
 
 The `chromium-bidi` source code lives in the Chromium repository under `third_party/chromium-bidi`.
 Contributions should follow the [Chromium Contributing Guide](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md).
+
+Issues are tracked in the [Chromium issue tracker (`Chromium > Platform > Browser Automation > ChromeDriver`)](https://issues.chromium.org/issues?q=componentid:1608258). If you find a bug, please [file an issue on `crbug.com`](https://issues.chromium.org/issues/new?component=1608258).
 
 The BiDi commands are processed in `src/bidiMapper/CommandProcessor.ts`. To add a
 new command, add it to `_processCommand`, write and call the module processor for it.

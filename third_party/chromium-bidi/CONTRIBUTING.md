@@ -1,10 +1,14 @@
 > [!NOTE]
-> If you are viewing this on GitHub, the source was moved to Chromium. Please contribute there.
+> If you are viewing this on GitHub, the source was moved to [Chromium](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi). Please contribute there and [file issues on `crbug.com`](https://issues.chromium.org/issues/new?component=1608258).
 
 # How to Contribute
 
 The `chromium-bidi` source code lives in the Chromium repository under `third_party/chromium-bidi`.
 All active development and contributions take place in Chromium.
+
+## Reporting Issues
+
+Issues are tracked in the [Chromium issue tracker (`Chromium > Platform > Browser Automation > ChromeDriver`)](https://issues.chromium.org/issues?q=componentid:1608258). To report a bug or request a feature, please [file an issue on `crbug.com`](https://issues.chromium.org/issues/new?component=1608258).
 
 ## Contributing to Chromium
 
