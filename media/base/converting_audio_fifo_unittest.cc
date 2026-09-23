@@ -400,4 +400,108 @@ TEST_F(ConvertingAudioFifoInputPoolTest, VaryingFramesAreNotPooled) {
   EXPECT_EQ(newly_allocated_bus->frames(), kDefaultParams.frames_per_buffer());
 }
 
+TEST_P(ConvertingAudioFifoTest, FlushDiscardAll) {
+  CreateFifo(TestOutputParams());
+
+  // Push enough frames to produce pending output and leave buffered input.
+  PushFrames(/*frames=*/min_number_input_frames_needed() * 2 + 1);
+  EXPECT_TRUE(fifo()->HasOutput());
+  EXPECT_GT(current_frames_in_fifo(), 0);
+  EXPECT_LT(current_frames_in_fifo(), min_number_input_frames_needed());
+
+  // Discard all buffered inputs and pending outputs.
+  fifo()->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  EXPECT_FALSE(fifo()->HasOutput());
+  EXPECT_EQ(current_frames_in_fifo(), 0);
+  EXPECT_TRUE(fifo()->GetBufferedInputDuration().is_zero());
+
+  // Calling DrainAndVerifyOutputs() should find zero outputs to consume,
+  // confirming all buffered outputs were discarded and leaving
+  // `number_outputs()` at 0.
+  DrainAndVerifyOutputs();
+  EXPECT_EQ(number_outputs(), 0);
+
+  // Subsequent pushes should process normally.
+  PushFrames(/*frames=*/min_number_input_frames_needed());
+  DrainAndVerifyOutputs();
+  // `number_outputs()` is exactly 1 because all prior pending outputs were
+  // discarded by Flush(kDiscardAll) above, and pushing exactly
+  // `min_number_input_frames_needed()` produces a single converted output
+  // buffer.
+  EXPECT_EQ(number_outputs(), 1);
+}
+
+TEST_P(ConvertingAudioFifoTest, FlushConvertAndRetainOutputs) {
+  CreateFifo(TestOutputParams());
+
+  // Push enough frames to leave residual input frames in the FIFO.
+  PushFrames(/*frames=*/min_number_input_frames_needed() * 2 + 1);
+  EXPECT_TRUE(fifo()->HasOutput());
+  EXPECT_GT(current_frames_in_fifo(), 0);
+  EXPECT_LT(current_frames_in_fifo(), min_number_input_frames_needed());
+
+  // Flush in kConvertAndRetainOutputs mode: remaining inputs should be
+  // converted into pending outputs.
+  fifo()->Flush(ConvertingAudioFifo::FlushMode::kConvertAndRetainOutputs);
+  EXPECT_EQ(current_frames_in_fifo(), 0);
+  EXPECT_TRUE(fifo()->GetBufferedInputDuration().is_zero());
+  EXPECT_TRUE(fifo()->HasOutput());
+
+  // Drain all outputs and verify they are valid.
+  DrainAndVerifyOutputs();
+  EXPECT_GT(number_outputs(), 0);
+  EXPECT_FALSE(fifo()->HasOutput());
+
+  // Subsequent pushes should process normally.
+  PushFrames(/*frames=*/min_number_input_frames_needed());
+  DrainAndVerifyOutputs();
+}
+
+TEST_P(ConvertingAudioFifoTest, FlushDiscardAllWithPendingOutputs) {
+  CreateFifo(TestOutputParams());
+
+  // Push frames to generate pending outputs and drain none.
+  PushFrames(/*frames=*/min_number_input_frames_needed());
+  EXPECT_TRUE(fifo()->HasOutput());
+
+  // Discard all pending outputs.
+  fifo()->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  EXPECT_FALSE(fifo()->HasOutput());
+  EXPECT_EQ(current_frames_in_fifo(), 0);
+  EXPECT_TRUE(fifo()->GetBufferedInputDuration().is_zero());
+
+  // Verify that an empty FIFO handles Flush(kDiscardAll) gracefully without
+  // crashing or corrupting internal converter state.
+  fifo()->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+  EXPECT_FALSE(fifo()->HasOutput());
+  EXPECT_EQ(current_frames_in_fifo(), 0);
+
+  // Subsequent pushes should continue to work normally. Draining after Flush()
+  // must find no outputs.
+  DrainAndVerifyOutputs();
+  EXPECT_EQ(number_outputs(), 0);
+  PushFrames(/*frames=*/min_number_input_frames_needed());
+  EXPECT_TRUE(fifo()->HasOutput());
+  DrainAndVerifyOutputs();
+  EXPECT_EQ(number_outputs(), 1);
+}
+
+TEST_F(ConvertingAudioFifoInputPoolTest, FlushDiscardAllRecyclesInputBuses) {
+  std::unique_ptr<AudioBus> bus1 = fifo_->GetInputAudioBus();
+  ASSERT_TRUE(bus1);
+  AudioBus* const bus1_ptr = bus1.get();
+
+  // Push the bus into the FIFO and immediately discard all buffers.
+  fifo_->Push(std::move(bus1));
+  fifo_->Flush(ConvertingAudioFifo::FlushMode::kDiscardAll);
+
+  EXPECT_FALSE(fifo_->HasOutput());
+  EXPECT_TRUE(fifo_->GetBufferedInputDuration().is_zero());
+
+  // Requesting another input bus should return the recycled buffer from the
+  // pool without new heap allocations.
+  std::unique_ptr<AudioBus> bus2 = fifo_->GetInputAudioBus();
+  EXPECT_EQ(bus2.get(), bus1_ptr);
+}
+
 }  // namespace media

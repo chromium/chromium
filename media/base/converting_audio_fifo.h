@@ -55,9 +55,18 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   // input pooling is enabled.
   std::unique_ptr<AudioBus> GetInputAudioBus();
 
-  // Forces all remaining frames to be converted, ouputing silence in case there
-  // isn't enough data. Noop if there aren't any available frames.
-  void Flush();
+  enum class FlushMode {
+    kConvertAndRetainOutputs,
+    kDiscardAll,
+  };
+
+  // Flushes remaining frames and resets the converter. If
+  // `kConvertAndRetainOutputs` mode is used, buffered input frames are
+  // converted and appended to pending outputs (padded with silence if needed).
+  // If `kDiscardAll` is used, all buffered inputs and pending outputs are
+  // discarded immediately without conversion. In both modes, the underlying
+  // converter is reset and primed with silence.
+  void Flush(FlushMode mode = FlushMode::kConvertAndRetainOutputs);
 
   int min_number_input_frames_needed_for_testing() {
     return min_input_frames_needed_;

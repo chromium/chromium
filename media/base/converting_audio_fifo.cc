@@ -98,28 +98,36 @@ void ConvertingAudioFifo::Convert() {
   pending_outputs_.push_back(std::move(output_dest));
 }
 
-void ConvertingAudioFifo::Flush() {
+void ConvertingAudioFifo::Flush(FlushMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_flushing_ = true;
 
-  // Convert all remaining frames.
-  while (total_frames_) {
-    Convert();
+  if (mode == FlushMode::kConvertAndRetainOutputs) {
+    // Convert all remaining frames.
+    while (total_frames_) {
+      Convert();
+    }
   }
 
-  converter_->Reset();
-  converter_->PrimeWithSilence();
-
-  // Clear out all remaining input frames.
-  // Note: Draining `total_frames_` in the loop above normally exhausts
-  // `inputs_` via ProvideInput() & PopInputs(), but this acts as a safety net.
+  // Draining all frames from the input. In kConvertAndRetainOutputs this should
+  // happen while draining `total_frames_` in the loop above but this acts as a
+  // safety net. In kDiscardAll we should do it explicitly.
   while (!inputs_.empty()) {
     PopInputs();
+  }
+
+  if (mode == FlushMode::kDiscardAll) {
+    while (!pending_outputs_.empty()) {
+      PopOutput();
+    }
   }
 
   total_frames_ = 0;
   front_frame_index_ = 0;
   is_flushing_ = false;
+
+  converter_->Reset();
+  converter_->PrimeWithSilence();
 }
 
 double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
@@ -178,8 +186,9 @@ std::unique_ptr<AudioBus> ConvertingAudioFifo::EnsureExpectedChannelCount(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No mixing required.
-  if (audio_bus->channels() == input_params_.channels())
+  if (audio_bus->channels() == input_params_.channels()) {
     return audio_bus;
+  }
 
   // We don't support mixing when using the input pool.
   CHECK(!input_pool_);
