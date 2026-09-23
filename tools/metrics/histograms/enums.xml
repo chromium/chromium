@@ -3934,6 +3934,16 @@ shown properly on the user-facing crash UI.
   <int value="5" label="kCloseFeedbackApp"/>
 </enum>
 
+<!-- LINT.IfChange(FeedbackDisabledDialogParentStatus) -->
+
+<enum name="FeedbackDisabledDialogParentStatus">
+  <int value="0" label="Direct parent window provided"/>
+  <int value="1" label="Parent window found via fallback"/>
+  <int value="2" label="No parent window found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/feedback/show_feedback_page.h:FeedbackDisabledDialogParentStatus) -->
+
 <enum name="FeedbackReportSendingResult">
 <!-- This must be kept current with feedback_uploader.cc's
      FeedbackReportSendingResult -->
