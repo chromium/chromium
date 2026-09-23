@@ -162,6 +162,18 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       bool force_sync_upload,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  static std::unique_ptr<ConnectorUploadRequest> CreateNetworkRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
   // Called whenever a content request finishes (on success or failure).
   void OnSendContentCompleted(base::TimeTicks start_time,
                               std::optional<std::string> response_body);

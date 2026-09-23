@@ -82,6 +82,13 @@ class CloudBinaryUploadServiceBaseTest : public testing::Test {
                                 const ContentAnalysisResponse& response) {
     service.RecordRequestMetrics(id, result, response);
   }
+  bool CallShouldTerminateRequestEarly(CloudBinaryUploadServiceBase& service,
+                                       BinaryUploadRequest* request,
+                                       ScanRequestUploadResult get_data_result,
+                                       size_t data_size) {
+    return service.ShouldTerminateRequestEarly(request, get_data_result,
+                                               data_size);
+  }
 };
 
 // Tests that GetUploadUrl returns the correct URL for enterprise and consumer
@@ -255,6 +262,63 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
                                 ScanRequestUploadResult::kSuccess, 1);
   histograms.ExpectUniqueTimeSample("Enterprise.MultipartRequest.Text.Duration",
                                     base::Seconds(4), 1);
+}
+
+// Tests that RecordRequestMetrics logs the correct enterprise-specific
+// histograms for a resumable network request upload.
+TEST_F(CloudBinaryUploadServiceBaseTest,
+       RecordRequestMetrics_EnterpriseNetworkRequestResumable) {
+  base::HistogramTester histograms;
+  TestCloudBinaryUploadServiceBase service;
+  BinaryUploadRequest::Id id(1);
+
+  auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
+  request->set_device_token("dm_token");
+  request->set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
+
+  GetActiveRequests(service)[id] = std::move(request);
+  GetStartTimes(service)[id] = base::TimeTicks::Now();
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
+
+  histograms.ExpectUniqueSample(
+      "Enterprise.ResumableRequest.NetworkRequest.Result",
+      ScanRequestUploadResult::kSuccess, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Enterprise.ResumableRequest.NetworkRequest.Duration", base::Seconds(5),
+      1);
+}
+
+TEST_F(CloudBinaryUploadServiceBaseTest, ShouldTerminateRequestEarly) {
+  TestCloudBinaryUploadServiceBase service;
+
+  auto make_request = [&service, this](BinaryUploadRequest::Id id) {
+    auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
+    request->set_id(id);
+    request->set_device_token("dm_token");
+    request->set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
+    BinaryUploadRequest* raw_request = request.get();
+    GetActiveRequests(service)[id] = std::move(request);
+    GetStartTimes(service)[id] = base::TimeTicks::Now();
+    return raw_request;
+  };
+
+  // Non-empty successful request should not terminate early.
+  BinaryUploadRequest* req1 = make_request(BinaryUploadRequest::Id(1));
+  EXPECT_FALSE(CallShouldTerminateRequestEarly(
+      service, req1, ScanRequestUploadResult::kSuccess, /*data_size=*/100));
+
+  // Resumable request with kFileTooLarge and data_size == 0 (e.g. chunked
+  // network request body) should not terminate early so metadata can be sent.
+  BinaryUploadRequest* req2 = make_request(BinaryUploadRequest::Id(2));
+  EXPECT_FALSE(CallShouldTerminateRequestEarly(
+      service, req2, ScanRequestUploadResult::kFileTooLarge, /*data_size=*/0));
+
+  // Empty successful request (data_size == 0) should terminate early.
+  BinaryUploadRequest* req3 = make_request(BinaryUploadRequest::Id(3));
+  EXPECT_TRUE(CallShouldTerminateRequestEarly(
+      service, req3, ScanRequestUploadResult::kSuccess, /*data_size=*/0));
 }
 
 }  // namespace enterprise_connectors

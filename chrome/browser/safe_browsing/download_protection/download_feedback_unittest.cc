@@ -113,6 +113,14 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
+  std::unique_ptr<ConnectorUploadRequest> CreateNetworkRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) override;
 
   raw_ptr<FakeUploader, DanglingUntriaged> uploader_ = nullptr;
 };
@@ -155,6 +163,17 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     const std::string& metadata,
     enterprise_connectors::ScanRequestUploadResult get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    ConnectorUploadRequest::Callback callback) {
+  NOTREACHED();
+}
+std::unique_ptr<ConnectorUploadRequest>
+FakeUploaderFactory::CreateNetworkRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    scoped_refptr<network::ResourceRequestBody> request_body,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {

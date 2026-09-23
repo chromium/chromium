@@ -34,12 +34,11 @@ class ContentAnalysisBrowserTestBase {
   void AddExpectedScanningRequest(const ContentAnalysisData& data,
                                   const std::string& body,
                                   const std::vector<std::string>& headers = {});
+  void AddExpectedScanningRequest(ContentAnalysisRequest request,
+                                  const std::string& body,
+                                  const std::vector<std::string>& headers = {});
 
- private:
-  // Returns true if `received_request` matches `expected_request`.
-  bool MatchesRequest(ContentAnalysisRequest received_request,
-                      ContentAnalysisRequest expected_request);
-
+ protected:
   // Returns the value to be set in the ConnectorAnalysisRequest::device_token
   // field.
   std::string ExpectedDeviceToken();
@@ -48,6 +47,11 @@ class ContentAnalysisBrowserTestBase {
   // ConnectorAnalysisRequest::client_metadata::profile::dm_token for
   // profile-managed requests.
   std::string ExpectedProfileToken();
+
+ private:
+  // Returns true if `received_request` matches `expected_request`.
+  bool MatchesRequest(ContentAnalysisRequest received_request,
+                      ContentAnalysisRequest expected_request);
 
   // Helpers called by `HandleRequest()` to validate different kinds of content
   // scanning requests received by the embedded test server.
@@ -59,10 +63,9 @@ class ContentAnalysisBrowserTestBase {
       const net::test_server::HttpRequest& request);
 
   // Helper that adds authorization requests to `expected_requests_` depending
-  // on `data` and whether or not an authorization request for that request type
+  // on whether or not an authorization request for that request type
   // already exists.
-  void AddAuthRequestIfNeeded(const ContentAnalysisData& data,
-                              ContentAnalysisRequest request);
+  void AddAuthRequestIfNeeded(ContentAnalysisRequest request);
 
   // Returns a Resumable metadata response indicating the action is not allowed
   // yet and that the content should be sent.
@@ -90,6 +93,7 @@ class ContentAnalysisBrowserTestBase {
   // each different type of auth request.
   bool paste_auth_request_added_ = false;
   bool file_attach_auth_request_added_ = false;
+  bool network_request_auth_request_added_ = false;
 };
 
 }  // namespace enterprise_connectors::test

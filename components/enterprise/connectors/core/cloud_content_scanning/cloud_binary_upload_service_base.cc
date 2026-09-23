@@ -294,6 +294,8 @@ void CloudBinaryUploadServiceBase::SetAuthForTesting(
 #if BUILDFLAG(IS_CHROMEOS)
            AnalysisConnector::FILE_TRANSFER,
 #endif
+           AnalysisConnector::DATA_COPIED,
+           AnalysisConnector::NETWORK_REQUEST,
        }) {
     TokenAndConnector token_and_connector = {dm_token, connector};
     can_upload_enterprise_data_[token_and_connector] = auth_check_result;
@@ -837,6 +839,13 @@ CloudBinaryUploadServiceBase::CreateUploadRequest(
                   url_loader_factory_, url, metadata, std::move(data.page),
                   histogram_suffix, std::move(traffic_annotation),
                   std::move(callback), ui_task_runner_);
+  } else if (data.request_body) {
+    upload_request = ResumableUploadRequest::CreateNetworkRequest(
+        url_loader_factory_, url, metadata, std::move(data.request_body),
+        histogram_suffix, std::move(traffic_annotation),
+        std::move(verdict_received_callback),
+        std::move(content_uploaded_callback), force_sync_upload,
+        ui_task_runner_);
   } else {
     NOTREACHED();
   }
@@ -1046,10 +1055,15 @@ bool CloudBinaryUploadServiceBase::ShouldTerminateRequestEarly(
     return true;
   }
 
-  if (!request->IsAuthRequest() && data_size == 0) {
+  if (!request->IsAuthRequest() &&
+      get_data_result == ScanRequestUploadResult::kSuccess && data_size == 0) {
     // A size of 0 implies an edge case like an empty file being uploaded. In
     // such a case, the file doesn't need to scan so the request can simply
     // finish early.
+    // Note that it's possible for `get_data_result` to be set to
+    // `kFileTooLarge` while `data_size` is 0 for network request scans of
+    // chunked data where the total size is unknown, so `kSuccess` is checked to
+    // account for this.
     FinishAndCleanupRequest(request, ScanRequestUploadResult::kSuccess,
                             ContentAnalysisResponse());
     return true;

@@ -138,6 +138,7 @@ NetworkRequestAnalysisRequest::NetworkRequestAnalysisRequest(
                           std::move(policy_connector_getter)),
       request_body_(std::move(request_body)) {
   CHECK(request_body_);
+  set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
 
   IncrementCrashKey(ScanningCrashKey::PENDING_NETWORK_REQUESTS);
   IncrementCrashKey(ScanningCrashKey::TOTAL_NETWORK_REQUESTS);

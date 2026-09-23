@@ -209,6 +209,14 @@ class ConnectorUploadRequestFactory {
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
+  virtual std::unique_ptr<ConnectorUploadRequest> CreateNetworkRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

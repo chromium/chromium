@@ -11,14 +11,18 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/network_request_analysis_request.h"
 #include "components/enterprise/connectors/core/content_analysis_browser_test_base.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -26,6 +30,8 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/test/test_data_pipe_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -113,6 +119,57 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
 
   std::string text() { return "b" + std::string(100, 'a') + "b"; }
 
+  ContentAnalysisRequest CreateNetworkAnalysisRequest(
+      const GURL& url,
+      const std::string& dm_token) {
+    ContentAnalysisRequest request;
+    request.set_analysis_connector(AnalysisConnector::NETWORK_REQUEST);
+    request.set_device_token(dm_token);
+    request.set_blocking(true);
+    request.add_tags("dlp");
+    request.set_user_action_requests_count(1);
+
+    auto* client_metadata = request.mutable_client_metadata();
+    client_metadata->mutable_device()->set_dm_token(dm_token);
+    client_metadata->mutable_profile()->set_dm_token("profile_dm_token");
+    client_metadata->set_is_chrome_os_managed_guest_session(false);
+
+    auto* request_data = request.mutable_request_data();
+    request_data->set_destination(url.spec());
+    request_data->set_tab_url(url.spec());
+    request_data->set_url(url.spec());
+
+    return request;
+  }
+
+  std::unique_ptr<NetworkRequestAnalysisRequest> CreateNetworkUploadRequest(
+      const ContentAnalysisRequest& expected_request,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      BinaryUploadRequest::ContentAnalysisCallback callback) {
+    CloudAnalysisSettings cloud_settings;
+    cloud_settings.dm_token = expected_request.device_token();
+    auto request = std::make_unique<NetworkRequestAnalysisRequest>(
+        std::move(cloud_settings), std::move(request_body), std::move(callback),
+        base::BindRepeating(&GetBrowserPolicyConnector));
+    request->set_device_token(expected_request.device_token());
+    request->set_blocking(expected_request.blocking());
+    for (const auto& tag : expected_request.tags()) {
+      request->add_tag(tag);
+    }
+    request->set_user_action_requests_count(
+        expected_request.user_action_requests_count());
+    request->set_user_action_id("user_action_id");
+    if (expected_request.has_client_metadata()) {
+      request->set_client_metadata(expected_request.client_metadata());
+    }
+    if (expected_request.has_request_data()) {
+      request->set_destination(expected_request.request_data().destination());
+      request->set_tab_url(GURL(expected_request.request_data().tab_url()));
+      request->set_url(GURL(expected_request.request_data().url()));
+    }
+    return request;
+  }
+
  protected:
   std::unique_ptr<enterprise::test::ManagementContextMixin>
       management_context_mixin_;
@@ -192,6 +249,41 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, FileAttachAllowed) {
             run_loop.Quit();
           }),
       DeepScanAccessPoint::UPLOAD);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, NetworkRequestAllowed) {
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+  network::TestDataPipeGetter test_data_pipe_getter(
+      text(), data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+
+  GURL url = browser()
+                 ->GetTabStripModel()
+                 ->GetActiveWebContents()
+                 ->GetLastCommittedURL();
+  ContentAnalysisRequest expected_request =
+      CreateNetworkAnalysisRequest(url, ExpectedDeviceToken());
+
+  AddExpectedScanningRequest(expected_request, text());
+
+  base::RunLoop run_loop;
+  auto request = CreateNetworkUploadRequest(
+      expected_request, std::move(request_body),
+      base::BindLambdaForTesting([&run_loop](ScanRequestUploadResult result,
+                                             ContentAnalysisResponse response) {
+        ASSERT_EQ(result, ScanRequestUploadResult::kSuccess);
+        ASSERT_EQ(response.results().size(), 1);
+        ASSERT_EQ(response.results()[0].status(),
+                  ContentAnalysisResponse::Result::SUCCESS);
+        ASSERT_EQ(response.results()[0].tag(), "dlp");
+        run_loop.Quit();
+      }));
+
+  safe_browsing::CloudBinaryUploadServiceFactory::GetForProfile(
+      browser()->GetProfile())
+      ->MaybeUploadForDeepScanning(std::move(request));
   run_loop.Run();
 }
 

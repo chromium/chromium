@@ -289,7 +289,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
   // The fields set above are the only ones expected from an authorization
   // request, so we can add it to `expected_requests_` immediately if it's not
   // already been done for a paste request.
-  AddAuthRequestIfNeeded(data, request);
+  AddAuthRequestIfNeeded(request);
 
   request.set_blocking(data.settings.block_until_verdict ==
                        BlockUntilVerdict::kBlock);
@@ -350,6 +350,18 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
   referrer_chain->set_url(data.url.spec());
 
   expected_requests_.emplace_back(request, body, headers);
+}
+
+void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
+    ContentAnalysisRequest request,
+    const std::string& body,
+    const std::vector<std::string>& headers) {
+  ContentAnalysisRequest auth_request;
+  auth_request.set_analysis_connector(request.analysis_connector());
+  auth_request.set_device_token(request.device_token());
+  AddAuthRequestIfNeeded(auth_request);
+
+  expected_requests_.emplace_back(std::move(request), body, headers);
 }
 
 bool ContentAnalysisBrowserTestBase::MatchesRequest(
@@ -432,7 +444,6 @@ std::string ContentAnalysisBrowserTestBase::ExpectedProfileToken() {
 }
 
 void ContentAnalysisBrowserTestBase::AddAuthRequestIfNeeded(
-    const ContentAnalysisData& data,
     ContentAnalysisRequest request) {
 #if BUILDFLAG(IS_CHROMEOS)
   // This field is set in authorization requests only on CrOS.
@@ -448,6 +459,11 @@ void ContentAnalysisBrowserTestBase::AddAuthRequestIfNeeded(
       request.analysis_connector() == FILE_ATTACHED) {
     expected_requests_.emplace_back(request, "", std::vector<std::string>());
     file_attach_auth_request_added_ = true;
+  }
+  if (!network_request_auth_request_added_ &&
+      request.analysis_connector() == NETWORK_REQUEST) {
+    expected_requests_.emplace_back(request, "", std::vector<std::string>());
+    network_request_auth_request_added_ = true;
   }
 }
 

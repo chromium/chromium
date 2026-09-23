@@ -181,6 +181,19 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
         should_succeed_, response_, http_status_, std::move(callback));
   }
 
+  std::unique_ptr<ConnectorUploadRequest> CreateNetworkRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) override {
+    called_ = true;
+    return std::make_unique<FakeConnectorUploadRequest>(
+        should_succeed_, response_, http_status_, std::move(callback));
+  }
+
   bool called() const { return called_; }
 
  private:
