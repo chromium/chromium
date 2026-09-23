@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_result_list.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
@@ -513,7 +514,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       std::optional<FragmentGeometry>* initial_fragment_geometry,
       LayoutCacheStatus* out_cache_status);
 
-  using LayoutResultList = HeapVector<Member<const LayoutResult>, 1>;
   class PhysicalFragmentList {
     STACK_ALLOCATED();
 
@@ -547,15 +547,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
       const PhysicalBoxFragment& operator*() const;
 
-      UNSAFE_BUFFER_USAGE Iterator& operator++() {
-        // SAFETY: This is not safe. We should not use this operator directly.
-        UNSAFE_BUFFERS(++iterator_);
+      Iterator& operator++() {
+        ++iterator_;
         return *this;
       }
-      UNSAFE_BUFFER_USAGE Iterator operator++(int) {
+      Iterator operator++(int) {
         Iterator copy = *this;
-        // SAFETY: This is not safe. We should not use this operator directly.
-        UNSAFE_BUFFERS(++*this);
+        ++*this;
         return copy;
       }
 

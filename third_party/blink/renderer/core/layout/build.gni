@@ -404,6 +404,8 @@ blink_core_sources_layout = [
   "layout_replaced.h",
   "layout_result.cc",
   "layout_result.h",
+  "layout_result_list.cc",
+  "layout_result_list.h",
   "layout_ruby_as_block.cc",
   "layout_ruby_as_block.h",
   "layout_shift_region.cc",

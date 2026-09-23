@@ -72,9 +72,8 @@ bool FragmentItems::IsSubSpan(const Span& span) const {
                           &span.back() <= &items_.back());
 }
 
-void FragmentItems::FinalizeAfterLayout(
-    const HeapVector<Member<const LayoutResult>, 1>& results,
-    LayoutBlockFlow& container) {
+void FragmentItems::FinalizeAfterLayout(const LayoutResultList& results,
+                                        LayoutBlockFlow& container) {
   // This class keeps the parent GC objecct and index in case the backing buffer
   // is moved, because `FragmentItem` is a traceable DISALLOW_NEW objects,
   class FragmentItemPtr {

@@ -157,7 +157,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   MinMaxSizes intrinsic_logical_widths;
   Member<void*> min_max_sizes_cache;
   Member<void*> cache;
-  HeapVector<Member<const LayoutResult>, 1> layout_results;
+  LayoutResultList layout_results;
   wtf_size_t first_fragment_item_index_;
   Member<void*> members[2];
 };
@@ -4300,9 +4300,8 @@ void ForEachAnchorMapOnContainer(const LayoutBox& box, Function func) {
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
 template <typename Function>
-void AssertSameDataOnLayoutResults(
-    const LayoutBox::LayoutResultList& layout_results,
-    Function func) {
+void AssertSameDataOnLayoutResults(const LayoutResultList& layout_results,
+                                   Function func) {
   // When an out-of-flow box is fragmented, the position fallback results on all
   // fragments should be the same.
   for (wtf_size_t i = 1; i < layout_results.size(); ++i) {

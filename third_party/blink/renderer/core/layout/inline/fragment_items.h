@@ -14,6 +14,7 @@ namespace blink {
 
 class FragmentItemsBuilder;
 class LayoutInline;
+class LayoutResultList;
 
 // Represents the inside of an inline formatting context.
 //
@@ -71,9 +72,8 @@ class CORE_EXPORT FragmentItems final {
 
   // Associate |FragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
-  static void FinalizeAfterLayout(
-      const HeapVector<Member<const LayoutResult>, 1>& results,
-      LayoutBlockFlow& container);
+  static void FinalizeAfterLayout(const LayoutResultList& results,
+                                  LayoutBlockFlow& container);
 
   // Disassociate |FragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);
