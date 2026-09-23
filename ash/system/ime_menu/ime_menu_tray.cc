@@ -389,7 +389,11 @@ ImeMenuTray::ImeMenuTray(Shelf* shelf)
   DCHECK(ime_controller_);
   SetCallback(base::BindRepeating(&ImeMenuTray::OnTrayButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()));
+
+  // Only the label exists at construction; the globe icon is created later.
   CreateLabel();
+  UpdateTrayImageOrLabelColor(/*is_image=*/false);
+
   SystemTrayNotifier* tray_notifier = Shell::Get()->system_tray_notifier();
   tray_notifier->AddIMEObserver(this);
   tray_notifier->AddVirtualKeyboardObserver(this);
@@ -485,11 +489,6 @@ bool ImeMenuTray::ShouldShowKeyboardToggle() const {
                                       ->accessibility_controller()
                                       ->virtual_keyboard()
                                       .enabled();
-}
-
-void ImeMenuTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  UpdateTrayLabel();
 }
 
 void ImeMenuTray::HandleLocaleChange() {

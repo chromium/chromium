@@ -53,7 +53,6 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   bool ShouldShowKeyboardToggle() const;
 
   // TrayBackgroundView:
-  void OnThemeChanged() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
