@@ -1394,15 +1394,63 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    if (!this.virtualFocusEnabled && e.key === 'Tab' &&
-        this.$.input === this.shadowRoot?.activeElement) {
-      if (!e.shiftKey &&
-          this.keywordModeManager.acceptTab(
-              this.selectedMatch, this.matchIndex)) {
-        e.preventDefault();
+    if (e.key === 'Tab') {
+      const isShift = e.shiftKey;
+      const isAimButtonFocused = this.isAiModeVirtualFocused() ||
+          this.shadowRoot?.activeElement === this.$.composeButton;
+      const isInputFocused = this.$.input === this.shadowRoot?.activeElement;
+
+      if (this.dropdownIsVisible) {
+        if (!this.virtualFocusEnabled) {
+          if (!isShift &&
+              this.keywordModeManager.acceptTab(
+                  this.selectedMatch, this.matchIndex)) {
+            e.preventDefault();
+            return;
+          }
+          if (this.acceptInlineAutocomplete(e)) {
+            return;
+          }
+        }
+        super.handleKeyNavigation(e);
         return;
       }
-      if (this.acceptInlineAutocomplete(e)) {
+
+      if (isAimButtonFocused) {
+        e.preventDefault();
+        this.setSelection(kDefaultSelection);
+        if (isShift) {
+          // Shift+Tab from AIM button moves focus back to the omnibox input.
+          this.getInputElement().focus();
+          return;
+        }
+        // If dropdown is closed / no suggestions, advance focus out of the
+        // omnibox.
+        this.popupPageHandler_.advanceFocus(/*reverse=*/ false);
+        return;
+      }
+
+      if (isInputFocused) {
+        if (!isShift) {
+          e.preventDefault();
+          // Forward Tab from input: always focus the AIM button first if
+          // visible.
+          if (this.aimButtonVisible_) {
+            this.$.composeButton.focus();
+            return;
+          }
+
+          // Advance focus out of the omnibox.
+          this.popupPageHandler_.advanceFocus(/*reverse=*/ false);
+          return;
+        }
+
+        // Shift+Tab from input:
+        e.preventDefault();
+
+        // Advance focus backwards out
+        // of the omnibox (e.g. to the Reload button).
+        this.popupPageHandler_.advanceFocus(/*reverse=*/ true);
         return;
       }
     }
@@ -1431,6 +1479,13 @@ export class OmniboxPopupSearchboxElement extends
     if (this.dropdownIsVisible && hasTemporaryText) {
       dropdown.selectFirst();
       this.selectedMatchIndex = 0;
+      if (this.virtualFocusEnabled) {
+        this.setSelection({
+          line: 0,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        });
+      }
       const defaultMatch = this.result?.matches?.[0];
       const typedText = this.lastQueriedInput ?? '';
       const inlineText =

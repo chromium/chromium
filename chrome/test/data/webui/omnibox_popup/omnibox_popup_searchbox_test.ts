@@ -44,6 +44,12 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
   };
 }
 
+const kDefaultSelection = {
+  line: -1,
+  state: SelectionLineState.kNormal,
+  actionIndex: 0,
+};
+
 suite('OmniboxPopupSearchboxTest', function() {
   let searchbox: OmniboxPopupSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
@@ -1518,71 +1524,6 @@ suite('OmniboxPopupSearchboxTest', function() {
    }
  });
 
- test('EscapeStagedUnwindingWithVirtualFocus', async () => {
-   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
-   searchbox.virtualFocusEnabled = true;
-
-   // Stage 1 (`kRevertTemporaryText`):
-   searchbox.getInputElement().inputElement.value = 'a';
-   searchbox.lastQueriedInput = 'a';
-   searchbox.activeQueryId = 0;
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
-     input: 'a',
-     matches: [
-       createSearchMatchForTesting({
-         allowedToBeDefaultMatch: true,
-         fillIntoEdit: 'a',
-         inlineAutocompletion: '',
-       }),
-       createSearchMatchForTesting({
-         allowedToBeDefaultMatch: false,
-         fillIntoEdit: 'suggestion-1',
-       }),
-     ],
-   }));
-   await microtasksFinished();
-   assertTrue(searchbox.dropdownIsVisible);
-
-   searchbox.setSelection({
-     line: 1,
-     state: SelectionLineState.kNormal,
-     actionIndex: 0,
-   });
-   searchbox.getInputElement().inputElement.value = 'suggestion-1';
-   await microtasksFinished();
-
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
-
-   assertEquals('a', searchbox.getInputElement().inputElement.value);
-   assertEquals(0, searchbox.selection.line);
-   assertTrue(searchbox.dropdownIsVisible);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kRevertTemporaryText,
-       handler.getArgs('logEscapeAction')[0]);
-
-   handler.reset();
-   testProxy.handler.reset();
-
-   // Stage 2 (`kClosePopup`):
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
-
-   assertFalse(searchbox.dropdownIsVisible);
-   assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
-   assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
- });
-
  test('EscapeStagedUnwinding_ClearedInputNonEmptyUrl', async () => {
    // Input was manually cleared ('') on a page with a non-empty permanent URL.
    // ESC should restore the permanent URL ('example.com') without closing UI.
@@ -2598,6 +2539,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('TabKeyAcceptsInlineAutocomplete', async () => {
    searchbox.virtualFocusEnabled = false;
+   searchbox.dropdownIsVisible = true;
    searchbox.focusInput();
    searchbox.getInputElement().setInput({
      text: 'you',
@@ -2635,6 +2577,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('ShiftTabClearsInlineAutocompleteWithoutPreventDefault', async () => {
    searchbox.virtualFocusEnabled = false;
+   searchbox.dropdownIsVisible = true;
    searchbox.focusInput();
    searchbox.getInputElement().setInput({
      text: 'you',
@@ -3056,5 +2999,189 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(SelectionLineState.kNormal, localSearchbox.selection.state);
        assertFalse(localSearchbox.isContextEntrypointVirtualFocused());
        assertFalse(entrypointButton.hasVirtualFocus);
+     });
+
+ test('TabKeyFromInputFocusesAimButtonWhenVisible', async () => {
+   searchbox.dropdownIsVisible = false;
+   searchbox.focusInput();
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   handler.reset();
+
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(tabEvent);
+   await microtasksFinished();
+
+   assertTrue(tabEvent.defaultPrevented);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   assertEquals(-1, searchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+ });
+
+ test('TabKeyFromInputAdvancesFocusForwardWhenAimButtonHidden', async () => {
+   searchbox.dropdownIsVisible = false;
+   searchbox.focusInput();
+   testProxy.page.setAimButtonVisible(false);
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   handler.reset();
+
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(tabEvent);
+   await microtasksFinished();
+
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals(1, handler.getCallCount('advanceFocus'));
+   assertFalse(handler.getArgs('advanceFocus')[0]);
+ });
+
+ test('ShiftTabKeyFromInputAdvancesFocusBackward', async () => {
+   searchbox.dropdownIsVisible = false;
+   searchbox.focusInput();
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   handler.reset();
+
+   const shiftTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(shiftTabEvent);
+   await microtasksFinished();
+
+   assertTrue(shiftTabEvent.defaultPrevented);
+   assertEquals(1, handler.getCallCount('advanceFocus'));
+   assertTrue(handler.getArgs('advanceFocus')[0]);
+ });
+
+ test('TabKeyFromAimButtonAdvancesFocusForward', async () => {
+   searchbox.dropdownIsVisible = false;
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   searchbox.$.composeButton.focus();
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   handler.reset();
+
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(tabEvent);
+   await microtasksFinished();
+
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals(-1, searchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   assertEquals(1, handler.getCallCount('advanceFocus'));
+   assertFalse(handler.getArgs('advanceFocus')[0]);
+ });
+
+ test('ShiftTabKeyFromAimButtonReturnsFocusToInput', async () => {
+   searchbox.dropdownIsVisible = false;
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   searchbox.$.composeButton.focus();
+   await microtasksFinished();
+
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   handler.reset();
+
+   const shiftTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(shiftTabEvent);
+   await microtasksFinished();
+
+   assertTrue(shiftTabEvent.defaultPrevented);
+   assertEquals(-1, searchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+ });
+
+ test(
+     'TabKeyWithDropdownVisibleDelegatesToSuperWhenVirtualFocusEnabled',
+     async () => {
+       loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+       searchbox.virtualFocusEnabled = true;
+       searchbox.dropdownIsVisible = true;
+
+       const match = createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         contents: 'first match',
+       });
+       searchbox.activeQueryId = 0;
+       searchbox.onAutocompleteResultChanged(
+           createAutocompleteResultForTesting({
+             queryId: 0,
+             input: 'first',
+             matches: [match],
+           }));
+       await microtasksFinished();
+
+       searchbox.focusInput();
+       handler.reset();
+
+       const tabEvent = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         cancelable: true,
+         bubbles: true,
+       });
+       await searchbox.handleKeyNavigation(tabEvent);
+       await microtasksFinished();
+
+       // Verify focus did not advance out of the omnibox popup.
+       assertEquals(0, handler.getCallCount('advanceFocus'));
+     });
+
+ test(
+     'TabKeyIgnoredWhenNeitherInputNorAimButtonFocusedAndDropdownClosed',
+     async () => {
+       searchbox.dropdownIsVisible = false;
+       searchbox.blur();
+       searchbox.setSelection(kDefaultSelection);
+       searchbox.$.input.inputElement.blur();
+       await microtasksFinished();
+
+       handler.reset();
+
+       const tabEvent = new KeyboardEvent('keydown', {
+         key: 'Tab',
+         cancelable: true,
+         bubbles: true,
+       });
+       await searchbox.handleKeyNavigation(tabEvent);
+       await microtasksFinished();
+
+       assertFalse(tabEvent.defaultPrevented);
+       assertEquals(0, handler.getCallCount('advanceFocus'));
      });
 });

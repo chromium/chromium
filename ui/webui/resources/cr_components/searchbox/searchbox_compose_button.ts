@@ -145,6 +145,14 @@ export class SearchboxComposeButtonElement extends
     return this.composeIcon.startsWith('chrome://favicon2/');
   }
 
+  override focus() {
+    this.$.composeButton?.focus();
+  }
+
+  override blur() {
+    this.$.composeButton?.blur();
+  }
+
   override firstUpdated() {
     if (this.$.glowAnimationWrapper) {
       if (this.isFuseboxEnabled_) {

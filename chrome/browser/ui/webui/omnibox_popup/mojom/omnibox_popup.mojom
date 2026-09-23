@@ -100,6 +100,9 @@ interface PageHandler {
 
   // Opens DevTools to inspect the Omnibox popup WebUI.
   OpenDevTools();
+
+  // Advances keyboard focus out of the WebUI popup into the browser window.
+  AdvanceFocus(bool reverse);
 };
 
 // The WebUI page for the Omnibox Popup.

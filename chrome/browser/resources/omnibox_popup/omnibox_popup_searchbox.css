@@ -79,16 +79,24 @@
   margin-bottom: var(--alignment-inset-top);
 }
 
-:host(:not([dropdown-is-visible]):not([has-input-selection_]):not([is-focused_])) #inputWrapper:hover:not(:focus-within) {
+:host(:not([dropdown-is-visible]):not([has-input-selection]):not([is-logically-focused])) #inputWrapper:hover:not(:focus-within) {
   cursor: text;
   background-color: var(--color-omnibox-results-background-hovered);
 }
 
 :host(:not([dropdown-is-visible])) #inputWrapper:focus-within,
-:host([is-focused_]:not([dropdown-is-visible])) #inputWrapper,
-:host([is-focused_][has-input-selection_]) #inputWrapper {
+:host([is-logically-focused]:not([dropdown-is-visible])) #inputWrapper,
+:host([is-logically-focused][has-input-selection]) #inputWrapper {
   --cr-searchbox-shadow: none;
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+:host #inputWrapper:has(#composeButton:is(:focus-within, [has-virtual-focus])) {
+  box-shadow: none;
+}
+
+:host(:not([dropdown-is-visible])) #inputWrapper:has(#composeButton:is(:focus-within, [has-virtual-focus])) {
+  background-color: var(--color-location-bar-background, var(--color-omnibox-results-background-hovered));
 }
 
 /* TODO(b/511199705): Widget is too wide when dropdown is visible. This is a
@@ -309,6 +317,21 @@ omnibox-popup-contextual-entrypoint {
 }
 
 :host([searchbox-dynamic-color-scheme_]) #composeButton::part(compose-button) {
+  background-color: var(--color-omnibox-results-background-hovered);
+}
+
+#composeButton[has-virtual-focus]::part(compose-button),
+#composeButton:focus-visible::part(compose-button),
+:host-context(.focus-outline-visible) #composeButton:focus::part(compose-button) {
+  background-color: var(--color-sys-tonal-container);
+  outline: 2px solid var(
+      --color-searchbox-results-icon-focused-outline,
+      var(--cr-focus-outline-color));
+}
+
+:host([searchbox-dynamic-color-scheme_]) #composeButton[has-virtual-focus]::part(compose-button),
+:host([searchbox-dynamic-color-scheme_]) #composeButton:focus-visible::part(compose-button),
+:host-context(.focus-outline-visible):host([searchbox-dynamic-color-scheme_]) #composeButton:focus::part(compose-button) {
   background-color: var(--color-omnibox-results-background-hovered);
 }
 

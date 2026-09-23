@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -42,15 +43,79 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// Finds the next or previous focusable view in `widget` outside of
+// `starting_view` by traversing up and out of its subtree using
+// `TraversalDirection::kUp`.
+views::View* GetNextFocusableViewPast(views::View* starting_view,
+                                      views::Widget* widget,
+                                      bool reverse) {
+  if (!starting_view || !widget || !widget->GetFocusTraversable()) {
+    return nullptr;
+  }
+
+  views::FocusTraversable* focus_traversable = nullptr;
+  views::View* focus_traversable_view = nullptr;
+  views::View* next_view =
+      widget->GetFocusTraversable()->GetFocusSearch()->FindNextFocusableView(
+          starting_view,
+          reverse ? views::FocusSearch::SearchDirection::kBackwards
+                  : views::FocusSearch::SearchDirection::kForwards,
+          views::FocusSearch::TraversalDirection::kUp,
+          views::FocusSearch::StartingViewPolicy::kSkipStartingView,
+          views::FocusSearch::AnchoredDialogPolicy::kCanGoIntoAnchoredDialog,
+          &focus_traversable, &focus_traversable_view);
+
+  views::FocusManager* focus_manager = widget->GetFocusManager();
+  if (focus_traversable && focus_traversable_view && focus_manager) {
+    next_view = focus_manager->GetNextFocusableView(
+        focus_traversable_view, nullptr, reverse, /*dont_loop=*/false);
+  }
+
+  if (!next_view && focus_manager) {
+    next_view = focus_manager->GetNextFocusableView(nullptr, nullptr, reverse,
+                                                    /*dont_loop=*/false);
+  }
+
+  return next_view;
+}
+
+// Transfers focus to `target_view` within `widget` using focus traversal.
+void TransferFocusToView(views::View* target_view,
+                         views::FocusManager* focus_manager,
+                         views::Widget* widget,
+                         bool reverse) {
+  views::ViewTracker tracker(target_view);
+  views::View* view = tracker.view();
+  if (!view || !focus_manager) {
+    return;
+  }
+  focus_manager->SetStoredFocusView(view);
+  view->AboutToRequestFocusFromTabTraversal(reverse);
+  focus_manager->SetFocusedViewWithReason(
+      view, views::FocusManager::FocusChangeReason::kFocusTraversal);
+  if (widget) {
+    widget->Activate();
+  }
+}
+
+}  // namespace
 
 OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
     OmniboxPopupPresenterBase* presenter,
@@ -314,6 +379,50 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
+void OmniboxPopupWebUIBaseContent::AdvanceFocus(bool reverse) {
+  if (!popup_presenter_) {
+    return;
+  }
+
+  views::Widget* browser_widget =
+      popup_presenter_->delegate().GetLocationBarWidget();
+  if (!browser_widget) {
+    return;
+  }
+
+  views::FocusManager* browser_focus_manager =
+      browser_widget->GetFocusManager();
+  if (!browser_focus_manager) {
+    return;
+  }
+
+  views::View* location_bar_view =
+      popup_presenter_->delegate().GetLocationBarFocusRestoreView();
+  if (!location_bar_view) {
+    return;
+  }
+
+  views::View* next_view =
+      GetNextFocusableViewPast(location_bar_view, browser_widget, reverse);
+  if (next_view && next_view != location_bar_view &&
+      !location_bar_view->Contains(next_view)) {
+    TransferFocusToView(next_view, browser_focus_manager, browser_widget,
+                        reverse);
+  }
+
+  const bool user_input_in_progress =
+      controller_->edit_model()->user_input_in_progress();
+  const std::u16string& user_text = controller_->edit_model()->user_text();
+  if (!user_input_in_progress || user_text.empty()) {
+    controller_->edit_model()->Revert();
+    CloseUI();
+  }
+  controller_->edit_model()->OnKillFocus();
+  if (location_bar_ && location_bar_->GetOmniboxPopupView()) {
+    location_bar_->GetOmniboxPopupView()->OnBlur();
+  }
+}
+
 void OmniboxPopupWebUIBaseContent::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
@@ -357,10 +466,16 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
         std::make_unique<OmniboxPopupTabSelectionListener>(
             weak_factory_.GetWeakPtr(), browser->GetTabStripModel());
   }
-  // Make the OmniboxController available to the OmniboxPopupUI.
+  // Make the OmniboxController and AdvanceFocus available to the
+  // OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
-  OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
-      ->set_omnibox_controller(controller_);
+  if (auto* helper =
+          OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())) {
+    helper->set_omnibox_controller(controller_);
+    helper->set_advance_focus_callback(
+        base::BindRepeating(&OmniboxPopupWebUIBaseContent::AdvanceFocus,
+                            weak_factory_.GetWeakPtr()));
+  }
 
   // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
   // allows speech recognition in `CheckRenderFrameType()`.
