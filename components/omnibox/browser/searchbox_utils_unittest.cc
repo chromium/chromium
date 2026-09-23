@@ -84,9 +84,9 @@ TEST_F(SearchboxUtilsTest, OpenMatchNormal) {
       .Times(1);
 
   OpenMatch(&autocomplete_controller_, &client_,
-            autocomplete_controller_.input(), OmniboxPopupSelection(0), match,
-            WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
-            metrics::OmniboxEventProto::INVALID, u"");
+            MakeAutocompleteSnapshot(&autocomplete_controller_),
+            OmniboxPopupSelection(0), match, WindowOpenDisposition::CURRENT_TAB,
+            metrics_tracker, metrics::OmniboxEventProto::INVALID, u"");
 }
 
 TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
@@ -117,8 +117,8 @@ TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
       0, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 0);
 
   OpenMatch(&autocomplete_controller_, &client_,
-            autocomplete_controller_.input(), selection, match,
-            WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
+            MakeAutocompleteSnapshot(&autocomplete_controller_), selection,
+            match, WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
             metrics::OmniboxEventProto::INVALID, u"");
 }
 

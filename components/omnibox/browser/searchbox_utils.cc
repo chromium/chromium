@@ -132,17 +132,16 @@ AutocompleteSnapshot MakeAutocompleteSnapshot(
 void OpenMatch(
     AutocompleteController* autocomplete_controller,
     OmniboxClient* client,
-    const AutocompleteInput& input,
+    const AutocompleteSnapshot& snapshot,
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
     WindowOpenDisposition disposition,
     const InteractionMetricsTracker& metrics_tracker,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
-    const std::u16string& pasted_text,
-    const AutocompleteSnapshot* snapshot) {
+    const std::u16string& pasted_text) {
   const base::TimeTicks now = base::TimeTicks::Now();
-  const AutocompleteResult& result =
-      snapshot ? snapshot->result : autocomplete_controller->result();
+  const AutocompleteInput& input = snapshot.input;
+  const AutocompleteResult& result = snapshot.result;
 
   // If the user is executing an action, this will be non-null and some match
   // opening and metrics behavior will be adjusted accordingly.
@@ -441,7 +440,11 @@ void PasteAndGo(AutocompleteController* autocomplete_controller,
     input.set_added_default_scheme_to_typed_url(false);
   }
 
-  OpenMatch(autocomplete_controller, client, input,
+  // `input` is a modified copy of the controller's input, so pair it with the
+  // controller's result rather than using a snapshot of the live state.
+  const AutocompleteSnapshot snapshot(
+      input, autocomplete_controller->result().CopyForSnapshot());
+  OpenMatch(autocomplete_controller, client, snapshot,
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
             WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
             keyword_mode_entry_method, text);

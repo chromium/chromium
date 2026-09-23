@@ -2112,9 +2112,10 @@ TEST_F(WebuiOmniboxHandlerTest, OpenMatchResumesNavigationWhenNoDialogShown) {
                                             testing::_, testing::_, testing::_,
                                             testing::_, testing::_, testing::_))
       .Times(1);
-  handler_->OpenMatch(OmniboxPopupSelection(0), match,
-                      WindowOpenDisposition::CURRENT_TAB,
-                      base::TimeTicks::Now());
+  handler_->OpenMatch(
+      OmniboxPopupSelection(0), match, WindowOpenDisposition::CURRENT_TAB,
+      base::TimeTicks::Now(),
+      searchbox::MakeAutocompleteSnapshot(handler_->autocomplete_controller()));
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenMatchDropsNavigationWhenDialogCancelled) {
@@ -2141,9 +2142,10 @@ TEST_F(WebuiOmniboxHandlerTest, OpenMatchDropsNavigationWhenDialogCancelled) {
                                             testing::_, testing::_))
       .Times(0);
 
-  handler_->OpenMatch(OmniboxPopupSelection(0), match,
-                      WindowOpenDisposition::CURRENT_TAB,
-                      base::TimeTicks::Now());
+  handler_->OpenMatch(
+      OmniboxPopupSelection(0), match, WindowOpenDisposition::CURRENT_TAB,
+      base::TimeTicks::Now(),
+      searchbox::MakeAutocompleteSnapshot(handler_->autocomplete_controller()));
 }
 
 TEST_F(WebuiOmniboxHandlerTest,

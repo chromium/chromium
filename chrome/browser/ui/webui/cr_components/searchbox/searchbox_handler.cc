@@ -1476,7 +1476,7 @@ void SearchboxHandler::OpenMatch(
     AutocompleteMatch match,
     WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp,
-    const searchbox::AutocompleteSnapshot* snapshot) {
+    const searchbox::AutocompleteSnapshot& snapshot) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog) &&
@@ -1493,11 +1493,9 @@ void SearchboxHandler::OpenMatch(
 
   metrics_tracker_.set_match_selection_timestamp(match_selection_timestamp);
   metrics_tracker_.set_focus_resulted_in_navigation(true);
-  const AutocompleteInput& input =
-      snapshot ? snapshot->input : autocomplete_controller()->input();
-  searchbox::OpenMatch(autocomplete_controller(), client(), input, selection,
+  searchbox::OpenMatch(autocomplete_controller(), client(), snapshot, selection,
                        match, disposition, metrics_tracker_,
-                       metrics::OmniboxEventProto::INVALID, u"", snapshot);
+                       metrics::OmniboxEventProto::INVALID, u"");
 }
 
 void SearchboxHandler::OpenAutocompleteMatch(
@@ -1525,7 +1523,10 @@ void SearchboxHandler::OpenAutocompleteMatch(
           client(), autocomplete_controller()->input().text(),
           /*in_keyword_mode=*/false,
           /*allow_exact_keyword_match=*/true, &verbatim_match);
-      OpenMatch(selection, verbatim_match, disposition, timestamp);
+      // The verbatim match is classified from the live input rather than
+      // taken from a published result, so snapshot the live state.
+      OpenMatch(selection, verbatim_match, disposition, timestamp,
+                searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
     } else {
       edit_model()->OpenSelection(selection, timestamp, disposition,
                                   via_keyboard);
@@ -1546,6 +1547,8 @@ void SearchboxHandler::OpenAutocompleteMatch(
   }
 
   const AutocompleteMatch* match = nullptr;
+  // Non-null only when the match was activated from a stale result; the
+  // `edit_model()` path below distinguishes this from the live result case.
   const searchbox::AutocompleteSnapshot* snapshot = nullptr;
   switch (status) {
     case MatchActivationStatus::kLiveResultMatch:
@@ -1563,7 +1566,13 @@ void SearchboxHandler::OpenAutocompleteMatch(
   const OmniboxPopupSelection selection(line);
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
-    OpenMatch(selection, *match, disposition, timestamp, snapshot);
+    // Open the match against the input and result it was activated from.
+    if (snapshot) {
+      OpenMatch(selection, *match, disposition, timestamp, *snapshot);
+    } else {
+      OpenMatch(selection, *match, disposition, timestamp,
+                searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
+    }
   } else {
     edit_model()->OpenSelection(selection, timestamp, disposition, via_keyboard,
                                 snapshot);
@@ -1700,10 +1709,11 @@ void SearchboxHandler::OpenPopupSelection(
         final_match = alternate_match;
       }
     }
-    OpenMatch(popup_selection, final_match, disposition,
-              base::TimeTicks::Now());
+    OpenMatch(popup_selection, final_match, disposition, base::TimeTicks::Now(),
+              searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
   } else {
-    OpenMatch(popup_selection, match, disposition, base::TimeTicks::Now());
+    OpenMatch(popup_selection, match, disposition, base::TimeTicks::Now(),
+              searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
   }
 }
 
@@ -2104,7 +2114,8 @@ void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
           OmniboxClient::ExtensionControlledDialogResult::kAccept ||
       dialog_result ==
           OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown) {
-    OpenMatch(selection, match, disposition, match_selection_timestamp);
+    OpenMatch(selection, match, disposition, match_selection_timestamp,
+              searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
   } else if (dialog_result ==
              OmniboxClient::ExtensionControlledDialogResult::kReject) {
     std::u16string input_text = autocomplete_controller()->input().text();
@@ -2116,7 +2127,8 @@ void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
         autocomplete_controller()->input().in_keyword_mode(),
         /*allow_exact_keyword_match=*/true, &new_match, &new_alternate_nav_url);
 
-    OpenMatch(selection, new_match, disposition, match_selection_timestamp);
+    OpenMatch(selection, new_match, disposition, match_selection_timestamp,
+              searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
     client()->FocusWebContents();
   }
 }

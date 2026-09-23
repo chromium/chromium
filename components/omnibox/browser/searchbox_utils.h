@@ -144,18 +144,18 @@ AutocompleteMatch GenerateDotComMatch(
     const std::u16string& text_for_desired_tld_navigation,
     AutocompleteInput* generated_input = nullptr);
 
-// Handles opening a match (called by AcceptInput).
+// Handles opening a match (called by AcceptInput). `snapshot` is the input and
+// result the match was activated from; see `MakeAutocompleteSnapshot()`.
 void OpenMatch(AutocompleteController* autocomplete_controller,
                OmniboxClient* client,
-               const AutocompleteInput& input,
+               const AutocompleteSnapshot& snapshot,
                OmniboxPopupSelection selection,
                AutocompleteMatch match,
                WindowOpenDisposition disposition,
                const InteractionMetricsTracker& metrics_tracker,
                metrics::OmniboxEventProto::KeywordModeEntryMethod
                    keyword_mode_entry_method,
-               const std::u16string& pasted_text,
-               const AutocompleteSnapshot* snapshot = nullptr);
+               const std::u16string& pasted_text);
 
 // Classifies `text` using the AutocompleteClassifier to generate a match and an
 // optional alternate navigation URL.

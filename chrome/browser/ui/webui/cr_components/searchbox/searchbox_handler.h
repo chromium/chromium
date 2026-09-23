@@ -328,7 +328,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                  AutocompleteMatch match,
                  WindowOpenDisposition disposition,
                  base::TimeTicks match_selection_timestamp,
-                 const searchbox::AutocompleteSnapshot* snapshot = nullptr);
+                 const searchbox::AutocompleteSnapshot& snapshot);
 
   void OnDefaultSearchExtensionDialogDone(
       OmniboxPopupSelection selection,
