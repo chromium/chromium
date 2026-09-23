@@ -8128,6 +8128,56 @@ TEST_F(ComposeboxQueryControllerTest,
                 .stored_chunk_options()
                 .total_stored_chunks(),
             2);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfRawFileRequest_CompressesPdfAndSetsContentType) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true,
+      /*enable_only_send_aai_for_modality_chips=*/false);
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::vector<uint8_t> pdf_bytes = {1, 2, 3, 4, 5};
+  StartPdfRawFileUploadFlow(file_token, pdf_bytes);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Validate the file upload request payload has CONTENT_TYPE_PDF and ZSTD
+  // compression.
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .compression_type(),
+            kExpectedPdfCompressionType);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
