@@ -18,7 +18,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -47,7 +46,7 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        mArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        mArchiveSettings = TabArchiveSettings.getInstance();
         mArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         SettingsUtils.addPreferencesFromResource(this, R.xml.tab_archive_settings);
         mPageTitle.set(getString(R.string.archive_settings_title));

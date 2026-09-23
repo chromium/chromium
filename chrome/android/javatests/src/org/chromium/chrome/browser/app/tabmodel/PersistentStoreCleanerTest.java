@@ -569,15 +569,13 @@ public class PersistentStoreCleanerTest {
         runOnUiThreadBlocking(
                 () -> {
                     ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
-                    new TabArchiveSettings(ChromeSharedPreferences.getInstance())
-                            .resetSettingsForTesting();
+                    TabArchiveSettings.getInstance().resetSettingsForTesting();
                 });
         CriteriaHelper.pollUiThread(
                 () -> !ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
         runOnUiThreadBlocking(
                 () -> {
-                    TabArchiveSettings archiveSettings =
-                            new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+                    TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
                     assertEquals(0, archiveSettings.getArchivedTabCount());
                 });
 

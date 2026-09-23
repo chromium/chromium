@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management.archived_tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.os.Looper;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -21,12 +23,9 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.ui.base.TestActivity;
@@ -45,7 +44,7 @@ public class TabArchiveSettingsFragmentUnitTest {
 
     @Before
     public void setUp() {
-        mArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        mArchiveSettings = TabArchiveSettings.getInstance();
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -154,13 +153,9 @@ public class TabArchiveSettingsFragmentUnitTest {
         // preference should be disabled.
         radioButton = archiveTimeDeltaPreference.getRadioButtonForTesting(0);
         radioButton.onClick(radioButton);
-        // PostTask to ensure the UI is updated after the preference change.
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    assertFalse(enableArchiveDuplicateTabs.isEnabled());
-                    assertFalse(enableArchiveDuplicateTabs.isChecked());
-                });
+        shadowOf(Looper.getMainLooper()).idle();
+        assertFalse(enableArchiveDuplicateTabs.isEnabled());
+        assertFalse(enableArchiveDuplicateTabs.isChecked());
     }
 
     @Test

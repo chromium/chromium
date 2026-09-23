@@ -178,8 +178,7 @@ public class TabsSettingsUnitTest {
 
     @Test
     public void testArchiveSettingsTitleAndSummary() {
-        TabArchiveSettings archiveSettings =
-                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
         archiveSettings.setArchiveEnabled(true);
         archiveSettings.setArchiveTimeDeltaHours((int) TimeUnit.DAYS.toHours(14));
 
@@ -197,8 +196,7 @@ public class TabsSettingsUnitTest {
             ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP + ":force_disable/true")
     public void testArchiveSettings_ForceDisabledOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        TabArchiveSettings archiveSettings =
-                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
         archiveSettings.setArchiveEnabled(true);
 
         TabsSettings tabsSettings = launchFragment();
@@ -209,12 +207,10 @@ public class TabsSettingsUnitTest {
 
     @Test
     @EnableFeatures(
-            ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP
-                    + ":disable_by_default/true")
+            ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP + ":disable_by_default/true")
     public void testArchiveSettings_DisableByDefaultOnDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        TabArchiveSettings archiveSettings =
-                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
         archiveSettings.resetSettingsForTesting();
 
         TabsSettings tabsSettings = launchFragment();

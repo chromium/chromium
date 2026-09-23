@@ -130,8 +130,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             return;
         }
 
-        TabArchiveSettings archiveSettings =
-                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
 
         if (archiveSettings.getArchiveEnabled()) {
             int tabArchiveTimeDeltaDays = archiveSettings.getArchiveTimeDeltaDays();
@@ -145,7 +144,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             tabArchiveSettingsPref.setSummary(
                     getResources().getString(R.string.archive_settings_time_delta_never));
         }
-        archiveSettings.destroy();
     }
 
     private void configureShareTitlesAndUrlsWithOsSwitch() {

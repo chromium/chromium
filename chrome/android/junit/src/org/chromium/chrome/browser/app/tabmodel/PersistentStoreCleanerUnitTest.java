@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Lea
 import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreCleaner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -97,6 +96,7 @@ public class PersistentStoreCleanerUnitTest {
 
     @Before
     public void setUp() {
+        when(mProfile.isNativeInitialized()).thenReturn(true);
         when(mOrchestrator.getTabModelSelector()).thenReturn(mSelector);
         when(mSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
@@ -146,7 +146,6 @@ public class PersistentStoreCleanerUnitTest {
     @After
     public void tearDown() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(null);
-        new TabArchiveSettings(ChromeSharedPreferences.getInstance()).resetSettingsForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
@@ -367,7 +366,7 @@ public class PersistentStoreCleanerUnitTest {
     @Test
     public void testScheduleCleanUnusedData_ZeroArchivedTabs_NotInstantiated() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(/* instance= */ null);
-        new TabArchiveSettings(ChromeSharedPreferences.getInstance()).resetSettingsForTesting();
+        TabArchiveSettings.getInstance().resetSettingsForTesting();
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
@@ -390,8 +389,7 @@ public class PersistentStoreCleanerUnitTest {
     @Test
     public void testScheduleCleanUnusedData_HasArchivedTabs_AcquiresAndReleasesLease() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
-        new TabArchiveSettings(ChromeSharedPreferences.getInstance())
-                .setArchivedTabCount(/* count= */ 3);
+        TabArchiveSettings.getInstance().setArchivedTabCount(/* count= */ 3);
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
@@ -435,8 +433,7 @@ public class PersistentStoreCleanerUnitTest {
     public void
             testScheduleCleanUnusedData_HasArchivedTabs_ArchivedSelectorNull_SkipsThumbnailCleanup() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
-        new TabArchiveSettings(ChromeSharedPreferences.getInstance())
-                .setArchivedTabCount(/* count= */ 3);
+        TabArchiveSettings.getInstance().setArchivedTabCount(/* count= */ 3);
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
 

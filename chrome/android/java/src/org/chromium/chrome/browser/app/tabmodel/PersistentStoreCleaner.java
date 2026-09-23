@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Lea
 import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreCleaner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -325,8 +324,7 @@ public class PersistentStoreCleaner {
             }
         }
 
-        TabArchiveSettings archiveSettings =
-                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
         // Check if there are any archived tabs either tracked in persistent settings or in
         // memory. archiveSettings.getArchivedTabCount() reads the persisted count from
         // SharedPreferences, and isInstantiatedForProfile checks memory residency.

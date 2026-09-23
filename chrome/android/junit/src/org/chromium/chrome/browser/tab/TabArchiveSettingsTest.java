@@ -41,6 +41,7 @@ public class TabArchiveSettingsTest {
 
     @After
     public void tearDown() {
+        mSettings.destroy();
         DeviceInfo.resetIsDesktopForTesting();
     }
 
@@ -188,5 +189,17 @@ public class TabArchiveSettingsTest {
         mSettings.resetSettingsForTesting();
         assertEquals(0, mSettings.getArchivedTabCount());
         assertEquals(0, mSettings.getArchivedTabCountSupplier().get().intValue());
+
+        // Observers should remain registered after resetSettingsForTesting().
+        mSettings.setArchivedTabCount(3);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(3, observedCount[0]);
+        assertEquals(3, callbackHelper.getCallCount());
+
+        // Destroying immediately after resetSettingsForTesting() when preference change tasks
+        // are pending on the UI thread should not throw a NullPointerException.
+        mSettings.resetSettingsForTesting();
+        mSettings.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

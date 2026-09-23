@@ -190,12 +190,12 @@ public class ArchivedTabsDialogCoordinatorTest {
                     mRegularTabModel = cta.getTabModelSelectorSupplier().get().getModel(false);
                     mArchivedTabModelOrchestrator =
                             ArchivedTabModelOrchestrator.getForProfile(mProfile);
+                    mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
+                    mTabArchiveSettings.setShouldShowDialogIphForTesting(false);
                 });
         waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
         mUserActionTester = new UserActionTester();
-        mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
-        mTabArchiveSettings.setShouldShowDialogIphForTesting(false);
     }
 
     @After
