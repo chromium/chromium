@@ -174,6 +174,8 @@ enum {
   kAutofillAtMemoryDoubleCtrlTriggerEnabled = 124,
   kAutofillAtMemoryShortcut = 125,
   kSubscriptionEligibilitySubscriptionBenefits = 126,
+  kCustomLinksInitializedMobile = 127,
+  kCustomLinksListMobile = 128,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -291,6 +293,14 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           WriteBehavior::kWriteToBoth}},
         {ntp_tiles::prefs::kCustomLinksList,
          {syncable_prefs_ids::kCustomLinksList, syncer::PREFERENCES,
+          PrefSensitivity::kSensitiveRequiresHistory, MergeBehavior::kNone,
+          WriteBehavior::kWriteToBoth}},
+        {ntp_tiles::prefs::kCustomLinksInitializedMobile,
+         {syncable_prefs_ids::kCustomLinksInitializedMobile,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,
+          WriteBehavior::kWriteToBoth}},
+        {ntp_tiles::prefs::kCustomLinksListMobile,
+         {syncable_prefs_ids::kCustomLinksListMobile, syncer::PREFERENCES,
           PrefSensitivity::kSensitiveRequiresHistory, MergeBehavior::kNone,
           WriteBehavior::kWriteToBoth}},
         {omnibox::kKeywordSpaceTriggeringEnabled,

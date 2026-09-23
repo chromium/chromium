@@ -22,7 +22,9 @@ namespace ntp_tiles {
 // preference file. All virtual functions are for testing.
 class CustomLinksStore {
  public:
-  explicit CustomLinksStore(PrefService* prefs);
+  explicit CustomLinksStore(
+      PrefService* prefs,
+      CustomLinksScope scope = CustomLinksScope::kDesktop);
 
   CustomLinksStore(const CustomLinksStore&) = delete;
   CustomLinksStore& operator=(const CustomLinksStore&) = delete;
@@ -48,7 +50,12 @@ class CustomLinksStore {
   static void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* user_prefs);
 
+  // The pref key this store reads from and writes to, as resolved from the
+  // CustomLinksScope it was constructed with.
+  const char* list_pref_name() const { return custom_links_list_pref_; }
+
  private:
+  const char* const custom_links_list_pref_;
   // The pref service used to persist the custom link data.
   raw_ptr<PrefService> prefs_;
 };

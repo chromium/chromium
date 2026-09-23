@@ -21,11 +21,14 @@ IOSCustomLinksManagerFactory::NewForProfile(ProfileIOS* profile) {
                                  ntp_tiles::AimButtonRefactorArm::kAimAsMvt;
   size_t max_links = enable_ai_mode_tile ? ntp_tiles::kMaxNumCustomLinks + 1
                                          : ntp_tiles::kMaxNumCustomLinks;
+  // iOS shows the mobile-sized pinned tile grid, which keeps its links in the
+  // mobile storage domain, isolated from desktop shortcuts.
   return std::make_unique<ntp_tiles::CustomLinksManagerImpl>(
       ntp_tiles::CustomLinksManagerImpl::Options{
           .prefs = profile->GetPrefs(),
           .history_service = history_service,
           .max_links = max_links,
           .enable_ai_mode_tile = enable_ai_mode_tile,
+          .scope = ntp_tiles::CustomLinksScope::kMobile,
       });
 }

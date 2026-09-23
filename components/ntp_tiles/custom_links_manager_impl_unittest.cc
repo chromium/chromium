@@ -1096,4 +1096,82 @@ TEST_F(CustomLinksManagerImplTest, AiModeLinkNineLinksWhenEnabled) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+TEST_F(CustomLinksManagerImplTest, MobileScopeUsesMobilePrefKeys) {
+  auto mobile_links = std::make_unique<CustomLinksManagerImpl>(
+      CustomLinksManagerImpl::Options{.prefs = &prefs_,
+                                      .history_service = history_service_.get(),
+                                      .scope = CustomLinksScope::kMobile});
+
+  // Initialize with tiles.
+  ASSERT_TRUE(mobile_links->Initialize(FillTestTiles(kTestCase1)));
+
+  // Verify data is stored in the mobile pref key.
+  EXPECT_TRUE(prefs_.GetBoolean(prefs::kCustomLinksInitializedMobile));
+  EXPECT_FALSE(prefs_.GetList(prefs::kCustomLinksListMobile).empty());
+
+  // Verify desktop pref key is unaffected.
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kCustomLinksInitialized));
+  EXPECT_TRUE(prefs_.GetList(prefs::kCustomLinksList).empty());
+}
+
+TEST_F(CustomLinksManagerImplTest, MobileScopeRemoteChangeNotifiesCorrectPref) {
+  auto mobile_links = std::make_unique<CustomLinksManagerImpl>(
+      CustomLinksManagerImpl::Options{.prefs = &prefs_,
+                                      .history_service = history_service_.get(),
+                                      .scope = CustomLinksScope::kMobile});
+
+  base::MockCallback<base::RepeatingClosure> callback;
+  base::CallbackListSubscription subscription =
+      mobile_links->RegisterCallbackForOnChanged(callback.Get());
+
+  ASSERT_FALSE(mobile_links->IsInitialized());
+
+  // Modify the mobile preference. This should notify and initialize.
+  EXPECT_CALL(callback, Run()).Times(2);
+  prefs_.SetUserPref(prefs::kCustomLinksInitializedMobile, base::Value(true));
+  prefs_.SetUserPref(prefs::kCustomLinksListMobile,
+                     base::Value(FillTestList(kTestUrl, kTestTitle, false)));
+  EXPECT_TRUE(mobile_links->IsInitialized());
+}
+
+TEST_F(CustomLinksManagerImplTest, DesktopChangeDoesNotReachMobileScope) {
+  auto mobile_links = std::make_unique<CustomLinksManagerImpl>(
+      CustomLinksManagerImpl::Options{.prefs = &prefs_,
+                                      .history_service = history_service_.get(),
+                                      .scope = CustomLinksScope::kMobile});
+
+  base::MockCallback<base::RepeatingClosure> callback;
+  base::CallbackListSubscription subscription =
+      mobile_links->RegisterCallbackForOnChanged(callback.Get());
+
+  ASSERT_FALSE(mobile_links->IsInitialized());
+
+  // A change to the desktop prefs must not be observed by a mobile-scoped
+  // manager, otherwise desktop shortcuts and mobile tiles would overwrite each
+  // other through sync.
+  EXPECT_CALL(callback, Run()).Times(0);
+  prefs_.SetUserPref(prefs::kCustomLinksInitialized, base::Value(true));
+  prefs_.SetUserPref(prefs::kCustomLinksList,
+                     base::Value(FillTestList(kTestUrl, kTestTitle, false)));
+
+  EXPECT_FALSE(mobile_links->IsInitialized());
+  EXPECT_EQ(std::vector<Link>(), mobile_links->GetLinks());
+}
+
+TEST_F(CustomLinksManagerImplTest, DefaultScopeUsesDesktopPrefKeys) {
+  // Embedders that do not name a scope get the desktop storage domain. Keep
+  // this pinned: flipping the default silently moves every such caller's data.
+  auto default_links =
+      std::make_unique<CustomLinksManagerImpl>(CustomLinksManagerImpl::Options{
+          .prefs = &prefs_, .history_service = history_service_.get()});
+
+  ASSERT_TRUE(default_links->Initialize(FillTestTiles(kTestCase1)));
+
+  EXPECT_TRUE(prefs_.GetBoolean(prefs::kCustomLinksInitialized));
+  EXPECT_FALSE(prefs_.GetList(prefs::kCustomLinksList).empty());
+
+  EXPECT_FALSE(prefs_.GetBoolean(prefs::kCustomLinksInitializedMobile));
+  EXPECT_TRUE(prefs_.GetList(prefs::kCustomLinksListMobile).empty());
+}
+
 }  // namespace ntp_tiles

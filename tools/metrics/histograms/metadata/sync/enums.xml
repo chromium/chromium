@@ -398,6 +398,8 @@ chromium-metrics-reviews@google.com.
   <int value="124" label="AutofillAtMemoryDoubleCtrlTriggerEnabled"/>
   <int value="125" label="AutofillAtMemoryShortcut"/>
   <int value="126" label="SubscriptionEligibilitySubscriptionBenefits"/>
+  <int value="127" label="CustomLinksInitializedMobile"/>
+  <int value="128" label="CustomLinksListMobile"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

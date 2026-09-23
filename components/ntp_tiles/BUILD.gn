@@ -12,10 +12,6 @@ if (is_android) {
 
 source_set("pref_names") {
   sources = [ "pref_names.h" ]
-  public_deps = [
-    "//build:android_buildflags",
-    "//build:branding_buildflags",
-  ]
 }
 
 static_library("ntp_tiles") {

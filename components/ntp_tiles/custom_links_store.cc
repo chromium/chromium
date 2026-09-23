@@ -26,7 +26,11 @@ const char* kDictionaryKeyIsMostVisited = "isMostVisited";
 
 }  // namespace
 
-CustomLinksStore::CustomLinksStore(PrefService* prefs) : prefs_(prefs) {
+CustomLinksStore::CustomLinksStore(PrefService* prefs, CustomLinksScope scope)
+    : custom_links_list_pref_(scope == CustomLinksScope::kDesktop
+                                  ? prefs::kCustomLinksList
+                                  : prefs::kCustomLinksListMobile),
+      prefs_(prefs) {
   DCHECK(prefs);
 }
 
@@ -38,7 +42,7 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
   std::vector<CustomLinksManager::Link> links;
 
   const base::ListValue& stored_links =
-      prefs_->GetList(prefs::kCustomLinksList);
+      prefs_->GetList(custom_links_list_pref_);
 
   for (const base::Value& link : stored_links) {
     const std::string* url_string =
@@ -80,17 +84,19 @@ void CustomLinksStore::StoreLinks(
     new_link.Set(kDictionaryKeyIsMostVisited, link.is_most_visited);
     new_link_list.Append(std::move(new_link));
   }
-  prefs_->SetList(prefs::kCustomLinksList, std::move(new_link_list));
+  prefs_->SetList(custom_links_list_pref_, std::move(new_link_list));
 }
 
 void CustomLinksStore::ClearLinks() {
-  prefs_->ClearPref(prefs::kCustomLinksList);
+  prefs_->ClearPref(custom_links_list_pref_);
 }
 
 // static
 void CustomLinksStore::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterListPref(prefs::kCustomLinksList,
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  user_prefs->RegisterListPref(prefs::kCustomLinksListMobile,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

@@ -14,6 +14,24 @@
 
 namespace ntp_tiles {
 
+// Selects the storage domain that custom links are persisted to and synced
+// under.
+//
+// Desktop-sized and mobile-sized surfaces keep their links in separate prefs:
+// they allow a different number of links and are laid out in differently sized
+// grids, so sharing a single storage domain would let one form factor's links
+// overwrite the other's via sync. Embedders pick the scope that matches the
+// surface they are instantiating custom links for.
+enum class CustomLinksScope {
+  // Storage shared by desktop-sized surfaces, backed by the unsuffixed
+  // |prefs::kCustomLinksList| and |prefs::kCustomLinksInitialized| keys. This
+  // is the default so that the many callers that only ever deal with
+  // desktop-sized surfaces do not have to spell the scope out.
+  kDesktop,
+  // Storage used by mobile-sized surfaces.
+  kMobile,
+};
+
 // Interface to manage and store custom links for the NTP. Initialized from
 // MostVisitedSites.
 //

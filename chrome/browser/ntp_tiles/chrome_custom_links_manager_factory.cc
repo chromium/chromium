@@ -21,14 +21,21 @@ ChromeCustomLinksManagerFactory::NewForProfile(Profile* profile) {
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   size_t max_links = ntp_tiles::kMaxNumCustomLinks;
+  // Desktop platforms only ever show the desktop-sized shortcut grid.
+  ntp_tiles::CustomLinksScope scope = ntp_tiles::CustomLinksScope::kDesktop;
 #if BUILDFLAG(IS_ANDROID)
+  // The WebUI NTP renders the same desktop-sized grid, so it shares the desktop
+  // storage domain. The native NTP keeps its links in the mobile domain.
   if (base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid)) {
     max_links = 10;
+  } else {
+    scope = ntp_tiles::CustomLinksScope::kMobile;
   }
 #endif
   return std::make_unique<ntp_tiles::CustomLinksManagerImpl>(
       ntp_tiles::CustomLinksManagerImpl::Options{
           .prefs = profile->GetPrefs(),
           .history_service = history_service,
-          .max_links = max_links});
+          .max_links = max_links,
+          .scope = scope});
 }
