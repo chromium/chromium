@@ -326,42 +326,42 @@
   </message>
   <!-- TODO(crbug.com/397187800): The following Glic experimental triggering strings are temporary
        and will be finalized and replaced next week. This also includes finalizing the links for
-       "Learn more about Gemini Spark" and "unexpected actions". -->
+       "Learn more about Gemini tasks" and "unexpected actions". -->
   <message name="IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE" desc="Title for the experimental opt-in dialog" is_accessibility_with_no_ui="true">
     First, turn on Chrome auto browse for this device
   </message>
   <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE" desc="Label for the Gemini experimental triggering setting" formatter_data="android_java">
-    Let Gemini Spark browse on this device
+    Let other Gemini apps browse remotely from any device
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL" desc="Sublabel explaining Gemini Spark feature." formatter_data="android_java">
-    Gemini Spark can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL" desc="Sublabel explaining the setting that lets other Gemini apps use Chrome auto browse on this device." formatter_data="android_java">
+    When you start a task from other Gemini apps, including gemini.google.com and Gemini mobile apps, Gemini can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_V2" desc="Sublabel explaining Gemini Spark feature with accessible link attributes.">
-    Gemini Spark can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank" aria-label="$2" aria-description="$3"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_V2" desc="Sublabel explaining the setting that lets other Gemini apps use Chrome auto browse on this device, with accessible link attributes.">
+    When you start a task from other Gemini apps, including gemini.google.com and Gemini mobile apps, Gemini can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank" aria-label="$2" aria-description="$3"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_LEARN_MORE_LINK_LABEL" desc="Accessible name for the 'Learn more' link in the Gemini Spark toggle sublabel." is_accessibility_with_no_ui="true">
-    Learn more about Gemini Spark
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_LEARN_MORE_LINK_LABEL" desc="Accessible name for the 'Learn more' link in the experimental triggering toggle sublabel." is_accessibility_with_no_ui="true">
+    Learn more about Gemini tasks
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_1" desc="Bullet point explaining what happens when Gemini Spark is enabled." formatter_data="android_java">
-    Gemini Spark can only use auto browse on this device if the device is awake and Chrome is running.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_1" desc="Bullet point explaining what happens when this setting is enabled." formatter_data="android_java">
+    Gemini can only use auto browse on this device if the device is awake and Chrome is running.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_2" desc="Bullet point explaining notifications when Gemini Spark is enabled." formatter_data="android_java">
-    Gemini Spark will decide which actions to take based on the tasks you start or update.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_2" desc="Bullet point explaining notifications when this setting is enabled." formatter_data="android_java">
+    Gemini will decide which actions to take based on the tasks you start or update.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_1" desc="Bullet point explaining site access when enabling Gemini Spark." formatter_data="android_java">
-    Gemini Spark will have access to the same sites as you, including the sites you’re signed in to. It will share necessary info with third parties, which could include personal info you might find sensitive.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_1" desc="Bullet point explaining site access when enabling this setting." formatter_data="android_java">
+    Gemini will have access to the same sites as you, including the sites you’re signed in to. It will share necessary info with third parties, which could include personal info you might find sensitive.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_2" desc="Bullet point explaining access risk when enabling Gemini Spark." formatter_data="android_java">
-    Anybody with access to your Gemini Spark agent could control your Chrome browser.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_2" desc="Bullet point explaining access risk when enabling this setting." formatter_data="android_java">
+    Anybody with access to your Gemini apps could control your Chrome browser.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3" desc="Bullet point explaining user responsibility and risks for Gemini Spark." formatter_data="android_java">
-    Gemini Spark is experimental and may do things like share your info or make purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3" desc="Bullet point explaining user responsibility and risks for this setting." formatter_data="android_java">
+    Gemini may make mistakes, like sharing your info or making purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3_V2" desc="Bullet point explaining user responsibility and risks for Gemini Spark with accessible link attributes.">
-    Gemini Spark is experimental and may do things like share your info or make purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank" aria-label="$2" aria-description="$3"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3_V2" desc="Bullet point explaining user responsibility and risks for this setting, with accessible link attributes.">
+    Gemini may make mistakes, like sharing your info or making purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank" aria-label="$2" aria-description="$3"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK" desc="Accessible name for the 'Review the risks' link in the Gemini Spark consider section." is_accessibility_with_no_ui="true">
-    Review the risks of Gemini Spark
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK" desc="Accessible name for the 'Review the risks' link in the experimental triggering consider section." is_accessibility_with_no_ui="true">
+    Review the risks of using Gemini
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen" formatter_data="android_java">
     Let Chrome browse for you
