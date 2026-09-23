@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
@@ -52,6 +54,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_watermark {
 
@@ -407,8 +413,9 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
   EXPECT_TRUE(overlay_view->has_text_for_testing());
   std::string text = overlay_view->watermark_text_for_testing();
   EXPECT_NE(text.find("custom_message"), std::string::npos);
-  EXPECT_TRUE(base::MatchPattern(text, "*????-??-??T??:??:??+??:??") ||
-              base::MatchPattern(text, "*????-??-??T??:??:??-??:??"))
+  std::string timestamp = text.substr(text.rfind('\n') + 1);
+  EXPECT_TRUE(base::MatchPattern(timestamp, "????-??-??T??:??:??+??:??") ||
+              base::MatchPattern(timestamp, "????-??-??T??:??:??-??:??"))
       << "Actual watermark text: " << text;
 }
 
@@ -421,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTestDisabled,
   EXPECT_TRUE(overlay_view->has_text_for_testing());
   std::string text = overlay_view->watermark_text_for_testing();
   EXPECT_NE(text.find("custom_message"), std::string::npos);
-  EXPECT_TRUE(base::MatchPattern(text, "*????-??-??T??:??:??.???Z"))
+  std::string timestamp = text.substr(text.rfind('\n') + 1);
+  EXPECT_TRUE(base::MatchPattern(timestamp, "????-??-??T??:??:??.???Z"))
       << "Actual watermark text: " << text;
 }
 
@@ -795,6 +803,10 @@ class WatermarkSettingsCommandLineBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  chrome::ScopedChannelOverride channel_override_{
+      chrome::ScopedChannelOverride::Channel::kDev};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList scoped_feature_list_{
       kEnableWatermarkCustomization};
 };

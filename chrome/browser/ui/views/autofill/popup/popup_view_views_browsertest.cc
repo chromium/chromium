@@ -224,9 +224,9 @@ Suggestion CreateBnplFootnoteSuggestion() {
 }
 
 Suggestion CreateAtMemoryFetchingSuggestion() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
-      SuggestionType::kAtMemoryFetching);
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+                            IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE),
+                        SuggestionType::kAtMemoryFetching);
   suggestion.acceptability =
       Suggestion::Acceptability::kSelectableButUnacceptable;
   return suggestion;
