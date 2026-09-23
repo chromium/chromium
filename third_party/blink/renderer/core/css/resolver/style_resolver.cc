@@ -3696,6 +3696,8 @@ void StyleResolver::PropagateStyleToViewport() {
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
     PROPAGATE_FROM(document_element_style, ColorSchemeFlagsIsNormal,
                    SetColorSchemeFlagsIsNormal, false);
+    PROPAGATE_FROM(document_element_style, ScrollAxisLock, SetScrollAxisLock,
+                   EScrollAxisLock::kAuto);
   }
 
   changed |= PropagateScrollSnapStyleToViewport(
