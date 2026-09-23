@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,8 +74,17 @@ public class ActorMetricsTest {
         ActorMetrics.maybeRecordMetricsFromIntent(intent, mProfile);
 
         watcher.assertExpected();
-        assertFalse(intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID));
-        assertFalse(intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE));
+        // Extras must NOT be stripped, so downstream consumers can still read them.
+        assertTrue(intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID));
+        assertTrue(intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE));
+
+        // Re-invoking with the same intent instance must be deduplicated and not record again.
+        var duplicateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.Notification.ClickTaskState")
+                        .build();
+        ActorMetrics.maybeRecordMetricsFromIntent(intent, mProfile);
+        duplicateWatcher.assertExpected();
     }
 
     @Test

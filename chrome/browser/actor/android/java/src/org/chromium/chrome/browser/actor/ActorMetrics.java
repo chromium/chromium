@@ -20,14 +20,19 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /** Helper class for recording Actor-related UMA metrics. */
 @NullMarked
 public class ActorMetrics implements ActorKeyedService.Observer {
     private static final int INVALID_TASK_ID = -1;
     private static final int INVALID_TASK_STATE = -1;
+    private static final Set<Intent> sRecordedIntents =
+            Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     // LINT.IfChange(ActorPipStatus)
 
@@ -145,6 +150,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
             @Nullable Intent intent, @Nullable Profile profile) {
         if (intent == null) return;
         if (!intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID)) return;
+        if (sRecordedIntents.contains(intent)) return;
 
         int taskId = intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, INVALID_TASK_ID);
         if (taskId == INVALID_TASK_ID) return;
@@ -163,13 +169,10 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         }
 
         if (state != INVALID_TASK_STATE) {
+            sRecordedIntents.add(intent);
             RecordHistogram.recordEnumeratedHistogram(
                     "Actor.Notification.ClickTaskState", state, ActorTaskState.MAX_VALUE + 1);
         }
-
-        // Consume the extras so that we don't record the same intent multiple times.
-        intent.removeExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID);
-        intent.removeExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE);
     }
 
     private static int getActorTaskStateFromTaskId(int taskId, Profile profile) {
@@ -314,6 +317,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
 
     public static void resetForTesting() {
         sInstance = null;
+        sRecordedIntents.clear();
     }
 
     public void onTaskStateChangedForTesting(
