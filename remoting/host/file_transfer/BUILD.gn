@@ -20,9 +20,10 @@ source_set("file_transfer") {
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {
     sources += [
+      "file_chooser_factory_win.cc",
       "file_chooser_main_win.cc",
-      "file_chooser_win.cc",
     ]
+    public_deps += [ ":file_chooser_win" ]
     deps += [
       "//ipc",
       "//mojo/core/embedder",
@@ -128,6 +129,28 @@ if (is_chromeos) {
   }
 }
 
+if (is_win) {
+  source_set("file_chooser_win") {
+    sources = [
+      "file_chooser_win.cc",
+      "file_chooser_win.h",
+    ]
+    deps = [
+      ":common",
+      "//base",
+      "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/bindings",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/cpp/system",
+      "//remoting/host:common",
+      "//remoting/host/base",
+      "//remoting/host/mojom",
+      "//remoting/host/win",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -187,6 +210,7 @@ source_set("unit_tests") {
     sources += [ "local_file_operations_unittest.cc" ]
     if (is_win) {
       sources += [ "file_chooser_win_unittest.cc" ]
+      deps += [ ":file_chooser_win" ]
     }
     if (remoting_multi_process) {
       sources += [ "ipc_file_operations_unittest.cc" ]

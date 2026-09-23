@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/file_transfer/file_chooser.h"
+#include "remoting/host/file_transfer/file_chooser_win.h"
 
 #include <windows.h>
 
@@ -16,16 +16,11 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/process/process.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_handle.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
 
@@ -62,28 +57,20 @@ FileTransferResult<base::FilePath> GetExePath(base::Location from_here) {
   return path.AppendASCII("remoting_host.exe");
 }
 
-class FileChooserWindows : public FileChooser {
- public:
-  FileChooserWindows(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-                     ResultCallback callback);
+}  // namespace
 
-  FileChooserWindows(const FileChooserWindows&) = delete;
-  FileChooserWindows& operator=(const FileChooserWindows&) = delete;
+FileChooserWindows::LaunchResult::LaunchResult() = default;
 
-  ~FileChooserWindows() override;
+FileChooserWindows::LaunchResult::LaunchResult(LaunchResult&&) = default;
 
-  // FileChooser implementation.
-  void Show() override;
+FileChooserWindows::LaunchResult& FileChooserWindows::LaunchResult::operator=(
+    LaunchResult&&) = default;
 
- private:
-  FileTransferResult<std::monostate> LaunchChooserProcess();
-  void OnFileChooserResult(const FileChooser::Result& result);
-  void OnDisconnected();
-
-  ResultCallback callback_;
-  base::Process process_;
-  mojo::Remote<mojom::FileChooser> file_chooser_;
-};
+FileChooserWindows::LaunchResult::~LaunchResult() {
+  if (process.IsValid()) {
+    process.Terminate(0, false);
+  }
+}
 
 FileChooserWindows::FileChooserWindows(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
@@ -91,22 +78,47 @@ FileChooserWindows::FileChooserWindows(
     : callback_(std::move(callback)) {}
 
 FileChooserWindows::~FileChooserWindows() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (process_.IsValid()) {
     process_.Terminate(0, false);
   }
 }
 
+void FileChooserWindows::SetLauncherForTesting(LaunchProcessCallback launcher) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  launcher_for_testing_ = std::move(launcher);
+}
+
 void FileChooserWindows::Show() {
-  FileTransferResult<std::monostate> result = LaunchChooserProcess();
-  if (!result) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), std::move(result.error())));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LaunchResult result = launcher_for_testing_ ? launcher_for_testing_.Run()
+                                              : LaunchChooserProcess();
+  OnProcessLaunched(std::move(result));
+}
+
+void FileChooserWindows::OnProcessLaunched(LaunchResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.status) {
+    if (callback_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_),
+                                    std::move(result.status.error())));
+    }
+    return;
   }
+
+  process_ = std::move(result.process);
+  file_chooser_.Bind(std::move(result.pending_remote));
+  file_chooser_.set_disconnect_handler(base::BindOnce(
+      &FileChooserWindows::OnDisconnected, base::Unretained(this)));
+
+  file_chooser_->OpenFile(base::BindOnce(
+      &FileChooserWindows::OnFileChooserResult, base::Unretained(this)));
 }
 
 void FileChooserWindows::OnFileChooserResult(
     const FileChooser::Result& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "File chooser result received, success=" << result.is_success();
   file_chooser_.reset();
   process_.Close();
@@ -116,6 +128,7 @@ void FileChooserWindows::OnFileChooserResult(
 }
 
 void FileChooserWindows::OnDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "File chooser Mojo channel disconnected.";
   file_chooser_.reset();
   process_.Close();
@@ -125,14 +138,17 @@ void FileChooserWindows::OnDisconnected() {
   }
 }
 
-FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
+// static
+FileChooserWindows::LaunchResult FileChooserWindows::LaunchChooserProcess() {
+  LaunchResult result;
   base::LaunchOptions launch_options;
 
   FileTransferResult<ScopedHandle> current_user =
       GetCurrentUserToken(FROM_HERE);
   if (!current_user) {
     LOG(ERROR) << "Failed to query current user token.";
-    return current_user.error();
+    result.status = current_user.error();
+    return result;
   }
   launch_options.as_user = current_user->Get();
   launch_options.force_breakaway_from_job_ = true;
@@ -141,7 +157,8 @@ FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
   FileTransferResult<base::FilePath> exe_path = GetExePath(FROM_HERE);
   if (!exe_path) {
     LOG(ERROR) << "Failed to get file chooser executable path.";
-    return exe_path.error();
+    result.status = exe_path.error();
+    return result;
   }
   base::CommandLine command_line(*exe_path);
   command_line.AppendSwitchASCII(kProcessTypeSwitchName,
@@ -154,37 +171,24 @@ FileTransferResult<std::monostate> FileChooserWindows::LaunchChooserProcess() {
   mojo::OutgoingInvitation invitation;
   invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
   mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(0);
-  file_chooser_.Bind(
-      mojo::PendingRemote<mojom::FileChooser>(std::move(pipe), 0));
-  file_chooser_.set_disconnect_handler(base::BindOnce(
-      &FileChooserWindows::OnDisconnected, base::Unretained(this)));
 
-  process_ = base::LaunchProcess(command_line, launch_options);
-  if (!process_.IsValid()) {
+  base::Process process = base::LaunchProcess(command_line, launch_options);
+  if (!process.IsValid()) {
     LOG(ERROR) << "Failed to launch file chooser process.";
-    file_chooser_.reset();
-    return MakeFileTransferError(
+    result.status = MakeFileTransferError(
         FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
+    return result;
   }
-  LOG(INFO) << "Launched file chooser process with PID " << process_.Pid();
+  LOG(INFO) << "Launched file chooser process with PID " << process.Pid();
 
   channel.RemoteProcessLaunchAttempted();
-  mojo::OutgoingInvitation::Send(std::move(invitation), process_.Handle(),
+  mojo::OutgoingInvitation::Send(std::move(invitation), process.Handle(),
                                  channel.TakeLocalEndpoint());
 
-  file_chooser_->OpenFile(base::BindOnce(
-      &FileChooserWindows::OnFileChooserResult, base::Unretained(this)));
-
-  return kSuccessTag;
-}
-
-}  // namespace
-
-std::unique_ptr<FileChooser> FileChooser::Create(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    ResultCallback callback) {
-  return std::make_unique<FileChooserWindows>(std::move(ui_task_runner),
-                                              std::move(callback));
+  result.process = std::move(process);
+  result.pending_remote =
+      mojo::PendingRemote<mojom::FileChooser>(std::move(pipe), 0);
+  return result;
 }
 
 }  // namespace remoting
