@@ -81,7 +81,13 @@ VisitContentModelAnnotations::VisitContentModelAnnotations(
 VisitContentModelAnnotations::VisitContentModelAnnotations() = default;
 VisitContentModelAnnotations::VisitContentModelAnnotations(
     const VisitContentModelAnnotations&) = default;
+VisitContentModelAnnotations::VisitContentModelAnnotations(
+    VisitContentModelAnnotations&&) noexcept = default;
 VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
+VisitContentModelAnnotations& VisitContentModelAnnotations::operator=(
+    const VisitContentModelAnnotations&) = default;
+VisitContentModelAnnotations& VisitContentModelAnnotations::operator=(
+    VisitContentModelAnnotations&&) noexcept = default;
 
 // static
 void VisitContentModelAnnotations::MergeCategoryIntoVector(
@@ -140,7 +146,13 @@ VisitContentAnnotations::VisitContentAnnotations(
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    VisitContentAnnotations&&) noexcept = default;
 VisitContentAnnotations::~VisitContentAnnotations() = default;
+VisitContentAnnotations& VisitContentAnnotations::operator=(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations& VisitContentAnnotations::operator=(
+    VisitContentAnnotations&&) noexcept = default;
 
 URLResult::URLResult() = default;
 

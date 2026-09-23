@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -191,7 +192,12 @@ struct VisitContentModelAnnotations {
                                int64_t page_topics_model_version,
                                const std::vector<Category>& entities);
   VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
+  VisitContentModelAnnotations(VisitContentModelAnnotations&& other) noexcept;
   ~VisitContentModelAnnotations();
+  VisitContentModelAnnotations& operator=(
+      const VisitContentModelAnnotations& other);
+  VisitContentModelAnnotations& operator=(
+      VisitContentModelAnnotations&& other) noexcept;
 
   // Merges `category` into `categories`. It upgrades the weight if it already
   // exists, and appends it if it doesn't.
@@ -248,7 +254,10 @@ struct VisitContentAnnotations {
                           PasswordState password_state,
                           bool has_url_keyed_image);
   VisitContentAnnotations(const VisitContentAnnotations& other);
+  VisitContentAnnotations(VisitContentAnnotations&& other) noexcept;
   ~VisitContentAnnotations();
+  VisitContentAnnotations& operator=(const VisitContentAnnotations& other);
+  VisitContentAnnotations& operator=(VisitContentAnnotations&& other) noexcept;
 
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
@@ -289,9 +298,8 @@ class URLResult : public URLRow {
   const VisitContentAnnotations& content_annotations() const {
     return content_annotations_;
   }
-  void set_content_annotations(
-      const VisitContentAnnotations& content_annotations) {
-    content_annotations_ = content_annotations;
+  void set_content_annotations(VisitContentAnnotations content_annotations) {
+    content_annotations_ = std::move(content_annotations);
   }
 
   const query_parser::Snippet& snippet() const { return snippet_; }

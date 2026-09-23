@@ -4,6 +4,8 @@
 
 #include "components/history/core/browser/url_row.h"
 
+#include <utility>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,6 +101,53 @@ TEST(HistoryUrlRowTest, MergeVisibilityScores) {
 
     EXPECT_NEAR(starting.visibility_score, test.want_score, 0.001);
   }
+}
+
+TEST(HistoryUrlRowTest, VisitContentAnnotationsMoveSemantics) {
+  VisitContentAnnotations original;
+  original.model_annotations.categories.emplace_back("cat1", 10);
+  original.model_annotations.entities.emplace_back("ent1", 20);
+  original.related_searches = {"search1", "search2"};
+  original.search_terms = u"test search";
+  original.alternative_title = "alt title";
+  original.page_language = "en";
+
+  // Verify move constructor transfers contents and empties source containers.
+  VisitContentAnnotations moved_constructed(std::move(original));
+  EXPECT_EQ(1u, moved_constructed.model_annotations.categories.size());
+  EXPECT_EQ("cat1", moved_constructed.model_annotations.categories[0].id);
+  EXPECT_EQ(1u, moved_constructed.model_annotations.entities.size());
+  EXPECT_EQ(2u, moved_constructed.related_searches.size());
+  EXPECT_EQ(u"test search", moved_constructed.search_terms);
+  EXPECT_EQ("alt title", moved_constructed.alternative_title);
+  EXPECT_EQ("en", moved_constructed.page_language);
+  EXPECT_TRUE(original.model_annotations.categories.empty());
+  EXPECT_TRUE(original.model_annotations.entities.empty());
+  EXPECT_TRUE(original.related_searches.empty());
+
+  // Verify move assignment transfers contents and empties source containers.
+  VisitContentAnnotations moved_assigned;
+  moved_assigned = std::move(moved_constructed);
+  EXPECT_EQ(1u, moved_assigned.model_annotations.categories.size());
+  EXPECT_EQ(2u, moved_assigned.related_searches.size());
+  EXPECT_EQ("alt title", moved_assigned.alternative_title);
+  EXPECT_TRUE(moved_constructed.model_annotations.categories.empty());
+  EXPECT_TRUE(moved_constructed.related_searches.empty());
+}
+
+TEST(HistoryUrlRowTest, URLResultSetContentAnnotationsMove) {
+  URLResult result;
+  VisitContentAnnotations annotations;
+  annotations.related_searches = {"query1", "query2"};
+  annotations.alternative_title = "my page";
+
+  // Pass rvalue into set_content_annotations.
+  result.set_content_annotations(std::move(annotations));
+  EXPECT_EQ(2u, result.content_annotations().related_searches.size());
+  EXPECT_EQ("query1", result.content_annotations().related_searches[0]);
+  EXPECT_EQ("my page", result.content_annotations().alternative_title);
+  // Moving into the sink setter must empty the original rvalue source.
+  EXPECT_TRUE(annotations.related_searches.empty());
 }
 
 }  // namespace
