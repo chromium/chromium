@@ -50,11 +50,6 @@ void WebGpuSharedImageLease::SetSyncToken(const gpu::SyncToken& sync_token) {
   resource_.shared_image_->UpdateDestructionSyncToken(resource_.sync_token_);
 }
 
-scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageLease::GetSharedImage()
-    const {
-  return resource_.shared_image_;
-}
-
 void WebGpuSharedImageLease::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
