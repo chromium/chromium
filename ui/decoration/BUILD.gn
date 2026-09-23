@@ -20,6 +20,7 @@ source_set("decoration") {
     "//cc/paint",
     "//skia",
     "//ui/base",
+    "//ui/base/interaction",
     "//ui/compositor",
     "//ui/gfx",
     "//ui/gfx/geometry",

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -25,7 +26,7 @@ namespace ui::decoration {
 // Decoration handles all of that. This split allows decorations to be composed
 // out of several sources and keeps the layer plumbing implemented and tested
 // exactly once.
-class DecorationSource {
+class DecorationSource : public ui::SafeCastable {
  public:
   // Everything Decoration needs in order to configure the underlying
   // cc::NinePatchLayer.
@@ -81,7 +82,7 @@ class DecorationSource {
   DecorationSource(const DecorationSource&) = delete;
   DecorationSource& operator=(const DecorationSource&) = delete;
 
-  virtual ~DecorationSource();
+  ~DecorationSource() override;
 
   // Returns the active decoration details for the given content bounds, whose
   // corner radii have already been clamped to fit the content size. Returns

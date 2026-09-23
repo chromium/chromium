@@ -44,6 +44,8 @@ gfx::RRectF ContentBounds(
 
 class TestDecorationSource : public DecorationSource {
  public:
+  DECLARE_SAFE_CAST_TARGET()
+
   explicit TestDecorationSource(
       std::optional<Details> details = MakeDetails(10))
       : details_(std::move(details)) {}
@@ -72,6 +74,8 @@ class TestDecorationSource : public DecorationSource {
   gfx::RRectF last_content_bounds_;
 };
 
+DEFINE_SAFE_CAST_TARGET(TestDecorationSource)
+
 class DecorationTest : public testing::Test {
  public:
   using Details = DecorationSource::Details;
@@ -84,10 +88,10 @@ class DecorationTest : public testing::Test {
  protected:
   Decoration& decoration() { return *decoration_; }
   TestDecorationSource& source() {
-    return static_cast<TestDecorationSource&>(*decoration_->source());
+    return *decoration_->source()->AsA<TestDecorationSource>();
   }
-  TestDecorationSource& source() const {
-    return static_cast<TestDecorationSource&>(*decoration_->source());
+  const TestDecorationSource& source() const {
+    return *decoration_->source()->AsA<TestDecorationSource>();
   }
 
   void set_details(std::optional<Details> details) {
