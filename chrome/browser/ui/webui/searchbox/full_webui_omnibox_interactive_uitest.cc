@@ -923,6 +923,66 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
                            "(el) => el && !el.dropdownIsVisible"));
 }
 
+// Verifies that switching between two tabs that both show the popup keeps it on
+// screen for the whole switch. Restoring the newly active tab's state reverts
+// the omnibox, which used to close the popup before `OnTabChanged()` applied
+// the target state; hiding tears the popup widget down, so the user saw the
+// popup flicker on every tab switch.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
+  std::vector<OmniboxPopupState> observed_states;
+  base::CallbackListSubscription subscription;
+  auto* const popup_state_manager = BrowserWindow::FromBrowser(browser())
+                                        ->GetLocationBar()
+                                        ->GetOmniboxController()
+                                        ->popup_state_manager();
+
+  RunTestSequence(
+      // Open Tab 1 at chrome://version/ and focus the Omnibox, which shows the
+      // popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // Open Tab 2 and focus its Omnibox too, so the popup is shown on both
+      // tabs.
+      AddInstrumentedTab(kTab2, GURL("chrome://about/")),
+      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+      Do([this]() {
+        BrowserWindow::FromBrowser(browser())
+            ->GetLocationBar()
+            ->GetOmniboxPopupView()
+            ->OnFocus(/*query_zps=*/true);
+      }),
+      WaitForPopupTransitionLockout(),
+      // Start recording popup state changes.
+      Do([&]() {
+        subscription = popup_state_manager->AddPopupStateChangedCallback(
+            base::BindLambdaForTesting(
+                [&observed_states](OmniboxPopupState /*old_state*/,
+                                   OmniboxPopupState new_state) {
+                  observed_states.push_back(new_state);
+                }));
+      }),
+      // Switch back to Tab 1 (index 1, since the browser starts off with a tab
+      // before the two added above).
+      SwitchTab(kTabStripElementId, 1),
+      // The popup is shown on both tabs, so the switch must not have moved
+      // through `kNone` and hidden it.
+      CheckResult([&]() { return observed_states; },
+                  std::vector<OmniboxPopupState>(), "PopupStateChanges"),
+      CheckResult(
+          [popup_state_manager]() {
+            return popup_state_manager->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupState"),
+      CheckResult(
+          [this]() {
+            auto* popup_view = BrowserWindow::FromBrowser(browser())
+                                   ->GetLocationBar()
+                                   ->GetOmniboxPopupView();
+            return popup_view->presenter() &&
+                   popup_view->presenter()->IsShown();
+          },
+          true, "PopupIsShown"));
+}
+
 // Verifies that clicking a bookmark button in the bookmarks bar situated
 // directly below the Omnibox while the Full WebUI Omnibox popup is open
 // and focused dismisses the popup and navigates to the bookmarked URL.

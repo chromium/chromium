@@ -73,7 +73,8 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   VLOG(1) << "Closing omnibox popup with reason: "
           << CloseReasonToString(reason);
   auto* location_bar = browser_view_->GetLocationBar();
-  if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
+  auto* popup_view = location_bar->GetOmniboxPopupView();
+  if (popup_view) {
     if (auto* presenter = popup_view->presenter()) {
       // Note: ESC key notifications (`PopupCloseReason::kEscapeKeyPressed`)
       // are handled via `OmniboxPopupWebUIBaseContent::OnPreHandleEscapeKey()`.
@@ -90,8 +91,13 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   if (auto* omnibox_view = location_bar->GetOmniboxView()) {
     omnibox_view->ApplyFocusRingToAimButton(false);
   }
-  // For `kRevertAll` ensure the popup state is reset back to `kNone`.
-  if (reason == PopupCloseReason::kRevertAll) {
+  // For `kRevertAll` ensure the popup state is reset back to `kNone`, unless
+  // the popup view is in the middle of applying a tab change. Restoring the
+  // newly active tab's state reverts the omnibox, and closing here would hide
+  // (and tear down) a popup that the same tab change is about to show again,
+  // which the user sees as a flicker.
+  if (reason == PopupCloseReason::kRevertAll &&
+      !(popup_view && popup_view->IsHandlingTabChange())) {
     if (auto* state_manager =
             location_bar->GetOmniboxController()->popup_state_manager()) {
       state_manager->SetPopupState(OmniboxPopupState::kNone);
