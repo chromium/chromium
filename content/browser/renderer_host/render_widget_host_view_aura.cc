@@ -3667,10 +3667,13 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
   const bool is_active_view =
       text_input_manager->GetActiveWidget() &&
       text_input_manager->GetActiveWidget()->GetView() == updated_view;
+  const bool is_focused_view =
+      text_input_manager->IsViewFocused(updated_view);
 
   const ui::TextInputType current_type = GetTextInputType();
   if (did_update_state &&
-      (is_active_view || current_type != last_text_input_type_)) {
+      (is_active_view || is_focused_view ||
+       current_type != last_text_input_type_)) {
     last_text_input_type_ = current_type;
     GetInputMethod()->OnTextInputTypeChanged(this);
     if (!check_alive()) {
