@@ -176,6 +176,40 @@ class SafeBrowsingApiHandlerBridgeTest
     }
   }
 
+  void RunHashRealTimeSocialEngineeringTest(bool has_canary,
+                                            SBThreatType expected_threat_type) {
+    GURL url("https://example.com");
+    std::vector<SafeBrowsingJavaThreatAttribute> threat_attributes;
+    if (has_canary) {
+      threat_attributes.push_back(SafeBrowsingJavaThreatAttribute::CANARY);
+    }
+    AddSafeBrowsingResponse(
+        url, SafeBrowsingApiLookupResult::SUCCESS,
+        SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, threat_attributes,
+        SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+        GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+    RunHashRealTimeUrlCheck(url,
+                            /*threat_types=*/GetAllThreatTypes(),
+                            expected_threat_type);
+    CheckSafeBrowsingApiHistogramValues(
+        ".RealTime",
+        /*expected_is_available=*/true,
+        /*expected_validation_result=*/SafeBrowsingJavaValidationResult::VALID,
+        /*expected_lookup_result=*/
+        static_cast<int>(SafeBrowsingApiLookupResult::SUCCESS),
+        /*expected_threat_type=*/
+        static_cast<int>(SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING),
+        /*expected_threat_attribute=*/
+        has_canary ? std::optional<int>(static_cast<int>(
+                         SafeBrowsingJavaThreatAttribute::CANARY))
+                   : std::nullopt,
+        /*expected_threat_attribute_count=*/has_canary ? 1 : 0,
+        /*expected_response_status=*/
+        static_cast<int>(
+            SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 };
@@ -443,6 +477,20 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashRealTimeUrlCheck_ThreatMatch) {
       /*expected_threat_attribute_count=*/0,
       /*expected_response_status=*/
       static_cast<int>(SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME));
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_SocialEngineering) {
+  RunHashRealTimeSocialEngineeringTest(
+      /*has_canary=*/false,
+      /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_SocialEngineeringCanary) {
+  RunHashRealTimeSocialEngineeringTest(
+      /*has_canary=*/true,
+      /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,

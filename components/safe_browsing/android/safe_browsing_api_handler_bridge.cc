@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -116,6 +117,10 @@ void ReportSafeBrowsingJavaResponse(
       static_cast<int>(response_status));
 }
 
+// TODO(crbug.com/564926007): Consider validating that CANARY is only
+// paired with supported threat types (SOCIAL_ENGINEERING,
+// ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION) and is not combined
+// with FRAME_ONLY, matching IsHashDetailRelevant.
 SafeBrowsingJavaValidationResult GetJavaValidationResult(
     SafeBrowsingApiLookupResult lookup_result,
     SafeBrowsingJavaThreatType threat_type,
@@ -275,15 +280,24 @@ SafetyNetJavaThreatType SBThreatTypeToSafetyNetJavaThreatType(
   return SafetyNetJavaThreatType::CSD_ALLOWLIST;
 }
 
-// Convert a Java threat type for SafeBrowsing to a SBThreatType.
+// Convert a Java threat type and threat attributes for SafeBrowsing to a
+// SBThreatType.
 SBThreatType SafeBrowsingJavaToSBThreatType(
-    SafeBrowsingJavaThreatType java_threat_num) {
+    SafeBrowsingJavaThreatType java_threat_num,
+    const std::vector<int>& threat_attributes) {
   using enum SBThreatType;
   switch (java_threat_num) {
     case SafeBrowsingJavaThreatType::NO_THREAT:
       return SB_THREAT_TYPE_SAFE;
     case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
-      return SB_THREAT_TYPE_URL_PHISHING;
+      // TODO(crbug.com/564926007): It would be better to filter out based on
+      // the caller's requested threat types instead of hard-coding safe in
+      // place of suspicious manually.
+      return std::ranges::contains(
+                 threat_attributes,
+                 static_cast<int>(SafeBrowsingJavaThreatAttribute::CANARY))
+                 ? SB_THREAT_TYPE_SAFE
+                 : SB_THREAT_TYPE_URL_PHISHING;
     case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
       return SB_THREAT_TYPE_URL_UNWANTED;
     case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
@@ -496,7 +510,7 @@ void OnUrlCheckDoneBySafeBrowsingApi(
 
   std::move(callback.response_callback)
       .Run(
-          SafeBrowsingJavaToSBThreatType(threat_type),
+          SafeBrowsingJavaToSBThreatType(threat_type, threat_attributes),
           GetThreatMetadataFromSafeBrowsingApi(threat_type, threat_attributes));
 }
 
