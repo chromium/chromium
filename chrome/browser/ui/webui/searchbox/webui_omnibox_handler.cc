@@ -532,6 +532,7 @@ void WebuiOmniboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
                                              tabs::TabInterface* tab) {
   web_contents_observer_.ScopedObserve(tab->GetContents());
   ContextualSearchboxHandler::OnActiveTabChanged(tab_list, tab);
+  UpdateAimButtonVisibility();
 }
 
 void WebuiOmniboxHandler::OnTabWillDetach(

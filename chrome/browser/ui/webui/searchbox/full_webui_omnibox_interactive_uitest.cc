@@ -13,6 +13,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -2028,6 +2029,61 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
       WaitForPopupState(OmniboxPopupState::kFull),
       WaitForWebUIInputValue("my test query"),
       InAnyContext(CheckWebUIInputFocus(true)));
+}
+
+// Opening multiple New Tab Pages rapidly while the Full WebUI omnibox popup is
+// already open and focused should keep the AIM entrypoint button visible on
+// every new tab (regression test for b/563421197).
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonRemainsVisibleAcrossRapidNewTabs) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      Do([this]() {
+        for (int i = 0; i < 5; ++i) {
+          chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1,
+                           true);
+        }
+      }),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(CheckWebUIInputFocus(true)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)));
+}
+
+// Switching back and forth between tabs where the omnibox is focused should
+// keep the AIM entrypoint button visible in the Full WebUI popup (regression
+// test for b/563421197 after keeping the popup on screen across tab switches).
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonRemainsVisibleAcrossTabSwitch) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      // Switch back to Tab 1 (index 1, since browser starts with an initial
+      // tab at index 0).
+      SwitchTab(kTabStripElementId, 1),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      // Switch forward to Tab 2 (index 2) and verify the AIM button remains
+      // visible.
+      SwitchTab(kTabStripElementId, 2),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)));
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
