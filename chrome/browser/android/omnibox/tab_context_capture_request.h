@@ -51,9 +51,13 @@ class TabContextCaptureRequest : content::WebContentsObserver {
   void TriggerCapture();
   void OnPageContextRetrieved(std::unique_ptr<lens::ContextualInputData> data);
   void DeleteSoon();
+  bool ShouldSkipDelayForActiveTab() const;
 
   // The current scheduled capture, if any.
   base::CancelableOnceClosure scheduled_capture_;
+
+  // Guards against triggering capture multiple times while in flight.
+  bool is_capturing_ = false;
 
   // Master timeout covering page load, APC extraction, and screenshot capture.
   base::OneShotTimer overall_timeout_timer_;

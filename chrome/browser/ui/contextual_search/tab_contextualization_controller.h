@@ -132,6 +132,7 @@ class TabContextualizationController : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidFirstVisuallyNonEmptyPaint() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
@@ -208,6 +209,7 @@ class TabContextualizationController : public content::WebContentsObserver {
   scoped_refptr<base::TaskRunner> screenshot_task_runner_;
 
   bool is_page_context_eligible_ = false;
+  bool did_first_visually_non_empty_paint_ = false;
 
   struct DeferredPageContextRequest {
     std::optional<base::UnguessableToken> cancellation_id;

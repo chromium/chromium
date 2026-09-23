@@ -453,6 +453,31 @@ inline constexpr base::FeatureParam<int>
         "overall_timeout_seconds",
         /*default_value=*/35);
 
+// Whether early completion and page context extraction on first visually
+// non-empty paint is enabled.
+inline constexpr base::FeatureParam<bool>
+    kOnDemandBackgroundTabContextCaptureEnableFirstPaint(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "enable_first_paint",
+        /*default_value=*/false);
+
+// Whether TabContextCaptureRequest skips load completion and post-load paint
+// delays for the active/foreground tab, triggering capture immediately.
+inline constexpr base::FeatureParam<bool>
+    kOnDemandBackgroundTabContextCaptureSkipDelayForActiveTab(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "skip_delay_for_active_tab",
+        /*default_value=*/false);
+
+// The overall flush timeout in seconds for TabContextualizationController to
+// flush pending page context callbacks for the active/foreground tab,
+// preventing long stalls when initial visual paint is delayed.
+inline constexpr base::FeatureParam<int>
+    kOnDemandBackgroundTabContextCaptureActiveTabFlushTimeoutSeconds(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "active_tab_flush_timeout_seconds",
+        /*default_value=*/1);
+
 inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     &kProtectRecentlyVisibleTab,
     "duration_in_seconds",

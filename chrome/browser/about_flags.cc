@@ -2797,6 +2797,10 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection[] = {
         {"cancel_load_on_deselection", "true"}};
+const FeatureEntry::FeatureParam
+    kOnDemandBackgroundTabContextCaptureOptimization_SkipDelayForActiveTab[] = {
+        {"skip_delay_for_active_tab", "true"},
+        {"active_tab_flush_timeout_seconds", "1"}};
 // Turns on every optimization param at once, for manual end-to-end testing.
 const FeatureEntry::FeatureParam
     kOnDemandBackgroundTabContextCaptureOptimization_All[] = {
@@ -2805,7 +2809,9 @@ const FeatureEntry::FeatureParam
         {"limit_concurrent_load_if_needed", "true"},
         {"minimum_concurrent_load_if_needed", "1"},
         {"maximum_concurrent_load_if_needed", "4"},
-        {"cancel_load_on_deselection", "true"}};
+        {"cancel_load_on_deselection", "true"},
+        {"skip_delay_for_active_tab", "true"},
+        {"active_tab_flush_timeout_seconds", "1"}};
 
 const FeatureEntry::FeatureVariation
     kOnDemandBackgroundTabContextCaptureOptimizationVariations[] = {
@@ -2818,6 +2824,9 @@ const FeatureEntry::FeatureVariation
          nullptr},
         {"CancelLoadOnDeselection",
          kOnDemandBackgroundTabContextCaptureOptimization_CancelOnDeselection,
+         nullptr},
+        {"SkipDelayForActiveTab",
+         kOnDemandBackgroundTabContextCaptureOptimization_SkipDelayForActiveTab,
          nullptr},
         // Rendered in chrome://flags as "Enabled (all)".
         {"(all)", kOnDemandBackgroundTabContextCaptureOptimization_All,

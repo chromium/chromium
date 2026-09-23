@@ -45,11 +45,14 @@ void TabContextCaptureRequest::Start() {
     }
   }
 
-  // There is no delay if the document is already loaded. It may not have done
-  // a paint yet; however, there is no guarantee that signal will ever arrive
-  // and there is no easy way to check. If the page is loaded it is better to
-  // just try to capture immediately than delaying to the maximum delay.
-  if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
+  // There is no delay if the document is already loaded, or if the tab is the
+  // currently active/foreground tab and the optimization variation is enabled.
+  // It may not have done a paint yet; however, there is no guarantee that
+  // signal will ever arrive and there is no easy way to check. If the page is
+  // loaded (or active) it is better to just try to capture immediately than
+  // delaying to the maximum delay.
+  if (ShouldSkipDelayForActiveTab() ||
+      web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType ||
       !base::FeatureList::IsEnabled(
           chrome::android::kOnDemandBackgroundTabContextCapture)) {
@@ -71,6 +74,10 @@ void TabContextCaptureRequest::Start() {
 }
 
 void TabContextCaptureRequest::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (ShouldSkipDelayForActiveTab()) {
+    TriggerCapture();
+    return;
+  }
   // Allow a short time for the page to paint after loading.
   ScheduleCapture(base::Seconds(5));
 }
@@ -98,10 +105,16 @@ void TabContextCaptureRequest::UnableToCapture() {
 }
 
 void TabContextCaptureRequest::TriggerCapture() {
-  if (!callback_) {
-    // The callback was already invoked we are done.
+  if (is_capturing_ || !callback_) {
+    // Already capturing or the callback was already invoked, we are done.
     return;
   }
+  scheduled_capture_.Cancel();
+  is_capturing_ = true;
+  // Stop observing once capture is triggered to avoid receiving redundant
+  // load completion events while capture is in flight.
+  Observe(nullptr);
+
   if (!weak_tab_) {
     UnableToCapture();
     return;
@@ -122,4 +135,15 @@ void TabContextCaptureRequest::OnPageContextRetrieved(
 
 void TabContextCaptureRequest::DeleteSoon() {
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
+}
+
+bool TabContextCaptureRequest::ShouldSkipDelayForActiveTab() const {
+  if (!weak_tab_ || !weak_tab_->IsActivated()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+             chrome::android::
+                 kOnDemandBackgroundTabContextCaptureOptimization) &&
+         chrome::android::
+             kOnDemandBackgroundTabContextCaptureSkipDelayForActiveTab.Get();
 }

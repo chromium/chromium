@@ -96,6 +96,7 @@ void TabContextualizationController::OnPageContextEligibilityAPILoaded(
 
 void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
   is_page_context_eligible_ = false;
+  did_first_visually_non_empty_paint_ = false;
   pending_page_context_timer_.Stop();
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -110,6 +111,11 @@ void TabContextualizationController::WillDetach(
 
 void TabContextualizationController::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
+  MaybeCompleteDeferredPageContextRequests();
+}
+
+void TabContextualizationController::DidFirstVisuallyNonEmptyPaint() {
+  did_first_visually_non_empty_paint_ = true;
   MaybeCompleteDeferredPageContextRequests();
 }
 
@@ -149,6 +155,27 @@ TabContextualizationController::GetPageContextAvailability() const {
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return PageContextAvailability::kReadyToExtract;
   }
+#if BUILDFLAG(IS_ANDROID)
+  // If the initial visual paint has already completed, the page is visually
+  // rendered and the primary DOM is ready. We can safely extract immediately
+  // without waiting for subresources or ads to finish loading, provided either:
+  // 1) early first paint completion is enabled, or
+  // 2) this is the active foreground tab and skip_delay_for_active_tab is on.
+  const bool is_first_paint_optimization_enabled =
+      base::FeatureList::IsEnabled(
+          chrome::android::kOnDemandBackgroundTabContextCaptureOptimization) &&
+      (chrome::android::kOnDemandBackgroundTabContextCaptureEnableFirstPaint
+           .Get() ||
+       (tab_->IsActivated() &&
+        chrome::android::
+            kOnDemandBackgroundTabContextCaptureSkipDelayForActiveTab.Get()));
+  const bool has_first_paint =
+      did_first_visually_non_empty_paint_ ||
+      web_contents->CompletedFirstVisuallyNonEmptyPaint();
+  if (has_first_paint && is_first_paint_optimization_enabled) {
+    return PageContextAvailability::kReadyToExtract;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return web_contents->IsLoading() ? PageContextAvailability::kLoading
                                    : PageContextAvailability::kUnavailable;
 }
@@ -324,10 +351,18 @@ void TabContextualizationController::GetPageContext(
   if (base::FeatureList::IsEnabled(
           chrome::android::
               kOnDemandBackgroundTabContextCaptureOptimization)) {
-    int timeout_sec =
+    const bool use_active_tab_timeout =
+        tab_->IsActivated() &&
         chrome::android::
-            kOnDemandBackgroundTabContextCaptureOverallFlushTimeoutSeconds
-                .Get();
+            kOnDemandBackgroundTabContextCaptureSkipDelayForActiveTab.Get();
+    const int timeout_sec =
+        use_active_tab_timeout
+            ? chrome::android::
+                  kOnDemandBackgroundTabContextCaptureActiveTabFlushTimeoutSeconds
+                      .Get()
+            : chrome::android::
+                  kOnDemandBackgroundTabContextCaptureOverallFlushTimeoutSeconds
+                      .Get();
     if (timeout_sec > 0 && !pending_page_context_timer_.IsRunning()) {
       pending_page_context_timer_.Start(
           FROM_HERE, base::Seconds(timeout_sec),
