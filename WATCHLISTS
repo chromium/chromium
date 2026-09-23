@@ -1547,7 +1547,7 @@
                   '|third_party/blink/renderer/modules/direct_sockets/'\
                   '|chrome/browser/printing/web_api/'\
                   '|third_party/blink/renderer/modules/printing/'\
-                  '|chrome/browser/media/webrtc/'\
+                  '|chrome/browser/media/webrtc/multi_capture/'\
                   '|chrome/browser/chromeos/policy/multi_screen_capture/'\
                   '|chrome/browser/web_applications/web_app_run_on_os_login'\
                   '|chrome/browser/ui/web_applications/sub_apps'\
