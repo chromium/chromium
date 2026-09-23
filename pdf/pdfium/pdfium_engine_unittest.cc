@@ -5193,18 +5193,7 @@ class PDFiumEngineInkDrawTextStrikethroughTest
 
     constexpr int kPageIndex = 0;
     PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
-
-    FontId font_id = AddDefaultFont(engine.get());
-    constexpr std::string_view kTextToDraw = "Hello!";
-    DrawTextData text_data = GetGlyphsForText(kTextToDraw, font_size);
-    ASSERT_FALSE(text_data.glyphs.empty());
-    ASSERT_FALSE(text_data.glyph_positions.empty());
-
     int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
-
-    const gfx::RectF location = (orientation % 2 == 0)
-                                    ? gfx::RectF(100.0f, 20.0f)
-                                    : gfx::RectF(20.0f, 100.0f);
 
     InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
     attributes.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f);
@@ -5212,13 +5201,7 @@ class PDFiumEngineInkDrawTextStrikethroughTest
     attributes.orientation = orientation;
     attributes.is_strikethrough = true;
 
-    engine->DrawText(
-        kPageIndex, InkTextId(0),
-        {InkTextLine(InkTextInfo(font_id, text_data.glyphs,
-                                 text_data.glyph_positions, location,
-                                 /*is_horizontal=*/true, text_data.text))},
-        FontAscent(engine.get(), font_id, attributes.css_font_size),
-        /*pdf_zoom=*/1.0, attributes);
+    DrawSingleTextLine(engine.get(), kPageIndex, attributes);
 
     // Strikethrough generates 2 page objects: text object and path object.
     int new_obj_count = FPDFPage_CountObjects(page.GetPage());
@@ -5236,9 +5219,43 @@ class PDFiumEngineInkDrawTextStrikethroughTest
 
     FPDF_PAGEOBJECT path_obj =
         FPDFPage_GetObject(page.GetPage(), initial_obj_count + 1);
+    VerifyLineDecorationPath(path_obj, expected_stroke_width, expected_line_y);
+
+    // Discarding the text annotation must remove both the text object and the
+    // strikethrough path object from the page.
+    engine->DiscardText(InkTextId(0));
+    EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
+  }
+
+ private:
+  void DrawSingleTextLine(PDFiumEngine* engine,
+                          int page_index,
+                          const InkTextBoxAttributes& attributes) {
+    FontId font_id = AddDefaultFont(engine);
+    constexpr std::string_view kTextToDraw = "Hello!";
+    DrawTextData text_data =
+        GetGlyphsForText(kTextToDraw, attributes.css_font_size);
+    ASSERT_FALSE(text_data.glyphs.empty());
+    ASSERT_FALSE(text_data.glyph_positions.empty());
+
+    const gfx::RectF location = (attributes.orientation % 2 == 0)
+                                    ? gfx::RectF(100.0f, 20.0f)
+                                    : gfx::RectF(20.0f, 100.0f);
+    engine->DrawText(
+        page_index, InkTextId(0),
+        {InkTextLine(InkTextInfo(font_id, text_data.glyphs,
+                                 text_data.glyph_positions, location,
+                                 /*is_horizontal=*/true, text_data.text))},
+        FontAscent(engine, font_id, attributes.css_font_size),
+        /*pdf_zoom=*/1.0, attributes);
+  }
+
+  void VerifyLineDecorationPath(FPDF_PAGEOBJECT path_obj,
+                                float expected_stroke_width,
+                                float expected_line_y) {
     ASSERT_EQ(FPDF_PAGEOBJ_PATH, FPDFPageObj_GetType(path_obj));
 
-    // The mark must also be attached to the strikethrough path object so that
+    // The mark must also be attached to the line decoration path object so that
     // it is tracked and cleaned up properly on reload or erase.
     ASSERT_EQ(1, FPDFPageObj_CountMarks(path_obj));
     FPDF_PAGEOBJECTMARK path_mark = FPDFPageObj_GetMark(path_obj, 0);
@@ -5270,11 +5287,6 @@ class PDFiumEngineInkDrawTextStrikethroughTest
 
     constexpr float kExpectedRunWidth = 75.0f;
     EXPECT_FLOAT_EQ(kExpectedRunWidth, end_x - start_x);
-
-    // Discarding the text annotation must remove both the text object and the
-    // strikethrough path object from the page.
-    engine->DiscardText(InkTextId(0));
-    EXPECT_EQ(initial_obj_count, FPDFPage_CountObjects(page.GetPage()));
   }
 };
 

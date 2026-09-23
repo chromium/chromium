@@ -276,22 +276,8 @@ FS_MATRIX CalculateTextObjectOriginTransform(
       1.0f, 0.0f, 0.0f, 1.0f, baseline_origin.x(), -baseline_origin.y()};
 }
 
-// Creates a strikethrough path page object for a single text line at
-// `text_line_rect` in local coordinates (relative to the baseline origin) in
-// PDF points.
-ScopedFPDFPageObject CreateStrikethroughPath(
-    const gfx::RectF& text_line_rect,
-    double pdf_zoom,
-    const InkTextBoxAttributes& attributes,
-    float ascent) {
-  const int total_rotations =
-      GetClockwiseRotationSteps(attributes.viewport_orientation) +
-      attributes.orientation;
-  const float run_length = (total_rotations % 2 == 0) ? text_line_rect.width()
-                                                      : text_line_rect.height();
-  const float run_width_pt = CSSFontSizeToPdfFontSize(run_length / pdf_zoom);
-  const float pdf_font_size =
-      CSSFontSizeToPdfFontSize(attributes.css_font_size);
+float GetLineDecorationStrokeWidth(float css_font_size) {
+  const float pdf_font_size = CSSFontSizeToPdfFontSize(css_font_size);
 
   // Matches Blink's text-decoration auto thickness.
   const float auto_thickness = pdf_font_size / 10.0f;
@@ -300,7 +286,51 @@ ScopedFPDFPageObject CreateStrikethroughPath(
   // use a smaller safety floor in PDF points so that the stroke scales down
   // proportionally with small glyphs and does not become thick when zoomed in
   // or on high DPI.
-  const float stroke_width = std::max(0.25f, auto_thickness);
+  return std::max(0.25f, auto_thickness);
+}
+
+// Creates a horizontal line path page object for a single text line at
+// `text_line_rect` and vertical offset `line_y` in local coordinates (relative
+// to the baseline origin) in PDF points.
+ScopedFPDFPageObject CreateLineDecorationPath(
+    const gfx::RectF& text_line_rect,
+    double pdf_zoom,
+    const InkTextBoxAttributes& attributes,
+    float stroke_width,
+    float line_y) {
+  const int total_rotations =
+      GetClockwiseRotationSteps(attributes.viewport_orientation) +
+      attributes.orientation;
+  const float run_length = (total_rotations % 2 == 0) ? text_line_rect.width()
+                                                      : text_line_rect.height();
+  const float run_width_pt = CSSFontSizeToPdfFontSize(run_length / pdf_zoom);
+
+  ScopedFPDFPageObject line_path(FPDFPageObj_CreateNewPath(0, line_y));
+  CHECK(line_path);
+  CHECK(FPDFPath_LineTo(line_path.get(), run_width_pt, line_y));
+  CHECK(FPDFPath_SetDrawMode(line_path.get(), FPDF_FILLMODE_NONE,
+                             /*stroke=*/1));
+  CHECK(FPDFPageObj_SetLineCap(line_path.get(), FPDF_LINECAP_BUTT));
+  const SkColor color = attributes.color;
+  CHECK(FPDFPageObj_SetStrokeColor(line_path.get(),
+                                   /*R=*/SkColorGetR(color),
+                                   /*G=*/SkColorGetG(color),
+                                   /*B=*/SkColorGetB(color),
+                                   /*A=*/255));
+  CHECK(FPDFPageObj_SetStrokeWidth(line_path.get(), stroke_width));
+  return line_path;
+}
+
+// Creates a strikethrough path page object for a single text line at
+// `text_line_rect` in local coordinates (relative to the baseline origin) in
+// PDF points.
+ScopedFPDFPageObject CreateStrikethroughPath(
+    const gfx::RectF& text_line_rect,
+    double pdf_zoom,
+    const InkTextBoxAttributes& attributes,
+    float ascent) {
+  const float stroke_width =
+      GetLineDecorationStrokeWidth(attributes.css_font_size);
 
   // Use the ascent calculated at the textbox level so the line remains
   // continuous across multiple different fonts on the same baseline.
@@ -310,21 +340,19 @@ ScopedFPDFPageObject CreateStrikethroughPath(
   // snaps the line to the nearest integer pixel boundary, whereas the PDF
   // stores exact float vector coordinates.
   const float line_y = CSSFontSizeToPdfFontSize(ascent) / 3.0f;
+  return CreateLineDecorationPath(text_line_rect, pdf_zoom, attributes,
+                                  stroke_width, line_y);
+}
 
-  ScopedFPDFPageObject strikethrough_path(FPDFPageObj_CreateNewPath(0, line_y));
-  CHECK(strikethrough_path);
-  CHECK(FPDFPath_LineTo(strikethrough_path.get(), run_width_pt, line_y));
-  CHECK(FPDFPath_SetDrawMode(strikethrough_path.get(), FPDF_FILLMODE_NONE,
-                             /*stroke=*/1));
-  CHECK(FPDFPageObj_SetLineCap(strikethrough_path.get(), FPDF_LINECAP_BUTT));
-  const SkColor color = attributes.color;
-  CHECK(FPDFPageObj_SetStrokeColor(strikethrough_path.get(),
-                                   /*R=*/SkColorGetR(color),
-                                   /*G=*/SkColorGetG(color),
-                                   /*B=*/SkColorGetB(color),
-                                   /*A=*/255));
-  CHECK(FPDFPageObj_SetStrokeWidth(strikethrough_path.get(), stroke_width));
-  return strikethrough_path;
+void TransformAndMarkLineDecoration(FPDF_PAGEOBJECT decoration_path,
+                                    const FS_MATRIX& line_origin_matrix,
+                                    const FS_MATRIX& textbox_matrix,
+                                    FPDF_PAGEOBJECTMARK mark) {
+  CHECK(FPDFPageObj_TransformF(decoration_path, &line_origin_matrix));
+  CHECK(FPDFPageObj_TransformF(decoration_path, &textbox_matrix));
+  // Mark should have already been created after text object creation.
+  CHECK(mark);
+  CHECK(FPDFPageObj_AddExistingMark(decoration_path, mark));
 }
 
 // Creates a text object for a single typeface run at `item` in PDF points.
@@ -5697,12 +5725,8 @@ void PDFiumEngine::DrawText(int page_index,
           CreateStrikethroughPath(line.location, pdf_zoom, attributes, ascent);
       FS_MATRIX line_origin_matrix = CalculateTextObjectOriginTransform(
           line.location, pdf_zoom, attributes, ascent);
-      CHECK(FPDFPageObj_TransformF(strikethrough_path.get(),
-                                   &line_origin_matrix));
-      CHECK(FPDFPageObj_TransformF(strikethrough_path.get(), &textbox_matrix));
-      // Mark should have already been created after text object creation.
-      CHECK(mark);
-      CHECK(FPDFPageObj_AddExistingMark(strikethrough_path.get(), mark));
+      TransformAndMarkLineDecoration(strikethrough_path.get(),
+                                     line_origin_matrix, textbox_matrix, mark);
       page_objects.push_back(strikethrough_path.get());
       CHECK(FPDFPage_InsertObject(page, strikethrough_path.release()));
     }
