@@ -22,6 +22,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
+#include "media/media_buildflags.h"
 #include "media/webrtc/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
@@ -1869,6 +1870,13 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
   capabilities.noise_suppression = {true, false};
   capabilities.voice_isolation =
       GetSupportedVoiceIsolationValues(device_parameters.effects());
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  // Voice isolation cannot be enabled dynamically if the source was not started
+  // with it enabled.
+  if (!IsVoiceIsolationInitiallyEnabled(audio_source.get())) {
+    capabilities.voice_isolation = {false};
+  }
+#endif
 
   if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
     if (device.type == mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {

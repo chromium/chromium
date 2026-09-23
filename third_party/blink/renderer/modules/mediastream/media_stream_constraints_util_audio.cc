@@ -215,15 +215,7 @@ class SourceInfo {
         source->GetAudioProcessingProperties();
     CHECK(properties);
 
-    std::optional<AudioProcessingProperties> initial_properties =
-        source->GetInitialAudioProcessingProperties();
-    bool voice_isolation_available =
-        initial_properties &&
-        initial_properties->voice_isolation ==
-            AudioProcessingProperties::VoiceIsolationType::
-                kVoiceIsolationEnabled;
-
-    return SourceInfo(*properties, voice_isolation_available,
+    return SourceInfo(*properties, IsVoiceIsolationInitiallyEnabled(source),
                       source_parameters.channels(),
                       source_parameters.sample_rate(),
                       source_parameters.GetBufferDuration().InSecondsF());
@@ -1693,6 +1685,17 @@ Vector<bool> GetSupportedVoiceIsolationValues(int platform_effects) {
     return {true, false};
   }
   return {false};
+}
+
+bool IsVoiceIsolationInitiallyEnabled(
+    const MediaStreamAudioSource* audio_source) {
+  std::optional<AudioProcessingProperties> initial_properties =
+      audio_source ? audio_source->GetInitialAudioProcessingProperties()
+                   : std::nullopt;
+  return initial_properties &&
+         initial_properties->voice_isolation ==
+             AudioProcessingProperties::VoiceIsolationType::
+                 kVoiceIsolationEnabled;
 }
 
 bool IsVoiceIsolationSupported() {

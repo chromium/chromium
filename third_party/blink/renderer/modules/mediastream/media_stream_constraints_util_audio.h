@@ -86,6 +86,10 @@ Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
 // {true, false}. Otherwise, returns {false} (only disabled state is supported).
 Vector<bool> GetSupportedVoiceIsolationValues(int platform_effects);
 
+// Returns true if `audio_source` was started with voice isolation enabled.
+bool IsVoiceIsolationInitiallyEnabled(
+    const MediaStreamAudioSource* audio_source);
+
 // Returns true if voice isolation is supported by the platform (either
 // system-wide or browser-side).
 MODULES_EXPORT bool IsVoiceIsolationSupported();
