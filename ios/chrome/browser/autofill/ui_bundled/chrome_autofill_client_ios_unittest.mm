@@ -43,6 +43,9 @@
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -98,6 +101,11 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
           return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
+    builder.AddTestingFactory(
+        GeminiServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<FakeGeminiService>();
         }));
     profile_ = std::move(builder).Build();
 
@@ -636,6 +644,20 @@ TEST_F(ChromeAutofillClientIOSTest, UpdateSuggestionsKeepsFormAndFieldId) {
   EXPECT_EQ(SuggestionType::kAddressEntry, suggestions[0].type);
   EXPECT_EQ(form_id, suggestions[0].metadata.form_id);
   EXPECT_EQ(field_id, suggestions[0].metadata.field_id);
+}
+
+// Test that `IsGlicEnabled` reflects Gemini eligibility for the profile.
+TEST_F(ChromeAutofillClientIOSTest, IsGlicEnabled) {
+  base::test::ScopedFeatureList feature_list(kPageActionMenu);
+  FakeGeminiService* fake_gemini_service = static_cast<FakeGeminiService*>(
+      GeminiServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(fake_gemini_service);
+
+  fake_gemini_service->SetIsEligible(false);
+  EXPECT_FALSE(client().IsGlicEnabled());
+
+  fake_gemini_service->SetIsEligible(true);
+  EXPECT_TRUE(client().IsGlicEnabled());
 }
 
 }  // namespace autofill

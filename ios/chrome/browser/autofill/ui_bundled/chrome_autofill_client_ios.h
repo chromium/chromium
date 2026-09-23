@@ -198,6 +198,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
   bool UsesPlatformAutofill() const override;
+  bool IsGlicEnabled() const override;
   bool IsContextSecure() const override;
   LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

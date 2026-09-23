@@ -254,6 +254,9 @@ constexpr std::string_view kNoticeInteractionsHistogram =
       case autofill::SuggestionType::kAtMemoryGenericError:
         [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
         return;
+      case autofill::SuggestionType::kAtMemoryOpenGemini:
+        [self.consumer setErrorType:AtMemoryErrorType::kUnsupportedQueryError];
+        return;
       case autofill::SuggestionType::kAtMemoryFetching:
         [self.consumer setFetchingSubtitle:base::SysUTF16ToNSString(
                                                suggestion.main_text.value)];

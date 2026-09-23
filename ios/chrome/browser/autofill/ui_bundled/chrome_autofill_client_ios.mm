@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -674,6 +675,11 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() const {
 
 bool ChromeAutofillClientIOS::UsesPlatformAutofill() const {
   return false;
+}
+
+bool ChromeAutofillClientIOS::IsGlicEnabled() const {
+  return gemini::IsGeminiAvailable(gemini::EntryPoint::AtMemorySearch, profile_)
+      .enabled;
 }
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {

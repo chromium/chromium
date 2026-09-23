@@ -361,8 +361,8 @@ TEST_F(AtMemorySearchMediatorTest, OpenGranularFillAtIndex) {
 }
 
 // Parameters for AtMemorySearchMediatorErrorTest.
-struct AtMemoryErrorTestParam {
-  std::string test_name;
+struct AtMemorySearchMediatorErrorTestParam {
+  const char* test_name;
   MemorySearchStatus search_status;
   AtMemoryErrorType expected_error_type;
 };
@@ -371,11 +371,13 @@ struct AtMemoryErrorTestParam {
 // to the expected consumer error type.
 class AtMemorySearchMediatorErrorTest
     : public AtMemorySearchMediatorTest,
-      public testing::WithParamInterface<AtMemoryErrorTestParam> {};
+      public testing::WithParamInterface<AtMemorySearchMediatorErrorTestParam> {
+};
 
 // Tests that search results error statuses map to the expected consumer error
 // type.
 TEST_P(AtMemorySearchMediatorErrorTest, HandlesErrorStatus) {
+  autofill_client_->set_is_glic_enabled(true);
   CreateMediator();
 
   MemorySearchResults fake_results(GetParam().search_status);
@@ -397,7 +399,7 @@ TEST_P(AtMemorySearchMediatorErrorTest, HandlesErrorStatus) {
 INSTANTIATE_TEST_SUITE_P(
     AllVariants,
     AtMemorySearchMediatorErrorTest,
-    ::testing::ValuesIn<AtMemoryErrorTestParam>({
+    ::testing::ValuesIn<AtMemorySearchMediatorErrorTestParam>({
         {.test_name = "NoConnectionFailure",
          .search_status = MemorySearchStatus::kNoConnectionFailure,
          .expected_error_type = AtMemoryErrorType::kNoConnectionError},
@@ -413,10 +415,13 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "NoData_FinalResponseSuccessWithNoEntries",
          .search_status = MemorySearchStatus::kFinalResponseSuccess,
          .expected_error_type = AtMemoryErrorType::kNoDataError},
+
+        {.test_name = "UnsupportedQuery",
+         .search_status = MemorySearchStatus::kUnsupportedQuery,
+         .expected_error_type = AtMemoryErrorType::kUnsupportedQueryError},
     }),
-    [](const ::testing::TestParamInfo<AtMemoryErrorTestParam>& info) {
-      return info.param.test_name;
-    });
+    [](const ::testing::TestParamInfo<AtMemorySearchMediatorErrorTestParam>&
+           info) { return info.param.test_name; });
 
 #pragma mark - Notice Tests
 
