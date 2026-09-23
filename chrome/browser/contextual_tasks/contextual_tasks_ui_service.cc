@@ -369,6 +369,9 @@ void ContextualTasksUiService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> source_tab,
@@ -1192,6 +1195,9 @@ void ContextualTasksUiService::ResetZeroStateInOpenSidePanel(
   }
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::OnNonThreadNavigationInTab(
     content::OpenURLParams url_params,
     base::WeakPtr<tabs::TabInterface> tab) {
@@ -1212,6 +1218,9 @@ void ContextualTasksUiService::OnNonThreadNavigationInTab(
   tab->GetContents()->GetController().LoadURLWithParams(params);
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
     content::OpenURLParams url_params,
     ContextualTasksUIInterface* web_ui_interface) {
@@ -1222,6 +1231,9 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
     const GURL& url,
     content::WebContents* source_contents) const {
@@ -1645,6 +1657,9 @@ ContextualTasksUiService::CreateMessageProxyWebContents(
   return message_proxy_web_contents;
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::OpenUrl(
     const content::OpenURLParams& url_params,
     const blink::mojom::WindowFeatures& window_features,
@@ -1729,6 +1744,12 @@ void ContextualTasksUiService::OpenUrl(
   }
 }
 
+// TODO(crbug.com/533072235): Deprecated. This code was a legacy artifact of the
+// requirement to intercept navigations to AIM and send them to Contextual
+// Tasks. This method quickly grew into an unreadable monolith and is being
+// deprecated as part of the Contextual Tasks rearchitecture. Do not add any new
+// logic or callers to this code without first consulting the Lens on Chrome
+// team (lens-chrome-eng@google.com).
 bool ContextualTasksUiService::HandleNavigationImpl(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
@@ -2358,6 +2379,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
     base::WeakPtr<tabs::TabInterface> weak_tab) {
   if (!weak_tab) {
@@ -2422,6 +2446,9 @@ void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
 }
 #endif
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::LoadUrlInWebContents(
     const GURL& url,
     base::WeakPtr<content::WebContents> web_contents) {
@@ -2433,6 +2460,9 @@ void ContextualTasksUiService::LoadUrlInWebContents(
   web_contents->GetController().LoadURLWithParams(params);
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::ScheduleRedirectWebUIUrlToAim(
     content::OpenURLParams url_params,
     base::WeakPtr<content::WebContents> source_contents,
@@ -2611,6 +2641,9 @@ std::string ContextualTasksUiService::GetHostForTask(
   return "";
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 void ContextualTasksUiService::RemoveWindowTracker(
     base::WeakPtr<ContextualTasksWindowTracker> tracker) {
   if (!GetIsContextualTasksWindowTrackingEnabled()) {
@@ -3218,6 +3251,9 @@ base::Uuid ContextualTasksUiService::GetTaskIdFromUrl(const GURL& url) {
   return base::Uuid::ParseLowercase(task_id);
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 bool ContextualTasksUiService::IsContextualTasksDisplayUrl(const GURL& url) {
   return url.scheme() == GetContextualTasksDisplayUrlScheme() &&
          url.host() == GetContextualTasksDisplayUrlHost() &&
@@ -3236,6 +3272,9 @@ bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
   return true;
 }
 
+// TODO(crbug.com/533072235): Deprecated. This method is being deprecated and
+// should not be used. It is only used by the legacy HandleNavigationImpl which
+// will be cleaned up (see comment there).
 bool ContextualTasksUiService::IsShareUrl(const GURL& url) {
   return url.query().find("https%3A%2F%2Fshare.google%2Faimode") !=
          std::string::npos;
