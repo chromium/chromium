@@ -1333,10 +1333,8 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   if (!image) {
     return;
   }
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder = ReleaseRecorder();
   canvas()->ResetLayer();
   ResetResourceProvider();
-  ResetRecorder();
 
   // Bail out if the context is lost.
   if (isContextLost() && !IsContextBeingRestored()) {
@@ -1357,8 +1355,6 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   } else {
     bitmap_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
   }
-  SetRecorder(std::move(recorder),
-              shared_image_provider_ && shared_image_provider_->IsGraphite());
 
   canvas()->UpdateMemoryUsage();
 }

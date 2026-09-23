@@ -3578,6 +3578,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
 
   Context2D()->InitializeResourceProvider();
+  const MemoryManagedPaintRecorder* initial_recorder = Context2D()->Recorder();
+  ASSERT_NE(initial_recorder, nullptr);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);
@@ -3589,6 +3591,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   Context2D()->DisableAcceleration();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
+  EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   Context2D()->endLayer(exception_state);
   Context2D()->restore(exception_state);
