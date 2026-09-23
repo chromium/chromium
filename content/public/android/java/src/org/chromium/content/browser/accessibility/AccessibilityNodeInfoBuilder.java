@@ -224,7 +224,8 @@ public class AccessibilityNodeInfoBuilder {
             boolean hasCharacterLocations,
             boolean isRequired,
             boolean isHeading,
-            boolean hasLayoutBasedActions) {
+            boolean hasLayoutBasedActions,
+            boolean hasNonEmptyInnerText) {
         node.setCheckable(checkable);
         node.setClickable(clickable);
         node.setEditable(editable);
@@ -262,11 +263,13 @@ public class AccessibilityNodeInfoBuilder {
 
         node.setAvailableExtraData(availableExtraData);
 
-        node.setMovementGranularities(
-                MOVEMENT_GRANULARITY_CHARACTER
-                        | MOVEMENT_GRANULARITY_WORD
-                        | MOVEMENT_GRANULARITY_LINE
-                        | MOVEMENT_GRANULARITY_PARAGRAPH);
+        if (hasNonEmptyInnerText) {
+            node.setMovementGranularities(
+                    MOVEMENT_GRANULARITY_CHARACTER
+                            | MOVEMENT_GRANULARITY_WORD
+                            | MOVEMENT_GRANULARITY_LINE
+                            | MOVEMENT_GRANULARITY_PARAGRAPH);
+        }
 
         boolean isAF = mDelegate.currentAccessibilityFocusId() == virtualViewId;
         node.setAccessibilityFocused(isAF);

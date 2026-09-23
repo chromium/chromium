@@ -44,6 +44,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_IN_WINDOW_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_LINE;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_WORD;
 
@@ -6984,5 +6985,91 @@ public class WebContentsAccessibilityTest {
                         mActivityTestRule.getWebContentsAccessibility(),
                         timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .clearNodeInfoCache();
+    }
+
+    @Test
+    @SmallTest
+    public void testANIBuilder_movementGranularityForNodesWithVisibleText() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="paragraph">Hello world</p>
+                <button id="visible_text_button">Submit</button>
+                <input id="text_input" type="text" value="Typed text">
+                """);
+
+        int expectedTextGranularities =
+                MOVEMENT_GRANULARITY_CHARACTER
+                        | MOVEMENT_GRANULARITY_WORD
+                        | MOVEMENT_GRANULARITY_LINE
+                        | MOVEMENT_GRANULARITY_PARAGRAPH;
+
+        // The AccessibilityNodeInfo of nodes with valid text content (visible text) should have:
+        // (1) character, word, line, and paragraph movement granularities and (2)
+        // NEXT/PREVIOUS_AT_MOVEMENT_GRANULARITY actions.
+        String[] idsOfTextNodes = new String[] {"paragraph", "visible_text_button", "text_input"};
+        for (String id : idsOfTextNodes) {
+            int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, id);
+            AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(vvId);
+            Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo);
+            Assert.assertEquals(
+                    "Node '" + id + "' with visible text should have movement granularities.",
+                    expectedTextGranularities,
+                    nodeInfo.getMovementGranularities());
+            Assert.assertTrue(
+                    "Node '"
+                            + id
+                            + "' with visible text should have"
+                            + " ACTION_NEXT_AT_MOVEMENT_GRANULARITY.",
+                    nodeInfo.getActionList().contains(ACTION_NEXT_AT_MOVEMENT_GRANULARITY));
+            Assert.assertTrue(
+                    "Node '"
+                            + id
+                            + "' with visible text should have"
+                            + " ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.",
+                    nodeInfo.getActionList().contains(ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testANIBuilder_noMovementGranularityOnNodesWithoutVisibleText() throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="empty_group" role="group"></div>
+                <button id="aria_label_button" aria-label="Close"></button>
+                <img id="alt_text_image" alt="Logo">
+                <input id="checkbox_input" type="checkbox">
+                """);
+
+        // The AccessibilityNodeInfo of nodes without valid text content (visible text) should have:
+        // (1) an empty bitmask of movement granularities and (2) no
+        // NEXT/PREVIOUS_AT_MOVEMENT_GRANULARITY actions.
+        String[] nodesWithoutTextIds =
+                new String[] {
+                    "empty_group", "aria_label_button", "alt_text_image", "checkbox_input"
+                };
+        for (String id : nodesWithoutTextIds) {
+            int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, id);
+            AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(vvId);
+            Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo);
+            Assert.assertEquals(
+                    "Node '"
+                            + id
+                            + "' without visible text should not have movement granularities.",
+                    0,
+                    nodeInfo.getMovementGranularities());
+            Assert.assertFalse(
+                    "Node '"
+                            + id
+                            + "' without visible text should not have"
+                            + " ACTION_NEXT_AT_MOVEMENT_GRANULARITY.",
+                    nodeInfo.getActionList().contains(ACTION_NEXT_AT_MOVEMENT_GRANULARITY));
+            Assert.assertFalse(
+                    "Node '"
+                            + id
+                            + "' without visible text should not have"
+                            + " ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.",
+                    nodeInfo.getActionList().contains(ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY));
+        }
     }
 }

@@ -1642,8 +1642,8 @@ void WebContentsAccessibilityAndroid::
       node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
       node->IsTextSelectable(), node->IsVisibleToUser(),
       node->HasCharacterLocations(), node->IsRequired(),
-      node->IsHeading() || node->IsTableHeader(),
-      node->HasLayoutBasedActions());
+      node->IsHeading() || node->IsTableHeader(), node->HasLayoutBasedActions(),
+      !node->GetTextContentUTF16().empty());
 }
 
 void WebContentsAccessibilityAndroid::
