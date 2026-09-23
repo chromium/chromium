@@ -44,7 +44,7 @@ RgbVideoFrame::RgbVideoFrame(const SkBitmap& bitmap, base::TimeTicks frame_time)
     : width_(bitmap.width()),
       height_(bitmap.height()),
       frame_time_(frame_time),
-      data_(new RgbColor[width_ * height_]) {
+      data_(base::HeapArray<RgbColor>::Uninit(width_ * height_)) {
   DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
 
   const size_t bytes_per_pixel = bitmap.bytesPerPixel();
@@ -84,9 +84,6 @@ RgbVideoFrame RgbVideoFrame::Clone() const {
 RgbVideoFrame::RgbVideoFrame(const RgbVideoFrame& other)
     : width_(other.width_),
       height_(other.height_),
-      data_(new RgbColor[width_ * height_]) {
-  UNSAFE_TODO(
-      std::memcpy(&data_[0], &other.data_[0], num_pixels() * sizeof(RgbColor)));
-}
+      data_(base::HeapArray<RgbColor>::CopiedFrom(other.data_)) {}
 
 }  // namespace recording

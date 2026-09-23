@@ -6,9 +6,9 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_RGB_VIDEO_FRAME_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -83,7 +83,7 @@ class RgbVideoFrame {
   // Returns the color of the pixel at `row` and `column`. The non-const version
   // can be used to change the color of the pixel.
   RgbColor& pixel_color(int row, int column) {
-    return UNSAFE_TODO(data_[row * width_ + column]);
+    return data_[row * width_ + column];
   }
   const RgbColor& pixel_color(int row, int column) const {
     return const_cast<RgbVideoFrame*>(this)->pixel_color(row, column);
@@ -103,7 +103,7 @@ class RgbVideoFrame {
   const base::TimeTicks frame_time_;
 
   // The pixel color data.
-  std::unique_ptr<RgbColor[]> data_;
+  base::HeapArray<RgbColor> data_;
 };
 
 }  // namespace recording
