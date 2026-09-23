@@ -512,8 +512,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                           ? SkColorSetRGB(0x30, 0x30, 0x30)
                                           : SkColorSetRGB(0xF2, 0xF2, 0xF2)};
   mixer[kColorGlicPlaceholderElem] = {dark_mode
-                                          ? SkColorSetRGB(0x1B, 0x1B, 0x1B)
-                                          : SkColorSetRGB(0xF8, 0xFA, 0xFD)};
+                                          ? SkColorSetRGB(0x33, 0x34, 0x38)
+                                          : SkColorSetRGB(0xEF, 0xF3, 0xFA)};
   // Gradient colors used for underlines on active tabs.
   constexpr color_utils::HSL start{-1.0, -1.0, 0.6};
   constexpr color_utils::HSL end{-1.0, -1.0, 0.4};
