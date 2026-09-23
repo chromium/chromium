@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {AccessPoint, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
@@ -24,7 +24,7 @@ export interface BrowserProxy {
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
-  recordSigninPendingOffered(): void;
+  recordSigninPendingOffered(accessPoint: AccessPoint): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   getInitialIdentityState(): Promise<HistoryIdentityState>;
@@ -64,8 +64,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     chrome.metricsPrivate.recordLongTime(histogram, time);
   }
 
-  recordSigninPendingOffered() {
-    chrome.send('recordSigninPendingOffered');
+  recordSigninPendingOffered(accessPoint: AccessPoint) {
+    chrome.send('recordSigninPendingOffered', [accessPoint]);
   }
 
   navigateToUrl(url: string, target: string, e: MouseEvent) {

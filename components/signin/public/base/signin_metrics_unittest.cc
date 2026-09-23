@@ -45,6 +45,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kProductSpecifications,
     AccessPoint::kAddressBubble,
     AccessPoint::kGlicLaunchButton,
+    AccessPoint::kHistoryPage,
     AccessPoint::kNonModalSigninPasswordPromo,
     AccessPoint::kNonModalSigninBookmarkPromo,
     AccessPoint::kUserManagerWithPrefilledEmail,

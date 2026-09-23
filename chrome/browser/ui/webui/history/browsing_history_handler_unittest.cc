@@ -404,7 +404,8 @@ TEST_F(BrowsingHistoryHandlerTest, RequestAccountInfo) {
 TEST_F(BrowsingHistoryHandlerTest, TurnOnHistorySync) {
   // This test doesn't create a Browser instance, so FindBrowserWithTab
   // returns nullptr. TurnOnHistorySync should handle this without crashing.
-  handler()->TurnOnHistorySync();
+  handler()->TurnOnHistorySync(history::mojom::AccessPoint::kRecentTabs);
+  handler()->TurnOnHistorySync(history::mojom::AccessPoint::kHistoryPage);
 }
 
 TEST_F(BrowsingHistoryHandlerTest, ObservesIdentityManagerOnlyAfterRequest) {

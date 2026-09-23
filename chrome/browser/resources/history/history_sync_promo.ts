@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {AccountInfo, PageCallbackRouter} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -43,6 +44,7 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
   protected accessor accountInfo_: AccountInfo|null = null;
   private callbackRouter_: PageCallbackRouter;
   private onAccountInfoDataReceivedListenerId_: number|null = null;
+  private signinPausedImpressionRecorded_: boolean = false;
   private accessor historyIdentityState_: HistoryIdentityState = {
     signIn: HistorySignInState.SIGNED_OUT,
     tabsSync: SyncState.TURNED_OFF,
@@ -59,13 +61,14 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
 
     BrowserProxyImpl.getInstance().getInitialIdentityState().then(
         (identityState: HistoryIdentityState) => {
-          this.historyIdentityState_ = identityState;
+          this.updateHistoryIdentityState_(identityState);
         });
 
     this.addWebUiListener(
         'history-identity-state-changed',
-        (identityState: HistoryIdentityState) => this.historyIdentityState_ =
-            identityState);
+        (identityState: HistoryIdentityState) => {
+          this.updateHistoryIdentityState_(identityState);
+        });
 
     this.onAccountInfoDataReceivedListenerId_ =
         this.callbackRouter_.sendAccountInfo.addListener(
@@ -90,6 +93,28 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
     this.accountInfo_ = accountInfo;
   }
 
+  private updateHistoryIdentityState_(identityState: HistoryIdentityState) {
+    this.historyIdentityState_ = identityState;
+    this.maybeRecordSigninPendingOffered_();
+  }
+
+  private maybeRecordSigninPendingOffered_() {
+    // Reset the flag if the state changes away from SIGN_IN_PENDING.
+    if (!this.isSignInState_(HistorySignInState.SIGN_IN_PENDING)) {
+      this.signinPausedImpressionRecorded_ = false;
+      return;
+    }
+
+    // Don't record if the promo is not shown or was already recorded.
+    if (!this.shown_ || this.signinPausedImpressionRecorded_) {
+      return;
+    }
+
+    BrowserProxyImpl.getInstance().recordSigninPendingOffered(
+        AccessPoint.kHistoryPage);
+    this.signinPausedImpressionRecorded_ = true;
+  }
+
   protected onCloseClick_() {
     this.shown_ = false;
     BrowserProxyImpl.getInstance()
@@ -105,7 +130,8 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
   }
 
   protected onTurnOnHistorySyncClick_() {
-    BrowserProxyImpl.getInstance().handler.turnOnHistorySync();
+    BrowserProxyImpl.getInstance().handler.turnOnHistorySync(
+        AccessPoint.kHistoryPage);
   }
 }
 

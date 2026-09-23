@@ -36302,6 +36302,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromHistoryPage">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kHistoryPage.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromHistorySyncOptinExpansionPillOnInactivity">
   <owner>ernn@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>

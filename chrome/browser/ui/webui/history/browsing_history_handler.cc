@@ -651,13 +651,23 @@ void BrowsingHistoryHandler::OpenClearBrowsingDataDialog() {
   chrome::ShowClearBrowsingDataDialog(browser);
 }
 
-void BrowsingHistoryHandler::TurnOnHistorySync() {
+void BrowsingHistoryHandler::TurnOnHistorySync(
+    history::mojom::AccessPoint access_point) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (browser) {
-    signin_ui_util::SignInAndEnableHistorySync(
-        browser, profile_, signin_metrics::AccessPoint::kRecentTabs);
+    signin_metrics::AccessPoint signin_access_point;
+    switch (access_point) {
+      case history::mojom::AccessPoint::kRecentTabs:
+        signin_access_point = signin_metrics::AccessPoint::kRecentTabs;
+        break;
+      case history::mojom::AccessPoint::kHistoryPage:
+        signin_access_point = signin_metrics::AccessPoint::kHistoryPage;
+        break;
+    }
+    signin_ui_util::SignInAndEnableHistorySync(browser, profile_,
+                                               signin_access_point);
   }
 #else
   // This is not expected to be called on ChromeOS as the screen that uses this

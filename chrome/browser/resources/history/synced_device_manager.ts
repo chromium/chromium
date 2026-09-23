@@ -9,6 +9,7 @@ import './synced_device_card.js';
 import '/strings.m.js';
 
 import {browserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // <if expr="not is_chromeos">
 import type {AccountInfo} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // </if>
@@ -251,7 +252,8 @@ export class HistorySyncedDeviceManagerElement extends
 
   // <if expr="not is_chromeos">
   protected onTurnOnHistorySyncClick_() {
-    BrowserProxyImpl.getInstance().handler.turnOnHistorySync();
+    BrowserProxyImpl.getInstance().handler.turnOnHistorySync(
+        AccessPoint.kRecentTabs);
   }
 
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
@@ -473,7 +475,8 @@ export class HistorySyncedDeviceManagerElement extends
       return;
     }
 
-    BrowserProxyImpl.getInstance().recordSigninPendingOffered();
+    BrowserProxyImpl.getInstance().recordSigninPendingOffered(
+        AccessPoint.kRecentTabs);
     this.signinPausedImpressionRecorded_ = true;
   }
 

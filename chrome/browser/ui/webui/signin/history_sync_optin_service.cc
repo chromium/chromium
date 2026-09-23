@@ -201,6 +201,11 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
       required_types = {syncer::UserSelectableType::kTabs};
       error_message_id = IDS_TABS_DISABLED_ERROR_DESCRIPTION;
       break;
+    case signin_metrics::AccessPoint::kHistoryPage:
+      required_types = {syncer::UserSelectableType::kHistory};
+      // TODO(crbug.com/453996401): Use a history-specific error string.
+      error_message_id = IDS_TABS_DISABLED_ERROR_DESCRIPTION;
+      break;
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
       required_types = {syncer::UserSelectableType::kSavedTabGroups};
@@ -264,7 +269,6 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kSkills:
     case signin_metrics::AccessPoint::kAccountMenuSignedOutState:
     case signin_metrics::AccessPoint::kIndigo:
-    case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:
     case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:

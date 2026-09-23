@@ -5,7 +5,7 @@
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {OpenConversationResult, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {AccessPoint, PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -124,8 +124,8 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('recordLongTime', histogram, value);
   }
 
-  recordSigninPendingOffered() {
-    this.methodCalled('recordSigninPendingOffered');
+  recordSigninPendingOffered(accessPoint: AccessPoint) {
+    this.methodCalled('recordSigninPendingOffered', accessPoint);
   }
 
   startTurnOnSyncFlow() {

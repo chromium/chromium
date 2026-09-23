@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/webui/resources/cr_components/history/history.mojom.h"
 
 HistoryLoginHandler::HistoryLoginHandler(
     base::RepeatingClosure identity_state_changed_callback)
@@ -104,9 +105,25 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
 }
 
 void HistoryLoginHandler::HandleRecordSigninPendingOffered(
-    const base::ListValue& /*args*/) {
-  signin_metrics::LogSigninPendingOffered(
-      signin_metrics::AccessPoint::kRecentTabs);
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  if (args.empty() || !args[0].is_int()) {
+    return;
+  }
+
+  switch (static_cast<history::mojom::AccessPoint>(args[0].GetInt())) {
+    case history::mojom::AccessPoint::kRecentTabs:
+      signin_metrics::LogSigninPendingOffered(
+          signin_metrics::AccessPoint::kRecentTabs);
+      break;
+    case history::mojom::AccessPoint::kHistoryPage:
+      signin_metrics::LogSigninPendingOffered(
+          signin_metrics::AccessPoint::kHistoryPage);
+      break;
+    default:
+      // Ensure no unexpected values are passed on from the UI.
+      NOTREACHED();
+  }
 }
 
 void HistoryLoginHandler::HandleGetInitialIdentityState(

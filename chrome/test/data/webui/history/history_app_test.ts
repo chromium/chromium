@@ -14,6 +14,7 @@ import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui
 import {TestUserEducationMixedTrustHandler} from 'chrome://webui-test/test_user_education_mixed_trust_handler.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // <if expr="not is_chromeos">
+import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 
@@ -439,6 +440,14 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     assertFalse(isChildVisible(
         historySyncPromo, '#sign-in-pending-not-syncing-history-description'));
     assertFalse(isChildVisible(historySyncPromo, '#verify-its-you-button'));
+
+    const button = historySyncPromo.shadowRoot.querySelector<HTMLElement>(
+        '#sync-history-button');
+    assertTrue(!!button);
+    button.click();
+    const accessPoint =
+        await browserProxy.handler.whenCalled('turnOnHistorySync');
+    assertEquals(AccessPoint.kHistoryPage, accessPoint);
   });
 
   test('HistorySyncPromoElementPendingSignInWithHistorySyncOn', async () => {
@@ -457,6 +466,10 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     assertTrue(isChildVisible(
         historySyncPromo, '#sign-in-pending-syncing-history-description'));
     assertTrue(isChildVisible(historySyncPromo, '#verify-its-you-button'));
+    assertEquals(1, browserProxy.getCallCount('recordSigninPendingOffered'));
+    assertEquals(
+        AccessPoint.kHistoryPage,
+        await browserProxy.whenCalled('recordSigninPendingOffered'));
 
     // The other states promo elements should not be visible.
     assertFalse(isChildVisible(historySyncPromo, '#signed-out-description'));

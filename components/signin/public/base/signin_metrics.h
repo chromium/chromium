@@ -288,8 +288,9 @@ enum class AccessPoint : int {
   kCollaborationShareTabGroup = 73,
   // Glic launch button on the tab strip.
   kGlicLaunchButton = 74,
-  // History sync promo shown on the History page. Should not be visible when
-  // the use is not signed-in. Android only.
+  // History sync promo shown on the History page. On Android, it should not be
+  // visible when the user is not signed-in. On Desktop, it can also be used to
+  // sign in and enable history sync.
   kHistoryPage = 75,
   // Access point triggered when a user attempts to join a tab group without
   // being signed in or synced.

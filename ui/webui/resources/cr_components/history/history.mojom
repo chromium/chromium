@@ -203,6 +203,12 @@ enum OpenConversationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:OpenConversationResult)
 
+// Represents the entry point from which the user turns on history sync.
+enum AccessPoint {
+  kRecentTabs = 0,
+  kHistoryPage = 1,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The BrowserProxy singleton calls this when it's first initialized.
@@ -242,7 +248,7 @@ interface PageHandler {
   RequestAccountInfo() => (AccountInfo account_info);
 
   // The user turns on the history sync by clicking the "Sync history" button.
-  TurnOnHistorySync();
+  TurnOnHistorySync(AccessPoint access_point);
 
   // Opens the conversation associated with the given critical action in
   // split view.

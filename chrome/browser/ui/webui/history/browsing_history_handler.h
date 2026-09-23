@@ -99,7 +99,7 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   // history::mojom::PageHandler:
   void RequestAccountInfo(RequestAccountInfoCallback callback) override;
-  void TurnOnHistorySync() override;
+  void TurnOnHistorySync(history::mojom::AccessPoint access_point) override;
   void OpenCriticalActionConversation(
       const std::string& critical_action_id,
       OpenCriticalActionConversationCallback callback) override;

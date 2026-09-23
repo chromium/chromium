@@ -831,6 +831,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             ManagedDataTypeTestParam(syncer::UserSelectableType::kTabs,
                                      signin_metrics::AccessPoint::kRecentTabs),
+            ManagedDataTypeTestParam(syncer::UserSelectableType::kHistory,
+                                     signin_metrics::AccessPoint::kHistoryPage),
             ManagedDataTypeTestParam(
                 syncer::UserSelectableType::kSavedTabGroups,
                 signin_metrics::AccessPoint::kCollaborationJoinTabGroup),

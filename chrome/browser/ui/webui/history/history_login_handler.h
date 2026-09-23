@@ -35,7 +35,8 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "startTurnOnSyncFlow" message. No args.
   void HandleTurnOnSyncFlow(const base::ListValue& args);
 
-  // Handler for the "recordSigninPendingOffered" message. No args.
+  // Handler for the "recordSigninPendingOffered" message. Takes an
+  // `history::mojom::AccessPoint` integer argument.
   void HandleRecordSigninPendingOffered(const base::ListValue& args);
 
   // Handler for the "getInitialIdentityState" message. Resolves with a

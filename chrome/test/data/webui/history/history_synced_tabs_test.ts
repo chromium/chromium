@@ -407,6 +407,8 @@ suite('<history-synced-device-manager>', function() {
 });
 
 // <if expr="not is_chromeos">
+import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+
 // history-sync-optin elements is not shown for ChromeOS.
 suite('<history-sync-optin>', function() {
   let element: HistorySyncedDeviceManagerElement;
@@ -597,7 +599,8 @@ suite('<history-sync-optin>', function() {
     assertTrue(!!button);
     button.click();
 
-    await testProxy.handler.whenCalled('turnOnHistorySync');
+    const accessPoint = await testProxy.handler.whenCalled('turnOnHistorySync');
+    assertEquals(AccessPoint.kRecentTabs, accessPoint);
   });
 
   test('check recorded metrics in pending signin', async () => {
@@ -609,6 +612,9 @@ suite('<history-sync-optin>', function() {
     });
     await microtasksFinished();
     assertEquals(1, testProxy.getCallCount('recordSigninPendingOffered'));
+    assertEquals(
+        AccessPoint.kRecentTabs,
+        await testProxy.whenCalled('recordSigninPendingOffered'));
 
     // Firing a sign in pending state again does not record again.
     webUIListenerCallback('history-identity-state-changed', {

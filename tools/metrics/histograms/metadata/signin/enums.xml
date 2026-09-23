@@ -1183,7 +1183,7 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="Drive file picker (iOS only)"/>
   <int value="73" label="Share collaboration tab group authentication"/>
   <int value="74" label="Glic launch button"/>
-  <int value="75" label="History page (Android only)"/>
+  <int value="75" label="History page"/>
   <int value="76" label="Join collaboration tab group authentication"/>
   <int value="77" label="History Sync Opt-in Expanded Pill on startup"/>
   <int value="78" label="Widget (iOS only)"/>
