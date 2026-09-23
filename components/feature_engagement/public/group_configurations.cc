@@ -60,8 +60,7 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     // Only one of the tailored promos ever can be shown.
     config.trigger =
         EventConfig("tailored_default_browser_promos_group_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -117,11 +116,10 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.trigger = EventConfig("homepage_new_badges_group_trigger",
                                  Comparator(LESS_THAN, 1), 1, 365);
     // Group Rule: Don't show until the holdback period has elapsed.
-    config.event_configs.insert(EventConfig(
-        feature_engagement::events::kIOSFREBadgeHoldbackPeriodElapsed,
-        Comparator(GREATER_THAN_OR_EQUAL, 1),
-        feature_engagement::kMaxStoragePeriod,
-        feature_engagement::kMaxStoragePeriod));
+    config.event_configs.insert(
+        EventConfig(events::kIOSFREBadgeHoldbackPeriodElapsed,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxStoragePeriod,
+                    kMaxStoragePeriod));
     return config;
   }
 #endif  // BUILDFLAG(IS_IOS)

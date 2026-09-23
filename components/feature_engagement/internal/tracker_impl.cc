@@ -84,18 +84,17 @@ void MaybeGetEventData(Tracker::EventList& result,
 }  // namespace
 
 std::unique_ptr<Tracker> CreateDemoModeTracker(
-    feature_engagement::FeatureActivation feature_activation) {
-  feature_engagement::FeatureActivation::State state =
-      feature_activation.get_state();
+    FeatureActivation feature_activation) {
+  FeatureActivation::State state = feature_activation.get_state();
 
   switch (state) {
-    case feature_engagement::FeatureActivation::State::kAllEnabled:
+    case FeatureActivation::State::kAllEnabled:
       DVLOG(2) << "Enabling demo mode. All features enabled ";
       break;
-    case feature_engagement::FeatureActivation::State::kAllDisabled:
+    case FeatureActivation::State::kAllDisabled:
       DVLOG(2) << "Enabling demo mode. All features disabled ";
       break;
-    case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+    case FeatureActivation::State::kSingleFeatureEnabled:
       DVLOG(2) << "Enabling demo mode. Chosen feature: "
                << feature_activation.get_unique_feature_name();
       break;
@@ -112,13 +111,13 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
     // If a particular feature has been chosen to use with demo mode, only
     // mark that feature with a valid configuration.
     switch (state) {
-      case feature_engagement::FeatureActivation::State::kAllEnabled:
+      case FeatureActivation::State::kAllEnabled:
         feature_config.valid = true;
         break;
-      case feature_engagement::FeatureActivation::State::kAllDisabled:
+      case FeatureActivation::State::kAllDisabled:
         feature_config.valid = false;
         break;
-      case feature_engagement::FeatureActivation::State::kSingleFeatureEnabled:
+      case FeatureActivation::State::kSingleFeatureEnabled:
         feature_config.valid =
             feature_activation.get_unique_feature_name() == feature->name;
     }
@@ -161,10 +160,9 @@ std::unique_ptr<Tracker> Tracker::Create(
     // not set. In this case, we want to enable all features.
     std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
         kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
-    feature_engagement::FeatureActivation feature_action =
-        chosen_feature_name.empty()
-            ? feature_engagement::FeatureActivation::AllEnabled()
-            : feature_engagement::FeatureActivation(chosen_feature_name);
+    FeatureActivation feature_action =
+        chosen_feature_name.empty() ? FeatureActivation::AllEnabled()
+                                    : FeatureActivation(chosen_feature_name);
     return CreateDemoModeTracker(feature_action);
   }
 

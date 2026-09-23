@@ -108,13 +108,12 @@ const base::FeatureParam<IPHExtensionsZeroStatePromoVariant>::Option
          "custom-ui-chip-iph-v3"},
         {IPHExtensionsZeroStatePromoVariant::kCustomUIPlainLinkIph,
          "custom-ui-plain-link-iph"}};
-BASE_FEATURE_ENUM_PARAM(
-    IPHExtensionsZeroStatePromoVariant,
-    kIPHExtensionsZeroStatePromoVariantParam,
-    &feature_engagement::kIPHExtensionsZeroStatePromoFeature,
-    "x_iph-variant",
-    IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV2,
-    &kIPHExtensionsZeroStatePromoVariantOptions);
+BASE_FEATURE_ENUM_PARAM(IPHExtensionsZeroStatePromoVariant,
+                        kIPHExtensionsZeroStatePromoVariantParam,
+                        &kIPHExtensionsZeroStatePromoFeature,
+                        "x_iph-variant",
+                        IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV2,
+                        &kIPHExtensionsZeroStatePromoVariantOptions);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
              "IPH_FocusHelpBubbleScreenReaderPromo",
@@ -147,22 +146,18 @@ BASE_FEATURE(kIPHLensOverlayFeature,
              "IPH_LensOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters{
-    &feature_engagement::kIPHLensOverlayFeature, "x_url_allow_filters", "[]"};
+    &kIPHLensOverlayFeature, "x_url_allow_filters", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters{
-    &feature_engagement::kIPHLensOverlayFeature, "x_url_block_filters", "[]"};
+    &kIPHLensOverlayFeature, "x_url_block_filters", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchAllowPatterns{
-    &feature_engagement::kIPHLensOverlayFeature,
-    "x_url_path_match_allow_patterns", "[]"};
+    &kIPHLensOverlayFeature, "x_url_path_match_allow_patterns", "[]"};
 const base::FeatureParam<std::string>
     kIPHLensOverlayUrlForceAllowedUrlMatchPatterns{
-        &feature_engagement::kIPHLensOverlayFeature,
-        "x_url_forced_allowed_match_patterns", "[]"};
+        &kIPHLensOverlayFeature, "x_url_forced_allowed_match_patterns", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchBlockPatterns{
-    &feature_engagement::kIPHLensOverlayFeature,
-    "x_url_path_match_block_patterns", "[]"};
+    &kIPHLensOverlayFeature, "x_url_path_match_block_patterns", "[]"};
 const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime{
-    &feature_engagement::kIPHLensOverlayFeature, "x_wait_time",
-    base::Seconds(7)};
+    &kIPHLensOverlayFeature, "x_wait_time", base::Seconds(7)};
 BASE_FEATURE(kIPHOmniboxEverywhereLensPromoFeature,
              "IPH_OmniboxEverywhereLensPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

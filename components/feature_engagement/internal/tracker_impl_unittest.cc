@@ -294,9 +294,9 @@ class TestConfigurationProvider : public ConfigurationProvider {
   // ConfigurationProvider:
   bool MaybeProvideFeatureConfiguration(
       const base::Feature& feature,
-      feature_engagement::FeatureConfig& config,
-      const feature_engagement::FeatureVector& known_features,
-      const feature_engagement::GroupVector& known_groups) const override {
+      FeatureConfig& config,
+      const FeatureVector& known_features,
+      const GroupVector& known_groups) const override {
     config = config_;
     return true;
   }
@@ -641,7 +641,7 @@ class FailingAvailabilityModelInitTrackerImplTest : public TrackerImplTest {
 }  // namespace
 
 TEST_F(TrackerImplTest, TestCreateTestTracker) {
-  EXPECT_NE(feature_engagement::CreateTestTracker(), nullptr);
+  EXPECT_NE(CreateTestTracker(), nullptr);
 }
 
 TEST_F(TrackerImplTest, TestInitialization) {
@@ -877,7 +877,7 @@ TEST_F(TrackerImplTest, TestMigrateSameEventMultipleTimes) {
 }
 
 TEST_F(TrackerImplTest, TestNoMigration) {
-  std::unique_ptr<Tracker> tracker = feature_engagement::CreateTestTracker();
+  std::unique_ptr<Tracker> tracker = CreateTestTracker();
   EXPECT_FALSE(tracker->IsInitialized());
 
   StoringInitializedCallback callback;

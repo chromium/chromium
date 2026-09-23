@@ -79,9 +79,9 @@ class TestConfigurationProvider : public ConfigurationProvider {
   // ConfigurationProvider:
   bool MaybeProvideFeatureConfiguration(
       const base::Feature& feature,
-      feature_engagement::FeatureConfig& config,
-      const feature_engagement::FeatureVector& known_features,
-      const feature_engagement::GroupVector& known_groups) const override {
+      FeatureConfig& config,
+      const FeatureVector& known_features,
+      const GroupVector& known_groups) const override {
     config = config_;
     return true;
   }

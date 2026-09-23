@@ -74,8 +74,7 @@ class ConfigurationProvider {
   // Gets the event to record when the configuration is successfully read.
   // Defaults to SUCCESS, but for historical reasons, some providers may need to
   // return a different value.
-  virtual feature_engagement::stats::ConfigParsingEvent GetOnSuccessEvent()
-      const;
+  virtual stats::ConfigParsingEvent GetOnSuccessEvent() const;
 };
 
 using ConfigurationProviderList =

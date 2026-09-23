@@ -256,6 +256,62 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+  def testNoRedundantNamespace_ValidCode(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(1, 'config.availability = Comparator(EQUAL, 0);'),
+       (2, 'events::kIOSFREBadgeHoldbackPeriodElapsed'),
+       (3, 'kMaxStoragePeriod')]) ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoRedundantNamespace_Violation(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(42, 'feature_engagement::events::kChromeOpened'),
+       (43, 'feature_engagement::kMaxStoragePeriod')]) ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(2, len(results))
+    self.assertEqual('Warning', results[0].type)
+    self.assertEqual('Warning', results[1].type)
+    self.assertIn('Redundant "feature_engagement::" qualifier', results[0].message)
+    self.assertIn('ping mschillaci@', results[0].message)
+
+  def testNoRedundantNamespace_IgnoreNamespaceDecl(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/stats.cc',
+      [],
+      [(9, 'namespace feature_engagement::stats {'),
+       (16, '}  // namespace feature_engagement::stats')]) ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoRedundantNamespace_IgnoreComments(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/tracker.h',
+      [],
+      [(14, '// Provides a test feature_engagement::Tracker.'),
+       (15, ' * see feature_engagement::TrackerImpl'),
+       (16, '/* feature_engagement::Tracker */')]) ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testNoRedundantNamespace_NonCppFile(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/README.md',
+      [],
+      [(1, 'feature_engagement::TrackerFactory::GetForBrowserContext(profile);')]) ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
 if __name__ == '__main__':
   unittest.main()
+
 
