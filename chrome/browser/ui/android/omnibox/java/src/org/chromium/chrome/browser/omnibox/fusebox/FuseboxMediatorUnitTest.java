@@ -381,11 +381,11 @@ public class FuseboxMediatorUnitTest {
                 .thenAnswer(i -> "token-" + i.getArgument(0));
         DriveFilePickerClient.setInstanceForTesting(mDriveFilePickerClient);
         TabLoadingService.setInstanceForTesting(mTabLoadingService);
-        lenient().doReturn(true).when(mDriveFilePickerClient).isAvailable(any());
+        lenient().doReturn(true).when(mDriveFilePickerClient).isAvailable(any(), any());
         lenient()
                 .doReturn(Promise.fulfilled(null))
                 .when(mDriveFilePickerClient)
-                .launchPicker(any(), any());
+                .launchPicker(any(), any(), any());
 
         mInputStateSupplier.set(DEFAULT_INPUT_STATE);
 
@@ -1425,7 +1425,7 @@ public class FuseboxMediatorUnitTest {
                         DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
         doReturn(Promise.fulfilled(metadata))
                 .when(mDriveFilePickerClient)
-                .launchPicker(mWindowAndroid, null);
+                .launchPicker(mWindowAndroid, mProfile, null);
         doReturn("token123")
                 .when(mComposeboxQueryControllerBridge)
                 .addDriveFile("drive_id", null, "Test Doc", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
@@ -2076,7 +2076,7 @@ public class FuseboxMediatorUnitTest {
     public void onInputStateChange_driveNotAvailable_hidesDriveButton() {
         FeatureOverrides.overrideFlag(
                 OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, true);
-        doReturn(false).when(mDriveFilePickerClient).isAvailable(any());
+        doReturn(false).when(mDriveFilePickerClient).isAvailable(any(), any());
         setInputState(
                 createDefaultInputStateBuilder()
                         .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE));

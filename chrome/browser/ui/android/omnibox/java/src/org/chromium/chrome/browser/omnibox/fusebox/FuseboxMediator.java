@@ -1124,13 +1124,13 @@ import java.util.function.Supplier;
         mPopupItemSelected = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.DRIVE_FILES);
-        launchDrivePicker();
+        launchDrivePicker(mProfile);
     }
 
-    private void launchDrivePicker() {
+    private void launchDrivePicker(Profile profile) {
         long startTime = TimeUtils.elapsedRealtimeMillis();
         DriveFilePickerClient.getInstance()
-                .launchPicker(mWindowAndroid, /* mimeTypes= */ null)
+                .launchPicker(mWindowAndroid, profile, /* mimeTypes= */ null)
                 .then(
                         metadata -> {
                             if (metadata == null) {
@@ -1298,7 +1298,7 @@ import java.util.function.Supplier;
         boolean driveVisible =
                 OmniboxFeatures.sComposeboxDriveContextMenuOption.isEnabled()
                         && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE)
-                        && DriveFilePickerClient.getInstance().isAvailable(mContext);
+                        && DriveFilePickerClient.getInstance().isAvailable(mContext, mProfile);
         boolean driveEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
