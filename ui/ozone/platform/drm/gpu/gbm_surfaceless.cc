@@ -61,8 +61,7 @@ bool GbmSurfaceless::ScheduleOverlayPlane(
     gfx::GpuFenceHandle gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   unsubmitted_frames_.back()->overlays.emplace_back(
-      std::move(image), std::make_unique<gfx::GpuFence>(std::move(gpu_fence)),
-      overlay_plane_data);
+      std::move(image), std::move(gpu_fence), overlay_plane_data);
   return true;
 }
 
@@ -164,9 +163,9 @@ void GbmSurfaceless::SubmitFrame() {
 
   if (unsubmitted_frames_.front()->ready && !submitted_frame_) {
     for (auto& overlay : unsubmitted_frames_.front()->overlays) {
-      if (overlay.z_order() == 0 && overlay.gpu_fence()) {
-        submitted_frame_gpu_fence_ = std::make_unique<gfx::GpuFence>(
-            overlay.gpu_fence()->GetGpuFenceHandle().Clone());
+      if (overlay.z_order() == 0 && !overlay.gpu_fence().is_null()) {
+        submitted_frame_gpu_fence_ =
+            std::make_unique<gfx::GpuFence>(overlay.gpu_fence().Clone());
       }
     }
     submitted_frame_ = std::move(unsubmitted_frames_.front());

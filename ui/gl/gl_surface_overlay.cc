@@ -11,7 +11,7 @@ namespace gl {
 
 GLSurfaceOverlay::GLSurfaceOverlay(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::GpuFenceHandle gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data)
     : pixmap_(std::move(pixmap)),
       gpu_fence_(std::move(gpu_fence)),
@@ -22,13 +22,9 @@ GLSurfaceOverlay::GLSurfaceOverlay(GLSurfaceOverlay&& other) = default;
 GLSurfaceOverlay::~GLSurfaceOverlay() {}
 
 bool GLSurfaceOverlay::ScheduleOverlayPlane(gfx::AcceleratedWidget widget) {
-  std::vector<gfx::GpuFence> acquire_fences;
-  if (gpu_fence_)
-    acquire_fences.push_back(std::move(*gpu_fence_));
-
   DCHECK(pixmap_);
   return pixmap_->ScheduleOverlayPlane(widget, overlay_plane_data_,
-                                       std::move(acquire_fences), {});
+                                       std::move(gpu_fence_));
 }
 
 }  // namespace gl

@@ -24,7 +24,7 @@ struct WaylandOverlayConfig {
   WaylandOverlayConfig();
   WaylandOverlayConfig(WaylandOverlayConfig&& other);
   WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
-                       std::unique_ptr<gfx::GpuFence> fence,
+                       gfx::GpuFenceHandle fence,
                        BufferId buffer_id,
                        float scale_factor);
   WaylandOverlayConfig& operator=(WaylandOverlayConfig&& other);

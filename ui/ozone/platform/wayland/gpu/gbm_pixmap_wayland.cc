@@ -188,8 +188,7 @@ uint32_t GbmPixmapWayland::GetUniqueId() const {
 bool GbmPixmapWayland::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
     const gfx::OverlayPlaneData& overlay_plane_data,
-    std::vector<gfx::GpuFence> acquire_fences,
-    std::vector<gfx::GpuFence> release_fences) {
+    gfx::GpuFenceHandle acquire_fence) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
   if (!created_wl_buffer_) {
@@ -205,13 +204,9 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
       static_cast<GbmSurfacelessWayland*>(surface);
   DCHECK(surfaceless);
 
-  DCHECK(acquire_fences.empty() || acquire_fences.size() == 1u);
-  surfaceless->QueueWaylandOverlayConfig(
-      {overlay_plane_data,
-       acquire_fences.empty()
-           ? nullptr
-           : std::make_unique<gfx::GpuFence>(std::move(acquire_fences[0])),
-       buffer_id_, surfaceless->surface_scale_factor()});
+  surfaceless->QueueWaylandOverlayConfig({overlay_plane_data,
+                                          std::move(acquire_fence), buffer_id_,
+                                          surfaceless->surface_scale_factor()});
   return true;
 }
 

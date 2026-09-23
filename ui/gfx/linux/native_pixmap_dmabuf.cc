@@ -77,8 +77,7 @@ uint32_t NativePixmapDmaBuf::GetUniqueId() const {
 bool NativePixmapDmaBuf::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
     const gfx::OverlayPlaneData& overlay_plane_data,
-    std::vector<gfx::GpuFence> acquire_fences,
-    std::vector<gfx::GpuFence> release_fences) {
+    gfx::GpuFenceHandle acquire_fence) {
   return false;
 }
 

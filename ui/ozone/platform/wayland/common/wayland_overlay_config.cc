@@ -16,7 +16,7 @@ WaylandOverlayConfig::WaylandOverlayConfig(WaylandOverlayConfig&& other) =
     default;
 
 WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
-                                           std::unique_ptr<gfx::GpuFence> fence,
+                                           gfx::GpuFenceHandle fence,
                                            BufferId buffer_id,
                                            float scale_factor)
     : z_order(data.z_order),
@@ -29,8 +29,7 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
       crop_rect(data.crop_rect),
       damage_region(data.damage_rect),
       opacity(data.opacity),
-      access_fence_handle(fence ? fence->GetGpuFenceHandle().Clone()
-                                : gfx::GpuFenceHandle()),
+      access_fence_handle(std::move(fence)),
       color_space(data.color_space == gfx::ColorSpace::CreateSRGB()
                       ? std::nullopt
                       : std::optional<gfx::ColorSpace>(data.color_space)),

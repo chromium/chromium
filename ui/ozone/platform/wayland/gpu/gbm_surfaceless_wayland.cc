@@ -159,17 +159,17 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
       return false;
     }
     frame->in_flight_color_buffers.push_back(buf_id);
-    QueueWaylandOverlayConfig(
-        {overlay_plane_data, nullptr, buf_id, surface_scale_factor()});
+    QueueWaylandOverlayConfig({overlay_plane_data, gfx::GpuFenceHandle(),
+                               buf_id, surface_scale_factor()});
   } else {
-    std::vector<gfx::GpuFence> acquire_fences;
+    gfx::GpuFenceHandle acquire_fence;
     if (!gpu_fence.is_null() &&
         (buffer_manager_->supports_acquire_fence() || use_egl_fence_sync_)) {
-      acquire_fences.push_back(gfx::GpuFence(std::move(gpu_fence)));
+      acquire_fence = std::move(gpu_fence);
     }
 
     frame->schedule_planes_succeeded = image->ScheduleOverlayPlane(
-        widget_, overlay_plane_data, std::move(acquire_fences), {});
+        widget_, overlay_plane_data, std::move(acquire_fence));
   }
   return frame->schedule_planes_succeeded;
 }

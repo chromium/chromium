@@ -6,15 +6,11 @@
 #define UI_GL_GL_SURFACE_OVERLAY_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_export.h"
-
-namespace gfx {
-class GpuFence;
-}  // namespace gfx
 
 namespace gl {
 
@@ -22,7 +18,7 @@ namespace gl {
 class GL_EXPORT GLSurfaceOverlay {
  public:
   GLSurfaceOverlay(scoped_refptr<gfx::NativePixmap> pixmap,
-                   std::unique_ptr<gfx::GpuFence> gpu_fence,
+                   gfx::GpuFenceHandle gpu_fence,
                    const gfx::OverlayPlaneData& overlay_plane_data);
   GLSurfaceOverlay(GLSurfaceOverlay&& other);
   ~GLSurfaceOverlay();
@@ -33,7 +29,7 @@ class GL_EXPORT GLSurfaceOverlay {
   // This should be called at most once.
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget);
 
-  gfx::GpuFence* gpu_fence() const { return gpu_fence_.get(); }
+  const gfx::GpuFenceHandle& gpu_fence() const { return gpu_fence_; }
   int z_order() const { return overlay_plane_data_.z_order; }
   gfx::OverlayType overlay_type() const {
     return overlay_plane_data_.overlay_type;
@@ -41,7 +37,7 @@ class GL_EXPORT GLSurfaceOverlay {
 
  private:
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  std::unique_ptr<gfx::GpuFence> gpu_fence_;
+  gfx::GpuFenceHandle gpu_fence_;
   gfx::OverlayPlaneData overlay_plane_data_;
 };
 

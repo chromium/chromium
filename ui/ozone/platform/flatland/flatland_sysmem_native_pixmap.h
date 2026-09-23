@@ -35,8 +35,7 @@ class FlatlandSysmemNativePixmap : public gfx::NativePixmap {
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
                             const gfx::OverlayPlaneData& overlay_plane_data,
-                            std::vector<gfx::GpuFence> acquire_fences,
-                            std::vector<gfx::GpuFence> release_fences) override;
+                            gfx::GpuFenceHandle acquire_fence) override;
   gfx::NativePixmapHandle ExportHandle() const override;
 
   FlatlandSysmemBufferCollection* sysmem_buffer_collection() const {

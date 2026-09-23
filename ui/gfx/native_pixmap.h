@@ -11,12 +11,12 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 struct OverlayPlaneData;
-class GpuFence;
 
 // This represents a buffer that can be directly imported via GL for
 // rendering, or exported via dma-buf fds.
@@ -53,18 +53,15 @@ class COMPONENT_EXPORT(GFX) NativePixmap
 
   // Sets the overlay plane to switch to at the next page flip.
   // |widget| specifies the screen to display this overlay plane on.
-  // |acquire_fences| specifies gpu fences to wait on before the pixmap is ready
-  // to be displayed. These fence are fired when the gpu has finished writing to
+  // |acquire_fence| specifies gpu fence to wait on before the pixmap is ready
+  // to be displayed. This fence is fired when the gpu has finished writing to
   // the pixmap.
-  // |release_fences| specifies gpu fences that are signalled when the pixmap
-  // has been displayed and is ready for reuse.
   // |overlay_plane_data| specifies overlay data such as opacity, z_order, size,
   // etc.
   virtual bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
       const gfx::OverlayPlaneData& overlay_plane_data,
-      std::vector<gfx::GpuFence> acquire_fences,
-      std::vector<gfx::GpuFence> release_fences) = 0;
+      gfx::GpuFenceHandle acquire_fence) = 0;
 
   // Export the buffer for sharing across processes.
   // Any file descriptors in the exported handle are owned by the caller.
