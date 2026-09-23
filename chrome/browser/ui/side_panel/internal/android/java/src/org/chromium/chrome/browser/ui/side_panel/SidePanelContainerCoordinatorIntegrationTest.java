@@ -53,6 +53,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.util.ColorUtils;
@@ -575,6 +576,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act: Undo the tab closure using the undo snackbar.
         undoSnackbar.pressUndo();
+        RecyclerViewTestUtils.waitForView(tabSwitcherStation.recyclerViewElement.value(), 0);
+        RecyclerViewTestUtils.waitForView(tabSwitcherStation.recyclerViewElement.value(), 1);
 
         // Act: Select the restored tab 1.
         mResponsivePageStation =
@@ -619,6 +622,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act: Undo the tab closure using the undo snackbar.
         undoSnackbar.pressUndo();
+        RecyclerViewTestUtils.waitForView(tabSwitcherStation.recyclerViewElement.value(), 0);
+        RecyclerViewTestUtils.waitForView(tabSwitcherStation.recyclerViewElement.value(), 1);
 
         // Act: Select the restored tab 1.
         mResponsivePageStation =
