@@ -233,7 +233,6 @@ CGFloat const kDividerVerticalPadding = 12.0;
                                        usingInfoBar:nil];
     [badgeButton setAccepted:badgeItem.badgeState & BadgeStateAccepted
                     animated:NO];
-    [badgeButton setEnabled:!(badgeItem.badgeState & BadgeStatePresented)];
 
     if (badgeItem.badgeType == BadgeType::kBadgeTypeReaderMode) {
       [self.layoutGuideCenter referenceView:badgeButton
