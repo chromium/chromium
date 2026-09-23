@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
   using Contexts = std::set<ElementContext>;
 
   // Identifier that should be used by each framework to create a
-  // TrackedElement from an element that does not alreayd have an identifier.
+  // TrackedElement from an element that does not already have an identifier.
   //
   // Currently, the identifier is not removed when the code that needs the
   // element completes, but in the future we may implement a ref-counting
