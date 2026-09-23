@@ -77,6 +77,10 @@ function hasAudioAlert(item: OpenTabsItem): boolean {
                             tabHasAudioAlert(item.tab);
 }
 
+export function isActive(item: OpenTabsItem): boolean {
+  return isSplitTab(item) ? item.tabs.some(tab => tab.active) : item.tab.active;
+}
+
 export class OpenTabsDelegate implements
     OrganizerListSectionDelegate<OpenTabsItem> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
@@ -230,9 +234,16 @@ export class OpenTabsDelegate implements
       });
     }
 
-    // Tabs playing or muting audio are surfaced first, each group ordered by
-    // most recently used.
+    // The currently active tab is placed at the end of the list so that users
+    // can more easily navigate to their other tabs. Tabs playing or muting
+    // audio are surfaced first, and within each group items are ordered by most
+    // recently used.
     items.sort((a, b) => {
+      const activeA = isActive(a);
+      const activeB = isActive(b);
+      if (activeA !== activeB) {
+        return activeA ? 1 : -1;
+      }
       const audioA = hasAudioAlert(a);
       const audioB = hasAudioAlert(b);
       if (audioA !== audioB) {
