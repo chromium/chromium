@@ -519,6 +519,11 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   if (aim_to_client_message.has_handshake_response()) {
     web_ui_controller_->GetPageRemote()->OnHandshakeComplete();
     web_ui_controller_->OnSidePanelStateChanged();
+    if (panel_controller_) {
+      panel_controller_->RecordTimeToHandshakeComplete(
+          web_ui_controller_ ? web_ui_controller_->GetWebUIWebContents()
+                             : nullptr);
+    }
   } else if (aim_to_client_message.has_hide_input()) {
     web_ui_controller_->GetPageRemote()->HideInput();
   } else if (aim_to_client_message.has_restore_input()) {

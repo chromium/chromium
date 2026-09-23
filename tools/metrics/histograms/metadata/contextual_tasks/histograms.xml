@@ -517,6 +517,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.SidePanel.TimeToFirstContentfulPaint"
+    units="ms" expires_after="2027-01-03">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the contextual tasks side panel renders its first contentful
+    paint (DidFirstVisuallyNonEmptyPaint) after being opened. Measures the
+    elapsed time from the initial side panel Show() request until the visual
+    paint event occurs in the embedded WebContents.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.TimeToHandshakeComplete" units="ms"
+    expires_after="2027-01-03">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the contextual tasks side panel frontend application (WebUI or
+    unprivileged WebContents with component extension) completes Mojo binding
+    and bidirectional handshake acknowledgment (OnHandshakeComplete) after being
+    opened. Measures the elapsed time from the initial side panel Show() request
+    until the frontend application is initialized and connected.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"
     enum="Boolean" expires_after="2027-06-18">
   <owner>nguyenbryan@chromium.org</owner>

@@ -140,6 +140,10 @@ class ContextualTasksPanelController {
   virtual void ShowPageInfoBubble(bool is_pointer_interaction) = 0;
   virtual void OnLogoPointerDown() = 0;
 
+  // Records the time to handshake complete metric for the given WebContents.
+  virtual void RecordTimeToHandshakeComplete(
+      content::WebContents* web_contents) {}
+
   // Static.
   static ContextualTasksPanelController* From(BrowserWindowInterface* browser);
 };

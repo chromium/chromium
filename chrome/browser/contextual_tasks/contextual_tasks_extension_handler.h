@@ -264,6 +264,7 @@ class ContextualTasksExtensionHandler
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
+  void RecordTimeToHandshakeComplete();
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
   base::CallbackListSubscription input_state_subscription_;

@@ -884,6 +884,8 @@ TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_HandshakeResponse) {
 
   EXPECT_CALL(page_, OnHandshakeComplete()).Times(1);
   EXPECT_CALL(page_, OnSidePanelStateChanged()).Times(1);
+  EXPECT_CALL(*mock_panel_controller_, RecordTimeToHandshakeComplete(_))
+      .Times(1);
 
   page_handler_->OnWebviewMessage(serialized);
 }

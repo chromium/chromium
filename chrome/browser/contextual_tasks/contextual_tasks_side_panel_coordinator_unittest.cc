@@ -1333,5 +1333,99 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 #endif
 
-}  // namespace contextual_tasks
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       TimeToFirstContentfulPaint_RecordedOncePerSession) {
+  base::HistogramTester histogram_tester;
 
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToFirstContentfulPaint", 0);
+
+  // Trigger RecordTimeToFirstContentfulPaint with unrelated WebContents (should
+  // be ignored).
+  auto other_wc = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), nullptr);
+  coordinator_->RecordTimeToFirstContentfulPaint(other_wc.get());
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToFirstContentfulPaint", 0);
+
+  // Trigger RecordTimeToFirstContentfulPaint with the cached WebContents.
+  coordinator_->RecordTimeToFirstContentfulPaint(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToFirstContentfulPaint", 1);
+
+  // Duplicate paint event in the same session should NOT record again.
+  coordinator_->RecordTimeToFirstContentfulPaint(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToFirstContentfulPaint", 1);
+
+  // Calling Show() again starts a new session, resetting the recorded flag.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  coordinator_->RecordTimeToFirstContentfulPaint(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToFirstContentfulPaint", 2);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       TimeToHandshakeComplete_RecordedOncePerSession) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToHandshakeComplete", 0);
+
+  // Trigger RecordTimeToHandshakeComplete with unrelated WebContents (should be
+  // ignored).
+  auto other_wc = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), nullptr);
+  coordinator_->RecordTimeToHandshakeComplete(other_wc.get());
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToHandshakeComplete", 0);
+
+  // Trigger RecordTimeToHandshakeComplete with the cached WebContents.
+  coordinator_->RecordTimeToHandshakeComplete(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToHandshakeComplete", 1);
+
+  // Duplicate handshake complete event in the same session should NOT record
+  // again.
+  coordinator_->RecordTimeToHandshakeComplete(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToHandshakeComplete", 1);
+
+  // Calling Show() again starts a new session, resetting the recorded flag.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  coordinator_->RecordTimeToHandshakeComplete(cached_wc);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SidePanel.TimeToHandshakeComplete", 2);
+}
+
+}  // namespace contextual_tasks

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -150,6 +151,7 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
         session_handle->set_auth_user_index(auth_user_index);
       }
       contextual_tasks_page_->OnHandshakeComplete();
+      RecordTimeToHandshakeComplete();
       return;
     }
   }
@@ -162,6 +164,19 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
 
   if (aim_to_client_message.has_handshake_response()) {
     contextual_tasks_page_->OnHandshakeComplete();
+    RecordTimeToHandshakeComplete();
+  }
+}
+
+void ContextualTasksExtensionHandler::RecordTimeToHandshakeComplete() {
+  if (auto* wc =
+          content::WebContents::FromRenderFrameHost(&render_frame_host())) {
+    if (auto* browser = webui::GetBrowserWindowInterface(wc)) {
+      if (auto* panel_controller =
+              contextual_tasks::ContextualTasksPanelController::From(browser)) {
+        panel_controller->RecordTimeToHandshakeComplete(wc);
+      }
+    }
   }
 }
 
