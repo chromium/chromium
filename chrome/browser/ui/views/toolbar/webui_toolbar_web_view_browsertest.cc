@@ -6030,6 +6030,66 @@ class WebUIToolbarFullyEnabledBrowserTest
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return GetControlSizes() == expected_widths; }));
   }
+
+  // Helper function for testing toolbar control shrinking as available space
+  // decreases. Takes the `expected_order` of responsive controls from highest
+  // to lowest priority.
+  //
+  // Measures controls, checks their priority order, and then incrementally
+  // grows a spacer to shrink controls in reverse priority order down to their
+  // minimum sizes.
+  //
+  // Note: This helper assumes that the two lowest priority controls (other than
+  // the location bar) are the same size as the overflow button, so expanding
+  // the spacer so that when the lowest priority button overflows, the overflow
+  // button won't fit, so showing it causes the second lowest priority button to
+  // also overflow, freeing up exactly the amount of space the overflow button
+  // takes.
+  void TestShrinkingResponsiveControls(
+      const std::vector<std::string>& expected_order) {
+    // Create spacer so that any padding it will add is taken into account by
+    // the MeasureResponsiveControls() call.
+    int spacer_width = 0;
+    ASSERT_EQ(SetSpacerWidth(spacer_width), true);
+
+    AllResponsiveControlsInfo all_controls_info;
+    ASSERT_NO_FATAL_FAILURE(MeasureResponsiveControls(all_controls_info));
+
+    CheckResponsiveControlOrder(all_controls_info, expected_order);
+
+    // Start by increasing spacer width by locationBarExtraWidth so that all
+    // controls, including location bar, are at their preferred size.
+    base::DictValue expected_sizes;
+    for (const ResponsiveControlInfo& info : all_controls_info.controls) {
+      expected_sizes.Set(info.id, info.preferred_width);
+    }
+    spacer_width += all_controls_info.location_bar_extra_width;
+    ASSERT_EQ(SetSpacerWidth(spacer_width), true);
+    CheckControlSizes(expected_sizes);
+
+    // Walk through each control in low-to-high priority order, increasing the
+    // size of the spacer to exactly hide/shrink the control, checking the
+    // resulting sizes are as expected.
+    bool overflow_button_shown = false;
+    for (int i = all_controls_info.controls.size() - 1; i >= 0; --i) {
+      const ResponsiveControlInfo& control = all_controls_info.controls[i];
+      spacer_width += control.effective_width_delta;
+      ASSERT_EQ(SetSpacerWidth(spacer_width), true);
+
+      expected_sizes.Set(control.id, control.min_width);
+      // When the first button overflows, showing the overflow button (which is
+      // the same size as a standard button) causes the next lowest priority
+      // button to also overflow.
+      if (control.id != "location-bar" && !overflow_button_shown) {
+        overflow_button_shown = true;
+        --i;
+        expected_sizes.Set(all_controls_info.controls[i].id,
+                           all_controls_info.controls[i].min_width);
+        expected_sizes.Set("overflow", all_controls_info.overflow_button_width);
+      }
+      CheckControlSizes(expected_sizes);
+    }
+  }
 };
 
 // When all currently supported WebUI controls are enabled, check that Views
@@ -6071,67 +6131,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
       kAvatarSelector,
 #endif
       kSplitTabsSelector, kForwardSelector, kHomeSelector}));
+  // Check that TrackedElements reach a consistent state.
+  EXPECT_TRUE(WaitForTrackedElements(
+      /*visible=*/{kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
+                   kToolbarHomeButtonElementId,
+                   kToolbarSplitTabsToolbarButtonElementId},
+      /*hidden=*/{kToolbarOverflowButtonElementId}));
 
-  // Create spacer so that any padding it will added is taking into account by
-  // the MeasureResponsiveControls() call.
-  int spacer_width = 0;
-  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-
-  AllResponsiveControlsInfo all_controls_info;
-  ASSERT_NO_FATAL_FAILURE(MeasureResponsiveControls(all_controls_info));
-
-  CheckResponsiveControlOrder(all_controls_info,
-                              {"location-bar",
+  TestShrinkingResponsiveControls(
+      {"location-bar",
 #if !BUILDFLAG(IS_CHROMEOS)
-                               // ChromeOS should not show the avatar button.
-                               "avatar",
+       // ChromeOS should not show the avatar button.
+       "avatar",
 #endif
-                               "split-tabs", "forward", "home"});
-  // Check that TrackedElements reach a consistent state.
-  EXPECT_TRUE(WaitForTrackedElements(
-      /*visible=*/{kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
-                   kToolbarHomeButtonElementId,
-                   kToolbarSplitTabsToolbarButtonElementId},
-      /*hidden=*/{kToolbarOverflowButtonElementId}));
-
-  // Start by increasing spacer width by locationBarExtraWidth so that all
-  // controls, including location bar, are at their preferred size.
-  base::DictValue expected_sizes;
-  for (const ResponsiveControlInfo& info : all_controls_info.controls) {
-    expected_sizes.Set(info.id, info.preferred_width);
-  }
-  spacer_width += all_controls_info.location_bar_extra_width;
-  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-  CheckControlSizes(expected_sizes);
-  // Check that TrackedElements reach a consistent state.
-  EXPECT_TRUE(WaitForTrackedElements(
-      /*visible=*/{kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
-                   kToolbarHomeButtonElementId,
-                   kToolbarSplitTabsToolbarButtonElementId},
-      /*hidden=*/{kToolbarOverflowButtonElementId}));
-
-  // Walk through each control in low-to-high priority order, increasing the
-  // size of the spacer to exactly hide the control, checking the resulting
-  // sizes are as expected. The first loop iteration expects to hide two
-  // controls, due to showing the overflow button.
-  for (int i = all_controls_info.controls.size() - 1; i >= 0; --i) {
-    const ResponsiveControlInfo& control = all_controls_info.controls[i];
-    spacer_width += control.effective_width_delta;
-    ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-
-    expected_sizes.Set(control.id, control.min_width);
-    // If this is the lowest priority control (i.e., the first loop iteration),
-    // the next control should also be hidden, to make room for the overflow
-    // button, which should be shown. We also need to skip over the next loop
-    // iteration.
-    if (i == static_cast<int>(all_controls_info.controls.size()) - 1) {
-      --i;
-      expected_sizes.Set(all_controls_info.controls[i].id,
-                         all_controls_info.controls[i].min_width);
-      expected_sizes.Set("overflow", all_controls_info.overflow_button_width);
-    }
-    CheckControlSizes(expected_sizes);
-  }
+       "split-tabs", "forward", "home"});
 
   // Check that TrackedElements reach a consistent state.
   EXPECT_TRUE(WaitForTrackedElements(
@@ -6441,24 +6454,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   CheckControlSizes(expected_sizes_after);
 }
 
-// Tests battery button overflow.
-//
-// Enables the home button and battery saver button, sizes the toolbar so all
-// buttons fit with no extra space, and then shrinks available space by the
-// battery saver button's effective width delta. Verifies that both the battery
-// saver button and home button overflow, and the overflow button is displayed.
+// Tests element overflow with the battery saver (and home) buttons enabled.
+// Incrementally increases the size of a spacer element, checking overflow order
+// as available space on the toolbar decreases.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
                        BatterySaverButtonOverflow) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-
   // Enable home button and battery saver button.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-  EnableBatterySaverButton(web_view->GetWebContents());
+  EnableBatterySaverButton();
 
   // Wait for home, forward, and battery saver buttons to be visible.
   ASSERT_TRUE(WaitUntilResponsiveControlsAreVisible(
@@ -6492,37 +6495,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   spacer_width += all_controls_info.location_bar_extra_width;
   ASSERT_EQ(SetSpacerWidth(spacer_width), true);
 
-  base::DictValue expected_sizes;
-  const ResponsiveControlInfo* battery_saver_info = nullptr;
-  const ResponsiveControlInfo* home_info = nullptr;
-  for (const ResponsiveControlInfo& info : all_controls_info.controls) {
-    if (info.id == "battery-saver") {
-      battery_saver_info = &info;
-    } else if (info.id == "home") {
-      home_info = &info;
-    }
-    expected_sizes.Set(info.id, info.preferred_width);
-  }
-  CHECK(battery_saver_info);
-  CHECK(home_info);
-  CheckControlSizes(expected_sizes);
+  TestShrinkingResponsiveControls(
+      {"location-bar",
+#if !BUILDFLAG(IS_CHROMEOS)
+       // ChromeOS should not show the avatar button.
+       "avatar",
+#endif
+       "forward", "home", "battery-saver"});
 
-  // Grow spacer by the battery saver button's effective width. This should
-  // cause the battery saver button to overflow, showing the overflow button,
-  // which in turn causes the home button to overflow.
-  spacer_width += battery_saver_info->effective_width_delta;
-  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-
-  expected_sizes.Set(battery_saver_info->id, battery_saver_info->min_width);
-  expected_sizes.Set(home_info->id, home_info->min_width);
-  expected_sizes.Set("overflow", all_controls_info.overflow_button_width);
-  CheckControlSizes(expected_sizes);
-
-  // Check that TrackedElements reach a consistent state.
+  // Check that TrackedElements reach a consistent state. All the overflowable
+  // buttons should now be hidden, and the overflow button shown.
   EXPECT_TRUE(WaitForTrackedElements(
-      /*visible=*/{kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
+      /*visible=*/{kToolbarBackButtonElementId,
                    kToolbarOverflowButtonElementId},
-      /*hidden=*/{kToolbarHomeButtonElementId,
+      /*hidden=*/{kToolbarForwardButtonElementId, kToolbarHomeButtonElementId,
                   kToolbarBatterySaverButtonElementId}));
 }
 
@@ -6869,48 +6855,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarNoOmniboxPrioritizationBrowserTest,
   AllResponsiveControlsInfo all_controls_info;
   ASSERT_NO_FATAL_FAILURE(MeasureResponsiveControls(all_controls_info));
 
-  CheckResponsiveControlOrder(
-      all_controls_info, {
+  TestShrinkingResponsiveControls({
 #if !BUILDFLAG(IS_CHROMEOS)
-                             // ChromeOS should not show the avatar button.
-                             "avatar",
+      // ChromeOS should not show the avatar button.
+      "avatar",
 #endif
-                             "split-tabs", "forward", "home", "location-bar"});
-
-  // Start by increasing spacer width by locationBarExtraWidth so that all
-  // controls, including location bar, are at their preferred size.
-  base::DictValue expected_sizes;
-  for (const ResponsiveControlInfo& info : all_controls_info.controls) {
-    expected_sizes.Set(info.id, info.preferred_width);
-  }
-  spacer_width += all_controls_info.location_bar_extra_width;
-  ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-  CheckControlSizes(expected_sizes);
-
-  // Walk through each control in low-to-high priority order, increasing the
-  // size of the spacer to exactly hide the control, checking the resulting
-  // sizes are as expected. The second loop iteration expects to hide two
-  // controls, due to showing the overflow button. The first iteration reduces
-  // the size of the location bar to its min size, so does not overflow any
-  // control.
-  for (int i = all_controls_info.controls.size() - 1; i >= 0; --i) {
-    const ResponsiveControlInfo& control = all_controls_info.controls[i];
-    spacer_width += control.effective_width_delta;
-    ASSERT_EQ(SetSpacerWidth(spacer_width), true);
-
-    expected_sizes.Set(control.id, control.min_width);
-    // If this is the second-to-lowest priority control (i.e., the second loop
-    // iteration), the next control should also be hidden, to make room for the
-    // overflow button, which should be shown. We also need to skip over the
-    // next loop iteration.
-    if (i == static_cast<int>(all_controls_info.controls.size()) - 2) {
-      --i;
-      expected_sizes.Set(all_controls_info.controls[i].id,
-                         all_controls_info.controls[i].min_width);
-      expected_sizes.Set("overflow", all_controls_info.overflow_button_width);
-    }
-    CheckControlSizes(expected_sizes);
-  }
+      "split-tabs", "forward", "home", "location-bar"});
 
   AssertNoJsErrors();
 }
