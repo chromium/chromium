@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -139,6 +140,22 @@ public class BottomSheetRecyclerScrollListenerTest {
         mScrollListener.onScrolled(recyclerView, 0, 0);
 
         assertTrue(mScrollListener.isScrolledToTop());
+        assertFalse(recyclerView.isLayoutSuppressed());
+    }
+
+    @Test
+    public void testNoSuppressLayout_Desktop_WithExplicitSheetContent() {
+        BottomSheetContent mockContent = mock(BottomSheetContent.class);
+        BottomSheetRecyclerScrollListener listener =
+                new BottomSheetRecyclerScrollListener(mMockBottomSheetController, mockContent);
+        RecyclerView recyclerView = createRecyclerViewWithOffset(0);
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
+        when(mMockBottomSheetController.isLargeFormFactorUiEnabled(mockContent)).thenReturn(true);
+
+        listener.onScrolled(recyclerView, 0, 0);
+
+        assertTrue(listener.isScrolledToTop());
         assertFalse(recyclerView.isLayoutSuppressed());
     }
 }

@@ -238,6 +238,30 @@ public class BottomSheetListViewBaseUnitTest {
         assertFalse(recyclerView.isLayoutSuppressed());
     }
 
+    @Test
+    public void testOnSheetStateChanged_HiddenState_UnsuppressesLayout() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        RecyclerView recyclerView = new RecyclerView(activity);
+        mListViewBase.setSheetItemListView(recyclerView);
+
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mListViewBase);
+        when(mMockBottomSheetController.isLargeFormFactorUiEnabled(mListViewBase))
+                .thenReturn(false);
+        when(mMockBottomSheetController.requestShowContent(mListViewBase, true)).thenReturn(true);
+
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        mListViewBase.setVisible(true);
+        verify(mMockBottomSheetController).addObserver(observerCaptor.capture());
+
+        BottomSheetObserver observer = observerCaptor.getValue();
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertTrue(recyclerView.isLayoutSuppressed());
+
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        assertFalse(recyclerView.isLayoutSuppressed());
+    }
+
     private static class RealMeasuringBottomSheetListView extends BottomSheetListViewBase {
         RealMeasuringBottomSheetListView(
                 BottomSheetController bottomSheetController, View contentView) {

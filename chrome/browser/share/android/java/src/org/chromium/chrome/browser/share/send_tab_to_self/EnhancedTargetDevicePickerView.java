@@ -214,7 +214,7 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
 
     @Override
     protected @Px int getSideMarginPx() {
-        return 0;
+        return getContentView().getResources().getDimensionPixelSize(R.dimen.stts_sheet_margin);
     }
 
     @Override

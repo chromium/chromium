@@ -263,7 +263,7 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
 
     @Override
     protected @Px int getSideMarginPx() {
-        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_padding);
+        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_margin);
     }
 
     @Override

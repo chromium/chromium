@@ -117,9 +117,11 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                     if (newState != BottomSheetController.SheetState.HIDDEN) {
                         return;
                     }
+                    assumeNonNull(mSheetItemListView).suppressLayout(false);
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
-                    assumeNonNull(mDismissHandler);
-                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                    if (mDismissHandler != null) {
+                        mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                    }
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                 }
 
@@ -203,7 +205,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                         : View.LAYOUT_DIRECTION_LTR);
         mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
 
-        mScrollListener = new BottomSheetRecyclerScrollListener(mBottomSheetController);
+        mScrollListener = new BottomSheetRecyclerScrollListener(mBottomSheetController, this);
         mSuppressCollectionA11y = suppressCollectionA11y;
     }
 

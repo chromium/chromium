@@ -361,9 +361,6 @@ class BottomSheet extends BottomSheetView
         setBottomMargin(bottomMargin);
 
         setHandlebarClickListener(v -> toggleSheetState());
-        if (isLargeFormFactorUiEnabled()) {
-            setHandlebarPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
-        }
 
         mSnackbarContainer = findViewById(R.id.bottom_sheet_snackbar_container);
         assert mSnackbarContainer != null;
@@ -1452,6 +1449,7 @@ class BottomSheet extends BottomSheetView
             setHandlebarPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
         updateContentContainerHeight();
+        sizeAndPositionSheetInParent();
         updateBackgroundColor();
         setSheetLayoutMode(mode);
         mMediator.notifySheetContentChanged(content);

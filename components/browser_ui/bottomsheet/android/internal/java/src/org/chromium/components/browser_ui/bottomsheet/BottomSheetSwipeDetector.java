@@ -194,11 +194,6 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
 
             mIsScrolling = false;
 
-            if (mSheetDelegate.isLargeFormFactorUiEnabled()
-                    && (isMouseEvent(e1) || isMouseEvent(e2))) {
-                return true;
-            }
-
             float newOffset = mSheetDelegate.getCurrentOffsetPx() + getFlingDistance(-velocityY);
 
             mSheetDelegate.setSheetOffset(

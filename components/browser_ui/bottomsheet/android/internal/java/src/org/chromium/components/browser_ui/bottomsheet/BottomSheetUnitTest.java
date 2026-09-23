@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1386,6 +1387,64 @@ public class BottomSheetUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width)
                         == sheet.getMaxSheetWidth());
+    }
+
+    @Test
+    public void testSheetWidthUpdatedOnContentChange_Desktop() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        // Content A supports large form factor -> clamped popup width.
+        BottomSheetContent contentLff = mock(BottomSheetContent.class);
+        doReturn(true).when(contentLff).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(contentLff).getContentView();
+        doReturn((float) HeightMode.DEFAULT).when(contentLff).getFullHeightRatio();
+        doReturn((float) HeightMode.DISABLED).when(contentLff).getHalfHeightRatio();
+        doReturn(HeightMode.DISABLED).when(contentLff).getPeekHeight();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        sheet.showContent(contentLff);
+        int expectedDesktopWidth = sheet.getMaxSheetWidth();
+        assertEquals(
+                "Sheet width should match clamped desktop width.",
+                expectedDesktopWidth,
+                sheet.getLayoutParams().width);
+
+        // Content B does not support large form factor -> falls back to mobile full width.
+        BottomSheetContent contentFallback = mock(BottomSheetContent.class);
+        doReturn(false).when(contentFallback).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(contentFallback).getContentView();
+        doReturn((float) HeightMode.DEFAULT).when(contentFallback).getFullHeightRatio();
+        doReturn((float) HeightMode.DISABLED).when(contentFallback).getHalfHeightRatio();
+        doReturn(HeightMode.DISABLED).when(contentFallback).getPeekHeight();
+
+        sheet.showContent(contentFallback);
+        int expectedFallbackWidth = sheet.getMaxSheetWidth();
+        assertNotEquals(
+                "Fallback width should differ from clamped desktop popup width.",
+                expectedDesktopWidth,
+                expectedFallbackWidth);
+        assertEquals(
+                "Sheet width should be updated on content swap.",
+                expectedFallbackWidth,
+                sheet.getLayoutParams().width);
     }
 
     @Test
