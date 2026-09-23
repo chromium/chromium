@@ -86,7 +86,7 @@ public class ActorTabStateHelper {
         // the first active task found in iteration order.
         Map<Integer, Integer> activeTabIdToTaskId = new HashMap<>();
         for (ActorTask task : service.getActiveTasks()) {
-            if (task.isUnderActorControl()) {
+            if (!task.isCompleted()) {
                 for (int tabId : task.getTabs()) {
                     activeTabIdToTaskId.putIfAbsent(tabId, task.getId());
                 }
@@ -133,6 +133,8 @@ public class ActorTabStateHelper {
             } else {
                 sessions.add(new BackgroundSession(tabData, taskId));
             }
+            // TODO(crbug.com/565409746): Ensure tabs for tasks that are in the PAUSED or
+            // NEEDS_USER_ATTENTION state are not moved to offscreen rendering.
             onTabDetaching.onResult(originalTab);
 
             setTabGroupSyncPaused(syncService, /* isPaused= */ true);

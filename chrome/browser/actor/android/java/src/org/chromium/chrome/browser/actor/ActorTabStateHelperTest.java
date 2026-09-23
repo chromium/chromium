@@ -193,13 +193,87 @@ public class ActorTabStateHelperTest {
     }
 
     @Test
+    public void testDetachActiveBackgroundSessions_PausedTask_TransitionsTab() {
+        setupDetachmentMocks();
+
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(500);
+        when(mockTask.isCompleted()).thenReturn(false);
+        when(mockTask.isUnderActorControl()).thenReturn(false);
+        when(mockTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        when(mockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
+
+        TabState testTabState = new TabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
+
+        List<BackgroundSession> sessions =
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        mTabModelSelector, 42, mOnTabDetaching);
+
+        assertEquals(1, sessions.size());
+        assertEquals(mTab, sessions.get(0).getLastActiveTab());
+        assertEquals(Integer.valueOf(500), sessions.get(0).getTaskId());
+        assertEquals(1, sessions.get(0).getTabDataList().size());
+        assertEquals(
+                Integer.valueOf(101),
+                sessions.get(0).getTabDataList().get(0).getPlaceholderTabId());
+        assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
+        assertEquals(42, sessions.get(0).getTabDataList().get(0).getTabWindowId());
+
+        InOrder inOrder = inOrder(mOnTabDetaching, mTabRemover);
+        inOrder.verify(mOnTabDetaching).onResult(mTab);
+        inOrder.verify(mTabRemover).removeTab(mTab, false);
+
+        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testDetachActiveBackgroundSessions_WaitingOnUserTask_TransitionsTab() {
+        setupDetachmentMocks();
+
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(500);
+        when(mockTask.isCompleted()).thenReturn(false);
+        when(mockTask.isUnderActorControl()).thenReturn(false);
+        when(mockTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+        when(mockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
+
+        TabState testTabState = new TabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
+
+        List<BackgroundSession> sessions =
+                ActorTabStateHelper.detachActiveBackgroundSessions(
+                        mTabModelSelector, 42, mOnTabDetaching);
+
+        assertEquals(1, sessions.size());
+        assertEquals(mTab, sessions.get(0).getLastActiveTab());
+        assertEquals(Integer.valueOf(500), sessions.get(0).getTaskId());
+        assertEquals(1, sessions.get(0).getTabDataList().size());
+        assertEquals(
+                Integer.valueOf(101),
+                sessions.get(0).getTabDataList().get(0).getPlaceholderTabId());
+        assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
+        assertEquals(42, sessions.get(0).getTabDataList().get(0).getTabWindowId());
+
+        InOrder inOrder = inOrder(mOnTabDetaching, mTabRemover);
+        inOrder.verify(mOnTabDetaching).onResult(mTab);
+        inOrder.verify(mTabRemover).removeTab(mTab, false);
+
+        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
+    }
+
+    @Test
     public void testDetachActiveBackgroundSessions_TasksNotRunning_NoTransition() {
         setupModelSelectorAndProfile();
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
 
         ActorTask mockTask = mock(ActorTask.class);
         when(mockTask.getId()).thenReturn(500);
-        when(mockTask.isUnderActorControl()).thenReturn(false);
+        when(mockTask.isCompleted()).thenReturn(true);
         when(mockTask.getTabs()).thenReturn(Collections.singleton(TAB_ID));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
 

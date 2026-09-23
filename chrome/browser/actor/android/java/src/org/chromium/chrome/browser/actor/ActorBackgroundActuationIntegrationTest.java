@@ -352,6 +352,61 @@ public class ActorBackgroundActuationIntegrationTest {
     }
 
     /**
+     * Verifies that when a paused Actor task is backgrounded and the activity is destroyed, the
+     * task remains in PAUSED_BY_USER state, the background session remains alive, the background
+     * tab pool holds the tab, and the foreground service controller remains connected.
+     */
+    @Test
+    @MediumTest
+    public void testPausedTaskPersistsWhenActivityDestroyed() throws Exception {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        TabModelSelector selector = activity.getTabModelSelector();
+        TabModel model = selector.getModel(/* incognito= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verifyTabInForegroundModel(model, mTab);
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+                    when(mActorTask.isUnderActorControl()).thenReturn(false);
+                    when(mActorTask.isCompleted()).thenReturn(false);
+                });
+
+        // Transition active tasks to background while task is paused.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.transitionActiveTasksToBackground(selector);
+                });
+
+        int placeholderTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> verifyTabTransitionedToBackground(model, mTab));
+
+        // Verify background session and tab pool state before activity destruction.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mBackgroundManager.getBackgroundSessions().size());
+                    assertTrue(mTab.getIsOffscreenRenderingSupplier().get());
+                    BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(selector);
+                    assertNotNull(pool);
+                    assertTrue(pool.hasPlaceholder(placeholderTabId));
+                });
+
+        // Destroy previous activity while background actuation keeps the task alive.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.finish();
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mBackgroundManager.getBackgroundSessions().size());
+                    assertEquals(ActorTaskState.PAUSED_BY_USER, mActorTask.getState());
+                    assertFalse(mActorTask.isCompleted());
+                    assertTrue(mController.isConnected());
+                });
+    }
+
+    /**
      * Verifies Case 4: When Chrome activity is destroyed and an Actor task completes while no
      * activity is alive, offscreen rendering is stopped immediately, tab state is marked dirty in
      * the cache, the session persists in RAM, and opening a new activity restores the tab cleanly.
