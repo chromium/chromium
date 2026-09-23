@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_pwc_permission_delegate.h"
@@ -734,6 +735,7 @@ void GlicNoWebviewContentsManager::LoadGuest() {
   guest_ready_.Set(false);
   is_guest_error_ = false;
   GURL guest_url = GetGuestURL();
+  net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url);
   guest_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(guest_url));
 }

@@ -30,12 +30,18 @@ const char kTestGlicURL[] = "about:blank?main-page";
 
 }  // namespace
 
-class GlicNetLogBrowserTest : public InProcessBrowserTest {
+class GlicNetLogBrowserTest : public InProcessBrowserTest,
+                              public testing::WithParamInterface<bool> {
  public:
   GlicNetLogBrowserTest() {
-    // TODO(b/559775860): revisit this test for GlicNoWebview.
-    feature_list_.InitWithFeatures(
-        {}, {features::kGlicWarming, features::kGlicNoWebview});
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled = {features::kGlicWarming};
+    if (GetParam()) {
+      enabled.push_back(features::kGlicNoWebview);
+    } else {
+      disabled.push_back(features::kGlicNoWebview);
+    }
+    feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -53,7 +59,7 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that opening the UI logs a request to the Glic main page.
-IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
+IN_PROC_BROWSER_TEST_P(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
   Profile* profile = browser()->GetProfile();
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
@@ -84,5 +90,7 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
   ASSERT_TRUE(url);
   EXPECT_THAT(*url, testing::StartsWith(kTestGlicURL));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, GlicNetLogBrowserTest, testing::Bool());
 
 }  // namespace glic
