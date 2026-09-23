@@ -321,8 +321,8 @@ TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectSmallBuffer) {
                        std::move(format_details), coded_size, process_cb);
   EXPECT_FALSE(status.is_ok());
   EXPECT_EQ(status.code(), EncoderStatus::Codes::kEncoderInitializationError);
-  EXPECT_NE(status.message().find("9000"), std::string::npos);
-  EXPECT_NE(status.message().find("15000"), std::string::npos);
+  EXPECT_TRUE(status.message().contains("9000"));
+  EXPECT_TRUE(status.message().contains("15000"));
 }
 
 TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOverflowStride) {
@@ -418,8 +418,7 @@ TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOddStride) {
                        std::move(format_details), coded_size, process_cb);
   EXPECT_FALSE(status.is_ok());
   EXPECT_EQ(status.code(), EncoderStatus::Codes::kEncoderInitializationError);
-  EXPECT_NE(status.message().find("Failed to calculate frame size"),
-            std::string::npos);
+  EXPECT_TRUE(status.message().contains("Failed to calculate frame size"));
 }
 
 TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOddDivisor) {
@@ -453,8 +452,7 @@ TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOddDivisor) {
                        std::move(format_details), coded_size, process_cb);
   EXPECT_FALSE(status.is_ok());
   EXPECT_EQ(status.code(), EncoderStatus::Codes::kEncoderInitializationError);
-  EXPECT_NE(status.message().find("Failed to calculate frame size"),
-            std::string::npos);
+  EXPECT_TRUE(status.message().contains("Failed to calculate frame size"));
 }
 
 TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOddHeight) {
@@ -524,8 +522,7 @@ TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectOddCodedHeight) {
                        std::move(format_details), coded_size, process_cb);
   EXPECT_FALSE(status.is_ok());
   EXPECT_EQ(status.code(), EncoderStatus::Codes::kEncoderInitializationError);
-  EXPECT_NE(status.message().find("Failed to calculate frame size"),
-            std::string::npos);
+  EXPECT_TRUE(status.message().contains("Failed to calculate frame size"));
 }
 
 TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectInvalidFormat) {
@@ -713,8 +710,7 @@ TEST_F(FuchsiaVideoFrameWriterQueueTest, RejectZeroCodedWidth) {
                        std::move(format_details), coded_size, process_cb);
   EXPECT_FALSE(status.is_ok());
   EXPECT_EQ(status.code(), EncoderStatus::Codes::kEncoderInitializationError);
-  EXPECT_NE(status.message().find("Failed to calculate frame size"),
-            std::string::npos);
+  EXPECT_TRUE(status.message().contains("Failed to calculate frame size"));
 }
 
 TEST_F(FuchsiaVideoFrameWriterQueueTest, QueueFramesBeforeInitialize) {

@@ -53,11 +53,11 @@ ACTION_P(ReturnBuffer, buffer) {
 }
 
 MATCHER(ContainsFailedToSendLog, "") {
-  return CONTAINS_STRING(arg, "Failed to send");
+  return arg.contains("Failed to send");
 }
 
 MATCHER(ContainsFailedToDecode, "") {
-  return CONTAINS_STRING(arg, "failed to decode");
+  return arg.contains("failed to decode");
 }
 
 class FFmpegVideoDecoderTest : public testing::Test {

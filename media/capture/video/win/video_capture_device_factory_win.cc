@@ -215,7 +215,7 @@ GetMFAttributes() {
 
 bool IsDeviceBlockedForQueryingDetailedFrameRates(
     const std::string& display_name) {
-  return display_name.find("WebcamMax") != std::string::npos;
+  return display_name.contains("WebcamMax");
 }
 
 bool IsDeviceBlockedForMediaFoundationByModelId(const std::string& model_id) {
@@ -344,7 +344,7 @@ void FindAndSetDefaultVideoCamera(
   // MEDIA_VIDEO_FACING_USER. It occupies the first index in |devices_info|.
   for (auto it = devices_info->begin(); it != devices_info->end(); ++it) {
     // Default video camera belongs to KSCATEGORY_VIDEO_CAMERA.
-    if (it->descriptor.device_id.find(kVideoCameraGuid) != std::string::npos) {
+    if (it->descriptor.device_id.contains(kVideoCameraGuid)) {
       if (it->descriptor.facing == VideoFacingMode::MEDIA_VIDEO_FACING_NONE) {
         std::iter_swap(devices_info->begin(), it);
         break;  // Stop iterating once an external video camera is found.

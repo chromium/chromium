@@ -273,8 +273,7 @@ MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
   // on Linux and doesn't support hardware acceleration. OSMesa did not support
   // any hardware acceleration here, so this was never an issue, but SwiftShader
   // revealed this issue. See https://crbug.com/859946
-  if (gpu_channel_host_->gpu_info().gl_renderer.find("SwiftShader") !=
-      std::string::npos) {
+  if (gpu_channel_host_->gpu_info().gl_renderer.contains("SwiftShader")) {
     return OutputFormat::UNDEFINED;
   }
 #endif

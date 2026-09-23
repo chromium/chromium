@@ -23,26 +23,23 @@ using ::testing::StrictMock;
 namespace media::mp4 {
 
 MATCHER_P(UnsupportedFrequencyIndexLog, frequency_index, "") {
-  return CONTAINS_STRING(arg, "Sampling Frequency Index(0x" +
-                                  std::string(frequency_index) +
-                                  ") is not supported.");
+  return arg.contains("Sampling Frequency Index(0x" +
+                      std::string(frequency_index) + ") is not supported.");
 }
 
 MATCHER_P(UnsupportedExtensionFrequencyIndexLog, frequency_index, "") {
-  return CONTAINS_STRING(arg, "Extension Sampling Frequency Index(0x" +
-                                  std::string(frequency_index) +
-                                  ") is not supported.");
+  return arg.contains("Extension Sampling Frequency Index(0x" +
+                      std::string(frequency_index) + ") is not supported.");
 }
 
 MATCHER_P(UnsupportedChannelConfigLog, channel_index, "") {
-  return CONTAINS_STRING(arg, "Channel Configuration(" +
-                                  std::string(channel_index) +
-                                  ") is not supported");
+  return arg.contains("Channel Configuration(" + std::string(channel_index) +
+                      ") is not supported");
 }
 
 MATCHER_P(UnsupportedAudioProfileLog, profile_string, "") {
-  return CONTAINS_STRING(
-      arg, "Audio codec(" + std::string(profile_string) + ") is not supported");
+  return arg.contains("Audio codec(" + std::string(profile_string) +
+                      ") is not supported");
 }
 
 class AACTest : public testing::Test {

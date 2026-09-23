@@ -42,22 +42,21 @@ namespace media {
 
 // Matchers for verifying common media log entry strings.
 MATCHER_P(OpusPacketDurationTooHigh, actual_duration_ms, "") {
-  return CONTAINS_STRING(
-      arg, "Warning, demuxed Opus packet with encoded duration: " +
-               base::NumberToString(static_cast<int64_t>(actual_duration_ms)) +
-               "ms. Should be no greater than 120ms.");
+  return arg.contains(
+      "Warning, demuxed Opus packet with encoded duration: " +
+      base::NumberToString(static_cast<int64_t>(actual_duration_ms)) +
+      "ms. Should be no greater than 120ms.");
 }
 
 MATCHER_P2(WebMBlockDurationMismatchesOpusDuration,
            block_duration_ms,
            opus_duration_ms,
            "") {
-  return CONTAINS_STRING(
-      arg, "BlockDuration (" +
-               base::NumberToString(static_cast<int64_t>(block_duration_ms)) +
-               "ms) differs significantly from encoded duration (" +
-               base::NumberToString(static_cast<int64_t>(opus_duration_ms)) +
-               "ms).");
+  return arg.contains(
+      "BlockDuration (" +
+      base::NumberToString(static_cast<int64_t>(block_duration_ms)) +
+      "ms) differs significantly from encoded duration (" +
+      base::NumberToString(static_cast<int64_t>(opus_duration_ms)) + "ms).");
 }
 
 namespace {

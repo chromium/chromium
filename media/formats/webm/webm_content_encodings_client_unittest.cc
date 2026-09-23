@@ -23,30 +23,29 @@ namespace media {
 
 // Matchers for verifying common media log entry strings.
 MATCHER(MissingContentEncoding, "") {
-  return CONTAINS_STRING(arg, "Missing ContentEncoding.");
+  return arg.contains("Missing ContentEncoding.");
 }
 
 MATCHER(UnexpectedContentEncodingOrder, "") {
-  return CONTAINS_STRING(arg, "Unexpected ContentEncodingOrder.");
+  return arg.contains("Unexpected ContentEncodingOrder.");
 }
 
 MATCHER(UnexpectedContentEncodingScope, "") {
-  return CONTAINS_STRING(arg, "Unexpected ContentEncodingScope.");
+  return arg.contains("Unexpected ContentEncodingScope.");
 }
 
 MATCHER(ContentCompressionNotSupported, "") {
-  return CONTAINS_STRING(arg, "ContentCompression not supported.");
+  return arg.contains("ContentCompression not supported.");
 }
 
 MATCHER(MissingContentEncryption, "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "ContentEncodingType is encryption but ContentEncryption is missing.");
 }
 
 MATCHER_P(UnexpectedContentEncAlgo, algo, "") {
-  return CONTAINS_STRING(
-      arg, "Unexpected ContentEncAlgo " + base::NumberToString(algo) + ".");
+  return arg.contains("Unexpected ContentEncAlgo " +
+                      base::NumberToString(algo) + ".");
 }
 
 class WebMContentEncodingsClientTest : public testing::Test {

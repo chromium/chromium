@@ -70,24 +70,21 @@ namespace media {
 // This does not verify any of the codec parameters that may be included in the
 // log entry.
 MATCHER_P(SimpleCreatedFFmpegDemuxerStream, stream_type, "") {
-  return CONTAINS_STRING(arg, "\"info\":\"FFmpegDemuxer: created " +
-                                  std::string(stream_type) +
-                                  " stream, config codec:");
+  return arg.contains("\"info\":\"FFmpegDemuxer: created " +
+                      std::string(stream_type) + " stream, config codec:");
 }
 
 MATCHER_P(FailedToCreateValidDecoderConfigFromStream, stream_type, "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "\"debug\":\"Warning, FFmpegDemuxer failed to create a "
       "valid/supported " +
-          std::string(stream_type) +
-          " decoder configuration from muxed stream");
+      std::string(stream_type) + " decoder configuration from muxed stream");
 }
 
 MATCHER_P(SkippingUnsupportedStream, stream_type, "") {
-  return CONTAINS_STRING(
-      arg, "\"info\":\"FFmpegDemuxer: skipping invalid or unsupported " +
-               std::string(stream_type) + " track");
+  return arg.contains(
+      "\"info\":\"FFmpegDemuxer: skipping invalid or unsupported " +
+      std::string(stream_type) + " track");
 }
 
 const auto kEncryptedMediaInitData = std::to_array<uint8_t>({

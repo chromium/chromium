@@ -910,8 +910,7 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
   if (mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate) {
     // The rate controller on grunt is not good enough to support VBR encoding,
     // b/253988139.
-    const bool is_amd_stoney_ridge_driver =
-        va_vendor_string.find("stoney") != std::string::npos;
+    const bool is_amd_stoney_ridge_driver = va_vendor_string.contains("stoney");
     if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding) ||
         is_amd_stoney_ridge_driver) {
       return true;

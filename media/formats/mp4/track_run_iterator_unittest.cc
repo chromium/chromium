@@ -326,7 +326,7 @@ namespace media {
 namespace mp4 {
 
 MATCHER(ReservedValueInSampleDependencyInfo, "") {
-  return CONTAINS_STRING(arg, "Reserved value used in sample dependency info.");
+  return arg.contains("Reserved value used in sample dependency info.");
 }
 
 TEST(TimeDeltaFromRationalTest, RoundsTowardZero) {

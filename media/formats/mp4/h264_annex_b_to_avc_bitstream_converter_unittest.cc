@@ -107,7 +107,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
       }
 
       auto& config = converter.GetCurrentConfig();
-      if (name.find("config") != std::string::npos) {
+      if (name.contains("config")) {
         // Chunks with configuration
         EXPECT_TRUE(config_changed);
 

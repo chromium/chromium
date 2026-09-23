@@ -145,7 +145,7 @@ MATCHER_P2(MatchesEncoderInfo,
 }
 
 MATCHER(ContainsTooManyEncoderInstances, "") {
-  return CONTAINS_STRING(arg, "Too many encoders are allocated");
+  return arg.contains("Too many encoders are allocated");
 }
 
 class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {

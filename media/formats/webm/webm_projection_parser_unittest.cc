@@ -19,64 +19,64 @@ namespace media {
 
 // Matchers for verifying common media log entry strings.
 MATCHER(UnexpectedProjectionId, "") {
-  return CONTAINS_STRING(arg, "Unexpected id in Projection: 0x");
+  return arg.contains("Unexpected id in Projection: 0x");
 }
 
 MATCHER(UnexpectedProjectionType, "") {
-  return CONTAINS_STRING(arg, "Unexpected value for ProjectionType: 0x");
+  return arg.contains("Unexpected value for ProjectionType: 0x");
 }
 
 MATCHER(UnexpectedMultipleValuesForProjectionType, "") {
-  return CONTAINS_STRING(arg, "Multiple values for id: 0x7671");
+  return arg.contains("Multiple values for id: 0x7671");
 }
 
 MATCHER(UnexpectedMultipleValuesForProjectionPrivate, "") {
-  return CONTAINS_STRING(arg, "Multiple values for id: 0x7672");
+  return arg.contains("Multiple values for id: 0x7672");
 }
 
 MATCHER(UnexpectedProjectionPrivateSize, "") {
-  return CONTAINS_STRING(arg, "ProjectionPrivate element has unexpected size:");
+  return arg.contains("ProjectionPrivate element has unexpected size:");
 }
 
 MATCHER(UnexpectedMultipleValuesForYaw, "") {
-  return CONTAINS_STRING(arg, "Multiple values for id: 0x7673");
+  return arg.contains("Multiple values for id: 0x7673");
 }
 
 
 MATCHER(UnexpectedMultipleValuesForRoll, "") {
-  return CONTAINS_STRING(arg, "Multiple values for id: 0x7675");
+  return arg.contains("Multiple values for id: 0x7675");
 }
 
 MATCHER(ProjectionPrivateMustNotBePresent, "") {
-  return CONTAINS_STRING(arg,
-                         "ProjectionPrivate must not be present when "
-                         "ProjectionType is Rectangular (0).");
+  return arg.contains(
+      "ProjectionPrivate must not be present when "
+      "ProjectionType is Rectangular (0).");
 }
 
 MATCHER(ProjectionPrivateRequiredForEquirect, "") {
-  return CONTAINS_STRING(arg,
-                         "ProjectionPrivate element required when "
-                         "ProjectionType is Equirectangular (1).");
+  return arg.contains(
+      "ProjectionPrivate element required when "
+      "ProjectionType is Equirectangular (1).");
 }
 
 MATCHER(ProjectionPrivateRequiredForCubemapOrMesh, "") {
-  return CONTAINS_STRING(arg,
-                         "ProjectionPrivate element required when "
-                         "ProjectionType is Cubemap (2) or Mesh (3).");
+  return arg.contains(
+      "ProjectionPrivate element required when "
+      "ProjectionType is Cubemap (2) or Mesh (3).");
 }
 
 MATCHER(UnexpectedProjectionYaw, "") {
-  return CONTAINS_STRING(arg, "Value not within valid range. id: 0x7673 val:");
+  return arg.contains("Value not within valid range. id: 0x7673 val:");
 }
 
 
 MATCHER(UnexpectedProjectionRoll, "") {
-  return CONTAINS_STRING(arg, "Value not within valid range. id: 0x7675 val:");
+  return arg.contains("Value not within valid range. id: 0x7675 val:");
 }
 
 MATCHER(MissingProjectionType, "") {
-  return CONTAINS_STRING(
-      arg, "Projection element is incomplete; ProjectionType required.");
+  return arg.contains(
+      "Projection element is incomplete; ProjectionType required.");
 }
 
 

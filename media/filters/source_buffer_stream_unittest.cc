@@ -55,13 +55,13 @@ static std::array<const uint8_t, 1> kDataB = {0x33};
 
 // Matchers for verifying common media log entry strings.
 MATCHER_P(ContainsTrackBufferExhaustionSkipLog, skip_milliseconds, "") {
-  return CONTAINS_STRING(arg,
-                         "Media append that overlapped current playback "
-                         "position may cause time gap in playing VIDEO stream "
-                         "because the next keyframe is " +
-                             base::NumberToString(skip_milliseconds) +
-                             "ms beyond last overlapped frame. Media may "
-                             "appear temporarily frozen.");
+  return arg.contains(
+      "Media append that overlapped current playback "
+      "position may cause time gap in playing VIDEO stream "
+      "because the next keyframe is " +
+      base::NumberToString(skip_milliseconds) +
+      "ms beyond last overlapped frame. Media may "
+      "appear temporarily frozen.");
 }
 
 #define EXPECT_STATUS_FOR_STREAM_OP(status_suffix, operation) \
@@ -355,13 +355,12 @@ class SourceBufferStreamTest : public testing::Test {
       }
 
       // Check duration if expected timestamp contains it.
-      if (timestamps[i].find('D') != std::string::npos) {
+      if (timestamps[i].contains('D')) {
         ss << "D" << buffer->duration().InMilliseconds();
       }
 
       // Check duration estimation if expected timestamp contains it.
-      if (timestamps[i].find('E') != std::string::npos &&
-          buffer->is_duration_estimated()) {
+      if (timestamps[i].contains('E') && buffer->is_duration_estimated()) {
         ss << "E";
       }
 

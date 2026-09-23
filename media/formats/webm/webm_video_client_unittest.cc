@@ -15,11 +15,11 @@ namespace {
 const gfx::Size kCodedSize(321, 243);
 
 MATCHER(UnexpectedStereoMode, "") {
-  return CONTAINS_STRING(arg, "Unexpected value for StereoMode: 0x");
+  return arg.contains("Unexpected value for StereoMode: 0x");
 }
 
 MATCHER(UnexpectedMultipleValues, "") {
-  return CONTAINS_STRING(arg, "Multiple values for id");
+  return arg.contains("Multiple values for id");
 }
 }
 

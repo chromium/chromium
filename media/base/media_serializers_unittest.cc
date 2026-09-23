@@ -84,7 +84,7 @@ TEST(MediaSerializersTest, AutoPipInfo) {
 
     // Check that the expected flag is set to true in the serialized info.
     auto serialized_info = ToString(MediaSerialize(modified_info));
-    EXPECT_NE(serialized_info.find(expected_json), std::string::npos)
+    EXPECT_TRUE(serialized_info.contains(expected_json))
         << "Could not find: " << expected_json;
 
     // Check that no other flag is set to true.

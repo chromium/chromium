@@ -33,7 +33,7 @@ namespace media {
 namespace {
 
 MATCHER(ContainsDecoderErrorLog, "") {
-  return CONTAINS_STRING(arg, "dav1d_send_data() failed");
+  return arg.contains("dav1d_send_data() failed");
 }
 
 }  // namespace

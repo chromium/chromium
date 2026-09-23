@@ -670,9 +670,9 @@ TEST_F(AVCConversionTest, InsertParamSetsForRecoveryPointFrame) {
 
   // Verify SPS and PPS were injected before the SEI.
   std::string annexb_str = AnnexBToString(buf, subsamples);
-  EXPECT_NE(annexb_str.find("SPS"), std::string::npos)
+  EXPECT_TRUE(annexb_str.contains("SPS"))
       << "SPS not found in output: " << annexb_str;
-  EXPECT_NE(annexb_str.find("PPS"), std::string::npos)
+  EXPECT_TRUE(annexb_str.contains("PPS"))
       << "PPS not found in output: " << annexb_str;
 }
 
@@ -771,9 +771,9 @@ TEST_F(AVCConversionTest,
   EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
 
   const std::string annexb_str = AnnexBToString(buf, subsamples);
-  EXPECT_NE(annexb_str.find("SPS"), std::string::npos)
+  EXPECT_TRUE(annexb_str.contains("SPS"))
       << "Expected SPS injection in clear content: " << annexb_str;
-  EXPECT_NE(annexb_str.find("PPS"), std::string::npos)
+  EXPECT_TRUE(annexb_str.contains("PPS"))
       << "Expected PPS injection in clear content: " << annexb_str;
 }
 
@@ -797,9 +797,9 @@ TEST_F(AVCConversionTest,
   EXPECT_FALSE(analysis.is_sei_recovery_point.value_or(false));
 
   const std::string annexb_str = AnnexBToString(buf, subsamples);
-  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("SPS"))
       << "SPS must not be injected for regular non-IDR frame: " << annexb_str;
-  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("PPS"))
       << "PPS must not be injected for regular non-IDR frame: " << annexb_str;
 }
 
@@ -828,9 +828,9 @@ TEST_F(AVCConversionTest,
   EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
 
   const std::string annexb_str = AnnexBToString(buf, subsamples);
-  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("SPS"))
       << "SPS must not be injected for encrypted SEI recovery: " << annexb_str;
-  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("PPS"))
       << "PPS must not be injected for encrypted SEI recovery: " << annexb_str;
 }
 
@@ -855,9 +855,9 @@ TEST_F(AVCConversionTest,
   EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
 
   const std::string annexb_str = AnnexBToString(buf, subsamples);
-  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("SPS"))
       << "SPS must not be injected when flag is disabled: " << annexb_str;
-  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+  EXPECT_FALSE(annexb_str.contains("PPS"))
       << "PPS must not be injected when flag is disabled: " << annexb_str;
 }
 

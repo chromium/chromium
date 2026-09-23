@@ -165,7 +165,7 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
     }
 
     // Handle large integers precisely without converting through a double.
-    if (ts_string.find('.') == std::string::npos) {
+    if (!ts_string.contains('.')) {
       int64_t milliseconds;
       CHECK(base::StringToInt64(ts_string, &milliseconds));
       return Milliseconds(milliseconds);

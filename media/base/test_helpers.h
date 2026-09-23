@@ -324,162 +324,155 @@ MATCHER(IsEmpty, "") {
 }
 
 MATCHER(EosBeforeHaveMetadata, "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "MediaSource endOfStream before demuxer initialization completes (before "
       "HAVE_METADATA) is treated as an error. This may also occur as "
       "consequence of other MediaSource errors before HAVE_METADATA.");
 }
 
 MATCHER_P(SegmentMissingFrames, track_id, "") {
-  return CONTAINS_STRING(
-      arg, "Media segment did not contain any coded frames for track " +
-               std::string(track_id));
+  return arg.contains(
+      "Media segment did not contain any coded frames for track " +
+      std::string(track_id));
 }
 
 MATCHER(MuxedSequenceModeWarning, "") {
-  return CONTAINS_STRING(arg,
-                         "Warning: using MSE 'sequence' AppendMode for a "
-                         "SourceBuffer with multiple tracks");
+  return arg.contains(
+      "Warning: using MSE 'sequence' AppendMode for a "
+      "SourceBuffer with multiple tracks");
 }
 
 MATCHER_P2(KeyframeTimeGreaterThanDependant,
            keyframe_time_string,
            nonkeyframe_time_string,
            "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "Warning: presentation time of most recently processed random access "
       "point (" +
-          std::string(keyframe_time_string) +
-          " s) is later than the presentation time of a non-keyframe (" +
-          nonkeyframe_time_string +
-          " s) that depends on it. This type of random access point is not "
-          "well supported by MSE; buffered range reporting may be less "
-          "precise.");
+      std::string(keyframe_time_string) +
+      " s) is later than the presentation time of a non-keyframe (" +
+      nonkeyframe_time_string +
+      " s) that depends on it. This type of random access point is not "
+      "well supported by MSE; buffered range reporting may be less "
+      "precise.");
 }
 
 MATCHER(StreamParsingFailed, "") {
-  return CONTAINS_STRING(arg, "RunSegmentParserLoop: stream parsing failed.");
+  return arg.contains("RunSegmentParserLoop: stream parsing failed.");
 }
 
 MATCHER(ParsedBuffersNotInDTSSequence, "") {
-  return CONTAINS_STRING(arg, "Parsed buffers not in DTS sequence");
+  return arg.contains("Parsed buffers not in DTS sequence");
 }
 
 MATCHER_P2(CodecUnsupportedInContainer, codec, container, "") {
-  return CONTAINS_STRING(arg, std::string(codec) + "' is not supported for '" +
-                                  std::string(container));
+  return arg.contains(std::string(codec) + "' is not supported for '" +
+                      std::string(container));
 }
 
 MATCHER_P(FoundStream, stream_type_string, "") {
-  return CONTAINS_STRING(
-      arg, "kHasFound" + std::string(stream_type_string) + "Stream\":true");
+  return arg.contains("kHasFound" + std::string(stream_type_string) +
+                      "Stream\":true");
 }
 
 MATCHER_P2(CodecName, stream_type_string, codec_string, "") {
-  return CONTAINS_STRING(arg,
-                         'k' + std::string(stream_type_string) + "CodecName") &&
-         CONTAINS_STRING(arg, std::string(codec_string));
+  return arg.contains('k' + std::string(stream_type_string) + "CodecName") &&
+         arg.contains(std::string(codec_string));
 }
 
 MATCHER_P2(FlacAudioSampleRateOverriddenByStreaminfo,
            original_rate_string,
            streaminfo_rate_string,
            "") {
-  return CONTAINS_STRING(
-      arg, "FLAC AudioSampleEntry sample rate " +
-               std::string(original_rate_string) + " overridden by rate " +
-               std::string(streaminfo_rate_string) +
-               " from FLACSpecificBox's STREAMINFO metadata");
+  return arg.contains(
+      "FLAC AudioSampleEntry sample rate " + std::string(original_rate_string) +
+      " overridden by rate " + std::string(streaminfo_rate_string) +
+      " from FLACSpecificBox's STREAMINFO metadata");
 }
 
 MATCHER_P2(InitSegmentMismatchesMimeType, stream_type, codec_name, "") {
-  return CONTAINS_STRING(arg, std::string(stream_type) + " stream codec " +
-                                  std::string(codec_name) +
-                                  " doesn't match SourceBuffer codecs.");
+  return arg.contains(std::string(stream_type) + " stream codec " +
+                      std::string(codec_name) +
+                      " doesn't match SourceBuffer codecs.");
 }
 
 MATCHER_P(InitSegmentMissesExpectedTrack, missing_codec, "") {
-  return CONTAINS_STRING(arg, "Initialization segment misses expected " +
-                                  std::string(missing_codec) + " track.");
+  return arg.contains("Initialization segment misses expected " +
+                      std::string(missing_codec) + " track.");
 }
 
 MATCHER_P2(UnexpectedTrack, track_type, id, "") {
-  return CONTAINS_STRING(arg, std::string("Got unexpected ") + track_type +
-                                  " track track_id=" + id);
+  return arg.contains(std::string("Got unexpected ") + track_type +
+                      " track track_id=" + id);
 }
 
 MATCHER_P2(FrameTypeMismatchesTrackType, frame_type, track_type, "") {
-  return CONTAINS_STRING(arg, std::string("Frame type ") + frame_type +
-                                  " doesn't match track buffer type " +
-                                  track_type);
+  return arg.contains(std::string("Frame type ") + frame_type +
+                      " doesn't match track buffer type " + track_type);
 }
 
 MATCHER_P2(AudioNonKeyframe, pts_microseconds, dts_microseconds, "") {
-  return CONTAINS_STRING(
-      arg, std::string("Bytestream with audio frame PTS ") +
-               base::NumberToString(pts_microseconds) + "us and DTS " +
-               base::NumberToString(dts_microseconds) +
-               "us indicated the frame is not a random access point (key "
-               "frame). All audio frames are expected to be key frames for "
-               "the current audio codec.");
+  return arg.contains(
+      std::string("Bytestream with audio frame PTS ") +
+      base::NumberToString(pts_microseconds) + "us and DTS " +
+      base::NumberToString(dts_microseconds) +
+      "us indicated the frame is not a random access point (key "
+      "frame). All audio frames are expected to be key frames for "
+      "the current audio codec.");
 }
 
 MATCHER(AudioNonKeyframeOutOfOrder, "") {
-  return CONTAINS_STRING(arg,
-                         "Dependent audio frame with invalid decreasing "
-                         "presentation timestamp detected.");
+  return arg.contains(
+      "Dependent audio frame with invalid decreasing "
+      "presentation timestamp detected.");
 }
 
 MATCHER_P2(SkippingSpliceAtOrBefore,
            new_microseconds,
            existing_microseconds,
            "") {
-  return CONTAINS_STRING(
-      arg, "Skipping splice frame generation: first new buffer at " +
-               base::NumberToString(new_microseconds) +
-               "us begins at or before existing buffer at " +
-               base::NumberToString(existing_microseconds) + "us.");
+  return arg.contains("Skipping splice frame generation: first new buffer at " +
+                      base::NumberToString(new_microseconds) +
+                      "us begins at or before existing buffer at " +
+                      base::NumberToString(existing_microseconds) + "us.");
 }
 
 MATCHER_P(SkippingSpliceAlreadySpliced, time_microseconds, "") {
-  return CONTAINS_STRING(
-      arg, "Skipping splice frame generation: overlapped buffers at " +
-               base::NumberToString(time_microseconds) +
-               "us are in a previously buffered splice.");
+  return arg.contains(
+      "Skipping splice frame generation: overlapped buffers at " +
+      base::NumberToString(time_microseconds) +
+      "us are in a previously buffered splice.");
 }
 
 MATCHER_P2(SkippingSpliceTooLittleOverlap,
            pts_microseconds,
            overlap_microseconds,
            "") {
-  return CONTAINS_STRING(
-      arg, "Skipping audio splice trimming at PTS=" +
-               base::NumberToString(pts_microseconds) + "us. Found only " +
-               base::NumberToString(overlap_microseconds) +
-               "us of overlap, need at least 1000us. Multiple occurrences may "
-               "result in loss of A/V sync.");
+  return arg.contains(
+      "Skipping audio splice trimming at PTS=" +
+      base::NumberToString(pts_microseconds) + "us. Found only " +
+      base::NumberToString(overlap_microseconds) +
+      "us of overlap, need at least 1000us. Multiple occurrences may "
+      "result in loss of A/V sync.");
 }
 
 // Prefer WebMSimpleBlockDurationEstimated over this matcher, unless the actual
 // estimated duration value is unimportant to the test.
 MATCHER(WebMSimpleBlockDurationEstimatedAny, "") {
-  return CONTAINS_STRING(arg, "Estimating WebM block duration=");
+  return arg.contains("Estimating WebM block duration=");
 }
 
 MATCHER_P(WebMSimpleBlockDurationEstimated, estimated_duration_ms, "") {
-  return CONTAINS_STRING(arg, "Estimating WebM block duration=" +
-                                  base::NumberToString(estimated_duration_ms));
+  return arg.contains("Estimating WebM block duration=" +
+                      base::NumberToString(estimated_duration_ms));
 }
 
 MATCHER(WebMOutOfOrderTimecode, "") {
-  return CONTAINS_STRING(
-      arg, "Got a block with a timecode before the previous block.");
+  return arg.contains("Got a block with a timecode before the previous block.");
 }
 
 MATCHER(WebMClusterBeforeFirstInfo, "") {
-  return CONTAINS_STRING(arg, "Found Cluster element before Info.");
+  return arg.contains("Found Cluster element before Info.");
 }
 
 MATCHER_P3(TrimmedSpliceOverlap,
@@ -487,31 +480,28 @@ MATCHER_P3(TrimmedSpliceOverlap,
            overlapped_start_us,
            trim_duration_us,
            "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "Audio buffer splice at PTS=" + base::NumberToString(splice_time_us) +
-          "us. Trimmed tail of overlapped buffer (PTS=" +
-          base::NumberToString(overlapped_start_us) + "us) by " +
-          base::NumberToString(trim_duration_us));
+      "us. Trimmed tail of overlapped buffer (PTS=" +
+      base::NumberToString(overlapped_start_us) + "us) by " +
+      base::NumberToString(trim_duration_us));
 }
 
 MATCHER_P2(NoSpliceForBadMux, overlapped_buffer_count, splice_time_us, "") {
-  return CONTAINS_STRING(arg,
-                         "Media is badly muxed. Detected " +
-                             base::NumberToString(overlapped_buffer_count) +
-                             " overlapping audio buffers at time " +
-                             base::NumberToString(splice_time_us));
+  return arg.contains("Media is badly muxed. Detected " +
+                      base::NumberToString(overlapped_buffer_count) +
+                      " overlapping audio buffers at time " +
+                      base::NumberToString(splice_time_us));
 }
 
 MATCHER(ChunkDemuxerCtor, "") {
-  return CONTAINS_STRING(arg, "ChunkDemuxer");
+  return arg.contains("ChunkDemuxer");
 }
 
 MATCHER_P2(DiscardingEmptyFrame, pts_us, dts_us, "") {
-  return CONTAINS_STRING(arg,
-                         "Discarding empty audio or video coded frame, PTS=" +
-                             base::NumberToString(pts_us) +
-                             "us, DTS=" + base::NumberToString(dts_us) + "us");
+  return arg.contains("Discarding empty audio or video coded frame, PTS=" +
+                      base::NumberToString(pts_us) +
+                      "us, DTS=" + base::NumberToString(dts_us) + "us");
 }
 
 MATCHER_P4(TruncatedFrame,
@@ -525,13 +515,12 @@ MATCHER_P4(TruncatedFrame,
       "frame_end_timestamp %dus append_window_%s %dus",
       start_or_end, pts_us, pts_end_us, start_or_end, append_window_us);
   *result_listener << "Expected TruncatedFrame contains '" << expected << "'";
-  return CONTAINS_STRING(arg, expected);
+  return arg.contains(expected);
 }
 
 MATCHER_P2(DroppedFrame, frame_type, pts_us, "") {
-  return CONTAINS_STRING(arg,
-                         "Dropping " + std::string(frame_type) + " frame") &&
-         CONTAINS_STRING(arg, "PTS " + base::NumberToString(pts_us));
+  return arg.contains("Dropping " + std::string(frame_type) + " frame") &&
+         arg.contains("PTS " + base::NumberToString(pts_us));
 }
 
 MATCHER_P3(DroppedFrameCheckAppendWindow,
@@ -539,10 +528,8 @@ MATCHER_P3(DroppedFrameCheckAppendWindow,
            append_window_start_us,
            append_window_end_us,
            "") {
-  return CONTAINS_STRING(arg,
-                         "Dropping " + std::string(frame_type) + " frame") &&
-         CONTAINS_STRING(
-             arg, "outside append window [" +
+  return arg.contains("Dropping " + std::string(frame_type) + " frame") &&
+         arg.contains("outside append window [" +
                       base::NumberToString(append_window_start_us) + "us," +
                       base::NumberToString(append_window_end_us) + "us");
 }
@@ -552,58 +539,53 @@ MATCHER_P3(DroppedAppendWindowUnusedPreroll,
            delta_us,
            next_pts_us,
            "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "Partial append window trimming dropping unused audio preroll buffer "
       "with PTS " +
-          base::NumberToString(pts_us) + "us that ends too far (" +
-          base::NumberToString(delta_us) + "us) from next buffer with PTS " +
-          base::NumberToString(next_pts_us) + "us");
+      base::NumberToString(pts_us) + "us that ends too far (" +
+      base::NumberToString(delta_us) + "us) from next buffer with PTS " +
+      base::NumberToString(next_pts_us) + "us");
 }
 
 MATCHER_P(PtsUnknown, frame_type, "") {
-  return CONTAINS_STRING(
-      arg, "Unknown PTS for " + std::string(frame_type) + " frame");
+  return arg.contains("Unknown PTS for " + std::string(frame_type) + " frame");
 }
 
 MATCHER_P2(FrameDurationUnknown, frame_type, pts_us, "") {
-  return CONTAINS_STRING(arg, "Unknown duration for " +
-                                  std::string(frame_type) + " frame at PTS " +
-                                  base::NumberToString(pts_us) + "us");
+  return arg.contains("Unknown duration for " + std::string(frame_type) +
+                      " frame at PTS " + base::NumberToString(pts_us) + "us");
 }
 
 MATCHER_P3(FrameTimeOutOfRange, when, pts_or_dts, frame_type, "") {
-  return CONTAINS_STRING(
-      arg, std::string(when) + ", " + pts_or_dts + " for " + frame_type +
-               " frame exceeds range allowed by implementation");
+  return arg.contains(std::string(when) + ", " + pts_or_dts + " for " +
+                      frame_type +
+                      " frame exceeds range allowed by implementation");
 }
 
 MATCHER(SequenceOffsetUpdateOutOfRange, "") {
-  return CONTAINS_STRING(arg,
-                         "Sequence mode timestampOffset update resulted in an "
-                         "offset that exceeds range allowed by implementation");
+  return arg.contains(
+      "Sequence mode timestampOffset update resulted in an "
+      "offset that exceeds range allowed by implementation");
 }
 
 MATCHER(SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp, "") {
-  return CONTAINS_STRING(
-      arg,
+  return arg.contains(
       "Sequence mode timestampOffset update prevented by a group start "
       "timestamp that exceeds range allowed by implementation");
 }
 
 MATCHER(OffsetOutOfRange, "") {
-  return CONTAINS_STRING(
-      arg, "timestampOffset exceeds range allowed by implementation");
+  return arg.contains(
+      "timestampOffset exceeds range allowed by implementation");
 }
 
 MATCHER_P(FrameEndTimestampOutOfRange, frame_type, "") {
-  return CONTAINS_STRING(arg,
-                         "Frame end timestamp for " + std::string(frame_type) +
-                             " frame exceeds range allowed by implementation");
+  return arg.contains("Frame end timestamp for " + std::string(frame_type) +
+                      " frame exceeds range allowed by implementation");
 }
 
 MATCHER(HlsDemuxerCtor, "") {
-  return CONTAINS_STRING(arg, "HlsDemuxer");
+  return arg.contains("HlsDemuxer");
 }
 
 }  // namespace media
