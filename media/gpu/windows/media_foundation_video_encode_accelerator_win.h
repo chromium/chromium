@@ -117,6 +117,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       const gfx::Size& input_visible_size,
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
 
+  void SetDxgiResourceMappingRequiredForTesting(bool required) {
+    dxgi_resource_mapping_required_ = required;
+  }
+
  private:
   // Holds output buffers coming from the client ready to be filled.
   struct BitstreamBufferRef;
