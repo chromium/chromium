@@ -258,8 +258,6 @@ class CORE_EXPORT SerializedScriptValue
                                    Transferables&,
                                    ExceptionState&);
 
-  static ArrayBufferArray ExtractNonSharedArrayBuffers(Transferables&);
-
   // Helper function which pulls ArrayBufferContents out of an ArrayBufferArray
   // and neuters the ArrayBufferArray.  Returns nullptr if there is an
   // exception.

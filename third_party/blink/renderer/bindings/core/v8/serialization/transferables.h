@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class DOMArrayBufferBase;
+class DOMArrayBuffer;
 class ElementImage;
 class ExceptionState;
 class ImageBitmap;
@@ -24,7 +24,7 @@ class WritableStream;
 class TransformStream;
 class MediaStreamTrack;
 
-using ArrayBufferArray = HeapVector<Member<DOMArrayBufferBase>>;
+using ArrayBufferArray = HeapVector<Member<DOMArrayBuffer>>;
 using ElementImageArray = HeapVector<Member<ElementImage>>;
 using ImageBitmapArray = HeapVector<Member<ImageBitmap>>;
 using OffscreenCanvasArray = HeapVector<Member<OffscreenCanvas>>;

@@ -64,9 +64,9 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByCopy(
   // so that the serializer can consider the array buffers as
   // non-transferable and serialize them into the message.
   ArrayBufferArray transferable_array_buffers =
-      SerializedScriptValue::ExtractNonSharedArrayBuffers(transferables);
-  ImageBitmapArray transferable_image_bitmaps = transferables.image_bitmaps;
-  transferables.image_bitmaps.clear();
+      std::move(transferables.array_buffers);
+  ImageBitmapArray transferable_image_bitmaps =
+      std::move(transferables.image_bitmaps);
   SerializedScriptValue::SerializeOptions serialize_options;
   serialize_options.transferables = &transferables;
   scoped_refptr<SerializedScriptValue> serialized_message =

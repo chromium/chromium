@@ -134,22 +134,6 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.array_buffers.push_back(array_buffer);
     return true;
   }
-  if (object->IsSharedArrayBuffer()) {
-    DOMSharedArrayBuffer* shared_array_buffer =
-        NativeValueTraits<IDLAllowResizable<DOMSharedArrayBuffer>>::NativeValue(
-            isolate, object, exception_state);
-    if (exception_state.HadException())
-      return false;
-    if (transferables.array_buffers.Contains(shared_array_buffer)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          StrCat({"SharedArrayBuffer at index ", String::Number(object_index),
-                  " is a duplicate of an earlier SharedArrayBuffer."}));
-      return false;
-    }
-    transferables.array_buffers.push_back(shared_array_buffer);
-    return true;
-  }
   if (ElementImage* element_image =
           V8ElementImage::ToWrappable(isolate, object)) {
     if (transferables.element_images.Contains(element_image)) {
@@ -337,18 +321,10 @@ void V8ScriptValueSerializer::PrepareTransfer(ExceptionState& exception_state) {
 
   // Transfer array buffers.
   for (uint32_t i = 0; i < transferables_->array_buffers.size(); i++) {
-    DOMArrayBufferBase* array_buffer = transferables_->array_buffers[i].Get();
-    if (!array_buffer->IsShared()) {
-      v8::Local<v8::Value> wrapper = ToV8Traits<DOMArrayBuffer>::ToV8(
-          script_state_, static_cast<DOMArrayBuffer*>(array_buffer));
-      serializer_.TransferArrayBuffer(
-          i, v8::Local<v8::ArrayBuffer>::Cast(wrapper));
-    } else {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "SharedArrayBuffer can not be in transfer list.");
-      return;
-    }
+    v8::Local<v8::Value> wrapper = ToV8Traits<DOMArrayBuffer>::ToV8(
+        script_state_, transferables_->array_buffers[i].Get());
+    serializer_.TransferArrayBuffer(i,
+                                    v8::Local<v8::ArrayBuffer>::Cast(wrapper));
   }
 }
 
@@ -360,64 +336,57 @@ void V8ScriptValueSerializer::FinalizeTransfer(
 
   v8::Isolate* isolate = script_state_->GetIsolate();
 
-  ArrayBufferArray array_buffers;
-  // The scope object to promptly free the backing store to avoid memory
-  // regressions.
-  // TODO(bikineev): Revisit after young generation is there.
-  struct PromptlyFreeArrayBuffers {
-    // The void* is to avoid blink-gc-plugin error.
-    void* buffer;
-    ~PromptlyFreeArrayBuffers() {
-      static_cast<ArrayBufferArray*>(buffer)->clear();
-    }
-  } promptly_free_array_buffers{&array_buffers};
-  if (transferables_)
-    array_buffers.append_range(transferables_->array_buffers);
-
-  if (!array_buffers.empty()) {
-    serialized_script_value_->TransferArrayBuffers(isolate, array_buffers,
-                                                   exception_state);
-    if (exception_state.HadException())
-      return;
+  if (!transferables_) {
+    return;
   }
 
-  if (transferables_) {
-    serialized_script_value_->TransferElementImages(
-        isolate, transferables_->element_images, exception_state);
+  serialized_script_value_->TransferArrayBuffers(
+      isolate, transferables_->array_buffers, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  serialized_script_value_->TransferElementImages(
+      isolate, transferables_->element_images, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  serialized_script_value_->TransferImageBitmaps(
+      isolate, transferables_->image_bitmaps, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  serialized_script_value_->TransferOffscreenCanvas(
+      isolate, transferables_->offscreen_canvases, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // Order matters here, because the order in which streams are added to the
+  // |stream_ports_| array must match the indexes which are calculated in
+  // WriteDOMObject().
+  serialized_script_value_->TransferReadableStreams(
+      script_state_, transferables_->readable_streams, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  serialized_script_value_->TransferWritableStreams(
+      script_state_, transferables_->writable_streams, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  serialized_script_value_->TransferTransformStreams(
+      script_state_, transferables_->transform_streams, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  for (auto& transfer_list : transferables_->transfer_lists.Values()) {
+    transfer_list->FinalizeTransfer(exception_state);
     if (exception_state.HadException()) {
       return;
-    }
-
-    serialized_script_value_->TransferImageBitmaps(
-        isolate, transferables_->image_bitmaps, exception_state);
-    if (exception_state.HadException())
-      return;
-
-    serialized_script_value_->TransferOffscreenCanvas(
-        isolate, transferables_->offscreen_canvases, exception_state);
-    if (exception_state.HadException())
-      return;
-
-    // Order matters here, because the order in which streams are added to the
-    // |stream_ports_| array must match the indexes which are calculated in
-    // WriteDOMObject().
-    serialized_script_value_->TransferReadableStreams(
-        script_state_, transferables_->readable_streams, exception_state);
-    if (exception_state.HadException())
-      return;
-    serialized_script_value_->TransferWritableStreams(
-        script_state_, transferables_->writable_streams, exception_state);
-    if (exception_state.HadException())
-      return;
-    serialized_script_value_->TransferTransformStreams(
-        script_state_, transferables_->transform_streams, exception_state);
-    if (exception_state.HadException())
-      return;
-
-    for (auto& transfer_list : transferables_->transfer_lists.Values()) {
-      transfer_list->FinalizeTransfer(exception_state);
-      if (exception_state.HadException())
-        return;
     }
   }
 }
