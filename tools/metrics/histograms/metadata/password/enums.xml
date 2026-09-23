@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Passkey unknown source"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager_metrics_util.h:BrowserAssistedLoginType) -->
+<!-- LINT.ThenChange(//components/password_manager/core/common/browser_assisted_login_type.h:BrowserAssistedLoginType) -->
 
 <enum name="ChangePasswordFormFinderError">
   <int value="0" label="Failed to capture page content"/>

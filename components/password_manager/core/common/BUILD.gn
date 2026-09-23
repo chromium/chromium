@@ -35,12 +35,17 @@ static_library("common") {
   ]
 
   public_deps = [
+    ":browser_assisted_login_type",
     ":constants",
     ":features",
     "//url",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("browser_assisted_login_type") {
+  sources = [ "browser_assisted_login_type.h" ]
 }
 
 source_set("constants") {

@@ -358,6 +358,9 @@ source_set("metrics_util") {
     "password_manager_metrics_util.cc",
     "password_manager_metrics_util.h",
   ]
+  public_deps = [
+    "//components/password_manager/core/common:browser_assisted_login_type",
+  ]
   deps = [
     ":password_form",
     "//components/autofill/core/common",
@@ -383,9 +386,9 @@ if (is_android) {
 
   java_cpp_enum("password_manager_java_enums_srcjar") {
     sources = [
+      "../common/browser_assisted_login_type.h",
       "manage_passwords_referrer.h",
       "password_check_referrer_android.h",
-      "password_manager_metrics_util.h",
       "password_manager_setting.h",
       "password_manager_util.h",
       "password_store/android_backend_error.h",
