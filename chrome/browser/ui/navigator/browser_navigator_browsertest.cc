@@ -2294,7 +2294,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorStandalonePictureInPictureTest,
   ExpectStandalonePipWindow(child);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
                        Disposition_PictureInPicture_OpenFromWebApp) {
   // Create the params for the PiP request that looks like it's from an app.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
@@ -2303,7 +2303,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   WebContents::CreateParams web_contents_params(browser()->GetProfile());
   web_contents_params.picture_in_picture_options = *pip_options;
 
-  // Opening a picture in picture window should create a new browser.
   NavigateParams params = MakeNavigateParams(browser());
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   params.app_id = "extensionappid";
@@ -2317,9 +2316,31 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   params.source_contents = tab;
   params.contents_to_insert = WebContents::Create(web_contents_params);
+  WebContents* child = params.contents_to_insert.get();
+  const size_t browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   Navigate(&params);
 
+  auto* manager = PictureInPictureWindowManager::GetInstance();
+  EXPECT_EQ(nullptr, params.contents_to_insert);
+  EXPECT_EQ(tab, manager->GetWebContents());
+  ASSERT_EQ(child, manager->GetChildWebContents());
+  EXPECT_TRUE(PictureInPictureWindowManager::IsChildWebContents(child));
+  EXPECT_TRUE(manager->GetPictureInPictureWindowBoundsInScreen().has_value());
+
+  if (standalone_enabled()) {
+    // Standalone PiP belongs to the opener, without a separate Browser or its
+    // app-name metadata.
+    EXPECT_EQ(nullptr, params.browser);
+    EXPECT_EQ(browser_count, GlobalBrowserCollection::GetInstance()->GetSize());
+    return;
+  }
+
   // Should be PiP, with an app name.
+  ASSERT_NE(nullptr, params.browser);
+  EXPECT_NE(browser(), params.browser);
+  EXPECT_EQ(browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(params.browser->GetType(),
             BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   EXPECT_NE(BrowserInitState::From(params.browser)->create_params().app_name,
