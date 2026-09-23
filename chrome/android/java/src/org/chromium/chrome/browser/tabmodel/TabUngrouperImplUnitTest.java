@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -107,6 +109,7 @@ public class TabUngrouperImplUnitTest {
         verify(mListener)
                 .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mTabModel).moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
+        verify(mTabModel, never()).notifyWillRemoveTabGroup(any());
         verify(mListener)
                 .onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
@@ -121,6 +124,7 @@ public class TabUngrouperImplUnitTest {
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(1);
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
@@ -156,9 +160,32 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
+        verify(mTabModel).notifyWillRemoveTabGroup(tabGroupId);
         verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);
+    }
+
+    @Test
+    public void
+            testUngroupTabsHandler_UngroupTabGroup_WithPlaceholderTab_DoesNotNotifyWillRemove() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        tab0.setTabGroupId(tabGroupId);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        // Simulate a placeholder tab keeping the group alive (total count 2 != tabs to ungroup 1).
+        when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(2);
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
+
+        mTabUngrouperImpl.ungroupTabGroup(
+                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        handler.performAction();
+        verify(mTabModel, never()).notifyWillRemoveTabGroup(any());
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
     }
 
     @Test

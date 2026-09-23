@@ -42,6 +42,7 @@ public class TabListObserverManagerUnitTest {
 
         mObserverManager.removeTabGroupObserver(mTabModel);
         verify(mTabModel).removeTabGroupObserver(mLayoutDelegate);
+        verify(mLayoutDelegate).reset();
     }
 
     @Test
@@ -74,5 +75,6 @@ public class TabListObserverManagerUnitTest {
 
         verify(mTab).removeObserver(mLayoutDelegate);
         verify(mTabModel).removeTabGroupObserver(mLayoutDelegate);
+        verify(mLayoutDelegate).reset();
     }
 }

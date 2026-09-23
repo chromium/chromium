@@ -193,6 +193,13 @@ public class TabUngrouperImpl implements TabUngrouper {
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
             }
+            if (mIsTabGroup && !newTabsToUngroup.isEmpty()) {
+                Token tabGroupId = newTabsToUngroup.get(0).getTabGroupId();
+                if (tabGroupId != null
+                        && tabModel.getTabCountForGroup(tabGroupId) == newTabsToUngroup.size()) {
+                    tabModel.notifyWillRemoveTabGroup(tabGroupId);
+                }
+            }
             PassthroughTabUngrouper.doUngroupTabs(tabModel, newTabsToUngroup, mTrailing);
             if (listener != null) {
                 listener.onConfirmationDialogResult(

@@ -908,6 +908,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
     }
 
+    @Override
+    public void notifyWillRemoveTabGroup(Token tabGroupId) {
+        assertOnUiThread();
+        for (TabGroupObserver observer : mTabGroupObservers) {
+            observer.willRemoveTabGroup(tabGroupId);
+        }
+    }
+
     // TabModelJniBridge overrides.
 
     @Override
@@ -1751,6 +1759,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
 
         Token tabGroupId = undoGroupMetadata.getTabGroupId();
+        // Suppress interim layout updates while tabs are moved out of the dissolving group.
+        if (undoGroupMetadata.didCreateNewGroup) {
+            notifyWillRemoveTabGroup(tabGroupId);
+        }
 
         // Move each of the merged tabs back to their original state in reverse order. If the
         // destination tab was moved it will be moved last.
@@ -2429,6 +2441,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                         adoptedGroupTitle,
                         wasDestinationTabGroupCollapsed);
 
+        for (Token tabGroupId : candidateTabGroupIds) {
+            notifyWillRemoveTabGroup(tabGroupId);
+        }
+
         // Move all tabs into the destination group.
         for (Tab tab : tabs) {
             int currentIndex = indexOf(tab);
@@ -2787,6 +2803,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 hiding = mHidingTabGroups.contains(tabGroupId);
                 for (TabGroupObserver observer : mTabGroupObservers) {
                     observer.willCloseTabGroup(tabGroupId, hiding);
+                    observer.willRemoveTabGroup(tabGroupId);
                 }
                 for (TabModelObserver obs : mTabModelObservers) {
                     obs.onTabGroupRemoving(tabGroupId);

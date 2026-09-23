@@ -162,6 +162,14 @@ public interface TabGroupObserver {
     default void didChangeGroupRootId(int oldRootId, int newRootId) {}
 
     /**
+     * Called when a tab group is about to be removed from the tab model (e.g. as a result of
+     * closure, ungrouping, or merging), prior to {@link #didRemoveTabGroup}.
+     *
+     * @param tabGroupId The tab group id being removed.
+     */
+    default void willRemoveTabGroup(Token tabGroupId) {}
+
+    /**
      * Called when a tab group is removed from the tab model. This could be the result of merging
      * tabs, ungrouping tabs or closing tabs.
      *

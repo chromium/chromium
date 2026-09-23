@@ -52,6 +52,7 @@ class TabListObserverManager {
             mObservedTabModel = null;
         }
         tabModel.removeTabGroupObserver(mLayoutDelegate);
+        mLayoutDelegate.reset();
     }
 
     /**
@@ -86,5 +87,6 @@ class TabListObserverManager {
             mObservedTabModel.removeTabGroupObserver(mLayoutDelegate);
             mObservedTabModel = null;
         }
+        mLayoutDelegate.reset();
     }
 }

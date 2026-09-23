@@ -444,9 +444,11 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
                 mMediator.addTabCardToModel(movedTab, getInsertionIndexOfTab(movedTab));
             }
             // Update the old group's card if it still has tabs left (if the old group dissolved,
-            // didRemoveTabGroup removes its card).
+            // didRemoveTabGroup removes its card). Skip updating if the group is being removed.
             Token previousGroupId = previousGroupTab.getTabGroupId();
-            if (previousGroupId != null && !previousGroupId.equals(movedTabGroupId)) {
+            if (previousGroupId != null
+                    && !previousGroupId.equals(movedTabGroupId)
+                    && !isRemovingTabGroup(previousGroupId)) {
                 updateGroupCard(previousGroupTab, /* isUpdatingId= */ true);
             }
             return;

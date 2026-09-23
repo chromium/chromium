@@ -1167,6 +1167,7 @@ public class TabListMediator implements TabListNotificationHandler {
             return true;
         }
         mModelList.clear();
+        mTabListLayoutDelegate.reset();
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
         if (tabs == null && tabGroupSyncIds == null) {

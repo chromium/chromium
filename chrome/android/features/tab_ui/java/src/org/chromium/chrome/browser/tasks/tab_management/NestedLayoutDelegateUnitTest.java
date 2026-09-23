@@ -616,6 +616,30 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testDidMoveTabOutOfGroup_SuppressedDuringUngroup() {
+        setupTabsInModel(mTab1, mTab3);
+        addGroupHeaderToModelList(TAB1_ID);
+        addTabToModelList(TAB1_ID, TAB_GROUP_ID);
+        PropertyModel tab3Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
+
+        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+
+        // When group removal is active, updateTabGroupHeaderId and updateTabGroupTitle should be
+        // suppressed.
+        mDelegate.willRemoveTabGroup(TAB_GROUP_ID);
+        mDelegate.didMoveTabOutOfGroup(mTab3, 1);
+
+        verify(mMediator, never()).updateTabGroupHeaderId(any());
+        verify(mMediator).clearTabGroupProperties(tab3Model);
+        verify(mMediator, never()).updateTabGroupTitle(any());
+
+        mDelegate.didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+        assertFalse(mDelegate.isRemovingTabGroup(TAB_GROUP_ID));
+    }
+
+    @Test
     public void testDidMoveTabOutOfGroup_LastTab() {
         setupTabsInModel(mTab1);
         addGroupHeaderToModelList(TAB1_ID);

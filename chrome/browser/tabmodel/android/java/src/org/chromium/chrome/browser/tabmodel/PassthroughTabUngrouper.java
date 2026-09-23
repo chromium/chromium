@@ -39,7 +39,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
-        ungroupTabsInternal(_ -> tabs, trailing, listener);
+        ungroupTabsInternal(_ -> tabs, trailing, listener, /* tabGroupId= */ null);
     }
 
     @Override
@@ -51,19 +51,23 @@ public class PassthroughTabUngrouper implements TabUngrouper {
         Function<TabModel, List<Tab>> tabsFetcher =
                 (tabModel) -> getTabsToUngroup(tabModel, tabGroupId);
 
-        ungroupTabsInternal(tabsFetcher, trailing, listener);
+        ungroupTabsInternal(tabsFetcher, trailing, listener, tabGroupId);
     }
 
     private void ungroupTabsInternal(
             Function<TabModel, List<Tab>> tabsFetcher,
             boolean trailing,
-            @Nullable TabModelActionListener listener) {
+            @Nullable TabModelActionListener listener,
+            @Nullable Token tabGroupId) {
         TabModelInternal tabModel = getTabModelInternal();
         @Nullable List<Tab> tabs = tabsFetcher.apply(tabModel);
         if (tabs == null || tabs.isEmpty()) return;
 
         if (listener != null) {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        }
+        if (tabGroupId != null) {
+            tabModel.notifyWillRemoveTabGroup(tabGroupId);
         }
         doUngroupTabs(tabModel, tabs, trailing);
         if (listener != null) {

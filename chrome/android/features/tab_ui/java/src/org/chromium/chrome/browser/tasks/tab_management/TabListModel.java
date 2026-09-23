@@ -390,7 +390,6 @@ public class TabListModel extends ModelList {
                     model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
             if (provider != null) {
                 provider.destroy();
-                model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
             }
         }
     }

@@ -181,6 +181,11 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
+    public void notifyWillRemoveTabGroup(Token tabGroupId) {
+        throw error();
+    }
+
+    @Override
     public @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
         throw error();
     }

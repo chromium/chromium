@@ -449,6 +449,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void notifyWillRemoveTabGroup(Token tabGroupId) {
+        mDelegateModel.notifyWillRemoveTabGroup(tabGroupId);
+    }
+
+    @Override
     public void broadcastSessionRestoreComplete() {}
 
     @Override

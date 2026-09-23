@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -961,6 +962,38 @@ public class GroupedLayoutDelegateUnitTest {
 
         verify(mMediator).updateTab(0, mTab2, true, false);
         verify(mMediator, never()).addTabCardToModel(any(), anyInt());
+    }
+
+    @Test
+    public void testDidMoveTabOutOfGroup_SuppressedDuringUngroup() {
+        GroupedLayoutDelegate delegate =
+                new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
+        PropertyModel groupCardModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CARD_TYPE, TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID)
+                        .with(TabProperties.TAB_ID, TAB2_ID)
+                        .build();
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
+
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
+        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
+        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab2);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+
+        // Before willRemoveTabGroup, didMoveTabOutOfGroup updates the card.
+        // With willRemoveTabGroup(TAB_GROUP_ID), updating the old group is suppressed,
+        // but adding the card for the newly ungrouped tab still occurs.
+        delegate.willRemoveTabGroup(TAB_GROUP_ID);
+        delegate.didMoveTabOutOfGroup(mTab1, 1);
+
+        verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
+        verify(mMediator).addTabCardToModel(eq(mTab1), anyInt());
+
+        // Once didRemoveTabGroup is called, mRemovingTabGroupIds is cleared.
+        delegate.didRemoveTabGroup(TAB2_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+        assertEquals(0, mModelList.size());
     }
 
     @Test

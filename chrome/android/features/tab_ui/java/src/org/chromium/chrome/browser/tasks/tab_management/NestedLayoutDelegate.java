@@ -257,7 +257,9 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         assumeNonNull(previousGroupTab);
 
         Token oldTabGroupId = previousGroupTab.getTabGroupId();
-        mMediator.updateTabGroupHeaderId(oldTabGroupId);
+        if (!isRemovingTabGroup(oldTabGroupId)) {
+            mMediator.updateTabGroupHeaderId(oldTabGroupId);
+        }
         syncChildTab(movedTab, oldTabGroupId);
     }
 
@@ -393,7 +395,9 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         if (newTabGroupId != null) {
             mMediator.updateTabGroupTitle(newTabGroupId);
         }
-        if (oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId)) {
+        if (oldTabGroupId != null
+                && !oldTabGroupId.equals(newTabGroupId)
+                && !isRemovingTabGroup(oldTabGroupId)) {
             mMediator.updateTabGroupTitle(oldTabGroupId);
         }
     }
