@@ -55,6 +55,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageOffers:
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -108,7 +109,6 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kVirtualCreditCardEntry:

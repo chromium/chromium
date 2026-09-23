@@ -705,25 +705,16 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
   if (!service || !service->ShouldShowPersonalContextAtMemoryNotice()) {
     return;
   }
-  // Before search results are returned (when only the search affordance to
-  // start the query is present), place the search affordance first and append
-  // the notice card at the end. After actual search results are returned, place
-  // the notice card first on top of the search results.
+  // Places the notice card in the footer at the end of the suggestions list.
   Suggestion notice(SuggestionType::kPersonalContextNotice);
   notice.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
-  if (suggestions.size() == 1u &&
-      (suggestions[0].type == SuggestionType::kAtMemorySearchAffordance ||
-       suggestions[0].type == SuggestionType::kAtMemoryFetching)) {
+  if (!suggestions.empty()) {
     suggestions.emplace_back(SuggestionType::kSeparator);
     suggestions.back().filtration_policy =
         Suggestion::FiltrationPolicy::kStatic;
-    suggestions.push_back(std::move(notice));
-    return;
   }
-
-  // This handles both empty vectors and vectors containing search results.
-  suggestions.insert(suggestions.begin(), std::move(notice));
+  suggestions.push_back(std::move(notice));
 }
 
 void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
@@ -915,8 +906,8 @@ void AtMemoryManager::ShowFetchingStateSuggestions() {
 
 std::vector<Suggestion> AtMemoryManager::GetEmptyQuerySuggestions() const {
   std::vector<Suggestion> suggestions;
-  MaybeAppendPersonalContextNotice(suggestions);
   MaybeAppendPreviouslyFilledSuggestions(suggestions);
+  MaybeAppendPersonalContextNotice(suggestions);
   return suggestions;
 }
 

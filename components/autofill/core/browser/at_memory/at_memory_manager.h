@@ -188,33 +188,38 @@ class AtMemoryManager {
 
   // Shows all the suggestions in the empty state.
   // These suggestions will be in order:
-  // * kPersonalContextNotice (optional)
   // * kTitle (optional)
   // * kAtMemorySearchResult (repeated)
+  // * kSeparator (optional)
+  // * kPersonalContextNotice (optional)
   void ShowEmptyQuerySuggestions();
 
   // Shows all the suggestions in the query typing state.
   // These suggestions will be in order:
   // * kAtMemorySearchAffordance | kAtMemoryNoConnection
+  // * kSeparator
   // * kAtMemoryAiDisclosure | kPersonalContextNotice
   void ShowQueryTypingSuggestions(const std::u16string& query);
 
   // Shows all the suggestions in the fetching state.
   // These suggestions will be in order:
   // * kAtMemoryFetching
+  // * kSeparator (optional)
   // * kPersonalContextNotice (optional)
   void ShowFetchingStateSuggestions();
 
   // Shows all the suggestions in the results retrieved state.
   // These suggestions will be in order:
-  // * kPersonalContextNotice (optional)
   // * kAtMemorySearchResult (repeated)
+  // * kSeparator (optional)
+  // * kPersonalContextNotice (optional)
   void ShowResultsRetrievedStateSuggestions(const MemorySearchResults& result);
 
   // Shows all the suggestions in the no results retrieved state.
   // These suggestions will be in order:
-  // * kPersonalContextNotice (optional)
   // * suggestion describing the error
+  // * kSeparator (optional)
+  // * kPersonalContextNotice (optional)
   void ShowNoResultsStateSuggestions(const std::u16string& query,
                                      const MemorySearchResults& result);
 

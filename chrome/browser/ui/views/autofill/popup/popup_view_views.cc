@@ -1387,11 +1387,6 @@ void PopupViewViews::CreateSuggestionViews() {
               suggestions[current_line_number].main_text.value));
           break;
         }
-        case SuggestionType::kPersonalContextNotice: {
-          body_builder.AddRow(CreatePersonalContextNoticeView(
-              *this, a11y_announcer_, controller(), current_line_number));
-          break;
-        }
         case SuggestionType::kAutofillAiPrivateInferenceNotice: {
           body_builder.AddRow(CreateAutofillAiPrivateInferenceNoticeView(
               *this, a11y_announcer_, controller(), current_line_number));
@@ -1487,6 +1482,10 @@ void PopupViewViews::CreateSuggestionViews() {
                SuggestionType::kAtMemoryAiDisclosure) {
       footer_builder.AddRow(std::make_unique<PopupAtMemoryAiDisclosureView>(
           controller(), /*a11y_selection_delegate=*/*this));
+    } else if (suggestions[current_line_number].type ==
+               SuggestionType::kPersonalContextNotice) {
+      footer_builder.AddRow(CreatePersonalContextNoticeView(
+          *this, a11y_announcer_, controller(), current_line_number));
     } else {
       footer_builder.AddRow(CreatePopupRowView(
           controller(), /*a11y_selection_delegate=*/*this,

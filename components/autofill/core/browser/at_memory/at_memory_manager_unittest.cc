@@ -1651,7 +1651,7 @@ TEST_P(AtMemoryManagerTest,
 }
 
 // Tests that after search results are returned, the personal context notice
-// is prepended at the top (before the search result suggestions).
+// is appended at the end (after the search result suggestions).
 TEST_P(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   autofill_client()
       .GetPersonalContextFirstRunService()
@@ -1676,12 +1676,13 @@ TEST_P(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   // Submit the search query to trigger query execution.
   manager().OnSearchSubmitted(u"query");
 
-  // Verify that the personal context notice card is prepended first, followed
-  // by the section title and the search result entry.
+  // Verify that the section title and search result entry are first, followed
+  // by the separator and personal context notice card.
   EXPECT_THAT(suggestions,
-              SuggestionVectorIdsAre(SuggestionType::kPersonalContextNotice,
-                                     SuggestionType::kTitle,
-                                     SuggestionType::kAtMemorySearchResult));
+              SuggestionVectorIdsAre(SuggestionType::kTitle,
+                                     SuggestionType::kAtMemorySearchResult,
+                                     SuggestionType::kSeparator,
+                                     SuggestionType::kPersonalContextNotice));
 }
 
 // Tests that during the fetching state (while search is in progress), the UI

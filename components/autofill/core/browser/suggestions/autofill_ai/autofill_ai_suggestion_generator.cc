@@ -210,11 +210,17 @@ Suggestion CreateManageShoppingSuggestion() {
 
 std::vector<Suggestion> GetFooterSuggestions(
     const AutofillField& trigger_field,
-    const DenseSet<AutofillAiUiSection>& ui_sections) {
+    const DenseSet<AutofillAiUiSection>& ui_sections,
+    bool should_show_personal_context_notice = false) {
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(3);
+  suggestions.reserve(4);
 
   suggestions.emplace_back(SuggestionType::kSeparator);
+  if (should_show_personal_context_notice) {
+    Suggestion& suggestion =
+        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  }
   if (ShouldOfferUndoOnField(trigger_field)) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
@@ -1271,17 +1277,13 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     return {};
   }
 
-  bool personal_context_notice_added = false;
+  bool should_show_personal_context_notice = false;
   if (IsPersonalContextNoticeSuggestionSupported() &&
       HasPersonalContextSuggestion(suggestions, all_entities)) {
     personal_context::PersonalContextFirstRunService* service =
         client.GetPersonalContextFirstRunService();
-    if (service && service->ShouldShowPersonalContextAmbientAutofillNotice()) {
-      Suggestion& suggestion =
-          suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
-      suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-      personal_context_notice_added = true;
-    }
+    should_show_personal_context_notice =
+        service && service->ShouldShowPersonalContextAmbientAutofillNotice();
   }
 
   if (should_show_fetching_suggestions) {
@@ -1291,12 +1293,15 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     }
   }
 
-  if (should_show_private_inference_notice && !personal_context_notice_added) {
+  if (should_show_private_inference_notice &&
+      !should_show_personal_context_notice) {
     suggestions.emplace_back(SuggestionType::kAutofillAiPrivateInferenceNotice);
   }
 
   if (!ui_sections.empty()) {
-    base::Extend(suggestions, GetFooterSuggestions(trigger_field, ui_sections));
+    base::Extend(suggestions,
+                 GetFooterSuggestions(trigger_field, ui_sections,
+                                      should_show_personal_context_notice));
   }
   return suggestions;
 }

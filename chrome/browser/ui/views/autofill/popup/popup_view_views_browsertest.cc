@@ -555,8 +555,31 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                              Suggestion::Icon::kPassport,
                              SuggestionType::kFillAutofillAi);
   Suggestion notice_suggestion(SuggestionType::kPersonalContextNotice);
-  PrepareSuggestions({fill_suggestion, notice_suggestion});
+  Suggestion manage_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+      SuggestionType::kManageEnhancedAutofill);
+  manage_suggestion.icon = Suggestion::Icon::kSettings;
+  PrepareSuggestions(
+      {std::move(fill_suggestion), Suggestion(SuggestionType::kSeparator),
+       std::move(notice_suggestion), std::move(manage_suggestion)});
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_AtMemory_PersonalContextNotice) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+  Suggestion search_result(u"Passport number",
+                           SuggestionType::kAtMemorySearchResult);
+  Suggestion notice_suggestion(SuggestionType::kPersonalContextNotice);
+  PrepareSuggestions({std::move(search_result),
+                      Suggestion(SuggestionType::kSeparator),
+                      std::move(notice_suggestion)});
+  ShowAndVerifyUi(
+      /*popup_has_parent=*/false,
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Find and fill",
+                                         .initial_value = {},
+                                         .no_results_message = u""});
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
