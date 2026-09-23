@@ -1873,13 +1873,13 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptLoomniboxInteractiveTest,
       EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
           *test_web_contents);
 
-  // Padding should only be applied to top and left (24px each).
+  // Padding should be applied to all four sides (24px each).
   constexpr int kPadding =
       EmbeddedPermissionPromptContentScrimView::kOmniboxEverywherePadding;
   EXPECT_EQ(scrim_bounds.x(), container_bounds.x() + kPadding);
   EXPECT_EQ(scrim_bounds.y(), container_bounds.y() + kPadding);
-  EXPECT_EQ(scrim_bounds.width(), container_bounds.width() - kPadding);
-  EXPECT_EQ(scrim_bounds.height(), container_bounds.height() - kPadding);
+  EXPECT_EQ(scrim_bounds.width(), container_bounds.width() - 2 * kPadding);
+  EXPECT_EQ(scrim_bounds.height(), container_bounds.height() - 2 * kPadding);
 
   views::WidgetDeletionObserver deletion_observer(widget.get());
   widget.reset();
