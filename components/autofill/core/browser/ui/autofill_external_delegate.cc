@@ -1230,17 +1230,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // `RemoveSuggestion`.
       return;
     case SuggestionType::kRemoveAutofillAi:
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillAmbientAutofillSuppression)) {
-        break;
-      }
-      if (const base::optional_ref<const EntityInstance> entity =
-              GetEntityInstance(suggestion)) {
-        if (EntitySuppressionManager* suppression_manager =
-                manager_->client().GetEntitySuppressionManager()) {
-          suppression_manager->SuppressEntity(*entity);
-        }
-      }
+      SuppressAutofillAiEntity(suggestion);
       break;
     case SuggestionType::kAutofillAiSourceAttribution:
       // TODO(crbug.com/541184575): Implement navigation to source URL.
@@ -1364,25 +1354,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       }
       return true;
     }
-    case SuggestionType::kFillAutofillAi: {
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillAmbientAutofillSuppression)) {
-        return false;
-      }
-      if (!std::holds_alternative<Suggestion::AutofillAiPayload>(
-              suggestion.payload)) {
-        return false;
-      }
-      if (const base::optional_ref<const EntityInstance> entity =
-              GetEntityInstance(suggestion)) {
-        if (EntitySuppressionManager* suppression_manager =
-                manager_->client().GetEntitySuppressionManager()) {
-          return suppression_manager->SuppressEntity(*entity) ||
-                 suppression_manager->IsSuppressed(*entity);
-        }
-      }
-      return false;
-    }
+    case SuggestionType::kFillAutofillAi:
+      return SuppressAutofillAiEntity(suggestion);
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllLoyaltyCardsEntry:
@@ -1834,6 +1807,50 @@ bool AutofillExternalDelegate::ShouldShowPayNowPayLaterTabs() {
              manager_->client(), field->Type().GetCreditCardType()) &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnablePayNowPayLaterTabs);
+}
+
+bool AutofillExternalDelegate::SuppressAutofillAiEntity(
+    const Suggestion& suggestion) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSuppression)) {
+    return false;
+  }
+  if (!std::holds_alternative<Suggestion::AutofillAiPayload>(
+          suggestion.payload)) {
+    return false;
+  }
+  const base::optional_ref<const EntityInstance> entity =
+      GetEntityInstance(suggestion);
+  if (!entity ||
+      entity->record_type() != EntityInstance::RecordType::kPersonalContext) {
+    return false;
+  }
+  EntitySuppressionManager* suppression_manager =
+      manager_->client().GetEntitySuppressionManager();
+  if (!suppression_manager) {
+    return false;
+  }
+  const bool newly_suppressed = suppression_manager->SuppressEntity(*entity);
+  if (newly_suppressed) {
+    manager_->client().ShowAutofillAiSuggestionRemovedNotification(
+        base::BindOnce(&AutofillExternalDelegate::OnAutofillAiSuppressionUndone,
+                       weak_ptr_factory_.GetWeakPtr(), *entity,
+                       last_query_.field_id));
+  }
+  return newly_suppressed || suppression_manager->IsSuppressed(*entity);
+}
+
+void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(
+    const EntityInstance& entity,
+    FieldGlobalId field_id) {
+  if (EntitySuppressionManager* suppression_manager =
+          manager_->client().GetEntitySuppressionManager()) {
+    suppression_manager->UnsuppressEntity(entity);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  manager_->driver().RendererShouldTriggerSuggestions(
+      field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill

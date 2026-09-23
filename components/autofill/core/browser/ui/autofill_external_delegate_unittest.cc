@@ -298,6 +298,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
+  MOCK_METHOD(void,
+              ShowAutofillAiSuggestionRemovedNotification,
+              (base::OnceClosure),
+              (override));
 
   // `IsAutofillTypeBlockedByPolicy` is needed in the mock because it is called
   // by `MayPerformAtMemoryAction` to evaluate enablement.
@@ -3545,6 +3549,7 @@ class AutofillExternalDelegateWithAmbientAutofillTest
             features::kAutofillAiReauthRequired,
             features::kAutofillAmbientAutofill,
             features::kAutofillAmbientAutofillSuppression,
+            features::kAutofillAmbientAutofillSuppressionUI,
             features::kAutofillAiWalletPrivatePasses,
 #if BUILDFLAG(IS_ANDROID)
             features::kAutofillAiShowPersonalContextFillingYourInfoDialog,
@@ -4052,7 +4057,84 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   Suggestion suggestion(SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(full_passport.guid());
 
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
   EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
+  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
+      full_passport));
+}
+
+// Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
+// calls `ShowAutofillAiSuggestionRemovedNotification` when the suppression UI
+// feature is enabled.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       RemoveSuggestion_FillAutofillAi_ShowsNotificationWhenUiEnabled) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{full_passport});
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion suggestion(SuggestionType::kFillAutofillAi);
+  suggestion.payload = Suggestion::AutofillAiPayload(full_passport.guid());
+
+  base::OnceClosure undo_completed;
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .WillOnce(MoveArg<0>(&undo_completed));
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
+
+  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
+      full_passport));
+  ASSERT_FALSE(undo_completed.is_null());
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(autofill_driver(),
+              RendererShouldTriggerSuggestions(
+                  queried_field().global_id(),
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked));
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(undo_completed).Run();
+  EXPECT_FALSE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
+      full_passport));
+}
+
+// Tests that calling `RemoveSuggestion` for a non-kPersonalContext entity
+// returns false and does not suppress or show a notification.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       RemoveSuggestion_FillAutofillAi_NonPersonalContextRejected) {
+  EntityInstance local_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  AddOrUpdateEntityInstance(local_passport);
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion suggestion(SuggestionType::kFillAutofillAi);
+  suggestion.payload = Suggestion::AutofillAiPayload(local_passport.guid());
+
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
+  EXPECT_FALSE(external_delegate().RemoveSuggestion(suggestion));
+  EXPECT_FALSE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
+      local_passport));
+}
+
+// Tests that accepting a `kRemoveAutofillAi` suggestion notifies the client
+// when the suppression UI feature is enabled.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       DidAcceptSuggestion_RemoveAutofillAi_ShowsNotificationWhenUiEnabled) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{full_passport});
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion remove_suggestion(SuggestionType::kRemoveAutofillAi);
+  remove_suggestion.payload =
+      Suggestion::AutofillAiPayload(full_passport.guid());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(std::nullopt)));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification);
+
+  external_delegate().DidAcceptSuggestion(remove_suggestion,
+                                          {.multi_index = {0}});
+
   EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
       full_passport));
 }

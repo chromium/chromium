@@ -244,6 +244,15 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns if the Pay Now Pay Later tabs should be shown.
   virtual bool ShouldShowPayNowPayLaterTabs();
 
+  // Attempts to suppress `suggestion`'s Autofill AI personal-context entity.
+  // If suppression succeeds, triggers the removal undo notification on the
+  // client with a re-query callback. Returns true if the entity is suppressed.
+  bool SuppressAutofillAiEntity(const Suggestion& suggestion);
+
+  // Unsuppresses `entity` and re-triggers Autofill suggestions on `field_id`.
+  void OnAutofillAiSuppressionUndone(const EntityInstance& entity,
+                                     FieldGlobalId field_id);
+
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   const raw_ref<BrowserAutofillManager> manager_;
