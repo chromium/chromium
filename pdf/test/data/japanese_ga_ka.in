@@ -1,0 +1,72 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 4 0 R
+  /MediaBox [0 0 200 200]
+  /Resources <<
+    /Font <<
+      /F1 5 0 R
+    >>
+  >>
+>>
+endobj
+{{object 4 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 12 Tf
+20 100 Td
+<0061304b0062304c0063304c0064304b0065> Tj
+ET
+endstream
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type0
+  /BaseFont /AAAAAA+Gothic
+  /DescendantFonts [6 0 R]
+  /Encoding /UniJIS-UCS2-H
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Font
+  /Subtype /CIDFontType2
+  /BaseFont /AAAAAA+Gothic
+  /CIDSystemInfo <<
+    /Ordering (Japan1)
+    /Registry (Adobe)
+    /Supplement 0
+  >>
+  /DW 1000
+  /FontDescriptor 7 0 R
+>>
+endobj
+{{object 7 0}} <<
+  /Type /FontDescriptor
+  /Ascent 1060
+  /CapHeight 735
+  /Descent -439
+  /Flags 32
+  /FontBBox [-984 -439 1822 1060]
+  /FontName /AAAAAA+Gothic
+  /ItalicAngle 0
+  /StemV 53
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
