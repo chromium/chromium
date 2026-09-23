@@ -84,6 +84,7 @@ enum ItemType {
   self.title = [self categoryTitle];
   self.tableView.accessibilityIdentifier =
       kSiteSettingsCategoryDetailTableViewId;
+  self.tableView.allowsMultipleSelectionDuringEditing = YES;
 
   _searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
@@ -100,6 +101,12 @@ enum ItemType {
 
   [self filterSitesForSearchTerm:_searchTerm];
   [self loadModel];
+  [self updateUIForEditState];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self updateUIForEditState];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -134,6 +141,40 @@ enum ItemType {
                                  sites:_filteredAllowedSites];
 }
 
+- (BOOL)shouldHideToolbar {
+  return self.navigationController &&
+         self.navigationController.visibleViewController != self &&
+         self.navigationController.topViewController != self;
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return NO;
+}
+
+- (BOOL)editButtonEnabled {
+  return _filteredAllowedSites.count > 0 || _filteredNotAllowedSites.count > 0;
+}
+
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+  [self updatedToolbarForEditState];
+}
+
+- (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
+  NSMutableArray<SiteSettingsSiteException*>* sitesToDelete =
+      [NSMutableArray arrayWithCapacity:indexPaths.count];
+  for (NSIndexPath* indexPath in indexPaths) {
+    SiteSettingsSiteException* siteException =
+        [self siteExceptionForIndexPath:indexPath];
+    if (siteException) {
+      [sitesToDelete addObject:siteException];
+    }
+  }
+  [self setEditing:NO animated:YES];
+  [self updateUIForEditState];
+  [self.mutator deleteSettingsForSites:sitesToDelete];
+}
+
 #pragma mark - SiteSettingsCategoryDetailConsumer
 
 - (void)setDefaultSetting:(ContentSetting)setting {
@@ -156,10 +197,16 @@ enum ItemType {
   _allAllowedSites = [allowedSites copy];
   _allNotAllowedSites = [notAllowedSites copy];
   [self filterSitesForSearchTerm:_searchTerm];
-  [self reloadData];
+  [self reloadSitesAndUpdateEditState];
 }
 
 #pragma mark - UITableViewDataSource
+
+- (BOOL)tableView:(UITableView*)tableView
+    canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  return [item isKindOfClass:[TableViewURLItem class]];
+}
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -210,15 +257,23 @@ enum ItemType {
                         willSelectRowAtIndexPath:indexPath];
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
-  if (sectionIdentifier == SectionIdentifierNotAllowed ||
-      sectionIdentifier == SectionIdentifierAllowed) {
-    return nil;
+  BOOL isSiteExceptionSection =
+      sectionIdentifier == SectionIdentifierNotAllowed ||
+      sectionIdentifier == SectionIdentifierAllowed;
+  if (tableView.editing) {
+    return isSiteExceptionSection ? superIndexPath : nil;
   }
-  return superIndexPath;
+  return isSiteExceptionSection ? nil : superIndexPath;
 }
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  if (tableView.editing) {
+    self.deleteButton.enabled = YES;
+    return;
+  }
+
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
@@ -234,8 +289,20 @@ enum ItemType {
   }
 }
 
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
+  if (!tableView.editing) {
+    return;
+  }
+  self.deleteButton.enabled = tableView.indexPathsForSelectedRows.count > 0;
+}
+
 - (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
     trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (tableView.editing) {
+    return nil;
+  }
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if (![item isKindOfClass:[TableViewURLItem class]]) {
     return nil;
@@ -271,10 +338,22 @@ enum ItemType {
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
   [self filterSitesForSearchTerm:searchController.searchBar.text];
-  [self reloadData];
+  [self reloadSitesAndUpdateEditState];
 }
 
 #pragma mark - Private
+
+// Updates edit mode and toolbar buttons when the visible site exceptions change
+// and reloads the table view data.
+- (void)reloadSitesAndUpdateEditState {
+  if (self.isViewLoaded) {
+    if (![self editButtonEnabled] && self.tableView.editing) {
+      [self setEditing:NO animated:YES];
+    }
+    [self updateUIForEditState];
+  }
+  [self reloadData];
+}
 
 // Populates the default permission setting section with Ask and Block options.
 - (void)loadDefaultSettingSection {
@@ -341,7 +420,6 @@ enum ItemType {
       item.title = siteException.formattedTitle;
     }
     item.URL = siteException.URL;
-    item.selectionStyle = UITableViewCellSelectionStyleNone;
     [model addItem:item toSectionWithIdentifier:sectionIdentifier];
   }
 }
@@ -384,8 +462,12 @@ enum ItemType {
   // TODO(crbug.com/553098545): Use localized strings.
   cell.accessibilityValue =
       currentSetting == CONTENT_SETTING_ALLOW ? @"Allowed" : @"Not Allowed";
+  __weak UITableViewCell* weakCell = cell;
   __weak UIView* weakButton = menuButton;
   cell.accessibilityActivationPointBlock = ^CGPoint() {
+    if (weakCell.editing) {
+      return [weakCell.contentView accessibilityActivationPoint];
+    }
     return [weakButton accessibilityActivationPoint];
   };
 }
@@ -543,6 +625,10 @@ enum ItemType {
   };
 
   [self.tableView performBatchUpdates:tableUpdates completion:nil];
+  if (self.tableView.editing) {
+    self.deleteButton.enabled =
+        self.tableView.indexPathsForSelectedRows.count > 0;
+  }
 }
 
 // Filters allowed and not allowed sites matching `searchTerm` against domain

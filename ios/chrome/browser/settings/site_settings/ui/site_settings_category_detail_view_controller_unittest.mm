@@ -92,8 +92,8 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   CreateController();
   CheckController();
 
-  SiteSettingsCategoryDetailViewController* vc = GetController();
-  [vc setDefaultSetting:CONTENT_SETTING_ASK];
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
+  [view_controller setDefaultSetting:CONTENT_SETTING_ASK];
 
   TableViewDetailIconItem* askItem =
       static_cast<TableViewDetailIconItem*>(GetTableViewItem(0, 0));
@@ -103,7 +103,7 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
       static_cast<TableViewDetailIconItem*>(GetTableViewItem(0, 1));
   EXPECT_EQ(UITableViewCellAccessoryNone, blockItem.accessoryType);
 
-  [vc setDefaultSetting:CONTENT_SETTING_BLOCK];
+  [view_controller setDefaultSetting:CONTENT_SETTING_BLOCK];
   EXPECT_EQ(UITableViewCellAccessoryNone, askItem.accessoryType);
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, blockItem.accessoryType);
 }
@@ -114,14 +114,15 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   CreateController();
   CheckController();
 
-  SiteSettingsCategoryDetailViewController* vc = GetController();
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
 
   SiteSettingsSiteException* blockedSite =
       CreateSiteException(@"https://blocked.com", @"blocked.com");
   SiteSettingsSiteException* allowedSite =
       CreateSiteException(@"https://allowed.com", @"allowed.com");
 
-  [vc setAllowedSites:@[ allowedSite ] notAllowedSites:@[ blockedSite ]];
+  [view_controller setAllowedSites:@[ allowedSite ]
+                   notAllowedSites:@[ blockedSite ]];
 
   // Sections: Default Setting, Not Allowed, Allowed.
   EXPECT_EQ(3, NumberOfSections());
@@ -139,7 +140,7 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(nil, allowedItem.title);
 
   // Clearing lists should remove the sections again.
-  [vc setAllowedSites:@[] notAllowedSites:@[]];
+  [view_controller setAllowedSites:@[] notAllowedSites:@[]];
   EXPECT_EQ(1, NumberOfSections());
 }
 
@@ -150,28 +151,32 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   CreateController();
   CheckController();
 
-  SiteSettingsCategoryDetailViewController* vc = GetController();
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
 
   SiteSettingsSiteException* allowedSite =
       CreateSiteException(@"https://allowed.com", @"allowed.com");
-  [vc setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
+  [view_controller setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
 
   NSIndexPath* askIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-  EXPECT_NSEQ(askIndexPath, [vc.tableView.delegate tableView:vc.tableView
-                                    willSelectRowAtIndexPath:askIndexPath]);
+  EXPECT_NSEQ(
+      askIndexPath,
+      [view_controller.tableView.delegate tableView:view_controller.tableView
+                           willSelectRowAtIndexPath:askIndexPath]);
 
   NSIndexPath* exceptionIndexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-  EXPECT_EQ(nil, [vc.tableView.delegate tableView:vc.tableView
-                         willSelectRowAtIndexPath:exceptionIndexPath]);
+  EXPECT_EQ(nil, [view_controller.tableView.delegate
+                                    tableView:view_controller.tableView
+                     willSelectRowAtIndexPath:exceptionIndexPath]);
 
   OCMExpect([mutator_ setDefaultSetting:CONTENT_SETTING_ASK]);
-  [vc.tableView.delegate tableView:vc.tableView
-           didSelectRowAtIndexPath:askIndexPath];
+  [view_controller.tableView.delegate tableView:view_controller.tableView
+                        didSelectRowAtIndexPath:askIndexPath];
   EXPECT_OCMOCK_VERIFY(mutator_);
 
   OCMExpect([mutator_ setDefaultSetting:CONTENT_SETTING_BLOCK]);
-  [vc.tableView.delegate tableView:vc.tableView
-           didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  [view_controller.tableView.delegate
+                    tableView:view_controller.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
   EXPECT_OCMOCK_VERIFY(mutator_);
 }
 
@@ -181,12 +186,12 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest, TestTrailingSwipeActions) {
   CreateController();
   CheckController();
 
-  SiteSettingsCategoryDetailViewController* vc = GetController();
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
 
   // With no exceptions, querying swipe actions for a default setting row should
   // return nil without crashing.
   UISwipeActionsConfiguration* defaultConfig =
-      [vc.tableView.delegate tableView:vc.tableView
+      [view_controller.tableView.delegate tableView:view_controller.tableView
           trailingSwipeActionsConfigurationForRowAtIndexPath:
               [NSIndexPath indexPathForRow:0 inSection:0]];
   EXPECT_EQ(nil, defaultConfig);
@@ -194,11 +199,11 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest, TestTrailingSwipeActions) {
   // Add an allowed site exception.
   SiteSettingsSiteException* allowedSite =
       CreateSiteException(@"https://allowed.com", @"allowed.com");
-  [vc setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
+  [view_controller setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
 
   // The Allowed section is at section index 1 (since Not Allowed is omitted).
   UISwipeActionsConfiguration* allowedConfig =
-      [vc.tableView.delegate tableView:vc.tableView
+      [view_controller.tableView.delegate tableView:view_controller.tableView
           trailingSwipeActionsConfigurationForRowAtIndexPath:
               [NSIndexPath indexPathForRow:0 inSection:1]];
   ASSERT_NE(nil, allowedConfig);
@@ -212,19 +217,20 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   CreateController();
   CheckController();
 
-  SiteSettingsCategoryDetailViewController* vc = GetController();
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
 
   SiteSettingsSiteException* blockedSite =
       CreateSiteException(@"https://blocked.com", @"blocked.com");
   SiteSettingsSiteException* allowedSite =
       CreateSiteException(@"https://allowed.com", @"allowed.com");
 
-  [vc setAllowedSites:@[ allowedSite ] notAllowedSites:@[ blockedSite ]];
+  [view_controller setAllowedSites:@[ allowedSite ]
+                   notAllowedSites:@[ blockedSite ]];
 
   // Section 1: Not Allowed.
   UITableViewCell* notAllowedCell =
-      [vc tableView:vc.tableView
-          cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+      [view_controller tableView:view_controller.tableView
+           cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
   ASSERT_TRUE([notAllowedCell.accessoryView isKindOfClass:[UIButton class]]);
   UIButton* notAllowedButton =
       static_cast<UIButton*>(notAllowedCell.accessoryView);
@@ -244,9 +250,9 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(UIMenuElementStateOn, notAllowedMenuBlockAction.state);
 
   // Section 2: Allowed.
-  UITableViewCell* allowedCell = [vc tableView:vc.tableView
-                         cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0
-                                                                  inSection:2]];
+  UITableViewCell* allowedCell =
+      [view_controller tableView:view_controller.tableView
+           cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
   ASSERT_TRUE([allowedCell.accessoryView isKindOfClass:[UIButton class]]);
   UIButton* allowedButton = static_cast<UIButton*>(allowedCell.accessoryView);
   EXPECT_TRUE(allowedButton.showsMenuAsPrimaryAction);
@@ -273,4 +279,81 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   OCMExpect([mutator_ setSetting:CONTENT_SETTING_BLOCK forSite:allowedSite]);
   [allowedMenuBlockAction performWithSender:allowedButton target:nil];
   EXPECT_OCMOCK_VERIFY(mutator_);
+}
+
+// Tests entering edit mode, selecting multiple site exceptions, and bulk
+// deleting them via the bottom toolbar Delete button.
+TEST_F(SiteSettingsCategoryDetailViewControllerTest,
+       TestBulkDeleteSiteExceptions) {
+  CreateController();
+  CheckController();
+
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
+  EXPECT_FALSE([view_controller shouldHideToolbar]);
+  EXPECT_FALSE([view_controller shouldShowEditDoneButton]);
+  EXPECT_FALSE([view_controller editButtonEnabled]);
+
+  SiteSettingsSiteException* blockedSite =
+      CreateSiteException(@"https://blocked.com", @"blocked.com");
+  SiteSettingsSiteException* allowedSite =
+      CreateSiteException(@"https://allowed.com", @"allowed.com");
+  [view_controller setAllowedSites:@[ allowedSite ]
+                   notAllowedSites:@[ blockedSite ]];
+
+  EXPECT_TRUE([view_controller editButtonEnabled]);
+  EXPECT_TRUE(view_controller.toolbarItems.lastObject.enabled);
+
+  // Enter editing mode.
+  [view_controller editButtonPressed];
+
+  // Default setting rows (Section 0) are not editable or selectable in edit
+  // mode.
+  NSIndexPath* defaultRow = [NSIndexPath indexPathForRow:0 inSection:0];
+  EXPECT_FALSE([view_controller tableView:view_controller.tableView
+                    canEditRowAtIndexPath:defaultRow]);
+  EXPECT_EQ(nil, [view_controller tableView:view_controller.tableView
+                     willSelectRowAtIndexPath:defaultRow]);
+
+  // Site exception rows (Section 1 and Section 2) are editable and selectable
+  // in edit mode.
+  NSIndexPath* blockedRow = [NSIndexPath indexPathForRow:0 inSection:1];
+  NSIndexPath* allowedRow = [NSIndexPath indexPathForRow:0 inSection:2];
+  EXPECT_TRUE([view_controller tableView:view_controller.tableView
+                   canEditRowAtIndexPath:blockedRow]);
+  EXPECT_TRUE([view_controller tableView:view_controller.tableView
+                   canEditRowAtIndexPath:allowedRow]);
+  EXPECT_NSEQ(blockedRow, [view_controller tableView:view_controller.tableView
+                              willSelectRowAtIndexPath:blockedRow]);
+  EXPECT_NSEQ(allowedRow, [view_controller tableView:view_controller.tableView
+                              willSelectRowAtIndexPath:allowedRow]);
+
+  // Select both site rows.
+  [view_controller.tableView
+      selectRowAtIndexPath:blockedRow
+                  animated:NO
+            scrollPosition:UITableViewScrollPositionNone];
+  [view_controller tableView:view_controller.tableView
+      didSelectRowAtIndexPath:blockedRow];
+  [view_controller.tableView
+      selectRowAtIndexPath:allowedRow
+                  animated:NO
+            scrollPosition:UITableViewScrollPositionNone];
+  [view_controller tableView:view_controller.tableView
+      didSelectRowAtIndexPath:allowedRow];
+
+  // Trigger Delete button action from the toolbar.
+  UIBarButtonItem* deleteButton = view_controller.toolbarItems.firstObject;
+  ASSERT_NE(nil, deleteButton);
+  EXPECT_TRUE(deleteButton.enabled);
+
+  NSArray<SiteSettingsSiteException*>* expectedSites =
+      @[ blockedSite, allowedSite ];
+  OCMExpect([mutator_ deleteSettingsForSites:expectedSites]);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  [deleteButton.target performSelector:deleteButton.action
+                            withObject:deleteButton];
+#pragma clang diagnostic pop
+  EXPECT_OCMOCK_VERIFY(mutator_);
+  EXPECT_FALSE(view_controller.editing);
 }

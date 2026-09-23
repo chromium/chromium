@@ -24,6 +24,9 @@
 // Removes the permission exception for the specified site.
 - (void)deleteSettingForSite:(SiteSettingsSiteException*)site;
 
+// Removes the permission exceptions for all specified `sites`.
+- (void)deleteSettingsForSites:(NSArray<SiteSettingsSiteException*>*)sites;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_SITE_SETTINGS_UI_SITE_SETTINGS_CATEGORY_DETAIL_MUTATOR_H_

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/site_settings/coordinator/site_settings_category_detail_mediator.h"
 
+#import "base/auto_reset.h"
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,6 +29,7 @@
   raw_ptr<FaviconLoader> _faviconLoader;
   ContentSettingsType _type;
   std::unique_ptr<ContentSettingsObserverBridge> _settingsObserver;
+  BOOL _ignoringSettingsChanges;
 }
 
 - (instancetype)initWithHostContentSettingsMap:
@@ -68,6 +70,9 @@
          didChangeForTypes:(ContentSettingsTypeSet)contentTypeSet
             primaryPattern:(const ContentSettingsPattern&)primaryPattern
           secondaryPattern:(const ContentSettingsPattern&)secondaryPattern {
+  if (_ignoringSettingsChanges) {
+    return;
+  }
   if (contentTypeSet.Contains(_type)) {
     [self loadSettings];
   }
@@ -98,6 +103,21 @@
   _settingsMap->SetContentSettingCustomScope(site.primaryPattern,
                                              site.secondaryPattern, _type,
                                              CONTENT_SETTING_DEFAULT);
+}
+
+- (void)deleteSettingsForSites:(NSArray<SiteSettingsSiteException*>*)sites {
+  if (!_settingsMap || sites.count == 0) {
+    return;
+  }
+  {
+    base::AutoReset<BOOL> ignoreChanges(&_ignoringSettingsChanges, YES);
+    for (SiteSettingsSiteException* site in sites) {
+      _settingsMap->SetContentSettingCustomScope(site.primaryPattern,
+                                                 site.secondaryPattern, _type,
+                                                 CONTENT_SETTING_DEFAULT);
+    }
+  }
+  [self loadSettings];
 }
 
 #pragma mark - TableViewFaviconDataSource
