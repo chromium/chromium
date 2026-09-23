@@ -1638,9 +1638,10 @@
     Got it
   </message>
 
-  <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_TEXT" desc="Text displayed in a toast notification when an Autofill AI suggestion has been removed by the user, explaining that the suggestion is removed and the original source data is not deleted." translateable="false">
-    <!-- TODO(crbug.com/501036619): Make string translateable once finalized. -->
-    Suggestion removed. Your original source won't be deleted.
+  <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_TEXT" desc="Text displayed in a toast notification when an Autofill AI suggestion has been removed by the user, explaining that the suggestion is removed and the original source data is not deleted. The plural selector is the number of such sources. [ICU Syntax]">
+    {NUM_SOURCES, plural,
+     =1 {Suggestion removed. Your original source won't be deleted.}
+     other {Suggestion removed. Your original sources won't be deleted.}}
   </message>
 
   <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_CONFIRMATION_TITLE" desc="Title of the dialog that asks the user to confirm that an Autofill AI suggestion should no longer be suggested by Chrome." translateable="false">
