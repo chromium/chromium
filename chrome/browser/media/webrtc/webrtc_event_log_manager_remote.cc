@@ -665,16 +665,6 @@ void WebRtcRemoteEventLogManager::RemoveLogsForNotEnabledBrowserContext(
 void WebRtcRemoteEventLogManager::RenderProcessHostExitedDestroyed(
     int render_process_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  StopLogging(render_process_id, StopLoggingAction::kStore,
-              /*diagnostic_uuid=*/std::nullopt, base::DoNothing());
-}
-
-void WebRtcRemoteEventLogManager::StopLogging(
-    int render_process_id,
-    StopLoggingAction action,
-    std::optional<std::string> diagnostic_uuid,
-    base::OnceClosure callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Remove all of the peer connections associated with this render process.
   auto pc_it = active_peer_connections_.begin();
@@ -685,6 +675,17 @@ void WebRtcRemoteEventLogManager::StopLogging(
       ++pc_it;
     }
   }
+
+  StopLogging(render_process_id, StopLoggingAction::kStore,
+              /*diagnostic_uuid=*/std::nullopt, base::DoNothing());
+}
+
+void WebRtcRemoteEventLogManager::StopLogging(
+    int render_process_id,
+    StopLoggingAction action,
+    std::optional<std::string> diagnostic_uuid,
+    base::OnceClosure callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Delete pending logs for this session if requested.
   if (action == StopLoggingAction::kDelete && diagnostic_uuid.has_value() &&

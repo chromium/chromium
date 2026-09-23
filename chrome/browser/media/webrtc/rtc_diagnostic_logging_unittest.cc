@@ -1190,4 +1190,100 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(observer_called);
 }
 
+TEST_F(RTCDiagnosticLoggingTest, QueuedStartAndCancelWithoutWaiting) {
+  const GURL url("https://example.google.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  base::test::TestFuture<void> start_future;
+  base::test::TestFuture<void> event_log_future;
+  base::test::TestFuture<void> cancel_future;
+
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_));
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_));
+
+  // Issue Start, StartRtcPeerConnectionEventDiagnosticLogging, and Cancel
+  // synchronously without waiting between them.
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), uuid, /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), kSessionId, event_log_future.GetCallback());
+  content::GetContentClientForTesting()->browser()->CancelRtcDiagnosticLogging(
+      *main_rfh(), cancel_future.GetCallback());
+
+  EXPECT_TRUE(start_future.Wait());
+  EXPECT_TRUE(event_log_future.Wait());
+  EXPECT_TRUE(cancel_future.Wait());
+
+  EXPECT_FALSE(controller()->web_api_settings().has_value());
+}
+
+TEST_F(RTCDiagnosticLoggingTest, QueuedStartFinishAndRestartWithoutWaiting) {
+  const GURL url("https://example.google.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  const base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid uuid2 = base::Uuid::GenerateRandomV4();
+
+  base::test::TestFuture<void> start1_future;
+  base::test::TestFuture<void> finish1_future;
+  base::test::TestFuture<void> start2_future;
+  base::test::TestFuture<void> event_log2_future;
+  base::test::TestFuture<void> finish2_future;
+
+  base::FilePath log_file_path;
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&log_file_path));
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_));
+
+  // Issue two full sessions back-to-back without waiting between calls:
+  // Session 1: Start -> Finish (upload=true)
+  // Session 2: Start -> StartEventLog -> Finish (upload=true)
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), uuid1, /*should_upload_on_stop=*/true,
+      {{"session", "first"}}, start1_future.GetCallback());
+  content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
+      *main_rfh(), {}, finish1_future.GetCallback());
+
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), uuid2, /*should_upload_on_stop=*/true,
+      {{"session", "second"}}, start2_future.GetCallback());
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), kSessionId, event_log2_future.GetCallback());
+  content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
+      *main_rfh(), {}, finish2_future.GetCallback());
+
+  EXPECT_TRUE(start1_future.Wait());
+  EXPECT_TRUE(finish1_future.Wait());
+  EXPECT_TRUE(start2_future.Wait());
+  EXPECT_TRUE(event_log2_future.Wait());
+  EXPECT_TRUE(finish2_future.Wait());
+
+  EXPECT_FALSE(controller()->web_api_settings().has_value());
+  EXPECT_THAT(log_file_path.BaseName().AsUTF8Unsafe(),
+              testing::HasSubstr(uuid2.AsLowercaseString()));
+
+  if (auto* uploader = webrtc_log_uploader()) {
+    base::test::TestFuture<void> uploader_future;
+    uploader->background_task_runner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), uploader_future.GetCallback());
+    EXPECT_TRUE(uploader_future.Wait());
+  }
+
+  if (!log_file_path.empty() && base::PathExists(log_file_path.DirName())) {
+    base::DeletePathRecursively(log_file_path.DirName());
+  }
+  base::FilePath text_log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          profile()->GetPath(), webrtc_logging::ApiType::kWeb);
+  if (base::PathExists(text_log_dir)) {
+    base::DeletePathRecursively(text_log_dir);
+  }
+}
+
 #endif

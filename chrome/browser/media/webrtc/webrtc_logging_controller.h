@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -93,7 +94,18 @@ class WebRtcLoggingController
 
   // Uploads the text log and the RTP dumps. Discards the local copy. May only
   // be called after text logging has stopped. Must be called on the UI thread.
-  void UploadLog(UploadDoneCallback callback);
+  // If `log_released_callback` is provided, it is invoked on the UI thread as
+  // soon as the log buffer has been released (closing the text log handler so
+  // new logs can be started) without waiting for the network upload to finish.
+  void UploadLog(
+      UploadDoneCallback callback,
+      base::OnceClosure log_released_callback = base::NullCallback());
+
+  // Enqueues an asynchronous Web API logging operation to ensure operations
+  // from the same renderer process are executed sequentially.
+  void EnqueueWebApiOperation(
+      base::OnceCallback<void(base::OnceClosure)> operation,
+      base::OnceClosure callback);
 
   // Discards the log and the RTP dumps. May only be called after logging has
   // stopped. Must be called on the UI thread.
@@ -189,6 +201,7 @@ class WebRtcLoggingController
   void LogToCircularBuffer(const std::string& message);
 
   void TriggerUpload(UploadDoneCallback callback,
+                     base::OnceClosure log_released_callback,
                      const base::FilePath& log_directory);
 
   void StoreLogInDirectory(const std::string& log_id,
@@ -197,7 +210,10 @@ class WebRtcLoggingController
                            const base::FilePath& directory);
   // A helper for TriggerUpload to do the real work.
   void DoUploadLogAndRtpDumps(const base::FilePath& log_directory,
-                              UploadDoneCallback callback);
+                              UploadDoneCallback callback,
+                              base::OnceClosure log_released_callback);
+
+  void OnWebApiOperationComplete(base::OnceClosure callback);
 
   // Create the RTP dump handler and start dumping. Must be called after making
   // sure the log directory exists.
@@ -269,6 +285,9 @@ class WebRtcLoggingController
   content::RenderProcessHost::WebRtcStopRtpDumpCallback stop_rtp_dump_callback_;
 
   std::optional<WebApiSettings> web_api_settings_;
+
+  base::queue<base::OnceClosure> web_api_operation_queue_;
+  bool is_web_api_operation_running_ = false;
 
   // Web app id used for statistics. Created as the hash of the value of a
   // "client" meta data key, if exists. 0 means undefined, and is the hash of
