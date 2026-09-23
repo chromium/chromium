@@ -221,7 +221,8 @@ TEST_F(DeviceTrustChallengeTabHelperTest,
   run_loop.Run();
   EXPECT_EQ(count, 1);
   EXPECT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.error, enterprise_connectors::DeviceTrustError::kUnknown);
+  EXPECT_EQ(response.error,
+            enterprise_connectors::DeviceTrustError::kServiceUnavailable);
 }
 
 // Verifies that BuildChallengeResponse fails when the DeviceTrustService is
@@ -241,7 +242,8 @@ TEST_F(DeviceTrustChallengeTabHelperTest,
   run_loop.Run();
   EXPECT_EQ(count, 1);
   EXPECT_TRUE(response.challenge_response.empty());
-  EXPECT_EQ(response.error, enterprise_connectors::DeviceTrustError::kUnknown);
+  EXPECT_EQ(response.error,
+            enterprise_connectors::DeviceTrustError::kServiceUnavailable);
 }
 
 // Verifies that BuildChallengeResponse fails when the origin is not watched

@@ -71,11 +71,8 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
       DeviceTrustServiceFactoryIOS::GetForProfile(profile);
 
   if (!service || !service->IsEnabled()) {
-    // TODO(crbug.com/563331507): Return a specific error code (e.g.
-    // kServiceUnavailable) instead of kUnknown when the service is absent or
-    // disabled.
     PostError(std::move(callback),
-              enterprise_connectors::DeviceTrustError::kUnknown);
+              enterprise_connectors::DeviceTrustError::kServiceUnavailable);
     return;
   }
 

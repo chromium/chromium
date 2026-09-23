@@ -226,10 +226,9 @@ void DeviceTrustJavaScriptFeature::HandleAttestationRequest(
   DeviceTrustChallengeTabHelper* tab_helper =
       DeviceTrustChallengeTabHelper::FromWebState(web_state);
   if (!tab_helper) {
-    // TODO(crbug.com/563331507): Return a specific error code instead of
-    // kUnknown when the tab helper is missing.
-    RejectAttestationRequest(std::move(callback),
-                             enterprise_connectors::DeviceTrustError::kUnknown);
+    RejectAttestationRequest(
+        std::move(callback),
+        enterprise_connectors::DeviceTrustError::kServiceUnavailable);
     return;
   }
 

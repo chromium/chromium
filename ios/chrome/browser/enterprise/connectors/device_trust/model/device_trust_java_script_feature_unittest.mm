@@ -214,10 +214,10 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectOversizedChallenge) {
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
-// Verifies that the default production routing returns INTERNAL_ERROR when no
-// DeviceTrustChallengeTabHelper is attached to the WebState.
+// Verifies that the default production routing returns SERVICE_UNAVAILABLE when
+// no DeviceTrustChallengeTabHelper is attached to the WebState.
 TEST_F(DeviceTrustJavaScriptFeatureTest,
-       DefaultRoutingReturnsInternalErrorWhenNoTabHelper) {
+       DefaultRoutingReturnsServiceUnavailableWhenNoTabHelper) {
   ResetReply();
   web::ScriptMessage message(MakeMessageBody(base::Value(kChallenge)),
                              /*is_user_interacting=*/false,
@@ -227,10 +227,38 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
   feature_.ScriptMessageReceivedWithReply(web_state(), message,
                                           CaptureReplyCallback());
 
-  ExpectErrorReply("INTERNAL_ERROR");
+  ExpectErrorReply("SERVICE_UNAVAILABLE");
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
             "Device attestation is not available.");
+}
+
+// Verifies that the default production routing returns SERVICE_UNAVAILABLE when
+// the DeviceTrustService is disabled.
+TEST_F(DeviceTrustJavaScriptFeatureTest,
+       DefaultRoutingReturnsServiceUnavailableWhenServiceDisabled) {
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(false));
+
+  ResetReply();
+  base::RunLoop run_loop;
+  web::ScriptMessage message(
+      MakeMessageBody(base::Value(kChallenge)),
+      /*is_user_interacting=*/false,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt,
+      /*security_origin=*/url::Origin::Create(GURL("https://example.com")));
+  feature_.ScriptMessageReceivedWithReply(
+      web_state(), message, CaptureReplyCallback(run_loop.QuitClosure()));
+
+  run_loop.Run();
+  ExpectErrorReply("SERVICE_UNAVAILABLE");
+  ASSERT_TRUE(reply_.has_value());
+  EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
+            "Device attestation is not available.");
+
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
 // Verifies that the default production routing returns URL_NOT_ALLOWED when the
