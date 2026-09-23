@@ -201,9 +201,6 @@ crbug.com/40145992 [ win qualcomm ] TraceTest_MediaFoundationD3D11VideoCapture [
 
 crbug.com/364179193 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
 
-# Flaky timeouts on all platforms
-crbug.com/371949935 TraceTest_ViewTransitionsCapture [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
