@@ -227,6 +227,8 @@ class OmniboxEverywhereUI
   void ExecuteScreenshotCommand(
       int command_id,
       base::WeakPtr<ContextualSearchboxScreenshareController> controller);
+  void OnScreenshotCaptureDone(
+      const std::optional<base::UnguessableToken>& token);
   void ResetScreenshotMenu();
   void SynthesizeMouseMoveEvent();
 
@@ -241,6 +243,7 @@ class OmniboxEverywhereUI
 
   const raw_ptr<Profile> profile_;
   bool is_composebox_mode_ = false;
+  bool screenshot_origin_was_searchbox_ = false;
 
   std::vector<PendingUploadStatus> pending_upload_statuses_;
 

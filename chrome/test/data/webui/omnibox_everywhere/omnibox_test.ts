@@ -3121,6 +3121,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
+          isPendingScreenshot: false,
         });
         await microtasksFinished();
 
@@ -3150,6 +3151,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           },
           fileToken: null,
           fileInfo: null,
+          isPendingScreenshot: false,
         });
         await microtasksFinished();
 
@@ -3174,6 +3176,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
+          isPendingScreenshot: false,
         });
         await microtasksFinished();
 
@@ -3204,6 +3207,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
+          isPendingScreenshot: false,
         });
         await microtasksFinished();
 
@@ -3243,6 +3247,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
+          isPendingScreenshot: false,
         });
         await microtasksFinished();
 
@@ -3267,5 +3272,137 @@ suite('OmniboxEverywhereContextMenuTest', () => {
 
         assertFalse(!!composebox.shadowRoot.querySelector('ntp-error-scrim'));
         assertEquals(0, composebox.files.size);
+      });
+
+  test(
+      'openComposebox with isPendingScreenshot suppresses suggestions dropdown',
+      async () => {
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: null,
+          fileInfo: null,
+          isPendingScreenshot: true,
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertTrue(composebox.isPendingScreenshot);
+        assertFalse(composebox.computeShowDropdown());
+
+        // Delivering a file context resets isPendingScreenshot and plays glow.
+        let glowPlayed = false;
+        composebox.playGlowAnimation = () => {
+          glowPlayed = true;
+        };
+
+        composebox.addFileContextFromBrowser(
+            '00000000000000010000000000000004', {
+              fileName: 'screenshot.png',
+              mimeType: 'image/png',
+              imageDataUrl: 'data:image/png;base64,AAAA',
+              thumbnailUrl: null,
+              isDeletable: true,
+              selectionTime: new Date(),
+            });
+        await microtasksFinished();
+
+        assertFalse(composebox.isPendingScreenshot);
+        assertTrue(glowPlayed);
+      });
+
+  test(
+      'onScreenshotCaptureCancelled reverts to searchbox if initiated from ' +
+          'searchbox',
+      async () => {
+        // Initially in searchbox mode.
+        assertTrue(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-omnibox'));
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: null,
+          fileInfo: null,
+          isPendingScreenshot: true,
+        });
+        await microtasksFinished();
+
+        // Should be in composebox mode with isPendingScreenshot = true.
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertTrue(composebox.isPendingScreenshot);
+
+        // Reset the mock calls before cancelling.
+        testEverywhereProxy.handler.reset();
+
+        // Cancel the screenshot capture.
+        testEverywhereProxy.page.onScreenshotCaptureCancelled();
+        await microtasksFinished();
+
+        // App should revert to searchbox mode.
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        assertTrue(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-omnibox'));
+        const isComposeboxArg =
+            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+        assertFalse(isComposeboxArg);
+      });
+
+  test(
+      'onScreenshotCaptureCancelled remains in composebox if initiated from ' +
+          'composebox',
+      async () => {
+        // First transition to composebox mode normally (e.g. from context
+        // menu).
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: null,
+          fileInfo: null,
+          isPendingScreenshot: false,
+        });
+        await microtasksFinished();
+
+        let composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertFalse(composebox.isPendingScreenshot);
+
+        // Initiate screenshot from within composebox mode.
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: null,
+          fileInfo: null,
+          isPendingScreenshot: true,
+        });
+        await microtasksFinished();
+
+        composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertTrue(composebox.isPendingScreenshot);
+
+        // Cancel the screenshot capture.
+        testEverywhereProxy.page.onScreenshotCaptureCancelled();
+        await microtasksFinished();
+
+        // Should remain in composebox mode with isPendingScreenshot reset to
+        // false.
+        composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertFalse(composebox.isPendingScreenshot);
       });
 });

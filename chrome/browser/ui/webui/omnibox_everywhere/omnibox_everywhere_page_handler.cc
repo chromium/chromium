@@ -42,3 +42,9 @@ void OmniboxEverywherePageHandler::OpenComposebox(
     page_->OpenComposebox(std::move(initial_state));
   }
 }
+
+void OmniboxEverywherePageHandler::OnScreenshotCaptureCancelled() {
+  if (page_) {
+    page_->OnScreenshotCaptureCancelled();
+  }
+}

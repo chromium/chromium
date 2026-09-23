@@ -31,6 +31,10 @@ struct ComposeboxInitialState {
   // File metadata (e.g. name, mime type, image preview data URL) for the
   // selected file corresponding to `file_token`.
   searchbox.mojom.SelectedFileInfo? file_info;
+
+  // True if transitioning into composebox while an asynchronous screenshot
+  // capture (e.g. from the Lens menu) is in progress.
+  bool is_pending_screenshot = false;
 };
 
 // The browser-side handler factory for Omnibox Everywhere.
@@ -59,4 +63,8 @@ interface Page {
   // Notifies the page to open composebox mode (e.g. from native context menu
   // actions) with optional initial configuration (tool, model, or tab).
   OpenComposebox(ComposeboxInitialState? initial_state);
+
+  // Notifies the WebUI that a pending screenshot capture (e.g. region or
+  // window selection) was cancelled by the user or failed.
+  OnScreenshotCaptureCancelled();
 };

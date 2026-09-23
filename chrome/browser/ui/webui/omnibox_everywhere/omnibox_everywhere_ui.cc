@@ -692,6 +692,7 @@ void OmniboxEverywhereUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
   pending_upload_statuses_.clear();
   is_composebox_mode_ = false;
+  screenshot_origin_was_searchbox_ = false;
 
   // OmniboxEverywhereUI concurrently hosts both `omnibox_handler_` and
   // `composebox_handler_` across a persistent WebContents.
@@ -895,30 +896,57 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
     return;
   }
 
+  screenshot_origin_was_searchbox_ = !is_composebox_mode_;
+
+  // Open Composebox immediately from the Lens entry point with a pending
+  // screenshot state so that when the capture/picker UI dismisses, the view
+  // transitions directly into Composebox without briefly rendering the
+  // Loomnibox omnibox or flashing zero-prefix suggestions.
+  auto initial_state = omnibox_everywhere::mojom::ComposeboxInitialState::New();
+  initial_state->is_pending_screenshot = true;
+  OpenComposebox(std::move(initial_state));
+
+  auto on_capture_done =
+      base::BindOnce(&OmniboxEverywhereUI::OnScreenshotCaptureDone,
+                     weak_factory_.GetWeakPtr());
+
   switch (command_id) {
     case kScreenshotEntireScreen:
       base::UmaHistogramEnumeration(
           "OmniboxEverywhere.Screenshare.OptionSelected",
           ScreenshareOption::kEntireScreen);
       controller->StartScreenshare(
-          /*prefer_entire_screen=*/true, base::DoNothing());
+          /*prefer_entire_screen=*/true, std::move(on_capture_done));
       break;
     case kScreenshotWindow:
       base::UmaHistogramEnumeration(
           "OmniboxEverywhere.Screenshare.OptionSelected",
           ScreenshareOption::kWindow);
       controller->StartScreenshare(
-          /*prefer_entire_screen=*/false, base::DoNothing());
+          /*prefer_entire_screen=*/false, std::move(on_capture_done));
       break;
     case kScreenshotRegion:
       base::UmaHistogramEnumeration(
           "OmniboxEverywhere.Screenshare.OptionSelected",
           ScreenshareOption::kRegion);
-      controller->CaptureRegionScreenshot(base::DoNothing());
+      controller->CaptureRegionScreenshot(std::move(on_capture_done));
       break;
     default:
       NOTREACHED();
   }
+}
+
+void OmniboxEverywhereUI::OnScreenshotCaptureDone(
+    const std::optional<base::UnguessableToken>& token) {
+  if (!token.has_value()) {
+    if (screenshot_origin_was_searchbox_) {
+      SetIsComposebox(false);
+    }
+    if (page_handler_) {
+      page_handler_->OnScreenshotCaptureCancelled();
+    }
+  }
+  screenshot_origin_was_searchbox_ = false;
 }
 
 bool OmniboxEverywhereUI::IsCommandIdChecked(int command_id) const {
@@ -969,6 +997,12 @@ bool OmniboxEverywhereUI::IsCommandIdVisible(int command_id) const {
 
 void OmniboxEverywhereUI::OpenComposebox(
     omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
+  // Clear any active autocomplete suggestions on the omnibox searchbox before
+  // transitioning into Composebox mode so that stale searchbox results do not
+  // linger or flash during the mode switch.
+  if (omnibox_handler_) {
+    omnibox_handler_->StopAutocomplete(/*clear_result=*/true);
+  }
   SetIsComposebox(true);
   if (page_handler_) {
     page_handler_->OpenComposebox(std::move(initial_state));
@@ -983,6 +1017,7 @@ void OmniboxEverywhereUI::OnComposeboxHandlerDisconnected() {
 void OmniboxEverywhereUI::AddFileContext(
     const base::UnguessableToken& token,
     searchbox::mojom::SelectedFileInfoPtr file_info) {
+  screenshot_origin_was_searchbox_ = false;
   if (is_composebox_mode_ && composebox_handler_) {
     composebox_handler_->AddFileContextFromBrowser(token, std::move(file_info));
   } else {
