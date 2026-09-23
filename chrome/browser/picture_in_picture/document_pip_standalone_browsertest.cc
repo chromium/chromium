@@ -19,9 +19,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -33,7 +35,7 @@ constexpr base::FilePath::CharType kDocumentPipPage[] =
 
 }  // namespace
 
-// Base fixture for the standalone Document PiP browser tests.
+// Base fixture for Document PiP browser tests.
 class DocumentPipStandaloneBrowserTestBase : public InProcessBrowserTest {
  public:
   DocumentPipStandaloneBrowserTestBase() = default;
@@ -80,6 +82,27 @@ class DocumentPipStandaloneEnabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class DocumentPipLifecycleBrowserTest
+    : public DocumentPipStandaloneBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  DocumentPipLifecycleBrowserTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kDocumentPictureInPictureAPI, true},
+         {features::kDocumentPipStandaloneWindow, GetParam()}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPipLifecycleBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
 // The standalone PiP widget should be placed on the same display as its
 // opener (regression guard for: the widget is given only a size, so the origin
 // defaults to the primary display's top-left).
@@ -110,38 +133,39 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
   EXPECT_EQ(opener_display.id(), pip_display.id());
 }
 
-// Exiting via the manager tears down the standalone window and child contents.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
-                       ExitClosesStandaloneWindow) {
-  OpenDocumentPipWindow();
+IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest, ExitClosesWindow) {
+  const bool is_standalone = GetParam();
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
 
-  auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
-  ASSERT_NE(nullptr, host->GetChildWebContents());
-
+  auto* opener = OpenerWebContents();
   auto* manager = PictureInPictureWindowManager::GetInstance();
-  EXPECT_TRUE(manager->ExitPictureInPicture());
-
-  EXPECT_EQ(nullptr, host->GetWidget());
-  EXPECT_EQ(nullptr, host->GetChildWebContents());
-  EXPECT_EQ(nullptr, manager->GetChildWebContents());
-}
-
-// Navigating the opener to a new page closes the standalone PiP window.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
-                       OpenerNavigationClosesWindow) {
-  OpenDocumentPipWindow();
-
+  ASSERT_TRUE(manager->IsInPictureInPicture());
+  ASSERT_EQ(opener, manager->GetWebContents());
+  auto* child = manager->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_NE(nullptr, widget);
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(widget);
   auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
-  ASSERT_NE(nullptr, host->GetWidget());
+  ASSERT_EQ(is_standalone, host != nullptr);
+  base::WeakPtr<DocumentPipHost> host_weak =
+      host ? host->GetWeakPtr() : nullptr;
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(manager->ExitPictureInPicture());
 
-  // The host stays attached to the opener, but its window is closed.
-  EXPECT_EQ(nullptr, host->GetWidget());
-  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  child_destroyed_watcher.Wait();
+  widget_destroyed_waiter.Wait();
+  EXPECT_FALSE(manager->IsInPictureInPicture());
+  EXPECT_EQ(nullptr, manager->GetWebContents());
+  EXPECT_EQ(nullptr, manager->GetChildWebContents());
+  if (is_standalone) {
+    ASSERT_TRUE(host_weak);
+    EXPECT_EQ(host_weak.get(), GetDocumentPipHost());
+    EXPECT_EQ(nullptr, host_weak->GetWidget());
+    EXPECT_EQ(nullptr, host_weak->GetChildWebContents());
+  }
 }
 
 // Regression test for crbug.com/544038274: a renderer-initiated same-window
@@ -172,16 +196,26 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
       PictureInPictureWindowManager::GetInstance()->GetChildWebContents());
 }
 
-// Closing the opener tab destroys the host and leaves no PiP window behind.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest,
                        OpenerDestroyedClosesWindow) {
-  OpenDocumentPipWindow();
-  auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
+  const bool is_standalone = GetParam();
+  ASSERT_NO_FATAL_FAILURE(OpenDocumentPipWindow());
 
-  // The host is WebContentsUserData on the opener, so it is destroyed when the
-  // opener tab closes. Track it with a WeakPtr to verify it is released.
-  base::WeakPtr<DocumentPipHost> host_weak = host->GetWeakPtr();
+  auto* opener = OpenerWebContents();
+  auto* manager = PictureInPictureWindowManager::GetInstance();
+  ASSERT_TRUE(manager->IsInPictureInPicture());
+  ASSERT_EQ(opener, manager->GetWebContents());
+  auto* child = manager->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(child->GetTopLevelNativeWindow());
+  ASSERT_NE(nullptr, widget);
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(widget);
+  auto* host = GetDocumentPipHost();
+  ASSERT_EQ(is_standalone, host != nullptr);
+  base::WeakPtr<DocumentPipHost> host_weak =
+      host ? host->GetWeakPtr() : nullptr;
 
   // Open a second tab so closing the first one doesn't close the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -192,9 +226,12 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
   browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 
-  // Destroying the opener releases the host and leaves no PiP window behind.
-  EXPECT_FALSE(host_weak);
-  EXPECT_EQ(
-      nullptr,
-      PictureInPictureWindowManager::GetInstance()->GetChildWebContents());
+  child_destroyed_watcher.Wait();
+  widget_destroyed_waiter.Wait();
+  EXPECT_FALSE(manager->IsInPictureInPicture());
+  EXPECT_EQ(nullptr, manager->GetWebContents());
+  EXPECT_EQ(nullptr, manager->GetChildWebContents());
+  if (is_standalone) {
+    EXPECT_FALSE(host_weak);
+  }
 }
