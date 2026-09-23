@@ -23,6 +23,16 @@ import type {SearchEngineChoice} from './search_engine_choice.js';
 import {browserProxyFactory, PageHandler_ScrollState} from './search_engine_choice.mojom-webui.js';
 import type {PageHandlerInterface} from './search_engine_choice.mojom-webui.js';
 
+export function doElementsOverlap(
+    firstElement: DOMRect, secondElement: DOMRect,
+    offset: number = 0): boolean {
+  return !(
+      firstElement.right + offset < secondElement.left ||
+      firstElement.left - offset > secondElement.right ||
+      firstElement.bottom < secondElement.top ||
+      firstElement.top > secondElement.bottom);
+}
+
 export interface AppRefreshElement {
   $: {
     actionButton: CrButtonElement,
@@ -92,8 +102,6 @@ export class AppRefreshElement extends AppRefreshElementBase {
       browserProxyFactory.getInstance().handler;
 
   override connectedCallback() {
-    super.connectedCallback();
-
     this.useHorizontalMode_ = this.mediaQueryList_.matches;
 
     // Change the `icon_path` format so that it can be used with the
@@ -111,27 +119,9 @@ export class AppRefreshElement extends AppRefreshElementBase {
             ') 1x, url(' + searchEngine.iconPath + '@2x) 2x)';
       }
     });
-    this.requestUpdate();
 
+    super.connectedCallback();
     this.addResizeObserver_();
-
-    this.updateComplete.then(() => {
-      const metrics = this.getScrollMetrics_();
-      const isPageScrollable = metrics.scrollHeight > metrics.clientHeight;
-
-      // If the choiceList doesn't contain a scrollbar then the user is already
-      // at the bottom.
-      this.hasUserScrolledToTheBottom_ = !isPageScrollable;
-
-      if (isPageScrollable) {
-        const scrollTarget =
-            this.useHorizontalMode_ ? window : this.$.choiceList;
-        scrollTarget.addEventListener('scroll', this.onPageScroll_);
-      }
-
-      this.mediaQueryList_.addEventListener('change', this.onLayoutChange_);
-      this.pageHandler_.displayDialog();
-    });
   }
 
   override disconnectedCallback() {
@@ -171,46 +161,57 @@ export class AppRefreshElement extends AppRefreshElementBase {
     }
   }
 
-  private addResizeObserver_() {
-    function doElementsOverlap(
-        firstElement: DOMRect, secondElement: DOMRect,
-        offset: number): boolean {
-      return !(
-          firstElement.right + offset < secondElement.left ||
-          firstElement.left - offset > secondElement.right ||
-          firstElement.bottom < secondElement.top ||
-          firstElement.top > secondElement.bottom);
+  override firstUpdated() {
+    const metrics = this.getScrollMetrics_();
+    const isPageScrollable = metrics.scrollHeight > metrics.clientHeight;
+
+    // If the choiceList doesn't contain a scrollbar then the user is already
+    // at the bottom.
+    this.hasUserScrolledToTheBottom_ = !isPageScrollable;
+
+    if (isPageScrollable) {
+      const scrollTarget = this.useHorizontalMode_ ? window : this.$.choiceList;
+      scrollTarget.addEventListener('scroll', this.onPageScroll_);
     }
 
+    this.mediaQueryList_.addEventListener('change', this.onLayoutChange_);
+    this.pageHandler_.displayDialog();
+  }
+
+  private evaluateOverlap_() {
+    // The button container should hide the remaining elements of the list
+    // when they overlap so that the search engines and submit button don't
+    // block each other.
+    const buttonRect = this.$.actionButton.getBoundingClientRect();
+    const listRect = this.$.choiceList.getBoundingClientRect();
+
+    // We add an offset to mitigate the change in position caused by the
+    // addition of the scrollbar.
+    let offset = 0;
+    if (this.$.choiceList.classList.contains('overlap-mitigation')) {
+      offset = 30;
+    }
+
+    // Check if the list overlaps with guest checkbox.
+    let isOverlapping = doElementsOverlap(buttonRect, listRect, offset);
+    if (this.$.guestCheckbox && !this.$.guestCheckbox.hidden) {
+      const checkboxRect = this.$.guestCheckbox.getBoundingClientRect();
+      isOverlapping =
+          isOverlapping || doElementsOverlap(checkboxRect, listRect, offset);
+    }
+
+    // Defer style changes to after the browser repaints to avoid triggering a
+    // resize loop. See crbug.com/409406185.
+    requestAnimationFrame(() => {
+      this.$.choiceList.classList.toggle('overlap-mitigation', isOverlapping);
+      this.$.buttonContainer.classList.toggle(
+          'overlap-mitigation', isOverlapping);
+    });
+  }
+
+  private addResizeObserver_() {
     this.resizeObserver_ = new ResizeObserver(() => {
-      // The button container should hide the remaining elements of the list
-      // when they overlap so that the search engines and submit button don't
-      // block each other.
-      const buttonRect = this.$.actionButton.getBoundingClientRect();
-      const listRect = this.$.choiceList.getBoundingClientRect();
-
-      // We add an offset to mitigate the change in position caused by the
-      // addition of the scrollbar.
-      let offset = 0;
-      if (this.$.choiceList.classList.contains('overlap-mitigation')) {
-        offset = 30;
-      }
-
-      // Check if the list overlaps with guest checkbox.
-      let isOverlapping = doElementsOverlap(buttonRect, listRect, offset);
-      if (this.$.guestCheckbox && !this.$.guestCheckbox.hidden) {
-        const checkboxRect = this.$.guestCheckbox.getBoundingClientRect();
-        isOverlapping =
-            isOverlapping || doElementsOverlap(checkboxRect, listRect, offset);
-      }
-
-      // Defer style changes to after the browser repaints to avoid triggering a
-      // resize loop. See crbug.com/409406185.
-      requestAnimationFrame(() => {
-        this.$.choiceList.classList.toggle('overlap-mitigation', isOverlapping);
-        this.$.buttonContainer.classList.toggle(
-            'overlap-mitigation', isOverlapping);
-      });
+      this.evaluateOverlap_();
     });
     this.resizeObserver_.observe(document.body);
     this.resizeObserver_.observe(this.$.choiceList);

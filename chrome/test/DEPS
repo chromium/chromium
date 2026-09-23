@@ -91,6 +91,7 @@ include_rules = [
   "+components/private_verification_tokens",
   "+components/profile_metrics",
   "+components/push_messaging",
+  "+components/regional_capabilities",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser/db",
   "+components/sampling_profiler",
