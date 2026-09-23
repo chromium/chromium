@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Presubmit script for chrome/browser/readaloud.
+"""Presubmit script for chrome/services/readaloud.
+
+Reuses the shared ReadAloud assertion order checks defined in
+chrome/browser/readaloud/common_checks.py.
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
