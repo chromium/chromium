@@ -1038,11 +1038,6 @@ bool GapGeometry::IsIntersectionAtContainerEdge(
     //     * kBoth: Both first and last intersections are edges.
     //     * kStart: Only the first intersection is an edge.
     //     * kEnd: Only the last intersection is an edge.
-    //
-    // TODO(samomekarajr): Introducing the edge state to main_gap, can avoid the
-    // special logic for flex cross gaps here. We can simply check the edge
-    // state of the gap to determine if the first and/or last intersection are
-    // edges.
     CrossGap::EdgeIntersectionState cross_gap_edge_state =
         GetCrossGaps()[gap_index].GetEdgeIntersectionState();
     if (cross_gap_edge_state == CrossGap::EdgeIntersectionState::kBoth) {

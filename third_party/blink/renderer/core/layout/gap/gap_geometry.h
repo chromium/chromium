@@ -793,13 +793,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   ContainerType container_type_;
 
-  // TODO(crbug.com/436140061): These properties are being used to implement the
-  // optimized version of GapDecorations. Once the optimized version is
-  // implemented, we can remove all the other unused properties from the old
-  // version.
-  // See third_party/blink/renderer/core/layout/gap/README.md for more
-  // information.
-
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
 

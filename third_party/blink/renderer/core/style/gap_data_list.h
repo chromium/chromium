@@ -18,9 +18,6 @@ namespace blink {
 // specified. These values can be an auto repeater, an integer repeater, or a
 // single value. The value could be a color, style or width. See:
 // https://drafts.csswg.org/css-gaps-1/#color-style-width
-// TODO(crbug.com/357648037): Consider removing the template and instead having
-// concrete subclasses
-// for StyleColor, EBorderStyle, and int.
 template <typename T>
 class CORE_EXPORT GapDataList {
   DISALLOW_NEW();

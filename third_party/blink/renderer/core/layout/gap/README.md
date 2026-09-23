@@ -140,5 +140,4 @@ reduced:
 
 <!--
 TODO(javiercon): Complete this for multicol.
-TODO(samomekarajr && javiercon): Complete this for grid-lanes.
 -->

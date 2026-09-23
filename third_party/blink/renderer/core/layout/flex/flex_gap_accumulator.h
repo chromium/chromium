@@ -119,9 +119,6 @@ struct FlexLine;
 //
 // Important to note that all of this is fragment-relative. If the flexbox is
 // fragmented, each fragment will have its own `GapGeometry`.
-//
-// TODO(javiercon): Consider refactoring this code to be able to be reused for
-// grid-lanes, by abstracting away the flex-specific logic.
 class CORE_EXPORT FlexGapAccumulator {
   STACK_ALLOCATED();
 
