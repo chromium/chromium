@@ -252,6 +252,9 @@ class DaemonProcess : public ConfigWatcher::Delegate,
     return remoting_host_control_.get();
   }
 
+  // Deletes all desktop sessions.
+  void DeleteAllDesktopSessions();
+
  private:
   // Launches a peer connection process and establishes an IPC channel with it.
   // Returns a pointer to the created handler, or nullptr if creation failed.
@@ -268,9 +271,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   // Binds associated interfaces to the network process launcher.
   void BindAssociatedInterfaces();
-
-  // Deletes all desktop sessions.
-  void DeleteAllDesktopSessions();
 
   // Task runner on which public methods of this class must be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;

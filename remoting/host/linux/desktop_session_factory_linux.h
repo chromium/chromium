@@ -8,9 +8,11 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -18,6 +20,7 @@
 #include "remoting/base/loggable.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/linux/desktop_session_backend.h"
+#include "remoting/host/linux/session_routing_config.h"
 #include "remoting/host/mojom/desktop_session.mojom-forward.h"
 
 namespace remoting {
@@ -44,7 +47,7 @@ class DesktopSessionFactoryLinux final {
   // Starts the factory. Must be called exactly once before calling other
   // methods. `callback` is called once the factory has successfully started or
   // failed to start.
-  void Start(Callback callback);
+  void Start(bool is_corp_host, Callback callback);
 
   // Creates a new desktop session instance.
   std::unique_ptr<DesktopSession> CreateDesktopSession(
@@ -59,12 +62,18 @@ class DesktopSessionFactoryLinux final {
   DesktopSession* GetSessionByUid(uid_t uid);
 
  private:
+  void OnSessionRoutingConfigLoaded(
+      Callback callback,
+      base::expected<std::optional<SessionRoutingConfig>, Loggable> result);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<DesktopSessionBackend> backend_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<DesktopSessionFactoryLinux> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

@@ -1590,16 +1590,11 @@ bool HostProcess::ApplyConfig(const base::DictValue& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
-  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
-  bool has_google_email = IsGoogleEmail(*host_owner);
   OnUpdateHostOwner(*host_owner);
 
   auto* host_type_hint = config.FindString(kHostTypeHintPath);
   is_cloud_host_ = (host_type_hint && *host_type_hint == kCloudHostTypeHint);
-  // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
-  // have a hint set. This is used to allow Googlers to test with Cloud hosts.
-  is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
-                  (has_google_email && !is_cloud_host_);
+  is_corp_host_ = IsCorpHostConfig(config);
 
   require_session_authorization_ =
       config.FindBool(kRequireSessionAuthorizationPath).value_or(false);

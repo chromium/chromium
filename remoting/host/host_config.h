@@ -82,6 +82,9 @@ std::optional<base::DictValue> HostConfigFromJsonFile(
 bool HostConfigToJsonFile(const base::DictValue& host_config,
                           const base::FilePath& config_file);
 
+// Returns true if the host configuration indicates a corporate host instance.
+bool IsCorpHostConfig(const base::DictValue& host_config);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_HOST_CONFIG_H_

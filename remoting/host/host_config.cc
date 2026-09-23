@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "remoting/base/is_google_email.h"
 
 namespace remoting {
 
@@ -89,6 +90,18 @@ bool HostConfigToJsonFile(const base::DictValue& host_config,
   std::string serialized = HostConfigToJson(host_config);
   return base::ImportantFileWriter::WriteFileAtomically(config_file,
                                                         serialized);
+}
+
+bool IsCorpHostConfig(const base::DictValue& host_config) {
+  const std::string* host_owner = host_config.FindString(kHostOwnerConfigPath);
+  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
+  bool has_google_email = host_owner && IsGoogleEmail(*host_owner);
+  const std::string* host_type_hint = host_config.FindString(kHostTypeHintPath);
+  bool is_cloud_host = host_type_hint && *host_type_hint == kCloudHostTypeHint;
+  // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
+  // have a hint set. This is used to allow Googlers to test with Cloud hosts.
+  return (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
+         (has_google_email && !is_cloud_host);
 }
 
 }  // namespace remoting

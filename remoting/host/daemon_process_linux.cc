@@ -77,7 +77,8 @@ class DaemonProcessLinux : public DaemonProcess {
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
 
-  void StartDesktopSessionFactory();
+  // ConfigWatcher::Delegate implementation.
+  void OnConfigUpdated(const std::string& serialized_config) override;
 
   void Cleanup(base::OnceClosure callback) override;
 
@@ -93,7 +94,8 @@ class DaemonProcessLinux : public DaemonProcess {
   void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
 
-  DesktopSessionFactoryLinux desktop_session_factory_;
+  std::optional<bool> is_corp_host_;
+  std::unique_ptr<DesktopSessionFactoryLinux> desktop_session_factory_;
 };
 
 DaemonProcessLinux::DaemonProcessLinux(
@@ -102,17 +104,33 @@ DaemonProcessLinux::DaemonProcessLinux(
     StoppedCallback stopped_callback)
     : DaemonProcess(caller_task_runner,
                     io_task_runner,
-                    std::move(stopped_callback)),
-      desktop_session_factory_(io_task_runner) {}
+                    std::move(stopped_callback)) {}
 
 DaemonProcessLinux::~DaemonProcessLinux() = default;
 
-
-
-void DaemonProcessLinux::StartDesktopSessionFactory() {
+void DaemonProcessLinux::OnConfigUpdated(const std::string& serialized_config) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  desktop_session_factory_.Start(
+  DaemonProcess::OnConfigUpdated(serialized_config);
+
+  std::optional<base::DictValue> config = HostConfigFromJson(serialized_config);
+  if (!config.has_value()) {
+    return;
+  }
+
+  bool is_corp_host = IsCorpHostConfig(*config);
+  if (is_corp_host_.has_value() && *is_corp_host_ == is_corp_host) {
+    return;
+  }
+  is_corp_host_ = is_corp_host;
+
+  if (desktop_session_factory_) {
+    DeleteAllDesktopSessions();
+  }
+  desktop_session_factory_ =
+      std::make_unique<DesktopSessionFactoryLinux>(io_task_runner());
+  desktop_session_factory_->Start(
+      is_corp_host,
       base::BindOnce(&DaemonProcessLinux::OnStartDesktopSessionFactoryResult,
                      base::Unretained(this)));
 }
@@ -122,8 +140,13 @@ std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
     const mojom::DesktopSessionOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  return desktop_session_factory_.CreateDesktopSession(terminal_id, this,
-                                                       options);
+  if (!desktop_session_factory_) {
+    LOG(ERROR) << "Desktop session factory is not ready.";
+    return nullptr;
+  }
+
+  return desktop_session_factory_->CreateDesktopSession(terminal_id, this,
+                                                        options);
 }
 
 void DaemonProcessLinux::LaunchNetworkProcess() {
@@ -229,7 +252,12 @@ void DaemonProcessLinux::OnStartDesktopSessionFactoryResult(
 void DaemonProcessLinux::Cleanup(base::OnceClosure callback) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  desktop_session_factory_.TerminateAllSessions(base::BindOnce(
+  if (!desktop_session_factory_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  desktop_session_factory_->TerminateAllSessions(base::BindOnce(
       [](base::OnceClosure callback, base::expected<void, Loggable> result) {
         if (!result.has_value()) {
           LOG(ERROR) << result.error();
@@ -252,8 +280,6 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     return nullptr;
   }
 
-  daemon_process->StartDesktopSessionFactory();
-
   // Finishes configuring the Daemon process and launches the network process.
   daemon_process->Initialize();
 
@@ -269,7 +295,9 @@ void DaemonProcessLinux::BindSessionServices(
   }
 
   uid_t uid = host_services_receivers().current_context()->credentials.uid;
-  DesktopSession* session = desktop_session_factory_.GetSessionByUid(uid);
+  DesktopSession* session = desktop_session_factory_
+                                ? desktop_session_factory_->GetSessionByUid(uid)
+                                : nullptr;
   if (session && session->events_remote()) {
     session->events_remote()->OnSessionServicesClientConnected(
         std::move(receiver));
