@@ -249,6 +249,7 @@ TEST_F(CrxDownloaderTest, OneUrl) {
       DeleteFileAndEmptyParentDirectory(download_complete_result_.response));
 
   EXPECT_LE(1, num_progress_calls_);
+  EXPECT_EQ(downloaded_bytes_, 1015);
   EXPECT_EQ(total_bytes_, 1015);
 }
 
@@ -334,6 +335,9 @@ TEST_F(CrxDownloaderTest, TwoUrls_FirstInvalid) {
   EXPECT_EQ(0, download_complete_result_.error);
   EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
+  // Assert that progress callbacks are received for the second URL.
+  EXPECT_EQ(downloaded_bytes_, 1015);
+  EXPECT_EQ(total_bytes_, 1015);
 
   EXPECT_TRUE(
       DeleteFileAndEmptyParentDirectory(download_complete_result_.response));

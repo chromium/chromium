@@ -115,11 +115,6 @@ void CrxDownloader::OnDownloadComplete(
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Release any references held by the progress callback, in case the
-  // CrxDownloader outlives the receiver of the progress_callback. (This is
-  // often the case in tests.)
-  progress_callback_.Reset();
-
   if (result.error) {
     main_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError, this,
