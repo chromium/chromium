@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2024 The Chromium Authors
+Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -9,15 +9,18 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/task_item_margin_bottom"
-    android:background="@color/dialog_selected_item_bg_color_list"
+    android:divider="@drawable/task_header_divider"
+    android:showDividers="middle"
     android:orientation="horizontal"
     android:padding="16dp">
 
+    <!-- TODO(crbug.com/381352682): Make the header items easier to click. -->
     <TextView
         android:id="@+id/task_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
     <TextView
         android:id="@+id/memory_footprint"
@@ -25,6 +28,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="@dimen/task_item_column_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
     <TextView
         android:id="@+id/cpu"
@@ -32,6 +36,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="@dimen/task_item_column_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
     <TextView
         android:id="@+id/network_usage"
@@ -39,6 +44,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="@dimen/task_item_column_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
     <TextView
         android:id="@+id/process_id"
@@ -46,6 +52,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="@dimen/task_item_column_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
     <TextView
         android:id="@+id/gpu_memory_id"
@@ -53,6 +60,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingStart="@dimen/task_item_column_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     />
 
 </LinearLayout>

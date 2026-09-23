@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.task_manager.ui;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
@@ -26,7 +25,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -87,11 +85,6 @@ class TaskManagerCoordinator {
         mMediator = mediator;
 
         mHeaderView = taskManagerView.findViewById(R.id.header_linear_layout);
-        mHeaderView.setBackground(null);
-        mHeaderView.setDividerDrawable(
-                AppCompatResources.getDrawable(
-                        mHeaderView.getContext(), R.drawable.task_header_divider));
-        mHeaderView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
         mModelChangeProcessors.add(
                 PropertyModelChangeProcessor.create(
@@ -315,8 +308,6 @@ class TaskManagerCoordinator {
                     textView.append(" ▼");
                 }
             }
-
-            textView.setTypeface(null, Typeface.BOLD);
         }
     }
 

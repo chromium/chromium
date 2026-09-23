@@ -58,6 +58,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/task_card_background.xml",
     "java/res/drawable/task_header_divider.xml",
+    "java/res/layout/task_header.xml",
     "java/res/layout/task_item.xml",
     "java/res/layout/task_manager_activity.xml",
     "java/res/layout/task_manager_search_box.xml",

@@ -32,7 +32,7 @@ found in the LICENSE file.
 
         <include
             android:id="@+id/header_linear_layout"
-            layout="@layout/task_item"
+            layout="@layout/task_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
