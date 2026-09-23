@@ -84,8 +84,8 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
   composebox_handler_->SubmitQuery(
       query_text, disposition,
-      PageClassificationToAimEntryPoint(
-          GetPageClassification(/*is_prefetch=*/false)),
+      GetAimEntryPoint(GetPageClassification(/*is_prefetch=*/false),
+                       composebox_handler_->GetContextualSessionHandle()),
       additional_params, /*is_voice_search=*/false);
 }
 
@@ -280,13 +280,13 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  omnibox::ChromeAimEntryPoint aim_entry_point =
-      PageClassificationToAimEntryPoint(
-          client()->GetPageClassification(/*is_prefetch=*/false));
+  auto* session_handle = GetContextualSessionHandle();
+  omnibox::ChromeAimEntryPoint aim_entry_point = GetAimEntryPoint(
+      client()->GetPageClassification(/*is_prefetch=*/false), session_handle);
 
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     int file_count = 0;
-    if (auto* session_handle = GetContextualSessionHandle()) {
+    if (session_handle) {
       file_count = session_handle->GetUploadedContextFileInfos().size();
     }
     metrics_recorder->RecordNoAcMatchSubmitQuery(query_text.size(), file_count,

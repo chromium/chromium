@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/accessibility/ax_mode.h"
@@ -181,6 +182,15 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
   }
   if (!context) {
     context = std::make_unique<SearchboxContextData::Context>();
+  }
+  // Synchronize the invocation source on any pre-existing/warm session handle
+  // with this invocation (or reset to default).
+  if (auto* webui_controller = contents_wrapper()->GetWebUIController()) {
+    if (auto* session_handle =
+            webui_controller->GetOrCreateContextualSessionHandle()) {
+      session_handle->set_invocation_source(context->invocation_source.value_or(
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery));
+    }
   }
   // TODO (crbug.com/502961786): Fix flickering of previous text on a new
   // instance of composebox.

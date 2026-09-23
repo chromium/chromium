@@ -93,6 +93,8 @@ GetLensInvocationSourceForAimZeroState(
         DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON:
       return lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton;
     case omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION:
+    case omnibox::ChromeAimEntryPoint::
+        DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH:
       return lens::LensOverlayInvocationSource::kOmniboxPageAction;
     case omnibox::ChromeAimEntryPoint::IOS_CHROME_APP_BAR_ENTRY_POINT:
       return lens::LensOverlayInvocationSource::kAppBarAimButton;

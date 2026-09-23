@@ -84,6 +84,10 @@ omnibox::ChromeAimEntryPoint AimEntryPointFromInvocationSource(
     return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
   }
   if (invocation_source ==
+      lens::LensOverlayInvocationSource::kOmniboxPageAction) {
+    return omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH;
+  }
+  if (invocation_source ==
       lens::LensOverlayInvocationSource::kOmniboxContextualQuery) {
     return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
   }
@@ -123,8 +127,10 @@ bool ShouldFetchActiveTabForInvocationSource(
   // query is fulfilled on a session of its own, as happens when it is routed
   // to the Lens side panel, the pre-uploaded context is unreachable and the
   // active tab must still be contextualized.
-  if (invocation_source ==
-          lens::LensOverlayInvocationSource::kOmniboxContextualQuery &&
+  if ((invocation_source ==
+           lens::LensOverlayInvocationSource::kOmniboxContextualQuery ||
+       invocation_source ==
+           lens::LensOverlayInvocationSource::kOmniboxPageAction) &&
       session_handle &&
       (!session_handle->GetUploadedContextTokens().empty() ||
        !session_handle->GetSubmittedContextTokens().empty())) {

@@ -829,6 +829,8 @@ void OmniboxEditModel::PopulateActiveTabContext() {
   int32_t tab_handle_val = tab->GetHandle().raw_value();
 
   auto context = std::make_unique<SearchboxContextData::Context>();
+  context->invocation_source =
+      lens::LensOverlayInvocationSource::kOmniboxPageAction;
   auto tab_attachment = searchbox::mojom::TabAttachment::New();
   tab_attachment->tab_id = tab_handle_val;
   tab_attachment->title = base::UTF16ToUTF8(web_contents->GetTitle());

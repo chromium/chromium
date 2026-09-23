@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 using OEP = ::metrics::OmniboxEventProto;
 
-omnibox::ChromeAimEntryPoint PageClassificationToAimEntryPoint(
-    metrics::OmniboxEventProto::PageClassification page_class) {
+omnibox::ChromeAimEntryPoint GetAimEntryPoint(
+    metrics::OmniboxEventProto::PageClassification page_class,
+    const contextual_search::ContextualSearchSessionHandle* session_handle) {
+  if (session_handle &&
+      session_handle->invocation_source() ==
+          lens::LensOverlayInvocationSource::kOmniboxPageAction) {
+    return omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH;
+  }
   switch (page_class) {
     // Omnibox Entry Points.
     case OEP::NTP_OMNIBOX_COMPOSEBOX:

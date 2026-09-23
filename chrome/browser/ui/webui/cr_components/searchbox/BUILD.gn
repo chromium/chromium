@@ -19,7 +19,9 @@ source_set("searchbox") {
   ]
   public_deps = [
     "//chrome/browser/contextual_tasks",
+    "//components/contextual_search:public",
     "//components/contextual_search/footprints/public",
+    "//components/lens",
     "//components/tabs:public",
     "//third_party/omnibox_proto",
   ]
@@ -30,10 +32,8 @@ source_set("searchbox") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/permissions:permission_prompt_observer",
     "//components/contextual_search:prefs",
-    "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:query_contextualizer",
-    "//components/lens",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/browser:vector_icons",

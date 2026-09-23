@@ -2044,9 +2044,9 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
       shift_key);
   // TODO(crbug.com/465427521): This implementation may be able to be removed
   // for now since this is handled in `ComposeboxHandler`.
-  omnibox::ChromeAimEntryPoint aim_entry_point =
-      PageClassificationToAimEntryPoint(
-          client()->GetPageClassification(/*is_prefetch=*/false));
+  auto* session_handle = GetContextualSessionHandle();
+  omnibox::ChromeAimEntryPoint aim_entry_point = GetAimEntryPoint(
+      client()->GetPageClassification(/*is_prefetch=*/false), session_handle);
 
   ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entry_point,
                                /*additional_params=*/{}, is_voice_search);
@@ -2288,8 +2288,9 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
             location_bar->Revert();
           }
           contextual_tasks::StartTaskUiOptions options;
-          options.entry_point = PageClassificationToAimEntryPoint(
-              client()->GetPageClassification(/*is_prefetch=*/false));
+          options.entry_point = GetAimEntryPoint(
+              client()->GetPageClassification(/*is_prefetch=*/false),
+              new_contextual_session_handle.get());
           ui_service->StartTaskUiInSidePanel(
               browser_window_interface, active_tab, url,
               std::move(new_contextual_session_handle), options);
@@ -2383,8 +2384,9 @@ void ContextualSearchboxHandler::OpenUrl(
     auto* active_web_contents =
         active_tab ? active_tab->GetContents() : nullptr;
 
+    auto* contextual_session_handle = GetContextualSessionHandle();
     if (ShouldOpenInLensSidePanel(active_web_contents,
-                                  GetContextualSessionHandle())) {
+                                  contextual_session_handle)) {
       // Open in AIM in lens side panel.
       if (auto* lens_search_controller =
               LensSearchController::FromWebUIWebContents(active_web_contents)) {
@@ -2392,8 +2394,13 @@ void ContextualSearchboxHandler::OpenUrl(
         // since a user can submit a query with just a file.
         std::string query_text;
         net::GetValueForKeyInQuery(url, "q", &query_text);
+        auto invocation_source =
+            contextual_session_handle &&
+                    contextual_session_handle->invocation_source().has_value()
+                ? contextual_session_handle->invocation_source().value()
+                : lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
         lens_search_controller->IssueContextualSearchRequest(
-            lens::LensOverlayInvocationSource::kOmniboxContextualQuery, url,
+            invocation_source, url,
             query_text.empty()
                 ? AutocompleteMatchType::Type::SEARCH_SUGGEST
                 : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,

@@ -321,6 +321,12 @@ class ContextualSearchboxHandler
     return context_input_data_;
   }
 
+  // Returns the contextual session session handle, or nullptr if none exists.
+  // This function also resets the context controller that is being observed for
+  // file upload status updates if different from the one that's current.
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSessionHandle();
+
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
   contextual_search::InputStateModel* input_state_model() {
@@ -435,12 +441,6 @@ class ContextualSearchboxHandler
   // Returns suggest inputs from the contextual search session, or nullopt if
   // none exists.
   std::optional<lens::proto::LensOverlaySuggestInputs> GetSuggestInputs();
-
-  // Returns the contextual session session handle, or nullptr if none exists.
-  // This function also resets the context controller that is being observed for
-  // file upload status updates if different from the one that's current.
-  contextual_search::ContextualSearchSessionHandle*
-  GetContextualSessionHandle();
 
   // Records metrics for when a tab is added to the composebox.
   void RecordTabAddedMetric(tabs::TabInterface* const tab,
