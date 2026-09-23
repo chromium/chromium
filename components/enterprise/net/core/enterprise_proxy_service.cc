@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -30,6 +31,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace enterprise_net {
 
@@ -75,6 +77,8 @@ std::string_view TokenFetchErrorToString(TokenFetchError error) {
       return "auth_error";
     case TokenFetchError::kCanceled:
       return "canceled";
+    case TokenFetchError::kInapplicableServer:
+      return "inapplicable_server";
   }
 }
 
@@ -319,8 +323,12 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
   PendingAuthRequest* request_ptr = request.get();
   pending_auth_requests_.push_back(std::move(request));
 
+  const net::ProxyServer& proxy_server = matched_proxy->proxy_chain.First();
+  GURL proxy_url(
+      base::StrCat({"https://", proxy_server.host_port_pair().ToString()}));
+
   auth_service_->FetchAccessToken(
-      matched_proxy->auth->scope,
+      matched_proxy->auth->scope, proxy_url,
       base::BindOnce(&EnterpriseProxyService::OnProxyAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), request_ptr));
 }

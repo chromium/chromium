@@ -3723,9 +3723,10 @@ shown properly on the user-facing crash UI.
   <int value="5" label="Transient Error"/>
   <int value="6" label="Auth Error"/>
   <int value="7" label="Canceled"/>
+  <int value="8" label="Inapplicable Server"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_network_auth_service.h:TokenFetchError) -->
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_network_auth_service.h:EnterpriseNetworkTokenFetchError) -->
 
 <!-- LINT.IfChange(EnterpriseProvisioningDomainClientFetchResult) -->
 

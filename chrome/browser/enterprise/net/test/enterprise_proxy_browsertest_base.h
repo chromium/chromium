@@ -21,7 +21,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/features.h"
+#include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -154,6 +156,9 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   bool was_auth_header_received_ = false;
   // The value of the last received Proxy-Authorization header.
   std::string last_received_auth_header_;
+
+  std::unique_ptr<enterprise_net::ScopedExtraAllowedDomainsForTesting>
+      scoped_extra_domains_;
 };
 
 }  // namespace enterprise::test

@@ -143,9 +143,14 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
       net::HostPortPair(kDestinationHost, https_server_.port()),
   });
   https_server_.StartAcceptingConnections();
+
+  scoped_extra_domains_ =
+      std::make_unique<enterprise_net::ScopedExtraAllowedDomainsForTesting>(
+          std::vector<std::string>{"example.com", "127.0.0.1", "localhost"});
 }
 
 void EnterpriseProxyBrowserTestBase::TearDownOnMainThread() {
+  scoped_extra_domains_.reset();
   identity_test_env_adaptor_.reset();
   MixinBasedPlatformBrowserTest::TearDownOnMainThread();
 }

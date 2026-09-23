@@ -7,17 +7,21 @@
 #include <optional>
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
+#include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/scheme_host_port_matcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,12 +31,19 @@ namespace {
 
 constexpr char kTestOAuthToken[] = "test_access_token_123";
 constexpr char kTestHistogramName[] = "Enterprise.NetworkAuth.TokenFetchError";
+constexpr char kTestDestinationUrl[] = "https://example.com";
 
 class EnterpriseNetworkAuthServiceTest : public testing::Test {
  public:
   EnterpriseNetworkAuthServiceTest() {
     pref_service_.registry()->RegisterStringPref("intl.accept_languages",
                                                  "en-US,en;q=0.9");
+  }
+
+  void SetUp() override {
+    scoped_allowed_domains_ =
+        std::make_unique<ScopedExtraAllowedDomainsForTesting>(
+            std::vector<std::string>{"example.com"});
   }
 
  protected:
@@ -47,12 +58,16 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
   }
 
   // Synchronously fetches an access token for immediate precondition checks
-  // (e.g. unsupported scope) where no async network fetch is started.
+  // (e.g. unsupported scope, inapplicable server) where no async network fetch
+  // is started.
   AccessTokenResult FetchAccessTokenSyncFailure(
       EnterpriseNetworkAuthService& service,
-      AuthScope scope) {
+      AuthScope scope,
+      std::optional<GURL> destination_url = std::nullopt) {
     base::test::TestFuture<AccessTokenResult> future;
-    service.FetchAccessToken(scope, future.GetCallback());
+    service.FetchAccessToken(
+        scope, destination_url.value_or(GURL(kTestDestinationUrl)),
+        future.GetCallback());
     return future.Take();
   }
 
@@ -61,9 +76,12 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
   AccessTokenResult FetchAccessTokenAsyncSuccess(
       EnterpriseNetworkAuthService& service,
       AuthScope scope,
-      const std::string& token) {
+      const std::string& token,
+      std::optional<GURL> destination_url = std::nullopt) {
     base::test::TestFuture<AccessTokenResult> future;
-    service.FetchAccessToken(scope, future.GetCallback());
+    service.FetchAccessToken(
+        scope, destination_url.value_or(GURL(kTestDestinationUrl)),
+        future.GetCallback());
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         token, base::Time::Max());
     return future.Take();
@@ -73,9 +91,12 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
   AccessTokenResult FetchAccessTokenAsyncFailure(
       EnterpriseNetworkAuthService& service,
       AuthScope scope,
-      const GoogleServiceAuthError& error) {
+      const GoogleServiceAuthError& error,
+      std::optional<GURL> destination_url = std::nullopt) {
     base::test::TestFuture<AccessTokenResult> future;
-    service.FetchAccessToken(scope, future.GetCallback());
+    service.FetchAccessToken(
+        scope, destination_url.value_or(GURL(kTestDestinationUrl)),
+        future.GetCallback());
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
         error);
     return future.Take();
@@ -85,6 +106,7 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
   enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
+  std::unique_ptr<ScopedExtraAllowedDomainsForTesting> scoped_allowed_domains_;
 };
 
 TEST_F(EnterpriseNetworkAuthServiceTest, SuccessfulAccessTokenFetch) {
@@ -118,9 +140,10 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ConcurrentAccessTokenFetches) {
   EXPECT_CALL(callback1, Run(AccessTokenResult(kTestOAuthToken)));
   EXPECT_CALL(callback2, Run(AccessTokenResult(kTestOAuthToken)));
 
-  auth_service.FetchAccessToken(AuthScope::kCloudSecureGateway,
+  GURL destination_url(kTestDestinationUrl);
+  auth_service.FetchAccessToken(AuthScope::kCloudSecureGateway, destination_url,
                                 callback1.Get());
-  auth_service.FetchAccessToken(AuthScope::kCloudSecureGateway,
+  auth_service.FetchAccessToken(AuthScope::kCloudSecureGateway, destination_url,
                                 callback2.Get());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -178,6 +201,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest, CancelPendingFetchesOnShutdown) {
       Run(AccessTokenResult(base::unexpected(TokenFetchError::kCanceled))));
 
   auth_service->FetchAccessToken(AuthScope::kCloudSecureGateway,
+                                 GURL(kTestDestinationUrl),
                                  mock_callback.Get());
 
   auth_service->Shutdown();
@@ -312,7 +336,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_CALL(mock_callback, Run(AccessTokenResult(kTestOAuthToken)));
 
   auth_service.FetchAccessToken(AuthScope::kCloudSecureGateway,
-                                mock_callback.Get());
+                                GURL(kTestDestinationUrl), mock_callback.Get());
 
   EXPECT_EQ(1u, auth_service.GetPendingTokenFetchCountForTesting());
 
@@ -419,6 +443,91 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ObserverNotifiedOnAccountChanges) {
   // After removing observer, subsequent token updates should NOT notify.
   EXPECT_CALL(observer, OnAccountStateChanged()).Times(0);
   identity_test_env_.SetRefreshTokenForAccount(account_info.GetAccountId());
+}
+
+// Verifies that ScopedExtraAllowedDomainsForTesting dynamically adds test
+// domains to the allowed list for the duration of the scope, rejects other
+// domains and non-HTTPS schemes, and restores the original allowed list upon
+// destruction.
+TEST_F(EnterpriseNetworkAuthServiceTest,
+       IsDestinationAllowedForScope_ExtraAllowedDomainsForTesting) {
+  const GURL kCustomUrl("https://pvd.custom.com");
+  EXPECT_FALSE(
+      IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway, kCustomUrl));
+
+  {
+    ScopedExtraAllowedDomainsForTesting scoped_domains({"custom.com"});
+    EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                             kCustomUrl));
+    EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                             GURL("https://custom.com")));
+    EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                             GURL("http://custom.com")));
+    EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                              GURL("https://other.com")));
+    EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                              GURL("http://other.com")));
+  }
+
+  // Restored after going out of scope.
+  EXPECT_FALSE(
+      IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway, kCustomUrl));
+}
+
+// Verifies that test destinations (e.g. localhost or mock servers) added to
+// extra allowed domains are permitted over HTTP.
+TEST_F(EnterpriseNetworkAuthServiceTest,
+       IsDestinationAllowedForScope_TestDestinationsAllowedOverHttp) {
+  ScopedExtraAllowedDomainsForTesting scoped_domains(
+      {"127.0.0.1", "localhost"});
+  EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                           GURL("http://127.0.0.1:8080/pvd")));
+  EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
+                                           GURL("http://localhost:8080/pvd")));
+  // Domains not in extra allowed domains must still be rejected.
+  EXPECT_FALSE(IsDestinationAllowedForScope(
+      AuthScope::kCloudSecureGateway, GURL("http://example.com:8080/pvd")));
+}
+
+// Verifies that FetchAccessToken rejects destination servers not matching the
+// allowed domains for the scope with TokenFetchError::kInapplicableServer.
+TEST_F(EnterpriseNetworkAuthServiceTest,
+       FetchAccessToken_InapplicableServerRejected) {
+  base::HistogramTester histogram_tester;
+  SetUpManagedPrimaryAccount();
+
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
+
+  AccessTokenResult result =
+      FetchAccessTokenSyncFailure(auth_service, AuthScope::kCloudSecureGateway,
+                                  GURL("https://untrusted-server.com"));
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(TokenFetchError::kInapplicableServer, result.error());
+  histogram_tester.ExpectUniqueSample(kTestHistogramName,
+                                      TokenFetchError::kInapplicableServer, 1);
+}
+
+// Verifies that FetchAccessToken rejects invalid destination URLs with
+// TokenFetchError::kInapplicableServer.
+TEST_F(EnterpriseNetworkAuthServiceTest,
+       FetchAccessToken_InvalidDestinationUrlRejected) {
+  base::HistogramTester histogram_tester;
+  SetUpManagedPrimaryAccount();
+
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
+
+  AccessTokenResult result = FetchAccessTokenSyncFailure(
+      auth_service, AuthScope::kCloudSecureGateway, GURL("invalid_url"));
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(TokenFetchError::kInapplicableServer, result.error());
+  histogram_tester.ExpectUniqueSample(kTestHistogramName,
+                                      TokenFetchError::kInapplicableServer, 1);
 }
 
 }  // namespace

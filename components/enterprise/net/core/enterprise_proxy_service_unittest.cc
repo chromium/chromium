@@ -17,9 +17,11 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
+#include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/enterprise/net/core/utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -159,14 +161,22 @@ base::DictValue CreateDomainPolicyEntry(const std::string& pvd_id,
 class EnterpriseProxyServiceTest : public testing::Test {
  protected:
   EnterpriseProxyServiceTest() {
-    scoped_feature_list_.InitAndEnableFeature(kEnableDynamicRouteFetching);
     RegisterProfilePrefs(pref_service_.registry());
   }
 
   void SetUp() override {
+    scoped_allowed_domains_ =
+        std::make_unique<ScopedExtraAllowedDomainsForTesting>(
+            std::vector<std::string>{"example.com"});
     auth_service_ = std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
         &profile_id_service_);
+  }
+
+  void TearDown() override {
+    service_.reset();
+    auth_service_.reset();
+    scoped_allowed_domains_.reset();
   }
 
   void SetUpPrimaryAccount(const std::string& email = "user@managed.com") {
@@ -207,7 +217,6 @@ class EnterpriseProxyServiceTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
       mock_network_change_notifier_ =
@@ -218,6 +227,7 @@ class EnterpriseProxyServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<EnterpriseNetworkAuthService> auth_service_;
   std::unique_ptr<EnterpriseProxyService> service_;
+  std::unique_ptr<ScopedExtraAllowedDomainsForTesting> scoped_allowed_domains_;
 };
 
 TEST_F(EnterpriseProxyServiceTest, InitializesAndRegistersPrefs) {
@@ -1138,6 +1148,50 @@ TEST_F(EnterpriseProxyServiceAuthChallengeTest,
   EXPECT_EQ("failed", *resolved_entries[0].params.FindString("decision"));
   EXPECT_EQ("service_shutdown",
             *resolved_entries[0].params.FindString("failure_reason"));
+}
+
+TEST_F(EnterpriseProxyServiceAuthChallengeTest, InapplicableProxyServer) {
+  base::HistogramTester histogram_tester;
+
+  // Configure a domain with an untrusted proxy server host not in the allowed
+  // domain list.
+  constexpr char kUntrustedProxyPvdJson[] = R"({
+    "identifier": "domain2.example.com",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "untrusted_proxy",
+        "proxy": "https://untrusted-proxy.com:443",
+        "google_chrome": {
+          "auth": {
+            "type": "profile_bearer_token",
+            "scope": "cloud_secure_gateway"
+          }
+        }
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["untrusted_proxy"],
+        "domains": ["*.untrusted-match.com"]
+      }
+    ]
+  })";
+  SetUpDomainAndSimulateResponse(kTestDomain2, kUntrustedProxyPvdJson);
+
+  AuthChallengeFuture future;
+  service_->HandleProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("untrusted-proxy.com"),
+      GURL("https://foo.untrusted-match.com/test"), nullptr,
+      future.GetCallback());
+
+  EXPECT_EQ(
+      EnterpriseProxyService::ProxyAuthChallengeResult::kCredentialFetchFailure,
+      future.Get<0>());
+  EXPECT_FALSE(future.Get<1>().has_value());
+  ExpectChallengeResultHistogram(
+      histogram_tester, EnterpriseProxyService::ProxyAuthChallengeResult::
+                            kCredentialFetchFailure);
 }
 
 }  // namespace

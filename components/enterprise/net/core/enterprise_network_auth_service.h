@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
+#include "url/gurl.h"
 
 namespace signin {
 struct AccessTokenInfo;
@@ -50,7 +51,8 @@ enum class TokenFetchError {
   kTransientError = 5,
   kAuthError = 6,
   kCanceled = 7,
-  kMaxValue = kCanceled,
+  kInapplicableServer = 8,
+  kMaxValue = kInapplicableServer,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseNetworkTokenFetchError)
 
@@ -103,10 +105,13 @@ class EnterpriseNetworkAuthService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Asynchronously requests an access token for the given auth `scope`.
+  // Asynchronously requests an access token for the given auth `scope` to be
+  // sent to `destination_url`.
   // Calls `callback` with the token string on success, or a TokenFetchError on
   // failure.
-  virtual void FetchAccessToken(AuthScope scope, AccessTokenCallback callback);
+  virtual void FetchAccessToken(AuthScope scope,
+                                const GURL& destination_url,
+                                AccessTokenCallback callback);
 
   // Resolves extra headers specified by `extra_headers` using identity and user
   // preferences. Supported variable placeholders: `${profile_id}` and

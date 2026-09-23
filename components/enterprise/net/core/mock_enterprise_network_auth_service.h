@@ -21,7 +21,9 @@ class MockEnterpriseNetworkAuthService : public EnterpriseNetworkAuthService {
 
   MOCK_METHOD(void,
               FetchAccessToken,
-              (AuthScope scope, AccessTokenCallback callback),
+              (AuthScope scope,
+               const GURL& destination_url,
+               AccessTokenCallback callback),
               (override));
   MOCK_METHOD(net::HttpRequestHeaders,
               ResolveExtraHeaders,

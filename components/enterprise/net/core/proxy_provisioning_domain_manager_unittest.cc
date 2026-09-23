@@ -12,8 +12,10 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_fetcher.h"
+#include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/enterprise/net/core/timer_utils.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/enterprise/net/core/utils.h"
@@ -96,6 +98,12 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
   ProxyProvisioningDomainManagerTest() {
     pref_service_.registry()->RegisterStringPref("intl.accept_languages",
                                                  "en-US,en;q=0.9");
+  }
+
+  void SetUp() override {
+    scoped_allowed_domains_ =
+        std::make_unique<ScopedExtraAllowedDomainsForTesting>(
+            std::vector<std::string>{"example.com"});
   }
 
  protected:
@@ -194,6 +202,7 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
   enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
+  std::unique_ptr<ScopedExtraAllowedDomainsForTesting> scoped_allowed_domains_;
 };
 
 TEST_F(ProxyProvisioningDomainManagerTest,

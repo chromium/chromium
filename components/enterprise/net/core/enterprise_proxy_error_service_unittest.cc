@@ -18,11 +18,13 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
+#include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -118,11 +120,16 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
         &pref_service_, auth_service_.get(), std::move(callback),
         &profile_id_service_, net::NetLog::Get());
 
+    scoped_allowed_domains_ =
+        std::make_unique<ScopedExtraAllowedDomainsForTesting>(
+            std::vector<std::string>{"example.com"});
+
     error_service_ =
         std::make_unique<EnterpriseProxyErrorService>(proxy_service_.get());
   }
 
   void TearDown() override {
+    scoped_allowed_domains_.reset();
     error_service_.reset();
     proxy_service_.reset();
     auth_service_.reset();
@@ -132,7 +139,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   void SetupManagedDomainWithProxy(std::string_view proxy_host,
                                    bool with_auth = true) {
     base::ListValue policy_domains;
-    policy_domains.Append(CreateDomainPolicyEntry("example-pvd.com", true));
+    policy_domains.Append(CreateDomainPolicyEntry("pvd.example.com", true));
     pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
 
     std::string auth_block = with_auth ? kAuthBlockJson : "";
@@ -141,7 +148,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
                            std::string(proxy_host).c_str(), auth_block.c_str());
 
     test_url_loader_factory_->SimulateResponseForPendingRequest(
-        "https://example-pvd.com/.well-known/pvd", pvd_config_json);
+        "https://pvd.example.com/.well-known/pvd", pvd_config_json);
   }
 
   net::AuthChallengeInfo CreateProxyAuthChallengeInfo(
@@ -186,6 +193,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   std::unique_ptr<EnterpriseNetworkAuthService> auth_service_;
   std::unique_ptr<EnterpriseProxyService> proxy_service_;
   std::unique_ptr<EnterpriseProxyErrorService> error_service_;
+  std::unique_ptr<ScopedExtraAllowedDomainsForTesting> scoped_allowed_domains_;
 };
 
 TEST_F(EnterpriseProxyErrorServiceTest, NotApplicableWhenNoManagedProxy) {

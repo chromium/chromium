@@ -120,10 +120,12 @@ static_library("test_support") {
     public += [
       "mock_enterprise_network_auth_service.h",
       "mock_enterprise_proxy_service.h",
+      "scoped_extra_allowed_domains_for_testing.h",
     ]
     sources += [
       "mock_enterprise_network_auth_service.cc",
       "mock_enterprise_proxy_service.cc",
+      "scoped_extra_allowed_domains_for_testing.cc",
     ]
     public_deps += [ "//net" ]
   }

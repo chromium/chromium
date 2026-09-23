@@ -78,6 +78,7 @@ ProvisioningDomainProxyConfig::State ClassifyFetchError(
         case TokenFetchError::kInvalidCredentials:
         case TokenFetchError::kAuthError:
         case TokenFetchError::kCanceled:
+        case TokenFetchError::kInapplicableServer:
           return ProvisioningDomainProxyConfig::State::kFailedBlocked;
         case TokenFetchError::kUnsupportedScope:
           return ProvisioningDomainProxyConfig::State::kFailedPermanent;

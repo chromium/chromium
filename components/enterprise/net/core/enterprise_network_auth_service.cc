@@ -4,7 +4,10 @@
 
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 
+#include <map>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -19,6 +22,7 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "url/gurl.h"
 
 namespace enterprise_net {
 
@@ -165,17 +169,21 @@ void EnterpriseNetworkAuthService::Shutdown() {
 
 void EnterpriseNetworkAuthService::FetchAccessToken(
     AuthScope scope,
+    const GURL& destination_url,
     AccessTokenCallback callback) {
-  // TODO(crbug.com/535229810): We need to have a check which prevents sending
-  // access tokens for a scope to non-applicable servers. In this case, access
-  // token with Secure Gateway scope is only applicable for Secure Gateway
-  // servers.
   std::optional<signin::OAuthConsumerId> consumer_id =
       GetOAuthConsumerIdForScope(scope);
   if (!consumer_id.has_value()) {
     RecordResultAndRunCallback(
         std::move(callback),
         base::unexpected(TokenFetchError::kUnsupportedScope));
+    return;
+  }
+
+  if (!IsDestinationAllowedForScope(scope, destination_url)) {
+    RecordResultAndRunCallback(
+        std::move(callback),
+        base::unexpected(TokenFetchError::kInapplicableServer));
     return;
   }
 

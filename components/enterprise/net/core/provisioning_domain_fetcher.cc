@@ -79,10 +79,8 @@ void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
   // need to handle it here.
   if (policy_config_.auth_config.has_value() &&
       policy_config_.auth_config->type == AuthType::kProfileBearerToken) {
-    // TODO(crbug.com/535229810): Enforce scope restrictions based on the
-    // domain.
     auth_service_->FetchAccessToken(
-        policy_config_.auth_config->scope,
+        policy_config_.auth_config->scope, url,
         base::BindOnce(&ProvisioningDomainFetcher::OnAccessTokenFetched,
                        weak_factory_.GetWeakPtr()));
     return;

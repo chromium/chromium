@@ -6,7 +6,9 @@
 #define COMPONENTS_ENTERPRISE_NET_CORE_AUTH_SCOPE_METADATA_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
@@ -46,8 +48,16 @@ std::optional<signin::OAuthConsumerId> GetOAuthConsumerIdForScope(
 
 // Returns true if `destination_url` is allowed to receive an access token for
 // `scope`. Validates that the URL uses the HTTPS scheme and matches an allowed
-// domain for `scope`.
+// domain for `scope`. Allowed destinations can be modified using
+// ScopedExtraAllowedDomainsForTesting.
 bool IsDestinationAllowedForScope(AuthScope scope, const GURL& destination_url);
+
+// Sets additional destination domains that are allowed to receive OAuth tokens
+// for testing purposes.
+void SetExtraAllowedDomainsForTesting(std::vector<std::string> extra_domains);
+
+// Returns the additional destination domains allowed for testing.
+const std::vector<std::string>& GetExtraAllowedDomainsForTesting();
 
 // Converts an AuthScope to its string representation used in policies and
 // preferences. Returns std::nullopt for AuthScope::kNone or unrecognized

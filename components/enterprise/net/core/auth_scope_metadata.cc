@@ -4,9 +4,12 @@
 
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -33,10 +36,36 @@ std::optional<signin::OAuthConsumerId> GetOAuthConsumerIdForScope(
   return metadata ? std::make_optional(metadata->consumer_id) : std::nullopt;
 }
 
+namespace {
+
+std::vector<std::string>& GetExtraAllowedDomainsStorage() {
+  static base::NoDestructor<std::vector<std::string>> domains;
+  return *domains;
+}
+
+}  // namespace
+
+void SetExtraAllowedDomainsForTesting(std::vector<std::string> extra_domains) {
+  GetExtraAllowedDomainsStorage() = std::move(extra_domains);
+}
+
+const std::vector<std::string>& GetExtraAllowedDomainsForTesting() {
+  return GetExtraAllowedDomainsStorage();
+}
+
 bool IsDestinationAllowedForScope(AuthScope scope,
                                   const GURL& destination_url) {
-  if (!destination_url.is_valid() ||
-      !destination_url.SchemeIs(url::kHttpsScheme)) {
+  if (!destination_url.is_valid()) {
+    return false;
+  }
+
+  for (const std::string& domain : GetExtraAllowedDomainsStorage()) {
+    if (destination_url.DomainIs(domain)) {
+      return true;
+    }
+  }
+
+  if (!destination_url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }
 
@@ -50,6 +79,7 @@ bool IsDestinationAllowedForScope(AuthScope scope,
       return true;
     }
   }
+
   return false;
 }
 
