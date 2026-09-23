@@ -87,14 +87,6 @@ export class ExperimentalOptInApp {
     this.webview_.setAttribute('maxwidth', String(targetWidth + 2));
     // </if>
     // <if expr="is_android">
-    // The WebUI is authored at a 512px design width, but the Android dialog is
-    // capped at 400dp (R.dimen.glic_experimental_opt_in_dialog_max_width);
-    // 400 / 512 = 0.78. Zoom applies to CSS pixels, so this is independent of
-    // screen density.
-    // TODO(crbug.com/561690931): Derive the scale from the webview's measured
-    // width so it stays correct when the dialog is narrower than its max width
-    // (small screens, split screen, large font scale).
-    this.webview_.style.zoom = '0.78';
     this.webview_.removeAttribute('autosize');
     // </if>
 
