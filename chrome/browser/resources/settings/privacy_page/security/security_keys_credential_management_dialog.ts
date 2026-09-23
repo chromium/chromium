@@ -350,7 +350,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
           for (let i = 0; i < this.credentials_.length; i++) {
             if (this.credentials_[i].credentialId ===
                 this.credentialIdToDelete_) {
-              this.credentials_.splice(i, 1);
+              this.splice('credentials_', i, 1);
               break;
             }
           }

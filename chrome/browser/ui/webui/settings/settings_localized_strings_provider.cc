@@ -4537,6 +4537,8 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_DISPLAYNAME_LABEL},
       {"securityKeysCredentialManagementLabel",
        IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_LABEL},
+      {"securityKeysCredentialManagementNoCredentials",
+       IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_NO_CREDENTIALS},
       {"securityKeysCredentialManagementConfirmDeleteCredential",
        IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_CONFIRM_DELETE_CREDENTIAL},
       {"securityKeysInputTooLong",

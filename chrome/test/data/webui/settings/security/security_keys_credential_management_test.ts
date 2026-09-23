@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {Credential, CredentialManagementResponse, CrIconButtonElement, SecurityKeysCredentialBrowserProxy, SettingsSecurityKeysCredentialManagementDialogElement, StartCredentialManagementResponse} from 'chrome://settings/lazy_load.js';
 import {CredentialManagementDialogPage, SecurityKeysCredentialBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSecurityKeysBrowserProxy} from '../test_security_keys_browser_proxy.js';
 
@@ -72,6 +72,111 @@ suite('SecurityKeysCredentialManagement', function() {
     dialog = document.createElement(
         'settings-security-keys-credential-management-dialog');
     allDivs = Object.values(CredentialManagementDialogPage);
+  });
+
+  async function showCredentials(credentials: Credential[]) {
+    browserProxy.setResponseFor('startCredentialManagement', Promise.resolve({
+      minPinLength: currentMinPinLength,
+      supportsUpdateUserInformation: true,
+    }));
+    browserProxy.setResponseFor('providePin', Promise.resolve(null));
+    browserProxy.setResponseFor(
+        'enumerateCredentials', Promise.resolve(credentials));
+    document.body.appendChild(dialog);
+    await browserProxy.whenCalled('startCredentialManagement');
+    await microtasksFinished();
+    dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
+    dialog.$.confirmButton.click();
+    await browserProxy.whenCalled('enumerateCredentials');
+    await microtasksFinished();
+    flush();
+    assertShown(allDivs, dialog, 'credentials');
+  }
+
+  function assertCredentialsVisible(visible: boolean) {
+    assertEquals(
+        visible, isVisible(dialog.shadowRoot!.querySelector('#header')));
+    assertEquals(visible, isVisible(dialog.$.credentialList));
+    assertEquals(
+        !visible,
+        isVisible(dialog.shadowRoot!.querySelector('#noCredentials')));
+  }
+
+  const credential: Credential = {
+    credentialId: 'aaaaaa',
+    relyingPartyId: 'acme.com',
+    userHandle: 'userausera',
+    userName: 'userA@example.com',
+    userDisplayName: 'User Aaa',
+  };
+
+  test('EmptyCredentials', async function() {
+    await showCredentials([]);
+
+    assertCredentialsVisible(false);
+    const emptyMessage = dialog.shadowRoot!.querySelector('#noCredentials');
+    assertEquals(
+        dialog.i18n('securityKeysCredentialManagementNoCredentials'),
+        emptyMessage!.textContent.trim());
+    assertTrue(isVisible(dialog.$.confirmButton));
+    assertFalse(dialog.$.confirmButton.disabled);
+    dialog.$.confirmButton.click();
+    await browserProxy.whenCalled('close');
+    assertFalse(dialog.$.dialog.open);
+  });
+
+  test('DeleteLastCredential', async function() {
+    await showCredentials([
+      {...credential},
+      {...credential, credentialId: 'bbbbbb'},
+    ]);
+
+    for (const credentialId of ['aaaaaa', 'bbbbbb']) {
+      assertCredentialsVisible(true);
+      const deleteButton =
+          dialog.$.credentialList.querySelector<CrIconButtonElement>(
+              `.delete-button[data-credentialid="${credentialId}"]`)!;
+      deleteButton.click();
+      await microtasksFinished();
+      assertShown(allDivs, dialog, 'confirm');
+      browserProxy.setResponseFor(
+          'deleteCredentials', Promise.resolve({success: true, message: ''}));
+      dialog.$.confirmButton.click();
+      assertDeepEquals(
+          [credentialId], await browserProxy.whenCalled('deleteCredentials'));
+      browserProxy.resetResolver('deleteCredentials');
+      await microtasksFinished();
+      flush();
+      assertShown(allDivs, dialog, 'credentials');
+    }
+
+    assertEquals(0, dialog.$.credentialList.items!.length);
+    assertCredentialsVisible(false);
+    dialog.$.confirmButton.click();
+    await browserProxy.whenCalled('close');
+    assertFalse(dialog.$.dialog.open);
+  });
+
+  test('DeleteLastCredentialFails', async function() {
+    await showCredentials([{...credential}]);
+    dialog.$.credentialList
+        .querySelector<CrIconButtonElement>('.delete-button')!.click();
+    await microtasksFinished();
+    browserProxy.setResponseFor(
+        'deleteCredentials',
+        Promise.resolve({success: false, message: 'Could not delete'}));
+    dialog.$.confirmButton.click();
+    await browserProxy.whenCalled('deleteCredentials');
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'error');
+    assertEquals('Could not delete', dialog.$.error.textContent.trim());
+
+    dialog.$.confirmButton.click();
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'credentials');
+    assertEquals(1, dialog.$.credentialList.items!.length);
+    assertCredentialsVisible(true);
   });
 
   test('Initialization', async function() {
