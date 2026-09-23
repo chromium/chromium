@@ -46,6 +46,11 @@ class SuggestionService {
   void RegisterTool(SuggestionTool* tool);
   void UnregisterTool(SuggestionTool* tool);
 
+  // Updates the screen content (screenshot and APC) for the active tab.
+  void UpdateScreenContent(
+      const SkBitmap& screenshot,
+      const optimization_guide::proto::AnnotatedPageContent& apc);
+
   // Requests zero-state or context-aware suggestions from registered tools
   // for the active selection context in the tab's WebContents.
   virtual void RequestSuggestions(const AreaOfInterest& processed_area,

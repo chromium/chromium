@@ -68,6 +68,10 @@ void SuggestionService::UnregisterTool(SuggestionTool* tool) {
   std::erase(tools_, tool);
 }
 
+void SuggestionService::UpdateScreenContent(
+    const SkBitmap& screenshot,
+    const optimization_guide::proto::AnnotatedPageContent& apc) {}
+
 void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
                                            SuggestionsCallback callback) {
   if (tools_.empty()) {

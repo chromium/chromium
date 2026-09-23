@@ -586,6 +586,22 @@ void SelectionOverlayController::PageContextReady(
     RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
+
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_);
+        suggestion_service && !redacted_screenshot_.empty()) {
+      optimization_guide::proto::AnnotatedPageContent apc;
+      if (tab_context_->annotated_page_data->annotated_page_content
+              .has_value()) {
+        if (auto unwrapped_apc =
+                tab_context_->annotated_page_data->annotated_page_content
+                    ->As<optimization_guide::proto::AnnotatedPageContent>()) {
+          apc = std::move(*unwrapped_apc);
+        }
+      }
+      suggestion_service->UpdateScreenContent(redacted_screenshot_, apc);
+    }
+  }
 }
 
 void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,

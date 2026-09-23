@@ -405,6 +405,8 @@ class CountingSelectionSuggestionTool
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     request_count_++;
+    last_aoi_screenshot_ = processed_area.screenshot;
+    last_aoi_apc_ = processed_area.apc;
     if (std::holds_alternative<gfx::Rect>(processed_area.bounds)) {
       last_rect_ = std::get<gfx::Rect>(processed_area.bounds);
     }
@@ -417,11 +419,17 @@ class CountingSelectionSuggestionTool
 
   int request_count() const { return request_count_; }
   const gfx::Rect& last_rect() const { return last_rect_; }
+  const SkBitmap& last_aoi_screenshot() const { return last_aoi_screenshot_; }
+  const optimization_guide::proto::AnnotatedPageContent& last_aoi_apc() const {
+    return last_aoi_apc_;
+  }
 
  private:
   raw_ptr<tabs::TabInterface> tab_;
   int request_count_ = 0;
   gfx::Rect last_rect_;
+  SkBitmap last_aoi_screenshot_;
+  optimization_guide::proto::AnnotatedPageContent last_aoi_apc_;
 };
 
 }  // namespace
@@ -474,6 +482,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     EXPECT_EQ(listener.actions()[0]->title, "Action 1");
     region1_action_id = listener.actions()[0]->id;
     EXPECT_EQ(counting_tool.request_count(), 1);
+    EXPECT_FALSE(counting_tool.last_aoi_screenshot().empty());
+    EXPECT_TRUE(counting_tool.last_aoi_apc().has_main_frame_data());
   }
 
   // 3. Re-request for Region 1 without changing bounds -> returns stored
