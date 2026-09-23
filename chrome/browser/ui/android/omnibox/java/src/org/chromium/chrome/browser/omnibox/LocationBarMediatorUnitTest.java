@@ -5136,6 +5136,31 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testMaybeShowOrClearCursorInLocationBar_aboutBlank_doesNotFocus() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        doReturn(JUnitTestGURLs.ABOUT_BLANK).when(mLocationBarDataProvider).getCurrentGurl();
+
+        mTabletMediator.maybeShowOrClearCursorInLocationBar();
+
+        assertFalse(mSessionState.isSessionActive());
+        verify(mUrlCoordinator, never()).requestFocus();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testMaybeShowOrClearCursorInLocationBar_ntp_focusesInStandby() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        doReturn(GURL.emptyGURL()).when(mLocationBarDataProvider).getCurrentGurl();
+
+        mTabletMediator.maybeShowOrClearCursorInLocationBar();
+
+        assertTrue(mSessionState.isSessionActive());
+        assertAutocompleteState(AutocompleteState.STANDBY);
+        verify(mUrlCoordinator).requestFocus();
+    }
+
+    @Test
     public void testOnUrlChanged_tabChanging_preservesDraftingNoFocusSession() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         beginInput(

@@ -867,7 +867,7 @@ public class LocationBarMediator
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return;
-        boolean onNtp = OmniboxUrlUtils.isNtpUrl(tab.getUrl());
+        boolean onNtp = OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
