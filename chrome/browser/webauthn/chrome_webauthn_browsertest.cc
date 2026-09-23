@@ -134,7 +134,7 @@ PublicKeyCredential.signalUnknownCredential({
 // In practice, Chromium will only consider the first recognised hint and ignore
 // the rest for the purposes of configuring the UI.
 // For cases where Chromium delegates WebAuthn to the OS (e.g. Windows), unknown
-// hints are filtered, but they are otherwise passed as received.
+// and duplicate hints are filtered, preserving their preference order.
 static constexpr char kMakeCredentialWithHints[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
@@ -645,8 +645,7 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, MakeCredentialHints) {
       EXPECT_THAT(win_api_.last_hints(),
                   testing::ElementsAre(
                       testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID),
-                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY),
-                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID)));
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY)));
     }
   }
 }
@@ -670,8 +669,7 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, GetAssertionHints) {
       EXPECT_THAT(win_api_.last_hints(),
                   testing::ElementsAre(
                       testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID),
-                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY),
-                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID)));
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY)));
     }
   }
 }

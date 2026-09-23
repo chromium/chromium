@@ -67,6 +67,24 @@ static Vector<uint8_t> VectorOf(base::span<const uint8_t> data) {
   return Vector<uint8_t>(data);
 }
 
+struct HintTestCase {
+  Vector<blink::String> hints;
+  Vector<blink::mojom::blink::Hint> expected;
+};
+
+static Vector<HintTestCase> GetHintTestCases() {
+  using blink::mojom::blink::Hint;
+  return {
+      {{}, {}},
+      {{"", "unknown", "HYBRID", "Security-Key"}, {}},
+      {{"client-device", "security-key", "hybrid"},
+       {Hint::CLIENT_DEVICE, Hint::SECURITY_KEY, Hint::HYBRID}},
+      {{"unknown", "hybrid", "hybrid", "security-key", "client-device",
+        "security-key", "unknown", "client-device", "hybrid"},
+       {Hint::HYBRID, Hint::SECURITY_KEY, Hint::CLIENT_DEVICE}},
+  };
+}
+
 TEST(CredentialManagerTypeConvertersTest, RpContextTest) {
   blink::test::TaskEnvironment task_environment;
   EXPECT_EQ(RpContext::kSignIn,
@@ -77,6 +95,46 @@ TEST(CredentialManagerTypeConvertersTest, RpContextTest) {
             ConvertTo<RpContext>(V8Context(V8Context::Enum::kUse)));
   EXPECT_EQ(RpContext::kContinue,
             ConvertTo<RpContext>(V8Context(V8Context::Enum::kContinue)));
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     PublicKeyCredentialRequestOptionsHints) {
+  for (const auto& test_case : GetHintTestCases()) {
+    SCOPED_TRACE(testing::PrintToString(test_case.hints));
+    auto* options = blink::PublicKeyCredentialRequestOptions::Create();
+    options->setChallenge(ArrayBufferOrView(kSample));
+    options->setHints(test_case.hints);
+
+    auto converted =
+        ConvertTo<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr>(
+            *options);
+    ASSERT_TRUE(converted);
+    EXPECT_THAT(converted->hints,
+                testing::ElementsAreArray(test_case.expected));
+  }
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     PublicKeyCredentialCreationOptionsHints) {
+  for (const auto& test_case : GetHintTestCases()) {
+    SCOPED_TRACE(testing::PrintToString(test_case.hints));
+    auto* options = blink::PublicKeyCredentialCreationOptions::Create();
+    auto* rp = blink::PublicKeyCredentialRpEntity::Create();
+    rp->setName("rp-name.test");
+    options->setRp(rp);
+    auto* user = blink::PublicKeyCredentialUserEntity::Create();
+    user->setId(ArrayBufferOrView(kSample));
+    options->setUser(user);
+    options->setChallenge(ArrayBufferOrView(kSample));
+    options->setHints(test_case.hints);
+
+    auto converted =
+        ConvertTo<blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr>(
+            *options);
+    ASSERT_TRUE(converted);
+    EXPECT_THAT(converted->hints,
+                testing::ElementsAreArray(test_case.expected));
+  }
 }
 
 TEST(CredentialManagerTypeConvertersTest,

@@ -1048,14 +1048,21 @@ TypeConverter<blink::Vector<Hint>, blink::Vector<blink::String>>::Convert(
   blink::Vector<Hint> ret;
 
   for (const blink::String& hint : hints) {
+    Hint parsed_hint;
     if (hint == "security-key") {
-      ret.push_back(Hint::SECURITY_KEY);
+      parsed_hint = Hint::SECURITY_KEY;
     } else if (hint == "client-device") {
-      ret.push_back(Hint::CLIENT_DEVICE);
+      parsed_hint = Hint::CLIENT_DEVICE;
     } else if (hint == "hybrid") {
-      ret.push_back(Hint::HYBRID);
+      parsed_hint = Hint::HYBRID;
+    } else {
+      // Unrecognised values are ignored.
+      continue;
     }
-    // Unrecognised values are ignored.
+    // Keep the first occurrence of each hint in preference order.
+    if (!ret.Contains(parsed_hint)) {
+      ret.push_back(parsed_hint);
+    }
   }
 
   return ret;
