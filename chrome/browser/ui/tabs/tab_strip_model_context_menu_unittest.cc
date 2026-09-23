@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,6 +29,16 @@ class MockTabStripModelDelegate : public TestTabStripModelDelegate {
   MOCK_METHOD(void,
               WillCloseSplit,
               (const split_tabs::SplitTabId& split_id),
+              (override));
+  MOCK_METHOD(void,
+              CreateHistoricalSplit,
+              (const split_tabs::SplitTabId& split_id),
+              (override));
+  MOCK_METHOD(void,
+              OnGroupsDestruction,
+              (const std::vector<tab_groups::TabGroupId>& group_ids,
+               base::OnceCallback<void()> callback,
+               bool delete_groups),
               (override));
 };
 
@@ -130,7 +141,7 @@ TEST_F(TabStripModelContextMenuTest, CommandTogglePinnedLogsHistograms) {
 }
 
 TEST_F(TabStripModelContextMenuTest,
-       CommandCloseTabCallsWillCloseSplitForSplitTab) {
+       CommandCloseTabCallsCreateHistoricalSplitOnceForSplitTab) {
   tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
   tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
 
@@ -143,8 +154,11 @@ TEST_F(TabStripModelContextMenuTest,
       indices, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
-  // Expect the call to WillCloseSplit exactly once.
-  EXPECT_CALL(delegate(), WillCloseSplit(testing::_)).Times(1);
+  // Expect CreateHistoricalSplit exactly once (via
+  // CreateHistoricalSplitIfClosing) and no eager WillCloseSplit call (which
+  // would record a duplicate entry).
+  EXPECT_CALL(delegate(), CreateHistoricalSplit(testing::_)).Times(1);
+  EXPECT_CALL(delegate(), WillCloseSplit(testing::_)).Times(0);
 
   // Execute close command on the first tab.
   tab_strip_model()->ExecuteContextMenuCommand(0,
@@ -152,15 +166,46 @@ TEST_F(TabStripModelContextMenuTest,
 }
 
 TEST_F(TabStripModelContextMenuTest,
-       CommandCloseTabDoesNotCallWillCloseSplitForRegularTab) {
+       CommandCloseTabDoesNotCallCreateHistoricalSplitForRegularTab) {
   tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
 
-  // Expect no calls to WillCloseSplit.
+  // Expect no calls to CreateHistoricalSplit or WillCloseSplit.
+  EXPECT_CALL(delegate(), CreateHistoricalSplit(testing::_)).Times(0);
   EXPECT_CALL(delegate(), WillCloseSplit(testing::_)).Times(0);
 
   // Execute close command on the tab.
   tab_strip_model()->ExecuteContextMenuCommand(0,
                                                TabStripModel::CommandCloseTab);
+}
+
+TEST_F(TabStripModelContextMenuTest, CommandCloseTabHandlesGroupDestruction) {
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+  tab_groups::TabGroupId group_id = tab_strip_model()->AddToNewGroup({0});
+  TabGroup* tab_group = tab_strip_model()->group_model()->GetTabGroup(group_id);
+  ASSERT_TRUE(tab_group);
+  EXPECT_FALSE(tab_group->IsGroupClosing());
+
+  base::OnceCallback<void()> close_callback;
+  EXPECT_CALL(delegate(),
+              OnGroupsDestruction(testing::ElementsAre(group_id), testing::_,
+                                  /*delete_groups=*/true))
+      .WillOnce([&](const std::vector<tab_groups::TabGroupId>&,
+                    base::OnceCallback<void()> callback, bool) {
+        EXPECT_TRUE(tab_group->IsGroupClosing());
+        close_callback = std::move(callback);
+      });
+
+  tab_strip_model()->ExecuteContextMenuCommand(0,
+                                               TabStripModel::CommandCloseTab);
+
+  // Until the group destruction callback runs, the tab and group remain open.
+  ASSERT_TRUE(close_callback);
+  EXPECT_EQ(1, tab_strip_model()->count());
+  EXPECT_TRUE(tab_strip_model()->group_model()->ContainsTabGroup(group_id));
+
+  std::move(close_callback).Run();
+  EXPECT_EQ(0, tab_strip_model()->count());
+  EXPECT_FALSE(tab_strip_model()->group_model()->ContainsTabGroup(group_id));
 }
 
 TEST_F(TabStripModelContextMenuTest, CommandToggleFocusGroupEnabled) {

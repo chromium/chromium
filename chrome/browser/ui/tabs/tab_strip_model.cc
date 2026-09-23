@@ -2857,13 +2857,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                    selection_model_.size());
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
 
-      std::optional<split_tabs::SplitTabId> split_id =
-          GetSplitForTab(context_index);
-      if (split_id.has_value()) {
-        delegate_->WillCloseSplit(split_id.value());
-      }
-
-      ExecuteCloseTabs(
+      ExecuteCloseTabsCommand(
           base::BindRepeating(&TabStripModel::GetTabsForCommand,
                               base::Unretained(this), context_index),
           /*delete_groups=*/true);
@@ -3740,6 +3734,9 @@ std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
 
 std::vector<tabs::TabInterface*> TabStripModel::GetTabsForCommand(
     int index) const {
+  if (!ContainsIndex(index)) {
+    return {};
+  }
   tabs::TabInterface* tab = GetTabAtIndex(index);
 
   if (!selection_model_.IsSelected(tab)) {
