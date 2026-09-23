@@ -2076,7 +2076,12 @@
     "expiry_milestone": 160
   },
   {
-    "name": "composebox-rich-image-suggestions",
+    "name": "composebox-rich-image-suggestions-omnibox",
+    "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
+    "name": "composebox-rich-image-suggestions-realbox",
     "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 165
   },

@@ -207,9 +207,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
-  source->AddBoolean(
-      "composeboxRichImageSuggestionsEnabled",
-      base::FeatureList::IsEnabled(omnibox::kComposeboxRichImageSuggestions));
+  source->AddBoolean("composeboxRichImageSuggestionsEnabled",
+                     base::FeatureList::IsEnabled(
+                         omnibox::kComposeboxRichImageSuggestionsOmnibox));
   // The popup chip UI entrypoint is enabled by the AskG experiment
   // (kAskGShowChip).
   source->AddBoolean(

@@ -8868,6 +8868,8 @@ from previous Chrome versions.
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
   <int value="-1835452732" label="GlicExperimentalTriggering:enabled"/>
   <int value="-1835389562" label="AndroidTipsNotifications:disabled"/>
+  <int value="-1835072402"
+      label="ComposeboxRichImageSuggestionsRealbox:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
   <int value="-1834521056"
@@ -8940,7 +8942,6 @@ from previous Chrome versions.
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
   <int value="-1812547164"
       label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:enabled"/>
-  <int value="-1812477991" label="ComposeboxRichImageSuggestions:enabled"/>
   <int value="-1812105527" label="WarmUpCompositor:enabled"/>
   <int value="-1812091085" label="kEnableOidcProfileRemoteCommands:disabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
@@ -11630,6 +11631,8 @@ from previous Chrome versions.
   <int value="-996374397"
       label="DeviceBoundSessionsForRestrictedSitesExperimentId:disabled"/>
   <int value="-996231379" label="SideBySide:enabled"/>
+  <int value="-995716019"
+      label="ComposeboxRichImageSuggestionsOmnibox:disabled"/>
   <int value="-995361761" label="ReloadTabUiResourcesIfChanged:enabled"/>
   <int value="-995224626" label="BatchTabRestore:enabled"/>
   <int value="-994558985" label="EnableNotificationIndicator:disabled"/>
@@ -13330,7 +13333,6 @@ from previous Chrome versions.
   <int value="-474322576" label="disable-quick-unlock-pin"/>
   <int value="-473087416" label="DragTabsInTabletMode:enabled"/>
   <int value="-473052940" label="ContextualSearchLegacyHttpPolicy:enabled"/>
-  <int value="-472845558" label="ComposeboxRichImageSuggestions:disabled"/>
   <int value="-472783446"
       label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
@@ -17526,6 +17528,7 @@ from previous Chrome versions.
   <int value="810556985" label="NtpAnimatedDoodles:disabled"/>
   <int value="811057677" label="ConfirmNtpSuggestionRemovals:disabled"/>
   <int value="811158245" label="DevToolsPwaHandler:disabled"/>
+  <int value="811167561" label="ComposeboxRichImageSuggestionsRealbox:enabled"/>
   <int value="811374216" label="disable-new-bookmark-apps"/>
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
@@ -20247,6 +20250,8 @@ from previous Chrome versions.
   <int value="1651488964" label="AndroidWindowPopupCustomTabUi:enabled"/>
   <int value="1651639176" label="AndroidDesktopUAPlatform:disabled"/>
   <int value="1651829920" label="CrOSEnforceMonoAudioCapture:enabled"/>
+  <int value="1652200897"
+      label="ComposeboxRichImageSuggestionsOmnibox:enabled"/>
   <int value="1652662999" label="ApiContextualTasksPrivate:enabled"/>
   <int value="1652700594" label="PlatformKeysAesEncryption:disabled"/>
   <int value="1652798696"

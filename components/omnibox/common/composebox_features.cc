@@ -22,7 +22,9 @@ BASE_FEATURE(kComposeboxSkillsNtp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxSkillsOmniboxEverywhere,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxSkillsOmniboxPopup, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kComposeboxRichImageSuggestions,
+BASE_FEATURE(kComposeboxRichImageSuggestionsRealbox,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxRichImageSuggestionsOmnibox,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxPersistentAimButtonRealbox,
              base::FEATURE_DISABLED_BY_DEFAULT);

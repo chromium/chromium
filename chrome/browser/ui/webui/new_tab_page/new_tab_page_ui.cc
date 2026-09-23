@@ -737,9 +737,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_composebox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
-  source->AddBoolean(
-      "composeboxRichImageSuggestionsEnabled",
-      base::FeatureList::IsEnabled(omnibox::kComposeboxRichImageSuggestions));
+  source->AddBoolean("composeboxRichImageSuggestionsEnabled",
+                     base::FeatureList::IsEnabled(
+                         omnibox::kComposeboxRichImageSuggestionsRealbox));
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
 
