@@ -39,6 +39,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <array>
 #include <vector>
 
 namespace media {
@@ -130,7 +132,7 @@ class MT21BitstreamReader {
 
 MT21BitstreamReader::MT21BitstreamReader(const uint8_t* buf) {
   buf_ = buf;
-  accumulator_ = *(uint64_t*)(buf + 8);
+  accumulator_ = *(uint64_t*)UNSAFE_TODO(buf + 8);
   byte_idx_ = 4;
   outstanding_reads_ = 0;
   consumed_bits_ = 0;
@@ -138,7 +140,7 @@ MT21BitstreamReader::MT21BitstreamReader(const uint8_t* buf) {
 
 void MT21BitstreamReader::MaybeRefillAccumulator() {
   if (outstanding_reads_ >= 32) {
-    uint32_t next_dword = *(uint32_t*)(buf_ + byte_idx_);
+    uint32_t next_dword = *(uint32_t*)UNSAFE_TODO(buf_ + byte_idx_);
     outstanding_reads_ -= 32;
     accumulator_ |= ((uint64_t)next_dword) << outstanding_reads_;
 
@@ -259,10 +261,11 @@ constexpr size_t kBitsInByte = 8;
 void PopulateGolombRiceCache(GolombRiceTableEntry* cache) {
   uint8_t tmp_buf[kMT21SubblockSize];
   for (size_t k = 1; k < kMaxKValue; k++) {
-    GolombRiceTableEntry* table = cache + (k - 1) * kGolombRiceTableSize;
+    GolombRiceTableEntry* table =
+        UNSAFE_TODO(cache + (k - 1) * kGolombRiceTableSize);
     for (size_t lookahead_val = 0;
          lookahead_val < (1 << kGolombRiceTableLookaheadLen); lookahead_val++) {
-      GolombRiceTableEntry* entry = table + lookahead_val;
+      GolombRiceTableEntry* entry = UNSAFE_TODO(table + lookahead_val);
 
       // Compressed symbol size 0 indicates a cache miss.
       entry->in_size = 0;
@@ -293,9 +296,10 @@ int FastReadGolombRiceSymbol(MT21BitstreamReader& reader,
                              int k,
                              const GolombRiceTableEntry* table) {
   const int lookahead_window = reader.PeekNBits(kGolombRiceTableLookaheadLen);
-  if (table[lookahead_window].in_size) {
-    reader.DiscardNBits(table[lookahead_window].in_size);
-    return table[lookahead_window].symbol;
+  const auto& entry = UNSAFE_TODO(table[lookahead_window]);
+  if (entry.in_size) {
+    reader.DiscardNBits(entry.in_size);
+    return entry.symbol;
   } else {
     // Cache miss, fall back to slow method.
     return ReadGolombRiceSymbol(reader, k);
@@ -325,7 +329,7 @@ uint8_t FirstColPrediction(uint8_t up, uint8_t up_right, uint8_t right) {
   ret[0b00] = horiz_grad_prediction;
   ret[0b01] = min_up_right;
   ret[0b10] = max_up_right;
-  return ret[idx];
+  return UNSAFE_TODO(ret[idx]);
 }
 
 // Same deal as with first column prediction, but with 4 possible prediction
@@ -346,7 +350,7 @@ uint8_t BodyPrediction(uint8_t up_left,
   ret[0b01] = min_up_right;
   ret[0b10] = max_up_right;
   ret[0b11] = right_grad;
-  return ret[idx];
+  return UNSAFE_TODO(ret[idx]);
 }
 
 // Core (scalar) decompression functions.
@@ -368,7 +372,7 @@ void DecompressSubblock(MT21BitstreamReader& reader,
                         uint8_t* dest,
                         const GolombRiceTableEntry* symbol_cache) {
   int k = reader.ReadNBits(3) + 1;
-  dest[width - 1] = reader.ReadNBits(8);
+  UNSAFE_TODO(dest[width - 1]) = reader.ReadNBits(8);
 
   if (k == 8) {
     // This is a solid color block, set everything equal to the top right corner
@@ -381,39 +385,40 @@ void DecompressSubblock(MT21BitstreamReader& reader,
   // doesn't bother factoring this calculation out of the loop, so we do it
   // manually.
   const GolombRiceTableEntry* symbol_table =
-      symbol_cache + (k - 1) * kGolombRiceTableSize;
+      UNSAFE_TODO(symbol_cache + (k - 1) * kGolombRiceTableSize);
 
   // Pixels get processed right to left, top to bottom.
   uint8_t curr;
   uint8_t up_left;
-  uint8_t up = dest[width - 1];
+  uint8_t up = UNSAFE_TODO(dest[width - 1]);
   uint8_t up_right;
   uint8_t right = up;
   for (int x = width - 2; x >= 0; x--) {
     curr = FirstRowPrediction(right) +
            FastReadGolombRiceSymbol(reader, k, symbol_table);
     right = curr;
-    dest[x] = curr;
+    UNSAFE_TODO(dest[x]) = curr;
   }
   for (size_t y = 1; y < kMT21SubblockHeight; y++) {
-    up = dest[y * width - 1];
+    up = UNSAFE_TODO(dest[y * width - 1]);
     curr = LastColPrediction(up) +
            FastReadGolombRiceSymbol(reader, k, symbol_table);
-    dest[y * width + width - 1] = curr;
+    UNSAFE_TODO(dest[y * width + width - 1]) = curr;
     right = curr;
     up_right = up;
-    up = dest[y * width - 2];
+    up = UNSAFE_TODO(dest[y * width - 2]);
     for (size_t x = width - 2; x >= 1; x--) {
-      up_left = dest[y * width - width + x - 1];
+      up_left = UNSAFE_TODO(dest[y * width - width + x - 1]);
       curr = BodyPrediction(up_left, up, up_right, right) +
              FastReadGolombRiceSymbol(reader, k, symbol_table);
-      dest[y * width + x] = curr;
+      UNSAFE_TODO(dest[y * width + x]) = curr;
       right = curr;
       up_right = up;
       up = up_left;
     }
-    dest[y * width] = FirstColPrediction(up, up_right, right) +
-                      FastReadGolombRiceSymbol(reader, k, symbol_table);
+    UNSAFE_TODO(dest[y * width]) =
+        FirstColPrediction(up, up_right, right) +
+        FastReadGolombRiceSymbol(reader, k, symbol_table);
   }
 }
 
@@ -438,13 +443,13 @@ void InterleaveUVSubblock(const uint8_t* src_u,
   LOOPN(
       {
         tmp_u = vld1q_u8(src_u);
-        src_u += 16;
+        UNSAFE_TODO(src_u += 16);
         tmp_v = vld1q_u8(src_v);
-        src_v += 16;
+        UNSAFE_TODO(src_v += 16);
         store_tmp.val[0] = tmp_u;
         store_tmp.val[1] = tmp_v;
         vst2q_u8(dest_uv, store_tmp);
-        dest_uv += 32;
+        UNSAFE_TODO(dest_uv += 32);
       },
       2)
 }
@@ -524,19 +529,26 @@ __attribute__((always_inline)) void VectorManageAccumulator(
     uint8_t** compressed_ptr) {
   // We always load in a fresh dword. Often it will be from the same offsets.
   // This is inefficient, but it's offset by the speedup of vectorization.
-  outstanding_reads[i] = vaddq_u32(outstanding_reads[i], discard_size);
-  uint32x4_t offsets = vshrq_n_u32(outstanding_reads[i], 3);
-  compressed_ptr[i * 4] -= offsets[0];
-  compressed_ptr[i * 4 + 1] -= offsets[1];
-  compressed_ptr[i * 4 + 2] -= offsets[2];
-  compressed_ptr[i * 4 + 3] -= offsets[3];
-  outstanding_reads[i] = vandq_u32(outstanding_reads[i], dword_literal_7);
-  accumulator[i][0] = LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4]);
-  accumulator[i][1] = LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 1]);
-  accumulator[i][2] = LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 2]);
-  accumulator[i][3] = LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 3]);
-  accumulator[i] =
-      vshlq_u32(accumulator[i], vreinterpretq_s32_u32(outstanding_reads[i]));
+  UNSAFE_TODO(outstanding_reads[i]) =
+      vaddq_u32(UNSAFE_TODO(outstanding_reads[i]), discard_size);
+  uint32x4_t offsets = vshrq_n_u32(UNSAFE_TODO(outstanding_reads[i]), 3);
+  UNSAFE_TODO(compressed_ptr[i * 4] -= offsets[0]);
+  UNSAFE_TODO(compressed_ptr[i * 4 + 1] -= offsets[1]);
+  UNSAFE_TODO(compressed_ptr[i * 4 + 2] -= offsets[2]);
+  UNSAFE_TODO(compressed_ptr[i * 4 + 3] -= offsets[3]);
+  UNSAFE_TODO(outstanding_reads[i]) =
+      vandq_u32(UNSAFE_TODO(outstanding_reads[i]), dword_literal_7);
+  UNSAFE_TODO(accumulator[i][0]) =
+      LoadUnalignedDword((uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4]));
+  UNSAFE_TODO(accumulator[i][1]) =
+      LoadUnalignedDword((uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 1]));
+  UNSAFE_TODO(accumulator[i][2]) =
+      LoadUnalignedDword((uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 2]));
+  UNSAFE_TODO(accumulator[i][3]) =
+      LoadUnalignedDword((uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 3]));
+  UNSAFE_TODO(accumulator[i]) =
+      vshlq_u32(UNSAFE_TODO(accumulator[i]),
+                vreinterpretq_s32_u32(UNSAFE_TODO(outstanding_reads[i])));
 }
 
 // Golomb-Rice decompression. The core algorithm looks like this:
@@ -557,24 +569,27 @@ __attribute__((always_inline)) uint8x16_t VectorReadGolombRiceSymbol(
     uint8_t** compressed_ptr) {
   // leading_ones = min(count_leading_zero(~accumulator), escape_codes)
   // escape_lanes = leading_ones == escape_codes
-  uint32x4_t leading_ones[4];
-  uint32x4_t escape_lanes[4];
+  std::array<uint32x4_t, 4> leading_ones;
+  std::array<uint32x4_t, 4> escape_lanes;
   LOOPN(
       {
         leading_ones[i] =
-            vminq_u32(vclzq_u32(vmvnq_u32(accumulator[i])), escape_codes[i]);
-        escape_lanes[i] = vceqq_u32(leading_ones[i], escape_codes[i]);
+            vminq_u32(vclzq_u32(vmvnq_u32(UNSAFE_TODO(accumulator[i]))),
+                      UNSAFE_TODO(escape_codes[i]));
+        escape_lanes[i] =
+            vceqq_u32(leading_ones[i], UNSAFE_TODO(escape_codes[i]));
       },
       4)
 
   // binary_len = k + (escape_lanes * (8 - k))
   // unary_len = leading_ones + !escape_lanes
-  uint32x4_t binary_len[4];
-  uint32x4_t unary_len[4];
+  std::array<uint32x4_t, 4> binary_len;
+  std::array<uint32x4_t, 4> unary_len;
   LOOPN(
       {
         binary_len[i] = vaddq_u32(
-            k_vals[i], vandq_u32(escape_lanes[i], escape_binary_len_diff[i]));
+            UNSAFE_TODO(k_vals[i]),
+            vandq_u32(escape_lanes[i], UNSAFE_TODO(escape_binary_len_diff[i])));
         unary_len[i] =
             vaddq_u32(leading_ones[i],
                       vandq_u32(dword_literal_1, vmvnq_u32(escape_lanes[i])));
@@ -583,30 +598,31 @@ __attribute__((always_inline)) uint8x16_t VectorReadGolombRiceSymbol(
 
   // output = (leading_ones << k)
   // output += ((accumulator << unary_len) >> (32 - binary_len)
-  uint32x4_t dword_output[4];
+  std::array<uint32x4_t, 4> dword_output;
   LOOPN(
       {
-        dword_output[i] =
-            vshlq_u32(leading_ones[i], vreinterpretq_s32_u32(k_vals[i]));
+        dword_output[i] = vshlq_u32(
+            leading_ones[i], vreinterpretq_s32_u32(UNSAFE_TODO(k_vals[i])));
         dword_output[i] = vaddq_u32(
             dword_output[i],
-            vshlq_u32(
-                vshlq_u32(accumulator[i], vreinterpretq_s32_u32(unary_len[i])),
-                vsubq_s32(vreinterpretq_s32_u32(binary_len[i]),
-                          vreinterpretq_s32_u32(dword_literal_32))));
+            vshlq_u32(vshlq_u32(UNSAFE_TODO(accumulator[i]),
+                                vreinterpretq_s32_u32(unary_len[i])),
+                      vsubq_s32(vreinterpretq_s32_u32(binary_len[i]),
+                                vreinterpretq_s32_u32(dword_literal_32))));
       },
       4)
 
   // total_len = unary_len + binary_len - (output <= 1)
   // total_len = solid_color_mask ? total_len : 0
-  uint32x4_t total_len[4];
+  std::array<uint32x4_t, 4> total_len;
   LOOPN(
       {
         total_len[i] =
             vsubq_u32(vaddq_u32(unary_len[i], binary_len[i]),
                       vandq_u32(dword_literal_1,
                                 vcleq_u32(dword_output[i], dword_literal_1)));
-        total_len[i] = vandq_u32(total_len[i], dword_solid_color_mask[i]);
+        total_len[i] =
+            vandq_u32(total_len[i], UNSAFE_TODO(dword_solid_color_mask[i]));
       },
       4)
 
@@ -636,14 +652,14 @@ __attribute__((always_inline)) void VectorInitializeAccumulator(
     uint8_t** compressed_ptr) {
   LOOPN(
       {
-        accumulator[i][0] =
-            LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4]);
-        accumulator[i][1] =
-            LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 1]);
-        accumulator[i][2] =
-            LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 2]);
-        accumulator[i][3] =
-            LoadUnalignedDword((uint32_t*)compressed_ptr[i * 4 + 3]);
+        UNSAFE_TODO(accumulator[i][0]) =
+            LoadUnalignedDword((uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4]));
+        UNSAFE_TODO(accumulator[i][1]) = LoadUnalignedDword(
+            (uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 1]));
+        UNSAFE_TODO(accumulator[i][2]) = LoadUnalignedDword(
+            (uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 2]));
+        UNSAFE_TODO(accumulator[i][3]) = LoadUnalignedDword(
+            (uint32_t*)UNSAFE_TODO(compressed_ptr[i * 4 + 3]));
       },
       4);
 }
@@ -665,24 +681,29 @@ __attribute__((always_inline)) uint8x16_t VectorReadCompressedHeader(
   // size of k.
   LOOPN(
       {
-        k_vals[i] =
-            vaddq_u32(vshrq_n_u32(accumulator[i], 32 - 3), dword_literal_1);
+        UNSAFE_TODO(k_vals[i]) = vaddq_u32(
+            vshrq_n_u32(UNSAFE_TODO(accumulator[i]), 32 - 3), dword_literal_1);
       },
       4)
 
   // Calculate what our escape code should be for each lane based on the K
   // values.
   // escape_codes = k + 7
-  LOOPN({ escape_codes[i] = vaddq_u32(k_vals[i], dword_literal_7); }, 4)
+  LOOPN(
+      {
+        UNSAFE_TODO(escape_codes[i]) =
+            vaddq_u32(UNSAFE_TODO(k_vals[i]), dword_literal_7);
+      },
+      4)
 
   // Compute the length of the binary components of "escaped" symbols.
   // Note that we abuse the fact that 0xFFFFFFFF == -1
   // escaped_binary_len_diff = 8 - k - (k >= 4)
   LOOPN(
       {
-        escape_binary_len_diff[i] =
-            vaddq_u32(vsubq_u32(dword_literal_8, k_vals[i]),
-                      vcgeq_u32(k_vals[i], dword_literal_4));
+        UNSAFE_TODO(escape_binary_len_diff[i]) =
+            vaddq_u32(vsubq_u32(dword_literal_8, UNSAFE_TODO(k_vals[i])),
+                      vcgeq_u32(UNSAFE_TODO(k_vals[i]), dword_literal_4));
       },
       4)
 
@@ -691,22 +712,29 @@ __attribute__((always_inline)) uint8x16_t VectorReadCompressedHeader(
   // color blocks. Unfortunately this is also the price we pay for
   // vectorization.
   // solid_color_mask = 0xFF * (k < 8)
-  LOOPN({ dword_solid_color_mask[i] = vcltq_u32(k_vals[i], dword_literal_8); },
-        4)
-  solid_color_mask =
-      NarrowToU8(dword_solid_color_mask[0], dword_solid_color_mask[1],
-                 dword_solid_color_mask[2], dword_solid_color_mask[3]);
+  LOOPN(
+      {
+        UNSAFE_TODO(dword_solid_color_mask[i]) =
+            vcltq_u32(UNSAFE_TODO(k_vals[i]), dword_literal_8);
+      },
+      4)
+  solid_color_mask = NarrowToU8(dword_solid_color_mask[0],
+                                UNSAFE_TODO(dword_solid_color_mask[1]),
+                                UNSAFE_TODO(dword_solid_color_mask[2]),
+                                UNSAFE_TODO(dword_solid_color_mask[3]));
 
   // Parse the top right pixel value
   // accumulator <<= 3
   // top_right = accumulator >> 24
   // accumulator <<= 8
-  uint32x4_t top_right[4];
+  std::array<uint32x4_t, 4> top_right;
   LOOPN(
       {
-        accumulator[i] = vshlq_n_u32(accumulator[i], 3);
-        top_right[i] = vshrq_n_u32(accumulator[i], 24);
-        accumulator[i] = vshlq_n_u32(accumulator[i], 8);
+        UNSAFE_TODO(accumulator[i]) =
+            vshlq_n_u32(UNSAFE_TODO(accumulator[i]), 3);
+        top_right[i] = vshrq_n_u32(UNSAFE_TODO(accumulator[i]), 24);
+        UNSAFE_TODO(accumulator[i]) =
+            vshlq_n_u32(UNSAFE_TODO(accumulator[i]), 8);
       },
       4)
 
@@ -802,18 +830,18 @@ void SubblockGather(const std::vector<T>& subblock_list,
   // so really our red zone only needs to be
   // 20/8*kMT21SubblockHeight*kMT21SubblockWidth = 160 bytes. We can consider
   // relaxing the red zone size if memory becomes more of an issue.
-  aligned_scratch_memory += kMT21RedZoneSize;
+  UNSAFE_TODO(aligned_scratch_memory += kMT21RedZoneSize);
 
   for (size_t i = 0; i < kNumOutputLanes; i++) {
-    compressed_ptr[i] = aligned_scratch_memory;
-    aligned_scratch_memory += kMT21SubblockSize;
+    UNSAFE_TODO(compressed_ptr[i]) = aligned_scratch_memory;
+    UNSAFE_TODO(aligned_scratch_memory += kMT21SubblockSize);
     for (size_t j = 0; j < subblock_list[i + start_idx].len;
          j += kMT21SubblockWidth) {
       UNSAFE_TODO(memcpy(compressed_ptr[i] + 3 * kMT21SubblockWidth - j,
                          subblock_list[i + start_idx].src + j,
                          kMT21SubblockWidth));
     }
-    compressed_ptr[i] += kMT21SubblockSize - sizeof(uint32_t);
+    UNSAFE_TODO(compressed_ptr[i] += kMT21SubblockSize - sizeof(uint32_t));
   }
 }
 
@@ -840,19 +868,19 @@ static const uint8x8_t kTableTranspose4x4LowerIndices = {
     2, 6, 10, 14, 3, 7, 11, 15,
 };
 void SubblockTransposeScatter(uint8_t*& src, uint8_t** decompressed_ptr) {
-  uint32x4x4_t load_regs[4];
-  uint32x4x4_t store_regs[4];
+  std::array<uint32x4x4_t, 4> load_regs;
+  std::array<uint32x4x4_t, 4> store_regs;
 
   // Load 4x4 blocks
   LOOPN(
       {
         load_regs[i] = vld4q_u32((uint32_t*)src);
-        src += 64;
+        UNSAFE_TODO(src += 64);
       },
       4)
 
   // Move the source pointer to the next row.
-  src -= 2 * kMT21SubblockWidth * kNumOutputLanes;
+  UNSAFE_TODO(src -= 2 * kMT21SubblockWidth * kNumOutputLanes);
 
   // 4x4 transposes using lookup table
   LOOPN(
@@ -872,28 +900,38 @@ void SubblockTransposeScatter(uint8_t*& src, uint8_t** decompressed_ptr) {
 
   // Rearrange 4x4 blocks. This probably won't generate any instructions since
   // we're basically just renaming some registers?
-  LOOPN({ store_regs[i / 4].val[i % 4] = load_regs[i % 4].val[i / 4]; }, 16)
+  LOOPN(
+      {
+        store_regs[i / 4].val[i % 4] = UNSAFE_TODO(load_regs[i % 4].val[i / 4]);
+      },
+      16)
 
   // Store the rows.
   // Apparently vst4q_lane_u32 requires a constant integer for the third
   // argument and clang isn't smart enough to realize that unrolling the loop
   // would make the third argument const. So, ctrl-c, ctrl-v.
   vst4q_lane_u32((uint32_t*)decompressed_ptr[0], store_regs[0], 0);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[1], store_regs[0], 1);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[2], store_regs[0], 2);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[3], store_regs[0], 3);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[4], store_regs[1], 0);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[5], store_regs[1], 1);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[6], store_regs[1], 2);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[7], store_regs[1], 3);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[8], store_regs[2], 0);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[9], store_regs[2], 1);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[10], store_regs[2], 2);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[11], store_regs[2], 3);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[12], store_regs[3], 0);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[13], store_regs[3], 1);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[14], store_regs[3], 2);
-  vst4q_lane_u32((uint32_t*)decompressed_ptr[15], store_regs[3], 3);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[1]), store_regs[0], 1);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[2]), store_regs[0], 2);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[3]), store_regs[0], 3);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[4]), store_regs[1], 0);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[5]), store_regs[1], 1);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[6]), store_regs[1], 2);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[7]), store_regs[1], 3);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[8]), store_regs[2], 0);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[9]), store_regs[2], 1);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[10]), store_regs[2],
+                 2);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[11]), store_regs[2],
+                 3);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[12]), store_regs[3],
+                 0);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[13]), store_regs[3],
+                 1);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[14]), store_regs[3],
+                 2);
+  vst4q_lane_u32((uint32_t*)UNSAFE_TODO(decompressed_ptr[15]), store_regs[3],
+                 3);
 }
 
 // Decompresses a sublock. We take width and stride parameters to let us recycle
@@ -920,7 +958,7 @@ void VectorDecompressSubblock(const std::vector<T>& subblock_list,
       k_vals, dword_solid_color_mask, solid_color_mask, compressed_ptr);
   right = output;
   vst1q_u8(output_buf, output);
-  output_buf -= pixel_distance * kNumOutputLanes;
+  UNSAFE_TODO(output_buf -= pixel_distance * kNumOutputLanes);
 
   for (int i = 0; i < width - 1; i++) {
     // Handle first row
@@ -934,11 +972,11 @@ void VectorDecompressSubblock(const std::vector<T>& subblock_list,
     right = output;
 
     vst1q_u8(output_buf, output);
-    output_buf -= pixel_distance * kNumOutputLanes;
+    UNSAFE_TODO(output_buf -= pixel_distance * kNumOutputLanes);
   }
   for (size_t y = 1; y < kMT21SubblockHeight; y++) {
     // Handle last col
-    up = vld1q_u8(output_buf + stride * kNumOutputLanes);
+    up = vld1q_u8(UNSAFE_TODO(output_buf + stride * kNumOutputLanes));
 
     output = VectorReadGolombRiceSymbol(
         accumulator, outstanding_reads, escape_codes, escape_binary_len_diff,
@@ -951,14 +989,14 @@ void VectorDecompressSubblock(const std::vector<T>& subblock_list,
     right = output;
 
     vst1q_u8(output_buf, output);
-    output_buf -= pixel_distance * kNumOutputLanes;
+    UNSAFE_TODO(output_buf -= pixel_distance * kNumOutputLanes);
 
-    up = vld1q_u8(output_buf + stride * kNumOutputLanes);
+    up = vld1q_u8(UNSAFE_TODO(output_buf + stride * kNumOutputLanes));
 
     for (int x = width - 2; x >= 1; x--) {
       // Handle body
-      up_left =
-          vld1q_u8(output_buf + (stride - pixel_distance) * kNumOutputLanes);
+      up_left = vld1q_u8(UNSAFE_TODO(output_buf + (stride - pixel_distance) *
+                                                      kNumOutputLanes));
 
       output = VectorReadGolombRiceSymbol(
           accumulator, outstanding_reads, escape_codes, escape_binary_len_diff,
@@ -973,7 +1011,7 @@ void VectorDecompressSubblock(const std::vector<T>& subblock_list,
       up = up_left;
 
       vst1q_u8(output_buf, output);
-      output_buf -= pixel_distance * kNumOutputLanes;
+      UNSAFE_TODO(output_buf -= pixel_distance * kNumOutputLanes);
     }
     // Handle first col
     output = VectorReadGolombRiceSymbol(
@@ -983,7 +1021,7 @@ void VectorDecompressSubblock(const std::vector<T>& subblock_list,
     output = vandq_u8(output, solid_color_mask);
     output = vaddq_u8(output, VectorFirstColPrediction(up, up_right, right));
     vst1q_u8(output_buf, output);
-    output_buf -= pixel_distance * kNumOutputLanes;
+    UNSAFE_TODO(output_buf -= pixel_distance * kNumOutputLanes);
   }
 }
 
@@ -999,15 +1037,16 @@ void VectorDecompressSubblockHelper(
     uint8_t* aligned_scratch) {
   uint8_t* compressed_ptr[kNumOutputLanes];
   uint8_t* decompressed_ptr[kNumOutputLanes];
-  uint8_t* output_buf = aligned_scratch + 2 * kMT21RedZoneSize +
-                        kNumOutputLanes * kMT21SubblockSize - kNumOutputLanes;
+  uint8_t* output_buf =
+      UNSAFE_TODO(aligned_scratch + 2 * kMT21RedZoneSize +
+                  kNumOutputLanes * kMT21SubblockSize - kNumOutputLanes);
   uint32x4_t outstanding_reads[4] = {{0}};
   uint32x4_t accumulator[4];
 
   SubblockGather<MT21YSubblock>(subblock_list, start_idx, aligned_scratch,
                                 compressed_ptr);
   for (size_t i = 0; i < kNumOutputLanes; i++) {
-    decompressed_ptr[i] = subblock_list[start_idx + i].dest;
+    UNSAFE_TODO(decompressed_ptr[i]) = subblock_list[start_idx + i].dest;
   }
 
   VectorInitializeAccumulator(accumulator, compressed_ptr);
@@ -1017,11 +1056,12 @@ void VectorDecompressSubblockHelper(
                                                compressed_ptr, output_buf,
                                                outstanding_reads, accumulator);
 
-  output_buf -= kNumOutputLanes * kMT21SubblockWidth - kNumOutputLanes;
+  UNSAFE_TODO(output_buf -=
+              kNumOutputLanes * kMT21SubblockWidth - kNumOutputLanes);
   for (int i = 0; i < 4; i++) {
     SubblockTransposeScatter(output_buf, decompressed_ptr);
     for (int j = 0; j < 16; j++) {
-      decompressed_ptr[j] += kMT21SubblockWidth;
+      UNSAFE_TODO(decompressed_ptr[j] += kMT21SubblockWidth);
     }
   }
 }
@@ -1032,15 +1072,16 @@ void VectorDecompressSubblockHelper(
     uint8_t* aligned_scratch) {
   uint8_t* compressed_ptr[16];
   uint8_t* decompressed_ptr[16];
-  uint8_t* output_buf = aligned_scratch + 2 * kMT21RedZoneSize +
-                        kNumOutputLanes * kMT21SubblockSize - kNumOutputLanes;
+  uint8_t* output_buf =
+      UNSAFE_TODO(aligned_scratch + 2 * kMT21RedZoneSize +
+                  kNumOutputLanes * kMT21SubblockSize - kNumOutputLanes);
   uint32x4_t outstanding_reads[4] = {{0}};
   uint32x4_t accumulator[4];
 
   SubblockGather<MT21UVSubblock>(subblock_list, start_idx, aligned_scratch,
                                  compressed_ptr);
   for (int i = 0; i < 16; i++) {
-    decompressed_ptr[i] = subblock_list[start_idx + i].dest;
+    UNSAFE_TODO(decompressed_ptr[i]) = subblock_list[start_idx + i].dest;
   }
 
   VectorInitializeAccumulator(accumulator, compressed_ptr);
@@ -1050,15 +1091,15 @@ void VectorDecompressSubblockHelper(
                                                compressed_ptr, output_buf,
                                                outstanding_reads, accumulator);
   VectorDecompressSubblock<MT21UVSubblock, kMT21SubblockWidth / 2,
-                           kMT21SubblockWidth>(subblock_list, start_idx,
-                                               compressed_ptr, output_buf - 16,
-                                               outstanding_reads, accumulator);
+                           kMT21SubblockWidth>(
+      subblock_list, start_idx, compressed_ptr, UNSAFE_TODO(output_buf - 16),
+      outstanding_reads, accumulator);
 
-  output_buf -= 16 * 16 - 16;
+  UNSAFE_TODO(output_buf -= 16 * 16 - 16);
   for (int i = 0; i < 4; i++) {
     SubblockTransposeScatter(output_buf, decompressed_ptr);
     for (int j = 0; j < 16; j++) {
-      decompressed_ptr[j] += kMT21SubblockWidth;
+      UNSAFE_TODO(decompressed_ptr[j] += kMT21SubblockWidth);
     }
   }
 }
@@ -1089,12 +1130,11 @@ void ParseBlockMetadata(const uint8_t* footer,
   // Footer metadata is packed in 2-bit pairs from LSB to MSB. This means we can
   // pack 4 subblocks, or 2 blocks into every byte of footer.
   const size_t block_idx = block_offset / kMT21BlockSize;
+  const uint8_t footer_byte = UNSAFE_TODO(footer[block_idx / 2]);
   subblock1_len =
-      kMT21BlockWidth *
-      (((footer[block_idx / 2] >> ((block_idx % 2) * 4)) & 0x3) + 1);
-  subblock2_len =
-      kMT21BlockWidth *
-      (((footer[block_idx / 2] >> ((block_idx % 2) * 4 + 2)) & 0x3) + 1);
+      kMT21BlockWidth * (((footer_byte >> ((block_idx % 2) * 4)) & 0x3) + 1);
+  subblock2_len = kMT21BlockWidth *
+                  (((footer_byte >> ((block_idx % 2) * 4 + 2)) & 0x3) + 1);
 }
 
 // Subblocks with a compressed size of 64 bytes are actually passthrough
@@ -1110,14 +1150,16 @@ void BinSubblocks(const uint8_t* src,
                   std::vector<T>* subblock_bins) {
   size_t subblock1_len, subblock2_len;
   ParseBlockMetadata(footer, block_offset, subblock1_len, subblock2_len);
-  T subblock1 = {src + block_offset, dest + block_offset, subblock1_len};
-  T subblock2 = {src + block_offset + subblock1_len,
-                 dest + block_offset + kMT21SubblockSize, subblock2_len};
+  T subblock1 = {UNSAFE_TODO(src + block_offset),
+                 UNSAFE_TODO(dest + block_offset), subblock1_len};
+  T subblock2 = {UNSAFE_TODO(src + block_offset + subblock1_len),
+                 UNSAFE_TODO(dest + block_offset + kMT21SubblockSize),
+                 subblock2_len};
   int subblock1_type = subblock1_len == kMT21SubblockSize;
   int subblock2_type = subblock2_len == kMT21SubblockSize;
 
-  subblock_bins[subblock1_type].push_back(subblock1);
-  subblock_bins[subblock2_type].push_back(subblock2);
+  UNSAFE_TODO(subblock_bins[subblock1_type]).push_back(subblock1);
+  UNSAFE_TODO(subblock_bins[subblock2_type]).push_back(subblock2);
 }
 
 }  // namespace

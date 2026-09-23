@@ -62,8 +62,9 @@ void DecompressAndDetile(const MT21DecompressionJob& job,
                               job.height, symbol_cache);
   }
 
-  libyuv::DetilePlane(pivot + job.offset, job.width, job.dest + job.offset,
-                      job.width, job.width, job.height,
+  libyuv::DetilePlane(UNSAFE_TODO(pivot + job.offset), job.width,
+                      UNSAFE_TODO(job.dest + job.offset), job.width, job.width,
+                      job.height,
                       job.is_chroma ? kMT21TileHeight / 2 : kMT21TileHeight);
 }
 
@@ -113,6 +114,8 @@ MT21DecompressionJob::MT21DecompressionJob(const uint8_t* src,
   this->is_chroma = is_chroma;
 }
 
+MT21DecompressionJob::~MT21DecompressionJob() {}
+
 MT21Decompressor::MT21Decompressor(gfx::Size resolution) {
   symbol_cache_ = new GolombRiceTableEntry[kGolombRiceCacheSize];
   PopulateGolombRiceCache(symbol_cache_);
@@ -125,10 +128,10 @@ MT21Decompressor::MT21Decompressor(gfx::Size resolution) {
 
   // Big cores are CPUs 2 and 3, while the little cores are 0 and 1.
   cpu_set_t mask;
-  CPU_ZERO(&mask);
+  UNSAFE_TODO(CPU_ZERO(&mask));
   for (size_t i = kNumLittleThreads; i < kNumLittleThreads + kNumBigThreads;
        i++) {
-    CPU_SET(i, &mask);
+    UNSAFE_TODO(CPU_SET(i, &mask));
   }
   big_core_pivot_ =
       static_cast<uint8_t*>(aligned_alloc(16, aligned_resolution_.GetArea()));
@@ -142,9 +145,9 @@ MT21Decompressor::MT21Decompressor(gfx::Size resolution) {
                                    big_core_pivot_, job);
   }
 
-  CPU_ZERO(&mask);
+  UNSAFE_TODO(CPU_ZERO(&mask));
   for (size_t i = 0; i < kNumLittleThreads; i++) {
-    CPU_SET(i, &mask);
+    UNSAFE_TODO(CPU_SET(i, &mask));
   }
   little_core_pivot_ =
       static_cast<uint8_t*>(aligned_alloc(16, aligned_resolution_.GetArea()));
@@ -214,13 +217,13 @@ void MT21Decompressor::MT21ToNV12(const uint8_t* src_y,
                                   uint8_t* dest_y,
                                   uint8_t* dest_uv) {
   const uint8_t* y_footer =
-      ComputeFooterOffset(aligned_resolution_.GetArea(), y_buf_size,
-                          kMT21YFooterAlignment) +
-      src_y;
+      UNSAFE_TODO(ComputeFooterOffset(aligned_resolution_.GetArea(), y_buf_size,
+                                      kMT21YFooterAlignment) +
+                  src_y);
   const uint8_t* uv_footer =
-      ComputeFooterOffset(aligned_resolution_.GetArea() / 2, uv_buf_size,
-                          kMT21UVFooterAlignment) +
-      src_uv;
+      UNSAFE_TODO(ComputeFooterOffset(aligned_resolution_.GetArea() / 2,
+                                      uv_buf_size, kMT21UVFooterAlignment) +
+                  src_uv);
 
   // Start little core jobs.
   for (auto& job : little_core_jobs_) {

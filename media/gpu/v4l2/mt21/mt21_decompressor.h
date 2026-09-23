@@ -70,7 +70,7 @@ struct MT21DecompressionJob : public base::RefCounted<MT21DecompressionJob> {
 
  private:
   friend class base::RefCounted<MT21DecompressionJob>;
-  ~MT21DecompressionJob() = default;
+  ~MT21DecompressionJob();
 };
 
 // We considered making this an ImageProcessorBackend, but it turns out we need
