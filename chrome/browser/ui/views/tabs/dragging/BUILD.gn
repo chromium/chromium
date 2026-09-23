@@ -233,6 +233,7 @@ if (!is_chromeos_device) {
 
     if (is_linux) {
       deps += [
+        "//chrome/browser/ui/views/frame:browser_native_widget_aura_linux",
         "//chrome/common:non_code_constants",
         "//ui/base/dragdrop:types",
         "//ui/linux:linux_ui",
@@ -241,6 +242,9 @@ if (!is_chromeos_device) {
 
     if (use_aura) {
       deps += [ "//ui/aura" ]
+      if (!is_chromeos) {
+        deps += [ "//chrome/browser/ui/views/frame:browser_native_widget_aura" ]
+      }
     }
 
     if (use_ozone) {

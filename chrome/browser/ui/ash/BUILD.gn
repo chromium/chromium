@@ -27,6 +27,7 @@ static_library("test_support") {
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/exclusive_access:test_support",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/frame:browser_frame_view_chromeos",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:immersive_mode_tester",
     "//chrome/test/base:in_process_browser_test",

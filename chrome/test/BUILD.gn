@@ -3191,6 +3191,7 @@ if (!is_android) {
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui:fullscreen_util_mac",
         "//chrome/browser/ui/cocoa:browser_tests",
+        "//chrome/browser/ui/views/frame:browser_frame_view_mac",
         "//chrome/browser/webshare:browser_tests",
         "//components/enterprise/platform_auth:enterprise_platform_auth",
         "//components/onc",
@@ -3529,6 +3530,7 @@ if (!is_android) {
         ]
         deps += [
           "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
+          "//chrome/browser/ui/views/frame:browser_frame_view_win",
           "//chrome/browser/ui/views/frame:windows_caption_button",
         ]
       }
@@ -3557,6 +3559,7 @@ if (!is_android) {
         ]
         deps += [
           "//chrome/browser/ash/fileapi",
+          "//chrome/browser/ui/views/frame:browser_frame_view_chromeos",
           "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
         ]
       } else {
@@ -9032,7 +9035,10 @@ if (!is_android && !is_chromeos_device) {
     if (is_linux) {
       sources += [ "../browser/ui/views/frame/browser_native_widget_aura_linux_interactive_uitest.cc" ]
 
-      deps += [ "//ui/linux:linux_ui" ]
+      deps += [
+        "//chrome/browser/ui/views/frame:browser_native_widget_aura_linux",
+        "//ui/linux:linux_ui",
+      ]
 
       if (ozone_platform_x11 && enable_remoting) {
         sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
