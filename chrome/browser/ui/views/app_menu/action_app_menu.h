@@ -79,7 +79,7 @@ class ActionAppMenu : public views::MenuDelegate {
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);
   void PopulateHeader(views::MenuItemView* view_parent,
-                      actions::ActionItem* header_action_item);
+                      actions::BaseAction* header_base_action);
   void PopulateFooter(views::MenuItemView* view_parent,
                       actions::ActionItem* footer_action_item);
   void PopulateBlockSection(views::MenuItemView* view_parent,

@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
@@ -84,6 +86,8 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_class_properties.h"
@@ -217,8 +221,9 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
 
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(profile_item->GetTopMargin(), 8);
+  EXPECT_EQ(profile_item->GetTopMargin(), 12);
 #endif
+  // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
   EXPECT_EQ(password_item->GetTopMargin(), 8);
   EXPECT_EQ(print_item->GetTopMargin(), 8);
   EXPECT_EQ(downloads_item->GetTopMargin(), 8);
@@ -231,6 +236,28 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(profile_item->GetSelectedColorId(),
             ui::kColorSysStateHoverOnSubtle);
+  EXPECT_EQ(menu.GetLabelFontList(profile_item->GetCommand()),
+            &views::TypographyProvider::Get().GetFont(
+                views::style::CONTEXT_MENU, views::style::STYLE_BODY_3_MEDIUM));
+  const int expected_avatar_size =
+      GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
+  EXPECT_EQ(profile_item->GetIcon().Size(),
+            gfx::Size(expected_avatar_size, expected_avatar_size));
+
+  EXPECT_TRUE(std::ranges::any_of(profile_item->children(),
+                                  &views::IsViewClass<AppMenuChipView>));
+
+  views::SubmenuView* root_submenu = root->GetSubmenu();
+  ASSERT_NE(root_submenu, nullptr);
+  auto profile_it = std::ranges::find(root_submenu->children(), profile_item);
+  ASSERT_NE(profile_it, root_submenu->children().end());
+  ASSERT_NE(std::next(profile_it), root_submenu->children().end());
+  views::MenuSeparator* item_separator =
+      views::AsViewClass<views::MenuSeparator>(*std::next(profile_it));
+  ASSERT_NE(item_separator, nullptr);
+  EXPECT_EQ(item_separator->GetType(),
+            ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  EXPECT_EQ(item_separator->GetColorId(), ui::kColorMenuBackground);
 #endif
   EXPECT_EQ(password_item->GetSelectedColorId(),
             ui::kColorSysStateHoverOnSubtle);

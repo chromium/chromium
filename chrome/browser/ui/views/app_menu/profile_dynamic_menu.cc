@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -104,6 +105,77 @@ ProfileDynamicMenu::ProfileDynamicMenu(BrowserWindowInterface* browser)
 }
 
 ProfileDynamicMenu::~ProfileDynamicMenu() = default;
+
+std::optional<ui::ImageModel> ProfileDynamicMenu::GetProfileAvatarIcon() const {
+  if (!browser_window_interface_) {
+    return std::nullopt;
+  }
+  Profile* profile = browser_window_interface_->GetProfile();
+  if (!profile) {
+    return std::nullopt;
+  }
+
+  const int avatar_icon_size =
+      GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
+  ui::ImageModel avatar_image_model = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kAccountCircleIcon
+                                        : kAccountCircleChromeRefreshOldIcon,
+      ui::kColorMenuIcon, avatar_icon_size);
+
+  if (profile->IsIncognitoProfile()) {
+    return ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kIncognitoCircleFilledIcon
+                                          : kIncognitoOldIcon,
+        ui::kColorAvatarIconIncognito, avatar_icon_size);
+  }
+  if (profile->IsGuestSession()) {
+    return avatar_image_model;
+  }
+
+  ProfileAttributesEntry* profile_attributes =
+      (g_browser_process && g_browser_process->profile_manager())
+          ? GetProfileAttributesFromProfile(profile)
+          : nullptr;
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  if (profile_attributes && color_provider) {
+    AccountInfo account_info = GetAccountInfoFromProfile(profile);
+    auto [avatar_image, icon_type] =
+        account_info.IsEmpty()
+            ? profile_attributes->GetAvatarIconWithType(
+                  avatar_icon_size, /*use_high_res_file=*/true,
+                  GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+                      color_provider->GetColor(ui::kColorMenuBackground)))
+            : std::make_pair(
+                  account_info.GetAvatarImage().value_or(gfx::Image()),
+                  AvatarIconType::kNonPlaceholder);
+    if (!avatar_image.IsEmpty() && icon_type != AvatarIconType::kPlaceholder) {
+      ui::ImageModel avatar_model =
+          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+              avatar_image, avatar_icon_size, avatar_icon_size,
+              profiles::SHAPE_CIRCLE));
+      syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
+      const bool has_actionable_error =
+          service &&
+          service->GetUserActionableError() !=
+              syncer::SyncService::UserActionableError::kNone &&
+          service->GetUserActionableError() !=
+              syncer::SyncService::UserActionableError::kBookmarksLimitExceeded;
+      if (has_actionable_error) {
+        avatar_image_model =
+            ui::ImageModel::FromImageSkia(profiles::GetAvatarWithDottedRing(
+                avatar_model, avatar_icon_size, /*has_padding=*/false,
+                /*has_background=*/false, *color_provider));
+      } else if (ShouldShowAvatarGradientRing(profile)) {
+        avatar_image_model =
+            ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
+                avatar_model, *color_provider, avatar_icon_size));
+      } else {
+        avatar_image_model = avatar_model;
+      }
+    }
+  }
+  return avatar_image_model;
+}
 
 // Populates the sync/sign-in section of the profile submenu.
 void ProfileDynamicMenu::BuildSyncSection(actions::BaseAction* parent_item) {

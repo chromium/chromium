@@ -165,19 +165,32 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
   ASSERT_NE(your_chrome_section, nullptr);
 
-  actions::BaseAction* profile_submenu = nullptr;
-  for (const auto& child : your_chrome_section->GetChildren().children()) {
-    if (child->GetActionItem()->GetActionId() == kActionProfileSubmenu) {
-      profile_submenu = child.get();
-      break;
-    }
-  }
-  ASSERT_NE(profile_submenu, nullptr);
+  const auto& section_children = your_chrome_section->GetChildren().children();
+  ASSERT_GE(section_children.size(), 3u);
+  actions::BaseAction* profile_submenu = section_children[1].get();
+  actions::BaseAction* item_after_profile = section_children[2].get();
+
   EXPECT_EQ(profile_submenu->GetActionItem()->GetActionId(),
             kActionProfileSubmenu);
   EXPECT_EQ(profile_submenu->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kRow);
+  EXPECT_EQ(profile_submenu->GetActionItem()->GetProperty(
+                AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kExpanded);
+  EXPECT_NE(profile_submenu->GetProperty(AppMenuActionItem::kIconOverrideKey),
+            nullptr);
+  ASSERT_NE(profile_submenu->GetProperty(AppMenuActionItem::kChipTextKey),
+            nullptr);
+  EXPECT_EQ(*profile_submenu->GetProperty(AppMenuActionItem::kChipTextKey),
+            l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE));
+
+  EXPECT_EQ(item_after_profile->GetActionItem()->GetProperty(
+                AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kDivider);
+  EXPECT_EQ(item_after_profile->GetActionItem()->GetProperty(
+                AppMenuActionItem::kSeparatorKey),
+            ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
 
   // It should contain sync header, divider, primary actions, divider, header,
   // other profiles, divider, and footer actions.

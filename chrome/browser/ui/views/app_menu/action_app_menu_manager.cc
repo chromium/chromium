@@ -83,6 +83,7 @@
 #include "components/search/ntp_features.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -463,6 +464,12 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
         std::u16string profile_name = GetProfileName(profile);
+        std::optional<std::u16string> chip_text;
+        if (!profile->IsOffTheRecord() && !profile->IsGuestSession() &&
+            !profile->IsEnterpriseIsolatedModeProfile() &&
+            profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+          chip_text = GetSigninStatusChipString(profile);
+        }
         section.AddSubmenu(
             kActionProfileSubmenu,
             [this, profile](AppMenuBuilder& sub) {
@@ -487,7 +494,11 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
             {.text_override = profile_name.empty()
                                   ? std::nullopt
                                   : std::make_optional(std::move(profile_name)),
+             .icon_override = profile_menu_->GetProfileAvatarIcon(),
+             .chip_text = std::move(chip_text),
+             .item_height = AppMenuActionItem::ItemHeight::kExpanded,
              .element_id = AppMenuModel::kProfileMenuItem});
+        section.AddDivider(ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
 #endif
 
         if (!profile->IsGuestSession()) {

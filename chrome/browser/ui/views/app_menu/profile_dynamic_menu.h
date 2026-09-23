@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_PROFILE_DYNAMIC_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_APP_MENU_PROFILE_DYNAMIC_MENU_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
 
 namespace ui {
 class ColorProvider;
@@ -26,6 +29,8 @@ class ProfileDynamicMenu {
   base::WeakPtr<ProfileDynamicMenu> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  std::optional<ui::ImageModel> GetProfileAvatarIcon() const;
 
   void BuildSyncSection(actions::BaseAction* parent_item);
   void BuildOtherProfiles(actions::BaseAction* parent_item);

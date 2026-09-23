@@ -362,7 +362,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuHighlightPrimary] = {ui::kColorButtonBackgroundProminent};
   mixer[kColorAppMenuExpandedForegroundPrimary] = {
       ui::kColorButtonForegroundProminent};
-  mixer[kColorAppMenuChipBackground] = {ui::kColorSysBaseContainer};
+  mixer[kColorAppMenuChipBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorAppMenuChipBackgroundHovered] = {ui::GetResultingPaintColor(
       ui::kColorSysStateHoverOnSubtle, kColorAppMenuChipBackground)};
   mixer[kColorAppMenuChipForeground] = {ui::kColorSysOnTonalContainer};

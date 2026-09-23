@@ -24,7 +24,6 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -226,16 +225,35 @@ bool ActionAppMenu::IsItemChecked(int id) const {
 }
 
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
-  if (id == ui::MenuModel::kTitleId) {
+  auto action_iterator = command_to_action_map_.find(id);
+  if (action_iterator == command_to_action_map_.end()) {
+    return nullptr;
+  }
+
+  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
+  CHECK(action_ptr);
+  if (action_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+      AppMenuActionItem::DisplayType::kHeader) {
     return &views::TypographyProvider::Get().GetFont(
         views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5);
+  } else if (action_ptr->GetActionId() == kActionProfileSubmenu) {
+    return &views::TypographyProvider::Get().GetFont(
+        views::style::CONTEXT_MENU, views::style::STYLE_BODY_3_MEDIUM);
   }
   return nullptr;
 }
 
 std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
-  if (id == ui::MenuModel::kTitleId && root_ && root_->HasSubmenu() &&
-      root_->GetSubmenu()->GetColorProvider()) {
+  auto action_iterator = command_to_action_map_.find(id);
+  if (action_iterator == command_to_action_map_.end()) {
+    return std::nullopt;
+  }
+
+  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
+  CHECK(action_ptr);
+  if (action_ptr->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+          AppMenuActionItem::DisplayType::kHeader &&
+      root_ && root_->GetSubmenu()->GetColorProvider()) {
     return root_->GetSubmenu()->GetColorProvider()->GetColor(
         ui::kColorMenuItemForeground);
   }
@@ -275,7 +293,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     } else if (display_type == AppMenuActionItem::DisplayType::kDivider) {
       PopulateDivider(view_parent, child_ptr);
     } else if (display_type == AppMenuActionItem::DisplayType::kHeader) {
-      PopulateHeader(view_parent, child_ptr);
+      PopulateHeader(view_parent, child_base);
     } else if (display_type == AppMenuActionItem::DisplayType::kSection) {
       // Recursively call using the same parent to keep the children in
       // the same menu section.
@@ -366,7 +384,9 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   if (ui::ImageModel* icon_override =
           child_base->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
-    menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));
+    menu_item->SetIcon(action_item->GetActionId() == kActionProfileSubmenu
+                           ? *icon_override
+                           : StandardizeMenuIconSize(*icon_override));
   } else if (!action_item->GetImage().IsEmpty()) {
     menu_item->SetIcon(StandardizeMenuIconSize(action_item->GetImage()));
   }
@@ -484,9 +504,14 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
 }
 
 void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
-                                   actions::ActionItem* header_action_item) {
+                                   actions::BaseAction* header_base_action) {
+  actions::ActionItem* const header_action_item =
+      header_base_action->GetActionItem();
   auto* const header_menu_item =
       view_parent->AppendTitle(std::u16string(header_action_item->GetText()));
+  const int command_id = next_id_++;
+  header_menu_item->SetCommand(command_id);
+  command_to_action_map_[command_id] = header_base_action;
   const int default_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN);
   header_menu_item->set_vertical_margin(default_margin);
@@ -538,6 +563,11 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
 
 void ActionAppMenu::PopulateDivider(views::MenuItemView* view_parent,
                                     actions::ActionItem* divider_action_item) {
-  view_parent->AppendSeparator(
-      divider_action_item->GetProperty(AppMenuActionItem::kSeparatorKey));
+  const ui::MenuSeparatorType separator_type =
+      divider_action_item->GetProperty(AppMenuActionItem::kSeparatorKey);
+  views::MenuSeparator* separator =
+      view_parent->AppendSeparator(separator_type);
+  if (separator_type == ui::MENU_ITEM_SEPARATOR) {
+    separator->SetColorId(ui::kColorMenuBackground);
+  }
 }
