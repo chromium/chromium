@@ -13,7 +13,7 @@ import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
-import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import {ControlKeyState, SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import type {OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {selectionIsNativelySupported, selectionsEqual} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {afterNextPaint, markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
@@ -1498,18 +1498,23 @@ export class OmniboxPopupSearchboxElement extends
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).
       e.preventDefault();
-      this.pageHandler().openAutocompleteMatch(
-          /*resultSequenceId=*/ this.result?.sequenceId ?? 0,
-          /*line=*/ -1,
-          /*url=*/ '',
-          /*areMatchesShowing=*/ this.dropdownIsVisible,
-          /*mouseButton=*/ 0, {
-            altKey: e.altKey,
-            ctrlKey: e.ctrlKey,
-            metaKey: e.metaKey,
-            shiftKey: e.shiftKey,
-          },
-          /*viaKeyboard=*/ true);
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey &&
+          this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED) {
+        this.openCtrlEnterMatch(-1);
+      } else {
+        this.pageHandler().openAutocompleteMatch(
+            /*resultSequenceId=*/ this.result?.sequenceId ?? 0,
+            /*line=*/ -1,
+            /*url=*/ '',
+            /*areMatchesShowing=*/ this.dropdownIsVisible,
+            /*mouseButton=*/ 0, {
+              altKey: e.altKey,
+              ctrlKey: e.ctrlKey,
+              metaKey: e.metaKey,
+              shiftKey: e.shiftKey,
+            },
+            /*viaKeyboard=*/ true);
+      }
       return;
     }
 

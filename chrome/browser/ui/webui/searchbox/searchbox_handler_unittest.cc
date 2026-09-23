@@ -2023,6 +2023,30 @@ TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_IndexOutOfBounds) {
       SearchboxHandler::kSnapshotMatchSequenceDistanceHistogram, 0);
 }
 
+TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_CtrlEnterWithNoMatch) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+
+  test_omnibox_view_->SetUserText(u"google");
+  omnibox_controller_->edit_model()->StartAutocomplete(false);
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept(GURL("http://www.google.com/"), _,
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            _, _, _, _, _, _, _, _))
+      .Times(1);
+
+  auto selection = searchbox::mojom::OmniboxPopupSelection::New();
+  selection->line = static_cast<uint8_t>(OmniboxPopupSelection::kNoMatch);
+  selection->state = searchbox::mojom::SelectionLineState::kCtrlEnter;
+  selection->action_index = 0;
+
+  handler_->OpenPopupSelection(
+      omnibox_controller_->autocomplete_controller()->result().sequence_id(),
+      std::move(selection), WindowOpenDisposition::CURRENT_TAB);
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
   // Set a mock AutocompleteController.
   auto mock_client = std::make_unique<MockAutocompleteProviderClient>();

@@ -652,6 +652,23 @@ TEST_F(OmniboxEditModelTest,
             state.autocomplete_input.canonicalized_url());
 }
 
+TEST_F(OmniboxEditModelTest, CtrlEnterSelectionNavigatesToDesiredTLDNoMatch) {
+  view()->SetUserText(u"google");
+  model()->StartAutocomplete(false);
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept(GURL("http://www.google.com/"), _,
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            _, _, _, _, _, _, _, _))
+      .Times(1);
+
+  // When selection state is CTRL_ENTER and line is kNoMatch (e.g. popup closed
+  // after typing and pressing Ctrl+Enter in WebUI), verify navigation to .com.
+  model()->OpenSelection(OmniboxPopupSelection(
+      OmniboxPopupSelection::kNoMatch, OmniboxPopupSelection::CTRL_ENTER));
+}
+
 TEST_F(OmniboxEditModelTest, SpaceInMiddleWithoutKeywordSelectionDoesNotCrash) {
   // Populate the TemplateURLService with a keyword search engine.
   TemplateURLData data;

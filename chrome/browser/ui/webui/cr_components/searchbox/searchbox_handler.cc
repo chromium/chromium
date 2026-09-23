@@ -1649,6 +1649,12 @@ void SearchboxHandler::OpenPopupSelection(
       ConvertSelection(std::move(selection));
   const bool sequence_id_matched =
       result_sequence_id == autocomplete_controller()->result().sequence_id();
+  // Verbatim Ctrl+Enter (on kNoMatch) navigates using the raw typed input
+  // text rather than an AutocompleteResult match item, so it is exempted from
+  // being dropped on result sequence ID mismatches.
+  const bool is_verbatim_ctrl_enter =
+      popup_selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+      popup_selection.line == OmniboxPopupSelection::kNoMatch;
 
   if (!base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
@@ -1662,6 +1668,7 @@ void SearchboxHandler::OpenPopupSelection(
         sequence_id_matched);
 
     if ((!selection_matched || !sequence_id_matched) &&
+        !is_verbatim_ctrl_enter &&
         base::FeatureList::IsEnabled(kDropMismatchedSelections)) {
       return;
     }
@@ -1673,9 +1680,32 @@ void SearchboxHandler::OpenPopupSelection(
   base::UmaHistogramBoolean("Omnibox.WebUI.AutocompleteResultSequenceIdMatched",
                             sequence_id_matched);
 
-  if (!sequence_id_matched &&
+  if (!sequence_id_matched && !is_verbatim_ctrl_enter &&
       base::FeatureList::IsEnabled(kDropMismatchedSelections)) {
     return;
+  }
+
+  // For Ctrl+Enter selections, the match is generated here rather than taken
+  // from the result, and the selection may have no corresponding match at all,
+  // e.g. for verbatim input, so this is handled before the range check below.
+  if (popup_selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+      autocomplete_controller()->history_url_provider()) {
+    const AutocompleteInput& input = autocomplete_controller()->input();
+    const AutocompleteResult& result = autocomplete_controller()->result();
+    // TODO(crbug.com/545723506): Use match from AutocompleteResult.
+    // There is no edit model on this path, and `input()` is never cleared, so
+    // this can be stale after a revert.
+    std::u16string text_for_tld = input.text();
+    if (popup_selection.line > 0 && popup_selection.line < result.size()) {
+      text_for_tld = result.match_at(popup_selection.line).fill_into_edit;
+    }
+    AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
+        client(), autocomplete_controller(), input, text_for_tld);
+    if (url_match.destination_url.is_valid()) {
+      OpenMatch(popup_selection, url_match, disposition, base::TimeTicks::Now(),
+                searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
+      return;
+    }
   }
 
   if (popup_selection.line >= autocomplete_controller()->result().size()) {
@@ -1694,22 +1724,6 @@ void SearchboxHandler::OpenPopupSelection(
             *(autocomplete_controller()->autocomplete_provider_client()));
       }
     }
-  } else if (popup_selection.state == OmniboxPopupSelection::CTRL_ENTER) {
-    AutocompleteMatch final_match = match;
-    if (autocomplete_controller()->history_url_provider()) {
-      std::u16string text_for_tld = autocomplete_controller()->input().text();
-      if (popup_selection.line > 0) {
-        text_for_tld = match.fill_into_edit;
-      }
-      AutocompleteMatch alternate_match = searchbox::GenerateDotComMatch(
-          client(), autocomplete_controller(),
-          autocomplete_controller()->input(), text_for_tld);
-      if (alternate_match.destination_url.is_valid()) {
-        final_match = alternate_match;
-      }
-    }
-    OpenMatch(popup_selection, final_match, disposition, base::TimeTicks::Now(),
-              searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
   } else {
     OpenMatch(popup_selection, match, disposition, base::TimeTicks::Now(),
               searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));

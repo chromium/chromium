@@ -166,7 +166,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     initialInputScrollHeight: number = 0;
 
-    private controlKeyState_: ControlKeyState = ControlKeyState.UP;
+    // Tracks the Ctrl key across a keydown sequence so that a Ctrl press
+    // already consumed by another shortcut (e.g. Ctrl+V) does not also append
+    // the desired TLD on Ctrl+Enter. Mirrors `OmniboxEditModel`'s
+    // `control_key_state_`.
+    controlKeyState: ControlKeyState = ControlKeyState.UP;
+
     private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
     private searchboxEventTracker_: EventTracker = new EventTracker();
     private callbackRouter_: PageCallbackRouter =
@@ -205,7 +210,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.searchboxEventTracker_.add(window, 'keyup', (e: Event) => {
         if (this.shouldAppendDotComOnCtrlEnter() &&
             (e as KeyboardEvent).key === 'Control') {
-          this.controlKeyState_ = ControlKeyState.UP;
+          this.controlKeyState = ControlKeyState.UP;
         }
       });
     }
@@ -359,21 +364,23 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     openCtrlEnterMatch(matchIndex: number) {
-      assert(matchIndex >= 0);
-      const match = this.result!.matches[matchIndex];
-      assert(match);
+      const match = matchIndex >= 0 && this.result?.matches ?
+          this.result.matches[matchIndex] :
+          null;
       this.pageHandler().openPopupSelection(
-          this.result!.sequenceId, {
+          this.result?.sequenceId ?? 0, {
             line: matchIndex,
             state: SelectionLineState.kCtrlEnter,
             actionIndex: 0,
           },
           1);
-      this.getInputElement().setInput({
-        text: match.fillIntoEdit,
-        inline: '',
-        moveCursorToEnd: true,
-      });
+      if (match) {
+        this.getInputElement().setInput({
+          text: match.fillIntoEdit,
+          inline: '',
+          moveCursorToEnd: true,
+        });
+      }
       this.keywordModeManager_.exit();
       this.clearAutocompleteMatches();
     }
@@ -466,7 +473,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     onInputFocusChanged(e: CustomEvent<{value: string, isOnFocus: boolean}>) {
       if (this.shouldAppendDotComOnCtrlEnter()) {
-        this.controlKeyState_ = ControlKeyState.UP;
+        this.controlKeyState = ControlKeyState.UP;
       }
       if (this.dropdownIsVisible) {
         return;
@@ -568,12 +575,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
       if (this.shouldAppendDotComOnCtrlEnter()) {
         if (e.key === 'Control') {
-          if (this.controlKeyState_ === ControlKeyState.UP) {
-            this.controlKeyState_ = ControlKeyState.DOWN;
+          if (this.controlKeyState === ControlKeyState.UP) {
+            this.controlKeyState = ControlKeyState.DOWN;
           }
         } else if (e.ctrlKey && e.key !== 'Enter') {
-          if (this.controlKeyState_ === ControlKeyState.DOWN) {
-            this.controlKeyState_ = ControlKeyState.DOWN_AND_CONSUMED;
+          if (this.controlKeyState === ControlKeyState.DOWN) {
+            this.controlKeyState = ControlKeyState.DOWN_AND_CONSUMED;
           }
         }
       }
@@ -730,7 +737,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
       const isPureCtrlEnter = this.shouldAppendDotComOnCtrlEnter() &&
           e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey &&
-          this.controlKeyState_ !== ControlKeyState.DOWN_AND_CONSUMED;
+          this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED;
 
       e.preventDefault();
       if (this.handleVirtualFocusEnter(e)) {
@@ -1101,6 +1108,7 @@ export interface SearchboxMixinInterface extends
   virtualFocusEnabled: boolean;
   matchIndex: number;
   composeboxSource: string;
+  controlKeyState: ControlKeyState;
   dropdownIsVisible: boolean;
   initialInputScrollHeight: number;
   inputAriaLive: string;

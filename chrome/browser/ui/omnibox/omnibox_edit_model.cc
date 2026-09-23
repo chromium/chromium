@@ -936,6 +936,30 @@ void OmniboxEditModel::OpenSelection(
   // the appropriate AI Mode UMA metrics.
   RecordAiModeMetrics(/*query=*/u"", AimActivation::kNotActivated);
 
+  // For Ctrl+Enter selections triggered via a WebUI searchbox, the event
+  // bypasses `AcceptInput` and arrives here directly, so generate the ".com"
+  // match here using the same rules `AcceptInput` applies.
+  if (selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+      autocomplete_controller()->history_url_provider()) {
+    std::u16string text_for_desired_tld_navigation = input_.text();
+    if (has_temporary_text_ && selection.line > 0) {
+      text_for_desired_tld_navigation = GetText();
+    } else if (!user_input_in_progress()) {
+      text_for_desired_tld_navigation = url_for_editing_;
+    }
+
+    AutocompleteInput generated_input;
+    AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
+        controller_->client(), autocomplete_controller(), input_,
+        text_for_desired_tld_navigation, &generated_input);
+    if (url_match.destination_url.is_valid()) {
+      input_ = generated_input;
+      OpenMatch(selection, url_match, disposition, GURL(), std::u16string(),
+                timestamp, snapshot);
+      return;
+    }
+  }
+
   const AutocompleteResult& result =
       snapshot ? snapshot->result : autocomplete_controller()->result();
   if (selection.line >= result.size()) {
@@ -952,25 +976,6 @@ void OmniboxEditModel::OpenSelection(
   const AutocompleteMatch& match = result.match_at(selection.line);
 
   const AutocompleteInput& input = snapshot ? snapshot->input : input_;
-
-  // For Ctrl+Enter selections triggered via a WebUI searchbox, the event
-  // bypasses `AcceptInput` and arrives here directly. The match is mutated here
-  // to generate a TLD match.
-  if (selection.state == OmniboxPopupSelection::CTRL_ENTER &&
-      autocomplete_controller()->history_url_provider()) {
-    std::u16string text_for_tld = autocomplete_controller()->input().text();
-    if (selection.line > 0) {
-      text_for_tld = match.fill_into_edit;
-    }
-    AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
-        controller_->client(), autocomplete_controller(), input, text_for_tld,
-        nullptr);
-    if (url_match.destination_url.is_valid()) {
-      OpenMatch(selection, url_match, disposition, GURL(), std::u16string(),
-                timestamp, snapshot);
-      return;
-    }
-  }
 
   // Selecting a featured search match should enter keyword mode instead of
   // navigating to the suggestion.
