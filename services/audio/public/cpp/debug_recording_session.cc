@@ -32,6 +32,8 @@ const base::FilePath::CharType* StreamTypeToStringType(
       return FILE_PATH_LITERAL("output");
     case media::AudioDebugRecordingStreamType::kLoopback:
       return FILE_PATH_LITERAL("loopback");
+    case media::AudioDebugRecordingStreamType::kVoiceIsolation:
+      return FILE_PATH_LITERAL("voiceisolation");
   }
   NOTREACHED();
 }

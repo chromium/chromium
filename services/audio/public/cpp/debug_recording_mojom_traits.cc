@@ -19,6 +19,8 @@ EnumTraits<audio::mojom::DebugRecordingStreamType,
       return audio::mojom::DebugRecordingStreamType::kOutput;
     case media::AudioDebugRecordingStreamType::kLoopback:
       return audio::mojom::DebugRecordingStreamType::kLoopback;
+    case media::AudioDebugRecordingStreamType::kVoiceIsolation:
+      return audio::mojom::DebugRecordingStreamType::kVoiceIsolation;
   }
   NOTREACHED();
 }
@@ -34,6 +36,8 @@ EnumTraits<audio::mojom::DebugRecordingStreamType,
       return media::AudioDebugRecordingStreamType::kOutput;
     case audio::mojom::DebugRecordingStreamType::kLoopback:
       return media::AudioDebugRecordingStreamType::kLoopback;
+    case audio::mojom::DebugRecordingStreamType::kVoiceIsolation:
+      return media::AudioDebugRecordingStreamType::kVoiceIsolation;
   }
   NOTREACHED();
 }

@@ -39,6 +39,8 @@ const base::FilePath::CharType kBaseFileName[] =
 const base::FilePath::CharType kWavExtension[] = FILE_PATH_LITERAL("wav");
 const base::FilePath::CharType kInput[] = FILE_PATH_LITERAL("input");
 const base::FilePath::CharType kOutput[] = FILE_PATH_LITERAL("output");
+const base::FilePath::CharType kVoiceIsolation[] =
+    FILE_PATH_LITERAL("voiceisolation");
 
 }  // namespace
 
@@ -154,6 +156,20 @@ TEST_F(DebugRecordingFileProviderTest, CreateFileForOutputStream) {
   task_environment_.RunUntilIdle();
 
   base::FilePath file_name(GetFileName(kOutput, id));
+  EXPECT_TRUE(base::PathExists(file_name));
+  ASSERT_TRUE(base::DeleteFile(file_name));
+}
+
+TEST_F(DebugRecordingFileProviderTest, CreateFileForVoiceIsolationStream) {
+  const uint32_t id = 1;
+  EXPECT_CALL(*this, OnFileCreated(true));
+  remote_file_provider_->CreateWavFile(
+      media::AudioDebugRecordingStreamType::kVoiceIsolation, id,
+      base::BindOnce(&DebugRecordingFileProviderTest::FileCreated,
+                     base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  base::FilePath file_name(GetFileName(kVoiceIsolation, id));
   EXPECT_TRUE(base::PathExists(file_name));
   ASSERT_TRUE(base::DeleteFile(file_name));
 }

@@ -26,7 +26,8 @@ class AudioBus;
 enum class AudioDebugRecordingStreamType {
   kInput = 0,
   kOutput = 1,
-  kLoopback = 2
+  kLoopback = 2,
+  kVoiceIsolation = 3
 };
 
 // Interface for feeding data to a recorder.
