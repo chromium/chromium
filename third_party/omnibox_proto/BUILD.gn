@@ -46,8 +46,6 @@ _proto_files = [
   "tool_config.proto",
   "tool_mode.proto",
   "tool_rule.proto",
-  "tool_substate.proto",
-  "tool_substate_config.proto",
   "types.proto",
   "url_param.proto",
 ]
