@@ -8,6 +8,8 @@ NSString* const kAssistantAIMCloseButtonAccessibilityIdentifier =
     @"AssistantAIMCloseButtonAccessibilityIdentifier";
 NSString* const kAssistantAIMContextMenuButtonAccessibilityIdentifier =
     @"AssistantAIMContextMenuButtonAccessibilityIdentifier";
+NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier =
+    @"AssistantAIMHistorySignedOutViewAccessibilityIdentifier";
 
 NSString* const kAIMSRPDebuggerURLViewControllerAccessibilityIdentifier =
     @"AIMSRPDebuggerURLViewControllerAccessibilityIdentifier";

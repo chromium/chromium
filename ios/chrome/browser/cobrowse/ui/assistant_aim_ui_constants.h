@@ -13,6 +13,10 @@ extern NSString* const kAssistantAIMCloseButtonAccessibilityIdentifier;
 // Accessibility identifier for the Assistant AIM context menu button.
 extern NSString* const kAssistantAIMContextMenuButtonAccessibilityIdentifier;
 
+// Accessibility identifier for the signed out zero state displayed in the
+// Assistant AIM history.
+extern NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
+
 // Accessibility identifiers for the AIM SRP Loaded URL debugger view
 // components.
 extern NSString* const kAIMSRPDebuggerURLViewControllerAccessibilityIdentifier;

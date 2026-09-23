@@ -396,10 +396,18 @@
 #pragma mark - AssistantAIMMutator
 
 - (void)didTapHistory {
+  // History is bound to the account, so there is nothing to fetch when the
+  // user is signed out.
+  if (!_authenticationService ||
+      !_authenticationService->HasPrimaryIdentity()) {
+    [self.consumer displayHistoryWithItems:{} signedIn:NO];
+    return;
+  }
+
   __weak AssistantAIMMediator* weakSelf = self;
   [self fetchHistoryItemsWithCompletion:^(
             const std::vector<AssistantAIMHistoryItem>& items) {
-    [weakSelf.consumer displayHistoryWithItems:items];
+    [weakSelf.consumer displayHistoryWithItems:items signedIn:YES];
   }];
 }
 

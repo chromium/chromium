@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -23,6 +24,12 @@ const NSInteger kTitleNumberOfLines = 2;
 // Identifier for the section in diffable data source.
 NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
 
+// The vertical spacing between the signed out zero state labels.
+const CGFloat kZeroStateLabelSpacing = 8.0;
+
+// The leading/trailing padding of the signed out zero state labels.
+const CGFloat kZeroStateHorizontalPadding = 32.0;
+
 }  // namespace
 
 @interface AssistantAIMHistoryViewController () <UICollectionViewDelegate>
@@ -32,6 +39,8 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
   UICollectionView* _collectionView;
   UICollectionViewDiffableDataSource<NSString*, NSString*>* _dataSource;
   std::vector<AssistantAIMHistoryItem> _items;
+  // Zero state displayed instead of the list when the user is signed out.
+  UIStackView* _signedOutZeroStateView;
 }
 
 - (void)viewDidLoad {
@@ -39,6 +48,8 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
   self.view.backgroundColor = [UIColor clearColor];
 
   [self setUpCollectionView];
+  [self setUpSignedOutZeroState];
+  [self updateContentVisibility];
 }
 
 - (void)setUpCollectionView {
@@ -108,6 +119,15 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
 - (void)updateHistoryItems:(const std::vector<AssistantAIMHistoryItem>&)items {
   _items = items;
   [self applySnapshot];
+}
+
+- (void)setSignedIn:(BOOL)signedIn {
+  _signedIn = signedIn;
+  // The sign-in state can be set before the view hierarchy is built; in that
+  // case `viewDidLoad` applies it.
+  if (self.viewLoaded) {
+    [self updateContentVisibility];
+  }
 }
 
 - (void)applySnapshot {
@@ -187,6 +207,65 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
   deleteAction.attributes = UIMenuElementAttributesDestructive;
 
   return [UIMenu menuWithTitle:@"" children:@[ shareAction, deleteAction ]];
+}
+
+// Creates the zero state displayed when the user is signed out.
+- (void)setUpSignedOutZeroState {
+  UILabel* titleLabel =
+      [self zeroStateLabelWithText:l10n_util::GetNSString(
+                                       IDS_IOS_AIM_HISTORY_SIGNED_OUT_TITLE)
+                         textStyle:UIFontTextStyleTitle2
+                             color:[UIColor colorNamed:kTextPrimaryColor]];
+  UILabel* subtitleLabel =
+      [self zeroStateLabelWithText:l10n_util::GetNSString(
+                                       IDS_IOS_AIM_HISTORY_SIGNED_OUT_SUBTITLE)
+                         textStyle:UIFontTextStyleSubheadline
+                             color:[UIColor colorNamed:kTextSecondaryColor]];
+
+  _signedOutZeroStateView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ titleLabel, subtitleLabel ]];
+  _signedOutZeroStateView.axis = UILayoutConstraintAxisVertical;
+  _signedOutZeroStateView.spacing = kZeroStateLabelSpacing;
+  _signedOutZeroStateView.alignment = UIStackViewAlignmentCenter;
+  _signedOutZeroStateView.translatesAutoresizingMaskIntoConstraints = NO;
+  _signedOutZeroStateView.accessibilityIdentifier =
+      kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
+
+  [self.view addSubview:_signedOutZeroStateView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_signedOutZeroStateView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [_signedOutZeroStateView.centerYAnchor
+        constraintEqualToAnchor:self.view.centerYAnchor],
+    [_signedOutZeroStateView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.leadingAnchor
+                                    constant:kZeroStateHorizontalPadding],
+    [_signedOutZeroStateView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.view.trailingAnchor
+                                 constant:-kZeroStateHorizontalPadding],
+  ]];
+}
+
+// Returns a centered, multiline label for the zero state.
+- (UILabel*)zeroStateLabelWithText:(NSString*)text
+                         textStyle:(UIFontTextStyle)textStyle
+                             color:(UIColor*)color {
+  UILabel* label = [[UILabel alloc] init];
+  label.text = text;
+  label.font = [UIFont preferredFontForTextStyle:textStyle];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.textColor = color;
+  label.textAlignment = NSTextAlignmentCenter;
+  label.numberOfLines = 0;
+  return label;
+}
+
+// Displays either the history list or the signed out zero state, depending on
+// the sign-in state.
+- (void)updateContentVisibility {
+  _collectionView.hidden = !self.signedIn;
+  _signedOutZeroStateView.hidden = self.signedIn;
 }
 
 @end

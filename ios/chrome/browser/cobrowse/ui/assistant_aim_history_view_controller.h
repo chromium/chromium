@@ -34,6 +34,10 @@
 @property(nonatomic, weak) id<AssistantAIMHistoryViewControllerDelegate>
     delegate;
 
+// Whether the user is signed in. When NO, the signed out zero state is
+// displayed instead of the list of historical tasks. Defaults to NO.
+@property(nonatomic, assign, getter=isSignedIn) BOOL signedIn;
+
 // Updates the table with a new list of historical tasks.
 - (void)updateHistoryItems:(const std::vector<AssistantAIMHistoryItem>&)items;
 

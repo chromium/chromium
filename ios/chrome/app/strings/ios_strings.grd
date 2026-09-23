@@ -398,6 +398,12 @@
       <message name="IDS_IOS_AIM_HISTORY" desc="Title of the AI mode history conversations.">
         AI Mode History
       </message>
+      <message name="IDS_IOS_AIM_HISTORY_SIGNED_OUT_SUBTITLE" desc="Message displayed below IDS_IOS_AIM_HISTORY_SIGNED_OUT_TITLE in the AI mode history, explaining that the user needs to sign in to their account to see their past conversations.">
+        To access history and more, sign in to your account
+      </message>
+      <message name="IDS_IOS_AIM_HISTORY_SIGNED_OUT_TITLE" desc="Title displayed in the AI mode history when the user is signed out and therefore has no history to display.">
+        You're signed out
+      </message>
       <message name="IDS_IOS_AIM_SNACKBAR_UNDO_BUTTON" desc="Title of the undo button in the close snackbar in AIM assistant.">
         Undo
       </message>
