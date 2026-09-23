@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -56,6 +57,31 @@ int GetAudioBufferImpl(struct AVCodecContext* s, AVFrame* frame, int flags) {
 void ReleaseAudioBufferImpl(void* opaque, uint8_t* data) {
   if (opaque)
     static_cast<AudioBuffer*>(opaque)->Release();
+}
+
+void InitializePlanarFrameData(const AudioBuffer& buffer, AVFrame* frame) {
+  auto planes = buffer.planar_data();
+  const size_t number_of_planes = planes.size();
+  base::span frame_data(frame->data);
+  if (number_of_planes <= frame_data.size()) {
+    DCHECK_EQ(frame->extended_data, frame->data);
+    for (size_t i = 0; i < number_of_planes; ++i) {
+      frame_data[i] = planes[i].data();
+    }
+    return;
+  }
+
+  // There are more channels than can fit into `data[]`, so allocate
+  // `extended_data[]` and fill appropriately.
+  frame->extended_data = static_cast<uint8_t**>(
+      av_malloc(number_of_planes * sizeof(*frame->extended_data)));
+  size_t i = 0;
+  for (; i < frame_data.size(); ++i) {
+    UNSAFE_TODO(frame->extended_data[i]) = frame_data[i] = planes[i].data();
+  }
+  for (; i < number_of_planes; ++i) {
+    UNSAFE_TODO(frame->extended_data[i]) = planes[i].data();
+  }
 }
 
 // Returns true iff the FFmpegAudioDecoder should be disabled because current
@@ -511,25 +537,15 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
       AudioBuffer::CreateBuffer(sample_format, channel_layout, channels,
                                 s->sample_rate, frames_required, pool_);
 
-  // Initialize the data[] and extended_data[] fields to point into the memory
-  // allocated for AudioBuffer. |number_of_planes| will be 1 for interleaved
-  // audio and equal to |channels| for planar audio.
-  int number_of_planes = buffer->channel_data().size();
-  if (number_of_planes <= AV_NUM_DATA_POINTERS) {
-    DCHECK_EQ(frame->extended_data, frame->data);
-    for (int i = 0; i < number_of_planes; ++i)
-      UNSAFE_TODO(frame->data[i]) = buffer->channel_data()[i];
+  // Initialize the `data[]` and `extended_data[]` fields to point into the
+  // memory allocated for `AudioBuffer`.
+  if (IsPlanar(sample_format)) {
+    InitializePlanarFrameData(*buffer, frame);
   } else {
-    // There are more channels than can fit into data[], so allocate
-    // extended_data[] and fill appropriately.
-    frame->extended_data = static_cast<uint8_t**>(
-        av_malloc(number_of_planes * sizeof(*frame->extended_data)));
-    int i = 0;
-    for (; i < AV_NUM_DATA_POINTERS; ++i)
-      UNSAFE_TODO(frame->extended_data[i]) = UNSAFE_TODO(frame->data[i]) =
-          buffer->channel_data()[i];
-    for (; i < number_of_planes; ++i)
-      UNSAFE_TODO(frame->extended_data[i]) = buffer->channel_data()[i];
+    // Bitstreams should not reach here, and `interleaved_data()` will `CHECK`
+    // if they do.
+    DCHECK_EQ(frame->extended_data, frame->data);
+    frame->data[0] = buffer->interleaved_data().data();
   }
 
   // Now create an AVBufferRef for the data just allocated. It will own the
