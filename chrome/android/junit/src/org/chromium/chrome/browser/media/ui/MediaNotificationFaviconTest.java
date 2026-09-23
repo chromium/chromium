@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.media.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -136,18 +136,21 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     @Test
     public void testWillReturnLargeIcon() {
         mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
-        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge =
-                new TestLargeIconBridge();
+        TestLargeIconBridge largeIconBridge = new TestLargeIconBridge();
+        mTabHolder.mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = largeIconBridge;
 
+        // A favicon fetch is kicked off to be used as the notification's fallback artwork.
         mTabHolder.simulateMediaSessionStateChanged(true, false);
-        assertEquals(0, getCurrentNotificationInfo().defaultNotificationLargeIcon);
+        assertTrue(largeIconBridge.getIconCalledAtLeastOnce());
+        assertNull(getCurrentNotificationInfo().notificationLargeIcon);
     }
 
     @Test
     public void testNoLargeIcon() {
         mTabHolder.simulateFaviconUpdated(null, null);
+        // Without a favicon the notification simply has no large icon.
         mTabHolder.simulateMediaSessionStateChanged(true, false);
-        assertNotEquals(0, getCurrentNotificationInfo().defaultNotificationLargeIcon);
+        assertNull(getCurrentNotificationInfo().notificationLargeIcon);
     }
 
     private Bitmap getDisplayedIcon() {

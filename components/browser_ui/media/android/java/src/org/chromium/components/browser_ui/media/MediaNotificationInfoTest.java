@@ -102,7 +102,6 @@ public class MediaNotificationInfoTest {
         builder.setPaused(true);
         builder.setPrivate(false);
         builder.setNotificationSmallIcon(1);
-        builder.setDefaultNotificationLargeIcon(2);
 
         builder.setActions(
                 MediaNotificationInfo.ACTION_PLAY_PAUSE | MediaNotificationInfo.ACTION_STOP);
@@ -125,7 +124,6 @@ public class MediaNotificationInfoTest {
         assertEquals(original.isPaused, copy.isPaused);
         assertEquals(original.isPrivate, copy.isPrivate);
         assertEquals(original.notificationSmallIcon, copy.notificationSmallIcon);
-        assertEquals(original.defaultNotificationLargeIcon, copy.defaultNotificationLargeIcon);
 
         assertEquals(original.supportsPlayPause(), copy.supportsPlayPause());
         assertEquals(original.supportsStop(), copy.supportsStop());

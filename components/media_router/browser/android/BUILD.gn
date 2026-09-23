@@ -165,23 +165,18 @@ robolectric_library("junit") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/cast_playing_square.png",
     "java/res/drawable-hdpi/ic_cast_dark_off.png",
     "java/res/drawable-hdpi/ic_cast_dark_on.png",
     "java/res/drawable-hdpi/ic_notification_media_route.png",
-    "java/res/drawable-mdpi/cast_playing_square.png",
     "java/res/drawable-mdpi/ic_cast_dark_off.png",
     "java/res/drawable-mdpi/ic_cast_dark_on.png",
     "java/res/drawable-mdpi/ic_notification_media_route.png",
-    "java/res/drawable-xhdpi/cast_playing_square.png",
     "java/res/drawable-xhdpi/ic_cast_dark_off.png",
     "java/res/drawable-xhdpi/ic_cast_dark_on.png",
     "java/res/drawable-xhdpi/ic_notification_media_route.png",
-    "java/res/drawable-xxhdpi/cast_playing_square.png",
     "java/res/drawable-xxhdpi/ic_cast_dark_off.png",
     "java/res/drawable-xxhdpi/ic_cast_dark_on.png",
     "java/res/drawable-xxhdpi/ic_notification_media_route.png",
-    "java/res/drawable-xxxhdpi/cast_playing_square.png",
     "java/res/drawable-xxxhdpi/ic_notification_media_route.png",
     "java/res/drawable/ic_cast_dark_chrome.xml",
     "java/res/layout/caf_controller_media_route_button.xml",

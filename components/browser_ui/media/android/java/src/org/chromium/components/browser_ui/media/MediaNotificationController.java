@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
@@ -122,8 +121,6 @@ public class MediaNotificationController {
     private final SparseArray<MediaButtonInfo> mActionToButtonInfo;
 
     @VisibleForTesting public @Nullable NotificationWrapperBuilder mNotificationBuilder;
-
-    @VisibleForTesting public @Nullable Bitmap mDefaultNotificationLargeIcon;
 
     // |mMediaNotificationInfo| should be not null if and only if the notification is showing.
     @VisibleForTesting public @Nullable MediaNotificationInfo mMediaNotificationInfo;

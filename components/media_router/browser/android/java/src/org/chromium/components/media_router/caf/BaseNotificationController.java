@@ -49,7 +49,6 @@ public abstract class BaseNotificationController
                         .setActions(MediaNotificationInfo.ACTION_STOP)
                         .setContentIntent(createContentIntent())
                         .setNotificationSmallIcon(R.drawable.ic_notification_media_route)
-                        .setDefaultNotificationLargeIcon(R.drawable.cast_playing_square)
                         .setId(getNotificationId())
                         .setListener(this);
 

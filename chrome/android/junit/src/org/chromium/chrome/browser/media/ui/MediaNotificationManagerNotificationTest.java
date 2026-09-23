@@ -73,14 +73,13 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationT
     }
 
     @Test
-    public void updateNotificationBuilderDisplaysCorrectLargeIcon_WithoutLargeIcon_AtLeastN() {
+    public void updateNotificationBuilderDisplaysCorrectLargeIcon_WithoutLargeIcon() {
         mMediaNotificationInfoBuilder.setNotificationLargeIcon(null);
 
         MediaNotificationInfo info = mMediaNotificationInfoBuilder.build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
         assertNull(notification.getLargeIcon());
-        assertNull(getController().mDefaultNotificationLargeIcon);
     }
 
     @Test
