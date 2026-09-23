@@ -6475,7 +6475,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(groupTabs);
 
-        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
         setUpActorState(mTab2, TabIndicatorStatus.NONE);
 
         mMediator.resetWithListOfTabs(List.of(mTab1), null, false);

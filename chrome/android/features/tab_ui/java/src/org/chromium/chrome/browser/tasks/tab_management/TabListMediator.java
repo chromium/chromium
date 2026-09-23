@@ -414,16 +414,11 @@ public class TabListMediator implements TabListNotificationHandler {
             new ActorUiTabController.Observer() {
                 @Override
                 public void onUiTabStateChanged(UiTabState state) {
-                    int tabId = state.tabId;
-                    Tab tab = getCurrentTabModelChecked().getTabById(tabId);
-                    if (tab == null) return;
-
-                    PropertyModel model = getModelFromTabId(tabId);
-                    if (model != null) {
-                        updateActorUiState(model, state);
+                    if (!mTrackingTabs) return;
+                    Tab tab = getCurrentTabModelChecked().getTabById(state.tabId);
+                    if (tab != null) {
+                        mTabListLayoutDelegate.onUiTabStateChanged(tab, state);
                     }
-
-                    mTabListLayoutDelegate.onUiTabStateChanged(tab, state);
                 }
             };
 
@@ -1321,7 +1316,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void updateActorUiState(PropertyModel model, @Nullable UiTabState state) {
+    void updateActorUiState(PropertyModel model, @Nullable UiTabState state) {
         boolean isTabGroupCard = TabProperties.isTabGroupHeader(model);
         model.set(
                 TabProperties.ACTOR_UI_STATE,
@@ -1791,11 +1786,15 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private PropertyModel addTabInfoToModel(
-            Tab tab, int index, @CardProperties.ModelType int cardType) {
+            Tab tab,
+            int index,
+            @CardProperties.ModelType int cardType,
+            @Nullable Token tabGroupHeaderId) {
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
                         .with(TabProperties.TAB_ID, tab.getId())
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, tabGroupHeaderId)
                         .with(TabProperties.IS_INCOGNITO, tab.isIncognito())
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.FAVICON_FETCHED, false)
@@ -1850,7 +1849,8 @@ public class TabListMediator implements TabListNotificationHandler {
     void addTabInfoToModelForTab(Tab tab, int index) {
         assert index != TabModel.INVALID_TAB_INDEX;
 
-        PropertyModel tabInfo = addTabInfoToModel(tab, index, ModelType.TAB);
+        PropertyModel tabInfo =
+                addTabInfoToModel(tab, index, ModelType.TAB, /* tabGroupHeaderId= */ null);
 
         mTabListLayoutDelegate.setupGroupPropertiesForChildTab(tab, tabInfo);
         tabInfo.set(
@@ -1897,9 +1897,12 @@ public class TabListMediator implements TabListNotificationHandler {
         boolean isCollapsed = mTabListLayoutDelegate.isGroupCollapsed(tabGroupId);
 
         int cardType = mTabListLayoutDelegate.getGroupCardType();
-        PropertyModel groupInfo = addTabInfoToModel(tab, index, cardType);
+        PropertyModel groupInfo = addTabInfoToModel(tab, index, cardType, tabGroupId);
 
         // Group Header Specific properties
+        // TODO(crbug.com/517544602): Consolidate group header property initialization after
+        // flipping the feature flag to eliminate redundant writes across addTabInfoToModel,
+        // updateTabGroupProperties, and this method.
         groupInfo.set(TabProperties.TAB_GROUP_ID, null);
         updateTabGroupProperties(tab, groupInfo, colorId);
         groupInfo.set(

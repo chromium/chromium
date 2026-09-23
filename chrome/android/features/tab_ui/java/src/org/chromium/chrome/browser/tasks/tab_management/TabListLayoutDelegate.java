@@ -405,12 +405,19 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     /**
-     * Handles layout-specific UI model updates when a tab's Actor UI state changes.
+     * Handles UI model updates when a tab's Actor UI state changes.
      *
      * @param updatedTab The {@link Tab} whose Actor UI state changed.
      * @param state The new {@link UiTabState}.
      */
-    void onUiTabStateChanged(Tab updatedTab, UiTabState state) {}
+    void onUiTabStateChanged(Tab updatedTab, UiTabState state) {
+        if (!mMediator.isTrackingTabs()) return;
+
+        PropertyModel model = getModelFromTabId(updatedTab.getId());
+        if (model != null) {
+            mMediator.updateActorUiState(model, state);
+        }
+    }
 
     /**
      * Handles UI model updates when a tab is removed for closure.

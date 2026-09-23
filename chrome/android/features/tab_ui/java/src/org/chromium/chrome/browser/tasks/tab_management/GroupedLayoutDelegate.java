@@ -350,13 +350,16 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
      */
     @Override
     void onUiTabStateChanged(Tab updatedTab, UiTabState state) {
+        if (!mMediator.isTrackingTabs()) return;
+
         if (mMediator.isTabInTabGroup(updatedTab)) {
-            // Resolves the containing group card and refreshes its thumbnail.
-            int index = getUiIndexForTab(updatedTab.getId());
+            int tabId = updatedTab.getId();
+            int index = getUiIndexForTab(tabId);
             if (index != TabModel.INVALID_TAB_INDEX) {
-                PropertyModel groupModel = mModelList.get(index).model;
-                mMediator.updateThumbnailFetcher(groupModel, groupModel.get(TabProperties.TAB_ID));
+                mMediator.updateThumbnailFetcher(mModelList.get(index).model, tabId);
             }
+        } else {
+            super.onUiTabStateChanged(updatedTab, state);
         }
     }
 

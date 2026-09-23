@@ -579,22 +579,39 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testOnUiTabStateChanged_InTabGroup() {
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testOnUiTabStateChanged_InTabGroup_featureDisabled() {
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
         PropertyModel groupModel = createAndAddPropertyModel(TAB1_ID);
-        UiTabState state = new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(TAB2_ID)).thenReturn(0);
+        UiTabState state = new UiTabState(TAB2_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
 
-        mDelegate.onUiTabStateChanged(mTab1, state);
-        verify(mMediator).updateThumbnailFetcher(groupModel, TAB1_ID);
+        mDelegate.onUiTabStateChanged(mTab2, state);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
+        verify(mMediator, never()).updateActorUiState(any(), any());
+    }
+
+    @Test
+    public void testOnUiTabStateChanged_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
+        UiTabState state = new UiTabState(TAB2_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+
+        mDelegate.onUiTabStateChanged(mTab2, state);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
+        verify(mMediator, never()).updateActorUiState(any(), any());
     }
 
     @Test
     public void testOnUiTabStateChanged_NotInTabGroup() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
-        createAndAddPropertyModel(TAB1_ID);
+        PropertyModel tabModel = createAndAddPropertyModel(TAB1_ID);
         UiTabState state = new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
 
         mDelegate.onUiTabStateChanged(mTab1, state);
+        verify(mMediator).updateActorUiState(tabModel, state);
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
     }
 
