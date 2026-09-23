@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -259,6 +260,78 @@ public class TabGroupSyncLocalObserverUnitTest {
                         eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
                         eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
                         anyInt());
+    }
+
+    @Test
+    public void testTabAddedLocally_WithPendingReconciliation_ReconcilesInsteadOfAddTab() {
+        int replacedId = 99;
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab1.getUserDataHost()).thenReturn(userDataHost);
+        TabGroupSyncPendingReconciliation.suppress(mTab1, replacedId);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = LOCAL_TAB_GROUP_ID_1;
+        savedGroup.syncId = SYNC_ID;
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = replacedId;
+        savedTab.syncId = "tab_sync_id_1";
+        savedGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
+        when(mTabModel.getIndexOfTabInGroup(mTab1)).thenReturn(0);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab1,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.LIVE_IN_BACKGROUND,
+                        false);
+
+        assertEquals(Integer.valueOf(TAB_ID_1), savedTab.localId);
+        verify(mTabGroupSyncService)
+                .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), eq("tab_sync_id_1"), eq(TAB_ID_1));
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TAB_TITLE_1),
+                        eq(TAB_URL_1),
+                        eq(0));
+        verify(mTabGroupSyncService, never()).addTab(any(), anyInt(), anyString(), any(), anyInt());
+        assertFalse(TabGroupSyncPendingReconciliation.isSuppressed(mTab1));
+    }
+
+    @Test
+    public void testDidMergeTabToGroup_WithPendingReconciliation_ReconcilesInsteadOfAddTab() {
+        int replacedId = 99;
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab1.getUserDataHost()).thenReturn(userDataHost);
+        TabGroupSyncPendingReconciliation.suppress(mTab1, replacedId);
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = LOCAL_TAB_GROUP_ID_1;
+        savedGroup.syncId = SYNC_ID;
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = replacedId;
+        savedTab.syncId = "tab_sync_id_1";
+        savedGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
+        when(mTabModel.getIndexOfTabInGroup(mTab1)).thenReturn(0);
+
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab1, /* isDestinationTab= */ false);
+
+        assertEquals(Integer.valueOf(TAB_ID_1), savedTab.localId);
+        verify(mTabGroupSyncService)
+                .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), eq("tab_sync_id_1"), eq(TAB_ID_1));
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TAB_TITLE_1),
+                        eq(TAB_URL_1),
+                        eq(0));
+        verify(mTabGroupSyncService, never()).addTab(any(), anyInt(), anyString(), any(), anyInt());
+        assertFalse(TabGroupSyncPendingReconciliation.isSuppressed(mTab1));
     }
 
     @Test

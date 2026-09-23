@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import android.util.Pair;
+
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -13,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
@@ -25,6 +28,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -111,6 +115,11 @@ public final class TabGroupSyncLocalObserver {
                 LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
                 if (!mIsObserving || localTabGroupId == null) return;
                 LogUtils.log(TAG, "didAddTab");
+
+                if (TabGroupSyncPendingReconciliation.isSuppressed(tab)) {
+                    reconcilePendingTab(localTabGroupId, tab);
+                    return;
+                }
 
                 mRemoteTabGroupMutationHelper.addTab(
                         localTabGroupId, tab, mTabModel.getIndexOfTabInGroup(tab));
@@ -232,6 +241,11 @@ public final class TabGroupSyncLocalObserver {
                         assertNonNull(
                                 TabGroupSyncUtils.getLocalTabGroupId(
                                         mTabModel, movedTab.getTabGroupId()));
+                if (TabGroupSyncPendingReconciliation.isSuppressed(movedTab)) {
+                    assert groupExistsInSync(localTabGroupId);
+                    reconcilePendingTab(localTabGroupId, movedTab);
+                    return;
+                }
                 if (groupExistsInSync(localTabGroupId)) {
                     int positionInGroup = mTabModel.getIndexOfTabInGroup(movedTab);
                     mRemoteTabGroupMutationHelper.addTab(
@@ -337,9 +351,34 @@ public final class TabGroupSyncLocalObserver {
         return mTabGroupSyncService.getGroup(localTabGroupId) != null;
     }
 
-    private @Nullable SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, int tabId) {
+    private void reconcilePendingTab(LocalTabGroupId localTabGroupId, Tab tab) {
+        assert groupExistsInSync(localTabGroupId);
+        SavedTabGroup savedGroup = assertNonNull(mTabGroupSyncService.getGroup(localTabGroupId));
+
+        @TabId int replacedId = TabGroupSyncPendingReconciliation.getReplacedLocalTabId(tab);
+        assert replacedId != Tab.INVALID_TAB_ID;
+        SavedTabGroupTab targetSavedTab = getSavedTab(savedGroup, replacedId);
+        assert targetSavedTab != null;
+
+        targetSavedTab.localId = tab.getId();
+        mTabGroupSyncService.updateLocalTabId(
+                localTabGroupId, assertNonNull(targetSavedTab.syncId), tab.getId());
+        Pair<GURL, String> urlAndTitle =
+                TabGroupSyncUtils.getFilteredUrlAndTitle(tab.getUrl(), tab.getTitle());
+        mTabGroupSyncService.updateTab(
+                localTabGroupId,
+                tab.getId(),
+                urlAndTitle.second,
+                urlAndTitle.first,
+                mTabModel.getIndexOfTabInGroup(tab));
+        TabGroupSyncPendingReconciliation.clear(tab);
+    }
+
+    private @Nullable SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, @TabId int tabId) {
         for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
-            if (savedTab.localId != null && savedTab.localId == tabId) return savedTab;
+            if (savedTab.localId != null && savedTab.localId == tabId) {
+                return savedTab;
+            }
         }
         return null;
     }

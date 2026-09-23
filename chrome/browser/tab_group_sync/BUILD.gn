@@ -200,7 +200,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerImpl.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncDelegate.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
-      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncNavigationSuppression.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncPendingReconciliation.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java",
     ]
@@ -267,7 +267,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncDelegateUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
-      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncNavigationSuppressionUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncPendingReconciliationUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncTestUtils.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtilsUnitTest.java",
