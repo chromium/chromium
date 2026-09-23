@@ -103,19 +103,25 @@ source_set("test_support") {
   sources = [
     "fake_send_tab_to_self_model.cc",
     "fake_send_tab_to_self_model.h",
+    "send_tab_to_self_entity_builder.cc",
+    "send_tab_to_self_entity_builder.h",
     "stub_send_tab_to_self_sync_service.cc",
     "stub_send_tab_to_self_sync_service.h",
     "test_matchers.cc",
     "test_matchers.h",
   ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
   deps = [
     ":send_tab_to_self",
-    "//base",
     "//components/autofill/core/common",
+    "//components/shared_highlighting/core/common",
     "//components/sync:test_support",
+    "//components/sync/nigori",
     "//components/sync_device_info",
     "//testing/gmock",
-    "//url",
   ]
 }
 

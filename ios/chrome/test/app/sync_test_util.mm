@@ -33,6 +33,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/proto_conversions.h"
+#import "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
@@ -128,6 +129,24 @@ fake_server::FakeServer* GetFakeServer() {
   return gSyncServerContext ? gSyncServerContext->server() : nullptr;
 }
 
+}  // namespace
+
+namespace chrome_test_util {
+
+fake_server::FakeServer* GetFakeSyncServer() {
+  return GetFakeServer();
+}
+
+void InjectFakeSyncServerEntity(
+    std::unique_ptr<syncer::LoopbackServerEntity> entity) {
+  CHECK(GetFakeServer());
+  GetFakeServer()->InjectEntity(std::move(entity));
+}
+
+}  // namespace chrome_test_util
+
+namespace {
+
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 
 // Overrides the network callback of the current SyncServiceImpl with
@@ -219,6 +238,27 @@ void AddSharedTabGroupDataToFakeServer(
           "non_unique_name", client_tag, group_entity_specifics,
           /*creation_time=*/creation_time,
           /*last_modified_time=*/update_time, metadata));
+}
+
+// Retrieves the local device cache GUID from the active profile. Returns an
+// empty string if not available.
+std::string GetLocalDeviceCacheGuid() {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  syncer::DeviceInfoSyncService* device_info_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  if (!device_info_service) {
+    return "";
+  }
+  const syncer::LocalDeviceInfoProvider* provider =
+      device_info_service->GetLocalDeviceInfoProvider();
+  if (!provider) {
+    return "";
+  }
+  const syncer::DeviceInfo* info = provider->GetLocalDeviceInfo();
+  if (!info) {
+    return "";
+  }
+  return info->guid();
 }
 
 }  // namespace
@@ -552,82 +592,26 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
     const std::string& target_device_cache_guid,
     const std::map<std::string, std::string>& form_fields,
     const std::string& text_fragment) {
-  DCHECK(IsFakeSyncServerSetUp());
+  CHECK(IsFakeSyncServerSetUp());
 
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* stts_specifics =
-      specifics.mutable_send_tab_to_self();
-  stts_specifics->set_url(url.spec());
-  stts_specifics->set_title(title);
-
-  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  stts_specifics->set_guid(guid);
+  send_tab_to_self::SendTabToSelfEntityBuilder builder(url, title);
+  builder.SetDeviceName(device_name);
 
   std::string target_guid = target_device_cache_guid;
   if (target_guid.empty()) {
-    syncer::DeviceInfoSyncService* device_info_service =
-        DeviceInfoSyncServiceFactory::GetForProfile(
-            chrome_test_util::GetOriginalProfile());
-    target_guid = device_info_service->GetLocalDeviceInfoProvider()
-                      ->GetLocalDeviceInfo()
-                      ->guid();
+    target_guid = GetLocalDeviceCacheGuid();
+  }
+  builder.SetTargetDeviceCacheGuid(std::move(target_guid));
+
+  for (const auto& [name, value] : form_fields) {
+    builder.AddFormField(name, value, name);
+  }
+  if (!text_fragment.empty()) {
+    builder.SetTextFragment(text_fragment);
   }
 
-  int64_t now_usec =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  stts_specifics->set_shared_time_usec(now_usec);
-  stts_specifics->set_device_name(device_name);
-  stts_specifics->set_target_device_sync_cache_guid(target_guid);
-  stts_specifics->set_opened(false);
-  stts_specifics->set_notification_dismissed(false);
-
-  if (!form_fields.empty() || !text_fragment.empty()) {
-    send_tab_to_self::PageContext context;
-
-    if (!form_fields.empty()) {
-      for (const auto& [name, value] : form_fields) {
-        send_tab_to_self::PageContext::FormField form_field;
-        form_field.id_attribute = base::UTF8ToUTF16(name);
-        form_field.name_attribute = base::UTF8ToUTF16(name);
-        form_field.value = base::UTF8ToUTF16(value);
-        form_field.form_control_type = autofill::FormControlType::kInputText;
-        context.form_field_info.fields.push_back(form_field);
-      }
-    }
-
-    if (!text_fragment.empty()) {
-      std::optional<shared_highlighting::TextFragment> parsed_fragment =
-          shared_highlighting::TextFragment::FromEscapedString(text_fragment);
-      if (parsed_fragment) {
-        context.scroll_position.text_fragment =
-            send_tab_to_self::TextFragmentData(*parsed_fragment);
-      }
-    }
-
-    *stts_specifics->mutable_page_context() =
-        send_tab_to_self::PageContextToProto(context);
-
-    std::vector<std::vector<uint8_t>> keystore_keys =
-        GetFakeServer()->GetKeystoreKeys();
-    if (!keystore_keys.empty()) {
-      std::string key_base64 = base::Base64Encode(keystore_keys.back());
-      std::unique_ptr<syncer::CryptographerImpl> cryptographer =
-          syncer::CryptographerImpl::FromSingleKeyForTesting(
-              key_base64, syncer::KeyDerivationParams::CreateForPbkdf2());
-      if (cryptographer &&
-          cryptographer->Encrypt(
-              stts_specifics->page_context(),
-              stts_specifics->mutable_encrypted_page_context())) {
-        stts_specifics->clear_page_context();
-      }
-    }
-  }
-
-  GetFakeServer()->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          /*non_unique_name=*/title, /*client_tag=*/guid, specifics,
-          /*creation_time=*/now_usec, /*last_modified_time=*/now_usec));
-
+  std::string guid = builder.guid();
+  GetFakeServer()->InjectEntity(builder.Build(GetFakeServer()));
   return guid;
 }
 

@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,13 +42,12 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/send_tab_to_self_entity_builder.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/time.h"
-#include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
@@ -109,23 +109,17 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
+// Tests that a SendTabToSelf entry injected on the FakeServer is downloaded and
+// added to the model when sync is enabled.
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        DownloadWhenSyncEnabled) {
   const std::string kUrl("https://www.example.com");
   const std::string kGuid("kGuid");
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* send_tab_to_self =
-      specifics.mutable_send_tab_to_self();
-  send_tab_to_self->set_url(kUrl);
-  send_tab_to_self->set_guid(kGuid);
-  send_tab_to_self->set_shared_time_usec(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   fake_server_->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          "non_unique_name", kGuid, specifics,
-          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
-          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
+      send_tab_to_self::SendTabToSelfEntityBuilder(GURL(kUrl))
+          .SetGuid(kGuid)
+          .Build());
 
   ASSERT_TRUE(SetupSync());
 
@@ -135,6 +129,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                   .Wait());
 }
 
+// Tests that form fields attached to an encrypted SendTabToSelf entry are
+// received and correctly populate fields in the target web page.
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldReceiveFormFields) {
   ASSERT_TRUE(SetupSync());
@@ -145,44 +141,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
   const std::string kGuid = "kGuid";
 
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* send_tab_to_self =
-      specifics.mutable_send_tab_to_self();
-  send_tab_to_self->set_url(kUrl.spec());
-  send_tab_to_self->set_guid(kGuid);
-  send_tab_to_self->set_shared_time_usec(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  {
-    sync_pb::FormField* field = send_tab_to_self->mutable_page_context()
-                                    ->mutable_form_field_info()
-                                    ->add_fields();
-    field->set_id_attribute("NAME_FIRST");
-    field->set_name_attribute("");
-    field->set_form_control_type("text");
-    field->set_value(kName);
-  }
-  {
-    sync_pb::FormField* field = send_tab_to_self->mutable_page_context()
-                                    ->mutable_form_field_info()
-                                    ->add_fields();
-    field->set_id_attribute("EMAIL_ADDRESS");
-    field->set_name_attribute("");
-    field->set_form_control_type("text");
-    field->set_value(kEmail);
-  }
-  ASSERT_TRUE(
-      syncer::CryptographerImpl::FromSingleKeyForTesting(
-          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
-          syncer::KeyDerivationParams::CreateForPbkdf2())
-          ->Encrypt(send_tab_to_self->page_context(),
-                    send_tab_to_self->mutable_encrypted_page_context()));
-  send_tab_to_self->clear_page_context();
-
-  fake_server_->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          "non_unique_name", kGuid, specifics,
-          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
-          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
+  fake_server_->InjectEntity(send_tab_to_self::SendTabToSelfEntityBuilder(kUrl)
+                                 .SetGuid(kGuid)
+                                 .AddFormField("NAME_FIRST", kName)
+                                 .AddFormField("EMAIL_ADDRESS", kEmail)
+                                 .Build(fake_server_.get()));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -330,25 +293,18 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));
 }
 
+// Tests that deleting a shared entry is coordinated with history deletion
+// for the corresponding URL.
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        DeleteSharedEntryWithHistory) {
   const std::string kUrl("https://www.example.com");
   const std::string kGuid("kGuid");
   const base::Time kNavigationTime(base::Time::Now());
 
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* send_tab_to_self =
-      specifics.mutable_send_tab_to_self();
-  send_tab_to_self->set_url(kUrl);
-  send_tab_to_self->set_guid(kGuid);
-  send_tab_to_self->set_shared_time_usec(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-
   fake_server_->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          "non_unique_name", kGuid, specifics,
-          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
-          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
+      send_tab_to_self::SendTabToSelfEntityBuilder(GURL(kUrl))
+          .SetGuid(kGuid)
+          .Build());
 
   ASSERT_TRUE(SetupSync());
 
@@ -434,9 +390,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   }
   ASSERT_FALSE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
-  // Just checking that we don't see test_event isn't very convincing yet,
-  // because it may simply not have reached the server yet. So let's send
-  // something else through the system that we can wait on before checking.
+  // Just checking that the test event isn't seen isn't very convincing yet,
+  // because it may simply not have reached the server yet. Send
+  // something else through the system to wait on before checking.
   syncer::UserEventService* user_event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   user_event_service->RecordUserEvent(
@@ -444,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
           user_events_helper::CreateTestEvent(base::Time::Now())));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::USER_EVENTS, 1).Wait());
 
-  // Repurpose the deleted checker to ensure url wasn't added.
+  // Repurpose the deleted checker to ensure `url` wasn't added.
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),
                   GURL(kUrl))
@@ -487,6 +443,8 @@ void SimulateOpeningReceivedTab(
   controller->bubble()->OpenInNewTab();
 }
 
+// Tests that text fragment directives attached to an encrypted SendTabToSelf
+// entry are received and trigger scrolling on page load.
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                        ShouldReceiveTextFragment) {
   ASSERT_TRUE(SetupSync());
@@ -496,33 +454,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
   constexpr char kGuid[] = "kGuid";
   constexpr char kTextStart[] = "quick brown fox";
 
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* send_tab_to_self =
-      specifics.mutable_send_tab_to_self();
-  send_tab_to_self->set_url(kUrl.spec());
-  send_tab_to_self->set_guid(kGuid);
-  send_tab_to_self->set_shared_time_usec(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-
-  sync_pb::ScrollPosition* scroll_position =
-      send_tab_to_self->mutable_page_context()->mutable_scroll_position();
-  sync_pb::TextFragmentData* text_fragment =
-      scroll_position->mutable_text_fragment();
-  text_fragment->set_text_start(kTextStart);
-
-  ASSERT_TRUE(
-      syncer::CryptographerImpl::FromSingleKeyForTesting(
-          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
-          syncer::KeyDerivationParams::CreateForPbkdf2())
-          ->Encrypt(send_tab_to_self->page_context(),
-                    send_tab_to_self->mutable_encrypted_page_context()));
-  send_tab_to_self->clear_page_context();
-
-  fake_server_->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          "non_unique_name", kGuid, specifics,
-          /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
-          /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
+  fake_server_->InjectEntity(send_tab_to_self::SendTabToSelfEntityBuilder(kUrl)
+                                 .SetGuid(kGuid)
+                                 .SetTextFragment(kTextStart)
+                                 .Build(fake_server_.get()));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
