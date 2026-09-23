@@ -1520,7 +1520,7 @@ public class LocationBarCoordinator
         mLocationBarMediator.setLensControllerForTesting(lensController);
     }
 
-    /* package */ LocationBarMediator getMediatorForTesting() {
+    public LocationBarMediator getMediatorForTesting() {
         return mLocationBarMediator;
     }
 

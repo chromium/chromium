@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -58,7 +59,8 @@ public class UrlBarCoordinator
     }
 
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
-    private static final int KEYBOARD_DEBOUNCE_DELAY_MS = 150;
+    /* package */ static final long KEYBOARD_DEBOUNCE_DELAY_MS =
+            BuildConfig.IS_FOR_TEST ? 10L : 150L;
 
     private final UrlBar mUrlBar;
     private final UrlBarMediator mMediator;

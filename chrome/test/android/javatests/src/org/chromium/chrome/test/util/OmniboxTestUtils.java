@@ -23,8 +23,6 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.ComponentActivity;
-import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -44,10 +42,14 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.LocationBarMediator;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -84,6 +86,8 @@ public class OmniboxTestUtils {
     private final AutocompleteCoordinator mAutocomplete;
     private final UrlBar mUrlBar;
     private final @Nullable ToolbarLayout mToolbar;
+    private final LocationBarCoordinator mLocationBarCoordinator;
+    private final LocationBarMediator mLocationBarMediator;
 
     /**
      * Invokes a specific ViewAction on an {@link
@@ -160,15 +164,21 @@ public class OmniboxTestUtils {
      */
     public OmniboxTestUtils(Activity activity) {
         mActivity = activity;
-        if (activity instanceof SearchActivity) {
+        if (activity instanceof SearchActivity searchActivity) {
             mLocationBar = mActivity.findViewById(R.id.search_location_bar);
             mToolbar = null;
-        } else {
+            mLocationBarCoordinator = searchActivity.getLocationBarCoordinatorForTesting();
+        } else if (activity instanceof ChromeActivity chromeActivity) {
             mLocationBar = mActivity.findViewById(R.id.location_bar);
             mToolbar = mActivity.findViewById(R.id.toolbar);
+            var toolbarManager = assumeNonNull(chromeActivity.getToolbarManager());
+            mLocationBarCoordinator = (LocationBarCoordinator) toolbarManager.getLocationBar();
+        } else {
+            throw new RuntimeException("OmniboxTestUtils does not support this setup");
         }
         mAutocomplete = assumeNonNull(mLocationBar.getAutocompleteCoordinator());
         mUrlBar = mActivity.findViewById(R.id.url_bar);
+        mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
     }
 
     /** Disables any live autocompletion, making Omnibox behave like a standard text field. */
@@ -234,14 +244,7 @@ public class OmniboxTestUtils {
      * Omnibox is already unfocused.
      */
     public void clearFocus() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (mUrlBar.hasFocus()) {
-                        ((ComponentActivity) mActivity)
-                                .getOnBackPressedDispatcher()
-                                .onBackPressed();
-                    }
-                });
+        ThreadUtils.runOnUiThreadBlocking(mLocationBarMediator::clearUrlBarFocus);
         // Needed to complete scrolling the UrlBar to TLD.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         checkFocus(false);

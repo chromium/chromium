@@ -896,7 +896,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchUiCoordinator.setBackPressManager(manager);
     }
 
-    /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {
+    public LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mSearchUiCoordinator.getLocationBarCoordinator();
     }
 

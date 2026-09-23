@@ -159,7 +159,7 @@ import java.util.function.Supplier;
  * currently, migration of this logic out of LocationBarLayout is in progress.
  */
 @NullMarked
-class LocationBarMediator
+public class LocationBarMediator
         implements Observer,
                 OmniboxStub,
                 VoiceRecognitionHandler.Observer,
@@ -3222,15 +3222,16 @@ class LocationBarMediator
     }
 
     /** Clear focus from the url bar if we haven't already. */
-    private void clearUrlBarFocus() {
-        if (mUrlHasFocus) {
+    @VisibleForTesting
+    public void clearUrlBarFocus() {
+        if (mUrlCoordinator != null) {
             // Triggers @see #onUrlFocusChange(UrlBarFocusChangeInfo) setting mUrlHasFocus to false.
             mUrlCoordinator.clearFocus();
-            // Focus a different view when the UrlBar loses focus to sever any lingering IME
-            // connections. Without this, there are cases where typing with a hardware keyboard can
-            // enter text into an unfocused UrlBar.
-            mLocationBarLayout.getFocusThief().requestFocus();
         }
+        // Focus a different view when the UrlBar loses focus to sever any lingering IME
+        // connections. Without this, there are cases where typing with a hardware keyboard can
+        // enter text into an unfocused UrlBar.
+        mLocationBarLayout.getFocusThief().requestFocus();
     }
 
     private void connectObservers() {
