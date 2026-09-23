@@ -24,6 +24,7 @@
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/metrics_switches.h"
+#import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -702,6 +703,12 @@ BOOL _credentialExtensionWasUsed = NO;
       {
           @"IOS.CredentialExtension.NewCredentialUsername",
           static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
+      },
+      {
+          @"PasswordManager.BrowserAssistedLogin.Type",
+          static_cast<int>(password_manager::metrics_util::
+                               BrowserAssistedLoginType::kMaxValue) +
+              1,
       }};
   metrics_mediator::RecordWidgetUsage(histogramsFromExtension);
 }

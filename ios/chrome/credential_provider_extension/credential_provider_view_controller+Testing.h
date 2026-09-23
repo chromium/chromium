@@ -7,9 +7,11 @@
 
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/credential_provider_extension/credential_provider_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
 // Exposes CredentialProviderViewController's private properties for tests only.
-@interface CredentialProviderViewController (Testing)
+@interface CredentialProviderViewController (Testing) <
+    CredentialResponseHandler>
 
 // Interface for the persistent credential store.
 @property(nonatomic, strong) id<CredentialStore> credentialStore;

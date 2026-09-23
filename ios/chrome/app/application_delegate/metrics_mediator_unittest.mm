@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/metrics/metrics_service.h"
+#import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
 #import "ios/chrome/app/app_startup_parameters.h"
@@ -177,6 +178,35 @@ TEST_F(MetricsMediatorTest, WidgetHistogramMatchesEnumerationBucketsColdStart) {
   tester.ExpectTotalCount("Test.ColdStartEnumerationHistogram", 2);
 
   [sharedDefaults removeObjectForKey:keyBucket2];
+}
+
+// Tests that PasswordManager.BrowserAssistedLogin.Type logged in an extension
+// is correctly re-emitted by Chrome via RecordWidgetUsage.
+TEST_F(MetricsMediatorTest, BrowserAssistedLoginTypeHistogramRecorded) {
+  using password_manager::metrics_util::BrowserAssistedLoginType;
+
+  base::HistogramTester tester;
+
+  NSString* keyBucket = app_group::HistogramCountKey(
+      @"PasswordManager.BrowserAssistedLogin.Type",
+      static_cast<int>(BrowserAssistedLoginType::
+                           kPasskeyStoredInGPMFacilitatedThroughIOSUI));
+
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setInteger:2 forKey:keyBucket];
+
+  metrics_mediator::RecordWidgetUsage(
+      {{@"PasswordManager.BrowserAssistedLogin.Type",
+        static_cast<int>(BrowserAssistedLoginType::kMaxValue) + 1}});
+
+  tester.ExpectUniqueSample(
+      "PasswordManager.BrowserAssistedLogin.Type",
+      BrowserAssistedLoginType::kPasskeyStoredInGPMFacilitatedThroughIOSUI, 2);
+
+  // Verify that all entries in NSUserDefaults have been removed.
+  EXPECT_EQ([sharedDefaults integerForKey:keyBucket], 0);
+
+  [sharedDefaults removeObjectForKey:keyBucket];
 }
 
 #pragma mark - logLaunchMetrics tests.

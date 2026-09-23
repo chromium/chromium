@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/autofill/core/browser/proto",
   "+components/password_manager/core/browser/generation",
+  "+components/password_manager/core/common/browser_assisted_login_type.h",
   "+components/password_manager/core/common/password_manager_constants.h",
   "+components/sync/protocol",
   "+components/webauthn/core/browser",

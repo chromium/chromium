@@ -297,6 +297,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Passkey from a security key"/>
   <int value="14" label="Passkey hybrid or security key"/>
   <int value="15" label="Passkey unknown source"/>
+  <int value="16" label="Passkey stored in GPM facilitated through iOS UI"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/password_manager/core/common/browser_assisted_login_type.h:BrowserAssistedLoginType) -->

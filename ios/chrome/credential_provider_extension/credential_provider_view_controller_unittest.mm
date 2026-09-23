@@ -7,7 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -19,6 +21,11 @@
 #import "testing/platform_test.h"
 
 namespace {
+
+using password_manager::metrics_util::BrowserAssistedLoginType;
+
+constexpr int kPasskeyBucket = static_cast<int>(
+    BrowserAssistedLoginType::kPasskeyStoredInGPMFacilitatedThroughIOSUI);
 
 NSString* const kTestUserDefaultsKey = @"UserDefaultsCredentialStoreTestKey";
 NSString* const kTestRPId = @"example.com";
@@ -73,7 +80,10 @@ class CredentialProviderViewControllerTest : public PlatformTest {
                                               error:nil];
     NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
     [userDefaults removeObjectForKey:kTestUserDefaultsKey];
-
+    [userDefaults
+        removeObjectForKey:app_group::HistogramCountKey(
+                               @"PasswordManager.BrowserAssistedLogin.Type",
+                               kPasskeyBucket)];
   }
 
   void CreateStoreWithCredentials(NSArray<id<Credential>>* credentials) {
@@ -192,6 +202,36 @@ TEST_F(CredentialProviderViewControllerTest, HiddenCredentialRestored) {
   EXPECT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_FALSE(credential_store_.credentials[0].hidden);
   EXPECT_EQ(credential_store_.credentials[0].hiddenTime, 0);
+}
+
+TEST_F(CredentialProviderViewControllerTest,
+       PasskeyAssertionRecordsBrowserAssistedLoginMetric) {
+  NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
+  NSString* key = app_group::HistogramCountKey(
+      @"PasswordManager.BrowserAssistedLogin.Type", kPasskeyBucket);
+  EXPECT_EQ([userDefaults integerForKey:key], 0);
+
+  ASPasskeyAssertionCredential* credential = [ASPasskeyAssertionCredential
+      credentialWithUserHandle:StringToData(kTestUserId)
+                  relyingParty:kTestRPId
+                     signature:StringToData("sig")
+                clientDataHash:StringToData("hash")
+             authenticatorData:StringToData("auth")
+                  credentialID:StringToData(kTestCredentialId)];
+  [controller_ userSelectedPasskey:credential];
+
+  EXPECT_EQ([userDefaults integerForKey:key], 1);
+}
+
+TEST_F(CredentialProviderViewControllerTest,
+       PasskeyAssertionFailureDoesNotRecordBrowserAssistedLoginMetric) {
+  NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
+  NSString* key = app_group::HistogramCountKey(
+      @"PasswordManager.BrowserAssistedLogin.Type", kPasskeyBucket);
+  EXPECT_EQ([userDefaults integerForKey:key], 0);
+
+  [controller_ userSelectedPasskey:nil];
+  EXPECT_EQ([userDefaults integerForKey:key], 0);
 }
 
 }  // namespace

@@ -40,6 +40,7 @@ source_set("credential_provider") {
     ":passkey_welcome_screen_util",
     ":reauthentication_handler",
     "//base",
+    "//components/password_manager/core/common:browser_assisted_login_type",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/app_group",
@@ -105,6 +106,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/cbor",
+    "//components/password_manager/core/common:browser_assisted_login_type",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/ios:passkey_types",
@@ -112,6 +114,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

@@ -31,8 +31,9 @@ enum class BrowserAssistedLoginType {
   kPasskeySecurityKey = 13,
   kPasskeyHybridOrSecurityKey = 14,
   kPasskeyUnknown = 15,
+  kPasskeyStoredInGPMFacilitatedThroughIOSUI = 16,
 
-  kMaxValue = kPasskeyUnknown,
+  kMaxValue = kPasskeyStoredInGPMFacilitatedThroughIOSUI,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:BrowserAssistedLoginType)
 

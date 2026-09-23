@@ -12,6 +12,7 @@
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
+#import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -1012,6 +1013,11 @@ enum class PasskeyCreationEligibility {
 // -completeAssertionRequestWithSelectedPasskeyCredential:completionHandler:.
 - (void)completeAssertionRequestWithSelectedPasskeyCredential:
     (ASPasskeyAssertionCredential*)credential {
+  UpdateHistogramCount(
+      @"PasswordManager.BrowserAssistedLogin.Type",
+      static_cast<int>(
+          password_manager::metrics_util::BrowserAssistedLoginType::
+              kPasskeyStoredInGPMFacilitatedThroughIOSUI));
   [self.listCoordinator stop];
   self.listCoordinator = nil;
   [self.extensionContext
