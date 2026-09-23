@@ -147,7 +147,8 @@ class ContextualCueingHelperBrowserTest
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},
-        {contextual_cueing::kContextualCueingV2});
+        {contextual_cueing::kContextualCueingV2,
+         features::kGlicHorizontalTabToolbarButton});
   }
 };
 

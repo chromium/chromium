@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
@@ -65,7 +66,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {glic::kContextualCueing, {}},
         },
-        {});
+        {features::kGlicHorizontalTabToolbarButton});
   }
 
   void SetUp() override {

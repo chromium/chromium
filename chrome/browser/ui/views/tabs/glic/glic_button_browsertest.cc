@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
@@ -47,7 +48,10 @@ namespace {
 
 class GlicButtonTest : public InProcessBrowserTest {
  public:
-  GlicButtonTest() = default;
+  GlicButtonTest()
+      : glic_test_env_({},
+                       GetDefaultEnabledGlicTestFeatures(),
+                       GetDisabledFeatures()) {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -71,6 +75,13 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
  private:
+  static std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    std::vector<base::test::FeatureRef> disabled =
+        GetDefaultDisabledGlicTestFeatures();
+    disabled.push_back(features::kGlicHorizontalTabToolbarButton);
+    return disabled;
+  }
+
   GlicTestEnvironment glic_test_env_;
 };
 

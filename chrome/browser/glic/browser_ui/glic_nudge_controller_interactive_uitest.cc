@@ -41,7 +41,8 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
   GlicNudgeControllerInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{contextual_cueing::kContextualCueingV2});
+        /*disabled_features=*/{contextual_cueing::kContextualCueingV2,
+                               features::kGlicHorizontalTabToolbarButton});
   }
 
   void SetUpOnMainThread() override {
@@ -113,7 +114,8 @@ class GlicNudgeControllerWarmingInteractiveUiTest
         /*enabled_features=*/{features::kGlicWarmOnNudge,
                               features::kGlicAnchorEntryPointForOnboardedUsers},
         /*disabled_features=*/{contextual_cueing::kContextualCueingV2,
-                               features::kGlicWarming});
+                               features::kGlicWarming,
+                               features::kGlicHorizontalTabToolbarButton});
   }
 
   void SetUp() override {
@@ -167,9 +169,9 @@ class GlicNudgeControllerWarmingDisabledInteractiveUiTest
   GlicNudgeControllerWarmingDisabledInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicAnchorEntryPointForOnboardedUsers},
-        /*disabled_features=*/{contextual_cueing::kContextualCueingV2,
-                               features::kGlicWarmOnNudge,
-                               features::kGlicWarming});
+        /*disabled_features=*/{
+            contextual_cueing::kContextualCueingV2, features::kGlicWarmOnNudge,
+            features::kGlicWarming, features::kGlicHorizontalTabToolbarButton});
   }
 
   void SetUp() override {

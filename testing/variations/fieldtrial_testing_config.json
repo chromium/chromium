@@ -8904,6 +8904,24 @@
             ]
         }
     ],
+    "GlicHorizontalTabToolbarButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicHorizontalTabToolbarButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicMarketingAutoOpen": [
         {
             "platforms": [
