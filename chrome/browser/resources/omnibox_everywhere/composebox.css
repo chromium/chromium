@@ -30,11 +30,13 @@
   --text-input-inline-end-spacing: 80px;
   --text-input-inline-start-spacing: 16px;
   --cr-composebox-input-padding-inline-start: 10.5px;
-  /* Aligns carousel thumbnails with the composebox input text. */
+  /* Aligns carousel thumbnails with the composebox input and dropdown text.
+   * Uses a 9.5px offset (1px less than the 10.5px input text padding) to
+   * optically align the thumbnail card with the text column. */
   --context-carousel-inline-start-spacing: calc(
       var(--text-input-inline-start-spacing) +
       var(--cr-searchbox-icon-container-size) +
-      var(--cr-composebox-input-padding-inline-start));
+      9.5px);
   --cr-composebox-match-icon-container-padding-inline-start: 16px;
   --cr-searchbox-match-text-padding-inline-start: 8px;
   --text-input-max-height: 190px;
