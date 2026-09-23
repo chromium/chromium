@@ -5862,7 +5862,7 @@
     },
     {
       name: "SingleAxisScrollContainers",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SingleAxisScrollContainersForScrollSnap",
