@@ -53,6 +53,10 @@ constexpr double kBorderBlue = 0.11;
 constexpr char kUpArrow[] = "▲";
 constexpr char kDownArrow[] = "▼";
 
+// Interval for periodic re-raising to ensure the window stays above fullscreen
+// applications.
+constexpr base::TimeDelta kRaiseInterval = base::Seconds(1);
+
 // GObject data keys for testing and position tracking.
 constexpr char kCurrentWidthKey[] = "current_width";
 constexpr char kCurrentHeightKey[] = "current_height";
@@ -85,6 +89,7 @@ class DisconnectWindowGtk : public DisconnectWindowBase {
 #if !GTK_CHECK_VERSION(3, 90, 0)
   void OnMonitorsChanged(GdkScreen* screen);
   gboolean OnWindowState(GtkWidget* window, GdkEventWindowState* event);
+  void Raise();
 #endif
 
   // Positions the dialog window based on the current anchor.
@@ -102,6 +107,8 @@ class DisconnectWindowGtk : public DisconnectWindowBase {
   // notifications.
   int current_width_ = 0;
   int current_height_ = 0;
+
+  base::RepeatingTimer raise_timer_;
 
   std::vector<ScopedGSignal> signals_;
 };
@@ -292,6 +299,14 @@ void DisconnectWindowGtk::Start(
     }
   }
 
+  // Override-redirect prevents the window manager from stacking fullscreen
+  // windows above the indicator.
+  gtk_widget_realize(disconnect_window_.get());
+  GdkWindow* gdk_window = gtk_widget_get_window(disconnect_window_.get());
+  if (gdk_window) {
+    gdk_window_set_override_redirect(gdk_window, TRUE);
+  }
+
   // GTK4 shows windows by default.
   gtk_widget_show_all(disconnect_window_.get());
 #endif
@@ -301,6 +316,13 @@ void DisconnectWindowGtk::Start(
   gtk_label_set_text(GTK_LABEL(message_.get()), message_text.c_str());
   SetDialogPosition();
   gtk_window_present(window);
+
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  Raise();
+  raise_timer_.Start(
+      FROM_HERE, kRaiseInterval,
+      base::BindRepeating(&DisconnectWindowGtk::Raise, base::Unretained(this)));
+#endif
 }
 
 void DisconnectWindowGtk::OnClicked(GtkButton* button) {
@@ -444,6 +466,17 @@ gboolean DisconnectWindowGtk::OnWindowState(GtkWidget* window,
     gtk_window_stick(gtk_window);
   }
   return FALSE;
+}
+
+void DisconnectWindowGtk::Raise() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!disconnect_window_) {
+    return;
+  }
+  GdkWindow* gdk_window = gtk_widget_get_window(disconnect_window_.get());
+  if (gdk_window) {
+    gdk_window_raise(gdk_window);
+  }
 }
 #endif
 

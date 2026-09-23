@@ -20,6 +20,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/x/connection.h"
+
+#if defined(GDK_WINDOWING_X11)
+#include <gdk/gdkx.h>
+#endif
 
 namespace remoting {
 
@@ -274,7 +279,8 @@ class DisconnectWindowLinuxTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestResourceBundleDelegate resource_delegate_;
   ui::ResourceBundle resource_bundle_{&resource_delegate_};
   ui::ResourceBundle::SharedInstanceSwapperForTesting resource_swapper_{
@@ -608,6 +614,82 @@ TEST_F(DisconnectWindowLinuxTest, WindowStateEventRestoresAboveAndSticky) {
 
   // Window should not crash and should remain active.
   EXPECT_TRUE(session_control.GetWeakPtr());
+
+  window.reset();
+}
+
+TEST_F(DisconnectWindowLinuxTest, WindowIsOverrideRedirectOnX11) {
+  if (!InitializeGtk()) {
+    GTEST_SKIP() << "No display available for GTK.";
+  }
+
+  FakeClientSessionControl session_control(kTestUserJid);
+  std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
+  ASSERT_TRUE(window);
+  window->Start(session_control.GetWeakPtr());
+
+  GtkWindow* gtk_window = FindDisconnectWindow();
+  ASSERT_NE(gtk_window, nullptr);
+
+  GdkWindow* gdk_window = gtk_widget_get_window(GTK_WIDGET(gtk_window));
+  ASSERT_NE(gdk_window, nullptr);
+
+#if defined(GDK_WINDOWING_X11)
+  if (GDK_IS_X11_WINDOW(gdk_window)) {
+    auto* connection = x11::Connection::Get();
+    auto xid = static_cast<x11::Window>(gdk_x11_window_get_xid(gdk_window));
+    auto attrs = connection->GetWindowAttributes({xid}).Sync();
+    ASSERT_TRUE(attrs);
+    EXPECT_TRUE(attrs->override_redirect);
+  }
+#endif
+
+  // Verify the periodic re-raise timer can fire without issue.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  window.reset();
+}
+
+TEST_F(DisconnectWindowLinuxTest, ContinueWindowIsOverrideRedirectOnX11) {
+  if (!InitializeGtk()) {
+    GTEST_SKIP() << "No display available for GTK.";
+  }
+
+  FakeClientSessionControl session_control(kTestUserJid);
+  std::unique_ptr<HostWindow> window = HostWindow::CreateContinueWindow();
+  ASSERT_TRUE(window);
+  window->Start(session_control.GetWeakPtr());
+
+  // Fast forward by 30 minutes to trigger ShowUi().
+  task_environment_.FastForwardBy(base::Minutes(30));
+
+  // Find the dialog in toplevels.
+  GList* toplevels = gtk_window_list_toplevels();
+  GtkWindow* continue_dialog = nullptr;
+  for (GList* iter = toplevels; iter != nullptr; iter = g_list_next(iter)) {
+    if (GTK_IS_DIALOG(iter->data)) {
+      continue_dialog = GTK_WINDOW(iter->data);
+      break;
+    }
+  }
+  g_list_free(toplevels);
+  ASSERT_NE(continue_dialog, nullptr);
+
+  GdkWindow* gdk_window = gtk_widget_get_window(GTK_WIDGET(continue_dialog));
+  ASSERT_NE(gdk_window, nullptr);
+
+#if defined(GDK_WINDOWING_X11)
+  if (GDK_IS_X11_WINDOW(gdk_window)) {
+    auto* connection = x11::Connection::Get();
+    auto xid = static_cast<x11::Window>(gdk_x11_window_get_xid(gdk_window));
+    auto attrs = connection->GetWindowAttributes({xid}).Sync();
+    ASSERT_TRUE(attrs);
+    EXPECT_TRUE(attrs->override_redirect);
+  }
+#endif
+
+  // Verify the periodic re-raise timer can fire without issue.
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   window.reset();
 }

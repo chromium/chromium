@@ -13,11 +13,21 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
+
+namespace {
+
+// Interval for periodic re-raising to ensure the dialog stays above fullscreen
+// applications.
+constexpr base::TimeDelta kRaiseInterval = base::Seconds(1);
+
+}  // namespace
 
 class ContinueWindowGtk : public ContinueWindow {
  public:
@@ -39,11 +49,17 @@ class ContinueWindowGtk : public ContinueWindow {
 
   void OnResponse(GtkDialog*, int);
 
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  void Raise();
+#endif
+
   raw_ptr<GtkWidget> continue_window_;
 
   bool buttons_enabled_ = false;
 
   ScopedGSignal signal_;
+
+  base::RepeatingTimer raise_timer_;
 };
 
 ContinueWindowGtk::ContinueWindowGtk() : continue_window_(nullptr) {}
@@ -59,11 +75,18 @@ void ContinueWindowGtk::ShowUi() {
   CreateWindow();
   gtk_window_set_urgency_hint(GTK_WINDOW(continue_window_.get()), TRUE);
   gtk_window_present(GTK_WINDOW(continue_window_.get()));
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  Raise();
+  raise_timer_.Start(
+      FROM_HERE, kRaiseInterval,
+      base::BindRepeating(&ContinueWindowGtk::Raise, base::Unretained(this)));
+#endif
 }
 
 void ContinueWindowGtk::HideUi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  raise_timer_.Stop();
   if (continue_window_) {
     signal_.Reset();
     gtk_widget_destroy(continue_window_.ExtractAsDangling());
@@ -105,6 +128,18 @@ void ContinueWindowGtk::CreateWindow() {
   // Set always-on-top, otherwise this window tends to be obscured by the
   // DisconnectWindow.
   gtk_window_set_keep_above(GTK_WINDOW(continue_window_.get()), TRUE);
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  gtk_window_set_position(GTK_WINDOW(continue_window_.get()),
+                          GTK_WIN_POS_CENTER);
+
+  // Override-redirect prevents the window manager from stacking fullscreen
+  // windows above the dialog.
+  gtk_widget_realize(continue_window_.get());
+  GdkWindow* gdk_window = gtk_widget_get_window(continue_window_.get());
+  if (gdk_window) {
+    gdk_window_set_override_redirect(gdk_window, TRUE);
+  }
+#endif
 
   signal_ = ScopedGSignal(GTK_DIALOG(continue_window_.get()), "response",
                           base::BindRepeating(&ContinueWindowGtk::OnResponse,
@@ -149,6 +184,19 @@ void ContinueWindowGtk::OnResponse(GtkDialog* dialog, int response_id) {
 
   HideUi();
 }
+
+#if !GTK_CHECK_VERSION(3, 90, 0)
+void ContinueWindowGtk::Raise() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!continue_window_) {
+    return;
+  }
+  GdkWindow* gdk_window = gtk_widget_get_window(continue_window_.get());
+  if (gdk_window) {
+    gdk_window_raise(gdk_window);
+  }
+}
+#endif
 
 // static
 std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
