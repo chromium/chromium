@@ -2,7 +2,7 @@ Name: Android Tools layoutlib-api
 Short Name: layoutlib-api
 URL: https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.2.0-beta01/layoutlib-api-30.2.0-beta01.jar
 Version: 30.2.0-beta01
-Update Mechanism: Manual
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

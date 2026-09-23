@@ -1,8 +1,1 @@
-[
-    "libs/com_android_tools_common",
-    "libs/com_android_tools_layoutlib_layoutlib_api",
-    "libs/com_android_tools_sdk_common",
-    "libs/com_squareup_javapoet",
-    "libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime",
-    "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime"
-]
+[]

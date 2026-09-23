@@ -2,7 +2,7 @@ Name: JavaPoet
 Short Name: javapoet
 URL: https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.13.0/javapoet-1.13.0.jar
 Version: 1.13.0
-Update Mechanism: Manual
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

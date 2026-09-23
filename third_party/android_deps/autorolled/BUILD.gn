@@ -19,6 +19,53 @@ template("define_autorolled_targets") {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_android_tools_common_java") {
+    jar_path = "autorolled/cipd/libs/com_android_tools_common/common.jar"
+    output_name = "com_android_tools_common"
+    enable_bytecode_checks = false
+
+    # This target does not come with most of its dependencies and is
+    # only meant to be used by the resources shrinker. If you wish to use
+    # this for other purposes, change buildCompileNoDepsLatest in
+    # autorolled/build.gradle.template.
+    visibility = [ "//build/android/unused_resources:*" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
+    jar_path = "autorolled/cipd/libs/com_android_tools_layoutlib_layoutlib_api/layoutlib-api.jar"
+    output_name = "com_android_tools_layoutlib_layoutlib_api"
+    enable_bytecode_checks = false
+
+    # This target does not come with most of its dependencies and is
+    # only meant to be used by the resources shrinker. If you wish to use
+    # this for other purposes, change buildCompileNoDepsLatest in
+    # autorolled/build.gradle.template.
+    visibility = [ "//build/android/unused_resources:*" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_android_tools_sdk_common_java") {
+    jar_path =
+        "autorolled/cipd/libs/com_android_tools_sdk_common/sdk-common.jar"
+    output_name = "com_android_tools_sdk_common"
+    enable_bytecode_checks = false
+
+    # This target does not come with most of its dependencies and is
+    # only meant to be used by the resources shrinker. If you wish to use
+    # this for other purposes, change buildCompileNoDepsLatest in
+    # autorolled/build.gradle.template.
+    visibility = [ "//build/android/unused_resources:*" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_javapoet_java") {
+    jar_path = "autorolled/cipd/libs/com_squareup_javapoet/javapoet.jar"
+    output_name = "com_squareup_javapoet"
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jspecify_jspecify_java") {
     jar_path = "autorolled/cipd/libs/org_jspecify_jspecify/jspecify.jar"
     output_name = "org_jspecify_jspecify"
@@ -1040,6 +1087,20 @@ template("define_autorolled_targets") {
       output_name = "org_codehaus_mojo_animal_sniffer_annotations"
       supports_android = true
       enable_bytecode_checks = false
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
+    java_prebuilt("org_jetbrains_kotlin_kotlin_parcelize_runtime_java") {
+      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime/kotlin-parcelize-runtime.jar"
+      output_name = "org_jetbrains_kotlin_kotlin_parcelize_runtime"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+      deps = [
+        "//third_party/android_deps:org_jetbrains_kotlin_kotlin_android_extensions_runtime_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
@@ -2287,6 +2348,25 @@ template("define_autorolled_targets") {
         "//third_party/androidx:*",
       ]
       testonly = true
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
+    java_prebuilt(
+        "org_jetbrains_kotlin_kotlin_android_extensions_runtime_java") {
+      jar_path = "autorolled/cipd/libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime/kotlin-android-extensions-runtime.jar"
+      output_name = "org_jetbrains_kotlin_kotlin_android_extensions_runtime"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.template
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy

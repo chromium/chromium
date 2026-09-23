@@ -1024,7 +1024,9 @@ No modifications.
     }
 
     private static void updateReadmeReferenceFile(List<String> directories, File refFile) {
-        refFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(directories)) + '\n')
+        // prettyPrint renders an empty list as "[\n    \n]" (trailing whitespace).
+        String json = directories ? JsonOutput.prettyPrint(JsonOutput.toJson(directories)) : '[]'
+        refFile.write(json + '\n')
     }
 
     private void updateBuildTargetDeclaration(ChromiumDepGraph depGraph) {
