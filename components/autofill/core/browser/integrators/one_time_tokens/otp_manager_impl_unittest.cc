@@ -1142,14 +1142,9 @@ TEST_F(OtpManagerImplTest,
   EXPECT_FALSE(future.IsReady());
 }
 
-// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, no query
-// is issued to the SMS backend if the OTP field is in a cross-origin iframe
-// with mismatched TLD+1.
-TEST_F(OtpManagerImplTest, CrossOriginOtpFormFeatureEnabledNoQueryIssued) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
+// Tests that no query is issued to the SMS backend if the OTP field is in a
+// cross-origin iframe with mismatched TLD+1.
+TEST_F(OtpManagerImplTest, CrossOriginOtpFormNoQueryIssued) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
@@ -1158,13 +1153,9 @@ TEST_F(OtpManagerImplTest, CrossOriginOtpFormFeatureEnabledNoQueryIssued) {
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
 }
 
-// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is enabled, a query is
-// issued to the SMS backend if the OTP field is in a same-TLD+1 iframe.
-TEST_F(OtpManagerImplTest, SameTldPlusOneOtpFormFeatureEnabledQueryIssued) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
+// Tests that a query is issued to the SMS backend if the OTP field is in a
+// same-TLD+1 iframe.
+TEST_F(OtpManagerImplTest, SameTldPlusOneOtpFormQueryIssued) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
@@ -1173,30 +1164,10 @@ TEST_F(OtpManagerImplTest, SameTldPlusOneOtpFormFeatureEnabledQueryIssued) {
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
 }
 
-// Tests that when `kAutofillRestrictOtpToSameTldPlusOne` is disabled, a query
-// is issued even if the OTP field has a mismatched TLD+1.
-TEST_F(OtpManagerImplTest, CrossOriginOtpFormFeatureDisabledQueryIssued) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
-  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
-
-  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
-  AddFormWithOtpField(
-      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
-      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
-}
-
 // Tests that `GetOtpSuggestions` immediately returns empty suggestions without
 // checking phishing or querying backend when the form contains a cross-origin
-// OTP field and `kAutofillRestrictOtpToSameTldPlusOne` is enabled.
-TEST_F(OtpManagerImplTest,
-       GetOtpSuggestionsCrossOriginFormFeatureEnabledReturnsEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
+// OTP field.
+TEST_F(OtpManagerImplTest, GetOtpSuggestionsCrossOriginFormReturnsEmpty) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
@@ -1251,13 +1222,8 @@ TEST_F(OtpManagerImplTest, EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
 }
 
 // Tests that `GetOtpSuggestions` returns OTP suggestions when the form is on a
-// same-TLD+1 origin and `kAutofillRestrictOtpToSameTldPlusOne` is enabled.
-TEST_F(OtpManagerImplTest,
-       GetOtpSuggestionsSameTldPlusOneFormFeatureEnabledReturnsOtp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
+// same-TLD+1 origin.
+TEST_F(OtpManagerImplTest, GetOtpSuggestionsSameTldPlusOneFormReturnsOtp) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
   one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
@@ -1269,35 +1235,6 @@ TEST_F(OtpManagerImplTest,
 
   const FormStructure* form = AddFormWithOtpField(
       /*field_origin=*/url::Origin::Create(GURL("https://sub.example.test")),
-      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
-  ASSERT_TRUE(form);
-
-  base::test::TestFuture<const std::vector<std::string>> future;
-  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
-
-  ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
-}
-
-// Tests that `GetOtpSuggestions` returns OTP suggestions on mismatched TLD+1
-// when `kAutofillRestrictOtpToSameTldPlusOne` is disabled.
-TEST_F(OtpManagerImplTest,
-       GetOtpSuggestionsCrossOriginFormFeatureDisabledReturnsOtp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
-  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
-
-  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
-                                    kDefaultOtpValue, base::TimeTicks::Now());
-  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
-      .WillOnce(RunOnceCallback<0>(otp));
-  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
-      .WillOnce(RunOnceCallback<1>(false));
-
-  const FormStructure* form = AddFormWithOtpField(
-      /*field_origin=*/url::Origin::Create(GURL("https://attacker.test")),
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
   ASSERT_TRUE(form);
 

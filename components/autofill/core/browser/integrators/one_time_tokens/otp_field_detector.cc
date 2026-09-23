@@ -9,22 +9,17 @@
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace autofill {
 
 bool OtpFieldDetector::IsOtpForm(const FormStructure& form) {
-  const bool restrict_to_same_tld = base::FeatureList::IsEnabled(
-      features::kAutofillRestrictOtpToSameTldPlusOne);
-
   bool has_otp_field = false;
   for (const std::unique_ptr<AutofillField>& f : form.fields()) {
     if (!f->Type().GetTypes().contains(ONE_TIME_CODE) || !f->is_focusable() ||
@@ -32,9 +27,6 @@ bool OtpFieldDetector::IsOtpForm(const FormStructure& form) {
       continue;
     }
     has_otp_field = true;
-    if (!restrict_to_same_tld) {
-      return true;
-    }
 
     if (!net::registry_controlled_domains::SameDomainOrHost(
             f->origin(), form.main_frame_origin(),
