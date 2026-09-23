@@ -504,6 +504,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:file_select_helper",
     "//chrome/browser:global_features",
+    "//chrome/browser:primitives",
     "//chrome/browser:startup_data",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
@@ -1100,7 +1101,10 @@ source_set("browser_tests") {
     ]
   }
   if (is_chromeos) {
-    deps += [ "//components/account_id:test_support" ]
+    deps += [
+      "//ash",
+      "//components/account_id:test_support",
+    ]
   }
 
   if (is_android) {

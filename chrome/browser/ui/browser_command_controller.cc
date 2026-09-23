@@ -2495,6 +2495,18 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
       UpdateTabSwitchingCommandState();
       UpdateCommandsForFind();
     }
+    if (auto* side_panel_ui = SidePanelUI::From(browser_)) {
+      if (side_panel_ui->GetCurrentEntryId() == SidePanelEntryId::kGlic) {
+        side_panel_ui->Close();
+      }
+    }
+    if (auto* const action = FindAction(kActionSidePanelShowGlic, browser_)) {
+      action->SetVisible(false);
+    }
+    if (auto* service =
+            glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())) {
+      service->CloseFloatingPanel();
+    }
   } else {
     // Do an init call to re-initialize command state after the
     // DisableAllCommands.

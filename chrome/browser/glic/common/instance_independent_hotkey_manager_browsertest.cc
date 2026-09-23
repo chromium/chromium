@@ -17,6 +17,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#include "ui/aura/window.h"
+#endif
+
 namespace glic {
 
 // TODO(crbug.com/537331304): Add test coverage for the Android bypass of the
@@ -46,6 +51,23 @@ class InstanceIndependentHotkeyManagerBrowserTest : public GlicBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
+                       CanHandleAcceleratorsReturnsFalseWhenLockedFullscreen) {
+  auto* hotkey_manager = coordinator().GetHotkeyManagerForTesting();
+  EXPECT_TRUE(hotkey_manager->CanHandleAccelerators());
+
+  // Pin the browser window in trusted (locked) fullscreen mode.
+  ash::PinWindow(GetBrowser()->GetWindow()->GetNativeWindow(),
+                 /*trusted=*/true);
+  EXPECT_FALSE(hotkey_manager->CanHandleAccelerators());
+
+  // Unpin the window and verify accelerators can be handled again.
+  ash::UnpinWindow(GetBrowser()->GetWindow()->GetNativeWindow());
+  EXPECT_TRUE(hotkey_manager->CanHandleAccelerators());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        CanHandleAcceleratorsReturnsFalseWhenFreNotCompleted) {

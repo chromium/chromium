@@ -19,6 +19,10 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "ui/base/base_window.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/platform_util.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
@@ -91,6 +95,11 @@ bool IsBrowserGlicCompatible(Profile* profile,
 
 bool IsBrowserGlicAttachable(Profile* profile,
                              BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (platform_util::IsBrowserLockedFullscreen(browser)) {
+    return false;
+  }
+#endif
   return IsBrowserGlicCompatible(profile, browser) &&
          browser->GetWindow()->IsVisible() &&
          !browser->GetWindow()->IsMinimized();

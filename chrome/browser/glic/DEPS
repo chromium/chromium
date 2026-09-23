@@ -16,5 +16,8 @@ specific_include_rules = {
   ],
   ".*_browsertest\\.cc": [
     "+chrome/browser/performance_manager",
-  ]
+  ],
+  "instance_independent_hotkey_manager_browsertest\\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
 }

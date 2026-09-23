@@ -19,9 +19,12 @@
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/prefs/pref_service.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/platform_util.h"
+#endif
 
 namespace glic {
 
@@ -30,6 +33,13 @@ constexpr LocalHotkeyManager::Command kSupportedCommands[] = {
     LocalHotkeyManager::Command::kPanelToggle,
     LocalHotkeyManager::Command::kCaptureRegion,
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+BrowserWindowInterface* GetLastActiveBrowser(Profile* profile) {
+  auto* const collection = ProfileBrowserCollection::GetForProfile(profile);
+  return collection ? collection->GetLastActiveBrowser() : nullptr;
+}
+#endif
 }  // namespace
 
 InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
@@ -81,12 +91,16 @@ void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
-  BrowserWindowInterface* const bwi =
-      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
+  BrowserWindowInterface* const bwi = GetLastActiveBrowser(profile_);
   // bwi is guaranteed to be valid and belong to profile_ because of
   // CanHandleAccelerators.
   CHECK(bwi);
   CHECK_EQ(bwi->GetProfile(), profile_);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (platform_util::IsBrowserLockedFullscreen(bwi)) {
+    return;
+  }
+#endif
   auto* active_tab = bwi->GetActiveTabInterface();
   if (!active_tab) {
     return;
@@ -131,7 +145,16 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
 }
 
 bool InstanceIndependentHotkeyManager::CanHandleAccelerators() const {
-  return hotkey_manager_ && GlicEnabling::IsEnabledAndConsentForProfile(profile_);
+  if (!hotkey_manager_ || !GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* const bwi = GetLastActiveBrowser(profile_);
+  if (bwi && platform_util::IsBrowserLockedFullscreen(bwi)) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 }  // namespace glic
