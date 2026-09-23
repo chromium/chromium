@@ -41,9 +41,18 @@ private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
        }
     }
 {%- endif %}
+{%- if array.kind|is_array_kind %}
+    // Arrays do not have distinct groups. Let `elementGroupName` be `nil`, so
+    // that Fuzzilli will infer the type. Type inference works reliably until
+    // the array is mutated with elements of other types.
+{#- TODO(crbug.com/565028886): Remove elementGroupName logic from Fuzzilli and
+    extend element type inference logic to work with all types & mutators. #}
+    b.createArray(with: elements)
+{%- else %}
     b.createArray(
         with: elements,
         elementGroupName:
             ILType.{{array.kind|format_il_type(primitive_with_suffix=True)}}.group)
+{%- endif %}
 }
 {%- endfor %}

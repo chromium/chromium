@@ -100,6 +100,7 @@ class Generator(generator.Generator):
       "format_il_type": self._ILTypeName,
       "format_unique_name": self._FormatUniqueName,
       "fully_qualified_name": self._FullyQualifiedName,
+      "is_array_kind": mojom.IsArrayKind,
       "is_synchronous_method": self._IsSynchronousMethod,
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,

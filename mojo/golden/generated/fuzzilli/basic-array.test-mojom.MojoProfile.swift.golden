@@ -22,6 +22,8 @@ extension ILType {
         withProperties: ["$"],
         withMethods: [
             "get",
+            "getNestedArray",
+            "syncGetNestedArray",
             "syncGetBools",
             "syncGetStrings",
             "getBools",
@@ -48,6 +50,14 @@ extension ObjectGroup {
                 .plain(.jsGoldenEntryArray),
                 .plain(.integer),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_Get_ResponseParams),
+            "getNestedArray": [
+                .plain(.jsGoldenEntryArrayArray),
+                .plain(.integer),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetNestedArray_ResponseParams),
+            "syncGetNestedArray": [
+                .plain(.jsGoldenEntryArrayArray),
+                .plain(.integer),
+            ] => .jsGoldenPrimary_SyncGetNestedArray_ResponseParams,
             "syncGetBools": [
             ] => .jsGoldenPrimary_SyncGetBools_ResponseParams,
             "syncGetStrings": [
@@ -102,6 +112,16 @@ extension ILType {
         withProperties: [
             "result",
         ])
+    fileprivate static let jsGoldenPrimary_GetNestedArray_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetNestedArray_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_SyncGetNestedArray_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetNestedArray_ResponseParams",
+        withProperties: [
+            "result",
+        ])
     fileprivate static let jsGoldenPrimary_SyncGetBools_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_SyncGetBools_ResponseParams",
         withProperties: [
@@ -136,6 +156,22 @@ extension ObjectGroup {
         instanceType: .jsGoldenPrimary_Get_ResponseParams,
         properties: [
             "result": .jsGoldenEntry,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetNestedArrayResponseParams = ObjectGroup(
+        name: "golden.Primary_GetNestedArray_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetNestedArray_ResponseParams,
+        properties: [
+            "result": .jsGoldenEntryArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimarySyncGetNestedArrayResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetNestedArray_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetNestedArray_ResponseParams,
+        properties: [
+            "result": .jsGoldenEntryArray,
         ],
         methods: [:]
     )
@@ -179,6 +215,8 @@ extension ObjectGroup {
 extension ILType {
     fileprivate static let jsGoldenEntryArray: ILType =
         .createJsArrayType(ofElementType: .jsGoldenEntry)
+    fileprivate static let jsGoldenEntryArrayArray: ILType =
+        .createJsArrayType(ofElementType: .jsGoldenEntryArray)
     fileprivate static let jsBoolElementArray: ILType =
         .createJsArrayType(ofElementType: .jsBoolElement)
     fileprivate static let jsStringElementArray: ILType =
@@ -213,6 +251,18 @@ private let MojoGoldenEntryArrayGenerator = CodeGenerator(
         with: elements,
         elementGroupName:
             ILType.jsGoldenEntry.group)
+}
+private let MojoGoldenEntryArrayArrayGenerator = CodeGenerator(
+    "MojoGoldenEntryArrayArrayGenerator",
+    inputs: .one,
+    produces: [.jsGoldenEntryArrayArray]
+) { b, _ in
+    let elem = b.findOrGenerateType(.jsGoldenEntryArray)
+    var elements: [Variable] = [elem]
+    // Arrays do not have distinct groups. Let `elementGroupName` be `nil`, so
+    // that Fuzzilli will infer the type. Type inference works reliably until
+    // the array is mutated with elements of other types.
+    b.createArray(with: elements)
 }
 private let MojoBoolArrayGenerator = CodeGenerator(
     "MojoBoolArrayGenerator",
@@ -379,6 +429,7 @@ let mojoPrimaryProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenEntryArrayGenerator, 1),
+        (MojoGoldenEntryArrayArrayGenerator, 1),
         (MojoBoolArrayGenerator, 1),
         (MojoStringArrayGenerator, 1),
         (MojoFloatArrayGenerator, 1),
@@ -397,6 +448,8 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryPendingReceiver,
         .goldenEntry,
         .goldenPrimaryGetResponseParams,
+        .goldenPrimaryGetNestedArrayResponseParams,
+        .goldenPrimarySyncGetNestedArrayResponseParams,
         .goldenPrimarySyncGetBoolsResponseParams,
         .goldenPrimarySyncGetStringsResponseParams,
         .goldenPrimaryGetBoolsResponseParams,
