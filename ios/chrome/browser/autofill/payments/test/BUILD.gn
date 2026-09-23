@@ -16,6 +16,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/authentication/test:egtest_util",
     "//ios/chrome/browser/autofill/manual_fill/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/model:features",
+    "//ios/chrome/browser/autofill/payments/coordinator:exit_reason",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
@@ -23,6 +24,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",
   ]

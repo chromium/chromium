@@ -2398,6 +2398,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The suggestion provider's type was incorrect"/>
   <int value="5"
       label="Bottom Sheet couldn't be presented for various reasons"/>
+  <int value="6" label="Dismissed due to page navigation or tab change"/>
 </enum>
 
 <!-- LINT.IfChange(PictureInPictureAppRestoration) -->

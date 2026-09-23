@@ -19,7 +19,9 @@ enum class PaymentsSuggestionBottomSheetExitReason {
   // Could not present the view controller for the bottom sheet as a modal for
   // other reasons.
   kCouldNotPresent = 5,
-  kMaxValue = kCouldNotPresent,
+  // The bottom sheet was dismissed due to navigation or tab change.
+  kNavigationOrTabChange = 6,
+  kMaxValue = kNavigationOrTabChange,
 };
 // LINT.ThenChange(tools/metrics/histograms/metadata/ios/enums.xml)
 
