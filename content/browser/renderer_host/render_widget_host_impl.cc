@@ -298,9 +298,6 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   }
 
   for (const auto& custom_data_item : drop_data.custom_data) {
-    if (custom_data_item.first == kDragIdCustomDataKey) {
-      continue;
-    }
     metadata.push_back(DropData::Metadata::CreateForMimeType(
         DropData::Kind::STRING, custom_data_item.first));
   }
@@ -3121,9 +3118,6 @@ void RenderWidgetHostImpl::StartDragging(
     const gfx::Rect& drag_obj_rect_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
   DropData drop_data = DragDataToDropData(*drag_data);
-  if (delegate_) {
-    delegate_->OnStartDragging(&drop_data, source_rfh.GetGlobalFrameToken());
-  }
   DropData filtered_data(drop_data);
   RenderProcessHost* process = GetProcess();
   ChildProcessSecurityPolicyImpl* policy =
@@ -3227,6 +3221,11 @@ void RenderWidgetHostImpl::StartDragging(
     // Need to clear drag and drop state in blink.
     DragSourceSystemDragEnded();
     return;
+  }
+
+  if (delegate_) {
+    delegate_->OnStartDragging(&filtered_data,
+                               source_rfh.GetGlobalFrameToken());
   }
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);

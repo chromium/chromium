@@ -8118,16 +8118,6 @@ void WebContentsImpl::OnStartDragging(
     return;
   }
 
-  // Do not contaminate pure local file drags (e.g., from ChromeOS Files app)
-  // with drag tracking tokens.
-  bool is_pure_file_drag =
-      !drop_data->filenames.empty() && !drop_data->text.has_value() &&
-      !drop_data->html.has_value() && drop_data->file_contents.empty();
-
-  if (is_pure_file_drag) {
-    return;
-  }
-
   DragId drag_id(base::UnguessableToken::Create());
 
   DragSourceDocumentTracker::GetOrCreateForCurrentDocument(source_frame)
@@ -8135,8 +8125,7 @@ void WebContentsImpl::OnStartDragging(
 
   active_drag_id_ = drag_id;
   SetDragSource(drag_id, source_rfh_token);
-  drop_data->custom_data[kDragIdCustomDataKey] =
-      base::ASCIIToUTF16(drag_id.value().ToString());
+  drop_data->drag_id = drag_id.value();
 }
 
 void WebContentsImpl::OnDragSourceEnded() {

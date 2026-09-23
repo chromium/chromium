@@ -795,6 +795,13 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
       [types containsObject:ui::kUTTypeChromiumRendererInitiatedDrag];
   drop_data.is_from_privileged =
       [types containsObject:ui::kUTTypeChromiumPrivilegedInitiatedDrag];
+  if ([types containsObject:ui::kUTTypeChromiumDragId]) {
+    NSString* drag_id_str = [pboard stringForType:ui::kUTTypeChromiumDragId];
+    if (drag_id_str) {
+      drop_data.drag_id = base::UnguessableToken::DeserializeFromString(
+          base::SysNSStringToUTF8(drag_id_str));
+    }
+  }
 
   // Get URL if possible. To avoid exposing file system paths to web content,
   // filenames in the drag are not converted to file URLs.

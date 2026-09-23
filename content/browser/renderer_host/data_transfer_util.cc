@@ -268,12 +268,6 @@ blink::mojom::DragDataPtr DropDataToDragData(
   }
   for (const std::pair<const std::u16string, std::u16string>& data :
        drop_data.custom_data) {
-    // The drag id entry is assigned by the browser for internal tracking
-    // (e.g. Glic drag attribution); never expose it to untrusted drop target
-    // renderers.
-    if (data.first == kDragIdCustomDataKey) {
-      continue;
-    }
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
     item->string_type = base::UTF16ToUTF8(data.first);
     item->string_data = data.second;
@@ -308,9 +302,6 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
 
   for (const auto& meta_data_item : drop_meta_data) {
     if (meta_data_item.kind == DropData::Kind::STRING) {
-      if (meta_data_item.mime_type == kDragIdCustomDataKey) {
-        continue;
-      }
       blink::mojom::DragItemStringPtr item =
           blink::mojom::DragItemString::New();
       item->string_type = base::UTF16ToUTF8(meta_data_item.mime_type);
@@ -408,14 +399,9 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
           if (string_item->base_url)
             result.html_base_url = *string_item->base_url;
         } else {
-          std::u16string custom_type =
-              base::UTF8ToUTF16(string_item->string_type);
-          // The drag id entry is assigned by the browser when a drag starts;
-          // discard any value supplied with the incoming drag data.
-          if (custom_type != kDragIdCustomDataKey) {
-            result.custom_data.emplace(std::move(custom_type),
-                                       string_item->string_data);
-          }
+          result.custom_data.emplace(
+              base::UTF8ToUTF16(string_item->string_type),
+              string_item->string_data);
         }
         break;
       }

@@ -263,6 +263,9 @@ void PrepareDragData(RenderFrameHost& source_rfh,
                      const DropData& drop_data,
                      ui::OSExchangeDataProvider* provider) {
   provider->MarkRendererTaintedFromOrigin(source_rfh.GetLastCommittedOrigin());
+  if (drop_data.drag_id.has_value()) {
+    provider->SetChromeDragId(*drop_data.drag_id);
+  }
 #if BUILDFLAG(IS_WIN)
   // Put download before file contents to prefer the download of a image over
   // its thumbnail link.
@@ -724,6 +727,7 @@ void WebContentsViewAura::PrepareDropData(
   drop_data->did_originate_from_renderer = data.IsRendererTainted();
 #endif
   drop_data->is_from_privileged = data.IsFromPrivileged();
+  drop_data->drag_id = data.GetChromeDragId();
 
   if (std::optional<std::u16string> string = data.GetString();
       string.has_value() && !string->empty()) {

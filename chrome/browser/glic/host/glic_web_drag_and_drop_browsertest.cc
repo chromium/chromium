@@ -5,15 +5,12 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/pickle.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -36,7 +33,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -98,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
             base::Unretained(&waiter)));
 
         // Programmatically simulate the DragEnter with Blink's real captured
-        // drag data (preserving the custom Glic drag source ID pickle
-        // chromium/x-drag-id).
+        // drag data (preserving the bespoke Chrome drag source ID
+        // drag_id).
         simulator.SimulateDragEnter(host_relative_point,
                                     waiter.TakeCapturedData());
 
@@ -181,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
             base::Unretained(&waiter)));
 
         // Programmatically simulate the DragEnter with Blink's real captured
-        // drag data (preserving the custom Glic drag source ID pickle
-        // chromium/x-drag-id).
+        // drag data (preserving the bespoke Chrome drag source ID
+        // drag_id).
         simulator.SimulateDragEnter(host_relative_point,
                                     waiter.TakeCapturedData());
 
@@ -242,15 +238,7 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
   data->SetFilename(test_file);
   data->SetString(u"Sensitive text");
   data->SetURL(GURL("https://a.com/secret.png"), u"secret.png");
-
-  base::Pickle custom_data_pickle;
-  ui::WriteCustomDataToPickle(
-      std::unordered_map<std::u16string, std::u16string>{
-          {std::u16string(content::kDragIdCustomDataKey),
-           base::UTF8ToUTF16(base::UnguessableToken::Create().ToString())}},
-      &custom_data_pickle);
-  data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
-                       custom_data_pickle);
+  data->SetChromeDragId(base::UnguessableToken::Create());
 
   drag_and_drop_test_utils::DragAndDropSimulator simulator(
       glic_host->webui_contents());

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "ipc/constants.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
@@ -26,13 +27,6 @@
 #include "url/gurl.h"
 
 namespace content {
-
-// Key of the DropData::custom_data entry holding the id that links an
-// in-progress drag back to the WebContents it started from. This entry is
-// assigned by the browser when a drag starts (see
-// `WebContentsImpl::OnStartDragging()`); values supplied by the drag source
-// are discarded (see `DragDataToDropData()`).
-inline constexpr char16_t kDragIdCustomDataKey[] = u"chromium/x-drag-id";
 
 struct CONTENT_EXPORT DownloadUrlMetadata {
   DownloadUrlMetadata();
@@ -110,6 +104,11 @@ struct CONTENT_EXPORT DropData {
 
   // Whether this drag is from a privileged WebContents.
   bool is_from_privileged = false;
+
+  // Opaque browser-internal identifier for tracking the originating WebContents
+  // of a drag across OS drag-and-drop boundaries without exposing custom MIME
+  // types to web renderers via DataTransfer.
+  std::optional<base::UnguessableToken> drag_id;
 
   // Holds one or more URLs, such as those from dragging links or images.
   std::vector<ui::ClipboardUrlInfo> url_infos;

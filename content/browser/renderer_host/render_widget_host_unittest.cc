@@ -2690,91 +2690,11 @@ TEST_F(RenderWidgetHostDragTest, SanitizeFilenameExtensionOnDrag) {
             FILE_PATH_LITERAL("payload.so"));
 }
 
-// The "chromium/x-drag-id" custom data entry is assigned by the browser when
-// a drag starts. A value supplied by the drag source must be discarded, also
-// on file-only drags, which do not receive a browser-assigned id.
-TEST_F(RenderWidgetHostDragTest, DragIdCustomDataDiscardedOnFileOnlyDrag) {
-  NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_EQ(start_dragging_count(), 0);
-
-  auto drag_data = blink::mojom::DragData::New();
-  auto file_item = blink::mojom::DataTransferFile::New();
-  file_item->path = base::FilePath(FILE_PATH_LITERAL("/path/to/file.txt"));
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewFile(std::move(file_item)));
-  auto id_item = blink::mojom::DragItemString::New();
-  id_item->string_type = base::UTF16ToUTF8(kDragIdCustomDataKey);
-  id_item->string_data = u"11223344556677889900aabbccddeeff";
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewString(std::move(id_item)));
-
-  StartDragWithDragData(std::move(drag_data));
-
-  EXPECT_EQ(start_dragging_count(), 1);
-  EXPECT_FALSE(drop_data().custom_data.contains(kDragIdCustomDataKey));
-}
-
-// On drags that are stamped with a drag id, a "chromium/x-drag-id" value
-// supplied by the drag source must be replaced with a browser-assigned one.
-TEST_F(RenderWidgetHostDragTest, DragIdCustomDataReplacedOnTextDrag) {
-  NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_EQ(start_dragging_count(), 0);
-
-  auto drag_data = blink::mojom::DragData::New();
-  auto text_item = blink::mojom::DragItemString::New();
-  text_item->string_type = ui::kMimeTypePlainText;
-  text_item->string_data = u"dragged text";
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewString(std::move(text_item)));
-  auto id_item = blink::mojom::DragItemString::New();
-  id_item->string_type = base::UTF16ToUTF8(kDragIdCustomDataKey);
-  id_item->string_data = u"11223344556677889900aabbccddeeff";
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewString(std::move(id_item)));
-
-  StartDragWithDragData(std::move(drag_data));
-
-  EXPECT_EQ(start_dragging_count(), 1);
-  auto it = drop_data().custom_data.find(kDragIdCustomDataKey);
-  ASSERT_NE(it, drop_data().custom_data.end());
-  EXPECT_NE(it->second, u"11223344556677889900aabbccddeeff");
-  EXPECT_TRUE(base::UnguessableToken::DeserializeFromString(
-                  base::UTF16ToASCII(it->second))
-                  .has_value());
-}
-
-// Custom data types other than "chromium/x-drag-id" pass through unmodified.
-TEST_F(RenderWidgetHostDragTest, OtherCustomDataPreservedOnFileOnlyDrag) {
-  NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_EQ(start_dragging_count(), 0);
-
-  auto drag_data = blink::mojom::DragData::New();
-  auto file_item = blink::mojom::DataTransferFile::New();
-  file_item->path = base::FilePath(FILE_PATH_LITERAL("/path/to/file.txt"));
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewFile(std::move(file_item)));
-  auto custom_item = blink::mojom::DragItemString::New();
-  custom_item->string_type = "application/x-example-type";
-  custom_item->string_data = u"example data";
-  drag_data->items.push_back(
-      blink::mojom::DragItem::NewString(std::move(custom_item)));
-
-  StartDragWithDragData(std::move(drag_data));
-
-  EXPECT_EQ(start_dragging_count(), 1);
-  auto it = drop_data().custom_data.find(u"application/x-example-type");
-  ASSERT_NE(it, drop_data().custom_data.end());
-  EXPECT_EQ(it->second, u"example data");
-  // File-only drags are not stamped with a drag id.
-  EXPECT_FALSE(drop_data().custom_data.contains(kDragIdCustomDataKey));
-}
-
-// Internal drag id in DropData must never be exposed to untrusted drop target
-// renderers in outgoing DragData.
+// Internal drag_id in DropData must never be exposed to untrusted
+// drop target renderers in outgoing DragData.
 TEST_F(RenderWidgetHostDragTest, DragIdNotExposedInOutgoingDragData) {
   DropData drop_data;
-  drop_data.custom_data[kDragIdCustomDataKey] =
-      u"11223344556677889900aabbccddeeff";
+  drop_data.drag_id = base::UnguessableToken::Create();
   drop_data.custom_data[u"application/x-custom-key"] = u"custom-value";
 
   blink::mojom::DragDataPtr drag_data =
@@ -2783,30 +2703,22 @@ TEST_F(RenderWidgetHostDragTest, DragIdNotExposedInOutgoingDragData) {
                          GetChromeBlobStorageContext());
 
   ASSERT_TRUE(drag_data);
-  bool found_custom_key = false;
-  for (const auto& item : drag_data->items) {
-    if (item->is_string()) {
-      EXPECT_NE(item->get_string()->string_type,
-                base::UTF16ToUTF8(kDragIdCustomDataKey));
-      if (item->get_string()->string_type == "application/x-custom-key") {
-        found_custom_key = true;
-        EXPECT_EQ(item->get_string()->string_data, u"custom-value");
-      }
-    }
-  }
-  EXPECT_TRUE(found_custom_key);
+  ASSERT_EQ(drag_data->items.size(), 1u);
+  ASSERT_TRUE(drag_data->items[0]->is_string());
+  EXPECT_EQ(drag_data->items[0]->get_string()->string_type,
+            "application/x-custom-key");
+  EXPECT_EQ(drag_data->items[0]->get_string()->string_data, u"custom-value");
 }
 
-// Internal drag id in DropData must never be exposed to renderers in dragenter
-// metadata.
+// Internal drag_id in DropData must never be exposed to renderers in
+// dragenter metadata.
 TEST_F(RenderWidgetHostDragTest, DragIdNotExposedInDragEnterMetaData) {
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver =
       BindFakeFrameWidgetInterfaces(main_test_rfh());
   DragCaptureFrameWidget mock_frame_widget(std::move(receiver));
 
   DropData drop_data;
-  drop_data.custom_data[kDragIdCustomDataKey] =
-      u"11223344556677889900aabbccddeeff";
+  drop_data.drag_id = base::UnguessableToken::Create();
   drop_data.custom_data[u"application/x-custom-key"] = u"custom-value";
 
   base::RunLoop run_loop;
@@ -2821,41 +2733,10 @@ TEST_F(RenderWidgetHostDragTest, DragIdNotExposedInDragEnterMetaData) {
 
   const auto& captured_drag_data = mock_frame_widget.drag_data();
   ASSERT_TRUE(captured_drag_data);
-  bool found_custom_key = false;
-  for (const auto& item : captured_drag_data->items) {
-    if (item->is_string()) {
-      EXPECT_NE(item->get_string()->string_type,
-                base::UTF16ToUTF8(kDragIdCustomDataKey));
-      if (item->get_string()->string_type == "application/x-custom-key") {
-        found_custom_key = true;
-      }
-    }
-  }
-  EXPECT_TRUE(found_custom_key);
-}
-
-// Internal drag id in DropData::Metadata must never be exposed to renderers
-// in DropMetaDataToDragData().
-TEST_F(RenderWidgetHostDragTest, DragIdNotExposedInDropMetaDataToDragData) {
-  std::vector<DropData::Metadata> metadata;
-  metadata.push_back(DropData::Metadata::CreateForMimeType(
-      DropData::Kind::STRING, kDragIdCustomDataKey));
-  metadata.push_back(DropData::Metadata::CreateForMimeType(
-      DropData::Kind::STRING, u"application/x-custom-key"));
-
-  blink::mojom::DragDataPtr drag_data = DropMetaDataToDragData(metadata);
-  ASSERT_TRUE(drag_data);
-  bool found_custom_key = false;
-  for (const auto& item : drag_data->items) {
-    if (item->is_string()) {
-      EXPECT_NE(item->get_string()->string_type,
-                base::UTF16ToUTF8(kDragIdCustomDataKey));
-      if (item->get_string()->string_type == "application/x-custom-key") {
-        found_custom_key = true;
-      }
-    }
-  }
-  EXPECT_TRUE(found_custom_key);
+  ASSERT_EQ(captured_drag_data->items.size(), 1u);
+  ASSERT_TRUE(captured_drag_data->items[0]->is_string());
+  EXPECT_EQ(captured_drag_data->items[0]->get_string()->string_type,
+            "application/x-custom-key");
 }
 
 TEST_F(RenderWidgetHostDragTest, DragEnterDoesNotLeakPaths) {

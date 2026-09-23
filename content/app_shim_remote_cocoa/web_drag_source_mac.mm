@@ -104,6 +104,9 @@
   if (_privileged) {
     [writableTypes addObject:ui::kUTTypeChromiumPrivilegedInitiatedDrag];
   }
+  if (_dropData.drag_id.has_value()) {
+    [writableTypes addObject:ui::kUTTypeChromiumDragId];
+  }
 
   // URL (and title).
   if (!_dropData.url_infos.empty()) {
@@ -326,6 +329,11 @@
     return _sourceOrigin.opaque()
                ? [NSString string]
                : base::SysUTF8ToNSString(_sourceOrigin.Serialize());
+  }
+
+  if ([type isEqualToString:ui::kUTTypeChromiumDragId]) {
+    CHECK(_dropData.drag_id.has_value());
+    return base::SysUTF8ToNSString(_dropData.drag_id->ToString());
   }
 
   // Flavors used to tag.

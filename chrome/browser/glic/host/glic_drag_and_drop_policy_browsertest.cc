@@ -279,13 +279,10 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                                    "a.com", "/drag_and_drop/cors-allowed.jpg"),
                                u"cors-allowed.jpg");
 
-        // Clone Glic's custom x-drag-id custom web data format from Blink's
-        // payload.
-        std::optional<base::Pickle> pickled_data = task_data->GetPickledData(
-            ui::ClipboardFormatType::DataTransferCustomType());
-        if (pickled_data.has_value()) {
-          augmented_data->SetPickledData(
-              ui::ClipboardFormatType::DataTransferCustomType(), *pickled_data);
+        // Clone the bespoke Chrome drag ID from Blink's payload.
+        if (std::optional<base::UnguessableToken> drag_id =
+                task_data->GetChromeDragId()) {
+          augmented_data->SetChromeDragId(*drag_id);
         }
 
         if (task_data->GetSource()) {

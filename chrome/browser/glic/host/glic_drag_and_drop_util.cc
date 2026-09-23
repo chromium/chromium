@@ -240,7 +240,7 @@ GlicDragAndDropContentType GetDragAndDropContentType(
 }  // namespace
 
 bool IsGlicWebDrag(const content::DropData& drop_data) {
-  return drop_data.custom_data.contains(content::kDragIdCustomDataKey);
+  return drop_data.drag_id.has_value();
 }
 
 // Initiates the Glic drag-and-drop invocation workflow when a web drag is
@@ -248,8 +248,8 @@ bool IsGlicWebDrag(const content::DropData& drop_data) {
 //
 // It executes the following steps:
 // 1. Verifies the Glic drag-and-drop file upload feature flag is enabled.
-// 2. Deserializes the custom Glic drag ID (`chromium/x-drag-id`) from the drop
-// data.
+// 2. Reads the bespoke Chrome drag ID (`drop_data.drag_id`) from the
+//    drop data.
 // 3. Resolves the unique drag ID back to the originating source WebContents in
 //    the same profile (guaranteeing cross-profile boundary safety).
 // 4. Restores original metadata (such as the source URL and pristine file
@@ -279,16 +279,13 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
     return;
   }
 
-  std::optional<base::UnguessableToken> raw_drag_id =
-      base::UnguessableToken::DeserializeFromString(base::UTF16ToUTF8(
-          drop_data.custom_data.at(content::kDragIdCustomDataKey)));
-  if (!raw_drag_id) {
+  if (!drop_data.drag_id) {
     base::UmaHistogramEnumeration(
         "Glic.DragAndDrop.ValidationResult",
         GlicDragAndDropValidationResult::kInvalidDragId);
     return;
   }
-  content::WebContents::DragId drag_id(*raw_drag_id);
+  content::WebContents::DragId drag_id(*drop_data.drag_id);
 
   // Look up the originating WebContents from the drag ID.
   // Note: Passing the target's BrowserContext enforces that both the drag
