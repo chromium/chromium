@@ -334,7 +334,15 @@ template("cargo_crate") {
       if (defined(invoker.allow_unsafe)) {
         allow_unsafe = invoker.allow_unsafe
       }
-      configs += [ "//build/rust/gni_impl:allow_all_warnings" ]
+
+      # Suppress warnings in third-party crates.  Note that this is a `deps`
+      # entry (rather than a `configs` entry), because the group below both
+      # 1) applies the warning-suppressing flags via `public_configs` and
+      # 2) generates the response file that these flags point at.
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ "//build/rust/gni_impl:allow_all_warnings" ]
 
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"

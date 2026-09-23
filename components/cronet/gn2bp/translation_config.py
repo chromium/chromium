@@ -181,6 +181,14 @@ _builtin_deps = {
     # to build this target at all.
     '//build/rust/gni_impl:rustc_print_cfg':
     always_disable,
+    # allow_all_warnings generates allow_all_warnings.rsp dynamically at build
+    # time using Chromium's host rustc toolchain. In AOSP Soong, crates are
+    # compiled with AOSP's own Rust compiler flags (and response files are
+    # stripped by gn2bp), so this action and group are not needed.
+    '//build/rust/gni_impl:allow_all_warnings':
+    always_disable,
+    '//build/rust/gni_impl:gen_allow_all_warnings_rsp':
+    always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
     always_disable,
     '//third_party/zstd:headers':
