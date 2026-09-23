@@ -3606,8 +3606,8 @@ If this page isn’t working as expected, try allowing optimization.
       </message>
 
       <!-- Contextual Tasks -->
-      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and closing Google Search in the side panel.">
-        Close side panel
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">
+        Hide side panel
       </message>
 
       <!-- Enterprise device signals disclaimer -->
