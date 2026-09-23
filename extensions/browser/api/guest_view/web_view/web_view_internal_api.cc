@@ -866,6 +866,9 @@ void WebViewInternalFindFunction::ForwardResponse(base::DictValue results) {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+
   std::optional<web_view_internal::Find::Params> params =
       web_view_internal::Find::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);

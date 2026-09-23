@@ -40,6 +40,9 @@ suite('WebviewUntrustedBasicTest', function() {
     assertThrows(() => {
       webview.loadDataWithBaseUrl('data:text/html,test', 'https://example.com');
     });
+    assertThrows(() => {
+      webview.find('test', {}, () => {});
+    });
   });
 
   test('PermissionRequestAutoDenyInUntrusted', async () => {
