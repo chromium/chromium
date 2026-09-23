@@ -218,7 +218,7 @@ class SyncConfirmationStepControllerForTest
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     // Reload the WebUI in the picker contents.
-    host()->ShowScreenInPickerContents(
+    host().ShowScreenInPickerContents(
         sync_confirmation_url_,
         base::BindOnce(
             &SyncConfirmationStepControllerForTest::OnSyncConfirmationLoaded,
@@ -228,7 +228,7 @@ class SyncConfirmationStepControllerForTest
   void OnSyncConfirmationLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
     SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
-        host()->GetPickerContents()->GetWebUI()->GetController());
+        host().GetPickerContents()->GetWebUI()->GetController());
 
     sync_confirmation_ui->InitializeMessageHandlerWithBrowser(nullptr);
 

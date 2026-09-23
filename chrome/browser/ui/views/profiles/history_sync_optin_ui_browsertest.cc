@@ -128,7 +128,7 @@ class HistorySyncOptinStepControllerForTest
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     // Reload the WebUI in the picker contents.
-    host()->ShowScreenInPickerContents(
+    host().ShowScreenInPickerContents(
         history_sync_optin_url_,
         base::BindOnce(
             &HistorySyncOptinStepControllerForTest::OnHistorySyncOptinLoaded,
@@ -139,7 +139,7 @@ class HistorySyncOptinStepControllerForTest
       StepSwitchFinishedCallback step_shown_callback) {
     HistorySyncOptinUI* history_sync_optin_ui =
         static_cast<HistorySyncOptinUI*>(
-            host()->GetPickerContents()->GetWebUI()->GetController());
+            host().GetPickerContents()->GetWebUI()->GetController());
 
     history_sync_optin_ui->Initialize(
         /*browser=*/nullptr,

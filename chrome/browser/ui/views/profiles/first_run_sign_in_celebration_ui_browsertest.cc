@@ -51,7 +51,7 @@ class SignInCelebrationStepControllerForTest
 
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
-    host()->ShowScreenInPickerContents(
+    host().ShowScreenInPickerContents(
         GURL(chrome::kChromeUIIntroURL)
             .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage),
         base::BindOnce(
@@ -61,7 +61,7 @@ class SignInCelebrationStepControllerForTest
 
   void OnCelebrationLoaded(StepSwitchFinishedCallback step_shown_callback) {
     auto* intro_ui = host()
-                         ->GetPickerContents()
+                         .GetPickerContents()
                          ->GetWebUI()
                          ->GetController()
                          ->GetAs<IntroUI>();

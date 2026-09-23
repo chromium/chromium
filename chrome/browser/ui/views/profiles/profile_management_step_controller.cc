@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,24 +54,24 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
         base::BindOnce(std::move(step_shown_callback.value()), true);
     if (!loaded_ui_in_picker_contents_) {
       loaded_ui_in_picker_contents_ = true;
-      host()->ShowScreenInPickerContents(initial_url_,
-                                         std::move(step_shown_success));
+      host().ShowScreenInPickerContents(initial_url_,
+                                        std::move(step_shown_success));
       return;
     }
 
     if (reset_state) {
       // Don't do a full reset, just go back to the beginning of the history:
-      host()->GetPickerContents()->GetController().GoToIndex(0);
+      host().GetPickerContents()->GetController().GoToIndex(0);
     }
-    host()->ShowScreenInPickerContents(GURL(), std::move(step_shown_success));
+    host().ShowScreenInPickerContents(GURL(), std::move(step_shown_success));
   }
 
   bool CanNavigateBack() const override {
-    return CanNavigateBackInternal(host()->GetPickerContents());
+    return CanNavigateBackInternal(host().GetPickerContents());
   }
 
   void OnNavigateBackRequested() override {
-    NavigateBackInternal(host()->GetPickerContents());
+    NavigateBackInternal(host().GetPickerContents());
   }
 
  private:
@@ -103,7 +104,7 @@ class SignInStepController : public ProfileManagementStepController {
   }
 
   void OnHidden() override {
-    host()->SetNativeToolbarSigninButtonsVisible(false);
+    host().SetNativeToolbarSigninButtonsVisible(false);
     // We don't reset the provider when we navigate back as we want to keep this
     // page and the ephemeral profile around for performance reasons.
     // The caller should delete the step if clearing the provider is needed.
@@ -165,7 +166,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
             bool reset_state) override {
     // First, stop showing `contents_` to free it up so it can be moved to a new
     // browser window.
-    host()->ShowScreenInPickerContents(
+    host().ShowScreenInPickerContents(
         GURL(url::kAboutBlankURL),
         /*navigation_finished_closure=*/
         base::BindOnce(&FinishSamlSignInStepController::OnSignInContentsFreedUp,
@@ -336,9 +337,9 @@ class SearchEngineChoiceStepController
     search_engine_choice_dialog_service_->RecordChoiceScreenEvent(
         choice_screen_event);
 
-    host()->ShowScreen(web_contents_,
-                       GURL(chrome::kChromeUISearchEngineChoiceURL),
-                       std::move(navigation_finished_closure));
+    host().ShowScreen(web_contents_,
+                      GURL(chrome::kChromeUISearchEngineChoiceURL),
+                      std::move(navigation_finished_closure));
   }
 
  private:
@@ -427,9 +428,9 @@ class DeviceSignalsDisclaimerStepController
         },
         std::move(step_shown_callback.value()), web_contents_.get());
 
-    host()->ShowScreen(web_contents_.get(),
-                       GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
-                       std::move(navigation_finished_closure));
+    host().ShowScreen(web_contents_.get(),
+                      GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+                      std::move(navigation_finished_closure));
   }
 
  private:
@@ -517,7 +518,7 @@ ProfileManagementStepController::CreateForDeviceSignalsDisclaimer(
 
 ProfileManagementStepController::ProfileManagementStepController(
     ProfilePickerWebContentsHost* host)
-    : host_(host) {}
+    : host_(CHECK_DEREF(host)) {}
 
 ProfileManagementStepController::~ProfileManagementStepController() = default;
 

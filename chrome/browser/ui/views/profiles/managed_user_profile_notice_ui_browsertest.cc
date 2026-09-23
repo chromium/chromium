@@ -116,13 +116,13 @@ class ManagedUserProfileNoticeStepControllerForTest
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     ManagedUserProfileNoticeParams::CreateForWebContents(
-        host()->GetPickerContents(),
+        host().GetPickerContents(),
         /*browser=*/nullptr,
         ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
         CreateEnterpriseProfileCreationDialogParams(account_info_));
 
     // Reload the WebUI in the picker contents.
-    host()->ShowScreenInPickerContents(
+    host().ShowScreenInPickerContents(
         managed_user_notice_url_,
         base::BindOnce(&ManagedUserProfileNoticeStepControllerForTest::
                            OnManagedUserProfileNoticeLoaded,

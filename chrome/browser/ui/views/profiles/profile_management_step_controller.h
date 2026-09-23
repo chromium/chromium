@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_STEP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_STEP_CONTROLLER_H_
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -133,10 +136,10 @@ class ProfileManagementStepController {
   // before.
   void NavigateBackInternal(content::WebContents* contents);
 
-  ProfilePickerWebContentsHost* host() const { return host_; }
+  ProfilePickerWebContentsHost& host() const { return *host_; }
 
  private:
-  raw_ptr<ProfilePickerWebContentsHost> host_;
+  raw_ref<ProfilePickerWebContentsHost> host_;
 
   base::OnceClosure pop_step_callback_;
 };

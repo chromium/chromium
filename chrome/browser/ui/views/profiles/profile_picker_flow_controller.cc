@@ -299,7 +299,7 @@ class ReauthFlowStepController : public ProfileManagementStepController {
   }
 
   void OnHidden() override {
-    host()->SetNativeToolbarSigninButtonsVisible(false);
+    host().SetNativeToolbarSigninButtonsVisible(false);
   }
 
   bool CanNavigateBack() const override {
