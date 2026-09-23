@@ -64,25 +64,10 @@ BASE_FEATURE(kWebAuthUseNativeWinApi,
 // when actor mode is on.
 BASE_FEATURE(kWebAuthnActorCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnICloudKeychainForGoogle,
-             "WebAuthenticationICloudKeychainForGoogle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnICloudKeychainForActiveWithDrive,
-             "WebAuthenticationICloudKeychainForActiveWithDrive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthnICloudKeychainForActiveWithoutDrive,
              "WebAuthenticationICloudKeychainForActiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive,
-             "WebAuthenticationICloudKeychainForInactiveWithDrive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,

@@ -1172,26 +1172,15 @@ bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
   if (preference.has_value()) {
     return *preference;
   }
-  const base::Feature* feature;
-  if (request_is_for_google_com) {
-    feature = &device::kWebAuthnICloudKeychainForGoogle;
-  } else {
-    if (is_active_profile_authenticator_user) {
-      if (has_icloud_drive_enabled) {
-        feature = &device::kWebAuthnICloudKeychainForActiveWithDrive;
-      } else {
-        feature = &device::kWebAuthnICloudKeychainForActiveWithoutDrive;
-      }
-    } else {
-      if (has_icloud_drive_enabled) {
-        feature = &device::kWebAuthnICloudKeychainForInactiveWithDrive;
-      } else {
-        feature = &device::kWebAuthnICloudKeychainForInactiveWithoutDrive;
-      }
-    }
+  // Requests for google.com and users with iCloud Drive enabled have
+  // defaulted to iCloud Keychain since M118.
+  if (request_is_for_google_com || has_icloud_drive_enabled) {
+    return true;
   }
-
-  return base::FeatureList::IsEnabled(*feature);
+  return base::FeatureList::IsEnabled(
+      is_active_profile_authenticator_user
+          ? device::kWebAuthnICloudKeychainForActiveWithoutDrive
+          : device::kWebAuthnICloudKeychainForInactiveWithoutDrive);
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureNSWindow(
