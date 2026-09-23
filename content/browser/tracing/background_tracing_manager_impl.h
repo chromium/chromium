@@ -14,6 +14,7 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 #include "services/tracing/public/cpp/background_tracing/tracing_agent_observer_manager.h"
@@ -53,7 +54,7 @@ class BackgroundTracingManagerImpl
       delete;
 
   // Callable from any thread.
-  static void ActivateForProcess(int child_process_id,
+  static void ActivateForProcess(content::ChildProcessId child_process_id,
                                  mojom::ChildProcess* child_process);
 
   // tracing::BackgroundTracingManager implementation:
@@ -92,10 +93,10 @@ class BackgroundTracingManagerImpl
 
  private:
   static void AddPendingAgent(
-      int child_process_id,
+      content::ChildProcessId child_process_id,
       mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
           provider);
-  static void ClearPendingAgent(int child_process_id);
+  static void ClearPendingAgent(content::ChildProcessId child_process_id);
   void MaybeConstructPendingAgents() override;
 
   std::unique_ptr<TracingDelegate> delegate_;
@@ -108,7 +109,8 @@ class BackgroundTracingManagerImpl
                    SetExperimental>>
       agent_observers_;
 
-  std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
+  std::map<content::ChildProcessId,
+           mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
 
   base::WeakPtrFactory<BackgroundTracingManagerImpl> weak_factory_{this};

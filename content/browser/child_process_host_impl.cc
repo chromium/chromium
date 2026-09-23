@@ -260,11 +260,6 @@ uint64_t ChildProcessHostImpl::ChildProcessIdToTracingProcessId(
          1;
 }
 
-uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
-    int child_process_id) {
-  return ChildProcessIdToTracingProcessId(ChildProcessId(child_process_id));
-}
-
 void ChildProcessHostImpl::Ping(PingCallback callback) {
   std::move(callback).Run();
 }

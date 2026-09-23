@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_AGENT_CLIENT_IMPL_H_
 
 #include <optional>
+
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 
@@ -15,7 +17,7 @@ class BackgroundTracingAgentClientImpl
     : public tracing::mojom::BackgroundTracingAgentClient {
  public:
   static void Create(
-      int child_process_id,
+      content::ChildProcessId child_process_id,
       mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider);
 
   BackgroundTracingAgentClientImpl(const BackgroundTracingAgentClientImpl&) =

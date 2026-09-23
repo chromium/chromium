@@ -1772,11 +1772,13 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 
   InitializeChannelProxy();
 
-  const int id = GetDeprecatedID();
+  const content::ChildProcessId id = GetID();
   const uint64_t tracing_id =
-      ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(id);
+      ChildProcessHostImpl::ChildProcessIdToTracingProcessId(id);
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   gpu_client_ = std::make_unique<viz::GpuClient>(
-      std::make_unique<BrowserGpuClientDelegate>(), id, tracing_id,
+      std::make_unique<BrowserGpuClientDelegate>(), id.GetUnsafeValue(),
+      tracing_id,
       /*enable_extra_handles_validation=*/false, GetUIThreadTaskRunner({}));
 }
 
@@ -2180,7 +2182,7 @@ bool RenderProcessHostImpl::Init() {
 
     // In single process mode, browser-side tracing and memory will cover the
     // whole process including renderers.
-    BackgroundTracingManagerImpl::ActivateForProcess(GetDeprecatedID(),
+    BackgroundTracingManagerImpl::ActivateForProcess(GetID(),
                                                      child_process_.get());
 
     fast_shutdown_started_ = false;
@@ -5617,8 +5619,9 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
   CHECK(shared_memory_config.has_value());
 
   // Create the shared memory region and allocator.
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   auto shared_memory = base::HistogramSharedMemory::Create(
-      GetDeprecatedID(), shared_memory_config.value());
+      GetID().GetUnsafeValue(), shared_memory_config.value());
   if (shared_memory.has_value()) {
     metrics_memory_region_ =
         MakeRefCounted<base::RefCountedData<base::UnsafeSharedMemoryRegion>>(

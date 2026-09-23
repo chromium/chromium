@@ -16,16 +16,16 @@ namespace content {
 
 // static
 void BackgroundTracingAgentClientImpl::Create(
-    int child_process_id,
+    content::ChildProcessId child_process_id,
     mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider) {
   mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
 
   mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent;
 
-  provider->Create(ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
-                       child_process_id),
-                   std::move(client), agent.BindNewPipeAndPassReceiver());
+  provider->Create(
+      ChildProcessHostImpl::ChildProcessIdToTracingProcessId(child_process_id),
+      std::move(client), agent.BindNewPipeAndPassReceiver());
 
   // Lifetime bound to the agent, which means it is bound to the lifetime of
   // the child process. Will be cleaned up when the process exits.

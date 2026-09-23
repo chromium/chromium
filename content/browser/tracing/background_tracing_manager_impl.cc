@@ -44,7 +44,7 @@ BackgroundTracingManagerImpl& BackgroundTracingManagerImpl::GetInstance() {
 
 // static
 void BackgroundTracingManagerImpl::ActivateForProcess(
-    int child_process_id,
+    content::ChildProcessId child_process_id,
     mojom::ChildProcess* child_process) {
   // NOTE: Called from any thread.
 
@@ -171,7 +171,7 @@ void BackgroundTracingManagerImpl::RemoveAgentObserver(
 
 // static
 void BackgroundTracingManagerImpl::AddPendingAgent(
-    int child_process_id,
+    content::ChildProcessId child_process_id,
     mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
         pending_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance().sequence_checker_);
@@ -188,7 +188,8 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
 }
 
 // static
-void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
+void BackgroundTracingManagerImpl::ClearPendingAgent(
+    content::ChildProcessId child_process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance().sequence_checker_);
   GetInstance().pending_agents_.erase(child_process_id);
 }
