@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
@@ -51,7 +53,7 @@ TEST(TaskAnnotatorTest, QueueAndRunTask) {
 // Test task annotator integration in base APIs and ensuing support for
 // backtraces. Tasks posted across multiple threads in this test fixture should
 // be synchronized as BeforeRunTask() and VerifyTraceAndPost() assume tasks are
-// observed in lock steps, one at a time.
+// observed in lock steps, one at a time, on a given thread.
 class TaskAnnotatorBacktraceIntegrationTest
     : public ::testing::Test,
       public TaskAnnotator::ObserverForTesting {
@@ -69,10 +71,18 @@ class TaskAnnotatorBacktraceIntegrationTest
 
   // TaskAnnotator::ObserverForTesting:
   void BeforeRunTask(const PendingTask* pending_task) override {
-    AutoLock auto_lock(on_before_run_task_lock_);
-    last_posted_from_ = pending_task->posted_from;
-    last_task_backtrace_ = pending_task->task_backtrace;
-    last_ipc_hash_ = pending_task->ipc_hash;
+    // This hook is invoked for every task run in the process, including tasks
+    // that are unrelated to this test (e.g. ThreadPool internal tasks running
+    // on its service thread). It is however always invoked on the thread that
+    // is about to run |pending_task|, immediately before it runs, so keying
+    // the observed state by thread guarantees that VerifyTraceAndPost() below
+    // reads the state of the very task it runs in, no matter what other
+    // threads are up to.
+    AutoLock auto_lock(last_task_state_lock_);
+    TaskState& state = last_task_state_[PlatformThread::CurrentId()];
+    state.posted_from = pending_task->posted_from;
+    state.task_backtrace = pending_task->task_backtrace;
+    state.ipc_hash = pending_task->ipc_hash;
   }
 
   void SetUp() override { TaskAnnotator::RegisterObserverForTesting(this); }
@@ -87,16 +97,18 @@ class TaskAnnotatorBacktraceIntegrationTest
                           OnceClosure task) {
     SCOPED_TRACE(StringPrintf("Callback Depth: %zu", expected_trace.size()));
 
-    EXPECT_EQ(posted_from, last_posted_from_);
-    for (size_t i = 0; i < last_task_backtrace_.size(); i++) {
+    const TaskState state = GetLastTaskStateForCurrentThread();
+
+    EXPECT_EQ(posted_from, state.posted_from);
+    for (size_t i = 0; i < state.task_backtrace.size(); i++) {
       SCOPED_TRACE(StringPrintf("Trace frame: %zu", i));
       if (i < expected_trace.size()) {
-        EXPECT_EQ(expected_trace[i], last_task_backtrace_[i]);
+        EXPECT_EQ(expected_trace[i], state.task_backtrace[i]);
       } else {
-        EXPECT_EQ(nullptr, last_task_backtrace_[i]);
+        EXPECT_EQ(nullptr, state.task_backtrace[i]);
       }
     }
-    EXPECT_EQ(expected_ipc_hash, last_ipc_hash_);
+    EXPECT_EQ(expected_ipc_hash, state.ipc_hash);
 
     task_runner->PostTask(next_from_here, std::move(task));
   }
@@ -127,11 +139,9 @@ class TaskAnnotatorBacktraceIntegrationTest
       WaitableEvent* wait_before_next_task) {
     DCHECK(wait_before_next_task);
 
-    // Need to lock to ensure the upcoming VerifyTraceAndPost() runs before the
-    // BeforeRunTask() hook for the posted WaitableEvent::Wait(). Otherwise the
-    // upcoming VerifyTraceAndPost() will race to read the state saved in the
-    // BeforeRunTask() hook preceding the current task.
-    AutoLock auto_lock(on_before_run_task_lock_);
+    // The BeforeRunTask() hook for the posted WaitableEvent::Wait() runs on
+    // |task_runner|'s thread, i.e. not on the thread running the upcoming
+    // VerifyTraceAndPost(), and hence cannot interfere with it.
     task_runner->PostTask(FROM_HERE,
                           wait_before_next_task->GetWaitCallbackForTesting());
     VerifyTraceAndPost(task_runner, posted_from, next_from_here, expected_trace,
@@ -145,18 +155,28 @@ class TaskAnnotatorBacktraceIntegrationTest
   }
 
  private:
-  // While calls to VerifyTraceAndPost() are strictly ordered in tests below
-  // (and hence non-racy), some helper methods (e.g. Wait/Signal) do racily call
-  // into BeforeRunTask(). This Lock ensures these unobserved writes are not
-  // racing. Locking isn't required on read per the VerifyTraceAndPost()
-  // themselves being ordered.
-  Lock on_before_run_task_lock_;
+  // State captured in BeforeRunTask() for the task about to run on a given
+  // thread.
+  struct TaskState {
+    Location posted_from;
+    std::array<const void*, PendingTask::kTaskBacktraceLength> task_backtrace =
+        {};
+    uint32_t ipc_hash = 0;
+  };
 
-  Location last_posted_from_;
-  std::array<const void*, PendingTask::kTaskBacktraceLength>
-      last_task_backtrace_ = {};
+  TaskState GetLastTaskStateForCurrentThread() {
+    AutoLock auto_lock(last_task_state_lock_);
+    return last_task_state_[PlatformThread::CurrentId()];
+  }
 
-  uint32_t last_ipc_hash_ = 0;
+  // BeforeRunTask() is invoked from every thread running tasks in this process
+  // while this observer is registered. This Lock protects |last_task_state_|
+  // from concurrent access by these threads.
+  Lock last_task_state_lock_;
+
+  // Last state observed in BeforeRunTask(), per thread.
+  flat_map<PlatformThreadId, TaskState> last_task_state_
+      GUARDED_BY(last_task_state_lock_);
 };
 
 // Ensure the task backtrace populates correctly.

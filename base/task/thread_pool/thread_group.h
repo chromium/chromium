@@ -87,6 +87,9 @@ class BASE_EXPORT ThreadGroup {
   // `synchronous_thread_start_for_testing` is true if this ThreadGroup should
   // synchronously wait for OnMainEntry() after starting each worker. Can only
   // be called once. CHECKs on failure.
+  // Note: Under kAsyncThreadPoolInit, the initial threads are created
+  // asynchronously on `service_thread_task_runner` rather than on the calling
+  // thread.
   virtual void Start(
       size_t max_tasks,
       size_t max_best_effort_tasks,

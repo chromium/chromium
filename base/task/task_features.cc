@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/base_export.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
@@ -65,5 +66,7 @@ BASE_FEATURE_PARAM(TimeDelta,
                    Milliseconds(1200));
 
 BASE_FEATURE(kInheritTaskImportanceByDefault, FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAsyncThreadPoolInit, FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace base

@@ -60,6 +60,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // when TaskPriority isn't otherwise specified.
 BASE_EXPORT BASE_DECLARE_FEATURE(kInheritTaskImportanceByDefault);
 
+// Under this feature, thread pool initialization creates various thread groups'
+// initial threads asynchronously on the service thread instead of synchronously
+// on UI thread.
+BASE_EXPORT BASE_DECLARE_FEATURE(kAsyncThreadPoolInit);
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

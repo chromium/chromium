@@ -5,9 +5,12 @@
 #include "base/task/thread_pool/thread_group_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string_view>
 
+#include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/thread_group_profiler.h"
@@ -16,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/common/checked_lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/threading/platform_thread_metrics.h"
@@ -310,8 +314,8 @@ void ThreadGroupImpl::Start(
           ? kThreadPoolForegroundBlockedWorkersPollParam.Get()
           : kBackgroundBlockedWorkersPoll;
 
+  auto executor = std::make_unique<ScopedCommandsExecutor>(this);
   {
-    ScopedCommandsExecutor executor(this);
     CheckedAutoLock auto_lock(lock_);
 
     ThreadGroup::StartImplLockRequired(
@@ -321,11 +325,21 @@ void ThreadGroupImpl::Start(
         synchronous_thread_start_for_testing);
 
     DCHECK(workers_.empty());
-    EnsureEnoughWorkersLockRequired(&executor);
+    EnsureEnoughWorkersLockRequired(executor.get());
 
     if (ThreadGroupProfiler::IsProfilingEnabled()) {
       thread_group_profiler_.emplace(thread_group_type_, this);
     }
+  }
+
+  // Destroying the executor starts the initial workers, which is expensive
+  // because it creates threads. Do this on the service thread to avoid
+  // blocking the calling thread. Note that the executor must be destroyed
+  // outside of `lock_` in either case.
+  if (FeatureList::IsEnabled(kAsyncThreadPoolInit)) {
+    service_thread_task_runner->DeleteSoon(FROM_HERE, std::move(executor));
+  } else {
+    executor.reset();
   }
 
   if (thread_group_profiler_) {
