@@ -29,7 +29,7 @@ suite('TopToolbarTest', () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: false,
       contextualTasksEnableSpatialModelToolbarLayout: false,
-      contextualTasksUnboundedMenuEnabled: true,
+      contextualTasksUnboundedMenuEnabled: false,
       contextualTasksSidePanelRearchitectureEnabled: false,
     });
   });
@@ -872,33 +872,23 @@ suite('TopToolbarTest', () => {
     assertFalse(overflowMenuButton.classList.contains('active'));
 
     const menu = topToolbar.$.overflowMenu.get();
-    let showUnboundedCalled = false;
-    let hideUnboundedCalled = false;
+    // Stubbed so the test never depends on real platform surface support.
+    // The unbounded lifecycle itself is covered by unbounded_menu_test.ts.
     const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
-    dialogEl.showUnboundedElement = () => {
-      showUnboundedCalled = true;
-      return Promise.resolve();
-    };
-    dialogEl.hideUnboundedElement = () => {
-      hideUnboundedCalled = true;
-      return Promise.resolve();
-    };
+    dialogEl.showUnboundedElement = () => Promise.resolve();
+    dialogEl.hideUnboundedElement = () => Promise.resolve();
 
     // Open overflow menu
     overflowMenuButton.click();
     await microtasksFinished();
 
     assertTrue(overflowMenuButton.classList.contains('active'));
-    assertTrue(showUnboundedCalled);
-    assertTrue(dialogEl.hasAttribute('unbounded'));
 
     // Close overflow menu
     menu.close();
     await microtasksFinished();
 
     assertFalse(overflowMenuButton.classList.contains('active'));
-    assertTrue(hideUnboundedCalled);
-    assertFalse(dialogEl.hasAttribute('unbounded'));
   });
 
   test('closes overflow menu when the side panel loses focus', async () => {

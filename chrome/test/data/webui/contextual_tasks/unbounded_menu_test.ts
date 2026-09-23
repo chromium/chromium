@@ -95,9 +95,12 @@ suite('UnboundedMenuTest', () => {
       await microtasksFinished();
 
       assertTrue(hideUnboundedCalled, 'hideUnboundedCalled should be true');
-      assertFalse(
+      // The `unbounded` attribute stays in sync with the menu's unbounded mode,
+      // which remains enabled after close. hideUnboundedElement() tears down
+      // the native surface.
+      assertTrue(
           dialogEl.hasAttribute('unbounded'),
-          'dialogEl should not have unbounded attribute');
+          'dialogEl should have unbounded attribute');
 
       const [tabId, url] =
           await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
@@ -170,7 +173,50 @@ suite('UnboundedMenuTest', () => {
       menu.close();
       await microtasksFinished();
       assertTrue(hideUnboundedCalled);
-      assertFalse(dialogEl.hasAttribute('unbounded'));
+      // The `unbounded` attribute stays in sync with the menu's unbounded mode,
+      // which remains enabled after close. hideUnboundedElement() tears down
+      // the native surface.
+      assertTrue(dialogEl.hasAttribute('unbounded'));
+    });
+
+    test('stays usable when unbounded API is unsupported', async () => {
+      const original =
+          (HTMLElement.prototype as unknown as
+           Record<string, unknown>)['showUnboundedElement'];
+      delete (
+          HTMLElement.prototype as unknown as
+          Record<string, unknown>)['showUnboundedElement'];
+
+      try {
+        const moreButton =
+            topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+                '#overflowMenuButton');
+        assertTrue(!!moreButton);
+        moreButton.click();
+        await microtasksFinished();
+
+        const menu = topToolbar.$.overflowMenu.get();
+        const dialogEl = menu.$.menu.getDialog();
+        // Regression test for b/560101585. If the platform does not support
+        // unbounded elements (e.g. Android < U), showAt() must open the menu
+        // as a normal bounded menu without setting 'unbounded'.
+        assertFalse(
+            dialogEl.hasAttribute('unbounded'),
+            'unbounded attribute should not be set when API is unsupported');
+        const crActionMenu = menu.shadowRoot.querySelector<CrActionMenuElement>(
+            'cr-action-menu');
+        assertTrue(!!crActionMenu);
+        assertTrue(crActionMenu.open, 'menu should remain open');
+        assertTrue(
+            dialogEl.checkVisibility({visibilityProperty: true}),
+            'menu should still be visible');
+        menu.close();
+      } finally {
+        if (original !== undefined) {
+          (HTMLElement.prototype as unknown as
+           Record<string, unknown>)['showUnboundedElement'] = original;
+        }
+      }
     });
   });
 });
