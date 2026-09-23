@@ -2,17 +2,7 @@
     "libs/com_android_tools_common",
     "libs/com_android_tools_layoutlib_layoutlib_api",
     "libs/com_android_tools_sdk_common",
-    "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework",
-    "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
-    "libs/net_bytebuddy_byte_buddy",
-    "libs/net_bytebuddy_byte_buddy_agent",
-    "libs/org_ccil_cowan_tagsoup_tagsoup",
     "libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime",
-    "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime",
-    "libs/org_jsoup_jsoup",
-    "libs/org_mockito_mockito_android",
-    "libs/org_mockito_mockito_core",
-    "libs/org_mockito_mockito_subclass",
-    "libs/org_objenesis_objenesis"
+    "libs/org_jetbrains_kotlin_kotlin_parcelize_runtime"
 ]
