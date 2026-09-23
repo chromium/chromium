@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STUDIES_HATS_SURVEYS_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STUDIES_HATS_SURVEYS_UTIL_H_
 
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <string>

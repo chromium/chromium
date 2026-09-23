@@ -19,6 +19,9 @@ class AutofillAiManagerTestApi {
       : manager_(CHECK_DEREF(manager)) {}
 
   AutofillAiLogger& logger() { return manager_->logger_; }
+  RecentUserAutofillAiInteractionsForHats& user_suggestion_interactions() {
+    return manager_->user_suggestion_interactions_per_form_;
+  }
 
  private:
   raw_ref<AutofillAiManager> manager_;

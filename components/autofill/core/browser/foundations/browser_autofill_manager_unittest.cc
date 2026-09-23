@@ -89,6 +89,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
@@ -209,6 +210,7 @@ using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
+using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
@@ -631,6 +633,11 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
               (FillingProduct, const HatsSurveyStringData&),
+              (override));
+  MOCK_METHOD(void,
+              TriggerPersonalizationAndTrustSurveys,
+              (FillingProduct filling_product,
+               const HatsSurveyStringData& field_filling_stats_data),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(bool,
@@ -7598,6 +7605,193 @@ TEST_F(
       base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+// Tests that the personalization and trust survey for address autofill is
+// not triggered after submitting an address form with less than three fields.
+TEST_F(BrowserAutofillManagerTest,
+       PersonalizationAndTrust_AddressForm_DoNotTriggerSurvey) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPersonalizationAndTrustAddressSurvey);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"}}});
+
+  FormsSeen({form});
+  FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys)
+      .Times(0);
+
+  FormSubmitted(response_data);
+}
+
+// Tests that the personalization and trust survey for address autofill is
+// triggered after submitting an address form and that the collected PSD is
+// correct.
+TEST_F(BrowserAutofillManagerTest,
+       PersonalizationAndTrust_AddressForm_TriggerSurvey) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPersonalizationAndTrustAddressSurvey);
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"}}});
+
+  FormsSeen({form});
+  FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+
+  FastForwardBy(base::Milliseconds(42500));
+
+  const HatsSurveyStringData expected_field_filling_stats_data = {
+      {"All field types",
+       "NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2"},
+      {"Total number of fields in form", "4"},
+      {"Number of correctly filled fields", "4"},
+      {"Number of fields that were submitted empty without filling", "0"},
+      {"Number of fields that were modified after filling", "0"},
+      {"Number of fields that were cleared after filling", "0"},
+      {"Number of fields that were manually filled without filling", "0"},
+      {"Filling products used", "Address"},
+      {"AutofillAi entity record types used", ""},
+      {"AutofillAi entity types used", ""},
+      {"Time since last Autofill use", "42"}};
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kAddress), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kAddress,
+                                     Not(expected_field_filling_stats_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kAddress, expected_field_filling_stats_data));
+
+  FormSubmitted(response_data);
+}
+
+// Tests that when both Autofill AI and Address personalization surveys are
+// eligible, the Autofill AI survey takes precedence and is triggered instead of
+// Address.
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       PersonalizationAndTrust_AutofillAiPrecedenceOverAddresses) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillPersonalizationAndTrustAddressSurvey,
+       features::kAutofillPersonalizationAndTrustAutofillAiSurvey},
+      /*disabled_features=*/{});
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+                  {.autocomplete_attribute = "passport-number"}}});
+
+  FormsSeen({form});
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  form_structure->field(4)->SetTypeTo(AutofillType(PASSPORT_NUMBER),
+                                      std::nullopt);
+
+  // Fill address fields.
+  FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+
+  const HatsSurveyStringData expected_first_survey_data = {
+      {"All field types",
+       "NAME_LAST, EMAIL_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, "
+       "PASSPORT_NUMBER"},
+      {"Total number of fields in form", "5"},
+      {"Number of correctly filled fields", "3"},
+      {"Number of fields that were submitted empty without filling", "2"},
+      {"Number of fields that were modified after filling", "0"},
+      {"Number of fields that were cleared after filling", "0"},
+      {"Number of fields that were manually filled without filling", "0"},
+      {"Filling products used", "Address"},
+      {"AutofillAi entity record types used", ""},
+      {"AutofillAi entity types used", ""},
+      {"Time since last Autofill use", "0"}};
+
+  // AutofillAi was not used, should trigger Address survey.
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kAddress), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kAddress, Not(expected_first_survey_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kAddress, expected_first_survey_data));
+
+  FormSubmitted(response_data);
+
+  Mock::VerifyAndClearExpectations(&autofill_client());
+
+  // Fill the Autofill AI field.
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form.global_id(), form.fields()[4].global_id(), u"12345678",
+      FillingProduct::kAutofillAi, PASSPORT_NUMBER);
+  test_api(response_data).fields()[4].set_value(u"12345678");
+
+  // Record Autofill AI interaction for the 5th field.
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  test_api(*autofill_client().GetAutofillAiManager())
+      .user_suggestion_interactions()
+      .SuggestionsShown(*form_structure, *form_structure->field(4));
+  test_api(*autofill_client().GetAutofillAiManager())
+      .user_suggestion_interactions()
+      .SuggestionAccepted(*form_structure, {form_structure->field(4)}, entity);
+
+  test_api(response_data).fields()[0].set_value(u"new value");
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kUser);
+  test_api(response_data).fields()[1].set_value(u"another value");
+  form_structure->field(1)->AddFieldModifier(FieldModifier::kUser);
+  test_api(response_data).fields()[2].set_value(u"");
+  form_structure->field(2)->AddFieldModifier(FieldModifier::kUser);
+
+  const HatsSurveyStringData expected_second_survey_data = {
+      {"All field types",
+       "NAME_LAST, EMAIL_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, "
+       "PASSPORT_NUMBER"},
+      {"Total number of fields in form", "5"},
+      {"Number of correctly filled fields", "2"},
+      {"Number of fields that were submitted empty without filling", "0"},
+      {"Number of fields that were modified after filling", "1"},
+      {"Number of fields that were cleared after filling", "1"},
+      {"Number of fields that were manually filled without filling", "1"},
+      {"Filling products used", "Address, AutofillAi"},
+      {"AutofillAi entity record types used", "PersonalContext"},
+      {"AutofillAi entity types used", "Passport"},
+      {"Time since last Autofill use", "0"}};
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kAutofillAi), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kAutofillAi,
+                                     Not(expected_second_survey_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kAutofillAi, expected_second_survey_data));
+
+  FormSubmitted(response_data);
 }
 
 }  // namespace
