@@ -24,7 +24,7 @@
   align-items: center;
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: 4px;
   /* Keeps buttons right-aligned even when contextual entrypoint is omitted. */
   margin-inline-start: auto;
 }
