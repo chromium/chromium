@@ -301,13 +301,6 @@ class BrowserWindowFeatures {
   // Called exactly once to tear down state that depends on the window object.
   void TearDownPreBrowserWindowDestruction();
 
-  // Get the FindBarController for this browser window, creating it if it does
-  // not yet exist.
-  FindBarController* GetFindBarController();
-
-  // Returns true if a FindBarController exists for this browser window.
-  bool HasFindBarController() const;
-
   LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
   const LocationBarModel* location_bar_model() const {
     return location_bar_model_.get();

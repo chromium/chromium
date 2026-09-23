@@ -1262,14 +1262,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   actor_border_view_controller_.reset();
 }
 
-FindBarController* BrowserWindowFeatures::GetFindBarController() {
-  return find_bar_controller_.get();
-}
-
-bool BrowserWindowFeatures::HasFindBarController() const {
-  return find_bar_controller_ && find_bar_controller_->HasFindBar();
-}
-
 // static
 ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
 BrowserWindowFeatures::GetUserDataFactoryForTesting() {
