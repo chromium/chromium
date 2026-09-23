@@ -246,6 +246,91 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    public void testUnregisterSideUiContainer_DuringTransition_EndsTransition() {
+        // Arrange: Register and show a SideUiContainer.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ true,
+                        UpdateReason.SIDE_UI_REQUEST));
+        assertEquals(mRightAnchorContainer, mSideUiContainerView.getParent());
+
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        // Arrange: Start an animated close transition and leave it in progress.
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ false,
+                        UpdateReason.SIDE_UI_REQUEST));
+        verify(mSideUiObserver).onTransitionBegun(any(), any());
+        int numUpdatesCompletedBeforeUnregister = sideUiContainer.mNumOnUiUpdateCompletedReceived;
+
+        // Act: Unregister the SideUiContainer while the transition is still in progress, then let
+        // any still-pending transition work run to completion.
+        mCoordinator.unregisterSideUiContainer(sideUiContainer);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Assert: The transition was ended while the container was still registered, so the
+        // transition end callback resolved it instead of throwing a NPE. See crbug.com/557655584.
+        verify(mSideUiObserver).onTransitionEnded(any(), any());
+        assertEquals(
+                numUpdatesCompletedBeforeUnregister + 1,
+                sideUiContainer.mNumOnUiUpdateCompletedReceived);
+
+        // Assert: The container is no longer registered.
+        assertNull(mCoordinator.getSideUiContainerById(sideUiContainer.getSideUiId()));
+    }
+
+    @Test
+    public void testDestroy_DuringTransition_EndsTransition() {
+        // Arrange: Register and show a SideUiContainer.
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ true,
+                        UpdateReason.SIDE_UI_REQUEST));
+        assertEquals(mRightAnchorContainer, mSideUiContainerView.getParent());
+
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        // Arrange: Start an animated close transition and leave it in progress.
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ false,
+                        UpdateReason.SIDE_UI_REQUEST));
+        verify(mSideUiObserver).onTransitionBegun(any(), any());
+        int numUpdatesCompletedBeforeDestroy = sideUiContainer.mNumOnUiUpdateCompletedReceived;
+
+        // Act: Destroy the coordinator while the transition is still in progress, then let any
+        // still-pending transition work run to completion. Note that destroy() clears the
+        // registered containers directly rather than going through unregisterSideUiContainer().
+        mCoordinator.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Assert: The transition was ended before the registered containers were cleared, so the
+        // transition end callback resolved the container instead of throwing a NPE. See
+        // crbug.com/557655584.
+        verify(mSideUiObserver).onTransitionEnded(any(), any());
+        assertEquals(
+                numUpdatesCompletedBeforeDestroy + 1,
+                sideUiContainer.mNumOnUiUpdateCompletedReceived);
+    }
+
+    @Test
     public void testUpdateUi_AnchorSideIsLeft() {
         var sideUiContainer =
                 new TestSideUiContainer(

@@ -238,7 +238,14 @@ final class SideUiCoordinatorImpl
         // initialization, but ChromeActivity is destroyed before the async task is completed.
         //
         // Therefore, we shouldn't assert that the given SideUiContainer is already registered.
-        if (!mSideUiContainers.remove(sideUiContainer)) return;
+        if (!mSideUiContainers.contains(sideUiContainer)) return;
+
+        // End any in-progress transition before the container is removed. The transition end
+        // callback resolves containers from mSideUiContainers, so it must run while this container
+        // is still registered to avoid a NPE. See crbug.com/557655584.
+        endAnimations();
+
+        mSideUiContainers.remove(sideUiContainer);
 
         SideUiResizeHandler resizeHandler = mResizeHandlers.remove(sideUiContainer.getAnchorSide());
         if (resizeHandler != null) resizeHandler.destroyHandleView();
@@ -259,6 +266,7 @@ final class SideUiCoordinatorImpl
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        endAnimations();
         releasePersistentShowingToken();
         if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
