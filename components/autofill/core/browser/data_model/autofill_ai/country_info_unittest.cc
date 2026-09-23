@@ -10,7 +10,7 @@ namespace autofill {
 
 namespace {
 
-constexpr char kAppLocaleUS[] = "US";
+constexpr char kAppLocaleUS[] = "en-US";
 
 // Tests that we can read the country name of an object constructed with country
 // name.
