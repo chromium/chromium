@@ -137,22 +137,23 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
   }
 }
 
-bool CSSValue::HasFailedOrCanceledSubresources() const {
+bool CSSValue::HasFailedOrCanceledSubresources(ResourceFetcher* fetcher) const {
   if (IsValueList()) {
-    return To<CSSValueList>(this)->HasFailedOrCanceledSubresources();
+    return To<CSSValueList>(this)->HasFailedOrCanceledSubresources(fetcher);
   }
   if (GetClassType() == kFontFaceSrcClass) {
-    return To<CSSFontFaceSrcValue>(this)->HasFailedOrCanceledSubresources();
+    return To<CSSFontFaceSrcValue>(this)->HasFailedOrCanceledSubresources(
+        fetcher);
   }
   if (GetClassType() == kImageClass) {
-    return To<CSSImageValue>(this)->HasFailedOrCanceledSubresources();
+    return To<CSSImageValue>(this)->HasFailedOrCanceledSubresources(fetcher);
   }
   if (GetClassType() == kCrossfadeClass) {
     return To<cssvalue::CSSCrossfadeValue>(this)
-        ->HasFailedOrCanceledSubresources();
+        ->HasFailedOrCanceledSubresources(fetcher);
   }
   if (GetClassType() == kImageSetClass) {
-    return To<CSSImageSetValue>(this)->HasFailedOrCanceledSubresources();
+    return To<CSSImageSetValue>(this)->HasFailedOrCanceledSubresources(fetcher);
   }
 
   return false;

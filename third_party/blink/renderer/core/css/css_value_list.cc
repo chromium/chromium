@@ -196,9 +196,10 @@ uint32_t CSSValueList::CustomHash() const {
   return hash;
 }
 
-bool CSSValueList::HasFailedOrCanceledSubresources() const {
+bool CSSValueList::HasFailedOrCanceledSubresources(
+    ResourceFetcher* fetcher) const {
   for (const auto& value : values_) {
-    if (value->HasFailedOrCanceledSubresources()) {
+    if (value->HasFailedOrCanceledSubresources(fetcher)) {
       return true;
     }
   }

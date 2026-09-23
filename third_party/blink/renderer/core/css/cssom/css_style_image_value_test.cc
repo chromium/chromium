@@ -76,8 +76,8 @@ TEST(CSSURLImageValueTest, GetSourceImageForCanvasSetsStatus) {
   auto* url_data = MakeGarbageCollected<CSSUrlData>(
       AtomicString("https://example.com/image.png"));
   auto* css_image_value = MakeGarbageCollected<CSSImageValue>(*url_data);
-  auto* url_image_value =
-      MakeGarbageCollected<CSSURLImageValue>(*css_image_value);
+  auto* url_image_value = MakeGarbageCollected<CSSURLImageValue>(
+      *css_image_value, /*fetcher=*/nullptr);
 
   SourceImageStatus status = kNormalSourceImageStatus;
   url_image_value->GetSourceImageForCanvas(&status, gfx::SizeF(100, 100));

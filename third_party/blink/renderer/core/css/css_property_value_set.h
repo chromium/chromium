@@ -41,6 +41,7 @@ class CSSStyleDeclaration;
 class ExecutionContext;
 class ImmutableCSSPropertyValueSet;
 class MutableCSSPropertyValueSet;
+class ResourceFetcher;
 class StyleSheetContents;
 enum class CSSValueID;
 enum class SecureContextMode;
@@ -216,7 +217,7 @@ class CORE_EXPORT CSSPropertyValueSet
     return Properties() == other.Properties();
   }
 
-  bool HasFailedOrCanceledSubresources() const;
+  bool HasFailedOrCanceledSubresources(ResourceFetcher*) const;
 
   static unsigned AverageSizeInBytes();
 

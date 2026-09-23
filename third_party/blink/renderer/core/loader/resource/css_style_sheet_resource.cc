@@ -32,7 +32,9 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -229,7 +231,11 @@ StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
   if (!parsed_style_sheet_cache_) {
     return nullptr;
   }
-  if (parsed_style_sheet_cache_->HasFailedOrCanceledSubresources()) {
+  ResourceFetcher* fetcher = nullptr;
+  if (ExecutionContext* execution_context = context->GetExecutionContext()) {
+    fetcher = execution_context->Fetcher();
+  }
+  if (parsed_style_sheet_cache_->HasFailedOrCanceledSubresources(fetcher)) {
     SetParsedStyleSheetCache(nullptr);
     return nullptr;
   }

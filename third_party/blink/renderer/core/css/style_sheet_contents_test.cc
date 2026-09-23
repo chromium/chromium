@@ -75,7 +75,8 @@ TEST(StyleSheetContentsTest,
   // This test is a regression test for a CHECK failure for casting
   // StyleRuleStartingStyle to StyleRuleGroup in
   // HasFailedOrCanceledSubresources().
-  EXPECT_FALSE(style_sheet->HasFailedOrCanceledSubresources());
+  EXPECT_FALSE(style_sheet->HasFailedOrCanceledSubresources(
+      /*fetcher=*/nullptr));
 }
 
 }  // namespace blink

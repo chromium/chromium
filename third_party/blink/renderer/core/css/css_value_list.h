@@ -29,6 +29,8 @@
 
 namespace blink {
 
+class ResourceFetcher;
+
 class CORE_EXPORT CSSValueList : public CSSValue {
  public:
   using const_iterator = HeapVector<Member<const CSSValue>, 4>::const_iterator;
@@ -81,7 +83,7 @@ class CORE_EXPORT CSSValueList : public CSSValue {
 
   const CSSValueList& PopulateWithTreeScope(const TreeScope*) const;
 
-  bool HasFailedOrCanceledSubresources() const;
+  bool HasFailedOrCanceledSubresources(ResourceFetcher*) const;
 
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;

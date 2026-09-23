@@ -709,9 +709,10 @@ void MutableCSSPropertyValueSet::MergeAndOverrideOnConflict(
   }
 }
 
-bool CSSPropertyValueSet::HasFailedOrCanceledSubresources() const {
+bool CSSPropertyValueSet::HasFailedOrCanceledSubresources(
+    ResourceFetcher* fetcher) const {
   for (const CSSPropertyValue& property : Properties()) {
-    if (property.Value().HasFailedOrCanceledSubresources()) {
+    if (property.Value().HasFailedOrCanceledSubresources(fetcher)) {
       return true;
     }
   }

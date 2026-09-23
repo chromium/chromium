@@ -46,6 +46,7 @@ class CSSStyleSheetResource;
 class Document;
 class MediaQueryEvaluator;
 class Node;
+class ResourceFetcher;
 class StyleRuleBase;
 class StyleRuleFontFace;
 class RuleSet;
@@ -109,7 +110,7 @@ class CORE_EXPORT StyleSheetContents final
   const TextEncoding& Charset() const { return parser_context_->Charset(); }
 
   bool LoadCompleted() const;
-  bool HasFailedOrCanceledSubresources() const;
+  bool HasFailedOrCanceledSubresources(ResourceFetcher*) const;
 
   void SetHasSyntacticallyValidCSSHeader(bool is_valid_css);
   bool HasSyntacticallyValidCSSHeader() const {

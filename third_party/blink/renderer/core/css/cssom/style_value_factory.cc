@@ -25,10 +25,12 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -53,7 +55,8 @@ CSSStyleValue* CreateStyleValueWithoutProperty(const CSSValue& value) {
   return nullptr;
 }
 
-CSSStyleValue* CreateStyleValue(const CSSValue& value) {
+CSSStyleValue* CreateStyleValue(const CSSValue& value,
+                                ResourceFetcher* fetcher) {
   if (IsA<CSSIdentifierValue>(value) || IsA<CSSCustomIdentValue>(value) ||
       IsA<cssvalue::CSSScopedKeywordValue>(value)) {
     return CSSKeywordValue::FromCSSValue(value);
@@ -65,13 +68,15 @@ CSSStyleValue* CreateStyleValue(const CSSValue& value) {
     return MakeGarbageCollected<CSSUnsupportedColor>(*color_value);
   }
   if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
-    return MakeGarbageCollected<CSSURLImageValue>(*image_value->Clone());
+    return MakeGarbageCollected<CSSURLImageValue>(*image_value->Clone(),
+                                                  fetcher);
   }
   return nullptr;
 }
 
 CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
-                                                    const CSSValue& value) {
+                                                    const CSSValue& value,
+                                                    ResourceFetcher* fetcher) {
   // FIXME: We should enforce/document what the possible CSSValue structures
   // are for each property.
   switch (property_id) {
@@ -87,7 +92,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       // the same, we should reify as a single value.
       if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
         if (pair->First() == pair->Second() && !pair->KeepIdenticalValues()) {
-          return CreateStyleValue(pair->First());
+          return CreateStyleValue(pair->First(), fetcher);
         }
       }
       return nullptr;
@@ -100,7 +105,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
         const auto* second = DynamicTo<CSSIdentifierValue>(&pair->Second());
         if (second && second->GetValueID() == CSSValueID::kAuto) {
-          return CreateStyleValue(pair->First());
+          return CreateStyleValue(pair->First(), fetcher);
         }
       }
       return nullptr;
@@ -139,13 +144,13 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     }
     case CSSPropertyID::kClipPath: {
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       if (const auto* value_list = DynamicTo<CSSValueList>(&value)) {
         // Only single keywords are supported in level 1.
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
@@ -153,27 +158,27 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kContain:
     case CSSPropertyID::kContainerType: {
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       // Only single values are supported in level 1.
       const auto& value_list = To<CSSValueList>(value);
       if (value_list.length() == 1U) {
-        return CreateStyleValue(value_list.Item(0));
+        return CreateStyleValue(value_list.Item(0), fetcher);
       }
       return nullptr;
     }
     case CSSPropertyID::kContainerName: {
       // 'none' is stored as an identifier.
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       // A single <custom-ident> is stored as a single element list. Only
       // single values are supported in level 1.
       if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
@@ -186,15 +191,15 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
         if (value_list->length() != 1U) {
           return nullptr;
         }
-        return CreateStyleValue(value_list->Item(0));
+        return CreateStyleValue(value_list->Item(0), fetcher);
       }
-      return CreateStyleValue(value);
+      return CreateStyleValue(value, fetcher);
     }
     case CSSPropertyID::kGridAutoFlow: {
       if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
         // Only single keywords are supported in level 1.
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
@@ -205,7 +210,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kOffsetPosition:
       // offset-anchor and offset-position can be 'auto'
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
       [[fallthrough]];
     case CSSPropertyID::kObjectPosition:
@@ -216,7 +221,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (const auto* value_list = DynamicTo<CSSValueList>(&value)) {
         // Only single keywords are supported in level 1.
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
@@ -229,33 +234,33 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
         if (value_list->length() != 1U) {
           return nullptr;
         }
-        return CreateStyleValue(value_list->Item(0));
+        return CreateStyleValue(value_list->Item(0), fetcher);
       }
-      return CreateStyleValue(value);
+      return CreateStyleValue(value, fetcher);
     }
     case CSSPropertyID::kTextDecorationLine:
     case CSSPropertyID::kTextTransform: {
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       if (const auto* value_list = DynamicTo<CSSValueList>(&value)) {
         // Only single keywords are supported in level 1.
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
     }
     case CSSPropertyID::kTextIndent: {
       if (value.IsIdentifierValue() || value.IsPrimitiveValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       const auto& value_list = To<CSSValueList>(value);
       // Only single values are supported in level 1.
       if (value_list.length() == 1U) {
-        return CreateStyleValue(value_list.Item(0));
+        return CreateStyleValue(value_list.Item(0), fetcher);
       }
       return nullptr;
     }
@@ -264,7 +269,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
         // Only single values are supported in level 1.
         if (value_list->length() == 1U) {
-          return CreateStyleValue(value_list->Item(0));
+          return CreateStyleValue(value_list->Item(0), fetcher);
         }
       }
       return nullptr;
@@ -272,14 +277,14 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kWillChange: {
       // Only 'auto' is supported, which can be stored as an identifier or list.
       if (value.IsIdentifierValue()) {
-        return CreateStyleValue(value);
+        return CreateStyleValue(value, fetcher);
       }
 
       const auto& value_list = To<CSSValueList>(value);
       if (value_list.length() == 1U) {
         const auto* ident = DynamicTo<CSSIdentifierValue>(value_list.Item(0));
         if (ident && ident->GetValueID() == CSSValueID::kAuto) {
-          return CreateStyleValue(value_list.Item(0));
+          return CreateStyleValue(value_list.Item(0), fetcher);
         }
       }
       return nullptr;
@@ -292,7 +297,8 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
 }
 
 CSSStyleValue* CreateStyleValueWithProperty(CSSPropertyID property_id,
-                                            const CSSValue& value) {
+                                            const CSSValue& value,
+                                            ResourceFetcher* fetcher) {
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
 
   if (value.IsPendingSubstitutionValue()) [[unlikely]] {
@@ -310,11 +316,11 @@ CSSStyleValue* CreateStyleValueWithProperty(CSSPropertyID property_id,
   }
 
   CSSStyleValue* style_value =
-      CreateStyleValueWithPropertyInternal(property_id, value);
+      CreateStyleValueWithPropertyInternal(property_id, value, fetcher);
   if (style_value) {
     return style_value;
   }
-  return CreateStyleValue(value);
+  return CreateStyleValue(value, fetcher);
 }
 
 CSSStyleValueVector UnsupportedCSSValue(const CSSPropertyName& name,
@@ -345,9 +351,17 @@ CSSStyleValueVector StyleValueFactory::FromString(
           property_id, /*allow_important_annotation=*/false, stream,
           parser_context, parsed_properties, StyleRule::RuleType::kStyle)) {
     if (parsed_properties.size() == 1) {
+      ResourceFetcher* fetcher = nullptr;
+      ExecutionContext* execution_context =
+          parser_context->GetExecutionContext();
+      if (execution_context && !execution_context->IsWorkletGlobalScope()) {
+        // Worklet global scopes do not support subresource fetching and DCHECK
+        // in Fetcher().
+        fetcher = execution_context->Fetcher();
+      }
       const auto result = StyleValueFactory::CssValueToStyleValueVector(
           CSSPropertyName(parsed_properties[0].PropertyID()),
-          parsed_properties[0].Value());
+          parsed_properties[0].Value(), fetcher);
       // TODO(801935): Handle list-valued properties.
       if (result.size() == 1U) {
         result[0]->SetCSSText(css_text);
@@ -387,10 +401,11 @@ CSSStyleValueVector StyleValueFactory::FromString(
 
 CSSStyleValue* StyleValueFactory::CssValueToStyleValue(
     const CSSPropertyName& name,
-    const CSSValue& css_value) {
+    const CSSValue& css_value,
+    ResourceFetcher* fetcher) {
   DCHECK(!CSSProperty::IsRepeated(name));
   CSSStyleValue* style_value =
-      CreateStyleValueWithProperty(name.Id(), css_value);
+      CreateStyleValueWithProperty(name.Id(), css_value, fetcher);
   if (!style_value) {
     return MakeGarbageCollected<CSSUnsupportedStyleValue>(name, css_value);
   }
@@ -435,12 +450,13 @@ CSSStyleValueVector StyleValueFactory::CoerceStyleValuesOrStrings(
 
 CSSStyleValueVector StyleValueFactory::CssValueToStyleValueVector(
     const CSSPropertyName& name,
-    const CSSValue& css_value) {
+    const CSSValue& css_value,
+    ResourceFetcher* fetcher) {
   CSSStyleValueVector style_value_vector;
 
   CSSPropertyID property_id = name.Id();
   CSSStyleValue* style_value =
-      CreateStyleValueWithProperty(property_id, css_value);
+      CreateStyleValueWithProperty(property_id, css_value, fetcher);
   if (style_value) {
     style_value_vector.push_back(style_value);
     return style_value_vector;
@@ -465,7 +481,8 @@ CSSStyleValueVector StyleValueFactory::CssValueToStyleValueVector(
   }
 
   for (const CSSValue* inner_value : *css_value_list) {
-    style_value = CreateStyleValueWithProperty(property_id, *inner_value);
+    style_value =
+        CreateStyleValueWithProperty(property_id, *inner_value, fetcher);
     if (!style_value) {
       return UnsupportedCSSValue(name, css_value);
     }

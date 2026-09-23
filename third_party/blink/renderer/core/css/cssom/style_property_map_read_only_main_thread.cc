@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -65,6 +66,15 @@ V8UnionCSSStyleValueOrUndefined* ToV8UnionCSSStyleValueOrUndefined(
   return MakeGarbageCollected<V8UnionCSSStyleValueOrUndefined>(value);
 }
 
+ResourceFetcher* FetcherFromContext(const ExecutionContext* execution_context) {
+  // Worklet global scopes do not support subresource fetching and DCHECK in
+  // Fetcher().
+  if (!execution_context || execution_context->IsWorkletGlobalScope()) {
+    return nullptr;
+  }
+  return const_cast<ExecutionContext*>(execution_context)->Fetcher();
+}
+
 }  // namespace
 
 V8UnionCSSStyleValueOrUndefined* StylePropertyMapReadOnlyMainThread::get(
@@ -93,17 +103,19 @@ V8UnionCSSStyleValueOrUndefined* StylePropertyMapReadOnlyMainThread::get(
         ToV8UndefinedGenerator());
   }
 
+  ResourceFetcher* fetcher = FetcherFromContext(execution_context);
+
   // Custom properties count as repeated whenever we have a CSSValueList.
   if (CSSProperty::IsRepeated(*name) ||
       (name->IsCustomProperty() && value->IsValueList())) {
     CSSStyleValueVector values =
-        StyleValueFactory::CssValueToStyleValueVector(*name, *value);
+        StyleValueFactory::CssValueToStyleValueVector(*name, *value, fetcher);
     return ToV8UnionCSSStyleValueOrUndefined(values.empty() ? nullptr
                                                             : values[0]);
   }
 
   return ToV8UnionCSSStyleValueOrUndefined(
-      StyleValueFactory::CssValueToStyleValue(*name, *value));
+      StyleValueFactory::CssValueToStyleValue(*name, *value, fetcher));
 }
 
 CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
@@ -134,7 +146,8 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
     return CSSStyleValueVector();
   }
 
-  return StyleValueFactory::CssValueToStyleValueVector(*name, *value);
+  return StyleValueFactory::CssValueToStyleValueVector(
+      *name, *value, FetcherFromContext(execution_context));
 }
 
 bool StylePropertyMapReadOnlyMainThread::has(
@@ -149,11 +162,14 @@ StylePropertyMapReadOnlyMainThread::CreateIterationSource(
     ScriptState* script_state) {
   HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry> result;
 
-  ForEachProperty([&result](const CSSPropertyName& name,
-                            const CSSValue& value) {
-    auto values = StyleValueFactory::CssValueToStyleValueVector(name, value);
-    result.emplace_back(name.ToAtomicString(), std::move(values));
-  });
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  ResourceFetcher* fetcher = FetcherFromContext(execution_context);
+  ForEachProperty(
+      [&result, fetcher](const CSSPropertyName& name, const CSSValue& value) {
+        auto values =
+            StyleValueFactory::CssValueToStyleValueVector(name, value, fetcher);
+        result.emplace_back(name.ToAtomicString(), std::move(values));
+      });
 
   return MakeGarbageCollected<StylePropertyMapIterationSource>(result);
 }

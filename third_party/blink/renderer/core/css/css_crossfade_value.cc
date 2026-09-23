@@ -73,11 +73,13 @@ String CSSCrossfadeValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
-bool CSSCrossfadeValue::HasFailedOrCanceledSubresources() const {
+bool CSSCrossfadeValue::HasFailedOrCanceledSubresources(
+    ResourceFetcher* fetcher) const {
   return std::any_of(
       image_and_percentages_.begin(), image_and_percentages_.end(),
-      [](const auto& image_and_percent) {
-        return image_and_percent.first->HasFailedOrCanceledSubresources();
+      [fetcher](const auto& image_and_percent) {
+        return image_and_percent.first->HasFailedOrCanceledSubresources(
+            fetcher);
       });
 }
 

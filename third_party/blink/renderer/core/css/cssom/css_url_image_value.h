@@ -11,10 +11,12 @@
 namespace blink {
 
 class CSSImageValue;
+class ResourceFetcher;
 
 class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
  public:
-  explicit CSSURLImageValue(const CSSImageValue& value) : value_(value) {}
+  CSSURLImageValue(const CSSImageValue& value, ResourceFetcher* fetcher)
+      : value_(value), fetcher_(fetcher) {}
   CSSURLImageValue(const CSSURLImageValue&) = delete;
   CSSURLImageValue& operator=(const CSSURLImageValue&) = delete;
 
@@ -39,6 +41,7 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
   scoped_refptr<Image> GetImage() const;
 
   Member<const CSSImageValue> value_;
+  WeakMember<ResourceFetcher> fetcher_;
 };
 
 }  // namespace blink

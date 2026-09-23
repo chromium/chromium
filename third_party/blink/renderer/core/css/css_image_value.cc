@@ -39,14 +39,36 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
-
-CSSImageValue::CSSImageValue(const CSSUrlData& url_data, StyleImage* image)
-    : CSSValue(kImageClass), url_data_(url_data), cached_image_(image) {}
+CSSImageValue::CSSImageValue(const CSSUrlData& url_data,
+                             StyleImage* fetcher_agnostic_image)
+    : CSSValue(kImageClass),
+      url_data_(url_data),
+      fetcher_agnostic_image_(fetcher_agnostic_image) {}
 
 CSSImageValue::~CSSImageValue() = default;
+
+CSSImageValue* CSSImageValue::Copy(const CSSImageValue& other,
+                                   const CSSUrlData& url_data) {
+  auto* result = MakeGarbageCollected<CSSImageValue>(url_data);
+  result->fetcher_agnostic_image_ = other.fetcher_agnostic_image_;
+  result->cached_image_ = other.cached_image_;
+  result->cached_images_ = other.cached_images_;
+  result->svg_resource_ = other.svg_resource_;
+  result->svg_resources_ = other.svg_resources_;
+  return result;
+}
+
+CSSImageValue* CSSImageValue::ComputedCSSValue() const {
+  return Copy(*this, *UrlData().MakeComputed());
+}
+
+CSSImageValue* CSSImageValue::Clone() const {
+  return Copy(*this, *UrlData().MakeWithoutReferrer());
+}
 
 FetchParameters CSSImageValue::PrepareFetch(
     const Document& document,
@@ -110,60 +132,117 @@ FetchParameters CSSImageValue::PrepareFetch(
   return params;
 }
 
+bool CSSImageValue::IsCachePending(ResourceFetcher* fetcher) const {
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    if (cached_images_.Contains(fetcher)) {
+      return false;
+    }
+  } else if (cached_image_) {
+    return false;
+  }
+  return !fetcher_agnostic_image_;
+}
+
+StyleImage* CSSImageValue::CachedImage(ResourceFetcher* fetcher) const {
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    auto it = cached_images_.find(fetcher);
+    if (it != cached_images_.end()) {
+      return it->value.Get();
+    }
+  } else if (cached_image_) {
+    return cached_image_.Get();
+  }
+  return fetcher_agnostic_image_.Get();
+}
+
 StyleImage* CSSImageValue::CacheImage(Document& document,
                                       CrossOriginAttributeValue cross_origin,
                                       const float override_image_resolution) {
-  if (!cached_image_) {
-    const CSSUrlData& url_data = UrlData();
-    if (url_data.ResolvedUrl().empty()) {
-      url_data.ReResolveUrl(document);
+  ResourceFetcher* fetcher = document.Fetcher();
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    auto it = cached_images_.find(fetcher);
+    if (it != cached_images_.end()) {
+      return it->value.Get();
     }
-
-    FetchParameters params = PrepareFetch(document, cross_origin);
-    ImageResourceContent* image_content =
-        document.GetStyleEngine().CacheImageContent(params);
-    cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
-        image_content, *url_data.MakeResolvedIfDanglingMarkup(document),
-        document,
-        params.Url(), override_image_resolution);
+  } else if (cached_image_) {
+    return cached_image_.Get();
   }
-  return cached_image_.Get();
+
+  const CSSUrlData& url_data = UrlData();
+  if (url_data.ResolvedUrl().empty()) {
+    url_data.ReResolveUrl(document);
+  }
+
+  FetchParameters params = PrepareFetch(document, cross_origin);
+  ImageResourceContent* image_content =
+      document.GetStyleEngine().CacheImageContent(params);
+  StyleImage* image = MakeGarbageCollected<StyleFetchedImage>(
+      image_content, *url_data.MakeResolvedIfDanglingMarkup(document), document,
+      params.Url(), override_image_resolution);
+
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    cached_images_.Set(fetcher, image);
+  } else {
+    cached_image_ = image;
+  }
+  return image;
 }
 
 void CSSImageValue::RestoreCachedResourceIfNeeded(
     const Document& document) const {
-  if (!cached_image_ || !document.Fetcher() ||
-      UrlData().ResolvedUrl().IsNull()) {
+  ResourceFetcher* fetcher = document.Fetcher();
+  if (!fetcher || UrlData().ResolvedUrl().IsNull()) {
     return;
   }
 
-  ImageResourceContent* cached_content = cached_image_->CachedImage();
+  StyleImage* image = CachedImage(fetcher);
+  if (!image) {
+    return;
+  }
+
+  ImageResourceContent* cached_content = image->CachedImage();
   if (!cached_content) {
     return;
   }
 
   cached_content->EmulateLoadStartedForInspector(
-      document.Fetcher(), initiator_name_.empty()
-                              ? fetch_initiator_type_names::kCSS
-                              : initiator_name_);
+      fetcher, initiator_name_.empty() ? fetch_initiator_type_names::kCSS
+                                       : initiator_name_);
 }
 
-SVGResource* CSSImageValue::EnsureSVGResource() const {
-  if (!svg_resource_) {
-    svg_resource_ = MakeGarbageCollected<ExternalSVGResourceImageContent>(
-        cached_image_->CachedImage(), NormalizedFragmentIdentifier());
+SVGResource* CSSImageValue::EnsureSVGResource(ResourceFetcher* fetcher) const {
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    auto it = svg_resources_.find(fetcher);
+    if (it != svg_resources_.end()) {
+      return it->value.Get();
+    }
+  } else if (svg_resource_) {
+    return svg_resource_.Get();
   }
-  return svg_resource_.Get();
+  SVGResource* resource = MakeGarbageCollected<ExternalSVGResourceImageContent>(
+      CachedImage(fetcher)->CachedImage(), NormalizedFragmentIdentifier());
+  if (fetcher &&
+      RuntimeEnabledFeatures::StyleResourceFetcherIdentityCheckEnabled()) {
+    svg_resources_.Set(fetcher, resource);
+  } else {
+    svg_resource_ = resource;
+  }
+  return resource;
 }
 
-bool CSSImageValue::HasFailedOrCanceledSubresources() const {
-  if (!cached_image_) {
+bool CSSImageValue::HasFailedOrCanceledSubresources(
+    ResourceFetcher* fetcher) const {
+  StyleImage* image = CachedImage(fetcher);
+  if (!image) {
     return false;
   }
-  if (ImageResourceContent* cached_content = cached_image_->CachedImage()) {
-    return cached_content->LoadFailedOrCanceled();
-  }
-  return true;
+  ImageResourceContent* content = image->CachedImage();
+  return !content || content->LoadFailedOrCanceled();
 }
 
 bool CSSImageValue::Equals(const CSSImageValue& other) const {
@@ -176,8 +255,11 @@ String CSSImageValue::CustomCSSText() const {
 
 void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(url_data_);
+  visitor->Trace(fetcher_agnostic_image_);
   visitor->Trace(cached_image_);
+  visitor->Trace(cached_images_);
   visitor->Trace(svg_resource_);
+  visitor->Trace(svg_resources_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 
@@ -196,7 +278,9 @@ AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
 void CSSImageValue::ReResolveURL(const Document& document) const {
   if (UrlData().ReResolveUrl(document)) {
     cached_image_.Clear();
+    cached_images_.clear();
     svg_resource_.Clear();
+    svg_resources_.clear();
   }
 }
 

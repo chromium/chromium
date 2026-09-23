@@ -574,8 +574,9 @@ void StyleRule::WrapperRemoveRule(CSSStyleSheet* parent_sheet, unsigned index) {
   child_rules_->erase(UNSAFE_BUFFERS(child_rules_->begin() + index));
 }
 
-bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
-  return properties_ && properties_->HasFailedOrCanceledSubresources();
+bool StyleRule::PropertiesHaveFailedOrCanceledSubresources(
+    ResourceFetcher* fetcher) const {
+  return properties_ && properties_->HasFailedOrCanceledSubresources(fetcher);
 }
 
 bool StyleRule::HasParsedProperties() const {

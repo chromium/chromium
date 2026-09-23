@@ -17,6 +17,7 @@ class CSSProperty;
 class CSSPropertyName;
 class CSSValue;
 class ExecutionContext;
+class ResourceFetcher;
 class V8UnionCSSStyleValueOrString;
 
 class CORE_EXPORT StyleValueFactory {
@@ -29,9 +30,12 @@ class CORE_EXPORT StyleValueFactory {
       const String&,
       const CSSParserContext*);
   static CSSStyleValue* CssValueToStyleValue(const CSSPropertyName&,
-                                             const CSSValue&);
-  static CSSStyleValueVector CssValueToStyleValueVector(const CSSPropertyName&,
-                                                        const CSSValue&);
+                                             const CSSValue&,
+                                             ResourceFetcher* fetcher);
+  static CSSStyleValueVector CssValueToStyleValueVector(
+      const CSSPropertyName&,
+      const CSSValue&,
+      ResourceFetcher* fetcher);
   // Returns an empty vector on error conditions.
   static CSSStyleValueVector CoerceStyleValuesOrStrings(
       const CSSProperty& property,

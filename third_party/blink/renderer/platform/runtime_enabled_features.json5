@@ -6082,6 +6082,15 @@
       status: "experimental",
     },
     {
+      // When enabled, a StyleImage/FontResource cached on a (potentially
+      // shared) StyleSheetContents is keyed on the requesting document's
+      // ResourceFetcher, so a second document that shares the stylesheet
+      // re-runs its own request checks (e.g. Content Security Policy) instead
+      // of reusing the first document's already-fetched resource. crbug.com/504107363.
+      name: "StyleResourceFetcherIdentityCheck",
+      status: "stable",
+    },
+    {
       name: "StylusHandwriting",
       base_feature: "none",
     },

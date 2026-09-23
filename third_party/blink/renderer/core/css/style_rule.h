@@ -52,6 +52,7 @@ class CSSStyleSheet;
 class MixinParameterBindings;
 class ExecutionContext;
 class NavigationQuery;
+class ResourceFetcher;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -296,7 +297,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   static unsigned AverageSizeInBytes();
 
   // Helper function to avoid parsing lazy properties when not needed.
-  bool PropertiesHaveFailedOrCanceledSubresources() const;
+  bool PropertiesHaveFailedOrCanceledSubresources(ResourceFetcher*) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

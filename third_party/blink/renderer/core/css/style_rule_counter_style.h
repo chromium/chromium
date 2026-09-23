@@ -61,7 +61,7 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
     ++version_;
   }
 
-  bool HasFailedOrCanceledSubresources() const {
+  bool HasFailedOrCanceledSubresources(ResourceFetcher*) const {
     // TODO(crbug.com/1176323): Handle image symbols when we implement it.
     return false;
   }

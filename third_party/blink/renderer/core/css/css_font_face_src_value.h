@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -41,6 +42,7 @@ class CSSURIValue;
 }  // namespace cssvalue
 
 class ExecutionContext;
+class ResourceFetcher;
 
 class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
  public:
@@ -89,7 +91,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
 
   String CustomCSSText() const;
 
-  bool HasFailedOrCanceledSubresources() const;
+  bool HasFailedOrCanceledSubresources(ResourceFetcher*) const;
 
   FontResource& Fetch(ExecutionContext*, FontResourceClient*) const;
 
@@ -98,7 +100,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
-  void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
+  void RestoreCachedResourceIfNeeded(ExecutionContext*, FontResource*) const;
 
   Vector<FontTechnology> technologies_;
   Member<cssvalue::CSSURIValue> src_value_;  // Non-null if remote (src()).
@@ -106,6 +108,8 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   String format_;
   const Member<const DOMWrapperWorld> world_;
   mutable Member<FontResource> fetched_;
+  mutable HeapHashMap<WeakMember<ResourceFetcher>, Member<FontResource>>
+      fetched_resources_;
 };
 
 template <>

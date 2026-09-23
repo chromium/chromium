@@ -166,7 +166,8 @@ StyleImage* StyleImageLoader::Load(
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     StyleImage* style_image =
         ResolveImageSet(*image_set_value, cross_origin, length_resolver);
-    return image_set_value->CacheImage(style_image, device_scale_factor_);
+    return image_set_value->CacheImage(document_.Fetcher(), style_image,
+                                       device_scale_factor_);
   }
 
   NOTREACHED();
@@ -230,7 +231,7 @@ ElementStyleResources::ElementStyleResources(Element& element,
 
 bool ElementStyleResources::IsPending(const CSSValue& value) const {
   if (auto* img_value = DynamicTo<CSSImageValue>(value)) {
-    return img_value->IsCachePending();
+    return img_value->IsCachePending(element_.GetDocument().Fetcher());
   }
 
   // paint(...) is always treated as pending because it needs to call
@@ -251,7 +252,8 @@ bool ElementStyleResources::IsPending(const CSSValue& value) const {
   }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value)) {
-    return img_set_value->IsCachePending(device_scale_factor_);
+    return img_set_value->IsCachePending(element_.GetDocument().Fetcher(),
+                                         device_scale_factor_);
   }
 
   NOTREACHED();
@@ -262,7 +264,7 @@ StyleImage* ElementStyleResources::CachedStyleImage(
   DCHECK(!IsPending(value));
   if (auto* img_value = DynamicTo<CSSImageValue>(value)) {
     img_value->RestoreCachedResourceIfNeeded(element_.GetDocument());
-    return img_value->CachedImage();
+    return img_value->CachedImage(element_.GetDocument().Fetcher());
   }
 
   // Gradient functions are never pending (but don't cache StyleImages).
@@ -280,7 +282,8 @@ StyleImage* ElementStyleResources::CachedStyleImage(
   }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value)) {
-    return img_set_value->CachedImage(device_scale_factor_);
+    return img_set_value->CachedImage(element_.GetDocument().Fetcher(),
+                                      device_scale_factor_);
   }
 
   NOTREACHED();
@@ -418,7 +421,8 @@ StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
   StyleImage* image = image_value->CacheImage(element_.GetDocument(),
                                               kCrossOriginAttributeAnonymous);
   return MakeGarbageCollected<StyleMaskSourceImage>(
-      To<StyleFetchedImage>(image), image_value->EnsureSVGResource(),
+      To<StyleFetchedImage>(image),
+      image_value->EnsureSVGResource(element_.GetDocument().Fetcher()),
       image_value);
 }
 

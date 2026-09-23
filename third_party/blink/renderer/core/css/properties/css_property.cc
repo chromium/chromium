@@ -47,8 +47,11 @@ CSSProperty::CrossThreadStyleValueFromComputedStyle(
   if (!css_value) {
     return std::make_unique<CrossThreadUnsupportedValue>("");
   }
-  CSSStyleValue* style_value =
-      StyleValueFactory::CssValueToStyleValue(GetCSSPropertyName(), *css_value);
+  // There is no ResourceFetcher for a cross-thread context, but this
+  // will not cause any problems because we do not need any resources
+  // that would be gated by a ResourceFetcher.
+  CSSStyleValue* style_value = StyleValueFactory::CssValueToStyleValue(
+      GetCSSPropertyName(), *css_value, /*fetcher=*/nullptr);
   if (!style_value) {
     return std::make_unique<CrossThreadUnsupportedValue>("");
   }
