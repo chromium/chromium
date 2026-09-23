@@ -305,6 +305,12 @@ class CreditCardAccessManager
   // Helper function to fetch masked server cards.
   void FetchMaskedServerCard();
 
+  // Helper function to start the authentication for masked server cards, once
+  // it is known whether the preflight call response is available. If
+  // OnDidGetUnmaskDetails() has been invoked, `get_unmask_details_returned`
+  // should be set to true.
+  void AuthenticateForMaskedServerCard(bool get_unmask_details_returned);
+
   // Helper function to fetch virtual cards.
   void FetchVirtualCard();
 

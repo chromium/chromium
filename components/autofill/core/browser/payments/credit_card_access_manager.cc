@@ -1203,8 +1203,10 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 
   bool get_unmask_details_returned =
       ready_to_start_authentication_.IsSignaled();
+  const bool risk_based_auth_available =
+      IsMaskedServerCardRiskBasedAuthAvailable();
 
-  if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+  if (risk_based_auth_available) {
     // Preflight call response time metrics should only be logged if the user is
     // verifiable.
 #if !BUILDFLAG(IS_IOS)
@@ -1230,56 +1232,67 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
             payments_autofill_client()
                 .GetRiskBasedAuthenticator()
                 ->AsWeakPtr()));
-
-    payments_autofill_client().GetRiskBasedAuthenticator()->Authenticate(
-        *card_, GetWeakPtr());
-    // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
-    // Further delegation will be handled in
-    // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.
-    return;
-  }
-
-  // Latency metrics should only be logged if the user is verifiable.
+  } else {
+    // Latency metrics should only be logged if the user is verifiable.
 #if !BUILDFLAG(IS_IOS)
-  if (is_user_verifiable_.value_or(false)) {
-    autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
-        get_unmask_details_returned
-            ? autofill_metrics::PreflightCallEvent::
-                  kPreflightCallReturnedBeforeCardChosen
-            : autofill_metrics::PreflightCallEvent::
-                  kCardChosenBeforePreflightCallReturned,
-        GetOrCreateFidoAuthenticator()->IsUserOptedIn());
-  }
+    if (is_user_verifiable_.value_or(false)) {
+      autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
+          get_unmask_details_returned
+              ? autofill_metrics::PreflightCallEvent::
+                    kPreflightCallReturnedBeforeCardChosen
+              : autofill_metrics::PreflightCallEvent::
+                    kCardChosenBeforePreflightCallReturned,
+          GetOrCreateFidoAuthenticator()->IsUserOptedIn());
+    }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // On desktop, show the verify pending dialog for opted-in user, unless it is
-  // already known that selected card requires CVC.
-  if (IsUserOptedInToFidoAuth() &&
-      (!get_unmask_details_returned || IsSelectedCardFidoAuthorized())) {
-    ShowVerifyPendingDialog();
-  }
+    // On desktop, show the verify pending dialog for opted-in user, unless it
+    // is already known that selected card requires CVC.
+    if (IsUserOptedInToFidoAuth() &&
+        (!get_unmask_details_returned || IsSelectedCardFidoAuthorized())) {
+      ShowVerifyPendingDialog();
+    }
 #endif
+  }
 
-  bool should_wait_to_authenticate =
-      IsUserOptedInToFidoAuth() && !get_unmask_details_returned;
+  // The unmask details are only needed by the FIDO flow, which is not reached
+  // when the risk-based authentication is available.
+  const bool should_wait_for_preflight = !get_unmask_details_returned &&
+                                         !risk_based_auth_available &&
+                                         IsUserOptedInToFidoAuth();
 
-  if (should_wait_to_authenticate) {
+  if (should_wait_for_preflight) {
     card_selected_without_unmask_details_timestamp_ = base::TimeTicks::Now();
 
-    // Wait for |ready_to_start_authentication_| to be signaled by
+    // Wait for `ready_to_start_authentication_` to be signaled by
     // OnDidGetUnmaskDetails() or until timeout before calling
     // OnStopWaitingForUnmaskDetails().
     ready_to_start_authentication_.OnEventOrTimeOut(
         base::BindOnce(&CreditCardAccessManager::OnStopWaitingForUnmaskDetails,
                        GetWeakPtr()),
         kUnmaskDetailsResponseTimeout);
-  } else {
-    StartAuthenticationFlow(IsFidoAuthEnabled(
-        get_unmask_details_returned &&
-        unmask_details_.unmask_auth_method ==
-            payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
+    return;
   }
+
+  AuthenticateForMaskedServerCard(get_unmask_details_returned);
+}
+
+void CreditCardAccessManager::AuthenticateForMaskedServerCard(
+    bool get_unmask_details_returned) {
+  if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
+    // Further delegation will be handled in
+    // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.
+    payments_autofill_client().GetRiskBasedAuthenticator()->Authenticate(
+        *card_, GetWeakPtr());
+    return;
+  }
+
+  StartAuthenticationFlow(IsFidoAuthEnabled(
+      get_unmask_details_returned &&
+      unmask_details_.unmask_auth_method ==
+          payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
 }
 
 void CreditCardAccessManager::FetchVirtualCard() {
@@ -1515,10 +1528,7 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
   }
 
   // Start the authentication after the wait ends.
-  StartAuthenticationFlow(IsFidoAuthEnabled(
-      get_unmask_details_returned &&
-      unmask_details_.unmask_auth_method ==
-          payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
+  AuthenticateForMaskedServerCard(get_unmask_details_returned);
 }
 
 void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
