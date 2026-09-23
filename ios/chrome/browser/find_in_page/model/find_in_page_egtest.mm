@@ -434,11 +434,12 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 // field and that the results UI updates accordingly.
 - (void)testFindInPageCopyPaste {
   // TODO(crbug.com/360362288): Flaky on iOS 18 simulators.
+  if (!@available(iOS 26, *)) {
 #if TARGET_OS_SIMULATOR
-  if (@available(iOS 18, *)) {
     EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulators.");
-  }
 #endif
+  }
+
   [self setUpTestServersForWebPageTest];
 
   // Load test page.

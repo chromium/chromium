@@ -91,9 +91,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that the contextual panel opens correctly.
 - (void)testOpenContextualPanel {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -120,9 +118,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that the contextual panel opens correctly from an IPH.
 - (void)testOpenContextualPanelFromIPH {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -152,9 +148,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // landscape.
 - (void)testContextualPanelLandscape {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   // This test is not relevant on iPads as iPads aren't compact height in
@@ -193,9 +187,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that closing the last tab with the panel open doesn't crash.
 - (void)testCloseLastTabWithPanelOpen {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -221,9 +213,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // doesn't crash.
 - (void)testCloseLastTabBeforeLargeEntrypointAppears {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -237,13 +227,11 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // controller (full iPad layout) and the panel's custom sheet component (other
 // window open/iPhone-style layout).
 - (void)testContexutalPaneliPadMultiwindow {
+  if (!@available(iOS 26.0, *)) {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
     EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
 #endif
-
-  if (@available(iOS 26.0, *)) {
+  } else {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
     // Fails because it assumes a window will be compact after creating a new
     // window.
@@ -297,14 +285,12 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // position.
 - (void)testBottomOmniboxDisablesFullscreen {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
     EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
 #endif
 
-  if (![ChromeEarlGrey isBottomOmniboxAvailable]) {
-    EARL_GREY_TEST_SKIPPED(@"Test requires bottom omnibox");
-  }
+    if (![ChromeEarlGrey isBottomOmniboxAvailable]) {
+      EARL_GREY_TEST_SKIPPED(@"Test requires bottom omnibox");
+    }
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/long-fullscreen")];
 
@@ -342,9 +328,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // swipe.
 - (void)testContextualPanelEntrypointLargeChipDismissable {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -370,9 +354,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // orientation changes.
 - (void)testOrientationChangeDismissesIPH {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
@@ -399,9 +381,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // panel is presented modally, so the panel wouldn't close.
 - (void)testKeyboardOpenClosesPanelOniPhone {
 #if TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-  }
+  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
 #endif
 
   if ([ChromeEarlGrey isIPadIdiom]) {

@@ -333,11 +333,6 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that two accessible permissions are shown in Permissions section with
 // toggle.
 - (void)testShowTwoAccessiblePermissionsInPageInfo {
-  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
-  // 17.
-  if (!@available(iOS 18, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 17.");
-  }
   // Open a page that requests microphone permissions.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(
