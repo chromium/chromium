@@ -152,6 +152,20 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
     kServiceWorker
   };
 
+  // Controls which active (initialized, non-dead, non-spare) RenderProcessHosts
+  // are counted by GetCurrentRenderProcessCountForTesting().
+  enum class RenderProcessCountMode {
+    // Counts all initialized, non-dead, non-spare RenderProcessHosts, including
+    // processes that only host prerendered frames or currently host no frames.
+    kIncludePrerenderOnlyOrEmptyProcess,
+
+    // Excludes RenderProcessHosts that only host prerendered frames or
+    // currently host no RenderFrameHosts (i.e., where
+    // IsOnlyHostingPrerenderedFramesOrEmpty() is true, such as transient
+    // speculative/prewarm prerender processes or worker-only processes).
+    kExcludePrerenderOnlyOrEmptyProcess,
+  };
+
   // General functions ---------------------------------------------------------
 
   ~RenderProcessHost() override {}
@@ -914,8 +928,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   static void SetHungRendererAnalysisFunction(
       AnalyzeHungRendererFunction analyze_hung_renderer);
 
-  // Counts current RenderProcessHost(s), ignoring all spare processes.
-  static int GetCurrentRenderProcessCountForTesting();
+  // Counts current RenderProcessHost(s), ignoring all spare processes, and
+  // optionally ignoring processes that only host prerendered frames or no
+  // frames.
+  static int GetCurrentRenderProcessCountForTesting(
+      RenderProcessCountMode mode =
+          RenderProcessCountMode::kIncludePrerenderOnlyOrEmptyProcess);
 
   // Allows tests to override host interface binding behavior. Any interface
   // binding request which would normally pass through the RPH's internal

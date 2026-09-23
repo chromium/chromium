@@ -607,14 +607,13 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
 
 // Exercises accounting in the case where an extension has two different-site
 // web iframes.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExtensionWithTwoWebIframes DISABLED_ExtensionWithTwoWebIframes
-#else
-#define MAYBE_ExtensionWithTwoWebIframes ExtensionWithTwoWebIframes
-#endif
-IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
-                       MAYBE_ExtensionWithTwoWebIframes) {
-  size_t baseline_count = GetRenderProcessCount() - 1;
+IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, ExtensionWithTwoWebIframes) {
+  using RenderProcessCountMode =
+      content::RenderProcessHost::RenderProcessCountMode;
+  int baseline_count =
+      content::RenderProcessHost::GetCurrentRenderProcessCountForTesting(
+          RenderProcessCountMode::kExcludePrerenderOnlyOrEmptyProcess) -
+      1;
   scoped_refptr<TestMemoryDetails> details =
       base::MakeRefCounted<TestMemoryDetails>();
   details->StartFetchAndWait();
@@ -629,8 +628,12 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
   details = base::MakeRefCounted<TestMemoryDetails>();
   details->StartFetchAndWait();
   EXPECT_EQ(GetRenderProcessCountFromUma(details->uma()),
-            GetRenderProcessCount());
-  int active_processes = GetRenderProcessCount() - baseline_count;
+            content::RenderProcessHost::GetCurrentRenderProcessCountForTesting(
+                RenderProcessCountMode::kIncludePrerenderOnlyOrEmptyProcess));
+  int active_processes =
+      content::RenderProcessHost::GetCurrentRenderProcessCountForTesting(
+          RenderProcessCountMode::kExcludePrerenderOnlyOrEmptyProcess) -
+      baseline_count;
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_THAT(active_processes, DependingOnPolicy(1, 3, 3));
   } else {

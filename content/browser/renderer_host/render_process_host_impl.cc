@@ -1592,15 +1592,23 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
 }
 
 // static
-int RenderProcessHost::GetCurrentRenderProcessCountForTesting() {
-  RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+int RenderProcessHost::GetCurrentRenderProcessCountForTesting(
+    RenderProcessCountMode mode) {
   int count = 0;
-  while (!it.IsAtEnd()) {
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
     RenderProcessHost* host = it.GetCurrentValue();
-    if (host->IsInitializedAndNotDead() && !host->IsSpare()) {
-      count++;
+    if (!host->IsInitializedAndNotDead()) {
+      continue;
     }
-    it.Advance();
+    if (host->IsSpare()) {
+      continue;
+    }
+    if (mode == RenderProcessCountMode::kExcludePrerenderOnlyOrEmptyProcess &&
+        host->IsOnlyHostingPrerenderedFramesOrEmpty()) {
+      continue;
+    }
+    count++;
   }
   return count;
 }
