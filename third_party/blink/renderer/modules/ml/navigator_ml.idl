@@ -5,7 +5,8 @@
 // https://www.w3.org/TR/webnn/#api-ml
 
 [
-  RuntimeEnabled=MachineLearningNeuralNetwork
+  RuntimeEnabled=MachineLearningNeuralNetwork,
+  Exposed=(Window, DedicatedWorker)
 ] interface mixin NavigatorML {
   [SameObject, SecureContext] readonly attribute ML ml;
 };
