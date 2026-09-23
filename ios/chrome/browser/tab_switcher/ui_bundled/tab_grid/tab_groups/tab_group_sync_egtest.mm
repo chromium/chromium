@@ -60,6 +60,8 @@ NSString* const kSyncedGroup3Name = @"2RemoteGroup";
 // Displays the group cell context menu by long pressing at the group cell at
 // `group_cell_index`.
 void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
+                                                          group_cell_index)];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
       performAction:grey_longPress()];
 }
@@ -149,8 +151,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:TabGroupsPanel()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupsPanel()];
 }
 
 // Tests that TabGroupAppInterface creates synced tab groups correctly.
@@ -175,15 +176,15 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the groups exist.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup2Name, 1)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup3Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kSyncedGroup1Name, 1)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kSyncedGroup2Name, 1)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kSyncedGroup3Name, 1)];
 
   [TabGroupAppInterface cleanup];
 
@@ -209,9 +210,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
   GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
@@ -237,6 +238,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Navigate back to the tab grid.
   [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:TabGroupsPanel()];
 
   // Check that the group is deleted in the tab grid.
   [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
@@ -303,9 +305,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroup1Name` exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
   GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
@@ -319,6 +321,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupsPanel()];
 
   // Check that the group with `kGroup1Name` doesn't exist.
   [[EarlGrey
@@ -343,9 +346,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroup1Name` exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 
   // Navigate back to the tab grid.
   [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
@@ -364,9 +367,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroup1Name` still exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 
   // Check that the group still exists in the sync service.
   GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
@@ -387,19 +390,21 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Verify that the group is present in the tab groups panel.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kSyncedGroup1Name, 1)];
   // Navigate back to the tab grid.
   [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
 
   // Open the tab group view.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(1)];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kTabGroupViewIdentifier)];
 
   // Delete the group on another device by modifying directly the fake sync
   // server.
@@ -425,6 +430,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Verify that the group is also no longer in the tab groups panel.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupsPanel()];
   [[EarlGrey
       selectElementWithMatcher:TabGroupsPanelCellWithName(kSyncedGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
@@ -455,9 +461,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 
   // Check that the group with `kGroup1Name` still exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 }
 
 // Tests that creating a group in the incognito tab grid isn't synced.
@@ -471,6 +477,7 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Switch over to the tab groups page.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupsPanel()];
 
   // Check that the group with `kGroup1Name` doesn't exist.
   [[EarlGrey
@@ -543,9 +550,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
   GREYAssertEqual(1, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 1.");
 
@@ -637,9 +644,9 @@ void CloseGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 
   // Check that the group with `kGroup1Name` still exists.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 
   // Verify that normal mode is active.
   [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
