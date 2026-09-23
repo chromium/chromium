@@ -50,6 +50,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   static PermissionControllerImpl* FromBrowserContext(
       BrowserContext* browser_context);
 
+  // Called by the BrowserContext owning this object from
+  // BrowserContextImpl::NotifyWillBeDestroyed(), i.e. while the
+  // PermissionControllerDelegate is still alive. This is the KeyedService-like
+  // shutdown phase that the destructor cannot provide: the delegate is always
+  // destroyed before the BrowserContext destroys this object, so any state
+  // registered with it must be torn down here.
+  void Shutdown();
+
   enum class OverrideStatus { kOverrideNotSet, kOverrideSet };
 
   // Sets status for |permissions| to GRANTED for |requesting_origin| and

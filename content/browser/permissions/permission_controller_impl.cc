@@ -342,11 +342,28 @@ PermissionControllerImpl* PermissionControllerImpl::FromBrowserContext(
       browser_context->GetPermissionController());
 }
 
-PermissionControllerImpl::~PermissionControllerImpl() {
-  // Ideally we need to unsubscribe from delegate subscriptions here,
-  // but browser_context_ is already destroyed by this point, so
-  // we can't fetch our delegate.
+void PermissionControllerImpl::Shutdown() {
+  if (subscriptions_.IsEmpty()) {
+    return;
+  }
+  // `browser_context_` is still valid here, so the delegate can be reached and
+  // asked to drop the observers it registered on our behalf. Note that
+  // `subscriptions_` being non-empty also guarantees that the delegate was
+  // already created when subscribing, so this will not lazily construct a
+  // KeyedService during BrowserContext teardown. Subscriptions are only cleared
+  // afterwards, since the delegate reads from the map while unsubscribing.
+  if (PermissionControllerDelegate* delegate =
+          browser_context_->GetPermissionControllerDelegate()) {
+    for (SubscriptionsMap::iterator it(&subscriptions_); !it.IsAtEnd();
+         it.Advance()) {
+      delegate->UnsubscribeFromPermissionResultChange(it.GetCurrentKey());
+    }
+    delegate->SetSubscriptions(nullptr);
+  }
+  subscriptions_.Clear();
 }
+
+PermissionControllerImpl::~PermissionControllerImpl() = default;
 
 PermissionResult PermissionControllerImpl::GetSubscriptionCurrentResult(
     const PermissionResultSubscription& subscription) {

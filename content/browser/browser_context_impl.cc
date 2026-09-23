@@ -201,6 +201,10 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
   // BrowserContext.
   ChildProcessSecurityPolicyImpl::GetInstance()->RemoveStateForBrowserContext(
       *self_);
+
+  if (permission_controller_) {
+    permission_controller_->Shutdown();
+  }
 }
 
 StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
@@ -310,6 +314,10 @@ void BrowserContextImpl::SetDownloadManagerForTesting(
 PermissionController* BrowserContextImpl::GetPermissionController() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
+  if (permission_controller_for_testing_) {
+    return permission_controller_for_testing_.get();
+  }
+
   if (!permission_controller_) {
     permission_controller_ = std::make_unique<PermissionControllerImpl>(self_);
   }
@@ -320,7 +328,11 @@ PermissionController* BrowserContextImpl::GetPermissionController() {
 void BrowserContextImpl::SetPermissionControllerForTesting(
     std::unique_ptr<PermissionController> permission_controller) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  permission_controller_ = std::move(permission_controller);
+  if (permission_controller_) {
+    permission_controller_->Shutdown();
+    permission_controller_.reset();
+  }
+  permission_controller_for_testing_ = std::move(permission_controller);
 }
 
 storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {

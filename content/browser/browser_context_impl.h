@@ -43,6 +43,7 @@ class DownloadManager;
 class InMemoryFederatedPermissionContext;
 class NavigationStateKeepAlive;
 class PermissionController;
+class PermissionControllerImpl;
 class PrefetchService;
 class StoragePartitionImplMap;
 
@@ -186,7 +187,8 @@ class CONTENT_EXPORT BrowserContextImpl {
       SharedCorsOriginAccessList::Create();
   std::unique_ptr<BrowsingDataRemoverImpl> browsing_data_remover_;
   std::unique_ptr<DownloadManager> download_manager_;
-  std::unique_ptr<PermissionController> permission_controller_;
+  std::unique_ptr<PermissionControllerImpl> permission_controller_;
+  std::unique_ptr<PermissionController> permission_controller_for_testing_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
 #if BUILDFLAG(IS_ANDROID)

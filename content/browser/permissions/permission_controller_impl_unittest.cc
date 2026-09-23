@@ -166,6 +166,13 @@ class PermissionControllerImplTest : public ::testing::Test {
         browser_context_.GetPermissionControllerDelegate());
   }
 
+  // Exposes `PermissionControllerImpl::subscriptions_`, which is only
+  // accessible to this fixture (friendship is not inherited by the TEST_F
+  // subclasses).
+  const PermissionController::SubscriptionsMap& subscriptions() {
+    return permission_controller_->subscriptions_;
+  }
+
   OverrideStatus SetPermissionOverrideAndWait(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
@@ -491,6 +498,55 @@ TEST_F(PermissionControllerImplTest,
                                PermissionStatus::GRANTED);
 
   EXPECT_EQ(callback_count, 1);
+}
+
+// The delegate is always destroyed before the PermissionController, so
+// Shutdown() is the last point at which subscriptions can be torn down.
+TEST_F(PermissionControllerImplTest, ShutdownUnsubscribes) {
+  base::MockCallback<base::RepeatingCallback<void(PermissionResult)>> callback;
+  PermissionController::SubscriptionId id =
+      permission_controller()->SubscribeToPermissionResultChange(
+          PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+              PermissionType::GEOLOCATION),
+          /*render_process_host=*/nullptr, /*render_frame_host=*/nullptr,
+          GURL(kTestUrl),
+          /*should_include_device_status=*/false, callback.Get());
+
+  ASSERT_FALSE(subscriptions().IsEmpty());
+  ASSERT_EQ(mock_manager()->subscriptions(), &subscriptions());
+
+  // The delegate must still be able to observe the unsubscription, and must no
+  // longer hold a pointer into the controller afterwards.
+  EXPECT_CALL(*mock_manager(), UnsubscribeFromPermissionResultChange(id));
+  permission_controller()->Shutdown();
+
+  EXPECT_TRUE(subscriptions().IsEmpty());
+  EXPECT_EQ(mock_manager()->subscriptions(), nullptr);
+}
+
+// Verifies that content actually drives Shutdown() from the BrowserContext's
+// pre-destruction phase. See BrowserContextImpl::NotifyWillBeDestroyed().
+TEST_F(PermissionControllerImplTest, BrowserContextShutdownUnsubscribes) {
+  TestBrowserContext browser_context;
+  auto owned_delegate =
+      std::make_unique<::testing::NiceMock<MockPermissionManager>>();
+  MockPermissionManager* delegate = owned_delegate.get();
+  browser_context.SetPermissionControllerDelegate(std::move(owned_delegate));
+
+  base::MockCallback<base::RepeatingCallback<void(PermissionResult)>> callback;
+  PermissionController::SubscriptionId id =
+      PermissionControllerImpl::FromBrowserContext(&browser_context)
+          ->SubscribeToPermissionResultChange(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      PermissionType::GEOLOCATION),
+              /*render_process_host=*/nullptr, /*render_frame_host=*/nullptr,
+              GURL(kTestUrl),
+              /*should_include_device_status=*/false, callback.Get());
+
+  EXPECT_CALL(*delegate, UnsubscribeFromPermissionResultChange(id));
+  browser_context.NotifyWillBeDestroyed();
+  EXPECT_EQ(delegate->subscriptions(), nullptr);
 }
 
 TEST_F(PermissionControllerImplTest,
