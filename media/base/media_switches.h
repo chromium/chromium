@@ -173,6 +173,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmProcessPriorityElevation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCdmThreadPriorityElevation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kClearPipCachedBoundsWhenPermissionPromptVisible);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kCoarseWallClockTimeSource);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuCopyVideoFrame);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSaveVideoFrameAs);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kContextMenuSearchForVideoFrame);

@@ -482,6 +482,10 @@ BASE_FEATURE(kCdmThreadPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearPipCachedBoundsWhenPermissionPromptVisible,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for coarsening CurrentMediaTime() to prevent high-resolution
+// timing attacks (crbug.com/562970433). Remove after M157 reaches stable.
+BASE_FEATURE(kCoarseWallClockTimeSource, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 

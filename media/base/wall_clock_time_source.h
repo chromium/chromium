@@ -17,6 +17,12 @@ namespace media {
 // A time source that uses interpolation based on the system clock.
 class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
  public:
+  // Resolution to which CurrentMediaTime() is coarsened to prevent
+  // high-resolution timing attacks (e.g. crbug.com/562970433) when media lacks
+  // an audio track. Matches blink::TimeClamper's coarse resolution of 100
+  // microseconds.
+  static constexpr base::TimeDelta kCoarseResolution = base::Microseconds(100);
+
   WallClockTimeSource();
 
   WallClockTimeSource(const WallClockTimeSource&) = delete;
@@ -53,6 +59,7 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
   // that time by the playback rate.
   double playback_rate_ GUARDED_BY(lock_) = 1.0;
   base::TimeDelta base_timestamp_ GUARDED_BY(lock_);
+  base::TimeDelta seek_time_ GUARDED_BY(lock_);
   base::TimeTicks reference_time_ GUARDED_BY(lock_);
 
   // TODO(scherkus): Remove internal locking from this class after access to

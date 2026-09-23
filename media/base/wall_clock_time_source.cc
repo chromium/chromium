@@ -4,7 +4,11 @@
 
 #include "media/base/wall_clock_time_source.h"
 
+#include <algorithm>
+
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -51,12 +55,18 @@ void WallClockTimeSource::SetMediaTime(base::TimeDelta time) {
   base::AutoLock auto_lock(lock_);
   CHECK(!ticking_);
   base_timestamp_ = time;
+  seek_time_ = time;
   reference_time_ = base::TimeTicks();
 }
 
 base::TimeDelta WallClockTimeSource::CurrentMediaTime() {
   base::AutoLock auto_lock(lock_);
-  return CurrentMediaTime_Locked();
+  const base::TimeDelta current_time = CurrentMediaTime_Locked();
+  if (base::FeatureList::IsEnabled(kCoarseWallClockTimeSource)) {
+    return std::max(seek_time_,
+                    current_time.FloorToMultiple(kCoarseResolution));
+  }
+  return current_time;
 }
 
 bool WallClockTimeSource::GetWallClockTimes(
