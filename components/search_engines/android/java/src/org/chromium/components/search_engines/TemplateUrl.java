@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.util.Locale;
-import java.util.Optional;
 
 /**
  * Represents object of a search engine. It only caches the native pointer of TemplateURL object
@@ -27,14 +26,6 @@ import java.util.Optional;
 public class TemplateUrl {
     private final long mTemplateUrlPtr;
     private @Nullable GURL mFaviconUrl;
-
-    /**
-     * Cached result of {@link #getAiModeButtonUiConfig()}. {@code null} means the config has not
-     * been retrieved from native yet; an empty {@link Optional} means this search engine offers no
-     * AI Mode entry point. This distinction keeps engines without a config from being re-queried.
-     */
-    @SuppressWarnings("NullableOptional")
-    private @Nullable Optional<AiModeButtonUiConfig> mAiModeButtonUiConfig;
 
     @CalledByNative
     private static TemplateUrl create(long templateUrlPtr) {
@@ -99,20 +90,6 @@ public class TemplateUrl {
     }
 
     /**
-     * Returns the configuration describing the AI Mode entry point offered by this search engine,
-     * or null if this search engine offers none. The result is retrieved from native on first call
-     * and cached for the lifetime of this object.
-     */
-    public @Nullable AiModeButtonUiConfig getAiModeButtonUiConfig() {
-        if (mAiModeButtonUiConfig == null) {
-            mAiModeButtonUiConfig =
-                    Optional.ofNullable(
-                            TemplateUrlJni.get().getAiModeButtonUiConfig(mTemplateUrlPtr));
-        }
-        return mAiModeButtonUiConfig.isPresent() ? mAiModeButtonUiConfig.get() : null;
-    }
-
-    /**
      * @return The last time used this search engine. If a search engine hasn't been used, it will
      *     return 0.
      */
@@ -170,6 +147,7 @@ public class TemplateUrl {
         return extensionId.isEmpty() ? null : extensionId;
     }
 
+    @CalledByNative
     public long getNativePtr() {
         return mTemplateUrlPtr;
     }
@@ -213,8 +191,6 @@ public class TemplateUrl {
         String getNewTabURL(long templateUrlPtr);
 
         GURL getFaviconURL(long templateUrlPtr);
-
-        @Nullable AiModeButtonUiConfig getAiModeButtonUiConfig(long templateUrlPtr);
 
         boolean requiresRemovalConfirmation(long templateUrlPtr);
 

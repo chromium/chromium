@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -77,6 +80,7 @@ public class SearchEngineServiceUnitTest {
     @Mock private Profile mProfile;
     @Mock private SearchEngineNameObserver mHintTextObserver;
     @Mock private SearchEngineIconObserver mEngineIconObserver;
+    @Mock private SearchEngineService.Natives mSearchEngineServiceNatives;
     private Context mContext;
     private Bitmap mBitmap;
 
@@ -86,7 +90,11 @@ public class SearchEngineServiceUnitTest {
         mBitmap = Shadow.newInstanceOf(Bitmap.class);
         shadowOf(mBitmap).appendDescription("test");
 
+        lenient().doReturn(true).when(mProfile).isNativeInitialized();
+        SearchEngineServiceJni.setInstanceForTesting(mSearchEngineServiceNatives);
+        lenient().doReturn(1L).when(mSearchEngineServiceNatives).init(any(), any());
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        lenient().doReturn("keyword").when(mTemplateUrl).getKeyword();
         lenient().doReturn(TEMPLATE_URL).when(mTemplateUrl).getURL();
         GURL faviconUrl = new GURL(LOGO_URL);
         lenient().doReturn(faviconUrl).when(mTemplateUrl).getFaviconURL();
@@ -567,5 +575,46 @@ public class SearchEngineServiceUnitTest {
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         assertEquals("Search Yahoo or type URL", searchEngineService.getOmniboxHintString());
+    }
+
+    private static AiModeButtonUiConfig createTestAiModeButtonUiConfig() {
+        return new AiModeButtonUiConfig(
+                "AI Mode",
+                "Ask AI Mode",
+                "AI Mode button",
+                "Always show AI Mode",
+                "Ask AI Mode",
+                GURL.emptyGURL(),
+                "",
+                GURL.emptyGURL());
+    }
+
+    @Test
+    public void getAiModeButtonUiConfigSupplier_initialState() {
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+
+        assertNull(searchEngineService.getAiModeButtonUiConfigSupplier().get());
+        verify(mSearchEngineServiceNatives).init(searchEngineService, mProfile);
+    }
+
+    @Test
+    public void onAiModeButtonUiConfigChanged_updatesSupplier() {
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        assertNull(searchEngineService.getAiModeButtonUiConfigSupplier().get());
+
+        var config = createTestAiModeButtonUiConfig();
+        searchEngineService.onAiModeButtonUiConfigChanged(config);
+        assertSame(config, searchEngineService.getAiModeButtonUiConfigSupplier().get());
+
+        searchEngineService.onAiModeButtonUiConfigChanged(null);
+        assertNull(searchEngineService.getAiModeButtonUiConfigSupplier().get());
+    }
+
+    @Test
+    public void destroy_destroysNativePeer() {
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+        searchEngineService.destroy();
+
+        verify(mSearchEngineServiceNatives).destroy(1L);
     }
 }

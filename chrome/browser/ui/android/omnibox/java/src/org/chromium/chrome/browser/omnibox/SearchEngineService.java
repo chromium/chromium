@@ -12,6 +12,10 @@ import android.text.TextUtils;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -19,6 +23,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,6 +45,7 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -70,6 +78,17 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             new ObserverList<>();
     private final ObserverList<SearchEngineIconObserver> mSearchEngineIconObservers =
             new ObserverList<>();
+
+    /**
+     * Configuration of the AI Mode entry point offered by the current default search engine. {@code
+     * null} whenever no entry point should be shown, which covers both an engine that offers none
+     * and a client that is not permitted to surface one; native deliberately does not distinguish
+     * the two, see {@link #getAiModeButtonUiConfigSupplier}.
+     */
+    private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
+            mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
+
+    private long mNativeSearchEngineServiceAndroid;
 
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
@@ -127,6 +146,13 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         mTemplateUrlService.addObserver(this);
         mDefaultSearchEngineMetadata = CachedZeroSuggestionsManager.readSearchEngineMetadata();
 
+        // Only initialize the native peer if the Profile is native-backed. In unit tests,
+        // Profile is typically a mock without a backing native pointer. Real profiles are
+        // always native-initialized at creation time.
+        if (profile.isNativeInitialized()) {
+            mNativeSearchEngineServiceAndroid = SearchEngineServiceJni.get().init(this, profile);
+        }
+
         onTemplateURLServiceChanged();
     }
 
@@ -145,6 +171,10 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     @Override
     public void destroy() {
+        if (mNativeSearchEngineServiceAndroid != 0) {
+            SearchEngineServiceJni.get().destroy(mNativeSearchEngineServiceAndroid);
+            mNativeSearchEngineServiceAndroid = 0;
+        }
         mTemplateUrlService.removeObserver(this);
         mFaviconHelper.destroy();
         mImageFetcher.destroy();
@@ -177,6 +207,24 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         }
 
         retrieveFavicon(templateUrl, this::setSearchEngineIcon);
+    }
+
+    @CalledByNative
+    void onAiModeButtonUiConfigChanged(@Nullable AiModeButtonUiConfig config) {
+        mAiModeButtonUiConfigSupplier.set(config);
+    }
+
+    /**
+     * Supplies the AI Mode entry point configuration for the current default search engine, updated
+     * reactively whenever the default search engine or user eligibility changes.
+     *
+     * <p>A null value means either that the search engine offers no AI Mode entry point, or that
+     * this client is not permitted to surface one. Native does not distinguish the two: an
+     * ineligible client is never handed a configuration in the first place, so callers cannot
+     * accidentally render an entry point they are not entitled to.
+     */
+    public NullableObservableSupplier<AiModeButtonUiConfig> getAiModeButtonUiConfigSupplier() {
+        return mAiModeButtonUiConfigSupplier;
     }
 
     /** Add observer to be notified whenever the default search engine name changes. */
@@ -408,5 +456,12 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     public static void setInstanceForTesting(SearchEngineService instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        long init(SearchEngineService caller, @JniType("Profile*") Profile profile);
+
+        void destroy(long nativeSearchEngineServiceAndroid);
     }
 }

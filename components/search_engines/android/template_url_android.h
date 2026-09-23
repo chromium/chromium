@@ -16,7 +16,25 @@ base::android::ScopedJavaLocalRef<jobject> CreateTemplateUrlAndroid(
     JNIEnv* env,
     const TemplateURL* template_url);
 
+TemplateURL* ToTemplateURL(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_template_url);
+
 namespace jni_zero {
+template <>
+inline TemplateURL* FromJniType<TemplateURL*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_template_url) {
+  return ToTemplateURL(env, j_template_url);
+}
+
+template <>
+inline const TemplateURL* FromJniType<const TemplateURL*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_template_url) {
+  return ToTemplateURL(env, j_template_url);
+}
+
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
                                              const TemplateURL* template_url) {

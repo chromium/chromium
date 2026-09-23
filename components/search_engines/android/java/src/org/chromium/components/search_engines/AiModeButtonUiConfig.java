@@ -92,4 +92,15 @@ public final class AiModeButtonUiConfig {
         this.navigationUrl = navigationUrl;
         this.navigationUrlEmpty = navigationUrlEmpty;
     }
+
+    @Override
+    public String toString() {
+        return "AiModeButtonUiConfig{text='"
+                + text
+                + "', tooltip='"
+                + tooltip
+                + "', navUrl='"
+                + navigationUrl
+                + "'}";
+    }
 }

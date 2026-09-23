@@ -370,6 +370,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
+    "java/src/org/chromium/chrome/browser/omnibox/SearchEngineService.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/ComposeboxQueryControllerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/DriveDisclaimerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/SuggestedTabInfo.java",
