@@ -356,6 +356,7 @@ source_set("unit_tests") {
       "//chrome/services/sharing/nearby/decoder",
       "//chrome/services/sharing/public/cpp",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/feature_usage",
       "//chromeos/ash/components/nearby/common/connections_manager",

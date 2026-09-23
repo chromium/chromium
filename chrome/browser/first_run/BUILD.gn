@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/installer/util:with_no_strings",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/startup_metric_utils",

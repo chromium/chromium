@@ -453,6 +453,7 @@ source_set("unit_tests") {
     "//chrome/browser/permissions",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//components/content_settings/core/test:test_support",
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/safe_browsing:buildflags",

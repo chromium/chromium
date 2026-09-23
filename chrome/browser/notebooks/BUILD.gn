@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/notebooks/public",
     "//content/test:test_support",
     "//testing/gtest",

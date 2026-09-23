@@ -123,6 +123,7 @@ if (enterprise_cloud_content_analysis || is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/safe_browsing",
       "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
       "//components/enterprise/connectors/core:test_support",
       "//components/enterprise/isolated_mode",
       "//components/policy/core/common:test_support",

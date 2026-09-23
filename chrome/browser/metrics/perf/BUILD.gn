@@ -25,6 +25,8 @@ test("profile_provider_unittest") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_browser_process_impl",
     "//chromeos/ash/components/dbus",
     "//content/test:test_support",
     "//testing/gtest",

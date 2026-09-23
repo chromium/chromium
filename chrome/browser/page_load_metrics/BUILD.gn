@@ -268,6 +268,7 @@ source_set("unit_tests") {
     # Inherits -Wno-sign-compare via fuzztest_public_config. See
     # crbug.com/527094632.
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/base:testing_browser_process",
     "//third_party/fuzztest",
   ]
 

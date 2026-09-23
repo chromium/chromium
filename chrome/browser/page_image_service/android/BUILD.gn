@@ -34,6 +34,7 @@ source_set("unit_tests") {
     ":android",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/page_image_service",
     "//components/signin/public/identity_manager",
     "//content/test:test_support",
