@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Orchestrates background actuation of agent tasks by provisioning offscreen tabs and windows.
@@ -66,6 +70,31 @@ public class ActorBackgroundActuationManager {
 
     /** Default constructor. */
     public ActorBackgroundActuationManager() {}
+
+    /**
+     * Returns the window holding the tab handed off to background actuation for the given task, or
+     * {@link TabWindowManager#INVALID_WINDOW_ID} if there is none.
+     */
+    public int getWindowIdForTask(int taskId) {
+        for (BackgroundSession session : mBackgroundSessions) {
+            if (session.getTaskId() == null || session.getTaskId() != taskId) continue;
+
+            for (BackgroundSession.BackgroundTabData tabData : session.getTabDataList()) {
+                int tabWindowId = tabData.getTabWindowId();
+                if (tabWindowId != TabWindowManager.INVALID_WINDOW_ID) {
+                    return tabWindowId;
+                }
+                Integer placeholderTabId = tabData.getPlaceholderTabId();
+                if (placeholderTabId != null && placeholderTabId != Tab.INVALID_TAB_ID) {
+                    TabWindowInfo placeholderInfo =
+                            TabWindowManagerSingleton.getInstance()
+                                    .getTabWindowInfoById(placeholderTabId);
+                    if (placeholderInfo != null) return placeholderInfo.windowId;
+                }
+            }
+        }
+        return TabWindowManager.INVALID_WINDOW_ID;
+    }
 
     /**
      * Starts background actuation for the given profile and context.
@@ -291,6 +320,8 @@ public class ActorBackgroundActuationManager {
 
         BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
         List<BackgroundSession> sessionsToRemove = new ArrayList<>();
+        Set<Integer> usableWindowIds =
+                MultiWindowUtils.getUsableInstanceIds(PersistedInstanceType.ACTIVE);
         try {
             for (BackgroundSession session : backgroundSessions) {
                 Iterator<BackgroundSession.BackgroundTabData> iterator =
@@ -299,11 +330,13 @@ public class ActorBackgroundActuationManager {
                     BackgroundSession.BackgroundTabData tabData = iterator.next();
                     int tabWindowId = tabData.getTabWindowId();
 
-                    boolean windowMatches =
+                    // A window whose task is gone can never claim its tabs back.
+                    boolean shouldRestoreIntoThisWindow =
                             (tabWindowId == TabWindowManager.INVALID_WINDOW_ID
-                                    || tabWindowId == activeWindowId);
+                                    || tabWindowId == activeWindowId
+                                    || !usableWindowIds.contains(tabWindowId));
 
-                    if (windowMatches) {
+                    if (shouldRestoreIntoThisWindow) {
                         restoreSessionTab(tabData, pool, model, window, tabDelegateFactory);
                         iterator.remove();
                     }

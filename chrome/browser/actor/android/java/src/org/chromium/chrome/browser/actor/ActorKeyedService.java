@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.text.TextUtils;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -111,6 +113,21 @@ public class ActorKeyedService {
         if (mNativePtr == 0) return null;
         int id = ActorKeyedServiceJni.get().getActiveTaskIdOnTab(mNativePtr, tabId, includePaused);
         return id != ActorTaskId.INVALID_TASK_ID ? id : null;
+    }
+
+    /**
+     * @param conversationId The Glic conversation ID to look up.
+     * @return The active task matching the given conversation ID, or null if none.
+     */
+    public @Nullable ActorTask getTaskByConversationId(@Nullable String conversationId) {
+        if (mNativePtr == 0 || TextUtils.isEmpty(conversationId)) return null;
+        List<ActorTask> tasks = getActiveTasks();
+        for (ActorTask task : tasks) {
+            if (conversationId.equals(task.getGlicConversationId())) {
+                return task;
+            }
+        }
+        return null;
     }
 
     @CalledByNative

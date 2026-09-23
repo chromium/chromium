@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -1855,8 +1856,7 @@ public class IntentHandler {
      */
     public static @Nullable String getGlicConversationId(@Nullable Intent intent) {
         if (!wasIntentSenderChrome(intent)) return null;
-        return IntentUtils.safeGetStringExtra(
-                intent, NotificationConstants.EXTRA_GLIC_CONVERSATION_ID);
+        return IntentUtils.safeGetStringExtra(intent, GlicIntentConstants.EXTRA_CONVERSATION_ID);
     }
 
     /** Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents. */

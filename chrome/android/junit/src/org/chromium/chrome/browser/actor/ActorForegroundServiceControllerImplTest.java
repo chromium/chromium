@@ -40,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -184,6 +186,21 @@ public class ActorForegroundServiceControllerImplTest {
     }
 
     @Test
+    public void testGetWindowIdForTask_DelegatesToBackgroundManager() {
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+        when(mMockBackgroundManager.getWindowIdForTask(456)).thenReturn(3);
+
+        assertEquals(3, mController.getWindowIdForTask(456));
+    }
+
+    @Test
+    public void testGetWindowIdForTask_NullBackgroundManager() {
+        mController.setBackgroundManagerForTesting(null);
+
+        assertEquals(TabWindowManager.INVALID_WINDOW_ID, mController.getWindowIdForTask(456));
+    }
+
+    @Test
     public void testCreateTrustedBringTabToFrontIntent() {
         FeatureOverrides.overrideFlag(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING, true);
         int tabId = 123;
@@ -192,7 +209,7 @@ public class ActorForegroundServiceControllerImplTest {
         String glicConversationId = "conv_test_123";
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getTargetTabId()).thenReturn(tabId);
         when(mActorTask.getGlicConversationId()).thenReturn(glicConversationId);
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
@@ -202,9 +219,9 @@ public class ActorForegroundServiceControllerImplTest {
                 tabId,
                 IntentHandler.getBringTabToFrontId(intent));
         assertEquals(
-                "Intent extra should contain EXTRA_GLIC_CONVERSATION_ID.",
+                "Intent extra should contain EXTRA_CONVERSATION_ID.",
                 glicConversationId,
-                intent.getStringExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID));
+                intent.getStringExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID));
         assertTrue(
                 "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
                 intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
@@ -227,7 +244,7 @@ public class ActorForegroundServiceControllerImplTest {
         String glicConversationId = "conv_test_123";
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getTargetTabId()).thenReturn(tabId);
         when(mActorTask.getGlicConversationId()).thenReturn(glicConversationId);
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
@@ -237,8 +254,8 @@ public class ActorForegroundServiceControllerImplTest {
                 tabId,
                 IntentHandler.getBringTabToFrontId(intent));
         assertNull(
-                "Intent extra should not contain EXTRA_GLIC_CONVERSATION_ID when flag is disabled.",
-                intent.getStringExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID));
+                "Intent extra should not contain EXTRA_CONVERSATION_ID when flag is disabled.",
+                intent.getStringExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID));
         assertTrue(
                 "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
                 intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
@@ -259,7 +276,7 @@ public class ActorForegroundServiceControllerImplTest {
         int taskState = ActorTaskState.FINISHED;
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getTargetTabId()).thenReturn(tabId);
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
         assertNotNull("Intent should not be null.", intent);
@@ -286,7 +303,7 @@ public class ActorForegroundServiceControllerImplTest {
         int taskState = ActorTaskState.FINISHED;
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
+        when(mActorTask.getTargetTabId()).thenReturn(Tab.INVALID_TAB_ID);
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
         assertNotNull("Intent should not be null.", intent);
@@ -426,6 +443,23 @@ public class ActorForegroundServiceControllerImplTest {
                 "Should resolve tab ID from task.getTargetTabId().",
                 789,
                 ActorForegroundServiceController.resolveActorIntentTabId(actorIntent));
+
+        Intent conversationIntent = new Intent(Intent.ACTION_VIEW);
+        conversationIntent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_456");
+
+        assertEquals(
+                "Non-existent conversation task should return INVALID_TAB_ID.",
+                Tab.INVALID_TAB_ID,
+                ActorForegroundServiceController.resolveActorIntentTabId(conversationIntent));
+
+        ActorTask conversationTask = mock(ActorTask.class);
+        when(actorKeyedService.getTaskByConversationId("conv_456")).thenReturn(conversationTask);
+        when(conversationTask.getTargetTabId()).thenReturn(999);
+
+        assertEquals(
+                "Should resolve tab ID from conversationTask.getTargetTabId().",
+                999,
+                ActorForegroundServiceController.resolveActorIntentTabId(conversationIntent));
 
         ActorKeyedServiceFactory.setForTesting(null);
     }

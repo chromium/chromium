@@ -26,6 +26,7 @@ import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -180,17 +181,22 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     }
 
     @Override
-    public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
-        int tabId = task.getLastActuatedTabId();
+    public int getWindowIdForTask(int taskId) {
+        return mBackgroundActuationManager != null
+                ? mBackgroundActuationManager.getWindowIdForTask(taskId)
+                : TabWindowManager.INVALID_WINDOW_ID;
+    }
 
+    @Override
+    public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
         Intent intent =
                 IntentHandler.createTrustedBringTabToFrontIntent(
-                        tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
+                        task.getTargetTabId(), IntentHandler.BringToFrontSource.NOTIFICATION);
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
         if (ChromeFeatureList.sActorNotificationIntentRouting.isEnabled()
                 && !TextUtils.isEmpty(task.getGlicConversationId())) {
             intent.putExtra(
-                    NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, task.getGlicConversationId());
+                    GlicIntentConstants.EXTRA_CONVERSATION_ID, task.getGlicConversationId());
         }
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, task.getId());
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, task.getState());

@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -904,26 +905,26 @@ public class IntentHandlerRobolectricTest {
         assertNull(IntentHandler.getGlicConversationId(null));
         assertNull(IntentHandler.getGlicConversationId(new Intent(Intent.ACTION_VIEW)));
 
-        // Untrusted intent with EXTRA_GLIC_CONVERSATION_ID and non-Chrome appId should return null.
+        // Untrusted intent with EXTRA_CONVERSATION_ID and non-Chrome appId should return null.
         Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
-        untrustedIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+        untrustedIntent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_123");
         untrustedIntent.putExtra(Browser.EXTRA_APPLICATION_ID, "com.example.otherapp");
         assertNull(IntentHandler.getGlicConversationId(untrustedIntent));
 
-        // Untrusted intent with EXTRA_GLIC_CONVERSATION_ID and Chrome's appId
+        // Untrusted intent with EXTRA_CONVERSATION_ID and Chrome's appId
         // (wasIntentSenderChrome
         // is false because it lacks trusted extras) should return null.
         Intent chromeAppIdIntent = new Intent(Intent.ACTION_VIEW);
-        chromeAppIdIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+        chromeAppIdIntent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_123");
         chromeAppIdIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         assertNull(IntentHandler.getGlicConversationId(chromeAppIdIntent));
 
-        // Trusted intent from Chrome with EXTRA_GLIC_CONVERSATION_ID should return the conversation
+        // Trusted intent from Chrome with EXTRA_CONVERSATION_ID should return the conversation
         // ID.
         try {
             IntentUtils.setForceIsTrustedIntentForTesting(true);
             Intent trustedIntent = new Intent(Intent.ACTION_VIEW);
-            trustedIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+            trustedIntent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, "conv_123");
             trustedIntent.setPackage(context.getPackageName());
             assertEquals("conv_123", IntentHandler.getGlicConversationId(trustedIntent));
         } finally {

@@ -17,9 +17,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
@@ -56,6 +58,12 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorNotificationFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -65,11 +73,23 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -81,7 +101,8 @@ import java.util.Arrays;
 @EnableFeatures({
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE,
     ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING,
-    ChromeFeatureList.GLIC_BACKGROUND_ACTUATION
+    ChromeFeatureList.GLIC_BACKGROUND_ACTUATION,
+    ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING
 })
 public class LaunchIntentDispatcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -125,6 +146,10 @@ public class LaunchIntentDispatcherTest {
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER);
+        ActorKeyedServiceFactory.setForTesting(null);
+        ActorForegroundServiceController.setInstanceForTesting(null);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
+        MultiWindowTestUtils.resetInstanceInfo();
     }
 
     @Test
@@ -740,7 +765,7 @@ public class LaunchIntentDispatcherTest {
     }
 
     private static final String GLIC_EXTERNAL_TRIGGERING_ACTION =
-            "org.chromium.chrome.browser.glic.EXTERNAL_TRIGGERING";
+            GlicIntentConstants.ACTION_EXTERNAL_TRIGGERING;
     private static final String START_ACTOR_FOREGROUND_SERVICE =
             "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
 
@@ -874,6 +899,314 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mForegroundServiceUtils);
+    }
+
+    private static Intent createGlicInterruptIntent(String conversationId) {
+        Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
+        intent.putExtra(GlicIntentConstants.EXTRA_CONVERSATION_ID, conversationId);
+        return intent;
+    }
+
+    private void setUpTrustedGlicCaller(Activity spyActivity) {
+        doReturn("com.google.android.apps.googlequicksearchbox")
+                .when(spyActivity)
+                .getCallingPackage();
+        doReturn(true)
+                .when(mExternalAuthUtils)
+                .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
+        doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
+    }
+
+    private ActorTask setUpGlicInterrupt(
+            Activity spyActivity, String conversationId, int taskId, @TabId int targetTabId) {
+        setUpTrustedGlicCaller(spyActivity);
+
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(taskId);
+        when(task.getTargetTabId()).thenReturn(targetTabId);
+        when(task.getGlicConversationId()).thenReturn(conversationId);
+        when(actorKeyedService.getTaskByConversationId(conversationId)).thenReturn(task);
+        return task;
+    }
+
+    private ActorForegroundServiceController setUpInterruptController(ActorTask task) {
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        Intent bringToFront =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        task.getTargetTabId(), IntentHandler.BringToFrontSource.NOTIFICATION);
+        bringToFront.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        bringToFront.putExtra(
+                GlicIntentConstants.EXTRA_CONVERSATION_ID, task.getGlicConversationId());
+        bringToFront.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, task.getId());
+        bringToFront.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, task.getState());
+        when(controller.createTrustedBringTabToFrontIntent(task)).thenReturn(bringToFront);
+        return controller;
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_WithConversationId_RoutesToTabbedActivity() {
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        ActorForegroundServiceController controller = setUpInterruptController(task);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        verify(controller).createTrustedBringTabToFrontIntent(task);
+        verifyNoInteractions(mForegroundServiceUtils);
+
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        Intent launchedIntent = launchedIntentCaptor.getValue();
+        assertTrue(IntentHandler.wasIntentSenderChrome(launchedIntent));
+        assertEquals("conv_123", IntentHandler.getGlicConversationId(launchedIntent));
+        assertEquals(789, IntentHandler.getBringTabToFrontId(launchedIntent));
+        assertEquals(
+                456,
+                IntentUtils.safeGetIntExtra(
+                        launchedIntent, NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+        assertTrue(
+                IntentUtils.safeGetBooleanExtra(
+                        launchedIntent, ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
+        assertFalse(
+                "No window could be resolved, so none should be stamped.",
+                launchedIntent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+    }
+
+    @Test
+    public void
+            testDispatchGlicExternalTrigger_WithConversationId_TaskNotFound_FallsBackGracefully() {
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        setUpTrustedGlicCaller(spyActivity);
+
+        ActorKeyedService actorKeyedService = mock(ActorKeyedService.class);
+        ActorKeyedServiceFactory.setForTesting(actorKeyedService);
+        when(actorKeyedService.getTaskByConversationId("conv_123")).thenReturn(null);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_CANCELED);
+        verify(spyActivity, never()).startActivity(any());
+        verifyNoInteractions(mForegroundServiceUtils);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testDispatchGlicExternalTrigger_WithConversationId_RoutingDisabled_StartsService() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        setUpTrustedGlicCaller(spyActivity);
+        doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        verify(spyActivity, never()).startActivity(any());
+        verify(mForegroundServiceUtils).startForegroundService(any());
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_WithConversationId_ConsentRequired_Continues() {
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        setUpTrustedGlicCaller(spyActivity);
+        doReturn(true).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        verify(spyActivity, never()).startActivity(any());
+        verifyNoInteractions(mForegroundServiceUtils);
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_TabInOtherWindow_RoutesToThatWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 5,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ 57);
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        setUpInterruptController(task);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(
+                        /* windowId= */ 5, mock(TabModelSelector.class), tabModel, mock(Tab.class));
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        when(tabWindowManager.getTabWindowInfoById(789)).thenReturn(tabWindowInfo);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(
+                "The window hosting the tab should be reused.",
+                5,
+                IntentUtils.safeGetIntExtra(
+                        launchedIntentCaptor.getValue(),
+                        IntentHandler.EXTRA_WINDOW_ID,
+                        TabWindowManager.INVALID_WINDOW_ID));
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_TabInInactiveWindow_StampsNoWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        // The instance is still persisted, but its task is gone from Android Recents.
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 5,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ -1);
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task = setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, 789);
+        setUpInterruptController(task);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(
+                        /* windowId= */ 5, mock(TabModelSelector.class), tabModel, mock(Tab.class));
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        when(tabWindowManager.getTabWindowInfoById(789)).thenReturn(tabWindowInfo);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertFalse(
+                "A window with no live task should not be resurrected.",
+                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_BackgroundTask_RoutesToRecordedWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 3,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ 57);
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task =
+                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorForegroundServiceController controller = setUpInterruptController(task);
+        when(controller.getWindowIdForTask(456)).thenReturn(3);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertEquals(
+                "The window recorded for the background task should be reused.",
+                3,
+                IntentUtils.safeGetIntExtra(
+                        launchedIntentCaptor.getValue(),
+                        IntentHandler.EXTRA_WINDOW_ID,
+                        TabWindowManager.INVALID_WINDOW_ID));
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_BackgroundTask_ClosedWindow_StampsNoWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task =
+                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorForegroundServiceController controller = setUpInterruptController(task);
+        // The window was closed after the task was handed off to background actuation.
+        when(controller.getWindowIdForTask(456)).thenReturn(3);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertFalse(
+                "A closed window should not be resurrected.",
+                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_BackgroundTask_InactiveWindow_StampsNoWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        // The instance is still persisted, but its task is gone from Android Recents.
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 3,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ -1);
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task =
+                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorForegroundServiceController controller = setUpInterruptController(task);
+        when(controller.getWindowIdForTask(456)).thenReturn(3);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture());
+        assertFalse(
+                "A window with no live task should not be resurrected.",
+                launchedIntentCaptor.getValue().hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_LaunchedInExistingInstance_SkipsNewLaunch() {
+        MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 3,
+                /* url= */ "https://www.example.com",
+                /* tabCount= */ 1,
+                /* taskId= */ 57);
+        MultiWindowUtils.setActivityByWindowIdForTesting(3, mock(ChromeTabbedActivity.class));
+        AndroidTaskUtils.setAppTaskForTesting(mock(AppTask.class));
+
+        Intent intent = createGlicInterruptIntent("conv_123");
+        Activity spyActivity = spy(mActivity);
+        ActorTask task =
+                setUpGlicInterrupt(spyActivity, "conv_123", /* taskId= */ 456, Tab.INVALID_TAB_ID);
+        ActorForegroundServiceController controller = setUpInterruptController(task);
+        when(controller.getWindowIdForTask(456)).thenReturn(3);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
+        verify(spyActivity, never()).startActivity(any());
     }
 
     @Test

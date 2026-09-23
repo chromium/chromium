@@ -215,6 +215,7 @@ if (is_android) {
     sources = [
       "public/android/java/src/org/chromium/chrome/browser/glic/ConversationInfo.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicIntentConstants.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceHandler.java",

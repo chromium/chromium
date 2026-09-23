@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -13,6 +14,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Set;
@@ -120,6 +123,18 @@ public interface ActorForegroundServiceController {
     }
 
     /**
+     * Returns the window holding the tab handed off to background actuation for the given task.
+     * Such a tab is detached from every window's tab model, so it cannot be found by tab ID alone.
+     *
+     * @param taskId The task to look up.
+     * @return The window ID, or {@link TabWindowManager#INVALID_WINDOW_ID} if the task has no
+     *     recorded background tab.
+     */
+    default int getWindowIdForTask(int taskId) {
+        return TabWindowManager.INVALID_WINDOW_ID;
+    }
+
+    /**
      * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
      * foreground and show the actor control bottom sheet.
      *
@@ -153,14 +168,12 @@ public interface ActorForegroundServiceController {
                         intent,
                         NotificationConstants.EXTRA_ACTOR_TASK_ID,
                         ActorTask.INVALID_TASK_ID);
-        if (taskId == ActorTask.INVALID_TASK_ID) {
+        String conversationId =
+                IntentUtils.safeGetStringExtra(intent, GlicIntentConstants.EXTRA_CONVERSATION_ID);
+        if (taskId == ActorTask.INVALID_TASK_ID && TextUtils.isEmpty(conversationId)) {
             return Tab.INVALID_TAB_ID;
         }
 
-        return resolveTabIdForTask(taskId);
-    }
-
-    private static @TabId int resolveTabIdForTask(int taskId) {
         if (!ProfileManager.isInitialized()) {
             return Tab.INVALID_TAB_ID;
         }
@@ -174,7 +187,11 @@ public interface ActorForegroundServiceController {
             return Tab.INVALID_TAB_ID;
         }
 
-        ActorTask task = service.getTask(taskId);
+        // A task ID cached by the sender may refer to a task that has already finished.
+        ActorTask task = service.getTaskByConversationId(conversationId);
+        if (task == null && taskId != ActorTask.INVALID_TASK_ID) {
+            task = service.getTask(taskId);
+        }
         return task != null ? task.getTargetTabId() : Tab.INVALID_TAB_ID;
     }
 
