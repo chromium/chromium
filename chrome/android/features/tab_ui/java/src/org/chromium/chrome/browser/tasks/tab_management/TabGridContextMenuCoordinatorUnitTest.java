@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
@@ -98,6 +99,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private TabModel mTabModel;
     @Mock private TabRemover mTabRemover;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private Tab mTab;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Profile mProfile;
@@ -138,6 +140,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup("other_sync_group_id")).thenReturn(otherSavedGroup);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
         when(mTab.getTabGroupId()).thenReturn(mTabGroupId);

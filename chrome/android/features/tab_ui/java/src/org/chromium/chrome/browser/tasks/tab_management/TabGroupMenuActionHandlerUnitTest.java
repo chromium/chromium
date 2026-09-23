@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -79,6 +80,7 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Mock private Tab mTab;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
@@ -101,6 +103,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         when(mTabModel.tabGroupExists(any())).thenReturn(true);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
 
@@ -157,6 +160,8 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
 
         assertFalse(mHandler.handleAddToGroupAction(mTab));
+        verify(mTabUngrouper)
+                .ungroupTabs(List.of(mTab), /* trailing= */ false, /* allowDialog= */ false);
         verify(mTabModel).createSingleTabGroup(mTab);
         verify(mTabGroupListBottomSheetCoordinator, never()).showBottomSheet(any());
     }

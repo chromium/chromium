@@ -4435,27 +4435,29 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 RecordUserAction.record("MobileMenuAddAnyGroup.BeforeTabRestore");
                 return false;
             }
+            if (currentTab == null) return true;
 
             Profile profile = mTabModelProfileSupplier.get();
             TabModel tabModel = mTabModelSelector.getCurrentModel();
             if (id == R.id.add_to_group_menu_id) {
                 TrackerFactory.getTrackerForProfile(profile)
                         .notifyEvent("menu_add_to_group_clicked");
-                if (tabModel.getTabGroupCount() == 0) {
-                    RecordUserAction.record("MobileMenuAddToNewGroup");
-                } else {
-                    RecordUserAction.record("MobileMenuAddToGroup");
-                }
             }
 
-            new TabGroupMenuActionHandler(
+            TabGroupMenuActionHandler tabGroupMenuActionHandler =
+                    new TabGroupMenuActionHandler(
                             this,
                             tabModel,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
                             getModalDialogManager(),
                             getTabGroupUiActionHandler(),
-                            profile)
-                    .handleAddToGroupAction(currentTab);
+                            profile);
+            boolean existingGroupsPresent =
+                    tabGroupMenuActionHandler.handleAddToGroupAction(currentTab);
+            if (id == R.id.add_to_group_menu_id) {
+                RecordUserAction.record(
+                        existingGroupsPresent ? "MobileMenuAddToGroup" : "MobileMenuAddToNewGroup");
+            }
         } else if (id == R.id.add_to_existing_group_menu_item_id) {
             if (!mTabModelSelector.isTabStateInitialized() || currentTab == null) {
                 return false;

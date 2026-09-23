@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -102,11 +103,11 @@ public class TabGroupMenuActionHandler {
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
         if (!windowChecker.hasOtherGroups(tab.getTabGroupId())) {
-            mTabModel.createSingleTabGroup(tab);
-            @Nullable Token groupId = tab.getTabGroupId();
-            if (groupId != null) {
-                onTabGroupCreation(groupId);
-            }
+            TabGroupUtils.createNewGroupForTabs(
+                    List.of(tab),
+                    mTabModel,
+                    /* tabMovedCallback= */ null,
+                    this::onTabGroupCreation);
             return false;
         } else {
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator =
