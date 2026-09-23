@@ -257,6 +257,7 @@ class VerticalTabStripRegionView final
   // Organizer panel:
   raw_ptr<views::View> organizer_panel_view_ = nullptr;
   double organizer_panel_show_percent_ = 0.0;
+  bool organizer_panel_was_visible_ = false;
 
   raw_ptr<views::View> content_area_view_ = nullptr;
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;

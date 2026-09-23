@@ -160,10 +160,9 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
     return steps;
   }
 
-  auto ExpandOnHover() {
+  auto WaitForExpandOnHover() {
     auto steps =
-        Steps(MoveMouseTo(kTabStripRegionElementId),
-              WaitForEvent(kBrowserViewElementId, kExpandOnHoverComplete),
+        Steps(WaitForEvent(kBrowserViewElementId, kExpandOnHoverComplete),
               CheckView(
                   kTabStripRegionElementId,
                   [this](VerticalTabStripRegionView* region) {
@@ -174,6 +173,13 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                   },
                   true)
                   .SetDescription("Check and lock expand-on-hover."));
+    AddDescriptionPrefix(steps, "WaitForExpandOnHover()");
+    return steps;
+  }
+
+  auto ExpandOnHover() {
+    auto steps =
+        Steps(MoveMouseTo(kTabStripRegionElementId), WaitForExpandOnHover());
     AddDescriptionPrefix(steps, "ExpandOnHover()");
     return steps;
   }
@@ -460,6 +466,21 @@ IN_PROC_BROWSER_TEST_F(
       ExpectPanelLocation(OrganizerPanelLocation::kOrganizerTray),
       CheckPanelVisuals(organizer_panel::kOrganizerPanelMinWidth,
                         /*should_have_rounded_corners=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       TriggersExpandOnHoverWhenOpenedViaAccelerator) {
+  ui::Accelerator tab_search_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_TAB_SEARCH, &tab_search_accelerator));
+
+  RunTestSequence(
+      SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/true),
+      CollapseTabStrip(),
+      SendAccelerator(kBrowserViewElementId, tab_search_accelerator),
+      WaitForExpandOnHover(),
+      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
+      CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
