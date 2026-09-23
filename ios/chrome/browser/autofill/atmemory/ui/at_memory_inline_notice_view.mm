@@ -36,7 +36,7 @@ constexpr CGFloat kMarginTrailing = 16.0;
   self = [super init];
   if (self) {
     _title = l10n_util::GetNSString(IDS_AT_MEMORY_NOTICE_TITLE);
-    _message = l10n_util::GetNSString(IDS_AT_MEMORY_NOTICE_TEXT_NO_LOGGING);
+    _message = l10n_util::GetNSString(IDS_AT_MEMORY_NOTICE_TEXT);
   }
   return self;
 }
