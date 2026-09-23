@@ -2271,7 +2271,7 @@ public class VerticalTabListCoordinator {
                             TabClosingSource.VERTICAL_TAB_STRIP,
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.VERTICAL,
-                            /* tabGroupUiActionHandler= */ null,
+                            mDataSharingTabManager.getTabGroupUiActionHandler(),
                             mTabHoverController::resetHoverState);
         }
         mTabHoverController.hideHoverCard();

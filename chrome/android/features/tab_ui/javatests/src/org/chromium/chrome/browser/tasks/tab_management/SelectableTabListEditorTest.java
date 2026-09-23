@@ -60,6 +60,7 @@ import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -1595,7 +1596,8 @@ public class SelectableTabListEditorTest {
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
-                                    IconPosition.START));
+                                    IconPosition.START,
+                                    SupplierUtils.ofNull()));
 
                     showSelectionEditor(tabs, actions);
                 });
@@ -1641,7 +1643,8 @@ public class SelectableTabListEditorTest {
                                                     f,
                                                     g,
                                                     h,
-                                                    i)));
+                                                    i),
+                                    SupplierUtils.ofNull()));
                     showSelectionEditor(tabs, actions);
                 });
 

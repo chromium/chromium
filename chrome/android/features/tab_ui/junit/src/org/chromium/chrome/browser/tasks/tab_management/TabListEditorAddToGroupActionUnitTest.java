@@ -9,8 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,11 +52,13 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -78,6 +83,8 @@ public class TabListEditorAddToGroupActionUnitTest {
     @Mock private Drawable mDrawable;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
+    @Mock private TabGroupListBottomSheetCoordinatorFactory mFactory;
 
     private TabListEditorAddToGroupAction mAction;
     private Token mTabGroupId;
@@ -89,6 +96,7 @@ public class TabListEditorAddToGroupActionUnitTest {
 
         mTabGroupId = Token.createRandom();
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTab1.getProfile()).thenReturn(mProfile);
         when(mTabModelSupplier.get()).thenReturn(mTabModel);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
@@ -113,7 +121,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                         TEXT,
                         START,
                         mDrawable,
-                        (a, b, c, d, e, f, g, h, i, j) -> mCoordinator);
+                        (a, b, c, d, e, f, g, h, i, j) -> mCoordinator,
+                        SupplierUtils.ofNull());
         mAction.configure(
                 mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
     }
@@ -136,7 +145,12 @@ public class TabListEditorAddToGroupActionUnitTest {
     public void testCreateAction() {
         TabListEditorAction action =
                 TabListEditorAddToGroupAction.createAction(
-                        mActivity, mTabGroupCreationDialogManager, MENU_ONLY, TEXT, START);
+                        mActivity,
+                        mTabGroupCreationDialogManager,
+                        MENU_ONLY,
+                        TEXT,
+                        START,
+                        SupplierUtils.ofNull());
         when(mTabModel.getTabGroupCount()).thenReturn(1);
         action.configure(
                 mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
@@ -164,7 +178,12 @@ public class TabListEditorAddToGroupActionUnitTest {
     public void testCreateAction_NoTabGroups() {
         TabListEditorAction action =
                 TabListEditorAddToGroupAction.createAction(
-                        mActivity, mTabGroupCreationDialogManager, MENU_ONLY, TEXT, START);
+                        mActivity,
+                        mTabGroupCreationDialogManager,
+                        MENU_ONLY,
+                        TEXT,
+                        START,
+                        SupplierUtils.ofNull());
         when(mTabModel.getTabGroupCount()).thenReturn(0);
         when(mTabModel.tabGroupExists(any())).thenReturn(false);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
@@ -268,6 +287,57 @@ public class TabListEditorAddToGroupActionUnitTest {
     @Test(expected = AssertionError.class)
     public void testPerformAction_NoTabs() {
         mAction.performAction(Collections.emptyList(), Collections.emptyList());
+    }
+
+    @Test
+    public void testPerformAction_forwardsUiActionHandler() {
+        when(mFactory.create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mCoordinator);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+
+        TabListEditorAddToGroupAction action =
+                new TabListEditorAddToGroupAction(
+                        mActivity,
+                        mTabGroupCreationDialogManager,
+                        MENU_ONLY,
+                        TEXT,
+                        START,
+                        mDrawable,
+                        mFactory,
+                        () -> mTabGroupUiActionHandler);
+        action.configure(
+                mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
+
+        List<TabListEditorItemSelectionId> itemIds =
+                List.of(TabListEditorItemSelectionId.createTabId(1));
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(new HashSet<>(itemIds));
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1));
+        assertTrue(action.performAction(tabs, Collections.emptyList()));
+        verify(mFactory)
+                .create(
+                        eq(mActivity),
+                        eq(mProfile),
+                        any(),
+                        isNull(),
+                        eq(mTabModel),
+                        any(),
+                        eq(true),
+                        eq(true),
+                        any(),
+                        eq(mTabGroupUiActionHandler));
     }
 
     @Test

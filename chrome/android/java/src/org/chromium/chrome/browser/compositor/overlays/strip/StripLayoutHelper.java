@@ -2462,6 +2462,7 @@ public class StripLayoutHelper
 
     /**
      * Called when a tab has stopped loading resources.
+     *
      * @param id The id of the Tab.
      */
     public void tabLoadFinished(int id) {
@@ -2723,7 +2724,7 @@ public class StripLayoutHelper
                                 /* supportsShowNewGroup= */ true,
                                 /* destroyOnHide= */ false,
                                 mWindowAndroid,
-                                /* tabGroupUiActionHandler= */ null);
+                                mDataSharingTabManager.getTabGroupUiActionHandler());
             }
             mTabContextMenuCoordinator =
                     TabContextMenuCoordinator.createContextMenuCoordinator(
@@ -2753,7 +2754,7 @@ public class StripLayoutHelper
                             TabClosingSource.TABLET_TAB_STRIP,
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.HORIZONTAL,
-                            /* tabGroupUiActionHandler= */ null,
+                            mDataSharingTabManager.getTabGroupUiActionHandler(),
                             /* onMenuDismissedCallback= */ null);
         }
         RectProvider anchorRectProvider = new RectProvider();
