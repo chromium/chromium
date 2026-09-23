@@ -37,11 +37,11 @@ std::string_view ActionSourceToString(ActionSource source) {
   NOTREACHED();
 }
 
-void LogVisitIdResolutionOutcome(const CriticalActionEntry& entry,
+void LogVisitIdResolutionOutcome(ActionSource source,
                                  VisitIdResolutionOutcome outcome) {
-  std::string_view source = ActionSourceToString(entry.action_source);
   base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.VisitIdResolutionOutcome.", source}),
+      base::StrCat({"CriticalActions.VisitIdResolutionOutcome.",
+                    ActionSourceToString(source)}),
       outcome);
 }
 
@@ -143,7 +143,8 @@ void CriticalActionService::OnURLVisitedWithNavigationId(
   for (auto& entry : state.pending_actions) {
     entry.visit_id = visit_id;
     AddCriticalAction(entry);
-    LogVisitIdResolutionOutcome(entry, VisitIdResolutionOutcome::kSuccess);
+    LogVisitIdResolutionOutcome(entry.action_source,
+                                VisitIdResolutionOutcome::kSuccess);
   }
   state.pending_actions.clear();
 }
@@ -217,7 +218,7 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (navigation_id == 0) {
     LogVisitIdResolutionOutcome(
-        entry, VisitIdResolutionOutcome::kDroppedNoNavigationId);
+        entry.action_source, VisitIdResolutionOutcome::kDroppedNoNavigationId);
     return;
   }
 
@@ -226,7 +227,7 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
     CriticalActionEntry resolved_entry = entry;
     resolved_entry.visit_id = *it->second.visit_id;
     AddCriticalAction(resolved_entry);
-    LogVisitIdResolutionOutcome(resolved_entry,
+    LogVisitIdResolutionOutcome(resolved_entry.action_source,
                                 VisitIdResolutionOutcome::kSuccess);
     return;
   }
@@ -234,7 +235,7 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
   if (it == navigation_cache_.end()) {
     if (navigation_cache_.size() >= navigation_cache_.max_size() &&
         !navigation_cache_.empty()) {
-      DropPendingActions(navigation_cache_.begin()->second,
+      DropPendingActions(navigation_cache_.rbegin()->second,
                          VisitIdResolutionOutcome::kEvictedCapacityExceeded);
     }
     it = navigation_cache_.Put(navigation_id, NavigationState());
@@ -315,7 +316,7 @@ void CriticalActionService::DropPendingActions(
     NavigationState& state,
     VisitIdResolutionOutcome outcome) {
   for (const auto& entry : state.pending_actions) {
-    LogVisitIdResolutionOutcome(entry, outcome);
+    LogVisitIdResolutionOutcome(entry.action_source, outcome);
   }
   state.pending_actions.clear();
 }

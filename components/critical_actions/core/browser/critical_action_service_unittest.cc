@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -364,17 +365,64 @@ TEST_F(CriticalActionServiceTest,
        VisitIdResolutionOutcomeEvictedCapacityExceeded) {
   base::HistogramTester histogram_tester;
   int64_t nav_id = 1000;
-  CriticalActionEntry entry =
+  CriticalActionEntry lru_entry =
       CreateDefaultEntry(ActionType::kFormFill, ActionSource::kPasswordManager);
-  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+  service_->AddCriticalActionWithNavigationId(lru_entry, nav_id);
 
-  for (int64_t next_id = nav_id + 1; next_id <= nav_id + 200; ++next_id) {
-    service_->AddCriticalActionWithNavigationId(entry, next_id);
+  CriticalActionEntry other_entry =
+      CreateDefaultEntry(ActionType::kFormFill, ActionSource::kAutofill);
+
+  const int max_capacity = features::kMaxNavigationCacheCapacity.Get();
+  for (int64_t next_id = nav_id + 1; next_id <= nav_id + max_capacity;
+       ++next_id) {
+    service_->AddCriticalActionWithNavigationId(other_entry, next_id);
   }
 
   histogram_tester.ExpectBucketCount(
       "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
       VisitIdResolutionOutcome::kEvictedCapacityExceeded, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.VisitIdResolutionOutcome.Autofill",
+      VisitIdResolutionOutcome::kEvictedCapacityExceeded, 0);
+}
+
+TEST_F(CriticalActionServiceTest,
+       VisitIdResolutionOutcomeEvictedCapacityExceededLruOrder) {
+  base::HistogramTester histogram_tester;
+  int64_t nav_id_1 = 1000;
+  int64_t nav_id_2 = 1001;
+  int64_t lru_nav_id = 1002;
+
+  CriticalActionEntry other_entry =
+      CreateDefaultEntry(ActionType::kFormFill, ActionSource::kAutofill);
+  CriticalActionEntry lru_entry =
+      CreateDefaultEntry(ActionType::kFormFill, ActionSource::kPasswordManager);
+
+  // Add initial entries for nav_id_1 and nav_id_2.
+  service_->AddCriticalActionWithNavigationId(other_entry, nav_id_1);
+  service_->AddCriticalActionWithNavigationId(other_entry, nav_id_2);
+
+  // Add the entry that should eventually become the least recently used.
+  service_->AddCriticalActionWithNavigationId(lru_entry, lru_nav_id);
+
+  // Re-access nav_id_1 and nav_id_2 so they become more recently used than
+  // lru_entry, testing true LRU behavior (recency) over insertion order.
+  service_->AddCriticalActionWithNavigationId(other_entry, nav_id_1);
+  service_->AddCriticalActionWithNavigationId(other_entry, nav_id_2);
+
+  // Add more entries until capacity is exceeded by 1.
+  const int max_capacity = features::kMaxNavigationCacheCapacity.Get();
+  for (int64_t next_id = lru_nav_id + 1;
+       next_id < lru_nav_id + 1 + (max_capacity - 2); ++next_id) {
+    service_->AddCriticalActionWithNavigationId(other_entry, next_id);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kEvictedCapacityExceeded, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.VisitIdResolutionOutcome.Autofill",
+      VisitIdResolutionOutcome::kEvictedCapacityExceeded, 0);
 }
 
 TEST_F(CriticalActionServiceTest, EventLoggedHistogramEmitted) {
@@ -732,7 +780,9 @@ TEST_F(CriticalActionServiceTest,
        ConversationIdResolutionOutcomeEvictedCapacityExceeded) {
   base::HistogramTester histogram_tester;
 
-  for (int i = 0; i <= 200; ++i) {
+  const int max_capacity =
+      features::kMaxTaskToCriticalActionIdsCacheCapacity.Get();
+  for (int i = 0; i <= max_capacity; ++i) {
     CriticalActionEntry entry = CreateDefaultEntry();
     entry.actor_task_id = base::StrCat({"task_", base::NumberToString(i)});
     service_->AddCriticalAction(entry);
