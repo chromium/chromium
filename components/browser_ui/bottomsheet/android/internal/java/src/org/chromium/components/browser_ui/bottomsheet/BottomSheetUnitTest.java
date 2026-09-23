@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.ShadowLayerView;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
@@ -1707,5 +1708,173 @@ public class BottomSheetUnitTest {
         assertTrue(
                 "Genuinely tiny screen (300dp) must trigger isSmallScreen.",
                 mBottomSheet.isSmallScreen());
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Large form factor mode matrix.
+    //
+    // The sheet renders in one of three modes, selected by the sheet's isLargeFormFactor flag
+    // (fixed at init) combined with the current content's supportsLargeFormFactor():
+    //
+    //   STANDARD          isLargeFormFactor == false
+    //   DESKTOP_POPUP     isLargeFormFactor == true  &&  content.supportsLargeFormFactor()
+    //   DESKTOP_FALLBACK  isLargeFormFactor == true  && !content.supportsLargeFormFactor()
+    //
+    // No production content overrides supportsLargeFormFactor() today, so DESKTOP_FALLBACK is
+    // currently unreachable in the field. It is kept as a safety valve, and these tests are what
+    // keep it honest.
+    //
+    // The tests below pin the geometry that differs across these modes. Each names the behavior
+    // it protects so a future refactor that collapses the modes fails loudly rather than
+    // silently changing layout.
+    // -----------------------------------------------------------------------------------------
+
+    /**
+     * Builds a mock sheet content with the given large form factor opt-in and height ratios.
+     *
+     * @param supportsLargeFormFactor Whether the content opts in to the desktop popup treatment.
+     * @param halfRatio The half height ratio, or a {@link HeightMode} constant.
+     * @param fullRatio The full height ratio, or a {@link HeightMode} constant.
+     */
+    private BottomSheetContent buildContent(
+            boolean supportsLargeFormFactor, float halfRatio, float fullRatio) {
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        doReturn(supportsLargeFormFactor).when(content).supportsLargeFormFactor();
+        doReturn(halfRatio).when(content).getHalfHeightRatio();
+        doReturn(fullRatio).when(content).getFullHeightRatio();
+        doReturn(MAX_HEIGHT_RATIO).when(content).getMaxResizeContentHeightRatio();
+        doReturn(HeightMode.DISABLED).when(content).getPeekHeight();
+        doReturn(new View(mActivity)).when(content).getContentView();
+        doReturn(android.R.string.ok).when(content).getSheetFullHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(content).getSheetHalfHeightAccessibilityStringId();
+        doReturn(android.R.string.copy).when(content).getSheetClosedAccessibilityStringId();
+        doReturn(android.R.string.copy).when(content).getSheetHiddenAccessibilityStringId();
+        return content;
+    }
+
+    /** Builds a sheet whose container has been laid out to the given height before init(). */
+    private BottomSheet buildSheetWithContainerHeight(boolean isLargeFormFactor, int height) {
+        BottomSheet sheet = inflateAndAttachSheet(isLargeFormFactor);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, height);
+        installSharedTestViews(sheet);
+        initSheet(sheet, isLargeFormFactor);
+        return sheet;
+    }
+
+    @Test
+    public void testSheetLayoutMode_Standard() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ false);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+
+        assertEquals(
+                "A non-large-form-factor sheet must stay STANDARD even if content opts in.",
+                SheetLayoutMode.STANDARD,
+                sheet.getSheetLayoutMode());
+    }
+
+    @Test
+    public void testSheetLayoutMode_DesktopPopup() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+
+        assertEquals(
+                "Large form factor sheet with opted-in content must use DESKTOP_POPUP.",
+                SheetLayoutMode.DESKTOP_POPUP,
+                sheet.getSheetLayoutMode());
+    }
+
+    @Test
+    public void testSheetLayoutMode_DesktopFallback() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+
+        assertEquals(
+                "Large form factor sheet with opted-out content must use DESKTOP_FALLBACK.",
+                SheetLayoutMode.DESKTOP_FALLBACK,
+                sheet.getSheetLayoutMode());
+    }
+
+    @Test
+    public void testGetMaxSheetHeight_DesktopFallback_NotClamped() {
+        int containerHeight = 800;
+        BottomSheet sheet =
+                buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, containerHeight);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+
+        assertEquals(
+                "Fallback content must use the whole container height, with no desktop clamping.",
+                containerHeight,
+                sheet.getMaxSheetHeight());
+    }
+
+    @Test
+    public void testContainerBottomMargin_DesktopPopup_AddsDesktopMargin() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+
+        assertEquals(
+                "Popup mode must float the sheet off the bottom by the desktop margin.",
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin),
+                sheet.getContainerBottomMargin());
+    }
+
+    @Test
+    public void testContainerBottomMargin_DesktopFallback_NoDesktopMargin() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+
+        assertEquals(
+                "Fallback mode must sit flush against the bottom like a standard sheet.",
+                0,
+                sheet.getContainerBottomMargin());
+    }
+
+    @Test
+    public void testContentContainerHeight_DesktopFallback_UsesMatchParent() {
+        BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 1000);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+
+        sheet.setSheetState(SheetState.FULL, false);
+
+        assertEquals(
+                "Fallback content is sized like a standard sheet, not to an explicit height.",
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                contentContainer.getLayoutParams().height);
+    }
+
+    @Test
+    public void testContentBottomPadding_Standard_AppliesViewportInset() {
+        BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ false, 1000);
+        sheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 40);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+
+        sheet.setSheetState(SheetState.FULL, false);
+
+        assertNotEquals(
+                "Standard sheets must reserve bottom padding for the edge-to-edge inset.",
+                0,
+                contentContainer.getPaddingBottom());
+    }
+
+    @Test
+    public void testContentBottomPadding_DesktopPopup_ForcesZero() {
+        BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 1000);
+        sheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 40);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+
+        sheet.setSheetState(SheetState.FULL, false);
+
+        assertEquals(
+                "Popup mode deliberately ignores the edge-to-edge inset; it floats above it.",
+                0,
+                contentContainer.getPaddingBottom());
     }
 }
