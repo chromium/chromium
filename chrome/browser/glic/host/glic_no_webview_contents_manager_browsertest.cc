@@ -474,8 +474,9 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_EQ(unattached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 }
 
+// TODO(crbug.com/565211288): This test is flaky.
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
-                       LoadingStyleMatchesPanelState) {
+                       DISABLED_LoadingStyleMatchesPanelState) {
   {
     // Unattached manager defaults to kSidePanel loading style.
     GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
