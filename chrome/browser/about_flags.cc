@@ -9710,7 +9710,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::internal::kWebUIOmniboxFullPopup,
                                     kWebUIOmniboxFullPopupVariations,
                                     "WebUIOmniboxFullPopup")},
 

@@ -45,6 +45,14 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
 // TODO(crbug.com/521521553): Remove this feature flag once the
 // feature flag is fully rolled out.
 BASE_DECLARE_FEATURE(kWebUIOmniboxSimplification);
+BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
+
+// Returns true if `kWebUIOmniboxFullPopup` is enabled.
+// UI and model callers must instead query:
+// - `OmniboxPopupPresenterDelegate::is_full_webui_omnibox()`
+// - `OmniboxView::IsFullWebUIOmnibox()`
+// - `OmniboxViewViews::IsFullWebUIOmniboxReady()`
+bool IsWebUIOmniboxFullPopupEnabled();
 
 }  // namespace internal
 
@@ -63,7 +71,6 @@ BASE_DECLARE_FEATURE(kOmniboxEverywhereFre);
 BASE_DECLARE_FEATURE(kAiModeSpaceDoesNotActivate);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
-BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopupDoubleClick);
 BASE_DECLARE_FEATURE(kOmniboxEverywhere);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
@@ -139,9 +146,6 @@ extern const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();
-
-// Returns true if `kWebUIOmniboxFullPopup` is enabled.
-bool IsWebUIOmniboxFullPopupEnabled();
 
 // Returns true if the webui omnibox should use the WebuiOmniboxFullHandler
 bool ShouldUseWebUIOmniboxFullHandler();

@@ -1011,7 +1011,7 @@ class OmniboxAimPopupFullWebUIBrowserTest : public OmniboxAimPopupBrowserTest {
  public:
   OmniboxAimPopupFullWebUIBrowserTest() {
     feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
-                                    omnibox::kWebUIOmniboxFullPopup},
+                                    omnibox::internal::kWebUIOmniboxFullPopup},
                                    {features::kWebUILocationBar});
   }
 

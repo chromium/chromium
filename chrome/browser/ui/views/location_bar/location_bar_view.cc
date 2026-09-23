@@ -219,8 +219,9 @@ LocationBarView::LocationBarView(BrowserWindowInterface* browser,
       profile_(profile),
       delegate_(delegate),
       is_popup_mode_(is_popup_mode),
-      is_full_webui_omnibox_(CanHostWebUIOmnibox(browser, is_popup_mode) &&
-                             omnibox::IsWebUIOmniboxFullPopupEnabled()) {
+      is_full_webui_omnibox_(
+          CanHostWebUIOmnibox(browser, is_popup_mode) &&
+          omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
   if (browser_) {
     pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_registrar_->Init(browser_->GetProfile()->GetPrefs());

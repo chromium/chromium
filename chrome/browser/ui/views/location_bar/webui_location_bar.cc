@@ -109,8 +109,7 @@ WebUILocationBar::WebUILocationBar(BrowserWindowInterface* browser,
       page_action_control_(
           browser ? BrowserActions::From(browser)->root_action_item()
                   : nullptr),
-      using_full_popup_(
-          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      using_full_popup_(omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
   permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
   permission_dashboard_controller_ =
       std::make_unique<PermissionDashboardController>(

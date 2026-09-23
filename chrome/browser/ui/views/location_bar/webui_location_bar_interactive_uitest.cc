@@ -268,11 +268,12 @@ class WebUILocationBarInteractiveUiTest
            features::kWebUILocationBar,
            omnibox::internal::kWebUIOmniboxAimPopup},
           {omnibox::kAimServerEligibilityEnabled, features::kPrewarm,
-           omnibox::kWebUIOmniboxFullPopup});
+           omnibox::internal::kWebUIOmniboxFullPopup});
     } else {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIReloadButton,
-           features::kWebUILocationBar, omnibox::kWebUIOmniboxFullPopup,
+           features::kWebUILocationBar,
+           omnibox::internal::kWebUIOmniboxFullPopup,
            omnibox::internal::kWebUIOmniboxAimPopup},
           {omnibox::kAimServerEligibilityEnabled, features::kPrewarm});
     }

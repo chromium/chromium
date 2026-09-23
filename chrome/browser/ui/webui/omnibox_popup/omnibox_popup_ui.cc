@@ -106,7 +106,7 @@ void PopulateAiModeButtonUiConfig(content::WebUIDataSource* source,
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return omnibox::IsAimPopupFeatureEnabled() ||
-         omnibox::IsWebUIOmniboxFullPopupEnabled() ||
+         omnibox::internal::IsWebUIOmniboxFullPopupEnabled() ||
          omnibox::IsWebUIOmniboxPopupEnabled() ||
          base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) ||
          features::IsWebUILocationBarEnabled();
@@ -147,7 +147,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
   source->AddBoolean("webuiOmniboxFullPopupEnabled",
-                     omnibox::IsWebUIOmniboxFullPopupEnabled());
+                     omnibox::internal::IsWebUIOmniboxFullPopupEnabled());
   // TODO(b/504670497): Replace this NTP-specific flag with a generic flag.
   // TODO(b/474406096): Replace this NTP-specific flag with a generic flag.
   source->AddBoolean("isFuseboxEnabled", false);
@@ -165,10 +165,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::ShouldDrawAimShadowInWebUI());
   source->AddBoolean("omniboxFullWebUIShadowEnabled",
                      omnibox::ShouldDrawFullPopupShadowInWebUI());
-  source->AddBoolean(
-      "searchboxMultiline",
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
-          omnibox::kWebUIOmniboxFullPopupMultiline.Get());
+  source->AddBoolean("searchboxMultiline",
+                     omnibox::internal::IsWebUIOmniboxFullPopupEnabled() &&
+                         omnibox::kWebUIOmniboxFullPopupMultiline.Get());
 
   source->AddBoolean("reportMetrics", true);
   source->AddString("charTypedToPaintMetricName",
@@ -281,7 +280,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kContextButtonShapeIsOblong.Get());
 
   int default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML;
-  if (omnibox::IsWebUIOmniboxFullPopupEnabled()) {
+  if (omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
     default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML;
   }
   webui::SetupWebUIDataSource(source, kOmniboxPopupResources, default_resource);

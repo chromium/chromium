@@ -268,7 +268,7 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
     set_global_browser_set_up_function(nullptr);
     feature_list_full_v2_.InitWithFeatures(
         {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::kWebUIOmniboxFullPopup},
+         omnibox::internal::kWebUIOmniboxFullPopup},
         {});
   }
 

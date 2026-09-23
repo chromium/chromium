@@ -1495,7 +1495,7 @@ TEST_F(WebuiOmniboxHandlerTest, SetPopupSelection_IgnoresOutOfBounds) {
 
 TEST_F(WebuiOmniboxHandlerTest, OnActiveTabChanged_SavesAndRestoresState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  feature_list.InitAndEnableFeature(omnibox::internal::kWebUIOmniboxFullPopup);
   tabs::MockTabInterface tab1;
   tabs::MockTabInterface tab2;
   auto web_contents1 =
@@ -2286,7 +2286,8 @@ TEST_F(WebuiOmniboxHandlerTest,
 class WebuiOmniboxHandlerTabScopingTest : public WebuiOmniboxHandlerTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::internal::kWebUIOmniboxFullPopup);
     WebuiOmniboxHandlerTest::SetUp();
 
     browser_window_interface_ =
@@ -2385,7 +2386,7 @@ TEST_F(WebuiOmniboxHandlerTabScopingTest,
 TEST_F(WebuiOmniboxHandlerTabScopingTest,
        QueryAutocomplete_StartsAutocompleteWhenFullPopupDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(omnibox::kWebUIOmniboxFullPopup);
+  feature_list.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxFullPopup);
 
   AutocompleteInput input;
   EXPECT_CALL(*mock_autocomplete_controller_, Start(_))

@@ -243,7 +243,7 @@ void WebuiOmniboxHandler::QueryAutocomplete(
     bool is_on_focus,
     const std::string& keyword,
     searchbox::mojom::InputMethod input_method) {
-  if (!omnibox::IsWebUIOmniboxFullPopupEnabled()) {
+  if (!omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
     DCHECK(!tab_id.has_value())
         << "QueryAutocomplete with tab_id is only supported when WebUI Omnibox "
            "full popup is enabled.";
@@ -440,7 +440,7 @@ void WebuiOmniboxHandler::OverrideIconPaths(
 
 void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
   if (focused) {
-    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    if (omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
       if (omnibox_controller() &&
           omnibox_controller()->popup_state_manager()->popup_state() ==
               OmniboxPopupState::kNone) {
@@ -452,7 +452,7 @@ void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
     edit_model()->OnWillKillFocus();
     // Delay killing focus for full popup until state is properly synced in
     // omnibox_popup_view_full_webui's `OnTabChanged`
-    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    if (!omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
       // Kill focus on focus loss to properly terminate the edit session and
       // reset popup and keyword state.
       edit_model()->OnKillFocus();

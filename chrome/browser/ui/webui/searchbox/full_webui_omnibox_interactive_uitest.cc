@@ -356,7 +356,7 @@ class FullWebUIOmniboxInteractiveTest
  public:
   FullWebUIOmniboxInteractiveTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kWebUIOmniboxFullPopup},
+        /*enabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup},
         /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup});
   }
   ~FullWebUIOmniboxInteractiveTest() override = default;
@@ -1786,7 +1786,7 @@ class FullWebUIOmniboxAimInteractiveTestBase
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
       bool force_enable_aim) {
     std::vector<base::test::FeatureRefAndParams> features = {
-        {omnibox::kWebUIOmniboxFullPopup, {}},
+        {omnibox::internal::kWebUIOmniboxFullPopup, {}},
         {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady, {}}};
     if (force_enable_aim) {
       features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
