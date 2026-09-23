@@ -1,0 +1,15 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++heading restriction=readOnly
+++++++staticText name='Section 1: Overview ' restriction=readOnly
+++++++++inlineTextBox name='Section 1: Overview ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='This main body paragraph explains the primary findings of the study. It continues onto a second line of regular ten point prose text here. ' restriction=readOnly
+++++++++inlineTextBox name='This main body paragraph explains the primary findings of the study. ' restriction=readOnly
+++++++++inlineTextBox name='It continues onto a second line of regular ten point prose text here. ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='Table 1: Fine print data row one with detailed numerical measurements. Table 1: Fine print data row two with detailed numerical measurements. Table 1: Fine print data row three with detailed numerical measurements. Table 1: Fine print data row four with detailed numerical measurements.' restriction=readOnly
+++++++++inlineTextBox name='Table 1: Fine print data row one with detailed numerical measurements. ' restriction=readOnly
+++++++++inlineTextBox name='Table 1: Fine print data row two with detailed numerical measurements. ' restriction=readOnly
+++++++++inlineTextBox name='Table 1: Fine print data row three with detailed numerical measurements. ' restriction=readOnly
+++++++++inlineTextBox name='Table 1: Fine print data row four with detailed numerical measurements.' restriction=readOnly

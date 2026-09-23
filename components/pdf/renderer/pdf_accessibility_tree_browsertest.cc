@@ -80,6 +80,23 @@ constexpr int kBoldFontWeight = 700;
 constexpr char kRegularFontName[] = "Helvetica-Regular";
 constexpr char kBoldFontName[] = "Helvetica-Bold";
 
+// Body text string exceeding `kSparsePageCharCountThreshold` (250 characters)
+// so that synthetic pages with smaller header, footer, or footnote runs are not
+// treated as sparse pages.
+constexpr char kLongBodyText[] =
+    "I've done it all for her "
+    "Put up each wall for her "
+    "All the plans I laid "
+    "All the options weighed "
+    "Every price I paid for her "
+    "I went to war for her "
+    "Braved a foreign shore for her "
+    "Bottled up the guilt, then I went full tilt "
+    "Rivaled Vanderbilt for her "
+    "Daisy "
+    "You fight and return "
+    "Only to learn that you have lost her";
+
 // Returns a style with only the font weight set to a normal weight.
 chrome_pdf::AccessibilityTextStyleInfo CreateNormalStyle() {
   chrome_pdf::AccessibilityTextStyleInfo style;
@@ -270,10 +287,14 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
   TestPdfAccessibilityTree& operator=(const TestPdfAccessibilityTree&) = delete;
 };
 
-std::vector<chrome_pdf::AccessibilityCharInfo> MakeCharVector(
-    const std::vector<std::string>& words) {
+struct CustomCharData {
   std::vector<chrome_pdf::AccessibilityCharInfo> chars;
-  chars.reserve(words.size() * kCharsPerWord);
+  std::vector<uint32_t> char_counts;
+};
+
+CustomCharData MakeCharVector(const std::vector<std::string>& words) {
+  CustomCharData data;
+  data.char_counts.reserve(words.size());
   for (const auto& word : words) {
     std::vector<base_icu::UChar32> code_points;
     for (size_t i = 0; i < word.size(); ++i) {
@@ -282,15 +303,17 @@ std::vector<chrome_pdf::AccessibilityCharInfo> MakeCharVector(
           << "word is not valid UTF-8: " << word;
       code_points.push_back(code_point);
     }
-    for (size_t i = 0; i < kCharsPerWord; ++i) {
+    const size_t run_len = std::max(kCharsPerWord, code_points.size());
+    data.char_counts.push_back(static_cast<uint32_t>(run_len));
+    for (size_t i = 0; i < run_len; ++i) {
       chrome_pdf::AccessibilityCharInfo char_info;
       char_info.unicode_character =
           (i < code_points.size()) ? code_points[i] : ' ';
       char_info.char_width = 10.0f;
-      chars.push_back(char_info);
+      data.chars.push_back(char_info);
     }
   }
-  return chars;
+  return data;
 }
 
 }  // namespace
@@ -378,7 +401,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   void SetUpHeuristicAccessibilityTreeDetailed(
       const std::vector<float>& font_sizes,
       const std::vector<chrome_pdf::AccessibilityTextStyleInfo>& styles,
-      const std::vector<chrome_pdf::AccessibilityCharInfo>& custom_chars,
+      const CustomCharData& custom_chars,
       const std::vector<gfx::RectF>& bounds = {},
       const std::vector<uint32_t>& char_counts = {}) {
     CreatePdfAccessibilityTree();
@@ -398,12 +421,14 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
       }
       if (i < char_counts.size()) {
         run.len = char_counts[i];
+      } else if (i < custom_chars.char_counts.size()) {
+        run.len = custom_chars.char_counts[i];
       }
       text_runs_.push_back(run);
     }
 
     CHECK(chars_.empty());
-    if (custom_chars.empty()) {
+    if (custom_chars.chars.empty()) {
       size_t total_chars = 0;
       for (const chrome_pdf::AccessibilityTextRunInfo& run : text_runs_) {
         total_chars += run.len;
@@ -417,7 +442,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
       // lengths must stay at the default that `MakeCharVector()` produces.
       CHECK(char_counts.empty())
           << "custom_chars and char_counts cannot both be specified";
-      chars_ = custom_chars;
+      chars_ = custom_chars.chars;
     }
 
     page_info_.text_run_count = text_runs_.size();
@@ -980,6 +1005,154 @@ TEST_F(PdfAccessibilityTreeTest,
   }
 }
 
+// On a sparse title/cover page (< 250 chars) where a multi-line title (36.0f)
+// has more characters than a subtitle/date line (28.0f), the smaller size is
+// chosen as the median so the title runs are promoted to headings.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSparsePageSelectsSmallerFontSizeForTitle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Total chars = 40 + 40 + 15 = 95 (< 250).
+  // top1 = {36.0f, 80}, top2 = {28.0f, 15} (>= 10% of 95).
+  // Median selects smaller_size (28.0f), putting heading threshold at 33.6f, so
+  // the two 36.0f title runs merge into a single heading node followed by the
+  // 28.0f paragraph node.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{36.0f, 36.0f, 28.0f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{40, 40, 15});
+
+  constexpr std::array<ax::mojom::Role, 2> kExpectedRoles = {
+      ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph};
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(kExpectedRoles.size(), page->GetChildCount());
+
+  for (size_t i = 0; i < kExpectedRoles.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(kExpectedRoles[i], node->GetRole());
+  }
+}
+
+// On a text-dense page (>= 250 chars) where a smaller table/footnote font size
+// (8.0f) outnumbers main body prose (10.0f), the larger body size is chosen as
+// the median so body paragraphs are not misclassified as headings.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicDensePageSelectsLargerBodyFontSizeOverSmallerTable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Total chars = 20 + 150 + 75 + 150 + 75 = 470 (>= 250).
+  // top1 = {8.0f, 300}, top2 = {10.0f, 150} (>= 0.4 * 300).
+  // Since 10.0f is in (8.0f * 1.2, 8.0f * 1.7), median selects 10.0f, so the
+  // 10.0f body runs remain paragraphs and only the 16.0f run is a heading.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{16.0f, 8.0f, 10.0f, 8.0f, 10.0f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{20, 150, 75, 150, 75});
+
+  constexpr std::array<ax::mojom::Role, 5> kExpectedRoles = {
+      ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kParagraph, ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kParagraph};
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(kExpectedRoles.size(), page->GetChildCount());
+
+  for (size_t i = 0; i < kExpectedRoles.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(kExpectedRoles[i], node->GetRole());
+  }
+}
+
+// When the most frequent font size is at or below kMinimumFontSize (5.0f), such
+// as dense 1.5f table-of-contents leader dots, the larger size is chosen so
+// heading detection is not aborted.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSubMinimumFontSizeDoesNotBecomeMedian) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // top1 = {1.5f, 200} (<= kMinimumFontSize), top2 = {10.0f, 100} (>= 0.4 *
+  // 200). Because smaller_size <= 5.0f, SelectMedianFontSize returns 10.0f so
+  // the 16.0f heading is still found.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{16.0f, 10.0f, 1.5f, 1.5f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{20, 100, 100, 100});
+
+  constexpr std::array<ax::mojom::Role, 4> kExpectedRoles = {
+      ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kParagraph, ax::mojom::Role::kParagraph};
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(kExpectedRoles.size(), page->GetChildCount());
+
+  for (size_t i = 0; i < kExpectedRoles.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(kExpectedRoles[i], node->GetRole());
+  }
+}
+
+// On a sparse page (< 250 chars), when the second most frequent font size is at
+// or below kMinimumFontSize (5.0f), the larger dominant size is kept as the
+// median instead of picking the sub-minimum size.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSparsePageSubMinimumSecondFontSizeDoesNotBecomeMedian) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Total chars = 15 + 100 + 20 = 135 (< 250).
+  // top1 = {10.0f, 100}, top2 = {4.0f, 20} (>= 10% of 135).
+  // Even though sparse pages normally prefer smaller_size (4.0f), 4.0f <= 5.0f
+  // so SelectMedianFontSize returns 10.0f and the 16.0f heading is detected.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{16.0f, 10.0f, 4.0f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{15, 100, 20});
+
+  constexpr std::array<ax::mojom::Role, 3> kExpectedRoles = {
+      ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kParagraph};
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(kExpectedRoles.size(), page->GetChildCount());
+
+  for (size_t i = 0; i < kExpectedRoles.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(kExpectedRoles[i], node->GetRole());
+  }
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeadingToBodySizeRatioMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
@@ -1393,7 +1566,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicBoldRunSmallerThanMedianNotPromoted) {
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f, 10.0f},
       {bold_style, normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"bold", "body1", "body2", "body3", "end"}));
+      MakeCharVector({"bold", kLongBodyText, "body2", "body3", "end"}));
 
   const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
   ASSERT_GT(pdf_root->GetChildCount(), 1u);
@@ -1550,7 +1723,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"CAPS", "body1", "body2", "body3", "end"}));
+      MakeCharVector({"CAPS", kLongBodyText, "body2", "body3", "end"}));
 
   const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
   ASSERT_GT(pdf_root->GetChildCount(), 1u);
@@ -2677,7 +2850,8 @@ TEST_F(PdfAccessibilityTreeTest,
       /*font_sizes=*/{10.0f, 10.0f, 6.0f, 10.0f, 6.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style,
        normal_style},
-      MakeCharVector({"body1", "body2", "1", "first note", "2", "second note"}),
+      MakeCharVector(
+          {kLongBodyText, "body2", "1", "first note", "2", "second note"}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 920.0f, 8.0f, 10.0f),
@@ -2719,7 +2893,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{6.0f, 10.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"1", "annotated text", "body1", "body2", "end"}),
+      MakeCharVector({"1", "annotated text", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 50.0f, 8.0f, 10.0f),
        gfx::RectF(60.0f, 50.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 300.0f, 200.0f, 15.0f),
@@ -2765,7 +2939,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 6.0f, 10.0f},
       {normal_style, normal_style, normal_style, bold_style, normal_style},
-      MakeCharVector({"body1", "body2", "end", "1", "footnote text"}),
+      MakeCharVector({kLongBodyText, "body2", "end", "1", "footnote text"}),
       {gfx::RectF(50.0f, 150.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 165.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 180.0f, 200.0f, 15.0f),
@@ -2806,7 +2980,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"Header Title", "body1", "body2", "end"}),
+      MakeCharVector({"Header Title", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 50.0f, 100.0f, 15.0f),
        gfx::RectF(50.0f, 200.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 215.0f, 200.0f, 15.0f),
@@ -2843,7 +3017,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNonPageNumberFooterInBottomMargin) {
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 8.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"body1", "body2", "end", "Confidential"}),
+      MakeCharVector({kLongBodyText, "body2", "end", "Confidential"}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 130.0f, 200.0f, 15.0f),
@@ -2882,7 +3056,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 8.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"body1", "body2", "end", "Confidential"}),
+      MakeCharVector({kLongBodyText, "body2", "end", "Confidential"}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 130.0f, 200.0f, 15.0f),
@@ -2920,7 +3094,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 8.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"body1", "body2", "end", "Page 1"}),
+      MakeCharVector({kLongBodyText, "body2", "end", "Page 1"}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 130.0f, 200.0f, 15.0f),
@@ -2992,7 +3166,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"---", "body1", "body2", "end"}),
+      MakeCharVector({"---", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 50.0f, 100.0f, 10.0f),
        gfx::RectF(50.0f, 200.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 215.0f, 200.0f, 15.0f),
@@ -3030,7 +3204,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"Κεφάλαιο", "body1", "body2", "end"}),
+      MakeCharVector({"Κεφάλαιο", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 50.0f, 100.0f, 10.0f),
        gfx::RectF(50.0f, 200.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 215.0f, 200.0f, 15.0f),
@@ -3069,7 +3243,7 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{8.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"★—★", "body1", "body2", "end"}),
+      MakeCharVector({"★—★", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 50.0f, 100.0f, 10.0f),
        gfx::RectF(50.0f, 200.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 215.0f, 200.0f, 15.0f),
@@ -3111,7 +3285,8 @@ TEST_F(PdfAccessibilityTreeTest,
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 8.0f, 10.0f, 10.0f, 10.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style},
-      MakeCharVector({"body text", "Section Title", "body1", "body2", "end"}),
+      MakeCharVector(
+          {"body text", "Section Title", kLongBodyText, "body2", "end"}),
       {gfx::RectF(50.0f, 20.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 35.0f, 100.0f, 15.0f),
        gfx::RectF(50.0f, 150.0f, 200.0f, 15.0f),
@@ -3162,7 +3337,7 @@ TEST_F(PdfAccessibilityTreeTest,
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 8.0f, 8.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style,
        normal_style},
-      MakeCharVector({"body1", "body2", "body3", "end",
+      MakeCharVector({kLongBodyText, "body2", "body3", "end",
                       "Wide first line of footnote text with URL",
                       "consultazione 16/03/2020)."}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
@@ -3254,7 +3429,7 @@ TEST_F(PdfAccessibilityTreeTest,
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 8.0f, 8.0f},
       {normal_style, normal_style, normal_style, normal_style, normal_style,
        normal_style},
-      MakeCharVector({"body1", "body2", "body3", "end", "1",
+      MakeCharVector({kLongBodyText, "body2", "body3", "end", "1",
                       "See Smith (2020) for a discussion of these standards."}),
       {gfx::RectF(50.0f, 100.0f, 200.0f, 15.0f),
        gfx::RectF(50.0f, 115.0f, 200.0f, 15.0f),

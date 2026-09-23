@@ -70,6 +70,19 @@ constexpr float kHeadingFontSizeRatio = 1.2f;
 // size on the page for it to be considered an H1 instead of H2.
 constexpr float kH1MinFontSizeRatio = 1.7f;
 
+// Character count threshold below which a page is considered sparse (such as a
+// cover page or slide) when selecting the median font size.
+constexpr uint64_t kSparsePageCharCountThreshold = 250;
+
+// On a sparse page, the second most frequent font size must account for at
+// least this share of the page's characters to be chosen as the median.
+constexpr float kSparsePageMinSecondFontSizeRatio = 0.1f;
+
+// On a text-dense page, the second most frequent font size must have at least
+// this many characters relative to the most frequent size to be chosen as the
+// median.
+constexpr float kSimilarFontSizeCharCountRatio = 0.4f;
+
 // Ratio between the line spacing between two lines and the median on the
 // page for that line spacing to be considered a paragraph break.
 constexpr float kParagraphLineSpacingRatio = 1.2f;
@@ -381,59 +394,79 @@ bool IsHeadingFontName(std::string_view font_name) {
   return false;
 }
 
-// The number of characters drawn at a given font size. One entry is recorded
-// per text run, so the same font size can appear in more than one entry.
+// A distinct font size on the page and the total number of characters drawn at
+// that size.
 struct FontSizeCharCount {
   float font_size = 0.0f;
   uint32_t char_count = 0;
 };
 
-// `font_sizes` holds one entry per text run on the page, sorted ascending by
-// font size. Returns the median font size of those entries.
-//
-// When the heuristic enhancements are enabled, the median is weighted by
-// character count so that the text occupying most of the page determines it.
-// An unweighted median counts a one character superscript the same as a full
-// line of body text, so a page carrying many short runs (page numbers, footnote
-// markers, table cells) reports a median below the true body text size. That
-// in turn lowers `heading_font_size_threshold` below the body text size and
-// promotes ordinary paragraphs to headings.
-//
-// The returned size is always one of the sizes in `font_sizes` rather than an
-// interpolation between two of them, because callers compare font sizes
-// against the median for exact equality.
-float SelectMedianFontSize(const std::vector<FontSizeCharCount>& font_sizes) {
+// `font_sizes` holds one entry per text run on the page. Returns the median
+// font size of those entries.
+float SelectUnweightedMedianFontSize(std::vector<float> font_sizes) {
+  CHECK(!features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   CHECK(!font_sizes.empty());
-  const float unweighted_median = font_sizes[font_sizes.size() / 2].font_size;
-  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-    return unweighted_median;
-  }
-
-  uint64_t total_chars = 0;
-  for (const FontSizeCharCount& entry : font_sizes) {
-    total_chars += entry.char_count;
-  }
-  // Without any characters to weight by, every font size carries the same
-  // zero weight, and the loop below would return the smallest one. Fall back
-  // to the unweighted median instead.
-  if (total_chars == 0) {
-    return unweighted_median;
-  }
-
-  // Return the font size at which the running character count reaches half of
-  // the page's characters. The final entry always satisfies this, since by
-  // then the running count equals `total_chars`.
-  uint64_t accumulated_chars = 0;
-  for (const FontSizeCharCount& entry : font_sizes) {
-    accumulated_chars += entry.char_count;
-    if (accumulated_chars * 2 >= total_chars) {
-      return entry.font_size;
-    }
-  }
-  NOTREACHED();
+  std::ranges::sort(font_sizes);
+  return font_sizes[font_sizes.size() / 2];
 }
 
-void ComputeFontSizes(std::vector<FontSizeCharCount> font_sizes,
+// `font_size_char_counts` maps each distinct font size on the page (sorted
+// ascending) to its total character count. Returns the dominant font size on
+// the page weighted by character count.
+float SelectMedianFontSize(
+    const std::map<float, uint32_t>& font_size_char_counts) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+
+  // Track the top two font sizes by character count (`top1` and `top2`), since
+  // a title on a sparse page or a table/footnote block on a dense page can
+  // outnumber the body text and push the body font size into `top2`.
+  uint64_t total_chars = 0;
+  FontSizeCharCount top1;
+  FontSizeCharCount top2;
+  for (const auto& [font_size, char_count] : font_size_char_counts) {
+    total_chars += char_count;
+    if (char_count >= top1.char_count) {
+      top2 = top1;
+      top1 = {.font_size = font_size, .char_count = char_count};
+    } else if (char_count >= top2.char_count) {
+      top2 = {.font_size = font_size, .char_count = char_count};
+    }
+  }
+
+  // Only consider `top2` if it has enough characters to represent body text
+  // rather than a short heading, footnote, or superscript.
+  const bool is_sparse_page = total_chars < kSparsePageCharCountThreshold;
+  const float min_top2_chars =
+      is_sparse_page ? total_chars * kSparsePageMinSecondFontSizeRatio
+                     : top1.char_count * kSimilarFontSizeCharCountRatio;
+  if (top2.char_count >= min_top2_chars) {
+    const auto [smaller_size, larger_size] =
+        std::minmax(top1.font_size, top2.font_size);
+    // Never select a font size at or below `kMinimumFontSize` when a larger
+    // dominant size is present (e.g. leader dots or punctuation runs).
+    if (smaller_size <= kMinimumFontSize) {
+      return larger_size;
+    }
+    // On sparse pages, prefer the smaller size so that a dominant title still
+    // exceeds the median font size.
+    if (is_sparse_page) {
+      return smaller_size;
+    }
+    // On text-dense pages, prefer the larger size (e.g. body text over a table
+    // or footnotes) when it falls in the non-H1 heading range relative to the
+    // smaller size, so that the body text is not misclassified as headings.
+    if (larger_size > smaller_size * kHeadingFontSizeRatio &&
+        larger_size < smaller_size * kH1MinFontSizeRatio) {
+      return larger_size;
+    }
+  }
+
+  // Otherwise, default to the single most frequent font size on the page.
+  return top1.font_size;
+}
+
+void ComputeFontSizes(std::vector<float> font_sizes,
+                      const std::map<float, uint32_t>& font_size_char_counts,
                       float* out_heading_font_size_threshold,
                       float* out_median_font_size,
                       std::map<float, int>* out_heading_font_size_mapping) {
@@ -441,8 +474,10 @@ void ComputeFontSizes(std::vector<FontSizeCharCount> font_sizes,
     return;
   }
 
-  std::ranges::sort(font_sizes, {}, &FontSizeCharCount::font_size);
-  const float median = SelectMedianFontSize(font_sizes);
+  const float median =
+      features::IsPdfAccessibilityHeuristicEnhancementsEnabled()
+          ? SelectMedianFontSize(font_size_char_counts)
+          : SelectUnweightedMedianFontSize(std::move(font_sizes));
   if (median <= kMinimumFontSize) {
     return;
   }
@@ -458,7 +493,7 @@ void ComputeFontSizes(std::vector<FontSizeCharCount> font_sizes,
   CHECK(out_heading_font_size_mapping->empty());
   // Start at heading level 1 only if the font size is significantly
   // larger than the median.
-  float current_cluster_font_size = font_sizes.back().font_size;
+  float current_cluster_font_size = font_size_char_counts.rbegin()->first;
   bool is_much_larger = current_cluster_font_size >=
                         (*out_median_font_size * kH1MinFontSizeRatio);
   int current_level = is_much_larger ? 1 : 2;
@@ -466,8 +501,7 @@ void ComputeFontSizes(std::vector<FontSizeCharCount> font_sizes,
   // Iterate from the largest font size down to the median font size. The
   // largest font size is compared to itself in the first iteration of the
   // loop so that it's set as the first level.
-  for (const FontSizeCharCount& entry : base::Reversed(font_sizes)) {
-    const float size = entry.font_size;
+  for (const auto& [size, _] : base::Reversed(font_size_char_counts)) {
     if (size < min_mapping_font_size) {
       break;
     }
@@ -518,14 +552,15 @@ std::optional<uint32_t> ComputeColors(
 HeuristicPageProperties ComputeHeuristicPageProperties(
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     const gfx::RectF& page_bounds) {
-  std::vector<FontSizeCharCount> font_sizes;
+  std::vector<float> font_sizes;
+  std::map<float, uint32_t> font_size_char_counts;
   std::vector<float> line_spacings;
   std::map<uint32_t, uint32_t> all_color_char_counts;
 
   for (size_t i = 0; i < text_runs.size(); ++i) {
     const auto& run = text_runs[i];
-    font_sizes.push_back(
-        {.font_size = run.style.font_size, .char_count = run.len});
+    font_sizes.push_back(run.style.font_size);
+    font_size_char_counts[run.style.font_size] += run.len;
     // TODO(crbug.com/525508832): Use a color distance threshold to group
     // visually indistinguishable but non-identical colors together.
     all_color_char_counts[run.style.fill_color] += run.len;
@@ -549,7 +584,7 @@ HeuristicPageProperties ComputeHeuristicPageProperties(
       page_bounds.height() * kPageNumberFooterMarginRatio;
   page_properties.bottom_non_page_number_margin =
       page_bounds.height() * kNonPageNumberFooterMarginRatio;
-  ComputeFontSizes(std::move(font_sizes),
+  ComputeFontSizes(std::move(font_sizes), font_size_char_counts,
                    &page_properties.heading_font_size_threshold,
                    &page_properties.median_font_size,
                    &page_properties.heading_font_size_mapping);

@@ -1140,6 +1140,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
              /*expected_subtext=*/"Page 1");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       HeadingHeuristicsSparseCoverPage) {
+  RunPDFTest(FILE_PATH_LITERAL("heading-heuristics-sparse-cover-page.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       HeadingHeuristicsDenseTableAndBody) {
+  RunPDFTest(FILE_PATH_LITERAL("heading-heuristics-dense-table-and-body.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
 // This test suite contains simple tests for the PDF OCR feature.
 class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
                       public ::testing::WithParamInterface<bool> {

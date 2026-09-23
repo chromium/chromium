@@ -1,0 +1,87 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 400 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Length 714
+>>
+stream
+BT
+/F1 16 Tf
+1 0 0 1 10 260 Tm
+(Section 1: Overview) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 220 Tm
+(This main body paragraph explains the primary findings of the study.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 200 Tm
+(It continues onto a second line of regular ten point prose text here.) Tj
+ET
+BT
+/F1 8 Tf
+1 0 0 1 10 150 Tm
+(Table 1: Fine print data row one with detailed numerical measurements.) Tj
+ET
+BT
+/F1 8 Tf
+1 0 0 1 10 135 Tm
+(Table 1: Fine print data row two with detailed numerical measurements.) Tj
+ET
+BT
+/F1 8 Tf
+1 0 0 1 10 120 Tm
+(Table 1: Fine print data row three with detailed numerical measurements.) Tj
+ET
+BT
+/F1 8 Tf
+1 0 0 1 10 105 Tm
+(Table 1: Fine print data row four with detailed numerical measurements.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000283 00000 n 
+0000000361 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 6
+>>
+startxref
+1128
+%%EOF

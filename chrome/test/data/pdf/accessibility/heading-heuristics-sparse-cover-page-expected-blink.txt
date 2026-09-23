@@ -1,0 +1,9 @@
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++heading restriction=readOnly
+++++++staticText name='Annual Climate Change Assessment and Global Policy Report ' restriction=readOnly
+++++++++inlineTextBox name='Annual Climate Change Assessment ' restriction=readOnly
+++++++++inlineTextBox name='and Global Policy Report ' restriction=readOnly
+++++paragraph restriction=readOnly
+++++++staticText name='December 2023' restriction=readOnly
+++++++++inlineTextBox name='December 2023' restriction=readOnly
