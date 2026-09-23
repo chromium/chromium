@@ -1012,8 +1012,7 @@ void ViewAccessibility::SetDescription(
   if (description.empty() &&
       description_from !=
           ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
-    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kDescription);
-    data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+    RemoveDescription();
     return;
   }
 

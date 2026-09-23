@@ -259,6 +259,41 @@ TEST_F(ViewAccessibilityTest, ViewUsesChildViewName) {
   EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
+TEST_F(ViewAccessibilityTest, EmptyDescriptionNotifiesAttributeRemoval) {
+  auto& view_accessibility = view()->GetViewAccessibility();
+  view_accessibility.SetDescription("Description");
+
+  bool description_removed = false;
+  base::CallbackListSubscription description_changed_subscription =
+      view_accessibility.AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kDescription,
+          base::BindRepeating(
+              [](bool* description_removed,
+                 ax::mojom::StringAttribute attribute,
+                 const std::optional<std::string>& description) {
+                EXPECT_EQ(attribute, ax::mojom::StringAttribute::kDescription);
+                *description_removed = !description.has_value();
+              },
+              &description_removed));
+  bool description_from_removed = false;
+  base::CallbackListSubscription description_from_changed_subscription =
+      view_accessibility.AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kDescriptionFrom,
+          base::BindRepeating(
+              [](bool* description_from_removed,
+                 ax::mojom::IntAttribute attribute,
+                 std::optional<int> description_from) {
+                EXPECT_EQ(attribute, ax::mojom::IntAttribute::kDescriptionFrom);
+                *description_from_removed = !description_from.has_value();
+              },
+              &description_from_removed));
+
+  view_accessibility.SetDescription("");
+
+  EXPECT_TRUE(description_removed);
+  EXPECT_TRUE(description_from_removed);
+}
+
 TEST_F(ViewAccessibilityTest, ViewUsesChildViewSelected) {
   base::CallbackListSubscription selected_changed_subscription_ =
       child_view()->GetViewAccessibility().AddBoolAttributeChangedCallback(
