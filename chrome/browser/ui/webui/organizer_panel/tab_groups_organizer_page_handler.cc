@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,11 +18,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -64,7 +70,11 @@ TabGroupsOrganizerPageHandler::TabGroupsOrganizerPageHandler(
   }
 }
 
-TabGroupsOrganizerPageHandler::~TabGroupsOrganizerPageHandler() = default;
+TabGroupsOrganizerPageHandler::~TabGroupsOrganizerPageHandler() {
+  if (on_menu_closed_callback_) {
+    std::move(on_menu_closed_callback_).Run();
+  }
+}
 
 void TabGroupsOrganizerPageHandler::GetTabGroups(
     GetTabGroupsCallback callback) {
@@ -112,6 +122,72 @@ void TabGroupsOrganizerPageHandler::OpenTabGroup(const base::Uuid& id) {
       tab_groups::OpeningSource::kOpenedFromRevisitUi, tab_group_sync_service_);
 }
 
+void TabGroupsOrganizerPageHandler::ShowContextMenu(
+    const base::Uuid& group_id,
+    const gfx::Rect& anchor_rect,
+    ShowContextMenuCallback callback) {
+  // If the menu was already open, close it.
+  OnContextMenuClosed();
+
+  on_menu_closed_callback_ = std::move(callback);
+
+  if (!tab_group_sync_service_) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  const std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service_->GetGroup(group_id);
+  if (!saved_group.has_value()) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents_->GetNativeView());
+  if (!widget) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  const gfx::Rect container_bounds = web_contents_->GetContainerBounds();
+  if (!gfx::Rect(container_bounds.size()).Contains(anchor_rect)) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  latest_command_id_ = 0;
+  menu_model_ = std::make_unique<tab_groups::STGTabsMenuModel>(
+      browser, tab_groups::TabGroupMenuContext::ORGANIZER_PANEL);
+  menu_model_->Build(
+      saved_group.value(),
+      base::BindRepeating(
+          &TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId,
+          base::Unretained(this)));
+
+  gfx::Rect screen_rect = anchor_rect + container_bounds.OffsetFromOrigin();
+
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED,
+      base::BindRepeating(&TabGroupsOrganizerPageHandler::OnContextMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  context_menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
+                                  views::MenuAnchorPosition::kTopLeft,
+                                  ui::mojom::MenuSourceType::kNone);
+}
+
+bool TabGroupsOrganizerPageHandler::IsContextMenuRunningForTesting() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
 void TabGroupsOrganizerPageHandler::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
@@ -150,4 +226,19 @@ void TabGroupsOrganizerPageHandler::OnTabGroupLocalIdChanged(
 void TabGroupsOrganizerPageHandler::OnWillBeDestroyed() {
   tab_group_sync_service_observation_.Reset();
   tab_group_sync_service_ = nullptr;
+}
+
+void TabGroupsOrganizerPageHandler::OnContextMenuClosed() {
+  if (on_menu_closed_callback_) {
+    std::move(on_menu_closed_callback_).Run();
+  }
+
+  if (context_menu_runner_ && context_menu_runner_->IsRunning()) {
+    context_menu_runner_->Cancel();
+  }
+  context_menu_runner_.reset();
+}
+
+int TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId() {
+  return latest_command_id_ += 1;
 }

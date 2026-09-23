@@ -22,7 +22,8 @@ enum class SharedTabGroupRecallTypeDesktop {
   kOpenedFromSubmenuFromEverythingMenu = 5,
   kOpenedFromSubmenuFromAppMenu = 6,
   kOpenedFromSubmenuFromMacSystemMenu = 7,
-  kMaxValue = kOpenedFromSubmenuFromMacSystemMenu
+  kOpenedFromSubmenuFromOrganizerPanel = 8,
+  kMaxValue = kOpenedFromSubmenuFromOrganizerPanel
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupRecallTypeDesktop)
 
@@ -49,7 +50,8 @@ enum class SavedTabGroupOpenedSubmenuDesktop {
   kEverythingMenu = 1,
   kAppMenu = 2,
   kMacSystemMenu = 3,
-  kMaxValue = kMacSystemMenu
+  kOrganizerPanel = 4,
+  kMaxValue = kOrganizerPanel
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SavedTabGroupOpenedSubmenuDesktop)
 

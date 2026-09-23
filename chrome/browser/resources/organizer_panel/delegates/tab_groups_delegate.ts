@@ -54,6 +54,18 @@ export class TabGroupsDelegate implements
     this.browserProxy_.handler.openTabGroup(data.id);
   }
 
+  async onItemActionButtonClicked(
+      item: OrganizerListSectionItem<TabGroup>, buttonElement: HTMLElement) {
+    assert(item.data);
+    const rect = buttonElement.getBoundingClientRect();
+    await this.browserProxy_.handler.showContextMenu(item.data.id, {
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+    });
+  }
+
   private notifyClient_() {
     this.client_?.onItemsChanged(
         this.tabGroups_.map(group => this.tabGroupToSectionItem_(group)));
@@ -89,6 +101,10 @@ export class TabGroupsDelegate implements
         element: html`<tab-group-dot .color="${group.color}"
             .filled="${group.isOpen}"
             .size="${TabGroupDotSize.LARGE}"></tab-group-dot>`,
+      },
+      hoveredActionButton: {
+        icon: 'cr:more-vert',
+        ariaLabel: loadTimeData.getString('tabGroupMoreOptions'),
       },
       size: CrUrlListItemSize.COMPACT,
       data: group,

@@ -15,6 +15,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//components/tab_groups/public/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
   ]
   webui_module_path = "/"
 }
@@ -48,6 +49,7 @@ source_set("organizer_panel") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
@@ -60,6 +62,7 @@ source_set("organizer_panel") {
     "//components/tab_groups",
     "//components/tabs:public",
     "//ui/base",
+    "//ui/views",
     "//ui/webui",
   ]
 }

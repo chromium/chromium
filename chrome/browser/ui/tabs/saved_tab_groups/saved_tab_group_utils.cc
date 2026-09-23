@@ -86,6 +86,9 @@ GetSharedTabGroupRecallTypeMetric(
     case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
       return tab_groups::saved_tab_groups::metrics::
           SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromMacSystemMenu;
+    case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
+      return tab_groups::saved_tab_groups::metrics::
+          SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromOrganizerPanel;
   }
 }
 
@@ -105,6 +108,9 @@ GetSavedTabGroupSubmenuOpenedMetric(
     case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
       return tab_groups::saved_tab_groups::metrics::
           SavedTabGroupOpenedSubmenuDesktop::kMacSystemMenu;
+    case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
+      return tab_groups::saved_tab_groups::metrics::
+          SavedTabGroupOpenedSubmenuDesktop::kOrganizerPanel;
   }
 }
 

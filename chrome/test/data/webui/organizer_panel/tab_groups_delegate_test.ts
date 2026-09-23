@@ -6,7 +6,7 @@ import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate,
 import type {OrganizerListSectionClient, OrganizerListSectionItem, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -48,11 +48,13 @@ suite('TabGroupsDelegateTest', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
+      tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
     });
     mockHandler = TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
     mockHandler.setResultFor(
         'getTabGroups', Promise.resolve({tabGroups: [...sampleGroups]}));
+    mockHandler.setResultFor('showContextMenu', Promise.resolve());
     const {instance, remote} =
         tabGroupsBrowserProxyFactory.createForTest(mockHandler);
     tabGroupsBrowserProxyFactory.setInstance(instance);
@@ -71,6 +73,10 @@ suite('TabGroupsDelegateTest', () => {
     assertEquals('Sample Group 2', items[1]!.title[0]);
     assertEquals('Sample Group 3', items[2]!.title[0]);
     assertEquals(1, mockHandler.getCallCount('getTabGroups'));
+
+    assertTrue(!!items[0]!.hoveredActionButton);
+    assertEquals('cr:more-vert', items[0]!.hoveredActionButton.icon);
+    assertEquals('More options', items[0]!.hoveredActionButton.ariaLabel);
 
     const container = document.createElement('div');
     document.body.appendChild(container);
@@ -164,5 +170,27 @@ suite('TabGroupsDelegateTest', () => {
     assertTrue(!!dot);
     assertEquals(Color.kCyan, dot.color);
     assertTrue(dot.filled);
+  });
+
+  test('calls showContextMenu on action button click', async () => {
+    const items = await delegate.getItems();
+    const button = document.createElement('button');
+    button.getBoundingClientRect = () => ({
+      x: 10,
+      y: 20,
+      width: 30,
+      height: 40,
+      top: 20,
+      right: 40,
+      bottom: 60,
+      left: 10,
+      toJSON: () => {},
+    });
+
+    delegate.onItemActionButtonClicked(items[0]!, button);
+
+    const args = await mockHandler.whenCalled('showContextMenu');
+    assertDeepEquals(sampleGroups[0]!.id, args[0]);
+    assertDeepEquals({x: 10, y: 20, width: 30, height: 40}, args[1]);
   });
 });

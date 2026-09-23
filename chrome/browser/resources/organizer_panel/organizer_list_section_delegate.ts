@@ -25,5 +25,6 @@ export interface OrganizerListSectionDelegate<T> {
 
   // Optional: Called when an item's trailing action button is clicked.
   onItemActionButtonClicked?
-      (item: OrganizerListSectionItem<T>, buttonElement: HTMLElement): void;
+      (item: OrganizerListSectionItem<T>, buttonElement: HTMLElement):
+          Promise<void>|void;
 }

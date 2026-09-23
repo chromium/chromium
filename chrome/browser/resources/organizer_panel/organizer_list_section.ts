@@ -242,15 +242,17 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.browserProxy_.handler.closePanel();
   }
 
-  protected onItemActionButtonClick_(e: CustomEvent<{
+  protected async onItemActionButtonClick_(e: CustomEvent<{
     item: HighlightableOrganizerListSectionItem<unknown>,
     buttonElement: HTMLElement,
   }>) {
     assert(e.detail.item);
     assert(e.detail.buttonElement);
     assert(this.delegate);
-    this.delegate.onItemActionButtonClicked?.(
+    const itemElement = e.currentTarget as OrganizerListSectionItemElement;
+    await this.delegate.onItemActionButtonClicked?.(
         e.detail.item, e.detail.buttonElement);
+    itemElement.resetActionButtonStateIfNeeded();
   }
 
   protected getFilteredItems_():

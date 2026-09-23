@@ -171,6 +171,10 @@ export class OrganizerListSectionItemElement extends
     return this.item.highlightRanges?.description ??
         (this.item.description?.map(() => []) || []);
   }
+
+  resetActionButtonStateIfNeeded() {
+    this.$.actionButton.blur();
+  }
 }
 
 declare global {

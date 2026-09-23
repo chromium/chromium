@@ -28,6 +28,7 @@ suite('OrganizerPanelAppTest', () => {
       recentlyClosed: 'Recently Closed',
       searchTabs: 'Search Tabs',
       shortcutText: 'Ctrl+Shift+A',
+      tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);

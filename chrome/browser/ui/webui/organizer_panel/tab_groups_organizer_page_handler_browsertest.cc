@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace {
@@ -352,6 +353,58 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(page.updated_groups()[0]->id, id);
   EXPECT_EQ(page.updated_groups()[0]->title, "Updated Title");
   EXPECT_EQ(page.updated_groups()[0]->color, tab_groups::TabGroupColorId::kRed);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       ShowContextMenu) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
+                                   id, /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Group 1",
+                                  tab_groups::TabGroupColorId::kBlue, {tab},
+                                  /*position=*/std::nullopt, id);
+  service->AddGroup(group);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->ShowContextMenu(id, gfx::Rect(10, 20, 30, 40),
+                                  base::DoNothing());
+  handler_remote.FlushForTesting();
+  EXPECT_TRUE(handler.IsContextMenuRunningForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       ShowContextMenuOutOfBoundsDoesNotShowMenu) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
+                                   id, /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Group 1",
+                                  tab_groups::TabGroupColorId::kBlue, {tab},
+                                  /*position=*/std::nullopt, id);
+  service->AddGroup(group);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->ShowContextMenu(id, gfx::Rect(-10, -20, 30, 40),
+                                  base::DoNothing());
+  handler_remote.FlushForTesting();
+  EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
 }
 
 }  // namespace

@@ -243,6 +243,30 @@ suite('OrganizerListSectionItemTest', () => {
       });
 
   test(
+      'resetActionButtonStateIfNeeded hides action button when not hovered',
+      async () => {
+        listItem.item = {
+          title: ['Group'],
+          hoveredActionButton: {
+            icon: 'cr:more-vert',
+            ariaLabel: 'More options',
+          },
+        };
+        await microtasksFinished();
+
+        const actionButton = listItem.$.actionButton;
+        listItem.classList.add('hovered');
+        listItem.$.crUrlListItem.classList.add('hovered');
+        actionButton.focus();
+        assertTrue(isVisible(actionButton));
+
+        listItem.classList.remove('hovered');
+        listItem.$.crUrlListItem.classList.remove('hovered');
+        listItem.resetActionButtonStateIfNeeded();
+        assertFalse(isVisible(actionButton));
+      });
+
+  test(
       'renders prefix icon with multiple URLs as stacked favicons',
       async () => {
         listItem.item = {

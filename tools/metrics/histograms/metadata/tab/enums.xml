@@ -275,6 +275,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Opened from the tab group submenu from the app menu."/>
   <int value="3"
       label="Opened from the tab group submenu from the mac system menu."/>
+  <int value="4"
+      label="Opened from the tab group submenu from the organizer panel."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SavedTabGroupOpenedSubmenuDesktop) -->
@@ -343,6 +345,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Opened from the tab group submenu from the app menu."/>
   <int value="7"
       label="Opened from the tab group submenu from the mac system menu."/>
+  <int value="8"
+      label="Opened from the tab group submenu from the organizer panel."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->

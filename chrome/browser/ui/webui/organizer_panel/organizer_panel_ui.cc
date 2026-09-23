@@ -56,6 +56,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
       {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
+      {"tabGroupMoreOptions", IDS_TAB_GROUP_MORE_OPTIONS},
       {"tabGroups", IDS_ORGANIZER_PANEL_TAB_GROUPS},
       {"title", IDS_ORGANIZER_PANEL},
   };
