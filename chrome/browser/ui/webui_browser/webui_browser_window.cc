@@ -863,6 +863,10 @@ ui::AcceleratorProvider* WebUIBrowserWindow::GetAcceleratorProvider() {
   return this;
 }
 
+PinnedToolbarActions* WebUIBrowserWindow::GetPinnedToolbarActions() {
+  return nullptr;
+}
+
 void WebUIBrowserWindow::SetFocusToLocationBar(bool is_user_initiated) {
   if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
     page->SetFocusToLocationBar(is_user_initiated);

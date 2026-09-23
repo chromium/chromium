@@ -109,6 +109,7 @@ class TestBrowserWindow : public BrowserWindow,
   bool IsFullscreen() const override;
   LocationBar* GetLocationBar() const override;
   ui::AcceleratorProvider* GetAcceleratorProvider() override;
+  PinnedToolbarActions* GetPinnedToolbarActions() override;
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;
   void SetFocusToLocationBar(bool is_user_initiated) override {}
   void UpdateReloadStopState(bool is_loading, bool force) override {}

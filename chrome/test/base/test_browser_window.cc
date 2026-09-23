@@ -278,6 +278,10 @@ ui::AcceleratorProvider* TestBrowserWindow::GetAcceleratorProvider() {
   return nullptr;
 }
 
+PinnedToolbarActions* TestBrowserWindow::GetPinnedToolbarActions() {
+  return nullptr;
+}
+
 autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
   return &autofill_bubble_handler_;
 }

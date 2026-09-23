@@ -2326,6 +2326,13 @@ ui::AcceleratorProvider* BrowserView::GetAcceleratorProvider() {
   return this;
 }
 
+PinnedToolbarActions* BrowserView::GetPinnedToolbarActions() {
+  // The provider is registered by the toolbar, so it is absent for windows
+  // that have no toolbar and during window teardown.
+  ToolbarButtonProvider* const provider = toolbar_button_provider();
+  return provider ? provider->GetPinnedToolbarActions() : nullptr;
+}
+
 void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
   // On Windows, changing focus to the location bar causes the browser window to
   // become active. This can steal focus if the user has another window open
