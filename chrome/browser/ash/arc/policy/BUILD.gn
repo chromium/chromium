@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
     "//components/session_manager/test:test_support",
+    "//components/supervised_user/core/browser:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",
