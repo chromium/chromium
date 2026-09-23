@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -33,8 +34,8 @@ import java.util.List;
 /**
  * Custom passive view displaying a skeleton loader for the Tab Bottom Sheet during WebContents
  * resize. Comprises a static peek header at the top and a skeleton group at the bottom, managing
- * header icon configuration, element tinting, parent clipping restoration, and NTP-style staggered
- * wave animation.
+ * header icon configuration, element tinting, parent clipping restoration, per-element proximity
+ * fade, and NTP-style staggered wave animation.
  */
 @NullMarked
 public class TabBottomSheetSkeletonView extends FrameLayout {
@@ -46,9 +47,43 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     private static final PathInterpolator FADE_CYCLE_CURVE =
             new PathInterpolator(0.33f, 0f, 0.83f, 0.83f);
 
+    @VisibleForTesting
+    static class ElementAlphaArbitrator {
+        private final View mView;
+        private float mWaveAlpha = HIGH_OPACITY;
+        private float mResizeAlpha = 1.0f;
+
+        ElementAlphaArbitrator(View view) {
+            mView = view;
+        }
+
+        View getView() {
+            return mView;
+        }
+
+        void setWaveAlpha(float waveAlpha) {
+            mWaveAlpha = waveAlpha;
+            mView.setAlpha(computeAlpha());
+        }
+
+        void setResizeAlpha(float resizeAlpha) {
+            mResizeAlpha = resizeAlpha;
+            mView.setAlpha(computeAlpha());
+        }
+
+        float getResizeAlpha() {
+            return mResizeAlpha;
+        }
+
+        float computeAlpha() {
+            return mWaveAlpha * mResizeAlpha;
+        }
+    }
+
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
+    private final List<ElementAlphaArbitrator> mElementArbitrators = new ArrayList<>();
     private @Nullable FrameLayout mHeaderContainer;
-    private @Nullable ViewGroup mBottomGroup;
+    private @Nullable LinearLayout mBottomGroup;
     private @Nullable TabBottomSheetPeekView mPeekView;
     private @Nullable View mBar1;
     private @Nullable View mBar2;
@@ -76,6 +111,13 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
         mBar2 = findViewById(R.id.skeleton_bar_2);
         mBar3 = findViewById(R.id.skeleton_bar_3);
         mPill = findViewById(R.id.skeleton_pill);
+        mElementArbitrators.clear();
+        if (mBottomGroup != null) {
+            mBottomGroup.setGravity(Gravity.BOTTOM);
+            for (int i = 0; i < mBottomGroup.getChildCount(); i++) {
+                mElementArbitrators.add(new ElementAlphaArbitrator(mBottomGroup.getChildAt(i)));
+            }
+        }
     }
 
     /**
@@ -131,22 +173,46 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     }
 
     /**
-     * Sets the alpha of the bottom skeleton group.
+     * Updates the proximity alpha of each skeleton element inside the bottom group sequentially as
+     * the header container approaches or moves away from it.
      *
-     * @param alpha The alpha value between 0.0f and 1.0f.
+     * @param visibleHeight The current visible height of the skeleton view in pixels.
+     * @param bufferPx The distance buffer in pixels before collision over which the first element
+     *     fades.
      */
-    public void setBottomGroupAlpha(float alpha) {
-        if (mBottomGroup != null && mBottomGroup.getAlpha() != alpha) {
-            mBottomGroup.setAlpha(alpha);
-            updateAnimationState();
+    public void updateChildAlphas(@Px int visibleHeight, @Px int bufferPx) {
+        int headerHeight = getHeaderHeight();
+        if (mBottomGroup == null || headerHeight == 0 || mElementArbitrators.isEmpty()) return;
+
+        int firstTop = mElementArbitrators.get(0).getView().getTop();
+        int lastBottom =
+                mElementArbitrators.get(mElementArbitrators.size() - 1).getView().getBottom();
+        if (lastBottom <= firstTop) return;
+
+        int baseHeight = headerHeight + (lastBottom - firstTop) + mBottomGroup.getPaddingBottom();
+        int maxHeight = baseHeight + bufferPx;
+        for (ElementAlphaArbitrator arbitrator : mElementArbitrators) {
+            int minHeight = baseHeight - (arbitrator.getView().getTop() - firstTop);
+            arbitrator.setResizeAlpha(computeResizeAlpha(visibleHeight, minHeight, maxHeight));
+            maxHeight = minHeight;
         }
+        updateAnimationState();
+    }
+
+    private static float computeResizeAlpha(
+            @Px int visibleHeight, @Px int minHeight, @Px int maxHeight) {
+        if (visibleHeight <= minHeight) return 0f;
+        if (visibleHeight >= maxHeight) return 1f;
+        return (float) (visibleHeight - minHeight) / (maxHeight - minHeight);
     }
 
     private void updateAnimationState() {
-        if (mBottomGroup == null) return;
+        if (mBottomGroup == null || mElementArbitrators.isEmpty()) return;
 
+        boolean hasVisibleChild =
+                mElementArbitrators.get(mElementArbitrators.size() - 1).getResizeAlpha() > 0f;
         boolean shouldAnimate =
-                mIsResizing && mBottomGroup.getAlpha() > 0f && ValueAnimator.areAnimatorsEnabled();
+                mIsResizing && hasVisibleChild && ValueAnimator.areAnimatorsEnabled();
         if (shouldAnimate) {
             if (!mAnimationHandler.isAnimationPresent()) {
                 mAnimationHandler.startAnimation(createWaveAnimatorSet());
@@ -158,13 +224,13 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
 
     @VisibleForTesting
     AnimatorSet createWaveAnimatorSet() {
-        assert mBottomGroup != null;
-        int count = mBottomGroup.getChildCount();
+        int count = mElementArbitrators.size();
         List<Animator> animators = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            View child = mBottomGroup.getChildAt(i);
-            ObjectAnimator pulse =
-                    ObjectAnimator.ofFloat(child, View.ALPHA, HIGH_OPACITY, LOW_OPACITY);
+            ElementAlphaArbitrator arbitrator = mElementArbitrators.get(i);
+            ValueAnimator pulse = ValueAnimator.ofFloat(HIGH_OPACITY, LOW_OPACITY);
+            pulse.addUpdateListener(
+                    animation -> arbitrator.setWaveAlpha((float) animation.getAnimatedValue()));
             pulse.setStartDelay((long) i * FADE_STAGGER_MS);
             pulse.setDuration(FADE_DURATION_MS);
             pulse.setInterpolator(FADE_CYCLE_CURVE);
@@ -180,10 +246,8 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     }
 
     private void resetChildAlphas() {
-        if (mBottomGroup == null) return;
-        int count = mBottomGroup.getChildCount();
-        for (int i = 0; i < count; i++) {
-            mBottomGroup.getChildAt(i).setAlpha(HIGH_OPACITY);
+        for (ElementAlphaArbitrator arbitrator : mElementArbitrators) {
+            arbitrator.setWaveAlpha(HIGH_OPACITY);
         }
     }
 

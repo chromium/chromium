@@ -22,7 +22,6 @@ import org.chromium.ui.util.CommonOnLayoutChangeListeners;
 @NullMarked
 public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoordinator {
     private final TabBottomSheetSkeletonView mSkeletonView;
-    private final @Px int mDefaultPeekHeightPx;
     private final @Px int mBufferPx;
     private final View.OnLayoutChangeListener mLayoutChangeListener;
     private @Px int mLastVisibleHeight;
@@ -49,9 +48,6 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
         mSkeletonView.setPlaceholderElemColor(placeholderElemColor);
         mSkeletonView.setBackground(new ColorDrawable(backgroundColor));
 
-        mDefaultPeekHeightPx =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
         mBufferPx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_buffer);
@@ -83,24 +79,7 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
     }
 
     private void updateAlpha() {
-        int headerHeight = mSkeletonView.getHeaderHeight();
-        int bottomGroupHeight = mSkeletonView.getBottomGroupHeight();
-        if (headerHeight == 0 || bottomGroupHeight == 0) {
-            return;
-        }
-        int collisionHeight = headerHeight + bottomGroupHeight + mBufferPx;
-        float alpha;
-        if (mLastVisibleHeight <= mDefaultPeekHeightPx) {
-            alpha = 0f;
-        } else if (mLastVisibleHeight >= collisionHeight
-                || collisionHeight <= mDefaultPeekHeightPx) {
-            alpha = 1f;
-        } else {
-            alpha =
-                    (float) (mLastVisibleHeight - mDefaultPeekHeightPx)
-                            / (collisionHeight - mDefaultPeekHeightPx);
-        }
-        mSkeletonView.setBottomGroupAlpha(alpha);
+        mSkeletonView.updateChildAlphas(mLastVisibleHeight, mBufferPx);
     }
 
     @Override
@@ -112,16 +91,6 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
     public void destroy() {
         mSkeletonView.setIsResizing(false);
         mSkeletonView.removeOnLayoutChangeListener(mLayoutChangeListener);
-    }
-
-    @Px
-    int getCollisionHeightForTesting() {
-        return mSkeletonView.getHeaderHeight() + mSkeletonView.getBottomGroupHeight() + mBufferPx;
-    }
-
-    @Px
-    int getDefaultPeekHeightForTesting() {
-        return mDefaultPeekHeightPx;
     }
 
     TabBottomSheetSkeletonView getSkeletonViewForTesting() {

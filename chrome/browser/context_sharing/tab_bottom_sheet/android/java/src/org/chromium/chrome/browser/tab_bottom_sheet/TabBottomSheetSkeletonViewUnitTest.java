@@ -12,13 +12,13 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -116,16 +116,49 @@ public class TabBottomSheetSkeletonViewUnitTest {
     }
 
     @Test
-    public void testSetBottomGroupAlpha() {
+    public void testElementAlphaArbitrator() {
+        View view = new View(mContext);
+        TabBottomSheetSkeletonView.ElementAlphaArbitrator arbitrator =
+                new TabBottomSheetSkeletonView.ElementAlphaArbitrator(view);
+
+        arbitrator.setResizeAlpha(0.5f);
+        assertEquals(0.5f, view.getAlpha(), EPSILON);
+
+        arbitrator.setWaveAlpha(0.6f);
+        assertEquals(0.3f, view.getAlpha(), EPSILON);
+
+        arbitrator.setResizeAlpha(0.0f);
+        arbitrator.setWaveAlpha(0.8f);
+        assertEquals(0.0f, view.getAlpha(), EPSILON);
+    }
+
+    @Test
+    public void testUpdateChildAlphas() {
+        mSkeletonView.measure(
+                View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        mSkeletonView.layout(0, 0, 500, 1000);
+
         ViewGroup bottomGroup = mSkeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
-        assertEquals(1.0f, bottomGroup.getAlpha(), EPSILON);
+        int baseHeight = mSkeletonView.getHeaderHeight() + mSkeletonView.getBottomGroupHeight();
+        int bar2Min = baseHeight - bottomGroup.getChildAt(1).getTop();
+        int pillMin = baseHeight - bottomGroup.getChildAt(3).getTop();
 
-        mSkeletonView.setBottomGroupAlpha(0.5f);
-        assertEquals(0.5f, bottomGroup.getAlpha(), EPSILON);
+        mSkeletonView.updateChildAlphas(baseHeight + 24, 24);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(3).getAlpha(), EPSILON);
 
-        mSkeletonView.setBottomGroupAlpha(0.0f);
-        assertEquals(0.0f, bottomGroup.getAlpha(), EPSILON);
+        mSkeletonView.updateChildAlphas(baseHeight, 24);
+        assertEquals(0.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(1).getAlpha(), EPSILON);
+
+        mSkeletonView.updateChildAlphas(bar2Min, 24);
+        assertEquals(0.0f, bottomGroup.getChildAt(1).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(2).getAlpha(), EPSILON);
+
+        mSkeletonView.updateChildAlphas(pillMin, 24);
+        assertEquals(0.0f, bottomGroup.getChildAt(3).getAlpha(), EPSILON);
     }
 
     @Test
@@ -150,9 +183,8 @@ public class TabBottomSheetSkeletonViewUnitTest {
 
         for (int i = 0; i < childAnimations.size(); i++) {
             Animator animator = childAnimations.get(i);
-            assertTrue(animator instanceof ObjectAnimator);
-            ObjectAnimator pulse = (ObjectAnimator) animator;
-            assertEquals("alpha", pulse.getPropertyName());
+            assertTrue(animator instanceof ValueAnimator);
+            ValueAnimator pulse = (ValueAnimator) animator;
             assertEquals(
                     (long) i * TabBottomSheetSkeletonView.FADE_STAGGER_MS, pulse.getStartDelay());
             assertEquals(TabBottomSheetSkeletonView.FADE_DURATION_MS, pulse.getDuration());
@@ -163,6 +195,11 @@ public class TabBottomSheetSkeletonViewUnitTest {
 
     @Test
     public void testWaveAnimation_startsAndStopsWithIsResizingAndAlpha() {
+        mSkeletonView.measure(
+                View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        mSkeletonView.layout(0, 0, 500, 1000);
+
         AnimationHandler animationHandler = mSkeletonView.getAnimationHandlerForTesting();
         ViewGroup bottomGroup = mSkeletonView.getBottomGroupForTesting();
         assertNotNull(animationHandler);
@@ -171,35 +208,40 @@ public class TabBottomSheetSkeletonViewUnitTest {
         // Initially not resizing: animation is not present.
         assertFalse(animationHandler.isAnimationPresent());
 
-        // Set alpha to 0.0f before entering resizing mode.
-        mSkeletonView.setBottomGroupAlpha(0.0f);
+        // Collapse height so all children have resizeAlpha == 0.0f before entering resizing mode.
+        mSkeletonView.updateChildAlphas(50, 24);
         assertFalse(animationHandler.isAnimationPresent());
 
-        // Enter resizing mode while alpha is 0.0f: still not started.
+        // Enter resizing mode while all children are faded out: still not started.
         mSkeletonView.setIsResizing(true);
         assertFalse(animationHandler.isAnimationPresent());
 
-        // Increase alpha > 0f while resizing: animation starts.
-        mSkeletonView.setBottomGroupAlpha(0.5f);
+        // Increase height so children are visible while resizing: animation starts.
+        mSkeletonView.updateChildAlphas(1000, 24);
         assertTrue(animationHandler.isAnimationPresent());
 
-        // Simulate mid-animation child alphas and verify setBottomGroupAlpha(0.0f) finishes &
-        // resets.
+        // Simulate mid-animation child alphas and verify collapsing height finishes & resets wave
+        // alpha.
         for (int i = 0; i < bottomGroup.getChildCount(); i++) {
             bottomGroup.getChildAt(i).setAlpha(TabBottomSheetSkeletonView.LOW_OPACITY);
         }
-        mSkeletonView.setBottomGroupAlpha(0.0f);
+        mSkeletonView.updateChildAlphas(50, 24);
         assertFalse(animationHandler.isAnimationPresent());
+        for (int i = 0; i < bottomGroup.getChildCount(); i++) {
+            assertEquals(0.0f, bottomGroup.getChildAt(i).getAlpha(), EPSILON);
+        }
+
+        // Restart animation and verify wave alpha was reset to HIGH_OPACITY and
+        // setIsResizing(false)
+        // finishes & resets child alphas.
+        mSkeletonView.updateChildAlphas(1000, 24);
+        assertTrue(animationHandler.isAnimationPresent());
         for (int i = 0; i < bottomGroup.getChildCount(); i++) {
             assertEquals(
                     TabBottomSheetSkeletonView.HIGH_OPACITY,
                     bottomGroup.getChildAt(i).getAlpha(),
                     EPSILON);
         }
-
-        // Restart animation and verify setIsResizing(false) finishes & resets child alphas.
-        mSkeletonView.setBottomGroupAlpha(0.8f);
-        assertTrue(animationHandler.isAnimationPresent());
         for (int i = 0; i < bottomGroup.getChildCount(); i++) {
             bottomGroup.getChildAt(i).setAlpha(TabBottomSheetSkeletonView.LOW_OPACITY);
         }

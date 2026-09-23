@@ -81,15 +81,21 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
 
-        int peekHeight = mCoordinator.getDefaultPeekHeightForTesting();
+        int peekHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
 
         mCoordinator.updateVisibleHeight(peekHeight);
         assertEquals(peekHeight, skeletonView.getLayoutParams().height);
-        assertEquals(0.0f, bottomGroup.getAlpha(), EPSILON);
+        for (int i = 0; i < bottomGroup.getChildCount(); i++) {
+            assertEquals(0.0f, bottomGroup.getChildAt(i).getAlpha(), EPSILON);
+        }
 
         mCoordinator.updateVisibleHeight(peekHeight - 20);
         assertEquals(peekHeight - 20, skeletonView.getLayoutParams().height);
-        assertEquals(0.0f, bottomGroup.getAlpha(), EPSILON);
+        for (int i = 0; i < bottomGroup.getChildCount(); i++) {
+            assertEquals(0.0f, bottomGroup.getChildAt(i).getAlpha(), EPSILON);
+        }
     }
 
     @Test
@@ -98,15 +104,23 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
 
-        int collisionHeight = mCoordinator.getCollisionHeightForTesting();
+        int bufferPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_buffer);
+        int collisionHeight =
+                skeletonView.getHeaderHeight() + skeletonView.getBottomGroupHeight() + bufferPx;
 
         mCoordinator.updateVisibleHeight(collisionHeight);
         assertEquals(collisionHeight, skeletonView.getLayoutParams().height);
-        assertEquals(1.0f, bottomGroup.getAlpha(), EPSILON);
+        for (int i = 0; i < bottomGroup.getChildCount(); i++) {
+            assertEquals(1.0f, bottomGroup.getChildAt(i).getAlpha(), EPSILON);
+        }
 
         mCoordinator.updateVisibleHeight(collisionHeight + 100);
         assertEquals(collisionHeight + 100, skeletonView.getLayoutParams().height);
-        assertEquals(1.0f, bottomGroup.getAlpha(), EPSILON);
+        for (int i = 0; i < bottomGroup.getChildCount(); i++) {
+            assertEquals(1.0f, bottomGroup.getChildAt(i).getAlpha(), EPSILON);
+        }
     }
 
     @Test
@@ -115,15 +129,42 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
 
-        int peekHeight = mCoordinator.getDefaultPeekHeightForTesting();
-        int collisionHeight = mCoordinator.getCollisionHeightForTesting();
-        int midHeight = (collisionHeight + peekHeight) / 2;
+        int baseHeight = skeletonView.getHeaderHeight() + skeletonView.getBottomGroupHeight();
+        int bufferPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_buffer);
+        int midHeight = baseHeight + bufferPx / 2;
 
         mCoordinator.updateVisibleHeight(midHeight);
         assertEquals(midHeight, skeletonView.getLayoutParams().height);
 
-        float expectedAlpha = (float) (midHeight - peekHeight) / (collisionHeight - peekHeight);
-        assertEquals(expectedAlpha, bottomGroup.getAlpha(), EPSILON);
+        float expectedAlpha = (float) (midHeight - baseHeight) / bufferPx;
+        assertEquals(expectedAlpha, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(1).getAlpha(), EPSILON);
+    }
+
+    @Test
+    public void testUpdateVisibleHeight() {
+        TabBottomSheetSkeletonView skeletonView = mCoordinator.getSkeletonViewForTesting();
+        ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
+        assertNotNull(bottomGroup);
+
+        int baseHeight = skeletonView.getHeaderHeight() + skeletonView.getBottomGroupHeight();
+        int bufferPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_buffer);
+
+        mCoordinator.updateVisibleHeight(baseHeight + bufferPx);
+        assertEquals(baseHeight + bufferPx, skeletonView.getLayoutParams().height);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(3).getAlpha(), EPSILON);
+
+        mCoordinator.updateVisibleHeight(baseHeight);
+        assertEquals(0.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(1).getAlpha(), EPSILON);
+
+        mCoordinator.updateVisibleHeight(50);
+        assertEquals(0.0f, bottomGroup.getChildAt(3).getAlpha(), EPSILON);
     }
 
     @Test
@@ -136,13 +177,11 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        int peekHeight = unlaidOutCoordinator.getDefaultPeekHeightForTesting();
-
         // Call updateVisibleHeight while unlaid out (heights == 0); alpha remains default (1.0f).
-        unlaidOutCoordinator.updateVisibleHeight(peekHeight);
+        unlaidOutCoordinator.updateVisibleHeight(50);
         ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
-        assertEquals(1.0f, bottomGroup.getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
 
         // Measure and lay out skeletonView so children are laid out and size-changed listener
         // fires.
@@ -152,7 +191,7 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         skeletonView.layout(0, 0, 500, 1000);
 
         // OnLayoutChangeListener re-evaluates updateAlpha() using laid-out heights -> alpha 0.0f.
-        assertEquals(0.0f, bottomGroup.getAlpha(), EPSILON);
+        assertEquals(0.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
     }
 
     @Test
@@ -165,8 +204,7 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        int peekHeight = coordinator.getDefaultPeekHeightForTesting();
-        coordinator.updateVisibleHeight(peekHeight);
+        coordinator.updateVisibleHeight(50);
 
         // Destroy removes the layout change listener.
         coordinator.destroy();
@@ -179,6 +217,6 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         // Because the listener was removed on destroy(), layout change does not update alpha.
         ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
         assertNotNull(bottomGroup);
-        assertEquals(1.0f, bottomGroup.getAlpha(), EPSILON);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
     }
 }
