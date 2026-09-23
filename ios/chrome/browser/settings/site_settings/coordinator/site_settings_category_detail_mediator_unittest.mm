@@ -173,6 +173,43 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDeleteSettingForSite) {
   [mediator disconnect];
 }
 
+// Tests that updating a site exception setting moves it between allowed and not
+// allowed lists.
+TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetSettingForSite) {
+  GURL siteUrl("https://example.com");
+  settings_map_->SetContentSettingDefaultScope(
+      siteUrl, siteUrl, ContentSettingsType::MEDIASTREAM_MIC,
+      CONTENT_SETTING_ALLOW);
+
+  SiteSettingsCategoryDetailMediator* mediator =
+      [[SiteSettingsCategoryDetailMediator alloc]
+          initWithHostContentSettingsMap:settings_map_.get()
+                           faviconLoader:favicon_loader_
+                     contentSettingsType:ContentSettingsType::MEDIASTREAM_MIC];
+
+  FakeSiteSettingsCategoryDetailConsumer* consumer =
+      [[FakeSiteSettingsCategoryDetailConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  ASSERT_EQ(1u, consumer.allowedSites.count);
+  ASSERT_EQ(0u, consumer.notAllowedSites.count);
+
+  [mediator setSetting:CONTENT_SETTING_BLOCK forSite:consumer.allowedSites[0]];
+
+  EXPECT_EQ(0u, consumer.allowedSites.count);
+  ASSERT_EQ(1u, consumer.notAllowedSites.count);
+  EXPECT_NSEQ(@"example.com", consumer.notAllowedSites[0].formattedTitle);
+
+  [mediator setSetting:CONTENT_SETTING_ALLOW
+               forSite:consumer.notAllowedSites[0]];
+
+  ASSERT_EQ(1u, consumer.allowedSites.count);
+  EXPECT_EQ(0u, consumer.notAllowedSites.count);
+  EXPECT_NSEQ(@"example.com", consumer.allowedSites[0].formattedTitle);
+
+  [mediator disconnect];
+}
+
 // Tests that disconnecting clears observer and consumer.
 TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDisconnect) {
   SiteSettingsCategoryDetailMediator* mediator =

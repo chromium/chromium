@@ -17,6 +17,10 @@
 // Updates the default content setting for this category.
 - (void)setDefaultSetting:(ContentSetting)setting;
 
+// Updates the permission setting for the specified site exception.
+- (void)setSetting:(ContentSetting)setting
+           forSite:(SiteSettingsSiteException*)site;
+
 // Removes the permission exception for the specified site.
 - (void)deleteSettingForSite:(SiteSettingsSiteException*)site;
 

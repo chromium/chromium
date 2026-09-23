@@ -165,21 +165,18 @@ enum ItemType {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if ([item isKindOfClass:[TableViewURLItem class]]) {
-    TableViewURLItem* URLItem =
-        base::apple::ObjCCastStrict<TableViewURLItem>(item);
-    if (!URLItem.faviconAttributes) {
-      __weak __typeof(self) weakSelf = self;
-      [self.imageDataSource
-          faviconForPageURL:URLItem.URL
-                 completion:^(FaviconAttributes* attributes, BOOL cached) {
-                   [weakSelf didFetchFaviconAttributes:attributes
-                                                  item:URLItem
-                                             indexPath:indexPath];
-                 }];
-    }
+    [self loadFaviconForURLItem:base::apple::ObjCCastStrict<TableViewURLItem>(
+                                    item)
+                    atIndexPath:indexPath];
   }
 
-  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  cell.accessibilityActivationPointBlock = nil;
+  if ([item isKindOfClass:[TableViewURLItem class]]) {
+    [self configureSiteExceptionCell:cell atIndexPath:indexPath];
+  }
+  return cell;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -347,6 +344,98 @@ enum ItemType {
     item.selectionStyle = UITableViewCellSelectionStyleNone;
     [model addItem:item toSectionWithIdentifier:sectionIdentifier];
   }
+}
+
+// Requests the favicon for `URLItem` at `indexPath` if it has not been loaded
+// yet.
+- (void)loadFaviconForURLItem:(TableViewURLItem*)URLItem
+                  atIndexPath:(NSIndexPath*)indexPath {
+  if (URLItem.faviconAttributes) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [self.imageDataSource
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes, BOOL cached) {
+               [weakSelf didFetchFaviconAttributes:attributes
+                                              item:URLItem
+                                         indexPath:indexPath];
+             }];
+}
+
+// Configures the trailing popup menu button and VoiceOver properties on `cell`
+// for the site exception at `indexPath`.
+- (void)configureSiteExceptionCell:(UITableViewCell*)cell
+                       atIndexPath:(NSIndexPath*)indexPath {
+  SiteSettingsSiteException* siteException =
+      [self siteExceptionForIndexPath:indexPath];
+  if (!siteException) {
+    return;
+  }
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
+  ContentSetting currentSetting = sectionIdentifier == SectionIdentifierAllowed
+                                      ? CONTENT_SETTING_ALLOW
+                                      : CONTENT_SETTING_BLOCK;
+
+  UIButton* menuButton = [self menuButtonForSiteException:siteException
+                                           currentSetting:currentSetting];
+  cell.accessoryView = menuButton;
+  // TODO(crbug.com/553098545): Use localized strings.
+  cell.accessibilityValue =
+      currentSetting == CONTENT_SETTING_ALLOW ? @"Allowed" : @"Not Allowed";
+  __weak UIView* weakButton = menuButton;
+  cell.accessibilityActivationPointBlock = ^CGPoint() {
+    return [weakButton accessibilityActivationPoint];
+  };
+}
+
+// Creates a trailing popup menu button allowing the user to switch
+// `siteException` between Allowed (`CONTENT_SETTING_ALLOW`) and Not Allowed
+// (`CONTENT_SETTING_BLOCK`).
+- (UIButton*)menuButtonForSiteException:
+                 (SiteSettingsSiteException*)siteException
+                         currentSetting:(ContentSetting)currentSetting {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIImage* chevronImage =
+      DefaultAccessorySymbolConfigurationWithRegularWeight(SymbolChevronUpDown);
+  [button setImage:chevronImage forState:UIControlStateNormal];
+  button.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  button.showsMenuAsPrimaryAction = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  // TODO(crbug.com/553098545): Use localized strings.
+  UIAction* allowAction =
+      [UIAction actionWithTitle:@"Allowed"
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator setSetting:CONTENT_SETTING_ALLOW
+                                               forSite:siteException];
+                        }];
+  allowAction.state = currentSetting == CONTENT_SETTING_ALLOW
+                          ? UIMenuElementStateOn
+                          : UIMenuElementStateOff;
+
+  UIAction* notAllowedAction =
+      [UIAction actionWithTitle:@"Not Allowed"
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.mutator setSetting:CONTENT_SETTING_BLOCK
+                                               forSite:siteException];
+                        }];
+  notAllowedAction.state = currentSetting == CONTENT_SETTING_BLOCK
+                               ? UIMenuElementStateOn
+                               : UIMenuElementStateOff;
+
+  button.menu = [UIMenu menuWithTitle:@""
+                                image:nil
+                           identifier:nil
+                              options:UIMenuOptionsSingleSelection
+                             children:@[ allowAction, notAllowedAction ]];
+  [button sizeToFit];
+  return button;
 }
 
 // Updates the accessory checkmark for the default setting row identified by

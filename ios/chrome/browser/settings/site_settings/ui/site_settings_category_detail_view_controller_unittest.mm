@@ -204,3 +204,73 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest, TestTrailingSwipeActions) {
   ASSERT_NE(nil, allowedConfig);
   EXPECT_EQ(1u, allowedConfig.actions.count);
 }
+
+// Tests that site exception rows configure a popup menu accessory button that
+// switches between Allow and Not Allowed via the mutator.
+TEST_F(SiteSettingsCategoryDetailViewControllerTest,
+       TestSiteExceptionPopupMenu) {
+  CreateController();
+  CheckController();
+
+  SiteSettingsCategoryDetailViewController* vc = GetController();
+
+  SiteSettingsSiteException* blockedSite =
+      CreateSiteException(@"https://blocked.com", @"blocked.com");
+  SiteSettingsSiteException* allowedSite =
+      CreateSiteException(@"https://allowed.com", @"allowed.com");
+
+  [vc setAllowedSites:@[ allowedSite ] notAllowedSites:@[ blockedSite ]];
+
+  // Section 1: Not Allowed.
+  UITableViewCell* notAllowedCell =
+      [vc tableView:vc.tableView
+          cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]];
+  ASSERT_TRUE([notAllowedCell.accessoryView isKindOfClass:[UIButton class]]);
+  UIButton* notAllowedButton =
+      static_cast<UIButton*>(notAllowedCell.accessoryView);
+  EXPECT_TRUE(notAllowedButton.showsMenuAsPrimaryAction);
+  EXPECT_TRUE(notAllowedCell.isAccessibilityElement);
+  EXPECT_NSEQ(@"Not Allowed", notAllowedCell.accessibilityValue);
+  ASSERT_NE(nil, notAllowedButton.menu);
+  ASSERT_EQ(2u, notAllowedButton.menu.children.count);
+
+  UIAction* notAllowedMenuAllowAction =
+      static_cast<UIAction*>(notAllowedButton.menu.children[0]);
+  UIAction* notAllowedMenuBlockAction =
+      static_cast<UIAction*>(notAllowedButton.menu.children[1]);
+  EXPECT_NSEQ(@"Allowed", notAllowedMenuAllowAction.title);
+  EXPECT_EQ(UIMenuElementStateOff, notAllowedMenuAllowAction.state);
+  EXPECT_NSEQ(@"Not Allowed", notAllowedMenuBlockAction.title);
+  EXPECT_EQ(UIMenuElementStateOn, notAllowedMenuBlockAction.state);
+
+  // Section 2: Allowed.
+  UITableViewCell* allowedCell = [vc tableView:vc.tableView
+                         cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0
+                                                                  inSection:2]];
+  ASSERT_TRUE([allowedCell.accessoryView isKindOfClass:[UIButton class]]);
+  UIButton* allowedButton = static_cast<UIButton*>(allowedCell.accessoryView);
+  EXPECT_TRUE(allowedButton.showsMenuAsPrimaryAction);
+  EXPECT_TRUE(allowedCell.isAccessibilityElement);
+  EXPECT_NSEQ(@"Allowed", allowedCell.accessibilityValue);
+  ASSERT_NE(nil, allowedButton.menu);
+  ASSERT_EQ(2u, allowedButton.menu.children.count);
+
+  UIAction* allowedMenuAllowAction =
+      static_cast<UIAction*>(allowedButton.menu.children[0]);
+  UIAction* allowedMenuBlockAction =
+      static_cast<UIAction*>(allowedButton.menu.children[1]);
+  EXPECT_NSEQ(@"Allowed", allowedMenuAllowAction.title);
+  EXPECT_EQ(UIMenuElementStateOn, allowedMenuAllowAction.state);
+  EXPECT_NSEQ(@"Not Allowed", allowedMenuBlockAction.title);
+  EXPECT_EQ(UIMenuElementStateOff, allowedMenuBlockAction.state);
+
+  // Verify selecting "Allow" on the blocked site calls the mutator.
+  OCMExpect([mutator_ setSetting:CONTENT_SETTING_ALLOW forSite:blockedSite]);
+  [notAllowedMenuAllowAction performWithSender:notAllowedButton target:nil];
+  EXPECT_OCMOCK_VERIFY(mutator_);
+
+  // Verify selecting "Not Allowed" on the allowed site calls the mutator.
+  OCMExpect([mutator_ setSetting:CONTENT_SETTING_BLOCK forSite:allowedSite]);
+  [allowedMenuBlockAction performWithSender:allowedButton target:nil];
+  EXPECT_OCMOCK_VERIFY(mutator_);
+}

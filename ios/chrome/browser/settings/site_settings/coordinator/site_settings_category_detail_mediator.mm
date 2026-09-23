@@ -82,6 +82,15 @@
   _settingsMap->SetDefaultContentSetting(_type, setting);
 }
 
+- (void)setSetting:(ContentSetting)setting
+           forSite:(SiteSettingsSiteException*)site {
+  if (!_settingsMap) {
+    return;
+  }
+  _settingsMap->SetContentSettingCustomScope(
+      site.primaryPattern, site.secondaryPattern, _type, setting);
+}
+
 - (void)deleteSettingForSite:(SiteSettingsSiteException*)site {
   if (!_settingsMap) {
     return;
