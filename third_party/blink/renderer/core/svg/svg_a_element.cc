@@ -46,10 +46,12 @@
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -227,6 +229,15 @@ bool SVGAElement::IsValidInterestInvoker(Element& target) const {
 KURL SVGAElement::Url() const {
   return GetDocument().CompleteURL(
       StripLeadingAndTrailingHtmlSpaces(HrefString()));
+}
+
+DOMOrigin* SVGAElement::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is necessary, as anchor elements are not accessible
+  // cross-origin.
+  if (href()->IsSpecified() || hasAttribute(xlink_names::kHrefAttr)) {
+    return DOMOrigin::Create(SecurityOrigin::Create(Url()));
+  }
+  return nullptr;
 }
 
 bool SVGAElement::HasActivationBehavior() const {

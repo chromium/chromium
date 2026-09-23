@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -90,6 +92,40 @@ TEST_F(SVGAElementTest, HrefChangePseudoStateInvalidation) {
   link->setAttribute(xlink_names::kHrefAttr,
                      AtomicString("https://www.chromium.org/"));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+}
+
+TEST_F(SVGAElementTest, GetDOMOrigin) {
+  SetBodyInnerHTML(R"HTML(
+    <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+      <a id="no-href"></a>
+      <a id="svg-href" href="https://example.com/test"></a>
+      <a id="xlink-href" xlink:href="https://example.com/test"></a>
+      <a id="opaque-href" href="about:blank"></a>
+    </svg>
+  )HTML");
+
+  auto* no_href = To<SVGAElement>(GetElementById("no-href"));
+  EXPECT_EQ(nullptr, no_href->GetDOMOrigin(GetDocument().domWindow()));
+
+  auto* svg_href = To<SVGAElement>(GetElementById("svg-href"));
+  DOMOrigin* svg_origin = svg_href->GetDOMOrigin(GetDocument().domWindow());
+  ASSERT_NE(nullptr, svg_origin);
+  EXPECT_FALSE(svg_origin->opaque());
+  EXPECT_TRUE(SecurityOrigin::CreateFromString("https://example.com")
+                  ->IsSameOriginWith(svg_origin->GetOriginForTesting()));
+
+  auto* xlink_href = To<SVGAElement>(GetElementById("xlink-href"));
+  DOMOrigin* xlink_origin = xlink_href->GetDOMOrigin(GetDocument().domWindow());
+  ASSERT_NE(nullptr, xlink_origin);
+  EXPECT_FALSE(xlink_origin->opaque());
+  EXPECT_TRUE(SecurityOrigin::CreateFromString("https://example.com")
+                  ->IsSameOriginWith(xlink_origin->GetOriginForTesting()));
+
+  auto* opaque_href = To<SVGAElement>(GetElementById("opaque-href"));
+  DOMOrigin* opaque_origin =
+      opaque_href->GetDOMOrigin(GetDocument().domWindow());
+  ASSERT_NE(nullptr, opaque_origin);
+  EXPECT_TRUE(opaque_origin->opaque());
 }
 
 }  // namespace blink
