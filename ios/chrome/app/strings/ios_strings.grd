@@ -4712,6 +4712,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           =1 {1 completed task}
           other {# completed tasks}}
       </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_AI_SEARCH" desc="Feature Name for Level Up's AI Search task. [iOS only]">
+        Search with AI Mode
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_AI_SEARCH_DESCRIPTION" desc="Description for Level Up's AI Search task. [iOS only]">
+        Get AI-powered responses with AI Mode in Google Search
+      </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_DELETE_BROWSING_DATA" desc="Feature Name for Level Up's Delete browsing data task. [iOS only]">
         Delete browsing data
       </message>
@@ -4730,14 +4736,23 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_FEATURE_GEMINI_DESCRIPTION" desc="Description for Level Up's Gemini task. [iOS only]">
         Get key takeaways, clarify concepts, find answers, and more
       </message>
-      <message name="IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS" desc="Feature name for Google Lens. [iOS only]">
-        Google Lens
-      </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_INCOGNITO" desc="Feature name for Level Up's Incognito task. [iOS only]">
         Go Incognito
       </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_INCOGNITO_DESCRIPTION" desc="Description for Level Up's Incognito task. [iOS only]">
         Open tabs in Incognito mode to browse the web more privately
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_LENS_CAMERA_SEARCH" desc="Feature Name for Level Up's Lens Camera Search task. [iOS only]">
+        Use your camera to search with Google Lens
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_LENS_CAMERA_SEARCH_DESCRIPTION" desc="Description for Level Up's Lens Camera Search task. [iOS only]">
+        Identify, shop, or translate what you see with your camera or an image
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_LENS_WEBSITE_SEARCH" desc="Feature name for Level Up's Lens Website Search task. [iOS only]">
+        Search your screen with Google Lens
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_LENS_WEBSITE_SEARCH_DESCRIPTION" desc="Description for Level Up's Lens Website Search task. [iOS only]">
+        Draw, highlight, or tap anything on your screen to search
       </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL" desc="Feature name for Passwords and Autofill. [iOS only]">
         Save a password
@@ -4867,7 +4882,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           other {Complete {count} more tasks to level up}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AI_SEARCH" desc="Completion snackbar message for the AI Search task. [iOS only]">
-        Search with AI Mode completed!
+        "Search with AI Mode" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL" desc="Completion snackbar message for the Autofill task. [iOS only]">
         "Save a password" completed!
@@ -4882,10 +4897,10 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Go Incognito" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH" desc="Completion snackbar message for the Lens Camera Search task. [iOS only]">
-        Search with camera completed!
+        "Use your camera to search with Google Lens" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_WEBSITE_SEARCH" desc="Completion snackbar message for the Lens Website Search task. [iOS only]">
-        Google Lens completed!
+        "Search your screen with Google Lens" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PASSWORD_CHECKUP" desc="Completion snackbar message for the Password Checkup task. [iOS only]">
         "Check your passwords" completed!

@@ -93,11 +93,12 @@ class LensWebsiteSearchTaskInfo : public TaskInfo {
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kLensWebsiteSearch; }
   std::string GetTitle() const override {
-    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS);
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_LENS_WEBSITE_SEARCH);
   }
   std::string GetTaskDescription() const override {
-    return "Draw, highlight, or tap to search and get results without leaving "
-           "your tab";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_LENS_WEBSITE_SEARCH_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolCameraLens; }
   bool IsMulticolorIcon() const override { return true; }

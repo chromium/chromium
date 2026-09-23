@@ -19,9 +19,13 @@ class LensCameraSearchTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kLensCameraSearch; }
-  std::string GetTitle() const override { return "Search with camera"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_LENS_CAMERA_SEARCH);
+  }
   std::string GetTaskDescription() const override {
-    return "Shop, translate and identify what you see with your camera";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_LENS_CAMERA_SEARCH_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolCamera; }
   LevelUpTaskCategory GetCategory() const override {
