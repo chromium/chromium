@@ -37,8 +37,12 @@ enum class StatusCode {
   kNoResponse = 10,
   // The request timed out. The client may retry the request.
   kTimeout = 11,
-  // Client attestation failed. The client may retry the request.
-  kClientAttestationFailed = 12,
+  // Deprecated. Replaced by:
+  //   - kClientAttestationFailedRequestNotSent
+  //   - kClientAttestationPresumedRejectedByServer
+  //   - kClientAttestationFailedConnectionAborted
+  //
+  // kClientAttestationFailed = 12,
   // The client is being destroyed before the response is received.
   kDestroyed = 13,
   // The connection is being closed because it has been unused for too long
@@ -58,7 +62,22 @@ enum class StatusCode {
   kClientAttestationTokenDecodeFailed = 20,
   // The connection was closed by the server.
   kConnectionClosedByServer = 21,
-  kMaxValue = kConnectionClosedByServer,
+  // The request was never sent, because client attestation had already failed
+  // on this connection before the request was submitted. See
+  // kClientAttestationPresumedRejectedByServer for the original failure.
+  kClientAttestationFailedRequestNotSent = 22,
+  // A request failed before any successful response was received after the
+  // client attestation token was sent. The server closes the stream on an
+  // invalid token, so this is presumed to be a token rejection - but the
+  // rejection is never observed directly, and a network error or timeout at
+  // this point is reported the same way. See the
+  // PrivateAi.Client.ClientAttestationRequestFailureReason histogram for the
+  // underlying error.
+  kClientAttestationPresumedRejectedByServer = 23,
+  // The connection was torn down in response to the presumed rejection above.
+  // Reported for requests that were already in flight at that moment.
+  kClientAttestationFailedConnectionAborted = 24,
+  kMaxValue = kClientAttestationFailedConnectionAborted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiStatusCode)
 

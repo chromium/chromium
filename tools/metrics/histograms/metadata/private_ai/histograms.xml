@@ -39,8 +39,9 @@ reviewer.
   <summary>
     Records the underlying status code (error reason) when the initial client
     attestation request fails. This error is rewritten as
-    kClientAttestationFailed on the main request status code metric, and this
-    histogram tracks the original failure reason of the request.
+    kClientAttestationPresumedRejectedByServer on the main request status code
+    metric, and this histogram tracks the original failure reason of the
+    request.
   </summary>
 </histogram>
 

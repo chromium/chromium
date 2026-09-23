@@ -84,7 +84,7 @@ void ConnectionTokenAttestation::Send(proto::PrivateAiRequest request,
 
   if (attestation_state_ == AttestationState::kTokenFailed) {
     std::move(callback).Run(
-        base::unexpected(StatusCode::kClientAttestationFailed));
+        base::unexpected(StatusCode::kClientAttestationFailedRequestNotSent));
     return;
   }
 
@@ -181,10 +181,11 @@ void ConnectionTokenAttestation::OnInnerConnectionResponse(
       attestation_state_ = AttestationState::kTokenFailed;
       if (original_callback) {
         std::move(original_callback)
-            .Run(base::unexpected(StatusCode::kClientAttestationFailed));
+            .Run(base::unexpected(
+                StatusCode::kClientAttestationPresumedRejectedByServer));
       }
       // The connection is now considered broken due to failed attestation.
-      CallOnDisconnect(StatusCode::kClientAttestationFailed);
+      CallOnDisconnect(StatusCode::kClientAttestationFailedConnectionAborted);
       return;
     } else {
       // If we reach here with result.has_value() and we were in kTokenSent

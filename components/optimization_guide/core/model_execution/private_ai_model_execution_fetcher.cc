@@ -50,7 +50,9 @@ OptimizationGuideModelExecutionError ToModelExecutionError(
     private_ai::StatusCode error) {
   switch (error) {
     case private_ai::StatusCode::kAuthenticationFailed:
-    case private_ai::StatusCode::kClientAttestationFailed:
+    case private_ai::StatusCode::kClientAttestationFailedRequestNotSent:
+    case private_ai::StatusCode::kClientAttestationPresumedRejectedByServer:
+    case private_ai::StatusCode::kClientAttestationFailedConnectionAborted:
       return OptimizationGuideModelExecutionError::FromModelExecutionError(
           ModelExecutionError::kPermissionDenied);
     case private_ai::StatusCode::kTimeout:

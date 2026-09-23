@@ -5,6 +5,7 @@
 #include "components/private_ai/connection_token_attestation.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -44,6 +45,7 @@ class ConnectionTokenAttestationTest : public testing::Test {
 
   void OnDisconnect(StatusCode status_code) {
     on_disconnect_counter_++;
+    last_disconnect_status_code_ = status_code;
     connection_attestation_->OnDestroy(status_code);
   }
 
@@ -58,6 +60,7 @@ class ConnectionTokenAttestationTest : public testing::Test {
   raw_ptr<FakeConnection> fake_connection_;
 
   int on_disconnect_counter_ = 0;
+  std::optional<StatusCode> last_disconnect_status_code_;
 };
 
 TEST_F(ConnectionTokenAttestationTest, Success) {
@@ -190,8 +193,9 @@ TEST_F(ConnectionTokenAttestationTest, ErrorBeforeFirstResponse) {
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  // The error should be rewritten to kClientAttestationFailed
-  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
+  // The error should be rewritten to kClientAttestationPresumedRejectedByServer
+  EXPECT_EQ(result.error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
 
   histogram_tester.ExpectUniqueSample(
       "PrivateAi.Client.ClientAttestationRequestFailureReason",
@@ -199,6 +203,47 @@ TEST_F(ConnectionTokenAttestationTest, ErrorBeforeFirstResponse) {
 
   // We expect a disconnect to be requested.
   EXPECT_EQ(on_disconnect_counter_, 1);
+  EXPECT_EQ(last_disconnect_status_code_,
+            StatusCode::kClientAttestationFailedConnectionAborted);
+}
+
+TEST_F(ConnectionTokenAttestationTest, SendAfterAttestationFailure) {
+  CreateConnectionAttestation();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future;
+  proto::PrivateAiRequest request;
+  request.set_request_id(123);
+  connection_attestation_->Send(std::move(request), base::Seconds(1),
+                                future.GetCallback());
+
+  // Provide the token.
+  token_manager_.RunPendingCallbacks();
+
+  ASSERT_EQ(fake_connection_->pending_requests().size(), 2u);
+
+  // Fail the first request, which marks the attestation as failed.
+  auto cb = std::move(fake_connection_->pending_requests()[1].callback);
+  fake_connection_->pending_requests()[1].callback = base::DoNothing();
+  std::move(cb).Run(base::unexpected(StatusCode::kNetworkError));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
+
+  // Any subsequent request fails immediately with a distinct status code.
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future2;
+  proto::PrivateAiRequest request2;
+  request2.set_request_id(456);
+  connection_attestation_->Send(std::move(request2), base::Seconds(1),
+                                future2.GetCallback());
+
+  ASSERT_TRUE(future2.IsReady());
+  auto result2 = future2.Get();
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(),
+            StatusCode::kClientAttestationFailedRequestNotSent);
 }
 
 TEST_F(ConnectionTokenAttestationTest, ErrorAfterFirstResponse) {
@@ -275,8 +320,9 @@ TEST_F(ConnectionTokenAttestationTest, TimeoutBeforeFirstResponse) {
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  // The error should be rewritten to kClientAttestationFailed
-  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
+  // The error should be rewritten to kClientAttestationPresumedRejectedByServer
+  EXPECT_EQ(result.error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
 
   histogram_tester.ExpectUniqueSample(
       "PrivateAi.Client.ClientAttestationRequestFailureReason",
@@ -310,8 +356,9 @@ TEST_F(ConnectionTokenAttestationTest, DestroyedBeforeFirstResponse) {
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
-  // The error should be rewritten to kClientAttestationFailed
-  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
+  // The error should be rewritten to kClientAttestationPresumedRejectedByServer
+  EXPECT_EQ(result.error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
 
   histogram_tester.ExpectUniqueSample(
       "PrivateAi.Client.ClientAttestationRequestFailureReason",

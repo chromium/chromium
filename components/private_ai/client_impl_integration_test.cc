@@ -266,8 +266,9 @@ TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   // Our heuristic correctly rewrites this early error (before first successful
-  // response) into kClientAttestationFailed.
-  EXPECT_EQ(result.error(), StatusCode::kClientAttestationFailed);
+  // response) into kClientAttestationPresumedRejectedByServer.
+  EXPECT_EQ(result.error(),
+            StatusCode::kClientAttestationPresumedRejectedByServer);
 }
 
 TEST_F(ClientImplIntegrationTest, ClientDestroyedDuringAttestation) {

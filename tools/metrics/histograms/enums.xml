@@ -25024,7 +25024,9 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="NoContent"/>
   <int value="10" label="NoResponse"/>
   <int value="11" label="Timeout"/>
-  <int value="12" label="ClientAttestationFailed"/>
+  <int value="12"
+      label="(Obsolete) ClientAttestationFailed. Split into values 22, 23 and
+             24 in 09/2026."/>
   <int value="13" label="Destroyed"/>
   <int value="14" label="UnusedConnection"/>
   <int value="15" label="ProxyConfigFailed"/>
@@ -25034,6 +25036,9 @@ Called by update_net_error_codes.py.-->
   <int value="19" label="ClientAttestationTokenFetchFailed"/>
   <int value="20" label="ClientAttestationTokenDecodeFailed"/>
   <int value="21" label="ConnectionClosedByServer"/>
+  <int value="22" label="ClientAttestationFailedRequestNotSent"/>
+  <int value="23" label="ClientAttestationPresumedRejectedByServer"/>
+  <int value="24" label="ClientAttestationFailedConnectionAborted"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/status_code.h:StatusCode) -->
