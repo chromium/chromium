@@ -10,23 +10,22 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
-import '../../settings_shared.css.js';
 import '../../i18n_setup.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SecurityKeysPinBrowserProxy} from './security_keys_browser_proxy.js';
 import {SecurityKeysPinBrowserProxyImpl} from './security_keys_browser_proxy.js';
-import {getTemplate} from './security_keys_set_pin_dialog.html.js';
+import {getCss} from './security_keys_set_pin_dialog.css.js';
+import {getHtml} from './security_keys_set_pin_dialog.html.js';
 
 export enum SetPinDialogPage {
   INITIAL = 'initial',
@@ -51,7 +50,7 @@ export interface SettingsSecurityKeysSetPinDialogElement {
   };
 }
 
-const SettingsSecurityKeysSetPinDialogElementBase = I18nMixin(PolymerElement);
+const SettingsSecurityKeysSetPinDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsSecurityKeysSetPinDialogElement extends
     SettingsSecurityKeysSetPinDialogElementBase {
@@ -59,161 +58,118 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     return 'settings-security-keys-set-pin-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
-       * Whether the value of the current PIN textbox is a valid PIN or not.
-       */
-      currentPINValid_: Boolean,
-
-      newPINValid_: Boolean,
-      confirmPINValid_: Boolean,
-
-      /**
        * Whether the dialog is in a state where the Set PIN button should be
-       * enabled. Read by Polymer.
+       * enabled.
        */
-      setPINButtonValid_: {
-        type: Boolean,
-        value: false,
-      },
+      setPINButtonValid_: {type: Boolean},
 
       /**
-       * The value of the new PIN textbox. Read/write by Polymer.
+       * The value of the new PIN textbox.
        */
-      newPIN_: {
-        type: String,
-        value: '',
-      },
+      newPIN_: {type: String},
 
-      confirmPIN_: {
-        type: String,
-        value: '',
-      },
+      confirmPIN_: {type: String},
 
-      currentPIN_: {
-        type: String,
-        value: '',
-      },
+      currentPIN_: {type: String},
 
       /**
        * The minimum length for the currently set PIN.
        */
-      currentMinPinLength_: Number,
+      currentMinPinLength_: {type: Number},
 
       /**
        * The minimum length to set a new PIN.
        */
-      newMinPinLength_: {
-        type: Number,
-        observer: 'newMinPinLengthChanged_',
-      },
+      newMinPinLength_: {type: Number},
 
       /**
        * The number of PIN attempts remaining.
        */
-      retries_: Number,
+      retries_: {type: Number},
 
       /**
-       * A CTAP error code when we don't recognise the specific error. Read by
-       * Polymer.
+       * A CTAP error code when we don't recognise the specific error.
        */
-      errorCode_: Number,
+      errorCode_: {type: Number},
 
       /**
        * Whether an entry for the current PIN should be displayed. (If no PIN
        * has been set then it won't be shown.)
        */
-      showCurrentEntry_: {
-        type: Boolean,
-        value: false,
-      },
+      showCurrentEntry_: {type: Boolean},
 
       /**
        * Error string to display under the current PIN entry, or empty.
        */
-      currentPINError_: {
-        type: String,
-        value: '',
-      },
+      currentPINError_: {type: String},
 
       /**
        * Error string to display under the new PIN entry, or empty.
        */
-      newPINError_: {
-        type: String,
-        value: '',
-      },
+      newPINError_: {type: String},
 
       /**
        * Error string to display under the confirmation PIN entry, or empty.
        */
-      confirmPINError_: {
-        type: String,
-        value: '',
-      },
+      confirmPINError_: {type: String},
 
       /**
        * Whether the dialog process has completed, successfully or otherwise.
        */
-      complete_: {
-        type: Boolean,
-        value: false,
-      },
+      complete_: {type: Boolean},
 
       /**
        * The id of an element on the page that is currently shown.
        */
-      shown_: {
-        type: String,
-        value: SetPinDialogPage.INITIAL,
-      },
+      shown_: {type: String},
 
       /**
        * Whether the contents of the PIN entries are visible, or are displayed
        * like passwords.
        */
-      pinsVisible_: {
-        type: Boolean,
-        value: false,
-      },
+      pinsVisible_: {type: Boolean},
 
-      title_: String,
-      newPINDialogDescription_: String,
+      title_: {type: String},
+      newPINDialogDescription_: {type: String},
     };
   }
 
-  declare private currentPINValid_: boolean;
-  declare private newPINValid_: boolean;
-  declare private confirmPINValid_: boolean;
-  declare private setPINButtonValid_: boolean;
-  declare private newPIN_: string;
-  declare private confirmPIN_: string;
-  declare private currentPIN_: string;
-  declare private currentMinPinLength_?: number;
-  declare private newMinPinLength_?: number;
-  declare private retries_?: number;
-  declare private errorCode_?: number;
-  declare private showCurrentEntry_: boolean;
-  declare private currentPINError_: string;
-  declare private newPINError_: string;
-  declare private confirmPINError_: string;
-  declare private complete_: boolean;
-  declare private shown_: SetPinDialogPage;
-  declare private pinsVisible_: boolean;
-  declare private title_: string;
-  declare private newPINDialogDescription_: string;
+  protected accessor setPINButtonValid_: boolean = false;
+  protected accessor newPIN_: string = '';
+  protected accessor confirmPIN_: string = '';
+  protected accessor currentPIN_: string = '';
+  protected accessor currentMinPinLength_: number|undefined = undefined;
+  protected accessor newMinPinLength_: number|undefined = undefined;
+  private accessor retries_: number|null|undefined = undefined;
+  private accessor errorCode_: number|undefined = undefined;
+  protected accessor showCurrentEntry_: boolean = false;
+  protected accessor currentPINError_: string = '';
+  protected accessor newPINError_: string = '';
+  protected accessor confirmPINError_: string = '';
+  protected accessor complete_: boolean = false;
+  protected accessor shown_: SetPinDialogPage = SetPinDialogPage.INITIAL;
+  private accessor pinsVisible_: boolean = false;
+  protected accessor title_: string = '';
+  protected accessor newPINDialogDescription_: string = '';
+
   private browserProxy_: SecurityKeysPinBrowserProxy =
       SecurityKeysPinBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
+    this.title_ = this.i18n('securityKeysSetPINInitialTitle');
     super.connectedCallback();
 
-    this.title_ = this.i18n('securityKeysSetPINInitialTitle');
     this.$.dialog.showModal();
 
     this.browserProxy_.startSetPin().then(
@@ -241,12 +197,6 @@ export class SettingsSecurityKeysSetPinDialogElement extends
             this.shown_ = SetPinDialogPage.LOCKED;
             this.finish_();
           } else {
-            // Need to prompt for a pin. Initially set the text boxes to valid
-            // so that they don't all appear red without the user typing
-            // anything.
-            this.currentPINValid_ = true;
-            this.newPINValid_ = true;
-            this.confirmPINValid_ = true;
             this.setPINButtonValid_ = true;
 
             this.currentMinPinLength_ = currentMinPinLength;
@@ -270,19 +220,28 @@ export class SettingsSecurityKeysSetPinDialogElement extends
             window.setTimeout(function() {
               focusTarget.focus();
             }, 0);
-            this.fire_('ui-ready');  // for test synchronization.
+            this.fire('ui-ready');  // for test synchronization.
           }
         });
   }
 
-  private fire_(eventName: string, detail?: unknown) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('newMinPinLength_')) {
+      this.newMinPinLengthChanged_();
+    }
   }
 
-  private closeDialog_() {
+  protected onDialogClose_() {
     this.$.dialog.close();
     this.finish_();
+  }
+
+  protected onCloseButtonClick_() {
+    this.onDialogClose_();
   }
 
   private finish_() {
@@ -298,25 +257,37 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     this.browserProxy_.close();
   }
 
-  private onIronSelect_(e: Event) {
+  protected onIronSelect_(e: Event) {
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
   }
 
-  private onCurrentPinInput_() {
+  protected onCurrentPinValueChanged_(e: CustomEvent<{value: string}>) {
+    this.currentPIN_ = e.detail.value;
+  }
+
+  protected onNewPinValueChanged_(e: CustomEvent<{value: string}>) {
+    this.newPIN_ = e.detail.value;
+  }
+
+  protected onConfirmPinValueChanged_(e: CustomEvent<{value: string}>) {
+    this.confirmPIN_ = e.detail.value;
+  }
+
+  protected onCurrentPinInput_() {
     // Typing in the current PIN box after an error makes the error message
     // disappear.
     this.currentPINError_ = '';
   }
 
-  private onNewPinInput_() {
+  protected onNewPinInput_() {
     // Typing in the new PIN box after an error makes the error message
     // disappear.
     this.newPINError_ = '';
   }
 
-  private onConfirmPinInput_() {
+  protected onConfirmPinInput_() {
     // Typing in the confirm PIN box after an error makes the error message
     // disappear.
     this.confirmPINError_ = '';
@@ -393,15 +364,15 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   }
 
   /**
-   * Called by Polymer when the Set PIN button is activated.
+   * Called when the Set PIN button is activated.
    */
-  private pinSubmitNew_() {
+  protected onPinSubmitClick_() {
     if (this.showCurrentEntry_) {
       this.currentPINError_ =
           this.isValidPin_(this.currentPIN_, this.currentMinPinLength_!);
       if (this.currentPINError_ !== '') {
         this.focusOn_(this.$.currentPIN);
-        this.fire_('ui-ready');  // for test synchronization.
+        this.fire('ui-ready');  // for test synchronization.
         return;
       }
     }
@@ -409,21 +380,21 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     this.newPINError_ = this.isValidPin_(this.newPIN_, this.newMinPinLength_!);
     if (this.newPINError_ !== '') {
       this.focusOn_(this.$.newPIN);
-      this.fire_('ui-ready');  // for test synchronization.
+      this.fire('ui-ready');  // for test synchronization.
       return;
     }
 
     if (this.newPIN_ !== this.confirmPIN_) {
       this.confirmPINError_ = this.i18n('securityKeysPINMismatch');
       this.focusOn_(this.$.confirmPIN);
-      this.fire_('ui-ready');  // for test synchronization.
+      this.fire('ui-ready');  // for test synchronization.
       return;
     }
 
     if (this.newPIN_ === this.currentPIN_) {
       this.newPINError_ = this.i18n('securityKeysSamePINAsCurrent');
       this.focusOn_(this.$.newPIN);
-      this.fire_('ui-ready');  // for test synchronization.
+      this.fire('ui-ready');  // for test synchronization.
       return;
     }
 
@@ -443,12 +414,11 @@ export class SettingsSecurityKeysSetPinDialogElement extends
         this.shown_ = SetPinDialogPage.LOCKED;
         this.finish_();
       } else if (error === 49 /* PIN_INVALID */) {
-        this.currentPINValid_ = false;
         this.retries_!--;
         this.currentPINError_ = this.mismatchError_(this.retries_!);
         this.setPINButtonValid_ = true;
         this.focusOn_(this.$.currentPIN);
-        this.fire_('ui-ready');  // for test synchronization.
+        this.fire('ui-ready');  // for test synchronization.
       } else {
         // Unknown error.
         this.errorCode_ = error;
@@ -461,58 +431,61 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   /**
    * onClick handler for the show/hide icon.
    */
-  private showPinsClick_() {
+  protected onShowPinsClick_() {
     this.pinsVisible_ = !this.pinsVisible_;
   }
 
   /**
-   * Polymer helper function to detect when an error string is empty.
+   * Helper function to detect when an error string is empty.
    */
-  private isNonEmpty_(s: string): boolean {
+  protected isNonEmpty_(s: string): boolean {
     return s !== '';
   }
 
   /**
-   * Called by Polymer when |errorCode_| changes to set the error string.
+   * Called to set the error string when |errorCode_| is set.
    */
-  private pinFailed_() {
-    if (this.errorCode_ === null) {
+  protected pinFailed_(): string {
+    if (this.errorCode_ === undefined || this.errorCode_ === null) {
       return '';
     }
-    return this.i18n('securityKeysPINError', this.errorCode_!.toString());
+    return this.i18n('securityKeysPINError', this.errorCode_.toString());
   }
 
   /**
    * @return The class of the Ok / Cancel button.
    */
-  private maybeActionButton_(): string {
+  protected maybeActionButton_(): string {
     return this.complete_ ? 'action-button' : 'cancel-button';
   }
 
   /**
    * @return The label of the Ok / Cancel button.
    */
-  private closeText_(): string {
+  protected closeText_(): string {
     return this.i18n(this.complete_ ? 'ok' : 'cancel');
   }
 
   private newMinPinLengthChanged_() {
+    if (this.newMinPinLength_ === undefined || this.newMinPinLength_ === null) {
+      return;
+    }
     PluralStringProxyImpl.getInstance()
-        .getPluralString('securityKeysNewPIN', this.newMinPinLength_!)
+        .getPluralString('securityKeysNewPIN', this.newMinPinLength_)
         .then(string => this.newPINDialogDescription_ = string);
   }
 
   /**
    * @return The class (and thus icon) to be displayed.
    */
-  private showPinsClass_(): string {
+  protected showPinsClass_(): string {
     return 'icon-visibility' + (this.pinsVisible_ ? '-off' : '');
   }
 
   /**
    * @return The tooltip for the icon.
    */
-  private showPinsTitle_(): string {
+  protected showPinsTitle_(): string {
     return this.i18n(
         this.pinsVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
   }
@@ -520,7 +493,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   /**
    * @return The PIN-input element type.
    */
-  private inputType_(): string {
+  protected inputType_(): string {
     return this.pinsVisible_ ? 'text' : 'password';
   }
 }
@@ -531,6 +504,9 @@ declare global {
         SettingsSecurityKeysSetPinDialogElement;
   }
 }
+
+export type SecurityKeysSetPinDialogElement =
+    SettingsSecurityKeysSetPinDialogElement;
 
 customElements.define(
     SettingsSecurityKeysSetPinDialogElement.is,

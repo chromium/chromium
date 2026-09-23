@@ -620,6 +620,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/step_indicator.css",
     "privacy_page/security/security_keys_pin_field.css",
     "privacy_page/security/security_keys_reset_dialog.css",
+    "privacy_page/security/security_keys_set_pin_dialog.css",
     "reset_page/reset_profile_banner.css",
     "reset_page/reset_profile_dialog.css",
     "safety_hub/extensions_module.css",

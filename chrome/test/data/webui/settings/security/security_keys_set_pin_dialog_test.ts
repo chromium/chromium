@@ -8,7 +8,7 @@ import {SecurityKeysPinBrowserProxyImpl, SetPinDialogPage} from 'chrome://settin
 import type {SetPinResponse} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSecurityKeysBrowserProxy} from '../test_security_keys_browser_proxy.js';
 
@@ -74,6 +74,7 @@ suite('SecurityKeysSetPINDialog', function() {
   test('Initialization', async function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('startSetPin');
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'initial');
     assertNotComplete();
   });
@@ -90,6 +91,7 @@ suite('SecurityKeysSetPINDialog', function() {
 
       await browserProxy.whenCalled('startSetPin');
       await browserProxy.whenCalled('close');
+      await microtasksFinished();
       assertComplete();
       assertShown(allDivs, dialog, (testCase[1] as string));
       if (testCase[1] === 'error') {
@@ -114,6 +116,7 @@ suite('SecurityKeysSetPINDialog', function() {
 
     await browserProxy.whenCalled('startSetPin');
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertComplete();
     assertShown(allDivs, dialog, 'locked');
   });
@@ -121,7 +124,7 @@ suite('SecurityKeysSetPINDialog', function() {
   async function setPINEntry(
       inputElement: CrInputElement, pinValue: string): Promise<void> {
     inputElement.value = pinValue;
-    await inputElement.updateComplete;
+    await microtasksFinished();
     // Dispatch input events to trigger validation and UI updates.
     inputElement.dispatchEvent(
         new CustomEvent('input', {bubbles: true, cancelable: true}));
@@ -160,6 +163,7 @@ suite('SecurityKeysSetPINDialog', function() {
       retries: null,
     });
     await uiReady;
+    await microtasksFinished();
     assertNotComplete();
     assertShown(allDivs, dialog, 'pinPrompt');
     assertTrue(dialog.$.currentPINEntry.hidden);
@@ -186,6 +190,7 @@ suite('SecurityKeysSetPINDialog', function() {
 
     setPINResolver.resolve({done: true, error: 0});
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'success');
     assertComplete();
   });
@@ -209,12 +214,14 @@ suite('SecurityKeysSetPINDialog', function() {
         retries: null,
       });
       await uiReady;
+      await microtasksFinished();
 
       browserProxy.setResponseFor(
           'setPin', Promise.resolve({done: true, error: testCase[0]}));
       setNewPINEntries(validNewPIN, validNewPIN);
       await browserProxy.whenCalled('setPin');
       await browserProxy.whenCalled('close');
+      await microtasksFinished();
       assertComplete();
       assertShown(allDivs, dialog, (testCase[1] as string));
       if (testCase[1] === 'error') {
@@ -240,6 +247,7 @@ suite('SecurityKeysSetPINDialog', function() {
       retries: 2,
     });
     await uiReady;
+    await microtasksFinished();
     assertNotComplete();
     assertShown(allDivs, dialog, 'pinPrompt');
     assertFalse(dialog.$.currentPINEntry.hidden);
@@ -289,6 +297,7 @@ suite('SecurityKeysSetPINDialog', function() {
     uiReady = eventToPromise('ui-ready', dialog);
     setPINResolver.resolve({done: true, error: 49});
     await uiReady;
+    await microtasksFinished();
     assertTrue(dialog.$.currentPIN.invalid);
     // Text box for current PIN should not be cleared.
     assertEquals(dialog.$.currentPIN.value, validCurrentPIN);
@@ -306,6 +315,7 @@ suite('SecurityKeysSetPINDialog', function() {
 
     setPINResolver.resolve({done: true, error: 0});
     await browserProxy.whenCalled('close');
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'success');
     assertComplete();
   });
