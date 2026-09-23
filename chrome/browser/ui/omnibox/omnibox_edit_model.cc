@@ -2581,6 +2581,7 @@ void OmniboxEditModel::StepPopupSelection(
 
 void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
                                    base::TimeTicks match_selection_timestamp) {
+  TRACE_EVENT("omnibox", "OmniboxEditModel::AcceptInput");
   // Get the URL and transition type for the selected entry.
   GURL alternate_nav_url;
   AutocompleteMatch match = CurrentMatchAndAlternateNavUrl(&alternate_nav_url);
@@ -2767,8 +2768,10 @@ void OmniboxEditModel::OpenMatch(
   }
 
   TRACE_EVENT("omnibox", "OmniboxEditModel::OpenMatch", "match", match,
-              "disposition", disposition, "altenate_nav_url", alternate_nav_url,
-              "pasted_text", pasted_text);
+              "disposition", disposition, "alternate_nav_url",
+              alternate_nav_url, "pasted_text", pasted_text, "is_search",
+              AutocompleteMatch::IsSearchType(match.type), "match_type",
+              AutocompleteMatchType::ToString(match.type));
   const base::TimeTicks& now(base::TimeTicks::Now());
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
       now - metrics_tracker_.time_user_first_modified_omnibox());

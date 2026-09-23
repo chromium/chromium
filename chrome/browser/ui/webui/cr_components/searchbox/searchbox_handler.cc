@@ -1504,6 +1504,8 @@ void SearchboxHandler::OpenAutocompleteMatch(
     uint8_t mouse_button,
     searchbox::mojom::ActionModifiersPtr modifiers,
     bool via_keyboard) {
+  TRACE_EVENT("omnibox", "SearchboxHandler::OpenAutocompleteMatch", "line",
+              line);
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const WindowOpenDisposition disposition = ComputeWindowOpenDisposition(
       mouse_button, modifiers->alt_key, modifiers->ctrl_key,
