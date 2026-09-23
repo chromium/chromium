@@ -4,5 +4,8 @@
 <script>
 test(() => {
   assert_true('rtc' in navigator, 'rtc in navigator');
-}, 'check navigator.rtc');
+  assert_true('startDiagnosticLogging' in RTCPeerConnection, 'startDiagnosticLogging in RTCPeerConnection');
+  assert_true('stopDiagnosticLogging' in RTCPeerConnection, 'stopDiagnosticLogging in RTCPeerConnection');
+  assert_true('cancelDiagnosticLogging' in RTCPeerConnection, 'cancelDiagnosticLogging in RTCPeerConnection');
+}, 'check navigator.rtc and RTCPeerConnection diagnostic logging methods');
 </script>

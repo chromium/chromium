@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webrtc-extensions/#diagnostic-logging
+
+[
+    ImplementedAs=RTCDiagnosticLogging,
+    Exposed=Window,
+    RuntimeEnabled=RTCDiagnosticLogging
+] partial interface RTCPeerConnection {
+    [CallWith=ScriptState, RaisesException, MeasureAs=V8RTC_StartDiagnosticLogging_Method] static DOMString startDiagnosticLogging(optional RTCDiagnosticLoggingOptions options = {});
+    [CallWith=ScriptState, RaisesException] static undefined stopDiagnosticLogging();
+    [CallWith=ScriptState, RaisesException] static undefined cancelDiagnosticLogging();
+};

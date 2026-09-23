@@ -575,6 +575,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/payments/payment_validation_errors.idl",
   "//third_party/blink/renderer/modules/payments/secure_payment_confirmation_request.idl",
   "//third_party/blink/renderer/modules/peerconnection/dedicated_worker_global_scope_rtc_transform.idl",
+  "//third_party/blink/renderer/modules/peerconnection/diagnostic_logging/rtc_diagnostic_logging.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_answer_options.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_certificate.idl",
   "//third_party/blink/renderer/modules/peerconnection/rtc_codec_specifics.idl",

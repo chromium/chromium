@@ -20,6 +20,8 @@ blink_modules_sources("peerconnection") {
     "adapters/sctp_transport_proxy.h",
     "dedicated_worker_global_scope_rtc_rtp_sender_encoded_source.h",
     "dedicated_worker_global_scope_rtc_transform.h",
+    "diagnostic_logging/rtc_diagnostic_logging.cc",
+    "diagnostic_logging/rtc_diagnostic_logging.h",
     "media_stream_remote_video_source.cc",
     "media_stream_remote_video_source.h",
     "media_stream_track_metrics.cc",

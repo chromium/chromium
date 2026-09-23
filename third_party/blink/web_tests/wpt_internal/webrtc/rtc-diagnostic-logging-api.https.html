@@ -10,24 +10,50 @@ promise_test(async t => {
   assert_true('rtc' in navigator, 'navigator.rtc should exist');
   const rtc = navigator.rtc;
 
-  // Verify startDiagnosticLogging returns a UUID string.
+  // Verify startDiagnosticLogging returns a UUID string via navigator.rtc.
   const uuid = await rtc.startDiagnosticLogging();
   assert_equals(typeof uuid, 'string', 'startDiagnosticLogging should return a uuid string');
   assert_regexp_match(uuid, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'uuid should be a valid v4 UUID');
 
-  // Verify finishDiagnosticLogging (StopLogging) resolves.
+  // Verify finishDiagnosticLogging resolves via navigator.rtc.
   await rtc.finishDiagnosticLogging();
 
-  // Verify cancelDiagnosticLogging resolves.
+  // Verify cancelDiagnosticLogging resolves via navigator.rtc.
   await rtc.cancelDiagnosticLogging();
-}, 'RTC Logging API basic functionality (start, finish, cancel)');
+}, 'navigator.rtc Logging API basic functionality (start, finish, cancel)');
+
+test(t => {
+  assert_true('startDiagnosticLogging' in RTCPeerConnection, 'RTCPeerConnection.startDiagnosticLogging should exist');
+
+  // Verify startDiagnosticLogging returns a UUID string synchronously via RTCPeerConnection.
+  const uuid = RTCPeerConnection.startDiagnosticLogging();
+  assert_equals(typeof uuid, 'string', 'startDiagnosticLogging should return a uuid string');
+  assert_regexp_match(uuid, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'uuid should be a valid v4 UUID');
+
+  // Calling startDiagnosticLogging again while active should throw InvalidStateError.
+  assert_throws_dom('InvalidStateError', () => {
+    RTCPeerConnection.startDiagnosticLogging();
+  });
+
+  // Verify stopDiagnosticLogging succeeds when logging is active.
+  RTCPeerConnection.stopDiagnosticLogging();
+
+  // Verify cancelDiagnosticLogging succeeds when logging is active.
+  RTCPeerConnection.startDiagnosticLogging();
+  RTCPeerConnection.cancelDiagnosticLogging();
+}, 'RTCPeerConnection Logging API basic functionality (start, stop, cancel)');
 
 promise_test(async t => {
-  // The API is intentionally not reporting any errors to avoid revealing
-  // information about the system.
-  // Verify that calling finish or cancel without start also resolves.
+  // navigator.rtc resolves even when not logging, while RTCPeerConnection
+  // throws InvalidStateError per the W3C specification.
   await navigator.rtc.finishDiagnosticLogging();
   await navigator.rtc.cancelDiagnosticLogging();
-}, 'RTC Logging API resolves even when not logging');
+  assert_throws_dom('InvalidStateError', () => {
+    RTCPeerConnection.stopDiagnosticLogging();
+  });
+  assert_throws_dom('InvalidStateError', () => {
+    RTCPeerConnection.cancelDiagnosticLogging();
+  });
+}, 'RTC Logging API behavior when not logging');
 
 </script>
