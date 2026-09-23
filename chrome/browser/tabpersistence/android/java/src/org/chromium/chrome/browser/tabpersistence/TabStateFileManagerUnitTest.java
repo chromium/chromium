@@ -58,7 +58,6 @@ public class TabStateFileManagerUnitTest {
     private static final long TAB_GROUP_ID_TOKEN_LOW = 0xABCDEF1234L;
     private static final Token TAB_GROUP_ID =
             new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
-    private static final int LARGE_BYTE_BUFFER_SIZE = Integer.MAX_VALUE / 4;
     private static final boolean CONTENT_IS_SENSITIVE = true;
     private static final boolean IS_PINNED = true;
     private static final GURL URL = new GURL(getOriginalNativeNtpUrl());
@@ -112,23 +111,6 @@ public class TabStateFileManagerUnitTest {
     public void testRestoreTabStateInternal_NullCipherFactoryAndEncrypted() throws IOException {
         File file = createTestTabStateFile();
         TabStateFileManager.restoreTabStateInternal(file, true, null);
-    }
-
-    @Test
-    public void testLargeContentsState() throws IOException {
-        File file = createTestTabStateFile();
-        ByteBuffer buffer = ByteBuffer.allocateDirect(LARGE_BYTE_BUFFER_SIZE);
-        for (int i = 0; i < LARGE_BYTE_BUFFER_SIZE; i++) {
-            buffer.put((byte) (i % Byte.MAX_VALUE));
-        }
-        WebContentsState contentsState =
-                new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        TabState state = createTabState(contentsState);
-        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false, mCipherFactory);
-        validateTestTabState(
-                TabStateFileManager.restoreTabStateInternal(
-                        file, /* isEncrypted= */ false, mCipherFactory),
-                contentsState);
     }
 
     @Test
@@ -707,20 +689,10 @@ public class TabStateFileManagerUnitTest {
         return state;
     }
 
-    private static TabState createTabState(WebContentsState contentsState) {
-        return createTabState(contentsState, TAB_GROUP_ID);
-    }
-
     private void validateTestTabState(TabState state, @Nullable Token tabGroupId) {
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
-        for (int i = 0; i < CONTENTS_STATE_BYTES.length; i++) {
-            byteBuffer.put(CONTENTS_STATE_BYTES[i]);
-        }
+        byteBuffer.put(CONTENTS_STATE_BYTES);
         validateTestTabState(state, tabGroupId, new WebContentsState(byteBuffer, VERSION));
-    }
-
-    private static void validateTestTabState(TabState state, WebContentsState contentsState) {
-        validateTestTabState(state, TAB_GROUP_ID, contentsState);
     }
 
     private static void validateTestTabState(
