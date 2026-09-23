@@ -824,23 +824,10 @@ class AvdConfig:
                         package_version,
                     )
 
-            # Skip Marshmallow as svc commands fail on this version.
-            if instance.device.build_version_sdk != 23:
-                # Always disable the network to prevent built-in system apps from
-                # updating themselves, which could take over package manager and
-                # cause shell command timeout.
-                # Use svc as this also works on the images with build type "user", and
-                # does not require a reboot or broadcast compared to setting the
-                # airplane_mode_on in "settings/global".
-                logging.info('Disabling the network.')
-                instance.device.RunShellCommand(
-                    ['svc', 'wifi', 'disable'], as_root=True, check_return=True
-                )
-                # Certain system image like tablet does not have data service
-                # So don't check return status here.
-                instance.device.RunShellCommand(
-                    ['svc', 'data', 'disable'], as_root=True, check_return=False
-                )
+            # Always disable the network to prevent built-in system apps from
+            # updating themselves, which could take over package manager and
+            # cause shell command timeout.
+            _SetNetwork(instance.device, False)
 
             if snapshot:
                 logging.info(
@@ -1630,9 +1617,9 @@ class _AvdInstance:
                 )
                 logging.info('Device fully booted, verifying system settings.')
                 _EnsureSystemSettings(self.device)
-
-            if enable_network:
-                _EnableNetwork(self.device)
+                # The network state don't retain in certain API level so set
+                # the network again to avoid any surprise.
+                _SetNetwork(self.device, enable_network)
 
         except base_error.BaseError as e:
             self.UploadCrashreport()
@@ -1785,16 +1772,17 @@ def _EnsureSystemSettings(device):
                 gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
 
-def _EnableNetwork(device):
-    logging.info('Enable the network on the emulator.')
-    # TODO(crbug.com/40282869): Remove airplane_mode once all AVD
-    # are rolled to svc-based version.
+def _SetNetwork(device, enable_network):
+    # Use svc as this also works on the images with build type "user", and
+    # does not require a reboot or broadcast compared to setting the
+    # airplane_mode_on in "settings/global".
+    state = 'enable' if enable_network else 'disable'
+    logging.info('%s the network on the emulator.', state.capitalize())
     device.RunShellCommand(
-        ['settings', 'put', 'global', 'airplane_mode_on', '0'], as_root=True
+        ['svc', 'wifi', state], as_root=True, check_return=True
     )
+    # Certain system image like tablet does not have data service.
+    # So don't check return status here.
     device.RunShellCommand(
-        ['am', 'broadcast', '-a', 'android.intent.action.AIRPLANE_MODE'],
-        as_root=True,
+        ['svc', 'data', state], as_root=True, check_return=False
     )
-    device.RunShellCommand(['svc', 'wifi', 'enable'], as_root=True)
-    device.RunShellCommand(['svc', 'data', 'enable'], as_root=True)

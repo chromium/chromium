@@ -429,6 +429,83 @@ class AvdEnsureSystemSettingsTest(unittest.TestCase):
         )
 
 
+class AvdSetNetworkTest(unittest.TestCase):
+    @patch('os.makedirs')
+    @patch('pylib.local.emulator.avd.tempfile_ext.TemporaryFileName')
+    @patch('pylib.local.emulator.avd.AvdConfig._InstallCipdPackages')
+    @patch('pylib.local.emulator.avd._AvdManagerAgent')
+    @patch('pylib.local.emulator.ini.update_ini_file')
+    @patch('pylib.local.emulator.avd.AvdConfig._UpdateAvdConfigFile')
+    @patch('pylib.local.emulator.avd.AvdConfig._Initialize')
+    @patch('pylib.local.emulator.avd._AvdInstance')
+    @patch('pylib.local.emulator.avd._SetNetwork')
+    def testCreateDisablesNetwork(
+        self,
+        mock_set_network,
+        mock_avd_instance,
+        _mock_init,
+        _mock_update_config,
+        _mock_update_ini,
+        _mock_avd_manager,
+        _mock_install_cipd,
+        _mock_temp_file,
+        _mock_makedirs,
+    ):
+        config = """
+        avd_name: "android_33_google_apis_x64"
+        system_image_name: "system-images;android-33;google_apis;x86_64"
+        system_image_package {
+          package_name: "system_image"
+          version: "1.0"
+        }
+        """
+        with patch('builtins.open', mock_open(read_data=config)):
+            avd_config = avd.AvdConfig('/path/to/creation.textpb')
+            avd_config.Create(dry_run=True)
+
+        mock_set_network.assert_called_once_with(
+            mock_avd_instance.return_value.device, False
+        )
+
+    @patch('os.makedirs')
+    @patch('pylib.local.emulator.avd.tempfile_ext.TemporaryFileName')
+    @patch('socket.socket')
+    @patch('pylib.local.emulator.avd.cmd_helper.Popen')
+    @patch(
+        'pylib.local.emulator.avd.timeout_retry.Run',
+        return_value='emulator-5554',
+    )
+    @patch('pylib.local.emulator.avd.device_utils.DeviceUtils')
+    @patch('pylib.local.emulator.avd._EnsureSystemSettings')
+    @patch('pylib.local.emulator.avd._SetNetwork')
+    def testStartSetsNetwork(
+        self,
+        mock_set_network,
+        _mock_ensure_settings,
+        _mock_device_utils,
+        _mock_timeout_run,
+        _mock_popen,
+        _mock_socket,
+        _mock_temp_file,
+        _mock_makedirs,
+    ):
+        config = 'avd_name: "android_33_google_apis_x64"'
+        with patch('builtins.open', mock_open(read_data=config)):
+            avd_config = avd.AvdConfig('/path/to/creation.textpb')
+            instance = avd._AvdInstance(avd_config)
+
+            instance.Start(enable_network=False)
+            mock_set_network.assert_called_once_with(instance.device, False)
+
+            mock_set_network.reset_mock()
+            instance.Start(enable_network=True)
+            mock_set_network.assert_called_once_with(instance.device, True)
+
+            mock_set_network.reset_mock()
+            instance.Start(ensure_system_settings=False)
+            mock_set_network.assert_not_called()
+
+
 class AvdProcessRawSystemImageTest(unittest.TestCase):
     _CONFIG_RAW_SYS_IMG = """
   emulator_package {
