@@ -28,7 +28,8 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     const viz::SharedImageFormat& format,
     uint32_t queue_family_index) {
   DCHECK(context_state);
-  DCHECK(context_state->GrContextIsVulkan());
+  DCHECK(context_state->GrContextIsVulkan() ||
+         context_state->IsGraphiteVulkan());
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(ahb_handle));

@@ -600,6 +600,12 @@ target(link_target_type, "gles2_sources") {
       "texture_owner.cc",
       "texture_owner.h",
     ]
+    if (skia_use_graphite_vulkan) {
+      sources += [
+        "shared_image/skia_graphite_vk_android_image_representation.cc",
+        "shared_image/skia_graphite_vk_android_image_representation.h",
+      ]
+    }
 
     # For AImageReader.
     libs = [ "mediandk" ]

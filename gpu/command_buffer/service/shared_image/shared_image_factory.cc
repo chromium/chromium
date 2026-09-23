@@ -963,7 +963,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
         display_compositor_on_another_thread &&
         workarounds_.avoid_one_component_egl_images;
   } else if (context_state_->GrContextIsVulkan() ||
-             context_state_->IsGraphiteDawnVulkan()) {
+             context_state_->IsGraphiteDawnVulkan() ||
+             context_state_->IsGraphiteVulkan()) {
     // Vulkan currently doesn't support single-component cross-thread shared
     // images for WebView.
     shared_image_caps.disable_one_component_textures =

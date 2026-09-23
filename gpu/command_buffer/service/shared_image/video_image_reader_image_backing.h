@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
   std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
@@ -105,6 +105,7 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
   class GLTextureVideoImageRepresentation;
   class GLTexturePassthroughVideoImageRepresentation;
   class SkiaGraphiteDawnImageRepresentation;
+  class SkiaGraphiteVkVideoImageRepresentation;
   class SkiaVkVideoImageRepresentation;
   class OverlayVideoImageRepresentation;
   class LegacyOverlayVideoImageRepresentation;

@@ -46,6 +46,10 @@
 #include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
 #endif
 
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+#include "gpu/command_buffer/service/shared_image/skia_graphite_vk_android_image_representation.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -621,6 +625,89 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       scoped_hardware_buffer_;
 };
 
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+class VideoImageReaderImageBacking::SkiaGraphiteVkVideoImageRepresentation
+    : public SkiaGraphiteVkAndroidImageRepresentation,
+      public RefCountedLockHelperDrDc {
+ public:
+  SkiaGraphiteVkVideoImageRepresentation(
+      SharedImageManager* manager,
+      AndroidImageBacking* backing,
+      scoped_refptr<SharedContextState> context_state,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<RefCountedLock> drdc_lock)
+      : SkiaGraphiteVkAndroidImageRepresentation(manager,
+                                                 backing,
+                                                 std::move(context_state),
+                                                 tracker),
+        RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
+
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
+      const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect) override {
+    NOTIMPLEMENTED();
+    return {};
+  }
+
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
+      override {
+    NOTIMPLEMENTED();
+    return {};
+  }
+
+  void EndWriteAccess() override { NOTIMPLEMENTED(); }
+
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+
+    DCHECK(!scoped_hardware_buffer_);
+    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
+    DCHECK(video_backing);
+    auto* stream_texture_sii = video_backing->stream_texture_sii_.get();
+
+    // GetAHardwareBuffer() renders the latest image and gets AHardwareBuffer
+    // from it.
+    scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+    if (!scoped_hardware_buffer_) {
+      LOG(ERROR) << "Failed to get the hardware buffer.";
+      return {};
+    }
+    DCHECK(scoped_hardware_buffer_->buffer());
+
+    SetInitialFence(scoped_hardware_buffer_->TakeFence());
+
+    if (!vulkan_image()) {
+      auto vulkan_image = CreateVkImageFromAhbHandle(
+          scoped_hardware_buffer_->TakeBuffer(), context_state(), size(),
+          format(), VK_QUEUE_FAMILY_FOREIGN_EXT);
+      if (!vulkan_image) {
+        return {};
+      }
+      SetVulkanImage(std::move(vulkan_image));
+    }
+
+    return SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess();
+  }
+
+  void EndReadAccess() override {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    DCHECK(scoped_hardware_buffer_);
+
+    SkiaGraphiteVkAndroidImageRepresentation::EndReadAccess();
+
+    // Pass the end read access sync fd to the scoped hardware buffer. This
+    // will make sure that the AImage associated with the hardware buffer will
+    // be deleted only when the read access is ending.
+    scoped_hardware_buffer_->SetReadFence(android_backing()->TakeReadFence());
+    scoped_hardware_buffer_ = nullptr;
+  }
+
+ private:
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+      scoped_hardware_buffer_;
+};
+#endif
+
 template <typename T>
 std::unique_ptr<T> VideoImageReaderImageBacking::ProduceGLTextureInternal(
     SharedImageManager* manager,
@@ -693,7 +780,7 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
                                            this, tracker);
 }
 
-#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
 std::unique_ptr<SkiaGraphiteImageRepresentation>
 VideoImageReaderImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
@@ -713,11 +800,16 @@ VideoImageReaderImageBacking::ProduceSkiaGraphite(
     return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
         manager, this, tracker, context_state, GetDrDcLock());
 #endif
+  } else if (context_state->IsGraphiteVulkan()) {
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+    return std::make_unique<SkiaGraphiteVkVideoImageRepresentation>(
+        manager, this, std::move(context_state), tracker, GetDrDcLock());
+#endif
   }
 
   NOTREACHED();
 }
-#endif
+#endif  // BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
 
 // Representation of VideoImageReaderImageBacking as an overlay plane.
 class VideoImageReaderImageBacking::OverlayVideoImageRepresentation

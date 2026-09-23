@@ -47,6 +47,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_vk_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_vk_android_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -477,6 +478,26 @@ class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
   }
 };
 
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+class SkiaGraphiteVkAHBImageRepresentation
+    : public SkiaGraphiteVkAndroidImageRepresentation {
+ public:
+  SkiaGraphiteVkAHBImageRepresentation(
+      SharedImageManager* manager,
+      AndroidImageBacking* backing,
+      scoped_refptr<SharedContextState> context_state,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<VulkanImage> vulkan_image)
+      : SkiaGraphiteVkAndroidImageRepresentation(manager,
+                                                 backing,
+                                                 std::move(context_state),
+                                                 tracker) {
+    CHECK(vulkan_image);
+    SetVulkanImage(std::move(vulkan_image));
+  }
+};
+#endif
+
 class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
  public:
   OverlayAHBImageRepresentation(SharedImageManager* manager,
@@ -708,6 +729,13 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
     return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#endif
+  } else if (context_state->IsGraphiteVulkan()) {
+#if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
+    auto vulkan_image = CreateVulkanImageFromAHB(context_state.get());
+    return std::make_unique<SkiaGraphiteVkAHBImageRepresentation>(
+        manager, this, std::move(context_state), tracker,
+        std::move(vulkan_image));
 #endif
   }
 
