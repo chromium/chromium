@@ -25,13 +25,15 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 
-#include "base/compiler_specific.h"
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,8 +67,11 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
 
 CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              Pattern::RepeatMode repeat,
-                             bool origin_clean)
-    : pattern_(Pattern::CreateImagePattern(image, repeat)),
+                             bool origin_clean,
+                             RespectImageOrientationEnum respect_orientation)
+    : pattern_(Pattern::CreateImagePattern(std::move(image),
+                                           repeat,
+                                           respect_orientation)),
       origin_clean_(origin_clean) {}
 
 void CanvasPattern::setTransform(DOMMatrix2DInit* transform,

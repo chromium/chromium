@@ -18,6 +18,7 @@
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "cc/test/paint_op_matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
@@ -43,25 +44,33 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation_enum.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -128,7 +137,10 @@ class Test2DRecordingContext final
   int Height() const override { return 300; }
 
   RespectImageOrientationEnum RespectImageOrientation() const override {
-    return kRespectImageOrientation;
+    return respect_image_orientation_;
+  }
+  void SetRespectImageOrientation(RespectImageOrientationEnum respect) {
+    respect_image_orientation_ = respect;
   }
 
   Color GetCurrentColor() const override { return Color::kBlack; }
@@ -193,6 +205,8 @@ class Test2DRecordingContext final
 
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
+  RespectImageOrientationEnum respect_image_orientation_ =
+      kRespectImageOrientation;
   MemoryManagedPaintRecorder recorder_;
   Member<HTMLCanvasElement> host_canvas_element_;
 };
@@ -235,7 +249,8 @@ TEST(Canvas2DRecorderContextCompositingTests, Pattern) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
+      kRespectImageOrientation);
 
   context->setFillStyle(scope.GetIsolate(),
                         pattern->ToV8(scope.GetScriptState()),
@@ -250,6 +265,142 @@ TEST(Canvas2DRecorderContextCompositingTests, Pattern) {
               RecordedOpsAre(
                   PaintOpEq<TranslateOp>(4, 5),
                   PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), flags)));
+}
+
+class FakeImageSourceWithOrientation : public CanvasImageSource {
+ public:
+  FakeImageSourceWithOrientation(gfx::Size size,
+                                 ImageOrientation orientation,
+                                 bool would_taint_origin)
+      : would_taint_origin_(would_taint_origin) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size.width(), size.height());
+    bitmap.eraseColor(SkColors::kRed);
+    sk_sp<SkImage> sk_image = SkImages::RasterFromBitmap(bitmap);
+    image_ = UnacceleratedStaticBitmapImage::Create(sk_image, orientation);
+  }
+
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus* status,
+                                               const gfx::SizeF&) override {
+    if (status) {
+      *status = kNormalSourceImageStatus;
+    }
+    return image_;
+  }
+
+  bool WouldTaintOrigin() const override { return would_taint_origin_; }
+  gfx::SizeF ElementSize(
+      const gfx::SizeF& default_object_size,
+      const RespectImageOrientationEnum respect_orientation) const override {
+    return gfx::SizeF(image_->Size(respect_orientation));
+  }
+  bool IsOpaque() const override { return true; }
+  bool IsAccelerated() const override { return false; }
+
+  ~FakeImageSourceWithOrientation() override = default;
+
+ private:
+  const bool would_taint_origin_;
+  scoped_refptr<Image> image_;
+};
+
+MATCHER_P2(IsDrawRectWithImageShaderSize, width, height, "") {
+  if (arg.GetType() != cc::PaintOpType::kDrawRect) {
+    *result_listener << "PaintOp is not a DrawRectOp";
+    return false;
+  }
+  const cc::PaintShader* shader =
+      static_cast<const cc::DrawRectOp&>(arg).flags.getShader();
+  if (!shader) {
+    *result_listener << "DrawRectOp has no shader";
+    return false;
+  }
+  if (shader->shader_type() != cc::PaintShader::Type::kImage) {
+    *result_listener << "DrawRectOp shader is not an image shader";
+    return false;
+  }
+  SkISize dimensions = shader->paint_image().GetSkImageInfo().dimensions();
+  if (!dimensions.equals(width, height)) {
+    *result_listener << "actual width == " << dimensions.width()
+                     << ", actual height == " << dimensions.height();
+    return false;
+  }
+  return true;
+}
+
+// Tests pattern creation respecting image orientation.
+TEST(Canvas2DRecorderContextCompositingTests, PatternImageOrientationRespect) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->SetRespectImageOrientation(kRespectImageOrientation);
+  FakeImageSourceWithOrientation image_source(
+      gfx::Size(20, 10), ImageOrientationEnum::kOriginRightTop,
+      /*would_taint_origin=*/false);
+  CanvasPattern* pattern =
+      context->createPattern(&image_source, "repeat", exception_state);
+  ASSERT_NE(pattern, nullptr);
+
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->fillRect(0, 0, 10, 10);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(IsDrawRectWithImageShaderSize(10, 20)));
+}
+
+// Tests pattern creation ignoring image orientation when not respecting it on
+// same-origin.
+TEST(Canvas2DRecorderContextCompositingTests, PatternImageOrientationIgnore) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->SetRespectImageOrientation(kDoNotRespectImageOrientation);
+  FakeImageSourceWithOrientation image_source(
+      gfx::Size(20, 10), ImageOrientationEnum::kOriginRightTop,
+      /*would_taint_origin=*/false);
+  CanvasPattern* pattern =
+      context->createPattern(&image_source, "repeat", exception_state);
+  ASSERT_NE(pattern, nullptr);
+
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->fillRect(0, 0, 10, 10);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(IsDrawRectWithImageShaderSize(20, 10)));
+}
+
+// Tests pattern creation with a source that taints origin enforcing
+// orientation.
+TEST(Canvas2DRecorderContextCompositingTests,
+     PatternImageOrientationWithTaintedOrigin) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->SetRespectImageOrientation(kDoNotRespectImageOrientation);
+  FakeImageSourceWithOrientation image_source(
+      gfx::Size(20, 10), ImageOrientationEnum::kOriginRightTop,
+      /*would_taint_origin=*/true);
+  CanvasPattern* pattern =
+      context->createPattern(&image_source, "repeat", exception_state);
+  ASSERT_NE(pattern, nullptr);
+
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->fillRect(0, 0, 10, 10);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(IsDrawRectWithImageShaderSize(10, 20)));
 }
 
 // Tests a plain drawImage.
@@ -917,7 +1068,8 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPattern) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
+      kRespectImageOrientation);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);
@@ -979,7 +1131,8 @@ TEST(Canvas2DRecorderContextCompositingTests, ShadowPatternTransform) {
   auto* context = MakeGarbageCollected<Test2DRecordingContext>(scope);
 
   auto* pattern = MakeGarbageCollected<CanvasPattern>(
-      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true,
+      kRespectImageOrientation);
 
   context->setShadowBlur(2);
   context->setShadowOffsetX(2);

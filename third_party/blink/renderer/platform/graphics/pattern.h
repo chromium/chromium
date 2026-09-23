@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -53,7 +54,8 @@ class PLATFORM_EXPORT Pattern {
 
   static std::unique_ptr<Pattern> CreateImagePattern(
       scoped_refptr<Image>,
-      RepeatMode = kRepeatModeXY);
+      RepeatMode repeat_mode,
+      RespectImageOrientationEnum respect_orientation);
   static std::unique_ptr<Pattern> CreatePaintRecordPattern(
       PaintRecord,
       const gfx::RectF& record_bounds,

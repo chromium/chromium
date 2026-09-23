@@ -608,7 +608,7 @@ scoped_refptr<Image> BitmapImage::ImageForDefaultFrame() {
                         .set_repetition_count(kAnimationNone)
                         .TakePaintImage();
     }
-    return StaticBitmapImage::Create(std::move(paint_image));
+    return StaticBitmapImage::Create(std::move(paint_image), Orientation());
   }
 
   return Image::ImageForDefaultFrame();

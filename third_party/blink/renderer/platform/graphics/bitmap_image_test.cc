@@ -577,6 +577,7 @@ TEST_F(BitmapImageTest, ImageForDefaultFrame_MultiFrame) {
   auto default_image1 = image_->ImageForDefaultFrame();
   auto default_image2 = image_->ImageForDefaultFrame();
   EXPECT_NE(default_image1, default_image2);
+  EXPECT_EQ(default_image1->Orientation(), image_->Orientation());
 
   // But the PaintImage should be the same.
   auto paint_image1 = default_image1->PaintImageForCurrentFrame();

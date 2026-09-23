@@ -31,6 +31,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,7 +49,10 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   static Pattern::RepeatMode ParseRepetitionType(const String&,
                                                  ExceptionState&);
 
-  CanvasPattern(scoped_refptr<Image>, Pattern::RepeatMode, bool origin_clean);
+  CanvasPattern(scoped_refptr<Image>,
+                Pattern::RepeatMode,
+                bool origin_clean,
+                RespectImageOrientationEnum respect_orientation);
 
   Pattern* GetPattern() const { return pattern_.get(); }
   const AffineTransform& GetTransform() const { return pattern_transform_; }

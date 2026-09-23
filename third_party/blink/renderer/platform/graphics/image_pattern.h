@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_PATTERN_H_
 
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 
@@ -14,7 +15,10 @@ class Image;
 
 class PLATFORM_EXPORT ImagePattern final : public Pattern {
  public:
-  static std::unique_ptr<ImagePattern> Create(scoped_refptr<Image>, RepeatMode);
+  static std::unique_ptr<ImagePattern> Create(
+      scoped_refptr<Image>,
+      RepeatMode,
+      RespectImageOrientationEnum respect_orientation);
 
   bool IsTextureBacked() const override;
 
@@ -22,7 +26,7 @@ class PLATFORM_EXPORT ImagePattern final : public Pattern {
   sk_sp<PaintShader> CreateShader(const SkMatrix&) const override;
 
  private:
-  ImagePattern(scoped_refptr<Image>, RepeatMode);
+  ImagePattern(scoped_refptr<Image>, RepeatMode, RespectImageOrientationEnum);
 
   PaintImage tile_image_;
 };
