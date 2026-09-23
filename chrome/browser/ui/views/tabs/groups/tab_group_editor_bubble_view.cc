@@ -73,6 +73,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -106,11 +107,13 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -455,6 +458,9 @@ void TabGroupEditorBubbleView::OnDisplayTabletStateChanged(
 }
 
 void TabGroupEditorBubbleView::UpdateGroup() {
+  if (IsEphemeralTabGroup()) {
+    return;
+  }
   const std::optional<int> selected_element =
       color_selector_->GetSelectedElement();
   TabGroup* const tab_group =
@@ -554,7 +560,15 @@ bool TabGroupEditorBubbleView::IsGroupShared() const {
   return maybe_saved_group.value().is_shared_tab_group();
 }
 
+bool TabGroupEditorBubbleView::IsEphemeralTabGroup() const {
+  return browser_ && browser_->GetTabStripModel() &&
+         browser_->GetTabStripModel()->IsEphemeralTabGroup(group_);
+}
+
 bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {
+  if (IsEphemeralTabGroup()) {
+    return false;
+  }
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
   return (CanSaveGroups() && pref_service &&
           saved_tab_group_prefs::GetLearnMoreFooterShownCount(pref_service) <
@@ -579,6 +593,23 @@ bool TabGroupEditorBubbleView::OwnsGroup() const {
       browser_->GetProfile(), maybe_saved_group->saved_guid());
 }
 
+void TabGroupEditorBubbleView::OnEphemeralGroupPromoted() {
+  browser_->GetTabStripModel()->PromoteEphemeralTabGroup(group_);
+  UpdateGroup();
+  OnBubbleClose();
+  if (GetWidget()) {
+    GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kAcceptButtonClicked);
+  }
+}
+
+void TabGroupEditorBubbleView::CancelEphemeralGroup() {
+  if (GetWidget()) {
+    GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kCancelButtonClicked);
+  }
+}
+
 void TabGroupEditorBubbleView::RebuildMenuContents() {
   simple_menu_items_.clear();
   std::unique_ptr<TitleField> title_field;
@@ -598,9 +629,17 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
   RemoveAllChildViews();
 
+  if (IsEphemeralTabGroup()) {
+    AddChildView(BuildEphemeralGroupTitle());
+  }
+
   title_field_ = AddChildView(title_field ? std::move(title_field)
                                           : BuildTitleField(title_at_opening_));
   color_selector_ = AddChildView(BuildColorPicker());
+  if (IsEphemeralTabGroup()) {
+    AddChildView(BuildEphemeralGroupButtons());
+    return;
+  }
   AddChildView(BuildSeparator());
 
   if (!CanSaveGroups()) {
@@ -730,6 +769,61 @@ std::unique_ptr<ColorPickerView> TabGroupEditorBubbleView::BuildColorPicker() {
                               gfx::Insets::VH(0, horizontal_spacing));
 
   return color_selector;
+}
+
+std::unique_ptr<views::Label>
+TabGroupEditorBubbleView::BuildEphemeralGroupTitle() {
+  auto title_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP),
+      views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5);
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  const gfx::Insets control_insets = GetControlInsets();
+  title_label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(control_insets.top(), control_insets.left(), 0,
+                        control_insets.right()));
+
+  return title_label;
+}
+
+std::unique_ptr<views::View>
+TabGroupEditorBubbleView::BuildEphemeralGroupButtons() {
+  auto button_row = std::make_unique<views::View>();
+  const int button_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+  button_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)
+              .WithWeight(1));
+
+  const gfx::Insets control_insets = GetControlInsets();
+  button_row->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(control_insets.top(), control_insets.left(), 0,
+                        control_insets.right()));
+
+  auto cancel_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&TabGroupEditorBubbleView::CancelEphemeralGroup,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_CANCEL));
+  cancel_button->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(0, 0, 0, button_spacing / 2));
+
+  auto create_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&TabGroupEditorBubbleView::OnEphemeralGroupPromoted,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP));
+  create_button->SetStyle(ui::ButtonStyle::kProminent);
+  create_button->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(0, button_spacing / 2, 0, 0));
+
+  button_row->AddChildView(std::move(cancel_button));
+  button_row->AddChildView(std::move(create_button));
+  return button_row;
 }
 
 std::unique_ptr<views::LabelButton>
@@ -1148,6 +1242,9 @@ bool TabGroupEditorBubbleView::CanMoveGroupToNewWindow() {
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {
+  if (IsEphemeralTabGroup()) {
+    return;
+  }
   if (title_at_opening_ != title_field_->GetText()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));
@@ -1266,8 +1363,12 @@ bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
       return true;
     }
     if (key_code == ui::VKEY_RETURN) {
-      parent_->GetWidget()->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
+      if (parent_->IsEphemeralTabGroup()) {
+        parent_->OnEphemeralGroupPromoted();
+      } else {
+        parent_->GetWidget()->CloseWithReason(
+            views::Widget::ClosedReason::kUnspecified);
+      }
       return true;
     }
   }

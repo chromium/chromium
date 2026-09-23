@@ -36,6 +36,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -49,6 +50,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -777,3 +779,129 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   bottom_right_widget->CloseNow();
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EphemeralGroup_ShowsOnlyNameColorAndButtons) {
+  tab_groups::TabGroupId ephemeral_group =
+      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* bubble_delegate =
+      editor_bubble->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(bubble_delegate->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
+
+  views::View* contents_view = bubble_delegate->GetContentsView();
+  ASSERT_EQ(contents_view->children().size(), 4u);
+
+  auto* title_label =
+      views::AsViewClass<views::Label>(contents_view->children()[0]);
+  ASSERT_NE(nullptr, title_label);
+  EXPECT_EQ(
+      title_label->GetText(),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP));
+
+  views::View* button_row = contents_view->children()[3];
+  ASSERT_EQ(button_row->children().size(), 2u);
+  auto* cancel_button =
+      views::AsViewClass<views::LabelButton>(button_row->children()[0]);
+  auto* create_button =
+      views::AsViewClass<views::LabelButton>(button_row->children()[1]);
+  ASSERT_NE(nullptr, cancel_button);
+  ASSERT_NE(nullptr, create_button);
+  EXPECT_EQ(cancel_button->GetText(), l10n_util::GetStringUTF16(IDS_CANCEL));
+  EXPECT_EQ(
+      create_button->GetText(),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP));
+
+  EXPECT_EQ(
+      contents_view->GetViewByID(
+          TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
+      nullptr);
+  EXPECT_EQ(contents_view->GetViewByID(
+                TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP),
+            nullptr);
+  EXPECT_EQ(contents_view->GetViewByID(
+                TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
+            nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EphemeralGroup_CancelDiscardsChanges) {
+  tab_groups::TabGroupId ephemeral_group =
+      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+
+  title_field->InsertOrReplaceText(u"Ephemeral Title");
+  // Changes should be deferred until Create is clicked.
+  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
+            u"");
+
+  views::View* contents_view = editor_bubble->widget_delegate()
+                                   ->AsBubbleDialogDelegate()
+                                   ->GetContentsView();
+  ASSERT_EQ(contents_view->children().size(), 4u);
+  views::View* button_row = contents_view->children()[3];
+  ASSERT_EQ(button_row->children().size(), 2u);
+  views::Button* cancel_button =
+      views::Button::AsButton(button_row->children()[0]);
+  ASSERT_NE(nullptr, cancel_button);
+
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
+                                gfx::PointF(), base::TimeTicks(), 0, 0);
+  views::test::ButtonTestApi(cancel_button).NotifyClick(released_event);
+
+  EXPECT_TRUE(
+      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
+  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
+            u"");
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       EphemeralGroup_CreatePromotesGroupAndAppliesChanges) {
+  tab_groups::TabGroupId ephemeral_group =
+      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  auto* title_field = views::AsViewClass<views::Textfield>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleId,
+          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
+  ASSERT_NE(nullptr, title_field);
+
+  title_field->InsertOrReplaceText(u"Promoted Title");
+
+  views::View* contents_view = editor_bubble->widget_delegate()
+                                   ->AsBubbleDialogDelegate()
+                                   ->GetContentsView();
+  ASSERT_EQ(contents_view->children().size(), 4u);
+  views::View* button_row = contents_view->children()[3];
+  ASSERT_EQ(button_row->children().size(), 2u);
+  views::Button* create_button =
+      views::Button::AsButton(button_row->children()[1]);
+  ASSERT_NE(nullptr, create_button);
+
+  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
+                                gfx::PointF(), base::TimeTicks(), 0, 0);
+  views::test::ButtonTestApi(create_button).NotifyClick(released_event);
+
+  EXPECT_FALSE(
+      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
+  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
+            u"Promoted Title");
+}

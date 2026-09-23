@@ -717,6 +717,10 @@ class TabStripModel {
   // but be part of a group architecturally.
   bool IsEphemeralTabGroup(const tab_groups::TabGroupId& group_id) const;
 
+  // Promotes an ephemeral tab group into a permanent tab group and notifies
+  // observers that the tab group was added.
+  void PromoteEphemeralTabGroup(const tab_groups::TabGroupId& group_id);
+
   // Returns the ID of the group that is focused. If no group is focused,
   // returns nullopt.
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;

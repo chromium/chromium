@@ -2179,6 +2179,24 @@ bool TabStripModel::IsEphemeralTabGroup(
              : false;
 }
 
+void TabStripModel::PromoteEphemeralTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  if (!group_model_ || !group_model_->ContainsTabGroup(group_id)) {
+    return;
+  }
+
+  TabGroup* tab_group = group_model_->GetTabGroup(group_id);
+  if (!tab_group->is_ephemeral()) {
+    return;
+  }
+
+  tab_group->SetIsEphemeral(false);
+
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnTabGroupAdded(group_id);
+  }
+}
+
 // Returns the ID of the group that is focused. If no group is focused,
 // returns nullopt.
 std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {

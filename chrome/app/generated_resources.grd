@@ -12884,6 +12884,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
         Unfocus group
       </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP" desc="The label for create button in the tab group editor bubble when creating a permanent tab group from an ephemeral one.">
+        Create
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP" desc="Title shown at top of the tab group editor bubble when in non group focus mode.">
+        Add Tabs to New Group
+      </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
         Share group
       </message>
