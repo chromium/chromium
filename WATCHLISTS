@@ -121,6 +121,9 @@
                   '|components/crash/android/' \
                   '|components/minidump_uploader/'
     },
+    'android_extensions_side_panel': {
+      'filepath': 'chrome/browser/ui/android/extensions/side_panel/',
+    },
     'android_extensions_windowing': {
       'filepath': 'chrome/browser/ui/android/extensions/windowing/',
     },
@@ -2618,6 +2621,7 @@
     'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
+    'android_extensions_side_panel': ['linyuh+watch@google.com'],
     'android_extensions_windowing': ['linyuh+watch@google.com'],
     'android_flags': ['hnakashima+watch@chromium.org'],
     'android_infobars': ['dfalcantara+watch@chromium.org'],
