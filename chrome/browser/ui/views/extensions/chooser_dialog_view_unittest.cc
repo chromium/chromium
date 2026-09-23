@@ -17,6 +17,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 using permissions::FakeBluetoothChooserController;
@@ -88,10 +89,10 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   raw_ptr<ChooserDialogView, DanglingUntriaged> dialog_ = nullptr;
   raw_ptr<FakeBluetoothChooserController, DanglingUntriaged> controller_ =
       nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 };
 
 TEST_F(ChooserDialogViewTest, ButtonState) {
@@ -148,6 +149,40 @@ TEST_F(ChooserDialogViewTest, Accept) {
   std::vector<size_t> expected = {1u};
   EXPECT_CALL(*controller_, Select(testing::Eq(expected))).Times(1);
   dialog_->Accept();
+}
+
+TEST_F(ChooserDialogViewTest, KeyEventsBlockedDuringInputProtection) {
+  EXPECT_FALSE(dialog_->ShouldAllowKeyEventsDuringInputProtection());
+
+  AddDevice();
+  table_view()->Select(0);
+  ASSERT_TRUE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  views::MdTextButton* ok_button = dialog_->GetOkButton();
+  ASSERT_NE(ok_button, nullptr);
+
+  // Pressing Enter immediately (within the 500ms input protection window)
+  // should be ignored.
+  EXPECT_CALL(*controller_, Select(testing::_)).Times(0);
+  views::test::ButtonTestApi(ok_button).NotifyClick(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+                   ui::EventTimeForNow()));
+  EXPECT_FALSE(widget_->IsClosed());
+
+  // A repeated Enter key event (holding Enter down from before the dialog
+  // opened) should still be ignored even after the 500ms safety window.
+  views::test::ButtonTestApi(ok_button).NotifyClick(ui::KeyEvent(
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_IS_REPEAT,
+      ui::EventTimeForNow() + base::Milliseconds(600)));
+  EXPECT_FALSE(widget_->IsClosed());
+  testing::Mock::VerifyAndClearExpectations(controller_);
+
+  // A fresh Enter key press after the safety window (600ms later) should
+  // succeed.
+  EXPECT_CALL(*controller_, Select(testing::ElementsAre(0u))).Times(1);
+  views::test::ButtonTestApi(ok_button).NotifyClick(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+                   ui::EventTimeForNow() + base::Milliseconds(600)));
+  EXPECT_TRUE(widget_->IsClosed());
 }
 
 TEST_F(ChooserDialogViewTest, Cancel) {

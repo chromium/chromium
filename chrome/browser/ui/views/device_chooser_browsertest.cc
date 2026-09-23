@@ -35,6 +35,12 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/table/table_view.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
@@ -313,4 +319,66 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
   EXPECT_FALSE(content::ExecJs(web_contents,
                                "document.documentElement.requestFullscreen()"));
   EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
+                       KeyjackingProtectionSafetyWindow) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("example.com")));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "ChooserBubbleUiViewDelegate");
+  ShowChooserBubble(browser(), std::make_unique<FakeUsbChooserController>(1));
+  views::Widget* bubble_widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(bubble_widget, nullptr);
+
+  views::DialogDelegate* delegate =
+      bubble_widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_NE(delegate, nullptr);
+  EXPECT_FALSE(delegate->ShouldAllowKeyEventsDuringInputProtection());
+
+  // Select the first device in the table so the OK ("Connect") button is
+  // enabled (`DialogDelegate::AcceptDialog()` DCHECKs `IsDialogButtonEnabled`).
+  auto find_table_view = [](this auto&& self,
+                            views::View* root) -> views::TableView* {
+    if (auto* table = views::AsViewClass<views::TableView>(root)) {
+      return table;
+    }
+    for (views::View* child : root->children()) {
+      if (auto* table = self(child)) {
+        return table;
+      }
+    }
+    return nullptr;
+  };
+  views::TableView* table_view = find_table_view(delegate->GetContentsView());
+  ASSERT_NE(table_view, nullptr);
+  table_view->Select(0);
+  ASSERT_TRUE(delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+
+  views::MdTextButton* ok_button = delegate->GetOkButton();
+  ASSERT_NE(ok_button, nullptr);
+
+  // 1. Press Enter immediately (within the 500ms input protection window).
+  views::test::ButtonTestApi(ok_button).NotifyClick(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+                   ui::EventTimeForNow()));
+
+  // Verify that the bubble did not close (the key event was ignored).
+  EXPECT_FALSE(bubble_widget->IsClosed());
+
+  // 2. A repeated Enter key event (holding Enter down) should also be ignored
+  // even after the 500ms safety window.
+  views::test::ButtonTestApi(ok_button).NotifyClick(ui::KeyEvent(
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_IS_REPEAT,
+      ui::EventTimeForNow() + base::Milliseconds(600)));
+  EXPECT_FALSE(bubble_widget->IsClosed());
+
+  // 3. A fresh Enter key press after the 500ms safety window (offset by 600ms)
+  // should succeed.
+  views::test::ButtonTestApi(ok_button).NotifyClick(
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+                   ui::EventTimeForNow() + base::Milliseconds(600)));
+
+  // Verify that the bubble accepted and closed.
+  EXPECT_TRUE(bubble_widget->IsClosed());
 }

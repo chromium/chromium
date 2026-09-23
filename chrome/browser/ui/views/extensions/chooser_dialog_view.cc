@@ -83,6 +83,10 @@ views::View* ChooserDialogView::GetInitiallyFocusedView() {
   return GetCancelButton();
 }
 
+bool ChooserDialogView::ShouldAllowKeyEventsDuringInputProtection() const {
+  return false;
+}
+
 void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
 }

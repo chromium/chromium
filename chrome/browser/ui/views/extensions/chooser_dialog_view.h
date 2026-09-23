@@ -35,6 +35,7 @@ class ChooserDialogView : public views::DialogDelegateView,
   // views::DialogDelegate:
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;
