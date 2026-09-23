@@ -3282,6 +3282,42 @@ void ContextualTasksUiService::InitSidePanelWithGhostLoader(
                             task.GetTaskId(), nullptr);
 }
 
+void ContextualTasksUiService::DestroyClosedSidePanel(
+    BrowserWindowInterface* browser_window_interface) {
+  CHECK(browser_window_interface);
+  if (!contextual_tasks_service_) {
+    return;
+  }
+
+  TabListInterface* tab_list = TabListInterface::From(browser_window_interface);
+  tabs::TabInterface* const active_tab =
+      tab_list ? tab_list->GetActiveTab() : nullptr;
+  if (!active_tab) {
+    return;
+  }
+
+  std::optional<SessionID> current_tab_session_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  if (!current_tab_session_id.has_value()) {
+    return;
+  }
+
+  std::optional<ContextualTask> current_task =
+      contextual_tasks_service_->GetContextualTaskForTab(
+          current_tab_session_id.value());
+  if (!current_task.has_value()) {
+    return;
+  }
+
+  base::Uuid task_id = current_task->GetTaskId();
+  contextual_tasks_service_->DisassociateAllTabsFromTask(task_id);
+
+  if (auto* controller =
+          ContextualTasksPanelController::From(browser_window_interface)) {
+    controller->CleanUpUnusedWebContents();
+  }
+}
+
 void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
     BrowserWindowInterface* browser_window_interface,
     tabs::TabInterface* tab_interface,

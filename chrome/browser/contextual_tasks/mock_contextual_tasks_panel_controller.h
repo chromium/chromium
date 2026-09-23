@@ -67,6 +67,7 @@ class MockContextualTasksPanelController
               GetPanelWebContentsList,
               (),
               (const, override));
+  MOCK_METHOD(void, CleanUpUnusedWebContents, (), (override));
   MOCK_METHOD(std::unique_ptr<content::WebContents>,
               DetachWebContentsForTask,
               (const base::Uuid&),

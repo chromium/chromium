@@ -207,7 +207,7 @@ class ContextualTasksSidePanelCoordinator
   void UpdatePanelVisibility();
 
   // Clean up unused WebContents.
-  void CleanUpUnusedWebContents();
+  void CleanUpUnusedWebContents() override;
 
   // Update the associated WebContents for active tab. Returns whether the web
   // contents was changed.

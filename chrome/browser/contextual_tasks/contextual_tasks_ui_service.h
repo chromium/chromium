@@ -289,6 +289,11 @@ class ContextualTasksUiService : public KeyedService {
           session_handle,
       omnibox::ChromeAimEntryPoint entry_point);
 
+  // Cleans up a closed side panel for the active tab's task by disassociating
+  // all associated tabs and releasing cached resources.
+  virtual void DestroyClosedSidePanel(
+      BrowserWindowInterface* browser_window_interface);
+
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
   // empty task. If the panel is already open for a task, this is a no-op.

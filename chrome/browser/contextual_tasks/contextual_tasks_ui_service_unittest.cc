@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
@@ -4312,6 +4313,88 @@ TEST_F(ContextualTasksUiServiceTest,
                                            /*invocation_source=*/std::nullopt);
 
   real_service_->RemoveObserver(&observer);
+}
+
+TEST_F(ContextualTasksUiServiceTest, DestroyClosedSidePanel) {
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ON_CALL(testing::Const(mock_browser_window), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  auto mock_panel_host =
+      std::make_unique<NiceMock<MockContextualTasksPanelHost>>();
+  ON_CALL(*mock_panel_host, IsPanelInitialized())
+      .WillByDefault(testing::Return(true));
+
+  NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider;
+  ContextualTasksSidePanelCoordinator coordinator(
+      &mock_browser_window, std::move(mock_panel_host),
+      &mock_active_task_context_provider, nullptr);
+
+  auto tab_session_id = sessions::SessionTabHelper::IdForTab(tab_contents.get());
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+
+  EXPECT_CALL(*contextual_tasks_service_, GetContextualTaskForTab(tab_session_id))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              DisassociateAllTabsFromTask(task.GetTaskId()))
+      .Times(1);
+
+  real_service_->DestroyClosedSidePanel(&mock_browser_window);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       DestroyClosedSidePanel_NoTaskDoesNotDisassociate) {
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  auto tab_session_id = sessions::SessionTabHelper::IdForTab(tab_contents.get());
+
+  EXPECT_CALL(*contextual_tasks_service_, GetContextualTaskForTab(tab_session_id))
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*contextual_tasks_service_, DisassociateAllTabsFromTask)
+      .Times(0);
+
+  real_service_->DestroyClosedSidePanel(&mock_browser_window);
 }
 
 }  // namespace contextual_tasks

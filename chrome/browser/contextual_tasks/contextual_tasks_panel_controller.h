@@ -100,6 +100,9 @@ class ContextualTasksPanelController {
   // Returns a list of all cached panel WebContents.
   virtual std::vector<content::WebContents*> GetPanelWebContentsList()
       const = 0;
+  // Cleans up any WebContents that are no longer associated with active tabs or
+  // have expired from the cache.
+  virtual void CleanUpUnusedWebContents() = 0;
   // Detaches the WebContents for the given task and returns it.
   virtual std::unique_ptr<content::WebContents> DetachWebContentsForTask(
       const base::Uuid& task_id) = 0;
