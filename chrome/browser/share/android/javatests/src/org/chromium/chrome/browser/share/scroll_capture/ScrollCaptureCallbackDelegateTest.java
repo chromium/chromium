@@ -101,6 +101,7 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(200);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(500);
+        when(mSurface.isValid()).thenReturn(true);
 
         mScrollCaptureCallbackObj = new ScrollCaptureCallbackDelegate(mEntryManagerWrapper);
         ((ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj).setCurrentTab(mTab);
@@ -392,6 +393,77 @@ public class ScrollCaptureCallbackDelegateTest {
         // The resulting capture Rect should be cropped to 500 height because the upper half of it
         // was out of the content area.
         Assert.assertEquals(new Rect(0, -1000, 500, -500), mRectCaptor.getValue());
+
+        // Test invalid surface at request entry (skips generateEntry)
+        when(mSurface.isValid()).thenReturn(false);
+        captureArea.set(0, -1500, 500, -500);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
+        when(mSurface.isValid()).thenReturn(true);
+
+        // Test invalid surface when bitmap callback runs
+        doAnswer(
+                        invocation -> {
+                            when(mSurface.isValid()).thenReturn(false);
+                            EntryListener listener = invocation.getArgument(0);
+                            listener.onResult(EntryStatus.BITMAP_GENERATED);
+                            return null;
+                        })
+                .when(mEntry)
+                .setListener(any(EntryListener.class));
+        captureArea.set(0, -1500, 500, -500);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mEntryManager).generateEntry(any());
+        inOrder.verify(mEntry).setListener(any());
+        inOrder.verify(mEntry).getBitmap();
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
+        when(mSurface.isValid()).thenReturn(true);
+
+        // Test canceled signal when bitmap callback runs
+        doAnswer(
+                        invocation -> {
+                            signal.cancel();
+                            EntryListener listener = invocation.getArgument(0);
+                            listener.onResult(EntryStatus.BITMAP_GENERATED);
+                            return null;
+                        })
+                .when(mEntry)
+                .setListener(any(EntryListener.class));
+        captureArea.set(0, -1500, 500, -500);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mEntryManager).generateEntry(any());
+        inOrder.verify(mEntry).setListener(any());
+        inOrder.verify(mEntry).getBitmap();
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
+
+        // Test canceled signal at request entry (skips generateEntry)
+        captureArea.set(0, -1500, 500, -500);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
+
+        // Test lockCanvas throwing IllegalArgumentException
+        CancellationSignal activeSignal = new CancellationSignal();
+        doAnswer(
+                        invocation -> {
+                            EntryListener listener = invocation.getArgument(0);
+                            listener.onResult(EntryStatus.BITMAP_GENERATED);
+                            return null;
+                        })
+                .when(mEntry)
+                .setListener(any(EntryListener.class));
+        when(mSurface.lockCanvas(any())).thenThrow(new IllegalArgumentException());
+        captureArea.set(0, -1500, 500, -500);
+        scrollCaptureCallback.onScrollCaptureImageRequest(
+                mSurface, activeSignal, captureArea, mRectConsumer);
+        inOrder.verify(mEntryManager).generateEntry(any());
+        inOrder.verify(mEntry).setListener(any());
+        inOrder.verify(mEntry).getBitmap();
+        inOrder.verify(mSurface).lockCanvas(any());
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         // Test end capture
         scrollCaptureCallback.onScrollCaptureEnd(mOnReady);

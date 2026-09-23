@@ -163,6 +163,8 @@ public class ScrollCaptureCallbackDelegate {
         // Reposition the captureArea to the content area coordinates.
         captureArea.offset(0, mInitialYOffset);
         if (mContentArea == null
+                || signal.isCanceled()
+                || !surface.isValid()
                 || !captureArea.intersect(mContentArea)
                 || captureArea.height() < BITMAP_HEIGHT_THRESHOLD) {
             onComplete.onResult(new Rect());
@@ -176,16 +178,26 @@ public class ScrollCaptureCallbackDelegate {
                     if (status == EntryStatus.BITMAP_GENERATION_IN_PROGRESS) return;
 
                     Bitmap bitmap = entry.getBitmap();
-                    if (status != EntryStatus.BITMAP_GENERATED || bitmap == null) {
+                    if (status != EntryStatus.BITMAP_GENERATED
+                            || bitmap == null
+                            || signal.isCanceled()
+                            || !surface.isValid()) {
                         onComplete.onResult(new Rect());
                         return;
                     }
 
                     Rect destRect = new Rect(0, 0, captureArea.width(), captureArea.height());
-                    Canvas canvas = surface.lockCanvas(destRect);
-                    canvas.drawColor(Color.WHITE);
-                    canvas.drawBitmap(bitmap, null, destRect, null);
-                    surface.unlockCanvasAndPost(canvas);
+                    try {
+                        Canvas canvas = surface.lockCanvas(destRect);
+                        canvas.drawColor(Color.WHITE);
+                        canvas.drawBitmap(bitmap, null, destRect, null);
+                        surface.unlockCanvasAndPost(canvas);
+                    } catch (IllegalArgumentException
+                            | IllegalStateException
+                            | Surface.OutOfResourcesException e) {
+                        onComplete.onResult(new Rect());
+                        return;
+                    }
                     // Translate the captureArea Rect back to its original coordinates.
                     captureArea.offset(0, -mInitialYOffset);
                     onComplete.onResult(captureArea);
