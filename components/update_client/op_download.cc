@@ -155,14 +155,15 @@ base::OnceClosure DownloadOperation(
           config->GetProdId(),
           CanDoBackgroundDownload(is_foreground,
                                   config->EnabledBackgroundDownloader(), size));
-  crx_downloader->set_progress_callback(base::BindRepeating(
-      [](CrxDownloader::ProgressCallback progress_callback, int64_t file_size,
-         int64_t downloaded_bytes, int64_t /*content_length*/) {
-        progress_callback.Run(downloaded_bytes, file_size);
-      },
-      progress_callback, size));
   cancellation->OnCancel(crx_downloader->StartDownload(
       urls, hash,
+      base::BindRepeating(
+          [](CrxDownloader::ProgressCallback progress_callback,
+             int64_t file_size, int64_t downloaded_bytes,
+             int64_t /*content_length*/) {
+            progress_callback.Run(downloaded_bytes, file_size);
+          },
+          progress_callback, size),
       base::BindOnce(&DownloadComplete, id, crx_downloader, cancellation,
                      event_adder, std::move(callback))));
   return base::BindOnce(&Cancellation::Cancel, cancellation);

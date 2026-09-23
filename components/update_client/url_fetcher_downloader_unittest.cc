@@ -159,7 +159,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelBeforeDownloadDirCreated) {
   auto downloader = MakeDownloader();
   base::RunLoop run_loop;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
-      GURL(kUrl), kHash, RecordingCallback(run_loop));
+      GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
 
   std::move(cancel).Run();
   run_loop.Run();
@@ -183,7 +183,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelWhileFetchInFlight) {
 
   base::RunLoop run_loop;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
-      GURL(kUrl), kHash, RecordingCallback(run_loop));
+      GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   // Wait for the fetch to start; the response is never provided.
   request_loop.Run();
   ASSERT_EQ(0, num_complete_calls_);
@@ -208,7 +208,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelAfterCompletionIsNoOp) {
 
   base::RunLoop run_loop;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
-      GURL(kUrl), kHash, RecordingCallback(run_loop));
+      GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   run_loop.Run();
   ASSERT_EQ(1, num_complete_calls_);
   // The content does not match the hash, which is the expected outcome here;
@@ -232,7 +232,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelWithFetcherCompletingOnCancel) {
 
   base::RunLoop run_loop;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
-      GURL(kUrl), kHash, RecordingCallback(run_loop));
+      GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   start_loop.Run();
   ASSERT_EQ(0, num_complete_calls_);
 
@@ -253,7 +253,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelTwice) {
 
   base::RunLoop run_loop;
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
-      GURL(kUrl), kHash, RecordingCallback(run_loop));
+      GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   request_loop.Run();
 
   std::move(cancel).Run();

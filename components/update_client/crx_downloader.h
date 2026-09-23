@@ -86,12 +86,12 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // callback that can be run to cancel the download.
   base::OnceClosure StartDownloadFromUrl(const GURL& url,
                                          const std::string& expected_hash,
+                                         ProgressCallback progress_callback,
                                          DownloadCallback download_callback);
   base::OnceClosure StartDownload(const std::vector<GURL>& urls,
                                   const std::string& expected_hash,
+                                  ProgressCallback progress_callback,
                                   DownloadCallback download_callback);
-
-  void set_progress_callback(const ProgressCallback& progress_callback);
 
   const std::vector<DownloadMetrics> download_metrics() const;
 

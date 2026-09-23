@@ -48,11 +48,6 @@ CrxDownloader::~CrxDownloader() {
               perfetto::TerminatingFlow::FromPointer(this));
 }
 
-void CrxDownloader::set_progress_callback(
-    const ProgressCallback& progress_callback) {
-  progress_callback_ = progress_callback;
-}
-
 GURL CrxDownloader::url() const {
   return current_url_ != urls_.end() ? *current_url_ : GURL();
 }
@@ -73,15 +68,18 @@ CrxDownloader::download_metrics() const {
 base::OnceClosure CrxDownloader::StartDownloadFromUrl(
     const GURL& url,
     const std::string& expected_hash,
+    ProgressCallback progress_callback,
     DownloadCallback download_callback) {
   std::vector<GURL> urls;
   urls.push_back(url);
-  return StartDownload(urls, expected_hash, std::move(download_callback));
+  return StartDownload(urls, expected_hash, progress_callback,
+                       std::move(download_callback));
 }
 
 base::OnceClosure CrxDownloader::StartDownload(
     const std::vector<GURL>& urls,
     const std::string& expected_hash,
+    ProgressCallback progress_callback,
     DownloadCallback download_callback) {
   TRACE_EVENT("update_client", "CrxDownloader::StartDownload",
               perfetto::Flow::FromPointer(this));
@@ -106,6 +104,7 @@ base::OnceClosure CrxDownloader::StartDownload(
   expected_hash_ = expected_hash;
   current_url_ = urls_.begin();
   download_callback_ = std::move(download_callback);
+  progress_callback_ = progress_callback;
 
   return DoStartDownload(*current_url_);
 }
@@ -221,7 +220,7 @@ void CrxDownloader::HandleDownloadError(
 
   // Try downloading using the next downloader.
   if (successor_ && !urls_.empty()) {
-    successor_->StartDownload(urls_, expected_hash_,
+    successor_->StartDownload(urls_, expected_hash_, progress_callback_,
                               std::move(download_callback_));
     return;
   }

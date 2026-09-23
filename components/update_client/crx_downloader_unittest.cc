@@ -127,7 +127,6 @@ void CrxDownloaderTest::SetUp() {
               test_shared_url_loader_factory_,
               base::BindRepeating([](const GURL& url) { return false; })))
           ->MakeCrxDownloader("CrxDownloaderTest", false);
-  crx_downloader_->set_progress_callback(progress_callback_);
 
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
       [&](const network::ResourceRequest& request) { interceptor_count_++; }));
@@ -199,7 +198,7 @@ void CrxDownloaderTest::RunThreadsUntilIdle() {
 // Tests that starting a download without a url results in an error.
 TEST_F(CrxDownloaderTest, NoUrl) {
   std::vector<GURL> urls;
-  crx_downloader_->StartDownload(urls, std::string("abcd"),
+  crx_downloader_->StartDownload(urls, std::string("abcd"), progress_callback_,
                                  std::move(callback_));
   RunThreadsUntilIdle();
 
@@ -215,7 +214,8 @@ TEST_F(CrxDownloaderTest, NoUrl) {
 TEST_F(CrxDownloaderTest, NoHash) {
   std::vector<GURL> urls(1, GURL("http://somehost/somefile"));
 
-  crx_downloader_->StartDownload(urls, std::string(), std::move(callback_));
+  crx_downloader_->StartDownload(urls, std::string(), progress_callback_,
+                                 std::move(callback_));
   RunThreadsUntilIdle();
 
   EXPECT_EQ(1, num_download_complete_calls_);
@@ -235,7 +235,8 @@ TEST_F(CrxDownloaderTest, OneUrl) {
   AddResponse(expected_crx_url, test_file, net::OK);
 
   crx_downloader_->StartDownloadFromUrl(
-      expected_crx_url, std::string(hash_jebg), std::move(callback_));
+      expected_crx_url, std::string(hash_jebg), progress_callback_,
+      std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(1, GetInterceptorCount());
@@ -266,7 +267,7 @@ TEST_F(CrxDownloaderTest, OneUrlBadHash) {
       expected_crx_url,
       std::string(
           "813c59747e139a608b3b5fc49633affc6db574373f309f156ea6d27229c0b3f9"),
-      std::move(callback_));
+      progress_callback_, std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(1, GetInterceptorCount());
@@ -294,7 +295,7 @@ TEST_F(CrxDownloaderTest, TwoUrls) {
   urls.push_back(expected_crx_url);
 
   crx_downloader_->StartDownload(urls, std::string(hash_jebg),
-                                 std::move(callback_));
+                                 progress_callback_, std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(1, GetInterceptorCount());
@@ -326,7 +327,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_FirstInvalid) {
   urls.push_back(expected_crx_url);
 
   crx_downloader_->StartDownload(urls, std::string(hash_jebg),
-                                 std::move(callback_));
+                                 progress_callback_, std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(2, GetInterceptorCount());
@@ -374,7 +375,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_SecondInvalid) {
   urls.push_back(no_file_url);
 
   crx_downloader_->StartDownload(urls, std::string(hash_jebg),
-                                 std::move(callback_));
+                                 progress_callback_, std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(1, GetInterceptorCount());
@@ -404,7 +405,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_BothInvalid) {
   urls.push_back(expected_crx_url);
 
   crx_downloader_->StartDownload(urls, std::string(hash_jebg),
-                                 std::move(callback_));
+                                 progress_callback_, std::move(callback_));
   RunThreads();
 
   EXPECT_EQ(2, GetInterceptorCount());
@@ -449,6 +450,7 @@ TEST_F(CrxDownloaderTest, CancelDoesNotFallBackToSuccessor) {
   base::OnceClosure cancel = downloader->StartDownloadFromUrl(
       GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf"),
       hash_jebg,
+      /*progress_callback=*/base::DoNothing(),
       base::BindLambdaForTesting([&](const CrxDownloader::Result& r) {
         ++num_complete_calls;
         result = r;
@@ -464,6 +466,65 @@ TEST_F(CrxDownloaderTest, CancelDoesNotFallBackToSuccessor) {
   EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED), result.error);
   EXPECT_TRUE(result.response.empty());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+// Tests that falling back to a successor downloader succeeds and posts progress
+// callbacks.
+TEST_F(CrxDownloaderTest, FallbackToSuccessor) {
+  const GURL expected_crx_url =
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx");
+  const base::FilePath test_file(GetTestFilePath(kTestFileName));
+
+  auto network_fetcher_factory =
+      base::MakeRefCounted<NetworkFetcherChromiumFactory>(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_),
+          base::BindRepeating([](const GURL& url) { return false; }));
+  auto downloader = base::MakeRefCounted<UrlFetcherDownloader>(
+      base::MakeRefCounted<UrlFetcherDownloader>(
+          nullptr, network_fetcher_factory, "CrxDownloaderTest"),
+      network_fetcher_factory, "CrxDownloaderTest");
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        interceptor_count_++;
+        if (interceptor_count_ == 1) {
+          AddResponse(expected_crx_url, base::FilePath(),
+                      net::ERR_FILE_NOT_FOUND);
+        } else {
+          AddResponse(expected_crx_url, test_file, net::OK);
+        }
+      }));
+
+  downloader->StartDownloadFromUrl(expected_crx_url, std::string(hash_jebg),
+                                   progress_callback_, std::move(callback_));
+  RunThreads();
+
+  EXPECT_EQ(2, GetInterceptorCount());
+  EXPECT_EQ(1, num_download_complete_calls_);
+  EXPECT_EQ(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
+  EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
+  // Assert that progress callbacks are received for the successor
+  // CrxDownloader.
+  EXPECT_EQ(downloaded_bytes_, 1015);
+  EXPECT_EQ(total_bytes_, 1015);
+
+  EXPECT_TRUE(
+      DeleteFileAndEmptyParentDirectory(download_complete_result_.response));
+
+  EXPECT_LE(1, num_progress_calls_);
+
+  const auto download_metrics = downloader->download_metrics();
+  ASSERT_EQ(2u, download_metrics.size());
+  EXPECT_EQ(expected_crx_url, download_metrics[0].url);
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[0].error);
+  EXPECT_EQ(-1, download_metrics[0].downloaded_bytes);
+  EXPECT_EQ(-1, download_metrics[0].total_bytes);
+  EXPECT_EQ(expected_crx_url, download_metrics[1].url);
+  EXPECT_EQ(0, download_metrics[1].error);
+  EXPECT_EQ(1015, download_metrics[1].downloaded_bytes);
+  EXPECT_EQ(1015, download_metrics[1].total_bytes);
 }
 
 }  // namespace update_client
