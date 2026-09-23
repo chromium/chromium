@@ -313,6 +313,14 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) final;
@@ -426,6 +434,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
     // Expected initial URL of the new window.
     GURL url;
+
+    // Referrer for the initial navigation of the new window.
+    content::Referrer referrer;
 
     // Parameters for the pending navigation, if any.
     std::optional<content::OpenURLParams> open_url_params;

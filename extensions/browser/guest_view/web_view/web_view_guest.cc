@@ -275,7 +275,10 @@ WebViewGuest::NewWindowInfo::NewWindowInfo(const GURL& url,
 
 WebViewGuest::NewWindowInfo::NewWindowInfo(const content::OpenURLParams& params,
                                            const std::string& name)
-    : name(name), url(params.url), open_url_params(params) {}
+    : name(name),
+      url(params.url),
+      referrer(params.referrer),
+      open_url_params(params) {}
 
 WebViewGuest::NewWindowInfo::NewWindowInfo(const WebViewGuest::NewWindowInfo&) =
     default;
@@ -604,8 +607,17 @@ void WebViewGuest::MaybeRecreateGuestContents(
         "obtained from window.open will be invalidated.");
   }
 
+  content::Referrer referrer;
+  if (WebViewGuest* opener_guest = GetOpener()) {
+    auto it = opener_guest->pending_new_windows_.find(this);
+    if (it != opener_guest->pending_new_windows_.end()) {
+      referrer = it->second.referrer;
+    }
+  }
+
+  content::RenderFrameHost* opener = nullptr;
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    content::RenderFrameHost* opener = GetGuestPageHolder().GetOpener();
+    opener = GetGuestPageHolder().GetOpener();
     ClearOwnedGuestPage();
     UpdateWebContentsForNewOwner(outer_contents_frame->GetParent());
 
@@ -617,6 +629,8 @@ void WebViewGuest::MaybeRecreateGuestContents(
     InitWithGuestPageHolder(create_params, guest_page_holder.get());
     TakeGuestPageOwnership(std::move(guest_page_holder));
   } else {
+    opener =
+        content::RenderFrameHost::FromID(web_contents_create_params.opener_id);
     ClearOwnedGuestContents();
     UpdateWebContentsForNewOwner(outer_contents_frame->GetParent());
 
@@ -634,8 +648,23 @@ void WebViewGuest::MaybeRecreateGuestContents(
   // related to the WebRequest API is set up.
   content::NavigationController::LoadURLParams load_url_params(
       web_contents_create_params.initial_popup_url);
-  load_url_params.referrer = content::Referrer();
-  load_url_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  load_url_params.referrer = referrer;
+  if (opener) {
+    load_url_params.initiator_origin = opener->GetLastCommittedOrigin();
+    load_url_params.initiator_process_id = opener->GetProcess()->GetID();
+    load_url_params.initiator_frame_token = opener->GetFrameToken();
+    load_url_params.initiator_navigation_state =
+        opener->GetCurrentInitiatorNavigationState();
+    if (!web_contents_create_params.opener_suppressed) {
+      load_url_params.source_site_instance = opener->GetSiteInstance();
+    }
+    load_url_params.transition_type = ui::PAGE_TRANSITION_LINK;
+    load_url_params.is_renderer_initiated = true;
+    load_url_params.was_opener_suppressed =
+        web_contents_create_params.opener_suppressed;
+  } else {
+    load_url_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  }
   recreate_initial_nav_ =
       base::BindOnce(&WebViewGuest::LoadURLWithParams,
                      weak_ptr_factory_.GetWeakPtr(), std::move(load_url_params),
@@ -2107,6 +2136,30 @@ void WebViewGuest::WebContentsCreated(WebContents* source_contents,
   guest->name_ = frame_name;
   pending_new_windows_.insert(
       std::make_pair(guest, NewWindowInfo(target_url, frame_name)));
+}
+
+void WebViewGuest::DidOpenRequestedURL(
+    WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  // TODO(crbug.com/40202416): Handle referrers for MPArch when recreating
+  // the initial nav in MaybeRecreateGuestContents.
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return;
+  }
+  auto* guest = WebViewGuest::FromWebContents(new_contents);
+  if (!guest) {
+    return;
+  }
+  auto it = pending_new_windows_.find(guest);
+  if (it != pending_new_windows_.end()) {
+    it->second.referrer = referrer;
+  }
 }
 
 void WebViewGuest::EnterFullscreenModeForTab(

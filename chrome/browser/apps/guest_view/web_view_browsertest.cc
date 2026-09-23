@@ -1906,6 +1906,9 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
   EXPECT_EQ(guest1->GetProcess()->GetID(),
             observer.last_initiator_process_id());
   EXPECT_EQ(guest_instance1, observer.last_source_site_instance());
+
+  EXPECT_EQ(guest1->GetLastCommittedURL().spec(),
+            content::EvalJs(guest2, "document.referrer"));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowTwoListeners) {
@@ -1971,8 +1974,18 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                        Shim_TestWebViewAndEmbedderInNewWindow) {
+  ASSERT_TRUE(InitializeEmbeddedTestServer());
+  EmbeddedTestServerAcceptConnections();
+
+  const GURL newwindow_url = embedded_test_server()->GetURL(
+      "localhost", "/extensions/platform_apps/web_view/shim/empty_guest.html");
+  content::TestNavigationObserver nav_observer(newwindow_url);
+  nav_observer.StartWatchingNewWebContents();
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
   TestHelper("testWebViewAndEmbedderInNewWindow", "web_view/shim",
-             NEEDS_TEST_SERVER);
+             NO_TEST_SERVER);
   content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(embedder_web_contents);
 
@@ -2016,6 +2029,24 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   EXPECT_EQ(url::kAboutBlankURL,
             content::EvalJs(new_window_guest_frame,
                             "window.newWindow.location.href"));
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(newwindow_url, nav_observer.last_navigation_url());
+  EXPECT_EQ(new_window_guest_frame->GetLastCommittedOrigin(),
+            nav_observer.last_initiator_origin());
+  EXPECT_EQ(new_window_guest_frame->GetFrameToken(),
+            nav_observer.last_initiator_frame_token());
+  EXPECT_EQ(new_window_guest_frame->GetProcess()->GetID(),
+            nav_observer.last_initiator_process_id());
+  EXPECT_EQ(new_window_guest_frame->GetSiteInstance(),
+            nav_observer.last_source_site_instance());
+
+  // TODO(crbug.com/40202416): Handle referrers under MPArch.
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    EXPECT_EQ(new_window_guest_frame->GetLastCommittedURL().spec(),
+              content::EvalJs(empty_guest_frame, "document.referrer"));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
