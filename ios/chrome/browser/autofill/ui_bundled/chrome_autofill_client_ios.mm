@@ -320,6 +320,8 @@ void ChromeAutofillClientIOS::GetAiPageContent(
           std::move(callback));
 
   // Populate the PageContext proto and then execute the query.
+  // TODO(crbug.com/519079870): Make sure that geometry information is
+  // extracted.
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state()
       completionCallback:std::move(page_context_completion_callback)];
