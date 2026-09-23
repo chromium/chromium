@@ -101,6 +101,12 @@ TEST(SandboxTypeTest, Utility) {
   base::CommandLine command_line13(command_line);
   SetCommandLineFlagsForSandboxType(&command_line13, Sandbox::kPrintBackend);
   EXPECT_EQ(Sandbox::kPrintBackend, SandboxTypeFromCommandLine(command_line13));
+
+  base::CommandLine command_line13_1(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line13_1,
+                                    Sandbox::kPlatformRuntime);
+  EXPECT_EQ(Sandbox::kPlatformRuntime,
+            SandboxTypeFromCommandLine(command_line13_1));
 #endif
 
   base::CommandLine command_line14(command_line);

@@ -211,6 +211,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<OnDeviceTranslationProcessPolicy>();
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
+    case sandbox::mojom::Sandbox::kPlatformRuntime:
+      return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kShapeDetection:
       return std::make_unique<UtilityProcessPolicy>();
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
@@ -293,6 +295,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kShapeDetection:
     case sandbox::mojom::Sandbox::kScreenAI:
+    case sandbox::mojom::Sandbox::kPlatformRuntime:
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kAudio:

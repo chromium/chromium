@@ -96,6 +96,7 @@ UtilitySandboxedProcessLauncherDelegate::
     BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPlatformRuntime ||
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
@@ -163,6 +164,7 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
     BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kPlatformRuntime ||
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||

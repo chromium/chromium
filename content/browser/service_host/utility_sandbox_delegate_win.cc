@@ -336,6 +336,25 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
   return true;
 }
 
+bool PlatformRuntimeInitializeConfig(sandbox::TargetConfig* config,
+                                     sandbox::mojom::Sandbox sandbox_type) {
+  CHECK(!config->IsConfigured());
+
+  auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                      sandbox::USER_LOCKDOWN);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
+  result = sandbox::policy::SandboxWin::SetJobLevel(
+      sandbox_type, sandbox::JobLevel::kLimitedUser, 0, config);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
@@ -430,6 +449,12 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
     if (!ScreenAIInitializeConfig(config, sandbox_type_)) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kPlatformRuntime) {
+    if (!PlatformRuntimeInitializeConfig(config, sandbox_type_)) {
       return false;
     }
   }

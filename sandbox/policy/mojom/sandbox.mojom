@@ -95,6 +95,9 @@ enum Sandbox {
   // Like kUtility but allows loading of screen AI library.
   [EnableIf=is_chromeos|is_linux|is_mac|is_win] kScreenAI,
 
+  // Like kUtility but allows loading of platform runtime library.
+  [EnableIf=is_chromeos|is_linux|is_mac|is_win] kPlatformRuntime,
+
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win] kXrCompositing,
 

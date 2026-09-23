@@ -156,6 +156,7 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintBackend:
       case Sandbox::kScreenAI:
+      case Sandbox::kPlatformRuntime:
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |

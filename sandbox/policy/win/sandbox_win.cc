@@ -506,7 +506,8 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
         sandbox_type != Sandbox::kScreenAI &&
         sandbox_type != Sandbox::kSpeechRecognition &&
-        sandbox_type != Sandbox::kMediaFoundationCdm) {
+        sandbox_type != Sandbox::kMediaFoundationCdm &&
+        sandbox_type != Sandbox::kPlatformRuntime) {
       mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
     }
 
@@ -1084,6 +1085,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(
       return "Audio";
     case Sandbox::kScreenAI:
       return "Screen AI";
+    case Sandbox::kPlatformRuntime:
+      return "Platform Runtime";
     case Sandbox::kSpeechRecognition:
       return "Speech Recognition";
     case Sandbox::kPdfConversion:
