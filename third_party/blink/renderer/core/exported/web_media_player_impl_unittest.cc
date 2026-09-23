@@ -3084,8 +3084,6 @@ TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
 }
 
 TEST_F(WebMediaPlayerImplTest, OnFrozenSuspendsPlayback) {
-  base::test::ScopedFeatureList feature_list(
-      media::kSuspendMediaForFrozenFrames);
   InitializeWebMediaPlayerImpl();
   ASSERT_FALSE(IsSuspended());
   wmpi_->OnFrozen();

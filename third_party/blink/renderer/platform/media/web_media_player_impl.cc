@@ -1107,15 +1107,13 @@ void WebMediaPlayerImpl::OnFrozen() {
 
   // This may be the last chance `main_task_runner_` gets to execute, so we
   // should kick off release of all media resources.
-  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
-    if (demuxer_manager_->HasDataSource()) {
-      demuxer_manager_->StopPreloading();
-    }
-
-    was_suspended_for_frame_closed_or_frozen_ = true;
-    UpdateBackgroundVideoOptimizationState();
-    UpdatePlayState();
+  if (demuxer_manager_->HasDataSource()) {
+    demuxer_manager_->StopPreloading();
   }
+
+  was_suspended_for_frame_closed_or_frozen_ = true;
+  UpdateBackgroundVideoOptimizationState();
+  UpdatePlayState();
 }
 
 void WebMediaPlayerImpl::Seek(double seconds) {
@@ -3644,19 +3642,12 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
 
 bool WebMediaPlayerImpl::IsPageHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
-    return delegate_->IsPageHidden();
-  }
-  return delegate_->IsPageHidden() &&
-         !was_suspended_for_frame_closed_or_frozen_;
+  return delegate_->IsPageHidden();
 }
 
 bool WebMediaPlayerImpl::IsFrameHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
-    return is_frame_hidden_;
-  }
-  return is_frame_hidden_ && !was_suspended_for_frame_closed_or_frozen_;
+  return is_frame_hidden_;
 }
 
 bool WebMediaPlayerImpl::IsPausedBecausePageHidden() const {

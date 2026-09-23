@@ -965,10 +965,6 @@ BASE_FEATURE(kSpeakerChangeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 // CanPlayThrough issued according to standard.
 BASE_FEATURE(kSpecCompliantCanPlayThrough, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Suspends WebMediaPlayerImpl instances when the containing RenderFrame is
-// frozen. TODO(crbug.com/41161335): Remove in M143 after it goes stable.
-BASE_FEATURE(kSuspendMediaForFrozenFrames, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Unified Autoplay policy by overriding the platform's default
 // autoplay policy.
 BASE_FEATURE(kUnifiedAutoplay, base::FEATURE_ENABLED_BY_DEFAULT);
