@@ -23,19 +23,8 @@
 namespace ash::boca_receiver {
 namespace {
 
-base::TimeDelta GetPollingInterval() {
-  constexpr base::TimeDelta kDefaultPollingInterval = base::Seconds(10);
-  return ash::features::IsBocaReceiverCustomPollingEnabled()
-             ? ash::features::kBocaReceiverCustomPollingInterval.Get()
-             : kDefaultPollingInterval;
-}
-
-int GetMaxConsecutiveFailures() {
-  constexpr int kDefaultMaxConsecutiveFailures = 3;
-  return ash::features::IsBocaReceiverCustomPollingEnabled()
-             ? ash::features::kBocaReceiverCustomPollingMaxFailuresCount.Get()
-             : kDefaultMaxConsecutiveFailures;
-}
+constexpr base::TimeDelta kPollingInterval = base::Seconds(10);
+constexpr int kMaxConsecutiveFailures = 3;
 
 }  // namespace
 
@@ -54,7 +43,7 @@ void ReceiverConnectionInfoPoller::Start(
       std::move(request_sender), kMaxRetriesPerRequest);
 
   polling_timer_.Start(
-      FROM_HERE, GetPollingInterval(),
+      FROM_HERE, kPollingInterval,
       base::BindOnce(&ReceiverConnectionInfoPoller::PollConnectionInfo,
                      base::Unretained(this), receiver_id, connection_id,
                      std::move(on_stop_callback)));
@@ -98,7 +87,7 @@ void ReceiverConnectionInfoPoller::OnConnectionInfoPolled(
   consecutive_failure_count_ =
       response.has_value() ? 0 : consecutive_failure_count_ + 1;
   bool server_unreachable =
-      consecutive_failure_count_ >= GetMaxConsecutiveFailures();
+      consecutive_failure_count_ >= kMaxConsecutiveFailures;
   if (server_unreachable ||
       (response.has_value() &&
        response->receiver_connection_state() ==
@@ -108,7 +97,7 @@ void ReceiverConnectionInfoPoller::OnConnectionInfoPolled(
     return;
   }
   polling_timer_.Start(
-      FROM_HERE, GetPollingInterval(),
+      FROM_HERE, kPollingInterval,
       base::BindOnce(&ReceiverConnectionInfoPoller::PollConnectionInfo,
                      base::Unretained(this), receiver_id, connection_id,
                      std::move(on_stop_callback)));

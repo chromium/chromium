@@ -10,11 +10,9 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -155,37 +153,6 @@ TEST_F(ReceiverConnectionInfoPollerTest, ExplicitStop) {
   task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_EQ(url_loader_factory_.NumPending(), 0);
-}
-
-TEST_F(ReceiverConnectionInfoPollerTest, CustomPollingEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams params;
-  params["BocaReceiverCustomPollingInterval"] = "5s";
-  params["BocaReceiverCustomPollingMaxFailuresCount"] = "2";
-  feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kBocaReceiverCustomPolling, params);
-
-  base::test::TestFuture<bool> stop_future;
-  poller_.Start(kReceiverId, kConnectionId, CreateRequestSender(),
-                stop_future.GetCallback());
-
-  // First poll after custom interval.
-  task_environment_.FastForwardBy(base::Seconds(5));
-  SimulateResponse(kConnectionId, kConnectedResponse);
-  EXPECT_FALSE(stop_future.IsReady());
-
-  // First failure (with one retry).
-  task_environment_.FastForwardBy(base::Seconds(5));
-  SimulateResponse(kConnectionId, /*content=*/"", net::HTTP_NOT_FOUND);
-  SimulateResponse(kConnectionId, /*content=*/"", net::HTTP_NOT_FOUND);
-  EXPECT_FALSE(stop_future.IsReady());
-
-  // Second failure. Poller should stop.
-  task_environment_.FastForwardBy(base::Seconds(5));
-  SimulateResponse(kConnectionId, /*content=*/"", net::HTTP_NOT_FOUND);
-  SimulateResponse(kConnectionId, /*content=*/"", net::HTTP_NOT_FOUND);
-
-  EXPECT_TRUE(stop_future.Get());  // server_unreachable is true.
 }
 
 }  // namespace

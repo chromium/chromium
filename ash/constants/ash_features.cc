@@ -283,19 +283,6 @@ BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables sharing student's screen in the Boca app.
 BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Boca receiver custom polling.
-BASE_FEATURE(kBocaReceiverCustomPolling, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Custom boca receiver polling time interval.
-const base::FeatureParam<base::TimeDelta> kBocaReceiverCustomPollingInterval{
-    &kBocaReceiverCustomPolling, "BocaReceiverCustomPollingInterval",
-    base::Seconds(10)};
-
-// Max number of consecutive polling failures to end receiver session.
-const base::FeatureParam<int> kBocaReceiverCustomPollingMaxFailuresCount{
-    &kBocaReceiverCustomPolling, "BocaReceiverCustomPollingMaxFailuresCount",
-    3};
-
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Camera Cloud Storage for saving photos and videos on Google Drive
@@ -2286,10 +2273,6 @@ bool IsBocaScreenSharingTeacherEnabled() {
 
 bool IsBocaScreenSharingStudentEnabled() {
   return base::FeatureList::IsEnabled(kBocaScreenSharingStudent);
-}
-
-bool IsBocaReceiverCustomPollingEnabled() {
-  return base::FeatureList::IsEnabled(kBocaReceiverCustomPolling);
 }
 
 bool IsOnTaskStatusCheckEnabled() {

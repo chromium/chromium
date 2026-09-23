@@ -132,12 +132,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaScreenSharingStudent);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaAudioForKiosk);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kBocaReceiverCustomPolling);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<base::TimeDelta>
-    kBocaReceiverCustomPollingInterval;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<int> kBocaReceiverCustomPollingMaxFailuresCount;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraCloudStorage);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraSuperResSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCrosSwitcher);
@@ -994,7 +990,6 @@ bool IsBocaConfigureMaxStudentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCourseWorkMaterialApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingTeacherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingStudentEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaReceiverCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeOnDeviceOcrEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryPolicyEnabled();
