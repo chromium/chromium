@@ -11,7 +11,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -144,9 +144,16 @@ void SendTabToSelfToolbarBubbleView::Hide() {
   SendTabToSelfClientServiceFactory::GetForProfile(browser_->GetProfile())
       ->GetReceivingUiHandler()
       ->DismissEntries(std::vector<std::string>({entry_.GetGUID()}));
-  browser_->GetFeatures()
-      .pinned_toolbar_actions()
-      ->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
+  // This bubble is dismissed as the window goes away, at which point
+  // BrowserWindow::FromBrowser() no longer resolves.
+  BrowserWindow* const browser_window =
+      BrowserWindow::FromBrowser(&browser_.get());
+  if (PinnedToolbarActions* const pinned_toolbar_actions =
+          browser_window ? browser_window->GetPinnedToolbarActions()
+                         : nullptr) {
+    pinned_toolbar_actions->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
+                                                           false);
+  }
 }
 
 BEGIN_METADATA(SendTabToSelfToolbarBubbleView)

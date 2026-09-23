@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
@@ -480,9 +480,8 @@ class ChromeLabsViewControllerBrowserTest : public InProcessBrowserTest {
                   ->toolbar_button_provider()
                   ->GetPinnedToolbarActions()));
     }
-    browser()
-        ->GetFeatures()
-        .pinned_toolbar_actions()
+    BrowserWindow::FromBrowser(browser())
+        ->GetPinnedToolbarActions()
         ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
@@ -507,9 +506,8 @@ class ChromeLabsViewControllerBrowserTest : public InProcessBrowserTest {
   ChromeLabsBubbleView* chrome_labs_bubble() { return bubble_view_; }
 
   views::Button* GetChromeLabsButton() {
-    return browser()
-        ->GetFeatures()
-        .pinned_toolbar_actions()
+    return BrowserWindow::FromBrowser(browser())
+        ->GetPinnedToolbarActions()
         ->GetChromeLabsButton();
   }
 

@@ -8,7 +8,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -133,8 +133,11 @@ bool CommentsSidePanelCoordinator::ShouldShowCommentsAction(
 
 void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
     bool should_show_comments_action) {
+  // Driven by a tab-group observer, which fires as tabs are removed during
+  // window teardown.
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser_);
   PinnedToolbarActions* controller =
-      browser_->GetFeatures().pinned_toolbar_actions();
+      browser_window ? browser_window->GetPinnedToolbarActions() : nullptr;
   if (!controller) {
     return;
   }

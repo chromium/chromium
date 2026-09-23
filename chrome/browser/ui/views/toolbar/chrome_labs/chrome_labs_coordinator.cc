@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -93,9 +93,15 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
-  browser_->GetFeatures()
-      .pinned_toolbar_actions()
-      ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+  // On ChromeOS this runs from an IsOwnerAsync() callback, so the window can
+  // already be gone by the time it fires.
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser_);
+  if (PinnedToolbarActions* const pinned_toolbar_actions =
+          browser_window ? browser_window->GetPinnedToolbarActions()
+                         : nullptr) {
+    pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
+        kActionShowChromeLabs, true);
+  }
 
   auto chrome_labs_bubble_view =
       std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(), browser_);
@@ -177,8 +183,11 @@ void ChromeLabsCoordinator::ShowOrHide() {
 }
 
 PinnedActionToolbarButton* ChromeLabsCoordinator::GetChromeLabsButton() {
+  // Reached from OnActionsChanged(), which the model fires as actions are
+  // removed during window teardown.
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser_);
   PinnedToolbarActions* pinned_toolbar_actions =
-      browser_->GetFeatures().pinned_toolbar_actions();
+      browser_window ? browser_window->GetPinnedToolbarActions() : nullptr;
   return pinned_toolbar_actions ? pinned_toolbar_actions->GetChromeLabsButton()
                                 : nullptr;
 }
@@ -195,9 +204,16 @@ void ChromeLabsCoordinator::OnChromeLabsBubbleClosing() {
   flags_state_ = nullptr;
   chrome_labs_action_item_->SetIsShowingBubble(false);
 
-  browser_->GetFeatures()
-      .pinned_toolbar_actions()
-      ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
+  // TearDown() closes the bubble, so this fires while the window is being
+  // destroyed and BrowserWindow::FromBrowser() no longer resolves. See
+  // ChromeLabsBrowserTest.ClosesWithoutCrashing.
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser_);
+  if (PinnedToolbarActions* const pinned_toolbar_actions =
+          browser_window ? browser_window->GetPinnedToolbarActions()
+                         : nullptr) {
+    pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
+        kActionShowChromeLabs, false);
+  }
 }
 
 void ChromeLabsCoordinator::MaybeInstallDotIndicator() {

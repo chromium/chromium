@@ -16,7 +16,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
@@ -93,7 +93,7 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
   if (browser) {
     browser_weak_ptr = browser->GetWeakPtr();
     if (PinnedToolbarActions* pinned_toolbar_actions =
-            browser->GetFeatures().pinned_toolbar_actions()) {
+            BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions()) {
       // Show the toolbar action button.
       pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
           kActionSendTabToSelf, true);
@@ -273,11 +273,17 @@ void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
-  if (browser && browser->GetFeatures().pinned_toolbar_actions()) {
-    // Hide the toolbar action button.
-    browser->GetFeatures()
-        .pinned_toolbar_actions()
-        ->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
+  if (browser) {
+    // Runs while the widget is being destroyed, which happens as the window
+    // goes away.
+    BrowserWindow* const browser_window = BrowserWindow::FromBrowser(browser);
+    if (PinnedToolbarActions* pinned_toolbar_actions =
+            browser_window ? browser_window->GetPinnedToolbarActions()
+                           : nullptr) {
+      // Hide the toolbar action button.
+      pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
+          kActionSendTabToSelf, false);
+    }
   }
   if (send_tab_to_self_action_item_) {
     send_tab_to_self_action_item_->SetIsShowingBubble(false);
