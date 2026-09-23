@@ -9,14 +9,12 @@
 #include "base/notreached.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -52,7 +50,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     void Dispose();
 
     void AttachLayoutTree();
-    void MarkFrozenFrameSizeStale();
     void MarkContainerSizeStale();
     void DidChangeFramePolicy(const FramePolicy& frame_policy);
     bool SupportsFocus();
@@ -64,7 +61,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
    private:
     Member<HTMLFencedFrameElement> outer_element_;
-    HeapMojoAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;
   };
 
   explicit HTMLFencedFrameElement(Document& document);
@@ -88,13 +84,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
-
-
-  // Returns the inner `IFRAME` element. This element creates two boxes, the
-  // outer container and the inner frame, so that the outer container can
-  // respond to the size change requests from the containing layout algorithm,
-  // while keeping the inner frame size unchanged.
-  HTMLIFrameElement* InnerIFrameElement() const;
 
   FencedFrameConfig* config() const { return config_.Get(); }
 
@@ -158,10 +147,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // Attributes that are modeled off of their iframe equivalents
   AtomicString allow_;
   Member<HTMLIFrameElementSandbox> sandbox_;
-
-  friend class FencedFrameMPArchDelegate;
-  // TODO(crbug.com/1262022): Remove this now that ShadowDOM is obsolete.
-  friend class FencedFrameShadowDOMDelegate;
 };
 
 // Type casting. Custom since adoption could lead to an HTMLFencedFrameElement

@@ -5,13 +5,11 @@
 #include "components/page_load_metrics/browser/page_load_metrics_forward_observer.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace page_load_metrics {
@@ -22,7 +20,6 @@ const char kTestUrl[] = "https://a.test/";
 
 struct PageLoadMetricsObserverEvents final {
   bool was_started = false;
-  bool was_fenced_frames_started = false;
   size_t event_count = 0;
 };
 
@@ -57,25 +54,14 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override {
-    is_in_fenced_frames_ = true;
-    events_->was_fenced_frames_started = true;
-    return FORWARD_OBSERVING;
+    return STOP_OBSERVING;
   }
 
   ObservePolicy ShouldObserveMimeType(
       const std::string& mime_type) const override {
-    // TestPageLoadMetricsObserver will be instantiated for the Primary page and
-    // a FencedFrames page. As instance for a FencedFrames page will be
-    // destructed after `OnFencedFramesStart` and `ShouldObserverMimeType` will
-    // not be invoked for the instance. Instead, PageLoadMetricsForwardObserver
-    // routes the event to the Primary page's observer.
-    EXPECT_FALSE(is_in_fenced_frames_);
-    if (!is_in_fenced_frames_)
-      events_->event_count++;
+    events_->event_count++;
     return CONTINUE_OBSERVING;
   }
-
-  bool is_in_fenced_frames_ = false;
 
   // Event records should be owned outside this class as this instance will be
   // automatically destructed on STOP_OBSERVING, and so on.
@@ -85,14 +71,7 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
 class PageLoadMetricsForwardObserverTest
     : public PageLoadMetricsObserverContentTestHarness {
  public:
-  PageLoadMetricsForwardObserverTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {blink::features::kFencedFrames,
-             {{"implementation_type", "mparch"}}},
-        },
-        {});
-  }
+  PageLoadMetricsForwardObserverTest() = default;
 
  protected:
   const PageLoadMetricsObserverEvents& GetEvents() const { return events_; }
@@ -104,31 +83,15 @@ class PageLoadMetricsForwardObserverTest
   }
 
   PageLoadMetricsObserverEvents events_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PageLoadMetricsForwardObserverTest, Basic) {
   // Navigate in.
   NavigateAndCommit(GURL(kTestUrl));
 
-  // Add a fenced frame.
-  content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-          ->AppendFencedFrame();
-  {
-    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-        GURL(kTestUrl), fenced_frame_root);
-    ASSERT_NE(nullptr, simulator);
-    simulator->Commit();
-  }
-
   // Check observer behaviors.
   EXPECT_TRUE(GetEvents().was_started);
-  EXPECT_TRUE(GetEvents().was_fenced_frames_started);
-  // The event will be invoked twice in the primary page observer, once is for
-  // its own, the other is forwarded one from the FencedFrames' page.
-  EXPECT_EQ(2u, GetEvents().event_count);
+  EXPECT_EQ(1u, GetEvents().event_count);
 }
 
 }  // namespace

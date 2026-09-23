@@ -27,7 +27,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -151,52 +150,6 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
   // Ensure that "Inspect Native UI" button is enabled.
   ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
                      "assertNativeUIButtonDisabled(false);"));
-}
-
-class InspectUIFencedFrameTest : public InspectUITest {
- public:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// TODO(crbug.com/40227465): Re-enable this test
-IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
-                       DISABLED_FencedFrameInFrontEnd) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIInspectURL)));
-
-  const int inspect_ui_tab_idx = tab_strip_model->active_index();
-  content::WebContents* inspect_ui_contents =
-      tab_strip_model->GetActiveWebContents();
-
-  content::WebContents* front_end_tab =
-      LaunchUIDevtools(tab_strip_model->GetActiveWebContents()->GetWebUI());
-
-  tab_strip_model->ActivateTabAt(inspect_ui_tab_idx);
-
-  // Run an empty test, to load the mocha test file on the page.
-  ASSERT_TRUE(RunTestCase("Empty"));
-  // Ensure that "Inspect Native UI" button is disabled.
-  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
-                     "assertNativeUIButtonDisabled(true);"));
-
-  // Create a fenced frame into the front-end page.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      front_end_tab->GetPrimaryMainFrame(), fenced_frame_url));
-
-  // Ensure that the fenced frame doesn't affect to the the front-end observer.
-  // "Inspect Native UI" button is still disabled.
-  ASSERT_TRUE(ExecJs(inspect_ui_contents->GetPrimaryMainFrame(),
-                     "assertNativeUIButtonDisabled(true);"));
 }
 
 class InspectUIRemoteDebuggingTest : public InspectUITest {

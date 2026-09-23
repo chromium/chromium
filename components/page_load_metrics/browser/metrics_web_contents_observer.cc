@@ -349,20 +349,6 @@ void MetricsWebContentsObserver::DidStartNavigationImpl(
     // start with ukm::kInvalidSourceId and set a correct ukm::SourceId on
     // activation.
     CHECK_EQ(ukm::kInvalidSourceId, source_id);
-  } else if (navigation_handle->GetNavigatingFrameType() ==
-             content::FrameType::kFencedFrameRoot) {
-    // For FencedFrames, use the primary page's ukm::SourceId. `primary_page_`
-    // can be nullptr if the main frame is in data URL or so.
-    if (primary_page_) {
-      source_id = primary_page_->GetPageUkmSourceId();
-      parent_tracker = primary_page_->GetWeakPtr();
-    } else {
-      // Use ukm::NoURLSourceId() rather than kInvalidSourceId to avoid
-      // unexpected check failure. This happens on tests that create a
-      // FencedFrame via FencedFrameTestHelper directly without a correct setup
-      // being finished on the embedder frame.
-      source_id = ukm::NoURLSourceId();
-    }
   } else {
     NOTREACHED();
   }
@@ -812,19 +798,7 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     primary_page_ = std::move(tracker);
     active_pages_.clear();
   } else {
-    CHECK_EQ(navigation_handle->GetNavigatingFrameType(),
-             content::FrameType::kFencedFrameRoot);
-    // There may be an active tracker in the map if navigation happens on the
-    // non-primary page. `emplace` operation below doesn't overwrite it, but
-    // just fails. It results in destructing the moved tracker unexpectedly.
-    // To avoid this problem, we ensure destructing existing tracker beforehand.
-    auto it = active_pages_.find(navigation_handle->GetRenderFrameHost());
-    if (it != active_pages_.end()) {
-      active_pages_.erase(it);
-    }
-
-    active_pages_.emplace(navigation_handle->GetRenderFrameHost(),
-                          std::move(tracker));
+    NOTREACHED();
   }
   raw_tracker->Commit(navigation_handle);
   CHECK(raw_tracker->did_commit());

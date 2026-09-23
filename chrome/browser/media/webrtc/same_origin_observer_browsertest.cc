@@ -9,7 +9,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 
 class SameOriginObserverTest : public InProcessBrowserTest {

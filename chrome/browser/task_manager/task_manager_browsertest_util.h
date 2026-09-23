@@ -86,10 +86,6 @@ std::u16string MatchBFCache(std::string_view title);
 std::u16string MatchAnyBFCache();
 std::u16string MatchPrerender(std::string_view title);
 std::u16string MatchAnyPrerender();
-std::u16string MatchFencedFrame(std::string_view title);
-std::u16string MatchAnyFencedFrame();
-std::u16string MatchIncognitoFencedFrame(std::string_view title);
-std::u16string MatchAnyIncognitoFencedFrame();
 }  // namespace browsertest_util
 }  // namespace task_manager
 

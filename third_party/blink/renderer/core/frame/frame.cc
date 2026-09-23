@@ -35,7 +35,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -452,32 +451,16 @@ void Frame::RenderFallbackContent() {
 }
 
 bool Frame::IsInFencedFrameTree() const {
-  DCHECK(!IsDetached());
-  if (!features::IsFencedFramesEnabled())
-    return false;
-
-  return GetPage() && GetPage()->IsMainFrameFencedFrameRoot();
+  return false;
 }
 
 bool Frame::IsFencedFrameRoot() const {
-  DCHECK(!IsDetached());
-  if (!features::IsFencedFramesEnabled())
-    return false;
-
-  return IsInFencedFrameTree() && IsMainFrame();
+  return false;
 }
 
 std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
 Frame::GetDeprecatedFencedFrameMode() const {
-  DCHECK(!IsDetached());
-
-  if (!features::IsFencedFramesEnabled())
-    return std::nullopt;
-
-  if (!IsInFencedFrameTree())
-    return std::nullopt;
-
-  return GetPage()->DeprecatedFencedFrameMode();
+  return std::nullopt;
 }
 
 void Frame::SetOwner(FrameOwner* owner) {

@@ -8,7 +8,7 @@ typedef (FenceEvent or DOMString) ReportEventType;
 
 [Exposed=Window, RuntimeEnabled=FencedFrames]
 interface Fence {
-    [RaisesException] void reportEvent(ReportEventType event);
-    [RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
-    [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
+    [RaisesException, DeprecateAs=HTMLFencedFrameElement] void reportEvent(ReportEventType event);
+    [RaisesException, DeprecateAs=HTMLFencedFrameElement] void setReportEventDataForAutomaticBeacons(FenceEvent event);
+    [RaisesException, DeprecateAs=HTMLFencedFrameElement] sequence<FencedFrameConfig> getNestedConfigs();
 };

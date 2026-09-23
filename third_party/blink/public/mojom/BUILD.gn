@@ -1203,7 +1203,6 @@ mojom("mojom_core") {
     "broadcastchannel/broadcast_channel.mojom",
 
     # Depends on frame_policy.mojom.
-    "fenced_frame/fenced_frame.mojom",
     "navigation/navigation_params.mojom",
 
     # Note that service_worker_object.mojom and service_worker.mojom depend on

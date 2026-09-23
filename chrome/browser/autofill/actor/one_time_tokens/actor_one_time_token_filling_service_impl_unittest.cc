@@ -1121,33 +1121,6 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
             FormFillingContextStatus::kInsecureContext);
 }
 
-// Tests that an OTP form nested inside a fenced frame is rejected as an
-// insecure context.
-TEST_F(ActorOneTimeTokenFillingServiceImplTest,
-       ValidateFormFillingContext_FencedFrame_InsecureContext) {
-  SetupSecureMainFrame();
-
-  content::RenderFrameHost* fenced_rfh =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  fenced_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://example.com"), fenced_rfh);
-
-  LocalFrameToken fenced_token(fenced_rfh->GetFrameToken().value());
-  url::Origin fenced_origin = url::Origin::Create(GURL("https://example.com"));
-  FormData form = SeeForm({
-      .fields = {{.server_type = ONE_TIME_CODE,
-                  .host_frame = fenced_token,
-                  .origin = fenced_origin}},
-      .host_frame = fenced_token,
-      .main_frame_origin = main_rfh_origin(),
-  });
-  ASSERT_FALSE(form.fields().empty());
-  FieldGlobalId field_id = form.fields()[0].global_id();
-
-  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
-            FormFillingContextStatus::kInsecureContext);
-}
-
 // Tests that a nested iframe (depth >= 2) that is same-origin with the main
 // frame and has no cross-origin ancestors is allowed for filling.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,

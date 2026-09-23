@@ -23,7 +23,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace offline_pages {
 namespace {
@@ -284,66 +283,6 @@ TEST_F(AutoFetchInternalImplTest, OtherTabClosedDoesNotNotify) {
   impl_.TabClosed(kDefaultTabId + 1);
 
   EXPECT_EQ(std::vector<int64_t>(), delegate_.set_notification_state_requests);
-}
-
-class AutoFetchInternalImplFencedFrameTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  AutoFetchInternalImplFencedFrameTest() = default;
-  ~AutoFetchInternalImplFencedFrameTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-    ChromeRenderViewHostTestHarness::SetUp();
-  }
-
-  content::RenderFrameHost* CreateFencedFrame(
-      content::RenderFrameHost* parent) {
-    content::RenderFrameHost* fenced_frame =
-        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
-    return fenced_frame;
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AutoFetchInternalImplFencedFrameTest,
-       DoNotHandleFencedFrameNavigationAsSuccessfulPageNavigation) {
-  const GURL kTestUrl("http://mystery.site/foo.html");
-
-  auto web_content = CreateTestWebContents();
-  AutoFetchPageLoadWatcher::CreateForWebContents(web_content.get());
-
-  AutoFetchPageLoadWatcher* page_load_watcher =
-      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
-          web_content->GetBrowserContext())
-          ->page_load_watcher();
-
-  content::WebContentsTester::For(web_content.get())
-      ->NavigateAndCommit(kTestUrl);
-
-  EXPECT_EQ(page_load_watcher->loaded_pages_for_testing().size(), 1U);
-  EXPECT_EQ(kTestUrl, page_load_watcher->loaded_pages_for_testing()[0]);
-
-  // Create a fenced frame and navigate a different URL.
-  content::RenderFrameHostTester::For(main_rfh())
-      ->InitializeRenderFrameIfNeeded();
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(web_content->GetPrimaryMainFrame());
-  GURL kFencedFrameUrl("http://fencedframe.com");
-  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
-                                                            fenced_frame_rfh);
-  navigation_simulator->Commit();
-  EXPECT_TRUE(
-      navigation_simulator->GetFinalRenderFrameHost()->IsFencedFrameRoot());
-
-  // AutoFetchPageLoadWatcher should not store the URL navigated in the fenced
-  // frame.
-  EXPECT_EQ(page_load_watcher->loaded_pages_for_testing().size(), 1U);
-  EXPECT_EQ(kTestUrl, page_load_watcher->loaded_pages_for_testing()[0]);
 }
 
 }  // namespace

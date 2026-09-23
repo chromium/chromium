@@ -77,7 +77,6 @@ class BackForwardCacheCanStoreTreeResult;
 class BrowserContext;
 class DedicatedWorkerHost;
 class DevToolsAgentHostImpl;
-class FencedFrame;
 class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
@@ -462,10 +461,6 @@ bool HandleCertificateError(WebContents* web_contents,
                             int cert_error,
                             const GURL& request_url,
                             CertErrorCallback callback);
-
-void FencedFrameCreated(
-    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    FencedFrame* fenced_frame);
 
 void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,

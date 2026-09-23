@@ -43,8 +43,6 @@ import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/drag/drag.mojom";
 import "third_party/blink/public/mojom/favicon/favicon_url.mojom";
-import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
-import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
@@ -696,48 +694,6 @@ interface LocalFrameHost {
   // RemoteFrameHost messages already signal the browser via RouteMessageEvent.
   ReceivedDelegatedCapability(DelegatedCapability delegated_capability);
 
-  // See:
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  //
-  // This implements the API:
-  // window.fence.reportEvent({eventType, eventData, destination})
-  //
-  // A document in a fenced frame can invoke the reportEvent API to request the
-  // browser to send `eventData` in a beacon toward the URL registered against
-  // `eventType` by the worklet in registerAdBeacon. Depending on the declared
-  // `destination`, the beacon is sent to the reporting destination's
-  // registered URL.
-  // Note the `destination` above is a WebIDL sequence, which means it may
-  // contain multiple destinations. It is forwarded as a collection in a single
-  // IPC call, instead of making an IPC call for each destination.
-  // For the list of available reporting destinations, see enum
-  // ReportingDestination defined in:
-  // third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom
-  // `cross_origin_exposed` determines if this event can be used with reporting
-  // metadata that lives in a cross-origin frame. See the comment in
-  // "fence_event.idl" for more details.
-  SendFencedFrameReportingBeacon(string event_data,
-                                 string event_type,
-                                 array<ReportingDestination> destinations,
-                                 bool cross_origin_exposed);
-
-  // See:
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  //
-  // This implements the API:
-  // window.fence.reportEvent({destinationURL})
-  //
-  // A document in a fenced frame can invoke the reportEvent API to request the
-  // browser to send a beacon to the https URL `destinationURL`, where macros
-  // in `destinationURL` will be substituted using the values specified by
-  // registerAdMacro in the Protected Audience auction's buyer worklet.
-  // `cross_origin_exposed` determines if this event can be used with reporting
-  // metadata that lives in a cross-origin frame. See the comment in
-  // "fence_event.idl" for more details.
-  //
-  SendFencedFrameReportingBeaconToCustomURL(
-      url.mojom.Url destination_url, bool cross_origin_exposed);
-
   // Notify the browser that there is a legacy technology used by the page.
   // The event contains the technology `type` and code location from the
   // ExecutionContext.
@@ -748,37 +704,6 @@ interface LocalFrameHost {
   // by the server.
   SendLegacyTechEvent(
       string type, LegacyTechEventCodeLocation code_location);
-
-  // Fenced frames can send beacons automatically when an event happens.
-  //
-  // For now, only "reserved.top_navigation_start" and
-  // "reserved.top_navigation_commit" is supported ("reserved.top_navigation"
-  // will still work, but is deprecated). The `event_data` is installed in the
-  // RenderFrameHost and will be sent toward `destinations` on the next
-  // cross-document top-frame navigation.
-  // `cross_origin_exposed` determines if this data can be used for an automatic
-  // beacon that originates from a cross-origin subframe. See the comment in
-  // "fence_event.idl" for more details.
-  SetFencedFrameAutomaticBeaconReportEventData(
-      AutomaticBeaconType event_type,
-      string event_data,
-      array<ReportingDestination> destinations,
-      bool once,
-      bool cross_origin_exposed);
-
-  // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
-  // element, to the browser process requesting the creation of a new fenced
-  // frame tree that will host the contents of the <fencedframe> element.
-  // `fenced_frame` - the receiver that the browser will bind to receive
-  //                  messages from the renderer.
-  // `frame_token` - the unique identifier of the RenderFrameProxy
-  // `devtools_frame_token` - the unique identifier of the main FrameTreeNode in
-  //                          the "inner" fenced frame FrameTree
-  CreateFencedFrame(
-      pending_associated_receiver<blink.mojom.FencedFrameOwnerHost> fenced_frame,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces,
-      blink.mojom.RemoteFrameToken frame_token,
-      mojo_base.mojom.UnguessableToken devtools_frame_token);
 
   // Notifies when the ViewTransition opt-in state for the current Document
   // changes.

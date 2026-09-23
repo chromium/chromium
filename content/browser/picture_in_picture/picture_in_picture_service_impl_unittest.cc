@@ -1014,28 +1014,4 @@ TEST_F(PictureInPictureServiceImplTest, Bind_BlockedByPermissionsPolicy) {
       1);
 }
 
-TEST_F(PictureInPictureServiceImplTest, Bind_BlockedForFencedFrame) {
-  TestRenderFrameHost* fenced_frame_rfh = main_test_rfh()->AppendFencedFrame();
-  auto navigation = NavigationSimulator::CreateRendererInitiated(
-      GURL("https://example.com"), fenced_frame_rfh);
-  navigation->Commit();
-  fenced_frame_rfh =
-      static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
-  ASSERT_TRUE(fenced_frame_rfh->IsNestedWithinFencedFrame());
-
-  base::HistogramTester histogram_tester;
-  mojo::Remote<blink::mojom::PictureInPictureService> service_remote;
-  fenced_frame_rfh->browser_interface_broker_receiver_for_testing()
-      .internal_state()
-      ->impl()
-      ->GetInterface(service_remote.BindNewPipeAndPassReceiver());
-
-  EXPECT_EQ(1, fenced_frame_rfh->GetProcess()->bad_msg_count());
-  histogram_tester.ExpectUniqueSample(
-      "Stability.BadMessageTerminated.Content",
-      bad_message::BadMessageReason::
-          BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_FOR_FENCED_FRAME,
-      1);
-}
-
 }  // namespace content

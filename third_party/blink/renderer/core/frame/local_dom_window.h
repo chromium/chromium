@@ -746,10 +746,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
-  // Collection of fenced frame APIs.
-  // https://github.com/shivanigithub/fenced-frame/issues/14
-  Member<Fence> fence_;
-
   Member<CrashReportContext> crash_report_storage_;
 
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;

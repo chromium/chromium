@@ -176,30 +176,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                        const String& srcdoc_value) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
-  void SendFencedFrameReportingBeacon(
-      const String& event_data,
-      const String& event_type,
-      const Vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool cross_origin_exposed) override;
-  void SendFencedFrameReportingBeaconToCustomURL(
-      const blink::KURL& destination_url,
-      bool cross_origin_exposed) override;
-  void SetFencedFrameAutomaticBeaconReportEventData(
-      blink::mojom::AutomaticBeaconType event_type,
-      const String& event_data,
-      const Vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool once,
-      bool cross_origin_exposed) override;
   void SendLegacyTechEvent(
       const String& type,
       mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;
-
-  void CreateFencedFrame(
-      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
-      mojom::blink::RemoteFrameInterfacesFromRendererPtr
-          remote_frame_interfaces,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token) override;
   void OnViewTransitionOptInChanged(
       mojom::blink::ViewTransitionSameOriginOptIn) override {}
   void StartDragging(const blink::WebDragData& drag_data,

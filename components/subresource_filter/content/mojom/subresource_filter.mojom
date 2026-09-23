@@ -43,23 +43,6 @@ interface SubresourceFilterHost {
   // browser keeps track of this for deciding whether to tag frames as ads.
   FrameWasCreatedByAdScript();
 
-  // Notifies the host that an MPArch-based FencedFrame was created while an ad
-  // script was on the v8 stack. Note that this is called from the owning
-  // RenderFrame since in MPArch the fenced frame's inner RenderFrame is
-  // isolated from the embedding frame so it cannot inspect the creating v8
-  // stack. The host uses this to initialize the AdEvidence for the inner
-  // frame. This is called immediately after the FencedFrame is created by the
-  // embedding RenderFrameHostImpl.
-  //
-  // Note: This is not called in the ShadowDOM FencedFrame implementation.
-  //
-  // `fenced_frame_root_placeholder_token` is the frame token for the
-  // placeholder remote frame representing the fenced frame root in the
-  // embedding renderer. i.e. what the browser side calls the "outer delegate
-  // proxy".
-  AdScriptDidCreateFencedFrame(
-      blink.mojom.RemoteFrameToken fenced_frame_root_placeholder_token);
-
   // This is sent to a RenderFrameHost in the browser when a document load is
   // finished, just before the DidFinishLoad message, and contains statistics
   // collected by the DocumentSubresourceFilter up until that point: the number

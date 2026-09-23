@@ -307,41 +307,4 @@ TEST_P(SubCaptureTargetIdWebContentsHelperTest,
   EXPECT_TRUE(helper->IsAssociatedWith(id, type_));
 }
 
-TEST_P(SubCaptureTargetIdWebContentsHelperTest,
-       GetRelevantWebContentsFencedFrameReturnsNull) {
-  std::unique_ptr<TestWebContents> web_contents = MakeTestWebContents();
-  web_contents->NavigateAndCommit(GURL("https://tests-r-us.com/first.html"));
-  TestRenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
-
-  // A normal main frame should return the WebContents.
-  EXPECT_EQ(SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
-                main_rfh->GetGlobalId()),
-            web_contents.get());
-
-  // A normal subframe should also return the WebContents.
-  RenderFrameHost* normal_subframe =
-      RenderFrameHostTester::For(main_rfh)->AppendChild("normal_subframe");
-  ASSERT_NE(normal_subframe, nullptr);
-  EXPECT_EQ(SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
-                normal_subframe->GetGlobalId()),
-            web_contents.get());
-
-  // A fenced frame root should return nullptr.
-  RenderFrameHost* fenced_frame_root =
-      RenderFrameHostTester::For(main_rfh)->AppendFencedFrame();
-  ASSERT_NE(fenced_frame_root, nullptr);
-  EXPECT_EQ(SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
-                fenced_frame_root->GetGlobalId()),
-            nullptr);
-
-  // A subframe nested inside a fenced frame tree should also return nullptr.
-  RenderFrameHost* fenced_frame_subframe =
-      RenderFrameHostTester::For(fenced_frame_root)
-          ->AppendChild("fenced_frame_subframe");
-  ASSERT_NE(fenced_frame_subframe, nullptr);
-  EXPECT_EQ(SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
-                fenced_frame_subframe->GetGlobalId()),
-            nullptr);
-}
-
 }  // namespace content

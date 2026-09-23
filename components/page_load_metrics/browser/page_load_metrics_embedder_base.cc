@@ -12,7 +12,6 @@
 #include "components/page_load_metrics/browser/observers/core/unstarted_page_paint_observer.h"
 #include "components/page_load_metrics/browser/observers/cross_origin_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/early_hints_page_load_metrics_observer.h"
-#include "components/page_load_metrics/browser/observers/fenced_frames_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/performance_manager_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/privacy_sandbox_ads_page_load_metrics_observer.h"
@@ -57,7 +56,6 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
   tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
-  tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
   tracker->AddObserver(
       std::make_unique<SoftNavigationPageLoadMetricsObserver>());

@@ -35,7 +35,6 @@
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -218,9 +217,6 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
 
  private:
   static void OnWillCreateBrowserContextServices(
@@ -235,7 +231,6 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
         }));
   }
 
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   base::CallbackListSubscription subscription_;

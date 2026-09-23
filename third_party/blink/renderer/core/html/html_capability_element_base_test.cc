@@ -1396,42 +1396,6 @@ TEST_F(HTMLCapabilityElementBaseDispatchValidationEventTest,
   EXPECT_TRUE(permission_element->isValid());
 }
 
-class HTMLCapabilityElementBaseFencedFrameTest
-    : public HTMLCapabilityElementBaseSimTest {
- public:
-  HTMLCapabilityElementBaseFencedFrameTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-
-  ~HTMLCapabilityElementBaseFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(HTMLCapabilityElementBaseFencedFrameTest, NotAllowedInFencedFrame) {
-  InitializeFencedFrameRoot(
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
-  SimRequest resource("https://example.test", "text/html");
-  LoadURL("https://example.test");
-  resource.Complete(R"(
-    <body>
-    </body>
-  )");
-
-  for (const char* permission : {"camera", "microphone", "geolocation"}) {
-    auto* permission_element = CreatePermissionElement(
-        *MainFrame().GetFrame()->GetDocument(), permission);
-    // We need this call to establish binding to the remote permission
-    // service, otherwise the next testing binder will fail.
-    permission_element->GetPermissionService();
-    permission_service()->set_pepc_registered_callback(
-        BindOnce(&NotReachedForPEPCRegistered));
-    base::RunLoop().RunUntilIdle();
-  }
-}
-
 class HTMLInstallElementSimTest : public HTMLCapabilityElementBaseSimTest {
  public:
   HTMLInstallElementSimTest() = default;

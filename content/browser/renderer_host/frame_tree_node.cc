@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -56,23 +55,6 @@ using FrameTreeNodeIdMap = absl::flat_hash_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
-
-FencedFrame* FindFencedFrame(const FrameTreeNode* frame_tree_node) {
-  // TODO(crbug.com/40053214): Consider having a pointer to `FencedFrame` in
-  // `FrameTreeNode` or having a map between them.
-
-  // Try and find the `FencedFrame` that `frame_tree_node` represents.
-  CHECK(frame_tree_node->parent(), base::NotFatalUntil::M152);
-  std::vector<FencedFrame*> fenced_frames =
-      frame_tree_node->parent()->GetFencedFrames();
-  for (FencedFrame* fenced_frame : fenced_frames) {
-    if (frame_tree_node->frame_tree_node_id() ==
-        fenced_frame->GetOuterDelegateFrameTreeNodeId()) {
-      return fenced_frame;
-    }
-  }
-  return nullptr;
-}
 
 }  // namespace
 
@@ -143,16 +125,7 @@ FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
     const FrameTree& frame_tree,
     RenderFrameHostImpl* parent,
     const blink::FramePolicy& frame_policy) {
-  using FencedFrameStatus = FrameTreeNode::FencedFrameStatus;
-  if (blink::features::IsFencedFramesEnabled() &&
-      frame_tree.is_fenced_frame()) {
-    if (!parent) {
-      return FencedFrameStatus::kFencedFrameRoot;
-    }
-    return FencedFrameStatus::kIframeNestedWithinFencedFrame;
-  }
-
-  return FencedFrameStatus::kNotNestedInFencedFrame;
+  return FrameTreeNode::FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
 FrameTreeNode::FrameTreeNode(
@@ -212,11 +185,6 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
       // be NOTREACHED.
       break;
     case FrameType::kFencedFrameRoot:
-      // If we are representing a `FencedFrame` object, we need to destroy it
-      // alongside ourself.
-      if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
-        parent()->DestroyFencedFrame(*doomed_fenced_frame);
-      }
       break;
     case FrameType::kGuestMainFrame:
       parent()->DestroyGuestPage(this);
@@ -1031,11 +999,11 @@ bool FrameTreeNode::HasPendingCommitNavigation() {
 }
 
 bool FrameTreeNode::IsFencedFrameRoot() const {
-  return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
+  return false;
 }
 
 bool FrameTreeNode::IsInFencedFrameTree() const {
-  return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
+  return false;
 }
 
 FrameTreeNode* FrameTreeNode::GetClosestAncestorWithFencedFrameProperties() {
@@ -1127,25 +1095,7 @@ void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
 
 blink::FencedFrame::DeprecatedFencedFrameMode
 FrameTreeNode::GetDeprecatedFencedFrameMode() {
-  if (!IsInFencedFrameTree()) {
-    return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
-  }
-
-  // See test "NestedUrnIframeUnderFencedFrameUnfencedTopNavigation" in
-  // "FencedFrameParameterizedBrowserTest" for why tree traversal is
-  // needed here to obtain the correct fenced frame properties.
-  // TODO(crbug.com/40279729): Now the fenced frame properties here are obtained
-  // via tree traversal, we should make sure it does not break things at
-  // renderers, for example, `_unfencedTop` navigation. Note these issues are
-  // pre-existing.
-  // TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes
-  // is deprecated, the issue above will no longer be relevant.
-  auto& root_fenced_frame_properties = GetFencedFrameProperties();
-  if (!root_fenced_frame_properties.has_value()) {
-    return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
-  }
-
-  return root_fenced_frame_properties->mode();
+  return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {

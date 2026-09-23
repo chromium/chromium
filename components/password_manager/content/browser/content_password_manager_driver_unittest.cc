@@ -442,58 +442,6 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormCleared) {
   driver()->PasswordFormCleared(form);
 }
 
-class ContentPasswordManagerDriverFencedFramesTest
-    : public ContentPasswordManagerDriverTest {
- public:
-  ContentPasswordManagerDriverFencedFramesTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-  ~ContentPasswordManagerDriverFencedFramesTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ContentPasswordManagerDriverFencedFramesTest,
-       SetFrameAndFormMetaDataOfForm) {
-  NavigateAndCommit(GURL("https://test.org"));
-
-  std::unique_ptr<ContentPasswordManagerDriver> driver(
-      new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));
-
-  content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-
-  // Navigate a fenced frame.
-  GURL fenced_frame_url = GURL("https://hostname/path?query#hash");
-  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
-                                                            fenced_frame_root);
-  navigation_simulator->Commit();
-  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
-
-  autofill::FormData initial_form;
-  autofill::FormData form_in_fenced_frame =
-      GetFormWithFrameAndFormMetaData(fenced_frame_root, initial_form);
-
-  // Verify all form data that are filled from a fenced frame's render frame
-  // host, not from the primary main frame.
-  EXPECT_EQ(
-      form_in_fenced_frame.host_frame(),
-      autofill::LocalFrameToken(fenced_frame_root->GetFrameToken().value()));
-  EXPECT_EQ(form_in_fenced_frame.url(), GURL("https://hostname/path"));
-  EXPECT_EQ(form_in_fenced_frame.full_url(),
-            GURL("https://hostname/path?query#hash"));
-
-  EXPECT_EQ(form_in_fenced_frame.main_frame_origin(),
-            fenced_frame_root->GetLastCommittedOrigin());
-  EXPECT_NE(form_in_fenced_frame.main_frame_origin(),
-            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(form_in_fenced_frame.main_frame_origin(),
-            url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
-}
-
 TEST_F(ContentPasswordManagerDriverTest,
        PasswordAutofillDisabledOnCredentiallessIframe) {
   NavigateAndCommit(GURL("https://test.org"));

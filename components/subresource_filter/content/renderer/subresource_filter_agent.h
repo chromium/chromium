@@ -87,8 +87,6 @@ class SubresourceFilterAgent
   virtual void SendFrameIsAd();
 
   // Tells the browser that the frame is a frame that was created by ad script.
-  // Fenced frame roots do not call this as they're tagged via
-  // DidCreateFencedFrame.
   virtual void SendFrameWasCreatedByAdScript();
 
   // True if the frame has been heuristically determined to be an ad frame.
@@ -100,8 +98,6 @@ class SubresourceFilterAgent
   // The browser will not inform the renderer of the (sub)frame's ad status and
   // evidence in the case of an initial synchronous commit to about:blank. We
   // thus fill in the frame's ad evidence and, if necessary, tag it as an ad.
-  // Fenced frame roots do not call this as their ad evidence is initialized
-  // via DidCreateFencedFrame.
   void SetAdEvidenceForInitialEmptySubframe();
 
   // mojom::SubresourceFilterAgent:
@@ -140,8 +136,6 @@ class SubresourceFilterAgent
   void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) override;
   void OnOverlayPopupAdDetected() override;
   void OnLargeStickyAdDetected() override;
-  void DidCreateFencedFrame(
-      const blink::RemoteFrameToken& placeholder_token) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
   raw_ptr<UnverifiedRulesetDealer> ruleset_dealer_;

@@ -118,20 +118,3 @@ TEST_F(StorageAccessAPITabHelperTest,
   // User activations in credentialless iframes are ignored.
   tab_helper()->FrameReceivedUserActivation(subframe);
 }
-
-TEST_F(StorageAccessAPITabHelperTest,
-       OnFrameReceivedUserActivation_FencedFrame) {
-  EXPECT_CALL(service(), RenewPermissionGrant(_, _)).Times(0);
-
-  NavigateAndCommit(GURL("https://example.test/"));
-
-  content::RenderFrameHost* fenced_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-
-  fenced_frame =
-      SimulateNavigateAndCommit(GURL("https://bar.test/foo"), fenced_frame);
-  ASSERT_NE(nullptr, fenced_frame);
-
-  // User activations in fenced frames are ignored.
-  tab_helper()->FrameReceivedUserActivation(fenced_frame);
-}

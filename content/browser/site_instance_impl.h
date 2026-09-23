@@ -54,8 +54,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);
-  static scoped_refptr<SiteInstanceImpl> CreateForFencedFrame(
-      SiteInstanceImpl* embedder_site_instance);
   static scoped_refptr<SiteInstanceImpl> CreateForFixedStoragePartition(
       BrowserContext* browser_context,
       const GURL& url,

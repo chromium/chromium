@@ -107,8 +107,6 @@
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_paint_event.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
@@ -429,17 +427,6 @@ void LocalFrameView::ForAllChildViewsAndPlugins(
   for (const auto& plugin : plugins_) {
     function(*plugin);
   }
-
-  if (Document* document = frame_->GetDocument()) {
-    if (DocumentFencedFrames* fenced_frames =
-            DocumentFencedFrames::Get(*document)) {
-      for (HTMLFencedFrameElement* fenced_frame :
-           fenced_frames->GetFencedFrames()) {
-        if (Frame* frame = fenced_frame->ContentFrame())
-          function(*frame->View());
-      }
-    }
-  }
 }
 
 void LocalFrameView::ForAllChildLocalFrameViews(
@@ -508,19 +495,6 @@ void LocalFrameView::ForAllRemoteFrameViews(
       DCHECK(child->IsRemoteFrame());
       if (RemoteFrameView* view = To<RemoteFrame>(child)->View())
         function(*view);
-    }
-  }
-  if (Document* document = frame_->GetDocument()) {
-    if (DocumentFencedFrames* fenced_frames =
-            DocumentFencedFrames::Get(*document)) {
-      for (HTMLFencedFrameElement* fenced_frame :
-           fenced_frames->GetFencedFrames()) {
-        if (RemoteFrame* frame =
-                To<RemoteFrame>(fenced_frame->ContentFrame())) {
-          if (RemoteFrameView* view = frame->View())
-            function(*view);
-        }
-      }
     }
   }
 }
@@ -4787,19 +4761,6 @@ void LocalFrameView::UpdateIntersectionObserverStatus() {
     needs_occlusion_tracking_ |= child->View()->NeedsOcclusionTracking();
   }
 
-  if (DocumentFencedFrames* fenced_frames =
-          DocumentFencedFrames::Get(*frame_->GetDocument())) {
-    for (HTMLFencedFrameElement* fenced_frame :
-         fenced_frames->GetFencedFrames()) {
-      if (Frame* frame = fenced_frame->ContentFrame()) {
-        frame->View()->UpdateIntersectionObserverStatus();
-        has_active_intersection_observations_ |=
-            frame->View()->HasActiveIntersectionObservations();
-        needs_occlusion_tracking_ |= frame->View()->NeedsOcclusionTracking();
-      }
-    }
-  }
-
   if (FrameOwner* owner = frame_->Owner()) {
     owner->SetNeedsOcclusionTracking(needs_occlusion_tracking_);
   }
@@ -4849,15 +4810,6 @@ void LocalFrameView::UpdateViewportIntersectionsForSubtree(
     child->View()->UpdateViewportIntersectionsForSubtree(flags, context);
   }
 
-  if (DocumentFencedFrames* fenced_frames =
-          DocumentFencedFrames::Get(*frame_->GetDocument())) {
-    for (HTMLFencedFrameElement* fenced_frame :
-         fenced_frames->GetFencedFrames()) {
-      if (Frame* frame = fenced_frame->ContentFrame()) {
-        frame->View()->UpdateViewportIntersectionsForSubtree(flags, context);
-      }
-    }
-  }
 }
 
 void LocalFrameView::DeliverSynchronousIntersectionObservations() {

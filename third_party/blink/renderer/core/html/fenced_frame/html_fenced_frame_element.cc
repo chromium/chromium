@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -32,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -135,12 +133,6 @@ void HTMLFencedFrameElement::DidChangeContainerPolicy() {
   if (frame_delegate_) {
     frame_delegate_->DidChangeFramePolicy(GetFramePolicy());
   }
-}
-
-HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
-  if (const ShadowRoot* root = UserAgentShadowRoot())
-    return To<HTMLIFrameElement>(root->lastChild());
-  return nullptr;
 }
 
 void HTMLFencedFrameElement::setConfig(FencedFrameConfig* config) {
@@ -471,25 +463,13 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
 
 HTMLFencedFrameElement::FencedFrameDelegate::FencedFrameDelegate(
     HTMLFencedFrameElement* outer_element)
-    : outer_element_(outer_element),
-      remote_(GetElement().GetDocument().GetExecutionContext()) {
-  DocumentFencedFrames::GetOrCreate(GetElement().GetDocument())
-      .RegisterFencedFrame(&GetElement());
-}
+    : outer_element_(outer_element) {}
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Navigate(const KURL& url) {
   // Navigation is disabled.
 }
 
-void HTMLFencedFrameElement::FencedFrameDelegate::Dispose() {
-  if (remote_.is_bound()) {
-    remote_.reset();
-  }
-  auto* fenced_frames = DocumentFencedFrames::Get(GetElement().GetDocument());
-  if (fenced_frames) {
-    fenced_frames->DeregisterFencedFrame(&GetElement());
-  }
-}
+void HTMLFencedFrameElement::FencedFrameDelegate::Dispose() {}
 
 void HTMLFencedFrameElement::FencedFrameDelegate::AttachLayoutTree() {
   if (GetElement().GetLayoutEmbeddedContent() && GetElement().ContentFrame()) {
@@ -499,10 +479,6 @@ void HTMLFencedFrameElement::FencedFrameDelegate::AttachLayoutTree() {
 
 bool HTMLFencedFrameElement::FencedFrameDelegate::SupportsFocus() {
   return true;
-}
-
-void HTMLFencedFrameElement::FencedFrameDelegate::MarkFrozenFrameSizeStale() {
-  // Size freezing is disabled.
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::MarkContainerSizeStale() {
@@ -519,7 +495,6 @@ void HTMLFencedFrameElement::FencedFrameDelegate::DidChangeFramePolicy(
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Trace(
     Visitor* visitor) const {
-  visitor->Trace(remote_);
   visitor->Trace(outer_element_);
 }
 

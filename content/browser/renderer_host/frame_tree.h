@@ -301,7 +301,7 @@ class CONTENT_EXPORT FrameTree {
 
   bool is_primary() const { return type_ == Type::kPrimary; }
   bool is_prerendering() const { return type_ == Type::kPrerender; }
-  bool is_fenced_frame() const { return type_ == Type::kFencedFrame; }
+  bool is_fenced_frame() const { return false; }
   bool is_guest() const { return type_ == Type::kGuest; }
 
   Delegate* delegate() { return delegate_; }

@@ -108,7 +108,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
@@ -2680,7 +2679,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(text_suggestion_controller_);
   visitor->Trace(isolated_world_csp_map_);
   visitor->Trace(network_state_observer_);
-  visitor->Trace(fence_);
   visitor->Trace(crash_report_storage_);
   visitor->Trace(closewatcher_stack_);
   visitor->Trace(soft_navigation_heuristics_);
@@ -2797,26 +2795,7 @@ bool LocalDOMWindow::IsInFencedFrame() const {
 }
 
 Fence* LocalDOMWindow::fence() {
-  // Return nullptr if we aren't in a fenced subtree.
-  if (!GetFrame()) {
-    return nullptr;
-  }
-  if (!GetFrame()->IsInFencedFrameTree()) {
-    // We temporarily allow window.fence in iframes loaded via
-    // FencedFrameConfigs (navigated by a config's associated urn:uuid since
-    // iframes don't support config objects directly). If we are in an iframe
-    // that doesn't qualify, return nullptr.
-    if (!blink::features::IsAllowURNsInIframeEnabled() ||
-        !GetFrame()->GetDocument()->Loader()->FencedFrameProperties()) {
-      return nullptr;
-    }
-  }
-
-  if (!fence_) {
-    fence_ = MakeGarbageCollected<Fence>(*this);
-  }
-
-  return fence_.Get();
+  return nullptr;
 }
 
 CrashReportContext* LocalDOMWindow::crashReport() {

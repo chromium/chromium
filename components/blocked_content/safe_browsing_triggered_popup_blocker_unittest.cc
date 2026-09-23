@@ -557,45 +557,4 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NonPrimaryFrameTree) {
   }
 }
 
-class SafeBrowsingTriggeredPopupBlockerFencedFrameTest
-    : public SafeBrowsingTriggeredPopupBlockerTest {
- public:
-  SafeBrowsingTriggeredPopupBlockerFencedFrameTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-  ~SafeBrowsingTriggeredPopupBlockerFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Ensures that the popup blocker is not triggered by a fenced frame.
-TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameTest,
-       ShouldNotTriggerPopupBlocker) {
-  const GURL url("https://example.test/");
-  MarkUrlAsAbusiveEnforce(url);
-  NavigateAndCommit(url);
-
-  // The popup blocker is triggered for a primary page.
-  EXPECT_TRUE(
-      popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
-
-  content::RenderFrameHost* fenced_frame_root =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-
-  // Navigate a fenced frame.
-  const GURL fenced_frame_url("https://fencedframe.test");
-  MarkUrlAsAbusiveEnforce(fenced_frame_url);
-  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
-                                                            fenced_frame_root);
-  navigation_simulator->Commit();
-  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
-
-  // The popup blocker is not triggered for a fenced frame.
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
-      fenced_frame_root->GetPage()));
-}
-
 }  // namespace blocked_content

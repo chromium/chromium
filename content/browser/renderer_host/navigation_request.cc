@@ -2587,11 +2587,6 @@ void NavigationRequest::BeginNavigation() {
     return;
   }
 
-  // Send any potential navigation start automatic beacons for this frame.
-  frame_tree_node_->current_frame_host()
-      ->MaybeSendFencedFrameAutomaticReportingBeacon(
-          *this, blink::mojom::AutomaticBeaconType::kTopNavigationStart);
-
   BeginNavigationImpl();
 }
 
@@ -10482,7 +10477,7 @@ bool NavigationRequest::IsPrerenderedPageActivation() const {
 }
 
 bool NavigationRequest::IsInFencedFrameTree() const {
-  return frame_tree_node()->IsInFencedFrameTree();
+  return false;
 }
 
 bool NavigationRequest::IsGuestViewMainFrame() const {

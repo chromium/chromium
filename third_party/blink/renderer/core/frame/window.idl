@@ -213,7 +213,7 @@
 
     // Collection of fenced frame APIs
     // https://github.com/shivanigithub/fenced-frame/issues/14
-    [RuntimeEnabled=FencedFrames] readonly attribute Fence? fence;
+    [RuntimeEnabled=FencedFrames, DeprecateAs=HTMLFencedFrameElement] readonly attribute Fence? fence;
 
     // See
     // https://github.com/WICG/crash-reporting/blob/gh-pages/crashStorage-explainer.md.

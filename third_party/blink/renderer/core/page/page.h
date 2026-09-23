@@ -730,11 +730,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // If true, pauses JavaScript execution until the page is activated.
   bool should_pause_javascript_execution_on_prerender_ = false;
 
-  // Whether the the Page's main document is a Fenced Frame document. This is
-  // only set for the MPArch implementation and is true when the corresponding
-  // browser side FrameTree has the FrameTree::Type of kFencedFrame.
-  bool is_fenced_frame_tree_ = false;
-
   // This tracks the mode that the fenced frame is set to.
   blink::FencedFrame::DeprecatedFencedFrameMode fenced_frame_mode_ =
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;

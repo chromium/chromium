@@ -283,30 +283,6 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingBlocked) {
             GetContentSetting(ContentSettingsType::MEDIASTREAM_MIC));
 }
 
-TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedInFencedFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-
-  content::RenderFrameHost* fenced_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-
-  RebindPermissionService(fenced_frame);
-
-  // A PEPC request is not allowed in a fenced frame.
-  permission_service()->RequestPageEmbeddedPermission(
-      CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC),
-      CreateUserMediaEmbeddedPermissionRequestDescriptorPtr(),
-      base::BindOnce(
-          &PEPCInitiatedPermissionRequestTest::PermissionServiceCallbackPEPC,
-          base::Unretained(this)));
-
-  WaitForPermissionServiceCallback();
-
-  // No prompts have been created.
-  EXPECT_EQ(prompt_factory()->request_count(), 0);
-}
-
 TEST_F(PEPCInitiatedPermissionRequestTest,
        PEPCRequestAllowedWithFeaturePolicy) {
   // The current setting is blocked, all new prompts will be allowed.

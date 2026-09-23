@@ -859,54 +859,6 @@ void ContentSubresourceFilterThrottleManager::FrameWasCreatedByAdScript() {
   OnChildFrameWasCreatedByAdScript(&receiver_.CurrentTargetFrame());
 }
 
-void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
-    const blink::RemoteFrameToken& placeholder_token) {
-  if (!blink::features::IsFencedFramesEnabled()) {
-    mojo::ReportBadMessage(
-        "AdScriptDidCreateFencedFrame can only be called when fenced frames "
-        "are enabled.");
-    return;
-  }
-
-  // This method is called from the renderer when it creates a new MPArch-based
-  // fenced frame while an ad script was on the v8 stack.
-  //
-  // Normal frames compute this when the new RenderFrame initializes since that
-  // happens synchronously during the CreateFrame call. At that time,
-  // SubresourceFilterAgent calls FrameWasCreatedByAdScript if needed.  However,
-  // creating an MPArch-based FencedFrame doesn't create a RenderFrame in the
-  // calling process; it creates a RenderFrame in another renderer via IPC at
-  // which point we cannot inspect the v8 stack so we use this special path for
-  // fenced frames.
-
-  content::RenderFrameHost& owner_frame = receiver_.CurrentTargetFrame();
-
-  auto* fenced_frame_root = content::RenderFrameHost::FromPlaceholderToken(
-      owner_frame.GetProcess()->GetDeprecatedID(), placeholder_token);
-
-  if (!fenced_frame_root) {
-    return;
-  }
-
-  if (!fenced_frame_root->IsFencedFrameRoot()) {
-    mojo::ReportBadMessage(
-        "AdScriptDidCreateFencedFrame received token for frame that isn't a "
-        "fenced frame root.");
-    return;
-  }
-
-  if (fenced_frame_root->GetParentOrOuterDocument() != &owner_frame) {
-    mojo::ReportBadMessage(
-        "AdScriptDidCreateFencedFrame called from non-embedder of fenced "
-        "frame.");
-    return;
-  }
-
-  CHECK(
-      !tracked_ad_evidence_.contains(fenced_frame_root->GetFrameTreeNodeId()));
-  OnChildFrameWasCreatedByAdScript(fenced_frame_root);
-}
-
 void ContentSubresourceFilterThrottleManager::OnChildFrameWasCreatedByAdScript(
     content::RenderFrameHost* frame_host) {
   CHECK(frame_host);

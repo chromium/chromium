@@ -402,50 +402,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
       GetCrossOriginUrl("/candidate3.html")));
 }
 
-// Link speculationrules prefetch is not started in fenced frame.
-// `CanPrefetchNow()` check blocks speculationrules prefetch from fenced frames.
-TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
-  // Create list of SpeculationCandidatePtrs.
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-
-  auto referrer = blink::mojom::Referrer::New();
-  referrer->url = GetSameOriginUrl("/referrer");
-  const GURL cross_origin_url = GetCrossOriginUrl("/candidate.html");
-
-  // Create candidate for private cross-origin prefetch. This candidate should
-  // be added to the queue of |PrefetchDocumentManager|. However, it will not be
-  // prefetched because it is from a fenced frame.
-  auto candidate = blink::mojom::SpeculationCandidate::New();
-  candidate->tags = {std::nullopt};
-  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate->requires_anonymous_client_ip_when_cross_origin = true;
-  candidate->url = cross_origin_url;
-  candidate->referrer = referrer->Clone();
-  candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
-  candidates.push_back(std::move(candidate));
-
-  // Process the candidate with the |PrefetchDocumentManager| for the current
-  // document.
-  TestRenderFrameHost* fenced_frame_rfh =
-      static_cast<TestRenderFrameHost&>(*main_rfh()).AppendFencedFrame();
-  auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(fenced_frame_rfh);
-  prefetch_document_manager->ProcessCandidates(candidates);
-
-  // Check that the candidate was sent to |PrefetchService|.
-  const auto& prefetch_urls = GetPrefetches();
-  ASSERT_EQ(prefetch_urls.size(), 1U);
-  EXPECT_EQ(prefetch_urls[0]->GetURL(), cross_origin_url);
-  EXPECT_EQ(prefetch_urls[0]->request().prefetch_type(),
-            PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                         /*use_prefetch_proxy=*/true,
-                         blink::mojom::SpeculationEagerness::kImmediate));
-
-  // `CanPrefetchNow()` blocks the speculationrules prefetch from fenced frame.
-  EXPECT_THAT(prefetch_document_manager->CanPrefetchNow(prefetch_urls[0].get()),
-              FieldsAre(false, IsNull()));
-}
-
 TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_Default) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());

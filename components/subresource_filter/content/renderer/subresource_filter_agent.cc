@@ -408,11 +408,4 @@ void SubresourceFilterAgent::OnLargeStickyAdDetected() {
       subresource_filter::mojom::AdsViolation::kLargeStickyAd);
 }
 
-void SubresourceFilterAgent::DidCreateFencedFrame(
-    const blink::RemoteFrameToken& placeholder_token) {
-  if (render_frame()->GetWebFrame()->IsAdScriptInStack()) {
-    GetSubresourceFilterHost()->AdScriptDidCreateFencedFrame(placeholder_token);
-  }
-}
-
 }  // namespace subresource_filter

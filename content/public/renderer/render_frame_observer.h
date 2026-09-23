@@ -147,13 +147,6 @@ class CONTENT_EXPORT RenderFrameObserver {
       const std::vector<blink::WebString>& newly_matching_selectors,
       const std::vector<blink::WebString>& stopped_matching_selectors) {}
 
-  // Called when the RenderFrame creates a FencedFrame and provides the
-  // RemoteFrameToken to identify the `blink::RemoteFrame` to the inner
-  // RenderFrame. This is called immediately after the FencedFrame is created
-  // in the browser and the `blink::RemoteFrame` initialized in this renderer.
-  virtual void DidCreateFencedFrame(
-      const blink::RemoteFrameToken& placeholder_token) {}
-
   // Called when same-document navigation finishes.
   // This is the only callback for same-document navigations,
   // DidStartNavigation and ReadyToCommitNavigation are not called.

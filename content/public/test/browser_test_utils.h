@@ -382,9 +382,6 @@ void SimulateUnresponsiveRenderer(WebContents* web_contents,
 // Notes:
 // - Input events to a page may not work right after a page load, see
 // `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
-// - For simulating clicks inside a fenced frame tree, this function does not
-// work. Use `SimulateClickInFencedFrameTree` in
-// `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
                         blink::WebMouseEvent::Button button);
@@ -398,9 +395,6 @@ void SimulateMouseClick(WebContents* web_contents,
 // Notes:
 // - Input events to a page may not work right after a page load, see
 // `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
-// - For simulating clicks inside a fenced frame tree, this function does not
-// work. Use `SimulateClickInFencedFrameTree` in
-// `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClickAt(WebContents* web_contents,
                           int modifiers,
                           blink::WebMouseEvent::Button button,

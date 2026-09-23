@@ -2827,6 +2827,11 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
 
 TEST_P(AdsPageLoadMetricsObserverTest,
        ErrorPageNavigationReplaceNavigationEntry) {
+  if (WithFencedFrames()) {
+    // Fenced frames are deprecated and no longer have independent frame trees.
+    return;
+  }
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);

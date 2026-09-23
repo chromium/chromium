@@ -78,8 +78,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -3482,18 +3480,6 @@ protocol::Response InspectorDOMAgent::getFrameOwner(
       break;
     }
 
-    if (IsA<LocalFrame>(frame)) {
-      if (auto* fenced_frames = DocumentFencedFrames::Get(
-              *To<LocalFrame>(frame)->GetDocument())) {
-        for (HTMLFencedFrameElement* ff : fenced_frames->GetFencedFrames()) {
-          Frame* ff_frame = ff->ContentFrame();
-          if (ff_frame && IdentifiersFactory::FrameId(ff_frame) == frame_id) {
-            found_frame = ff_frame;
-            break;
-          }
-        }
-      }
-    }
   }
 
   if (!found_frame) {

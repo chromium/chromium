@@ -2167,18 +2167,6 @@ bool HandleCertificateError(WebContents* web_contents,
   return !callback;
 }
 
-void FencedFrameCreated(
-    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    FencedFrame* fenced_frame) {
-  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
-      RenderFrameDevToolsAgentHost::GetFor(
-          owner_render_frame_host->frame_tree_node()));
-  if (!agent_host) {
-    return;
-  }
-  agent_host->DidCreateFencedFrame(fenced_frame);
-}
-
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const DropData& drop_data,
                        const blink::mojom::DragDataPtr drag_data,

@@ -314,24 +314,6 @@ TEST_P(AdditionalWindowingControlsTest, RejectsInIframe) {
             "API is only supported in primary top-level browsing contexts.");
 }
 
-TEST_P(AdditionalWindowingControlsTest, RejectsInFencedFrame) {
-  GetDocument().GetPage()->SetIsMainFrameFencedFrameRoot();
-
-  ASSERT_TRUE(GetDocument().GetFrame()->IsMainFrame());
-  ASSERT_FALSE(GetDocument().GetFrame()->IsOutermostMainFrame());
-
-  ScriptState::Scope scope(GetScriptState());
-  DummyExceptionStateForTesting exception_state;
-
-  RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
-
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-  EXPECT_EQ(exception_state.Message(),
-            "API is only supported in primary top-level browsing contexts.");
-}
-
 TEST_P(AdditionalWindowingControlsTest, RejectsIfNotInWebAppScope) {
   ScriptState::Scope scope(GetScriptState());
   DummyExceptionStateForTesting exception_state;

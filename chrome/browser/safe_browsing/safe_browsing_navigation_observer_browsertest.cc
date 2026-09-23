@@ -38,7 +38,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -544,13 +543,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     return prerender_helper_;
   }
 
-  content::test::FencedFrameTestHelper& fenced_frame_helper() {
-    return fenced_frame_helper_;
-  }
-
  private:
   content::test::PrerenderTestHelper prerender_helper_;
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
 // Type download URL into address bar and start download on the same page.

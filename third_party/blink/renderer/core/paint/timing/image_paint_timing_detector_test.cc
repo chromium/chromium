@@ -1355,45 +1355,6 @@ TEST_P(ImagePaintTimingDetectorTest, FirstVideoFrameRacesWithPosterImage) {
   EXPECT_EQ(LargestPaintedImage(), record2);
 }
 
-class ImagePaintTimingDetectorFencedFrameTest
-    : private ScopedFencedFramesForTest,
-      public ImagePaintTimingDetectorTest {
- public:
-  ImagePaintTimingDetectorFencedFrameTest() : ScopedFencedFramesForTest(true) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-
- protected:
-  void SetUp() override {
-    ImagePaintTimingDetectorTest::SetUp();
-
-    GetDocument().GetPage()->SetIsMainFrameFencedFrameRoot();
-    ASSERT_TRUE(GetDocument().GetFrame()->IsInFencedFrameTree());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(ImagePaintTimingDetectorFencedFrameTest);
-
-TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  SetMainFrameBodyContent(R"HTML(
-    <style>body {margin: 0px;}</style>
-    <img id="target"></img>
-  )HTML");
-  SetImageContent("target", 3000, 3000);
-  SimulateRenderingAndPresentationTime();
-  ImageRecord* record = LargestImage();
-  EXPECT_EQ(record, nullptr);
-  // Simulate some input event to force StopRecordEntries().
-  SimulateKeyDown();
-  auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
-  EXPECT_EQ(0u, entries.size());
-}
-
 class ImagePaintTimingDetectorTransparentPlaceholderImageTest
     : public ImagePaintTimingDetectorTest {
  public:

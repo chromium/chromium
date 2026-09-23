@@ -320,8 +320,6 @@ class ContentSubresourceFilterThrottleManager
   void DidDisallowFirstSubresource() override;
   void FrameIsAd() override;
   void FrameWasCreatedByAdScript() override;
-  void AdScriptDidCreateFencedFrame(
-      const blink::RemoteFrameToken& placeholder_token) override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
   void OnAdsViolationTriggered(mojom::AdsViolation violation) override;

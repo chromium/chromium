@@ -1570,33 +1570,6 @@ TEST_P(ProduceSubCaptureTargetTest, IdRejectedIfDifferentWindow) {
       String("The Element and the MediaDevices object must be same-window."));
 }
 
-TEST_P(ProduceSubCaptureTargetTest, RejectsIfFencedFrame) {
-  V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  ASSERT_TRUE(media_devices);
-
-  // Set the page to behave as a fenced frame root.
-  GetDocument().GetPage()->SetIsMainFrameFencedFrameRoot();
-  ASSERT_TRUE(GetDocument().GetFrame()->IsInFencedFrameTree());
-
-  SetBodyContent("<div id='test-div'></div>");
-  Element* const div = GetDocument().getElementById(AtomicString("test-div"));
-
-  bool got_promise =
-      ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
-  EXPECT_FALSE(got_promise);
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kNotAllowedError);
-  EXPECT_EQ(
-      scope.GetExceptionState().Message(),
-      type_ == SubCaptureTarget::Type::kCropTarget
-          ? String(
-                "CropTarget.fromElement is not allowed in a fenced frame tree.")
-          : String("RestrictionTarget.fromElement is not allowed in a fenced "
-                   "frame tree."));
-}
-
 TEST_P(ProduceSubCaptureTargetTest, DuplicateId) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());

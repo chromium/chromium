@@ -42,16 +42,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
       mojom::blink::FrameReplicationStatePtr replicated_state);
 
-  static WebRemoteFrameImpl* CreateForFencedFrame(
-      mojom::blink::TreeScopeType,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      HTMLFrameOwnerElement* frame_owner,
-      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
-          remote_frame_host,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-      mojom::blink::FrameReplicationStatePtr replicated_state);
-
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;

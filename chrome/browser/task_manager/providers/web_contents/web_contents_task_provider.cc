@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/task_manager/providers/web_contents/back_forward_cache_task.h"
-#include "chrome/browser/task_manager/providers/web_contents/fenced_frame_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/guest_task_mparch.h"
 #include "chrome/browser/task_manager/providers/web_contents/prerender_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/subframe_task.h"
@@ -442,9 +441,6 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
           WebContentsTag::FromWebContents(web_contents());
       new_task = tag->CreateTask(provider_);
       primary_main_frame_site_instance_ = site_instance;
-    } else if (render_frame_host->IsFencedFrameRoot()) {
-      new_task = std::make_unique<FencedFrameTask>(
-          render_frame_host, std::move(primary_main_frame_task));
     } else if (IsMPArchGuestMainFrame(render_frame_host)) {
       new_task = std::make_unique<GuestTaskMPArch>(
           render_frame_host, std::move(primary_main_frame_task));

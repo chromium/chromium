@@ -260,56 +260,6 @@ SiteInstanceImpl::CreateForFixedStoragePartition(
 }
 
 // static
-scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
-    SiteInstanceImpl* embedder_site_instance) {
-  CHECK(embedder_site_instance, base::NotFatalUntil::M158);
-  BrowserContext* browser_context = embedder_site_instance->GetBrowserContext();
-  bool should_isolate_fenced_frames =
-      SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled();
-  scoped_refptr<SiteInstanceImpl> site_instance =
-      base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
-          browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
-          embedder_site_instance->GetSecurityPrincipal().IsGuest(),
-          /*is_fenced=*/should_isolate_fenced_frames,
-          embedder_site_instance->IsFixedStoragePartition())));
-
-  // Give the new fenced frame SiteInstance the same site url as its embedder's
-  // SiteInstance to allow it to reuse its embedder's process. We avoid doing
-  // this in the default SiteInstance case as the url will be invalid; process
-  // reuse will still happen below though, as the embedder's SiteInstance's
-  // process will not be locked to any site.
-  // Note: Even when process isolation for fenced frames is enabled, we will
-  // still be able to reuse the embedder's process below, because we set its
-  // SiteInfo to be the embedder's SiteInfo, and |is_fenced| will be false. The
-  // process will change after the first navigation (the new SiteInstance will
-  // have a SiteInfo with is_fenced set to true).
-  if (!embedder_site_instance->IsDefaultSiteInstance()) {
-    site_instance->SetSiteInfo(embedder_site_instance->GetSiteInfo());
-  } else if (embedder_site_instance->GetSecurityPrincipal().IsGuest()) {
-    // For guests, in the case where the embedder is not a default SiteInstance,
-    // we reuse the embedder's SiteInfo above. When the embedder is
-    // a default SiteInstance, we explicitly create a SiteInfo through
-    // CreateForGuest.
-    // TODO(crbug.com/40230422): When we support fenced frame process isolation
-    // with partial or no site isolation modes, we will be able to reach this
-    // code path and will need to also set is_fenced for the SiteInfo created
-    // below.
-    CHECK(!should_isolate_fenced_frames, base::NotFatalUntil::M158);
-    site_instance->SetSiteInfo(SiteInfo::CreateForGuest(
-        browser_context, embedder_site_instance->GetSecurityPrincipal()
-                             .GetStoragePartitionConfig()));
-  }
-  CHECK_EQ(embedder_site_instance->GetSecurityPrincipal().IsGuest(),
-           site_instance->GetSecurityPrincipal().IsGuest(),
-           base::NotFatalUntil::M158);
-  if (embedder_site_instance->HasProcess()) {
-    site_instance->ReuseExistingProcessIfPossible(
-        embedder_site_instance->GetProcess());
-  }
-  return site_instance;
-}
-
-// static
 scoped_refptr<SiteInstanceImpl>
 SiteInstanceImpl::CreateReusableInstanceForTesting(
     BrowserContext* browser_context,

@@ -140,12 +140,6 @@ LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
   return nullptr;
 }
 
-RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(
-    HTMLFencedFrameElement*,
-    mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) {
-  return nullptr;
-}
-
 WebPluginContainerImpl* EmptyLocalFrameClient::CreatePlugin(
     HTMLPlugInElement&,
     const KURL&,

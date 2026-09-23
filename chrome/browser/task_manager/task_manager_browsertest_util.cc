@@ -293,23 +293,5 @@ std::u16string MatchPrerender(std::string_view title) {
 std::u16string MatchAnyPrerender() {
   return MatchPrerender("*");
 }
-
-std::u16string MatchFencedFrame(std::string_view title) {
-  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_FENCED_FRAME_PREFIX,
-                                    base::UTF8ToUTF16(title));
-}
-
-std::u16string MatchAnyFencedFrame() {
-  return MatchFencedFrame("*");
-}
-
-std::u16string MatchIncognitoFencedFrame(std::string_view title) {
-  return l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX, base::UTF8ToUTF16(title));
-}
-
-std::u16string MatchAnyIncognitoFencedFrame() {
-  return MatchIncognitoFencedFrame("*");
-}
 }  // namespace browsertest_util
 }  // namespace task_manager

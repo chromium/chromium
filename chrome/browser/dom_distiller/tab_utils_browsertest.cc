@@ -49,7 +49,6 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -338,37 +337,6 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsMPArchTest,
   // SelfDeletingRequestDelegate deletes itself when PrimaryPageChanged() is
   // called. Ensure that the TaskTracker has been removed.
   EXPECT_FALSE(HasTaskTracker());
-}
-
-class DomDistillerTabUtilsFencedFrameTest
-    : public DomDistillerTabUtilsMPArchTest {
- public:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
- protected:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsFencedFrameTest,
-                       DISABLED_TaskTrackerNotRemovedByFencedFrame) {
-  NavigateAndDistill();
-  // Ensure the TaskTracker for distilling the source article exist.
-  EXPECT_TRUE(HasTaskTracker());
-
-  // Activate the source web contents.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-
-  // Add a fenced frame into the source web contents.
-  const GURL fenced_frame_url =
-      https_server_->GetURL("/fenced_frames/title1.html");
-  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      source_web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
-
-  // Ensure that the navigation in the fenced frame doesn't affect the
-  // SelfDeletingRequestDelegate.
-  EXPECT_TRUE(HasTaskTracker());
 }
 
 class DomDistillerTabUtilsPrerenderTest

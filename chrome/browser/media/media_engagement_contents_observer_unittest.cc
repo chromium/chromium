@@ -1197,49 +1197,4 @@ TEST_F(MediaEngagementContentsObserverPrerenderTest,
   EXPECT_EQ(0u, GetAudioContextPlayersCount());
 }
 
-class MediaEngagementContentsObserverFencedFrameTest
-    : public MediaEngagementContentsObserverTest {
- public:
-  MediaEngagementContentsObserverFencedFrameTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-  ~MediaEngagementContentsObserverFencedFrameTest() override = default;
-
-  content::RenderFrameHost* CreateFencedFrame(
-      content::RenderFrameHost* parent) {
-    content::RenderFrameHost* fenced_frame =
-        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
-    return fenced_frame;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(MediaEngagementContentsObserverFencedFrameTest,
-       EnsureDoNotCleanupAfterNavigation_AudioContextOnFencedFrame) {
-  GURL url("https://example.com");
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             url);
-  EXPECT_EQ(0u, GetAudioContextPlayersCount());
-
-  SimulateAudioContextStarted(0);
-  EXPECT_EQ(1u, GetAudioContextPlayersCount());
-
-  // Navigate a fenced frame.
-  content::RenderFrameHostTester::For(main_rfh())
-      ->InitializeRenderFrameIfNeeded();
-  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
-  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(url,
-                                                            fenced_frame_rfh);
-  navigation_simulator->Commit();
-  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
-  EXPECT_EQ(1u, GetAudioContextPlayersCount());
-
-  Navigate(url);
-  EXPECT_EQ(0u, GetAudioContextPlayersCount());
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -2661,8 +2661,7 @@ void ServiceWorkerGlobalScope::RecordQueuingTime(base::TimeTicks created_time) {
 }
 
 bool ServiceWorkerGlobalScope::IsInFencedFrame() const {
-  return GetAncestorFrameType() ==
-         mojom::blink::AncestorFrameType::kFencedFrame;
+  return false;
 }
 
 void ServiceWorkerGlobalScope::NotifyWebSocketActivity() {

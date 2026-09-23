@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,7 @@ class FencedFrameStubBrowserTest : public ContentBrowserTest {
  public:
   FencedFrameStubBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kFencedFrames,
-                              blink::features::kFencedFramesAPIChanges},
+        /*enabled_features=*/{blink::features::kFencedFrames},
         /*disabled_features=*/{});
   }
 
@@ -36,12 +35,9 @@ class FencedFrameStubBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(https_server_.Start());
   }
 
-  WebContentsImpl* web_contents() {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetPrimaryMainFrame();
+    return static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryMainFrame();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }

@@ -140,37 +140,4 @@ TEST_F(FrameSchedulerFrameTypeTest, GetFrameType) {
             To<LocalFrame>(child)->GetFrameScheduler()->GetFrameType());
 }
 
-class FencedFrameFrameSchedulerTest
-    : private ScopedFencedFramesForTest,
-      public testing::WithParamInterface<const char*>,
-      public SimTest {
- public:
-  FencedFrameFrameSchedulerTest() : ScopedFencedFramesForTest(true) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(FencedFrameFrameSchedulerTest, GetFrameType) {
-  InitializeFencedFrameRoot(
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE HTML>
-    <body>
-    </body>
-  )HTML");
-
-  // A fenced frame root will should be treated as a main frame but
-  // marked in an embedded frame tree.
-  EXPECT_EQ(FrameScheduler::FrameType::kMainFrame,
-            MainFrame().GetFrame()->GetFrameScheduler()->GetFrameType());
-  EXPECT_TRUE(
-      MainFrame().GetFrame()->GetFrameScheduler()->IsInEmbeddedFrameTree());
-}
-
 }  // namespace blink

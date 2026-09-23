@@ -441,7 +441,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
   using FencedFrameStatus = RenderFrameHostImpl::FencedFrameStatus;
-  FencedFrameStatus fenced_frame_status() const { return fenced_frame_status_; }
+  FencedFrameStatus fenced_frame_status() const {
+    return FencedFrameStatus::kNotNestedInFencedFrame;
+  }
 
   blink::FrameOwnerElementType frame_owner_element_type() const {
     return frame_owner_element_type_;

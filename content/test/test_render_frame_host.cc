@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -366,22 +365,7 @@ void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
 }
 
 TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame() {
-  fenced_frames_.push_back(std::make_unique<FencedFrame>(
-      weak_ptr_factory_.GetSafeRef(), /* was_discarded= */ false));
-  FencedFrame* fenced_frame = fenced_frames_.back().get();
-  // Create stub RemoteFrameInterfaces.
-  auto remote_frame_interfaces =
-      blink::mojom::RemoteFrameInterfacesFromRenderer::New();
-  remote_frame_interfaces->frame_host_receiver =
-      mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
-          .BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
-  std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
-  remote_frame_interfaces->frame = frame.Unbind();
-  fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
-      std::move(remote_frame_interfaces), blink::RemoteFrameToken(),
-      base::UnguessableToken::Create());
-  return static_cast<TestRenderFrameHost*>(fenced_frame->GetInnerRoot());
+  return AppendChild("fenced_frame");
 }
 
 void TestRenderFrameHost::SendNavigate(int nav_entry_id,

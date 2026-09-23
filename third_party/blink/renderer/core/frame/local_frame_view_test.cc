@@ -1485,25 +1485,6 @@ TEST_F(PaintHoldingSimTest, ReleasedByFCPNotFP) {
   resource.Complete("");
 }
 
-class FencedFrameLocalFrameViewTest : private ScopedFencedFramesForTest,
-                                      public SimTest {
- public:
-  FencedFrameLocalFrameViewTest() : ScopedFencedFramesForTest(true) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(FencedFrameLocalFrameViewTest, DoNotDeferCommitsInFencedFrames) {
-  InitializeFencedFrameRoot(
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
-  GetDocument().SetDeferredCompositorCommitIsAllowed(true);
-  EXPECT_FALSE(GetDocument().View()->WillDoPaintHoldingForFCP());
-}
-
 class ResizableLocalFrameViewTest : public testing::Test {
  public:
   void SetUp() override { web_view_helper_.Initialize(); }

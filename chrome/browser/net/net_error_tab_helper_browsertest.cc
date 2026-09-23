@@ -13,7 +13,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
@@ -210,10 +209,6 @@ class NetErrorTabHelperWithFencedFrameTest : public NetErrorTabHelperTest {
   NetErrorTabHelperWithFencedFrameTest& operator=(
       const NetErrorTabHelperWithFencedFrameTest&) = delete;
 
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
   // Returns true if the platform has support for a diagnostics tool, and it
   // can be launched from |render_frame_host|.
   std::string WebContentsCanShowDiagnosticsTool(
@@ -222,9 +217,6 @@ class NetErrorTabHelperWithFencedFrameTest : public NetErrorTabHelperTest {
     return CanShowNetworkDiagnosticsDialog(web_contents) ? "FOUND"
                                                          : "NOT FOUND";
   }
-
- private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,

@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -141,32 +140,6 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   return frame;
 }
 
-WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForFencedFrame(
-    mojom::blink::TreeScopeType scope,
-    const RemoteFrameToken& frame_token,
-    const base::UnguessableToken& devtools_frame_token,
-    HTMLFrameOwnerElement* frame_owner,
-    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
-        remote_frame_host,
-    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-    mojom::blink::FrameReplicationStatePtr replicated_state) {
-  // We first convert this to a raw blink::Element*, and manually convert this
-  // to an HTMLElement*. That is the only way the IsA<> and To<> casts below
-  // will work.
-  DCHECK(IsA<HTMLFencedFrameElement>(frame_owner));
-  auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
-  ExecutionContext* execution_context = frame_owner->GetExecutionContext();
-  DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(execution_context));
-  LocalFrame* host_frame = frame_owner->GetDocument().GetFrame();
-  frame->InitializeCoreFrame(
-      *host_frame->GetPage(), frame_owner, /*parent=*/nullptr,
-      /*previous_sibling=*/nullptr, FrameInsertType::kInsertInConstructor,
-      g_null_atom, &host_frame->window_agent_factory(), devtools_frame_token,
-      std::move(remote_frame_host), std::move(receiver));
-  frame->SetReplicatedState(std::move(replicated_state));
-  return frame;
-}
-
 WebRemoteFrameImpl::~WebRemoteFrameImpl() = default;
 
 void WebRemoteFrameImpl::Trace(Visitor* visitor) const {
@@ -276,24 +249,13 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
 
   // If this is not a top-level frame, we need to send FrameVisualProperties to
   // the remote renderer process. Some of the properties are inherited from the
-  // WebFrameWidget containing this frame, and this is true for regular frames
-  // in the frame tree as well as for fenced frames, which are not in the frame
-  // tree; hence the code to traverse up through FrameOwner.
+  // WebFrameWidget containing this frame.
   WebFrameWidgetImpl* ancestor_widget = nullptr;
   if (parent) {
     if (parent->IsWebLocalFrame()) {
       ancestor_widget =
           To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidgetImpl();
     }
-  } else if (owner && owner->IsLocal()) {
-    // Never gets to this point unless |owner| is a <fencedframe>
-    // element.
-    HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(owner);
-    DCHECK(owner_element->IsHTMLFencedFrameElement());
-    LocalFrame& local_frame =
-        owner_element->GetDocument().GetFrame()->LocalFrameRoot();
-    ancestor_widget =
-        WebLocalFrameImpl::FromFrame(local_frame)->FrameWidgetImpl();
   }
 
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
