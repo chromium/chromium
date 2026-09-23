@@ -5236,6 +5236,11 @@
     "expiry_milestone": 200
   },
   {
+    "name": "focus-selection",
+    "owners": [ "kunaldaftari@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 161
+  },
+  {
     "name": "force-ai-subscription-tier",
     "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 170

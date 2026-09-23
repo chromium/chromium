@@ -4506,6 +4506,10 @@ inline constexpr char kTabGroupRibbonDescription[] =
     "Displays a vertical ribbon on the left side of the browser window for "
     "quickly switching between tab groups.";
 
+inline constexpr char kFocusSelectionName[] = "Focus Selection";
+inline constexpr char kFocusSelectionDescription[] =
+    "Allows focusing a selection of ungrouped tabs in the tabstrip.";
+
 inline constexpr char kTabStorageSqlitePrototypeName[] =
     "Tab Storage SQLite Prototype";
 inline constexpr char kTabStorageSqlitePrototypeDescription[] =

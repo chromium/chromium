@@ -7241,6 +7241,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupRibbonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupRibbon)},
 
+    {"focus-selection", flag_descriptions::kFocusSelectionName,
+     flag_descriptions::kFocusSelectionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kNonGroupFocus)},
+
     {"tab-strip-unification", flag_descriptions::kTabStripUnificationName,
      flag_descriptions::kTabStripUnificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kTabStripUnification)},

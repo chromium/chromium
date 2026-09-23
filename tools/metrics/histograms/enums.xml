@@ -19280,6 +19280,7 @@ from previous Chrome versions.
       label="ForceSupervisedUserReauthenticationForBlockedSites:enabled"/>
   <int value="1346812608" label="TipsSelfService:enabled"/>
   <int value="1346994602" label="SyncPseudoUSSDictionary:enabled"/>
+  <int value="1347395295" label="NonGroupFocus:disabled"/>
   <int value="1348378628" label="GlicHorizontalTabToolbarButton:enabled"/>
   <int value="1348575062" label="LayoutExtraction:enabled"/>
   <int value="1349100152"
@@ -19974,6 +19975,7 @@ from previous Chrome versions.
   <int value="1559812394" label="ToolbarPinning:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>
   <int value="1560361199" label="TabBottomSheetHalfHeight:enabled"/>
+  <int value="1560529663" label="NonGroupFocus:enabled"/>
   <int value="1560607634" label="ExtensionsCollapseMainMenu:enabled"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
