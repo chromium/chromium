@@ -208,7 +208,6 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
-constexpr char kHatsSurveyTriggerAutofillAiFilling[] = "autofill-ai-filling";
 constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[] =
         "autofill-personalization-and-trust-address-filled";
@@ -941,14 +940,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                                "time_prompt_visible", "referrer_origin",
                                "referring_app"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
-
-  survey_configs.emplace_back(
-      &::autofill::features::kAutofillAiFillingSurvey,
-      kHatsSurveyTriggerAutofillAiFilling,
-      /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"User accepted suggestion"},
-      std::vector<std::string>{"Entity type", "Triggering field types",
-                               "Saved entities"});
 
   const std::vector<std::string>
       autofill_personalization_and_trust_product_specific_data = {

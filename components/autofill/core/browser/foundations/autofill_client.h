@@ -710,19 +710,6 @@ class AutofillClient {
       FillingProduct filling_product,
       const HatsSurveyStringData& field_filling_stats_data);
 
-  // Triggers a survey after the user sees an Autofill AI suggestion and submits
-  // a form. The triggering happens only if the uses sees an Autofill AI
-  // suggestion, regardless of whether they accepted it or not.
-  // `suggestion_accepted` defines whether the suggestion seen by the user was
-  // accepted. `entity_type` defines the type of entity used to generate the
-  // suggestion.
-  virtual void TriggerAutofillAiFillingJourneySurvey(
-      bool suggestion_accepted,
-      EntityType entity_type,
-      const base::flat_set<EntityTypeName>& saved_entities,
-      const FieldTypeSet& triggering_field_types);
-
-
   // Returns whether there is an active actor task for this client's tab (if
   // one exists).
   virtual bool IsTabInActorMode() const;

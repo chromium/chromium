@@ -318,15 +318,6 @@ void AutofillClient::TriggerPersonalizationAndTrustSurveys(
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
-    bool suggestion_accepted,
-    EntityType entity_type,
-    const base::flat_set<EntityTypeName>& saved_entities,
-    const FieldTypeSet& triggering_field_types) {
-  NOTIMPLEMENTED();
-}
-
-
 bool AutofillClient::IsTabInActorMode() const {
   return false;
 }

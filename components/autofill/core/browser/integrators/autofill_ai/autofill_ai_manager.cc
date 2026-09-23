@@ -459,8 +459,6 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   if (!prompt_or_notice_shown) {
     prompt_or_notice_shown = MaybeShowWalletReminderNotice(form);
   }
-  MaybeTriggerAutofillAiSubmissionHatsSurveys(
-      *client_, form, user_suggestion_interactions_per_form_);
   return prompt_or_notice_shown;
 }
 

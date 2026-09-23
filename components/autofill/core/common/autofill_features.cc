@@ -191,11 +191,6 @@ BASE_FEATURE(kAutofillAiEditEntitiesFromSaveUpdatePrompt,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled, a HaTS survey is shown after a walletable suggestion is
-// displayed and the form submitted. The survey does not require the suggestion
-// to be accepted.
-BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
 // `kAutofillAiIgnoreGeoIp` is enabled):

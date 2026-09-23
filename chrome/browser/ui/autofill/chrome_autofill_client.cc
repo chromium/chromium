@@ -249,19 +249,8 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
       source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
 }
 
-// Returns a string representation of `saved_entities` (comma separated). Used
-// to include in product data to hats surveys.
-std::string GetStringRepresentatioOfSavedEntitiesTypes(
-    const base::flat_set<EntityTypeName>& saved_entities) {
-  return base::JoinString(
-      base::ToVector(saved_entities,
-                     [](EntityTypeName name) {
-                       return std::string(EntityType(name).name_as_string());
-                     }),
-      ",");
-}
-
 #if !BUILDFLAG(IS_ANDROID)
+
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
@@ -1027,26 +1016,6 @@ void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
       /*timeout_ms=*/5000,
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/field_filling_stats_data);
-}
-
-void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
-    bool suggestion_accepted,
-    EntityType entity_type,
-    const base::flat_set<EntityTypeName>& saved_entities,
-    const FieldTypeSet& triggering_field_types) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-  CHECK(hats_service);
-
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerAutofillAiFilling, web_contents(),
-      /*timeout_ms=*/5000, {{"User accepted suggestion", suggestion_accepted}},
-      {{"Entity type", std::string(entity_type.name_as_string())},
-       {"Triggering field types", FieldTypeSetToString(triggering_field_types)},
-       {"Saved entities",
-        GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}});
 }
 
 bool ChromeAutofillClient::IsTabInActorMode() const {

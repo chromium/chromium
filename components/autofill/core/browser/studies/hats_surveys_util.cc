@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -282,34 +281,6 @@ RecentUserAutofillAiInteractionsForHats::GetRecentUserInteraction(
     return it->second;
   }
   return std::nullopt;
-}
-
-void MaybeTriggerAutofillAiSubmissionHatsSurveys(
-    AutofillClient& client,
-    const FormStructure& submitted_form,
-    const RecentUserAutofillAiInteractionsForHats& suggestion_interactions) {
-  std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
-      interaction_details = suggestion_interactions.GetRecentUserInteraction(
-          submitted_form.global_id());
-  if (!interaction_details) {
-    return;
-  }
-  const EntityDataManager* entity_manager = client.GetEntityDataManager();
-  if (!entity_manager) {
-    return;
-  }
-  if (!interaction_details->entity_type_accepted.empty() &&
-      std::ranges::contains(interaction_details->accepted_entity_record_type,
-                            EntityInstance::RecordType::kPersonalContext)) {
-    auto saved_entity_type_names = base::MakeFlatSet<EntityTypeName>(
-        entity_manager->GetEntityInstances(), std::less(),
-        [](const EntityInstance& entity) { return entity.type().name(); });
-
-    client.TriggerAutofillAiFillingJourneySurvey(
-        /*suggestion_accepted=*/true,
-        interaction_details->entity_type_accepted.front(),
-        saved_entity_type_names, interaction_details->autofill_ai_field_types);
-  }
 }
 
 }  // namespace autofill

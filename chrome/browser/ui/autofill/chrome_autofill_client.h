@@ -230,11 +230,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void TriggerPersonalizationAndTrustSurveys(
       FillingProduct filling_product,
       const HatsSurveyStringData& field_filling_stats_data) final;
-  void TriggerAutofillAiFillingJourneySurvey(
-      bool suggestion_accepted,
-      EntityType entity_type,
-      const base::flat_set<EntityTypeName>& saved_entities,
-      const FieldTypeSet& triggering_field_types) final;
   bool IsTabInActorMode() const final;
   ActorAutofillManager* GetActorAutofillManager() final;
   int64_t GetNavigationId() const final;
