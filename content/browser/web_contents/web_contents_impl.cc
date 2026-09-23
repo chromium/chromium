@@ -1496,6 +1496,10 @@ WebContentsImpl::~WebContentsImpl() {
   }
   created_widgets_.clear();
 
+  if (GetPrimaryMainFrame() && GetPrimaryMainFrame()->GetRenderWidgetHost()) {
+    GetPrimaryMainFrame()->GetRenderWidgetHost()->DetachDelegate();
+  }
+
   // Clear out any JavaScript state.
   CancelDialogManagerDialogs(/*reset_state=*/true);
 

@@ -4481,4 +4481,22 @@ TEST_F(WebContentsImplTest, ConstrainPopupBounds) {
             above_line_of_death);
 }
 
+TEST_F(WebContentsImplTest, DestroyWebContentsWithFrameSinkIdOwnerView) {
+  std::unique_ptr<WebContents> web_contents = CreateTestWebContents();
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents.get());
+  RenderWidgetHostImpl* rwh =
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+  EXPECT_EQ(rwh->delegate(), web_contents_impl);
+
+  RenderWidgetHostViewBase* view = rwh->GetView();
+  ASSERT_TRUE(view);
+  view->SetIsFrameSinkIdOwner(true);
+
+  // Destroy WebContents. Its destructor must detach the delegate from
+  // the main frame widget so that subsequent FrameTree destruction does
+  // not dereference a dead delegate in DestroyOrDefer().
+  web_contents.reset();
+}
+
 }  // namespace content
