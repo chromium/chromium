@@ -22,7 +22,10 @@ android_library("sample_java") {
 }
 
 source_set("sample_native_side") {
-  deps = [ ":sample_jni" ]
+  deps = [
+    ":sample_jni",
+    "//third_party/jni_zero",
+  ]
   sources = [ "sample.cc" ]
 }
 
@@ -61,6 +64,7 @@ instrumentation_test_apk("jni_zero_sample_apk_test") {
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
   ]
 }
