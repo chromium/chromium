@@ -201,6 +201,11 @@ constexpr base::FeatureParam<int>
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kClientSideDetectionServerModelForScamDetectionIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int>
+    kClientSideDetectionServerModelMaxScansPerDayIos{
+        &kClientSideDetectionServerModelForScamDetectionIos,
+        "MaxIntelligentScansPerDayIos",
+        /*default_value=*/5};
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

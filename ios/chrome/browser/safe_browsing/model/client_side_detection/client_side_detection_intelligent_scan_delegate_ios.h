@@ -68,6 +68,10 @@ class ClientSideDetectionIntelligentScanDelegateIOS
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
 
+  // Called when a scam warning interstitial is shown to the user to refund
+  // the consumed scan quota.
+  void OnScamWarningShown() override;
+
   // KeyedService implementation:
   // Shuts down the delegate, invalidating active inquiries and releasing
   // references to dependencies.
@@ -85,6 +89,16 @@ class ClientSideDetectionIntelligentScanDelegateIOS
   // Resets and cancels all active inquiries. Returns `true` if there were
   // active inquiries.
   bool ResetAllInquiries();
+
+  // Returns `true` if the daily quota limit for intelligent scans has been
+  // reached. Prunes timestamps older than 24 hours.
+  bool IsAtIntelligentScanQuota();
+
+  // Records a scan timestamp in prefs for quota tracking.
+  void AddIntelligentScanQuota();
+
+  // Removes the most recent scan timestamp from prefs to refund quota.
+  void RemoveLastIntelligentScanQuota();
 
   // Reference to profile prefs.
   const raw_ref<PrefService> pref_;

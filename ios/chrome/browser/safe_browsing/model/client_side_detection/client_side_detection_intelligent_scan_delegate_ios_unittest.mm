@@ -6,12 +6,15 @@
 
 #import <string_view>
 
+#import "base/functional/callback_helpers.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/protobuf_matchers.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
 #import "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -44,6 +47,7 @@ using RemoteModelExecutionCallback =
 constexpr std::string_view kTestRenderedText = "test rendered text";
 constexpr std::string_view kTestBrand = "test_brand";
 constexpr std::string_view kTestIntent = "test_intent";
+constexpr int kMaxScansPerDay = 5;
 
 }  // namespace
 
@@ -86,7 +90,9 @@ class ClientSideDetectionIntelligentScanDelegateIOSTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kClientSideDetectionImageEmbeddingMatch,
           {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
-         {kClientSideDetectionServerModelForScamDetectionIos, {}}},
+         {kClientSideDetectionServerModelForScamDetectionIos,
+          {{"MaxIntelligentScansPerDayIos",
+            base::NumberToString(kMaxScansPerDay)}}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
   }
 };
@@ -485,6 +491,152 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
   EXPECT_FALSE(future.IsReady());
 }
 
+// Tests daily quota lookup and enforcement over a sliding 24-hour window.
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       StartIntelligentScan_QuotaChecks) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   _, _, _))
+      .Times(kMaxScansPerDay + 1);
+
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    SCOPED_TRACE(testing::Message() << "i=" << i);
+    delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                    base::DoNothing());
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", false,
+      kMaxScansPerDay);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 0);
+
+  // At quota: scan fails immediately without executing model.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    EXPECT_FALSE(token.has_value());
+    ASSERT_TRUE(future.IsReady());
+    IntelligentScanResult result = future.Get();
+    EXPECT_FALSE(result.execution_success);
+    EXPECT_EQ(result.model_type, ModelType::kServerSide);
+    EXPECT_EQ(result.no_info_reason,
+              IntelligentScanInfo::SERVER_SIDE_MODEL_EXCEED_QUOTA);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 1);
+
+  // Fast forward by 2 days: quota is reset.
+  task_environment_.FastForwardBy(base::Days(2));
+
+  // Scan succeeds again.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    EXPECT_TRUE(token.has_value());
+  }
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", false,
+      kMaxScansPerDay + 1);
+}
+
+// Tests that failed model executions still consume quota.
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       StartIntelligentScan_QuotaConsumedOnModelFailure) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    SCOPED_TRACE(testing::Message() << "i=" << i);
+    EXPECT_CALL(remote_model_executor_,
+                ExecuteModel(
+                    optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                    _, _, _))
+        .WillOnce(base::test::RunOnceCallback<3>(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                /*execution_info=*/nullptr),
+            /*log_entry=*/nullptr));
+
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    ASSERT_TRUE(token.has_value());
+    EXPECT_FALSE(future.Get().execution_success);
+  }
+
+  // Next scan exceeds quota.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    EXPECT_FALSE(token.has_value());
+    ASSERT_TRUE(future.IsReady());
+    EXPECT_FALSE(future.Get().execution_success);
+    EXPECT_EQ(future.Get().no_info_reason,
+              IntelligentScanInfo::SERVER_SIDE_MODEL_EXCEED_QUOTA);
+  }
+}
+
+// Tests that showing a scam warning refunds scan quota.
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       OnScamWarningShown_RefundsQuota) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   _, _, _))
+      .Times(kMaxScansPerDay + 1);
+
+  for (int i = 0; i < kMaxScansPerDay; ++i) {
+    SCOPED_TRACE(testing::Message() << "i=" << i);
+    delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                    base::DoNothing());
+  }
+
+  // Reached quota.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    EXPECT_FALSE(token.has_value());
+  }
+
+  // Warning shown: refunds quota.
+  delegate_->OnScamWarningShown();
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown",
+      kMaxScansPerDay, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelPrefEmptyWhenRemovingQuota", false, 1);
+
+  // Now scan succeeds because quota was refunded.
+  {
+    base::test::TestFuture<IntelligentScanResult> future;
+    std::optional<base::UnguessableToken> token =
+        delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        future.GetCallback());
+    EXPECT_TRUE(token.has_value());
+  }
+}
+
 // Tests ShouldShowScamWarning evaluation for all verdict types.
 TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
        ShouldShowScamWarning) {
@@ -521,7 +673,9 @@ class ClientSideDetectionIntelligentScanDelegateIOSRolloutTest
     feature_list_.InitWithFeaturesAndParameters(
         {{kClientSideDetectionImageEmbeddingMatch,
           {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
-         {kClientSideDetectionServerModelForScamDetectionIos, {}},
+         {kClientSideDetectionServerModelForScamDetectionIos,
+          {{"MaxIntelligentScansPerDayIos",
+            base::NumberToString(kMaxScansPerDay)}}},
          {kClientSideDetectionServerModelRolloutIos,
           {{"ModelVersion", "2000"}}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});

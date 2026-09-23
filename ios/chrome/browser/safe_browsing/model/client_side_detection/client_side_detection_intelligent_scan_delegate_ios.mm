@@ -4,19 +4,24 @@
 
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_ios.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/json/values_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/scam_detection.pb.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -132,6 +137,18 @@ ClientSideDetectionIntelligentScanDelegateIOS::StartIntelligentScan(
     return std::nullopt;
   }
 
+  bool is_at_quota = IsAtIntelligentScanQuota();
+  if (is_server_model_enabled_) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", is_at_quota);
+  }
+  if (is_at_quota) {
+    std::move(callback).Run(IntelligentScanResult::Failure(
+        IntelligentScanResult::kModelVersionUnavailable, ModelType::kServerSide,
+        IntelligentScanInfo::SERVER_SIDE_MODEL_EXCEED_QUOTA));
+    return std::nullopt;
+  }
+
   base::UnguessableToken scan_id = base::UnguessableToken::Create();
   auto [it, inserted] = inquiries_.try_emplace(
       scan_id, std::make_unique<Inquiry>(this, scan_id, std::move(callback)));
@@ -162,6 +179,18 @@ bool ClientSideDetectionIntelligentScanDelegateIOS::ShouldShowScamWarning(
              IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
 }
 
+void ClientSideDetectionIntelligentScanDelegateIOS::OnScamWarningShown() {
+  if (!is_server_model_enabled_) {
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown",
+      pref_->GetList(prefs::kSafeBrowsingCsdIntelligentScanTimestamps).size());
+
+  RemoveLastIntelligentScanQuota();
+}
+
 #pragma mark - KeyedService
 
 void ClientSideDetectionIntelligentScanDelegateIOS::Shutdown() {
@@ -187,6 +216,55 @@ bool ClientSideDetectionIntelligentScanDelegateIOS::ResetAllInquiries() {
   return did_reset;
 }
 
+bool ClientSideDetectionIntelligentScanDelegateIOS::IsAtIntelligentScanQuota() {
+  if (!is_server_model_enabled_) {
+    return false;
+  }
+
+  const base::Time now = base::Time::Now();
+  auto is_expired = [now](const base::Value& timestamp_value) {
+    constexpr base::TimeDelta kIntelligentScanQuotaInterval = base::Days(1);
+    std::optional<base::Time> report_time = base::ValueToTime(timestamp_value);
+    return !report_time.has_value() ||
+           *report_time + kIntelligentScanQuotaInterval < now;
+  };
+
+  const base::ListValue& timestamps =
+      pref_->GetList(prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
+  if (std::ranges::any_of(timestamps, is_expired)) {
+    ScopedListPrefUpdate update(
+        pref_.get(), prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
+    update->EraseIf(is_expired);
+  }
+
+  // Clamp non-positive values to `0` to avoid unsigned wrap-around and block
+  // all scans when the daily limit is configured to `<= 0`.
+  return pref_->GetList(prefs::kSafeBrowsingCsdIntelligentScanTimestamps)
+             .size() >=
+         static_cast<size_t>(std::max(
+             0, kClientSideDetectionServerModelMaxScansPerDayIos.Get()));
+}
+
+void ClientSideDetectionIntelligentScanDelegateIOS::AddIntelligentScanQuota() {
+  ScopedListPrefUpdate update(pref_.get(),
+                              prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
+  update->Append(base::TimeToValue(base::Time::Now()));
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ServerSideModelQuotaCountOnLookup", update->size());
+}
+
+void ClientSideDetectionIntelligentScanDelegateIOS::
+    RemoveLastIntelligentScanQuota() {
+  ScopedListPrefUpdate update(pref_.get(),
+                              prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.ServerSideModelPrefEmptyWhenRemovingQuota",
+      update->empty());
+  if (!update->empty()) {
+    update->erase(update->end() - 1);
+  }
+}
+
 #pragma mark - Inquiry
 
 ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::Inquiry(
@@ -204,6 +282,7 @@ void ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::Start(
   was_start_called_ = true;
 
   if (parent_->is_server_model_enabled_ && parent_->remote_model_executor_) {
+    parent_->AddIntelligentScanQuota();
     ScamDetectionRequest request;
     request.set_rendered_text(std::move(rendered_texts));
     parent_->remote_model_executor_->ExecuteModel(

@@ -174,6 +174,8 @@ extern const base::FeatureParam<int>
 #if BUILDFLAG(IS_IOS)
 // Controls whether scam detection via the server-side model is enabled on iOS.
 BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionIos);
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelMaxScansPerDayIos;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
