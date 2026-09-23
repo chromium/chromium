@@ -94,6 +94,7 @@ source_set("impl") {
     "//chrome/browser/ui/search",
     "//chrome/browser/ui/toolbar/cast",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:top_container_view",
     "//chrome/browser/ui/views/global_media_controls",
     "//chrome/browser/ui/webui/access_code_cast",
     "//chrome/common",
@@ -106,8 +107,8 @@ source_set("impl") {
   ]
 
   # These .cc files include headers still compiled in //chrome/browser/ui:ui:
-  # views/frame/browser_view.h, views/frame/top_container_view.h and
-  # tab_dialogs.h. Reach them via browser_public_dependencies; the reverse
+  # views/frame/browser_view.h and tab_dialogs.h. Reach them via
+  # browser_public_dependencies; the reverse
   # edge is the allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
@@ -206,6 +207,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/browser/ui/views/global_media_controls",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

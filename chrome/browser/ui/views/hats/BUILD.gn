@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/frame:top_container_view",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common:chrome_features",
     "//components/constrained_window",

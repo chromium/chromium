@@ -142,6 +142,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:theme_copying_widget",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:contents_web_view",
+    "//chrome/browser/ui/views/frame:top_container_view",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/send_tab_to_self",

@@ -262,6 +262,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:browser_widget",
     "//chrome/browser/ui/views/tabs/horizontal",
     "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/shared",

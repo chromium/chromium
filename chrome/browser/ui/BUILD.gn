@@ -2762,8 +2762,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_frame_view_factory_chromeos",
 
       # browser_native_widget_ash.cc includes
-      # browser_commands.h, views/frame/browser_view.h, and
-      # views/frame/browser_widget.h which cannot be split out yet.
+      # browser_commands.h and views/frame/browser_view.h which cannot be
+      # split out yet.
       "//chrome/browser/ui/views/frame:browser_native_widget_ash_impl",
 
       # browser_view_ash.h includes views/frame/browser_view.h which cannot be
@@ -2771,8 +2771,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_view_ash",
 
       # immersive_mode_controller_chromeos.cc includes
-      # browser_element_identifiers.h, views/frame/browser_view.h, and
-      # views/frame/top_container_view.h from //chrome/browser/ui:ui.
+      # browser_element_identifiers.h and views/frame/browser_view.h from
+      # //chrome/browser/ui:ui.
       "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos_impl",
 
       # picture_in_picture_browser_frame_view_ash.h includes
@@ -3004,14 +3004,13 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
 
       # browser_native_widget_mac.mm includes browser_commands.h,
-      # views/frame/browser_frame_view.h, views/frame/browser_view.h,
-      # views/frame/browser_widget.h, and
+      # views/frame/browser_frame_view.h, views/frame/browser_view.h, and
       # views/frame/vertical_tab_strip_region_view.h which cannot be split out
       # yet.
       "//chrome/browser/ui/views/frame:browser_native_widget_mac_impl",
 
-      # immersive_mode_controller_mac.mm includes browser_frame_view_mac.h,
-      # browser_view.h, and top_container_view.h from //chrome/browser/ui:ui.
+      # immersive_mode_controller_mac.mm includes browser_frame_view_mac.h and
+      # browser_view.h from //chrome/browser/ui:ui.
       "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
 
       # immersive_mode_overlay_views_mac.mm includes browser_frame_view_mac.h
@@ -3158,18 +3157,10 @@ static_library("ui") {
       "views/frame/browser_frame_view.cc",
       "views/frame/browser_frame_view.h",
       "views/frame/browser_view.cc",
-      "views/frame/browser_widget.cc",
-      "views/frame/browser_widget.h",
-      "views/frame/contents_container_view.cc",
-      "views/frame/contents_container_view.h",
       "views/frame/horizontal_tab_strip_region_view.cc",
       "views/frame/horizontal_tab_strip_region_view.h",
       "views/frame/layout/browser_view_layout.cc",
       "views/frame/layout/browser_view_layout.h",
-      "views/frame/multi_contents_view.cc",
-      "views/frame/multi_contents_view.h",
-      "views/frame/top_container_view.cc",
-      "views/frame/top_container_view.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
     ]
@@ -3376,6 +3367,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_view_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_popup_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_tabbed_layout_impl",
+      "//chrome/browser/ui/views/frame:browser_widget",
+      "//chrome/browser/ui/views/frame:browser_widget_impl",
       "//chrome/browser/ui/views/frame:browser_window_factory",
       "//chrome/browser/ui/views/frame:caption_button_placeholder_container",
       "//chrome/browser/ui/views/frame:contents_border_controller",
@@ -3383,6 +3376,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:contents_capture_border_view",
       "//chrome/browser/ui/views/frame:contents_capture_border_view_impl",
       "//chrome/browser/ui/views/frame:contents_container_outline",
+      "//chrome/browser/ui/views/frame:contents_container_view",
+      "//chrome/browser/ui/views/frame:contents_container_view_impl",
       "//chrome/browser/ui/views/frame:contents_separator",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/frame:custom_corners",
@@ -3401,8 +3396,10 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:multi_contents_drop_target_view",
       "//chrome/browser/ui/views/frame:multi_contents_resize_area",
       "//chrome/browser/ui/views/frame:multi_contents_resize_area_impl",
+      "//chrome/browser/ui/views/frame:multi_contents_view",
       "//chrome/browser/ui/views/frame:multi_contents_view_delegate",
       "//chrome/browser/ui/views/frame:multi_contents_view_drop_target_controller",
+      "//chrome/browser/ui/views/frame:multi_contents_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar_impl",
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout_delegate",
@@ -3422,6 +3419,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host_impl",
       "//chrome/browser/ui/views/frame:themed_background",
       "//chrome/browser/ui/views/frame:themed_background_impl",
+      "//chrome/browser/ui/views/frame:top_container_view",
+      "//chrome/browser/ui/views/frame:top_container_view_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/frame:windows_icon_painter",
@@ -3656,15 +3655,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/fullscreen_control:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # c/b/ui/views/frame/top_container_view.h
-      "//chrome/browser/ui/views/exclusive_access:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/tab_dialogs.h
       # c/b/ui/views/frame/browser_view.h
-      # c/b/ui/views/frame/top_container_view.h
       "//chrome/browser/ui/views/media_router:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -3697,16 +3690,16 @@ static_library("ui") {
       # which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
 
-      # browser_view_layout_impl includes browser_view_layout.h and
-      # multi_contents_view.h which cannot be split out yet.
+      # browser_view_layout_impl includes browser_view_layout.h which cannot be
+      # split out yet.
       "//chrome/browser/ui/views/frame:browser_view_layout_impl",
 
       # browser_window_factory includes browser_view.h, etc.
       # which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_window_factory",
 
-      # contents_border_controller_impl includes browser_view.h and
-      # contents_container_view.h which cannot be split out yet.
+      # contents_border_controller_impl includes browser_view.h which cannot be
+      # split out yet.
       "//chrome/browser/ui/views/frame:contents_border_controller_impl",
 
       # immersive_mode_controller_factory_views includes
@@ -3734,11 +3727,26 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:themed_background_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
 
-      # picture_in_picture_browser_frame_view.h and
-      # picture_in_picture_browser_frame_view.cc include browser_frame_view.h,
-      # browser_view.h, browser_widget.h, and top_container_view.h from
+      # browser_widget.cc includes browser_frame_view.h, browser_view.h, and
+      # unload_controller.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:browser_widget_impl",
+
+      # contents_container_view.cc includes browser_view.h from
       # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:contents_container_view_impl",
+
+      # multi_contents_view.cc includes browser_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:multi_contents_view_impl",
+
+      # picture_in_picture_browser_frame_view.h and
+      # picture_in_picture_browser_frame_view.cc include browser_frame_view.h
+      # and browser_view.h from //chrome/browser/ui:ui.
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
+
+      # top_container_view.cc includes browser_frame_view.h and browser_view.h
+      # from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:top_container_view_impl",
 
       # web_app_frame_toolbar_view.cc includes browser_frame_view.h and
       # browser_view.h from //chrome/browser/ui:ui.
@@ -3925,7 +3933,6 @@ static_library("ui") {
       # - c/b/ui/unload_controller.h
       # - c/b/ui/views/frame/browser_frame_view.h
       # - c/b/ui/views/frame/browser_view.h
-      # - c/b/ui/views/frame/browser_widget.h
       # - c/b/ui/views/frame/horizontal_tab_strip_region_view.h
       "//chrome/browser/ui/views/tabs:tab_strip_impl",
 
@@ -4051,7 +4058,7 @@ static_library("ui") {
       ]
       allow_circular_includes_from += [
         # browser_desktop_window_tree_host_win.cc includes
-        # browser_frame_view_win.h, browser_view.h, and browser_widget.h from
+        # browser_frame_view_win.h and browser_view.h from
         # //chrome/browser/ui:ui.
         "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_win_impl",
         "//chrome/browser/ui/views/frame:windows_caption_button_impl",

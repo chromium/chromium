@@ -19,6 +19,7 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame:contents_container_view",
     "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/new_tab_footer",
@@ -47,6 +48,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:contents_container_view",
     "//chrome/test:test_support",
   ]
 }

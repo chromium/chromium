@@ -850,6 +850,7 @@ if (!is_android) {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:browser_widget",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/frame:system_menu_model_builder",
       "//chrome/test:test_support",

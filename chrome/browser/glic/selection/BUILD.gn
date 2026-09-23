@@ -78,6 +78,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic/test_support",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:multi_contents_view",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//content/test:test_support",

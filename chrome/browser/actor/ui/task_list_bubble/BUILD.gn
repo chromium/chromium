@@ -121,6 +121,7 @@ if (!is_android) {
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/test:test_support",
       "//testing/gtest",
       "//ui/base/interaction:test_support",

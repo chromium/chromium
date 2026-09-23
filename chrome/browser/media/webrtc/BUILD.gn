@@ -367,6 +367,10 @@ source_set("webrtc") {
   }
 
   defines = [ "ZLIB_CONST" ]
+
+  if (toolkit_views) {
+    deps += [ "//chrome/browser/ui/views/frame:browser_widget" ]
+  }
 }
 
 source_set("test_support") {
@@ -637,6 +641,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:browser_widget",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

@@ -33,18 +33,13 @@ source_set("impl") {
     "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/frame:top_container_view",
     "//components/fullscreen_control",
     "//components/viz/common",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
   ]
-
-  # exclusive_access_bubble_views.cc includes views/frame/top_container_view.h,
-  # which is still compiled in //chrome/browser/ui:ui. Reach it via
-  # browser_public_dependencies; the reverse edge is the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("browser_tests") {

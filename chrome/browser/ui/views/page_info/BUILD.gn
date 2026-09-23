@@ -188,6 +188,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views:file_system_access_test_support",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:contents_container_outline",
+    "//chrome/browser/ui/views/frame:contents_container_view",
+    "//chrome/browser/ui/views/frame:multi_contents_view",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

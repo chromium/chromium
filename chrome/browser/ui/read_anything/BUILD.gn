@@ -153,6 +153,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:contents_container_view",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
