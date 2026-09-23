@@ -10,7 +10,16 @@ assert(
     enable_extensions_core,
     "Extension side panel should only be built when enable_extensions_core is true")
 
+# Android C++ extension side panel internals.
+#
+# This target shouldn't be used by anything outside this directory, except
+# //c/b/ui, which is the C++ "glue" that links the implementation into
+# libchrome.so.
 source_set("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ui",
+  ]
   sources = [
     "extension_side_panel_contents_android.cc",
     "extension_side_panel_contents_android.h",
@@ -65,6 +74,7 @@ android_library("java") {
 }
 
 generate_jni("jni") {
+  visibility = [ ":*" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelContents.java",
     "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelManagerBridgeImpl.java",
