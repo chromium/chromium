@@ -88,6 +88,10 @@ async function test_frame(frame, colorSpace) {
       format: 'RGBA',
       colorSpace: colorSpace
     };
+    const expected_size = frame.allocationSize(options);
+    TEST.assert(
+        copy_to_buf.byteLength >= expected_size,
+        `buffer too small: ${copy_to_buf.byteLength} < ${expected_size}`);
     layout = await frame.copyTo(copy_to_buf, options);
   } catch (e) {
     TEST.reportFailure(`copyTo() failure: ${e}`);
@@ -115,6 +119,15 @@ async function test_frame(frame, colorSpace) {
   }
 }
 
+function makeFloat16CanvasFrame() {
+  const width = 16;
+  const height = 16;
+  const cnv = new OffscreenCanvas(width, height);
+  const ctx = cnv.getContext('2d', {colorType: 'float16'});
+  fourColorsFrame(ctx, width, height, 'float16');
+  return new VideoFrame(cnv, {timestamp: 0});
+}
+
 async function check_predefined_frames() {
   // Test frames constructed from an array buffer.
   // This should be a part of the WPT tests some day.
@@ -123,6 +136,16 @@ async function check_predefined_frames() {
     await test_frame(frame, 'display-p3');
     frame.close();
   }
+
+  // Test a frame with null format (float16 canvas).
+  let f16_frame = makeFloat16CanvasFrame();
+  TEST.assert(
+      f16_frame.format === null,
+      `Expected null format for float16 canvas frame, got: ${
+          f16_frame.format}`);
+  await test_frame(f16_frame, 'srgb');
+  await test_frame(f16_frame, 'display-p3');
+  f16_frame.close();
 }
 
 async function main(arg) {

@@ -224,7 +224,6 @@ bool IsFormatEnabled(media::VideoPixelFormat fmt) {
     case media::PIXEL_FORMAT_YUV444P12:
     case media::PIXEL_FORMAT_I444A:
     case media::PIXEL_FORMAT_YUV444AP10:
-    case media::PIXEL_FORMAT_RGBAF16:
       return true;
     default:
       return false;
