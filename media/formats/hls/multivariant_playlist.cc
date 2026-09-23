@@ -228,7 +228,7 @@ MultivariantPlaylist::Parse(std::string_view source,
     // Handle URIs
     // `GetNextLineItem` should return either a TagItem (handled above) or a
     // UriItem.
-    static_assert(std::variant_size<GetNextLineItemResult>() == 2);
+    static_assert(std::variant_size<LineItem>() == 2);
     auto variant_uri_result = ParseUri(std::get<UriItem>(std::move(item)), uri,
                                        common_state, sub_buffer);
     if (!variant_uri_result.has_value()) {

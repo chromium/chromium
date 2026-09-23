@@ -39,13 +39,12 @@ TagItem GetTagItem(SourceString tag) {
 
 }  // namespace
 
-ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
-    SourceLineIterator* src) {
+base::expected<LineItem, ParseStatus> GetNextLineItem(SourceLineIterator* src) {
   while (true) {
     auto result = src->Next();
     if (!result.has_value()) {
       // Forward error to caller
-      return std::move(result).error();
+      return base::unexpected(std::move(result).error());
     }
 
     auto line = std::move(result).value();
@@ -61,7 +60,7 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
 
       // All tags begin with "EXT", otherwise it's a comment.
       if (line.Str().starts_with("EXT")) {
-        return GetNextLineItemResult{GetTagItem(line)};
+        return LineItem{GetTagItem(line)};
       }
 
       continue;
@@ -70,7 +69,7 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     // If not empty, tag, or comment, it must be a URI.
     // This line may contain leading, trailing, or interior whitespace,
     // but that's the URI parser's responsibility.
-    return GetNextLineItemResult{UriItem{.content = line}};
+    return LineItem{UriItem{.content = line}};
   }
 }
 

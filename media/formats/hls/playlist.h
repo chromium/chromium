@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_HLS_PLAYLIST_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -42,7 +43,8 @@ class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
   // Identifies the type and version of the given playlist.
   // This function does the minimum amount of parsing necessary to determine
   // these properties, so it is not a guarantee that this playlist is valid.
-  static ParseStatus::Or<Identification> IdentifyPlaylist(std::string_view src);
+  static base::expected<Identification, ParseStatus> IdentifyPlaylist(
+      std::string_view src);
 
   Playlist(const Playlist&) = delete;
   Playlist(Playlist&&) = delete;

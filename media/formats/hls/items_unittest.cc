@@ -15,8 +15,6 @@ namespace media::hls {
 
 namespace {
 
-using LineResult = GetNextLineItemResult;
-
 void CheckSourceString(SourceString expected,
                        SourceString actual,
                        const base::Location& from) {
@@ -43,7 +41,7 @@ void RunTest(std::string_view source,
       auto value = std::move(result).value();
 
       // Ensure that resulting variants are the same
-      static_assert(std::variant_size<LineResult>::value == 2, "");
+      static_assert(std::variant_size<LineItem>::value == 2, "");
       if (auto* expected_tag = std::get_if<TagItem>(&expected_value)) {
         auto tag = std::get<TagItem>(std::move(value));
         EXPECT_EQ(expected_tag->GetName(), tag.GetName()) << from.ToString();
@@ -72,29 +70,29 @@ void RunTest(std::string_view source,
 }
 
 template <typename T>
-ParseStatus::Or<LineResult> ExpectTag(T name,
-                                      size_t line,
-                                      size_t col,
-                                      std::string_view content) {
-  return LineResult(TagItem::Create(
+base::expected<LineItem, ParseStatus> ExpectTag(T name,
+                                                size_t line,
+                                                size_t col,
+                                                std::string_view content) {
+  return LineItem(TagItem::Create(
       ToTagName(name), SourceString::CreateForTesting(line, col, content)));
 }
 
 template <typename T>
-ParseStatus::Or<LineResult> ExpectEmptyTag(T name, size_t line) {
-  return LineResult(TagItem::CreateEmpty(ToTagName(name), line));
+base::expected<LineItem, ParseStatus> ExpectEmptyTag(T name, size_t line) {
+  return LineItem(TagItem::CreateEmpty(ToTagName(name), line));
 }
 
-ParseStatus::Or<LineResult> ExpectUnknownTag(std::string_view name,
-                                             size_t line) {
-  return LineResult(
+base::expected<LineItem, ParseStatus> ExpectUnknownTag(std::string_view name,
+                                                       size_t line) {
+  return LineItem(
       TagItem::CreateUnknown(SourceString::CreateForTesting(line, 2, name)));
 }
 
-ParseStatus::Or<LineResult> ExpectUri(size_t line,
-                                      size_t col,
-                                      std::string_view content) {
-  return LineResult(
+base::expected<LineItem, ParseStatus> ExpectUri(size_t line,
+                                                size_t col,
+                                                std::string_view content) {
+  return LineItem(
       UriItem{.content = SourceString::CreateForTesting(line, col, content)});
 }
 
@@ -122,7 +120,7 @@ TEST(HlsItemsTest, GetNextLineItem1) {
       "#EXT-X-VERSION-FOO\n"
       "#EXTINF:1234,\t\n";
 
-  const ParseStatus::Or<LineResult> kExpectations[] = {
+  const base::expected<LineItem, ParseStatus> kExpectations[] = {
       ExpectEmptyTag(CommonTagName::kM3u, 1), ExpectUnknownTag("EXTasdf", 5),
 
       // Lines without leading # should be considered URIs
@@ -141,7 +139,8 @@ TEST(HlsItemsTest, GetNextLineItem1) {
       ExpectEmptyTag(CommonTagName::kXVersion, 17),
       ExpectUnknownTag("EXT-X-VERSION-FOO", 18),
       ExpectTag(MediaPlaylistTagName::kInf, 19, 9, "1234,\t"),
-      ParseStatusCode::kReachedEOF, ParseStatusCode::kReachedEOF};
+      base::unexpected(ParseStatusCode::kReachedEOF),
+      base::unexpected(ParseStatusCode::kReachedEOF)};
 
   RunTest(kManifest, kExpectations);
 }
@@ -149,8 +148,9 @@ TEST(HlsItemsTest, GetNextLineItem1) {
 TEST(HlsItemsTest, GetNextLineItemAcceptMissingEOL) {
   constexpr std::string_view kManifest = "#EXTM3U";
 
-  const ParseStatus::Or<LineResult> kExpectations[] = {
-      ExpectEmptyTag(CommonTagName::kM3u, 1), ParseStatusCode::kReachedEOF};
+  const base::expected<LineItem, ParseStatus> kExpectations[] = {
+      ExpectEmptyTag(CommonTagName::kM3u, 1),
+      base::unexpected(ParseStatusCode::kReachedEOF)};
 
   RunTest(kManifest, kExpectations);
 }
@@ -161,9 +161,10 @@ TEST(HlsItemsTest, GetNextLineItem2) {
       "https://ww\rw.example.com\n"
       "#EXT-X-VERSION:3\n";
 
-  const ParseStatus::Or<LineResult> kExpectations[] = {
-      ExpectEmptyTag(CommonTagName::kM3u, 1), ParseStatusCode::kInvalidEOL,
-      ParseStatusCode::kInvalidEOL};
+  const base::expected<LineItem, ParseStatus> kExpectations[] = {
+      ExpectEmptyTag(CommonTagName::kM3u, 1),
+      base::unexpected(ParseStatusCode::kInvalidEOL),
+      base::unexpected(ParseStatusCode::kInvalidEOL)};
 
   RunTest(kManifest, kExpectations);
 }
@@ -171,8 +172,9 @@ TEST(HlsItemsTest, GetNextLineItem2) {
 TEST(HlsItemsTest, GetNextLineItem4) {
   constexpr std::string_view kManifest = "#EXTM3U\r";
 
-  const ParseStatus::Or<LineResult> kExpectations[] = {
-      ParseStatusCode::kInvalidEOL, ParseStatusCode::kInvalidEOL};
+  const base::expected<LineItem, ParseStatus> kExpectations[] = {
+      base::unexpected(ParseStatusCode::kInvalidEOL),
+      base::unexpected(ParseStatusCode::kInvalidEOL)};
 
   RunTest(kManifest, kExpectations);
 }
@@ -180,8 +182,9 @@ TEST(HlsItemsTest, GetNextLineItem4) {
 TEST(HlsItemsTest, GetNextLineItem5) {
   constexpr std::string_view kManifest = "\n";
 
-  const ParseStatus::Or<LineResult> kExpectations[] = {
-      ParseStatusCode::kReachedEOF, ParseStatusCode::kReachedEOF};
+  const base::expected<LineItem, ParseStatus> kExpectations[] = {
+      base::unexpected(ParseStatusCode::kReachedEOF),
+      base::unexpected(ParseStatusCode::kReachedEOF)};
 
   RunTest(kManifest, kExpectations);
 }

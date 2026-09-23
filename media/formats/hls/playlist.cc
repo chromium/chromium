@@ -27,8 +27,8 @@ Playlist::Playlist(url::Origin origin,
 Playlist::~Playlist() = default;
 
 // static
-ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
-    std::string_view source) {
+base::expected<Playlist::Identification, ParseStatus>
+Playlist::IdentifyPlaylist(std::string_view source) {
   std::optional<Kind> playlist_kind;
   std::optional<XVersionTag> version_tag;
 
@@ -45,7 +45,7 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
         break;
       }
 
-      return error;
+      return base::unexpected(error);
     }
 
     auto item = std::move(item_result).value();
@@ -60,13 +60,14 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
       if (tag_name == ToTagName(CommonTagName::kXVersion)) {
         auto error = ParseUniqueTag(*tag, version_tag);
         if (error.has_value()) {
-          return std::move(error).value();
+          return base::unexpected(std::move(error).value());
         }
 
         // Ensure that the version is supported by this implementation
         if (version_tag->version < Playlist::kMinSupportedVersion ||
             version_tag->version > Playlist::kMaxSupportedVersion) {
-          return ParseStatusCode::kPlaylistHasUnsupportedVersion;
+          return base::unexpected(
+              ParseStatusCode::kPlaylistHasUnsupportedVersion);
         }
 
         continue;
@@ -79,14 +80,16 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
           break;
         case TagKind::kMultivariantPlaylistTag:
           if (playlist_kind == Kind::kMediaPlaylist) {
-            return ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag;
+            return base::unexpected(
+                ParseStatusCode::kMediaPlaylistHasMultivariantPlaylistTag);
           }
           playlist_kind = Kind::kMultivariantPlaylist;
           break;
         case TagKind::kMediaPlaylistTag:
           if (playlist_kind == Kind::kMultivariantPlaylist) {
             if (!HLSQuirks::AllowMediaTagsInMultivariantPlaylists()) {
-              return ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag;
+              return base::unexpected(
+                  ParseStatusCode::kMultivariantPlaylistHasMediaPlaylistTag);
             }
             break;
           }

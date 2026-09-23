@@ -68,9 +68,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Determine playlist version (ignore type mismatch)
   const auto version = GetPlaylistVersion(media_playlist_source);
   const auto playlist_uri = GURL("http://localhost/playlist.m3u8");
-  media::hls::MediaPlaylist::Parse(media_playlist_source, playlist_uri,
-                                   url::Origin::Create(playlist_uri), version,
-                                   multivariant_playlist.get());
+  auto result = media::hls::MediaPlaylist::Parse(
+      media_playlist_source, playlist_uri, url::Origin::Create(playlist_uri),
+      version, multivariant_playlist.get());
 
   return 0;
 }

@@ -59,9 +59,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     auto result = media::hls::GetNextLineItem(&iterator);
 
     if (!result.has_value()) {
+      auto error = result.error();
       // Ensure that this was an error this function is expected to return
-      CHECK(result == media::hls::ParseStatusCode::kReachedEOF ||
-            result == media::hls::ParseStatusCode::kInvalidEOL);
+      CHECK(error == media::hls::ParseStatusCode::kReachedEOF ||
+            error == media::hls::ParseStatusCode::kInvalidEOL);
 
       // Ensure that `source` is still a substring of the previous source
       CHECK(IsSubstring(iterator.SourceForTesting(),

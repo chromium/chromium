@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/types/expected.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
@@ -68,11 +69,11 @@ struct UriItem {
   SourceString content;
 };
 
-using GetNextLineItemResult = std::variant<TagItem, UriItem>;
+using LineItem = std::variant<TagItem, UriItem>;
 
 // Returns the next line-level item from the source text. Automatically skips
 // empty lines.
-MEDIA_EXPORT ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
+MEDIA_EXPORT base::expected<LineItem, ParseStatus> GetNextLineItem(
     SourceLineIterator* src);
 
 }  // namespace media::hls
