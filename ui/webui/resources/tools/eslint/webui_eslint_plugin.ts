@@ -9,6 +9,7 @@ import {litElementStructureRule} from './lit_element_structure.js';
 import {litElementTemplateStructure} from './lit_element_template_structure.js';
 import {litPropertyAccessorRule} from './lit_property_accessor.js';
 import {litReactiveProperties} from './lit_reactive_properties.js';
+import {litUseFireHelper} from './lit_use_fire_helper.js';
 import {noAssertEqualsBoolean} from './no_assert_equals_boolean.js';
 import {noMixedTypeAndValueImports} from './no_mixed_type_and_value_imports.js';
 import {polymerPropertyClassMemberRule} from './polymer_property_class_member.js';
@@ -24,6 +25,7 @@ const rules = {
   'lit-element-template-structure': litElementTemplateStructure,
   'lit-property-accessor': litPropertyAccessorRule,
   'lit-reactive-properties': litReactiveProperties,
+  'lit-use-fire-helper': litUseFireHelper,
   'no-assert-equals-boolean': noAssertEqualsBoolean,
   'no-mixed-type-and-value-imports': noMixedTypeAndValueImports,
   'polymer-property-class-member': polymerPropertyClassMemberRule,

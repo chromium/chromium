@@ -71,9 +71,8 @@ customElements.define(TestError5Element.is, TestError5Element);
 // Case1.6: Class with
 //  1) Inconsistent DOM name suffix.
 //  2) Incorrect order method definition order
-//  3) Usage of this.dispatchEvent(new CustomEvent(...))
-//  4) Usage of incorrect dollar sign notation.
-//  5) Usage of CustomEvent type without a type parameter.
+//  3) Usage of incorrect dollar sign notation.
+//  4) Usage of CustomEvent type without a type parameter.
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -109,15 +108,6 @@ export class TestError6Element extends CrLitElement {
 
   override updated() {
     super.updated();
-
-    this.dispatchEvent(
-        new CustomEvent('foo1-updated', {bubbles: true, composed: true}));
-    this.dispatchEvent(new CustomEvent(
-        'foo2-updated', {bubbles: true, composed: true, detail: 'foo'}));
-
-    const FOO3_UPDATED = 'foo3-updated';
-    this.dispatchEvent(new CustomEvent(
-        FOO3_UPDATED, {bubbles: true, composed: true, detail: 'foo'}));
 
     this.$['hello-button'].focus();
   }

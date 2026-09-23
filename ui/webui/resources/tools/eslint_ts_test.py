@@ -324,10 +324,6 @@ class EslintTsTest(unittest.TestCase):
     )
     _EXPECTED_MISSING_SUPER_CALLS_ERROR = "Missing superclass calls for lifecycle method(s) %(lifecycleMethods)s in class %(className)s"
     _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
-    _EXPECTED_USE_FIRE_HELPER_ERROR = (
-      "Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))."
-    )
-    _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR = "Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event '%(eventName)s'"
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
 
     super_call_required_methods = [
@@ -383,15 +379,6 @@ class EslintTsTest(unittest.TestCase):
         'expectedOrder': '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
         'actualOrder': '[render, styles, is, properties, disconnectedCallback, connectedCallback, constructor, willUpdate, updated, firstUpdated]',
       },
-      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
-      % {
-        'eventName': 'foo1-updated',
-      },
-      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
-      % {
-        'eventName': 'foo2-updated',
-      },
-      _EXPECTED_USE_FIRE_HELPER_ERROR,
       _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR
       % {
         'dashCaseName': 'hello-button',
@@ -516,10 +503,6 @@ class EslintTsTest(unittest.TestCase):
       % {
         'className': 'TestNoError3Element',
         'domName': 'test-no-error3',
-      },
-      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
-      % {
-        'eventName': 'bar-updated',
       },
       _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR
       % {
@@ -1128,6 +1111,103 @@ class EslintTsTest(unittest.TestCase):
       "Use assertTrue(anyBool) instead of assertEquals(anyBool, true)",
       "Use assertFalse(anyBool) instead of assertEquals(false, anyBool)",
       "Use assertFalse(anyBool) instead of assertEquals(anyBool, false)",
+    ]
+    for e in non_errors:
+      self.assertFalse(
+        e in str(context.exception), f'Found unexpected error: {e}'
+      )
+
+  def testWebUiEslintPlugin_LitUseFireHelper(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_lit_use_fire_helper_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-use-fire-helper"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_USE_FIRE_HELPER_ERROR = "Use %(expr)s.fire(...) instead of %(expr)s.dispatchEvent(new CustomEvent(...))"
+    _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR = "Use %(expr)s.fire(...) instead of %(expr)s.dispatchEvent(new CustomEvent(...)), for event '%(eventName)s'"
+
+    errors = [
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'this',
+        'eventName': 'this1-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'this',
+        'eventName': 'this2-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_ERROR
+      % {
+        'expr': 'this',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'childElement',
+        'eventName': 'foo1-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'parentElement',
+        'eventName': 'foo2-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_ERROR
+      % {
+        'expr': 'parentElement',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'queriedChild!',
+        'eventName': 'foo4-updated',
+      },
+    ]
+    for e in errors:
+      self.assertTrue(
+        e in str(context.exception), f'Didn\'t find expected error: {e}'
+      )
+
+    non_errors = [
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'this',
+        'eventName': 'this-bar-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'this',
+        'eventName': 'non-lit-this-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'htmlElement',
+        'eventName': 'bar1-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'window',
+        'eventName': 'bar2-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'anyElement',
+        'eventName': 'bar3-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'childElement',
+        'eventName': 'bar4-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'childElement',
+        'eventName': 'bar5-updated',
+      },
+      _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR
+      % {
+        'expr': 'childElement',
+        'eventName': 'bar6-updated',
+      },
     ]
     for e in non_errors:
       self.assertFalse(

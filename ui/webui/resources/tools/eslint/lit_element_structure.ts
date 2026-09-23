@@ -35,8 +35,7 @@ type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
     'incorrectDollarSignNotation'|'incorrectDomNameSuffix'|
     'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
     'missingCustomElementRegistration'|'missingCustomEventTypeParameter'|
-    'missingStaticIsGetter'|'missingSuperCalls'|'missingTagNameRegistration'|
-    'useFireHelper'|'useFireHelperWithEventName';
+    'missingStaticIsGetter'|'missingSuperCalls'|'missingTagNameRegistration';
 
 // Necessary info to track about each CrLitElement subclass definition
 // encountered in the current file.
@@ -155,54 +154,6 @@ class ClassInfo {
       data: {
         type: 'variable',
         name: parentNode.id.name,
-      },
-    });
-  }
-
-  runUseFireHelperCheck(node: TSESTree.ObjectExpression) {
-    assert.ok(isType(node, Node.ObjectExpression));
-
-    const callExpressionNode = node.parent!.parent! as TSESTree.CallExpression;
-    assert.ok(isType(callExpressionNode, Node.CallExpression));
-
-    function hasProp(
-        node: TSESTree.ObjectExpression, name: string,
-        value: unknown): boolean {
-      return node.properties.some(prop => {
-        return isType(prop, Node.Property) && isIdentifier(prop.key) &&
-            prop.key.name === name && isLiteral(prop.value) &&
-            prop.value.value === value;
-      });
-    }
-
-    if (!hasProp(node, 'bubbles', true) || !hasProp(node, 'composed', true)) {
-      return;
-    }
-
-    let propertiesLength = 2;
-    if (node.properties.find(
-            prop => isType(prop, Node.Property) && isIdentifier(prop.key) &&
-                prop.key.name === 'detail')) {
-      propertiesLength++;
-    }
-
-    if (node.properties.length > propertiesLength) {
-      // Handle case where properties other than 'bubbles', 'composed',
-      // 'detail' are passed.
-      return;
-    }
-
-    const callExpression = node.parent as TSESTree.NewExpression;
-    let eventName: string = '';
-    if (isLiteral(callExpression.arguments[0]!)) {
-      eventName = callExpression.arguments[0]!.value as string;
-    }
-
-    this.context.report({
-      node: callExpressionNode,
-      messageId: eventName ? 'useFireHelperWithEventName' : 'useFireHelper',
-      data: {
-        eventName,
       },
     });
   }
@@ -442,10 +393,6 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
     messages: {
       htmlImportInTsFile:
           'Found import of html in file containing a CrLitElement subclass definition. Templates for CrLitElement subclasses belong in the .html.ts template file, not the class definition file.',
-      useFireHelper:
-          'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))..',
-      useFireHelperWithEventName:
-          'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event \'{{eventName}}\'.',
       incorrectClassNameSuffix:
           'Class name \'{{className}}\' should end with the \'Element\' suffix.',
       incorrectDomNameSuffix:
@@ -575,14 +522,6 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         }
 
         currentClassInfo.runDollarSignNotationCheck(node);
-      },
-      ['CallExpression[callee.object.type="ThisExpression"][callee.property.name="dispatchEvent"] > NewExpression[callee.name="CustomEvent"] > ObjectExpression'](
-          node: TSESTree.ObjectExpression) {
-        if (!hasLitImport || !currentClassInfo) {
-          return;
-        }
-
-        currentClassInfo.runUseFireHelperCheck(node);
       },
       ['MethodDefinition > FunctionExpression TSTypeReference[typeName.name="CustomEvent"]:not([typeArguments])'](
           node: TSESTree.TSTypeReference) {
