@@ -7,9 +7,11 @@ source_set("external_protocol") {
     "constants.h",
     "external_protocol_handler.h",
     "external_protocol_observer.h",
+    "features.h",
   ]
 
   public_deps = [
+    "//base",
     "//chrome/browser:shell_integration",
     "//content/public/browser",
     "//ui/base",
@@ -26,6 +28,7 @@ source_set("impl") {
     "constants.cc",
     "external_protocol_handler.cc",
     "external_protocol_observer.cc",
+    "features.cc",
   ]
 
   public_deps = [ ":external_protocol" ]

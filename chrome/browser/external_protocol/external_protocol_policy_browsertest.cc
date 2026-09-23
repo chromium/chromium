@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
 #include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/policy/core/common/policy_map.h"
@@ -15,6 +19,12 @@
 #include "url/origin.h"
 
 namespace policy {
+
+namespace {
+
+constexpr char kLocalOnlyScheme[] = "local+custom";
+
+}  // namespace
 
 class ExternalProtocolPolicyBrowserTest : public PolicyTest {};
 
@@ -465,6 +475,96 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
       ExternalProtocolHandler::GetBlockState(kExampleScheme, &test_origin,
                                              browser()->GetProfile());
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
+}
+
+// Exercises policy precedence through the provider rather than setting prefs
+// directly.
+class ExternalProtocolLocalOnlyPrefixPolicyBrowserTest : public PolicyTest {
+ public:
+  ExternalProtocolLocalOnlyPrefixPolicyBrowserTest() {
+    feature_list_.InitAndEnableFeature(::features::kLocalOnlyAppProtocolPrefix);
+  }
+
+ protected:
+  void SetAutoLaunchPolicy(std::string_view scheme, std::string_view origin) {
+    base::DictValue protocol_origins_map;
+    protocol_origins_map.Set(policy::external_protocol::kProtocolNameKey,
+                             scheme);
+    base::ListValue origins;
+    origins.Append(origin);
+    protocol_origins_map.Set(policy::external_protocol::kOriginListKey,
+                             std::move(origins));
+    base::ListValue protocol_origins_map_list;
+    protocol_origins_map_list.Append(std::move(protocol_origins_map));
+    PolicyMap policies;
+    policies.Set(key::kAutoLaunchProtocolsFromOrigins, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(protocol_origins_map_list)), nullptr);
+    UpdateProviderPolicy(policies);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolLocalOnlyPrefixPolicyBrowserTest,
+                       LocalOnlyPrefixBlockedFromWebOrigin) {
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, browser()->GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolLocalOnlyPrefixPolicyBrowserTest,
+                       LocalOnlyPrefixAllowedByEnterprisePolicy) {
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, browser()->GetProfile()));
+
+  SetAutoLaunchPolicy(kLocalOnlyScheme, "https://example.test");
+
+  EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, browser()->GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolLocalOnlyPrefixPolicyBrowserTest,
+                       LocalOnlyPrefixPolicyDoesNotLeakToOtherOrigins) {
+  SetAutoLaunchPolicy(kLocalOnlyScheme, "https://allowed.test");
+
+  url::Origin other_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &other_origin, browser()->GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolLocalOnlyPrefixPolicyBrowserTest,
+                       LocalOnlyPrefixIgnoredForNullInitiatingOrigin) {
+  // A null origin is not web-initiated, so the usual prompt path remains.
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState(kLocalOnlyScheme, nullptr,
+                                                   browser()->GetProfile()));
+}
+
+class ExternalProtocolLocalOnlyPrefixDisabledPolicyBrowserTest
+    : public PolicyTest {
+ public:
+  ExternalProtocolLocalOnlyPrefixDisabledPolicyBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        ::features::kLocalOnlyAppProtocolPrefix);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolLocalOnlyPrefixDisabledPolicyBrowserTest,
+                       LocalOnlyPrefixNotBlockedWhenFeatureDisabled) {
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, browser()->GetProfile()));
 }
 
 }  // namespace policy

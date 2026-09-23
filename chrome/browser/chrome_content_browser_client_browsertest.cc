@@ -29,11 +29,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -68,8 +71,12 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/features.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
@@ -894,6 +901,59 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
   }
 };
 
+class ProtocolHandlerLocalOnlyBaseTest : public ProtocolHandlerTest {
+ public:
+  ProtocolHandlerLocalOnlyBaseTest() {
+    feature_list_.InitWithFeatures(
+        {features::kLocalOnlyAppProtocolPrefix,
+         policy::features::kUseManagementServiceForSensitivePolicies},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    ProtocolHandlerTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+ protected:
+  void SetURLAllowlistAndWait(const GURL& url) {
+    base::ListValue allowlist;
+    allowlist.Append("local+custom:*");
+    browser()->GetProfile()->GetPrefs()->SetList(
+        policy::policy_prefs::kUrlAllowlist, std::move(allowlist));
+    PolicyBlocklistService* policy_service =
+        ChromePolicyBlocklistServiceFactory::GetForProfile(
+            browser()->GetProfile());
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return policy_service->GetURLBlocklistState(url) ==
+             policy::URLBlocklist::URL_IN_ALLOWLIST;
+    }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ProtocolHandlerLocalOnlyTest : public ProtocolHandlerLocalOnlyBaseTest {
+ private:
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL};
+};
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// URLAllowlist is ignored on unmanaged Windows and macOS. Other platforms do
+// not gate this policy on the platform management service.
+class ProtocolHandlerLocalOnlyUnmanagedTest
+    : public ProtocolHandlerLocalOnlyBaseTest {
+ private:
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE};
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 // TODO(crbug.com/40917055): Enable test when MacOS flake is fixed.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CustomHandler DISABLED_CustomHandler
@@ -944,6 +1004,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 class FakeExternalProtocolHandlerWorker
@@ -1010,6 +1071,7 @@ class ScopedFakeExternalProtocolHandlerDelegate
     EXPECT_EQ(program_name_, program_name);
     external_protocol_dialog_called_ = true;
     launched_url_with_security_check_ = url.spec();
+    initiating_origin_ = initiating_origin;
   }
 
   void LaunchUrlWithoutSecurityCheck(
@@ -1032,6 +1094,9 @@ class ScopedFakeExternalProtocolHandlerDelegate
   std::string_view launched_url_with_security_check() const {
     return launched_url_with_security_check_;
   }
+  const std::optional<url::Origin>& initiating_origin() const {
+    return initiating_origin_;
+  }
 
  private:
   base::RunLoop launch_url_run_loop_;
@@ -1039,10 +1104,74 @@ class ScopedFakeExternalProtocolHandlerDelegate
   bool external_protocol_dialog_called_ = false;
   std::string launched_url_without_security_check_;
   std::string launched_url_with_security_check_;
+  std::optional<url::Origin> initiating_origin_;
 };
 
 }  // namespace
 
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
+                       URLAllowlistOverridesLocalOnlyBlock) {
+  const GURL local_only_url("local+custom:test");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  {
+    content::WebContentsConsoleObserver observer(web_contents);
+    observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "location.href = 'local+custom:test';"));
+    ASSERT_TRUE(observer.Wait());
+    ASSERT_EQ(1u, observer.messages().size());
+  }
+
+  SetURLAllowlistAndWait(local_only_url);
+
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "location.href = 'local+custom:test';"));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_FALSE(delegate.external_protocol_dialog_called());
+  EXPECT_EQ(local_only_url.spec(),
+            delegate.launched_url_without_security_check());
+  EXPECT_EQ("", delegate.launched_url_with_security_check());
+}
+
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
+                       AllowsBrowserInitiatedNavigation) {
+  const GURL local_only_url("local+custom:test");
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState(
+                local_only_url.GetScheme(), nullptr, browser()->GetProfile()));
+
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), local_only_url));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_TRUE(delegate.external_protocol_dialog_called());
+  EXPECT_EQ("", delegate.launched_url_without_security_check());
+  EXPECT_EQ(local_only_url.spec(), delegate.launched_url_with_security_check());
+  EXPECT_FALSE(delegate.initiating_origin().has_value());
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyUnmanagedTest,
+                       URLAllowlistDoesNotOverrideLocalOnlyBlock) {
+  const GURL local_only_url("local+custom:test");
+  SetURLAllowlistAndWait(local_only_url);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsConsoleObserver observer(web_contents);
+  observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "location.href = 'local+custom:test';"));
+  ASSERT_TRUE(observer.Wait());
+  ASSERT_EQ(1u, observer.messages().size());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS)
 // URLs which are explicitly allowlisted by policy can bypass security checks.
 // TODO: https://crbug.com/434758587 - Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,

@@ -6,8 +6,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -30,6 +32,24 @@ class ExternalProtocolHandlerBrowserTest : public InProcessBrowserTest {
   content::WebContents* web_content() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
+};
+
+class ExternalProtocolHandlerLocalOnlyBrowserTest
+    : public ExternalProtocolHandlerBrowserTest {
+ public:
+  ExternalProtocolHandlerLocalOnlyBrowserTest() {
+    features_.InitAndEnableFeature(features::kLocalOnlyAppProtocolPrefix);
+  }
+
+  void SetUpOnMainThread() override {
+    ExternalProtocolHandlerBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 class ExternalProtocolHandlerSandboxBrowserTest
@@ -297,6 +317,16 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
 };
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerLocalOnlyBrowserTest,
+                       BlocksWebInitiatedNavigation) {
+  content::WebContentsConsoleObserver observer(web_content());
+  observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+
+  ASSERT_TRUE(ExecJs(web_content(), "location.href = 'local+custom:test';"));
+  ASSERT_TRUE(observer.Wait());
+  ASSERT_EQ(1u, observer.messages().size());
+}
 
 // Tests (by forcing a particular scheme to be blocked, regardless of platform)
 // that the console message is attributed to a subframe if one was responsible.

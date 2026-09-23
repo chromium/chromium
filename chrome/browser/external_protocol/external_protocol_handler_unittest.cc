@@ -10,8 +10,11 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/external_protocol/constants.h"
+#include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,6 +37,12 @@
 #else
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+constexpr char kLocalOnlyScheme[] = "local+custom";
+
+}  // namespace
 
 class FakeExternalProtocolHandlerWorker
     : public shell_integration::DefaultSchemeClientWorker {
@@ -506,6 +515,76 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultDontBlock) {
   histogram_tester.ExpectBucketCount(
       ExternalProtocolHandler::kBlockStateMetric,
       ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
+}
+
+TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateLocalOnlyPrefixDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLocalOnlyAppProtocolPrefix);
+
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, profile_.get()));
+}
+
+TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateLocalOnlyPrefix) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalOnlyAppProtocolPrefix);
+
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, profile_.get()));
+
+  url::Origin opaque_origin =
+      url::Origin::Resolve(GURL("data:text/html,hi"), test_origin);
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &opaque_origin, profile_.get()));
+
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState(kLocalOnlyScheme, nullptr,
+                                                   profile_.get()));
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState("custom", &test_origin,
+                                                   profile_.get()));
+  EXPECT_EQ(ExternalProtocolHandler::UNKNOWN,
+            ExternalProtocolHandler::GetBlockState("local-custom", &test_origin,
+                                                   profile_.get()));
+
+  ExternalProtocolHandler::SetBlockState(kLocalOnlyScheme, test_origin,
+                                         ExternalProtocolHandler::DONT_BLOCK,
+                                         profile_.get());
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, profile_.get()));
+}
+
+TEST_F(ExternalProtocolHandlerTest,
+       TestPolicyOverridesGetBlockStateLocalOnlyPrefix) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalOnlyAppProtocolPrefix);
+
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, profile_.get()));
+
+  base::DictValue protocol_origins_map;
+  protocol_origins_map.Set(policy::external_protocol::kProtocolNameKey,
+                           kLocalOnlyScheme);
+  base::ListValue origins;
+  origins.Append("*");
+  protocol_origins_map.Set(policy::external_protocol::kOriginListKey,
+                           std::move(origins));
+  base::ListValue protocol_origins_map_list;
+  protocol_origins_map_list.Append(std::move(protocol_origins_map));
+  profile_->GetPrefs()->SetList(prefs::kAutoLaunchProtocolsFromOrigins,
+                                std::move(protocol_origins_map_list));
+
+  EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK,
+            ExternalProtocolHandler::GetBlockState(
+                kLocalOnlyScheme, &test_origin, profile_.get()));
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {

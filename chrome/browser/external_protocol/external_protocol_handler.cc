@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
 #include "chrome/browser/external_protocol/constants.h"
+#include "chrome/browser/external_protocol/features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -64,6 +67,10 @@ bool g_accept_requests = true;
 
 ExternalProtocolHandler::Delegate* g_external_protocol_handler_delegate =
     nullptr;
+
+// Prefix for schemes that apps declare must not be launched by web content.
+// See crbug.com/539667062.
+constexpr std::string_view kLocalOnlySchemePrefix = "local+";
 
 constexpr auto kDeniedSchemes = base::MakeFixedFlatSet<std::string_view>({
     "afp",
@@ -320,6 +327,17 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
   return !matching_set.empty();
 }
 
+// A nullptr initiating_origin is treated by external_protocol code as not
+// initiated by web content, for example omnibox code does this.
+bool ShouldBlockLocalOnlyAppProtocolPrefix(
+    std::string_view scheme,
+    const url::Origin* initiating_origin) {
+  return initiating_origin &&
+         base::FeatureList::IsEnabled(features::kLocalOnlyAppProtocolPrefix) &&
+         base::StartsWith(scheme, kLocalOnlySchemePrefix,
+                          base::CompareCase::SENSITIVE);
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(LoggedScheme)
@@ -411,7 +429,16 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
           kBlockStateMetric, BlockStateMetric::kAllowedByEnterprisePolicy);
       return DONT_BLOCK;
     }
+  }
 
+  // Administrator policy overrides local-only registration, but remembered
+  // user decisions do not. URLAllowlist is handled by the caller.
+  if (ShouldBlockLocalOnlyAppProtocolPrefix(scheme, initiating_origin)) {
+    // TODO(crbug.com/539667060): Record local-only enforcement telemetry.
+    return BLOCK;
+  }
+
+  if (profile_prefs) {
     if (MayRememberAllowDecisionsForThisOrigin(initiating_origin)) {
       // Check if there is a matching {Origin+Protocol} pair exemption:
       const base::DictValue& allowed_origin_protocol_pairs =
