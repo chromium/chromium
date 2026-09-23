@@ -11,22 +11,8 @@ repositories {
 
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
-
-    // Needed by androidx and by doubledown targets.
-    compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
-
-    // Used by ModuleInterfaceProcessor.java
-    buildCompile 'com.squareup:javapoet:1.13.0'
-
-    // Used by resource shrinking.
-    // buildCompileNoDeps targets do not bring in any of their dependencies,
-    // this list of targets is carefully curated for the use of the resources
-    // shrinker. If these are needed for something other than the resources
-    // shrinker, use buildCompile instead.
-    String androidToolsVersion = '30.2.0-beta01'
-    buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
-    buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
-    buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
+    // All dependencies now live in autorolled/build.gradle.template
+    // (crbug.com/562517138).
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

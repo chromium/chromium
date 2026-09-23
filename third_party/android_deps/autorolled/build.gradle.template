@@ -121,6 +121,21 @@ dependencies {
     // (see byte-buddy-agent / byte-buddy-android), otherwise gradle resolves
     // to the higher of the two anyway.
     androidTestCompileLatest 'net.bytebuddy:byte-buddy:1.17.6'
+
+    // Needed by androidx and by doubledown targets.
+    compileLatest 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22'
+
+    // Used by ModuleInterfaceProcessor.java
+    buildCompileLatest 'com.squareup:javapoet:1.13.0'
+
+    // Used by resource shrinking.
+    // buildCompileNoDepsLatest targets do not bring in any of their
+    // dependencies, this list of targets is carefully curated for the use of
+    // the resources shrinker. If these are needed for something other than the
+    // resources shrinker, use buildCompileLatest instead.
+    buildCompileNoDepsLatest 'com.android.tools:sdk-common:30.2.0-beta01'
+    buildCompileNoDepsLatest 'com.android.tools:common:30.2.0-beta01'
+    buildCompileNoDepsLatest 'com.android.tools.layoutlib:layoutlib-api:30.2.0-beta01'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

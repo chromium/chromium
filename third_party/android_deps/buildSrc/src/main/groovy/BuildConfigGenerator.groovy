@@ -612,7 +612,11 @@ No modifications.
         dependencyDirectories.sort { path1, path2 -> return path1 <=> path2 }
         updateReadmeReferenceFile(dependencyDirectories, project.file("additional_readme_paths.json"))
 
-        project.file("${LIBS_DIRECTORY}/OWNERS").write(makeRootOwners())
+        // libs/ is only created above when at least one dependency has an
+        // artifact; the main project may have none (crbug.com/562517138).
+        File libsDir = project.file(LIBS_DIRECTORY)
+        libsDir.mkdirs()
+        new File(libsDir, 'OWNERS').write(makeRootOwners())
         if (writeBoM) {
             project.file("bill_of_materials.json").write(makeBillOfMaterials(graph.dependencies.values()))
         }
@@ -872,7 +876,8 @@ No modifications.
                 sb.append('\n')
                 sb.append('  # This target does not come with most of its dependencies and is\n')
                 sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
-                sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
+                sb.append('  # this for other purposes, change buildCompileNoDepsLatest in\n')
+                sb.append('  # autorolled/build.gradle.template.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
             case 'com_google_android_gms_play_services_basement':
