@@ -50,6 +50,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mView =
                 (SafetyPromoCarouselView)
                         LayoutInflater.from(mContext)
@@ -71,7 +72,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         assertEquals(LinearLayoutManager.HORIZONTAL, layoutManager.getOrientation());
 
-        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
+        assertSelectedItemState(SafetyPromoItem.PASSWORD_MANAGER);
     }
 
     @Test
@@ -80,31 +81,31 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
                 ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO);
         new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
 
-        assertHeader(SafetyPromoItem.INCOGNITO);
+        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
     }
 
     @Test
-    public void testSelectedItemSetAfterConstruction_updatesHeader() {
+    public void testSelectedItemSetAfterConstruction_updatesSelectedItemState() {
         SettableNullableObservableSupplier<SafetyPromoItem> supplier =
                 ObservableSuppliers.createNullable();
         new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
 
-        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
+        assertSelectedItemState(SafetyPromoItem.PASSWORD_MANAGER);
 
         supplier.set(SafetyPromoItem.INCOGNITO);
 
-        assertHeader(SafetyPromoItem.INCOGNITO);
+        assertSelectedItemState(SafetyPromoItem.INCOGNITO);
     }
 
     @Test
-    public void testSelectedItemChanged_updatesHeader() {
+    public void testSelectedItemChanged_updatesSelectedItemState() {
         SettableNullableObservableSupplier<SafetyPromoItem> supplier =
                 ObservableSuppliers.createNullable(SafetyPromoItem.PASSWORD_MANAGER);
         new SafetyPromoCarouselCoordinator(mContext, mView, supplier, mAdvancePage, TEST_ITEMS);
 
         supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
 
-        assertHeader(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
+        assertSelectedItemState(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
     }
 
     @Test
@@ -118,7 +119,7 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         coordinator.destroy();
         supplier.set(SafetyPromoItem.ENHANCED_SAFE_BROWSING);
 
-        assertHeader(SafetyPromoItem.PASSWORD_MANAGER);
+        assertSelectedItemState(SafetyPromoItem.PASSWORD_MANAGER);
     }
 
     @Test
@@ -131,11 +132,16 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
         verify(mAdvancePage).run();
     }
 
-    private void assertHeader(SafetyPromoItem item) {
+    private void assertSelectedItemState(SafetyPromoItem item) {
         TextView titleView = mView.findViewById(R.id.safety_promo_carousel_title);
         assertEquals(mContext.getString(item.carouselTitleResId), titleView.getText().toString());
         TextView subtitleView = mView.findViewById(R.id.safety_promo_carousel_subtitle);
         assertEquals(
                 mContext.getString(item.carouselSubtitleResId), subtitleView.getText().toString());
+
+        SafetyPromoPageIndicatorView indicatorView =
+                mView.findViewById(R.id.safety_promo_carousel_page_indicator);
+        assertEquals(TEST_ITEMS.size(), indicatorView.getPageCountForTesting());
+        assertEquals(TEST_ITEMS.indexOf(item), indicatorView.getActivePositionForTesting());
     }
 }

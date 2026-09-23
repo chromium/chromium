@@ -58,6 +58,7 @@ public class SafetyPromoCarouselCoordinator {
         mModel =
                 new PropertyModel.Builder(SafetyPromoCarouselProperties.ALL_KEYS)
                         .with(ON_CONTINUE_CLICKED, _ -> advancePage.run())
+                        .with(SafetyPromoCarouselProperties.PAGE_COUNT, mItems.size())
                         .build();
 
         initializeRecyclerView(context);
@@ -93,7 +94,7 @@ public class SafetyPromoCarouselCoordinator {
                         int position = layoutManager.getPosition(centerView);
                         if (position == RecyclerView.NO_POSITION) return;
 
-                        updateHeader(position);
+                        updateSelectedItemState(position);
                     }
                 });
     }
@@ -112,15 +113,22 @@ public class SafetyPromoCarouselCoordinator {
     }
 
     private void setCurrentItem(int position) {
-        updateHeader(position);
+        updateSelectedItemState(position);
         mRecyclerView.scrollToPosition(position);
     }
 
-    private void updateHeader(int position) {
+    /**
+     * Updates the property model with the current item's title, subtitle, and dot indicator
+     * position.
+     *
+     * @param position The active index of the carousel item to bind.
+     */
+    private void updateSelectedItemState(int position) {
         assert position >= 0 && position < mItems.size();
 
         SafetyPromoItem item = mItems.get(position);
         mModel.set(TITLE_RES_ID, item.carouselTitleResId);
         mModel.set(SUBTITLE_RES_ID, item.carouselSubtitleResId);
+        mModel.set(SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX, position);
     }
 }

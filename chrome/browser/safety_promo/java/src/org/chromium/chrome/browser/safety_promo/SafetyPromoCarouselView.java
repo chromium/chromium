@@ -24,6 +24,7 @@ public class SafetyPromoCarouselView extends RelativeLayout {
     private TextView mTitleView;
     private TextView mSubtitleView;
     private ButtonCompat mContinueButton;
+    private SafetyPromoPageIndicatorView mPageIndicatorView;
 
     public SafetyPromoCarouselView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -36,6 +37,7 @@ public class SafetyPromoCarouselView extends RelativeLayout {
         mTitleView = findViewById(R.id.safety_promo_carousel_title);
         mSubtitleView = findViewById(R.id.safety_promo_carousel_subtitle);
         mContinueButton = findViewById(R.id.fre_continue_button);
+        mPageIndicatorView = findViewById(R.id.safety_promo_carousel_page_indicator);
     }
 
     public void setContinueButtonOnClickListener(OnClickListener listener) {
@@ -48,6 +50,14 @@ public class SafetyPromoCarouselView extends RelativeLayout {
 
     public void setSubtitleText(@StringRes int stringResId) {
         mSubtitleView.setText(stringResId);
+    }
+
+    public void setPageIndicatorCount(int count) {
+        mPageIndicatorView.setPageCount(count);
+    }
+
+    public void setActivePageIndicatorPosition(int position) {
+        mPageIndicatorView.setActivePosition(position);
     }
 
     RecyclerView getRecyclerView() {

@@ -61,4 +61,16 @@ public class SafetyPromoCarouselViewBinderUnitTest {
                 mModel, mView, SafetyPromoCarouselProperties.ON_CONTINUE_CLICKED);
         verify(mView).setContinueButtonOnClickListener(eq(mOnClickListener));
     }
+
+    @Test
+    public void testSetPageCount() {
+        mModel.set(SafetyPromoCarouselProperties.PAGE_COUNT, 3);
+        verify(mView).setPageIndicatorCount(eq(3));
+    }
+
+    @Test
+    public void testSetActivePageIndex() {
+        mModel.set(SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX, 1);
+        verify(mView).setActivePageIndicatorPosition(eq(1));
+    }
 }

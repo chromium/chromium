@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.safety_promo;
 
+import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ON_CONTINUE_CLICKED;
+import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.PAGE_COUNT;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.SUBTITLE_RES_ID;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.TITLE_RES_ID;
 
@@ -23,6 +25,10 @@ class SafetyPromoCarouselViewBinder {
             view.setSubtitleText(model.get(SUBTITLE_RES_ID));
         } else if (propertyKey == ON_CONTINUE_CLICKED) {
             view.setContinueButtonOnClickListener(model.get(ON_CONTINUE_CLICKED));
+        } else if (propertyKey == PAGE_COUNT) {
+            view.setPageIndicatorCount(model.get(PAGE_COUNT));
+        } else if (propertyKey == ACTIVE_PAGE_INDEX) {
+            view.setActivePageIndicatorPosition(model.get(ACTIVE_PAGE_INDEX));
         }
     }
 }

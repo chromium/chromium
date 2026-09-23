@@ -313,6 +313,16 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSecondaryContainer, context);
     }
 
+    /** Returns the semantic color values that correspond to colorOutline. */
+    public static @ColorInt int getColorOutline(Context context) {
+        return resolve(R.attr.colorOutline, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorOutlineVariant. */
+    public static @ColorInt int getColorOutlineVariant(Context context) {
+        return resolve(R.attr.colorOutlineVariant, context);
+    }
+
     public static void setBottomSystemNavDividerColorForTesting(@ColorInt int value) {
         sBottomSystemNavDividerColorForTesting = value;
         ResettersForTesting.register(() -> sBottomSystemNavDividerColorForTesting = null);

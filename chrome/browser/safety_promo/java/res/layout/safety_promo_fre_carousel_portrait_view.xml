@@ -59,6 +59,13 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:orientation="horizontal"
           android:scrollbars="none" />
+
+      <org.chromium.chrome.browser.safety_promo.SafetyPromoPageIndicatorView
+          android:id="@+id/safety_promo_carousel_page_indicator"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop=
+              "@dimen/safety_fre_carousel_page_indicator_top_margin" />
     </LinearLayout>
   </ScrollView>
 

@@ -32,6 +32,7 @@ public class SafetyPromoCarouselViewUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mView =
                 (SafetyPromoCarouselView)
                         LayoutInflater.from(mContext)
@@ -46,6 +47,7 @@ public class SafetyPromoCarouselViewUnitTest {
         assertNotNull(mView.findViewById(R.id.safety_promo_carousel_title));
         assertNotNull(mView.findViewById(R.id.safety_promo_carousel_subtitle));
         assertNotNull(mView.findViewById(R.id.fre_continue_button));
+        assertNotNull(mView.findViewById(R.id.safety_promo_carousel_page_indicator));
     }
 
     @Test
@@ -75,5 +77,23 @@ public class SafetyPromoCarouselViewUnitTest {
         continueButton.performClick();
 
         verify(mockListener).onClick(continueButton);
+    }
+
+    @Test
+    public void testSetPageIndicatorCount() {
+        mView.setPageIndicatorCount(5);
+
+        SafetyPromoPageIndicatorView indicatorView =
+                mView.findViewById(R.id.safety_promo_carousel_page_indicator);
+        assertEquals(5, indicatorView.getPageCountForTesting());
+    }
+
+    @Test
+    public void testSetActivePageIndicatorPosition() {
+        mView.setActivePageIndicatorPosition(2);
+
+        SafetyPromoPageIndicatorView indicatorView =
+                mView.findViewById(R.id.safety_promo_carousel_page_indicator);
+        assertEquals(2, indicatorView.getActivePositionForTesting());
     }
 }

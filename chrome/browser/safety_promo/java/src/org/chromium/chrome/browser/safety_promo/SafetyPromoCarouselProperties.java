@@ -21,6 +21,12 @@ public class SafetyPromoCarouselProperties {
     public static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_CLICKED =
             new ReadableObjectPropertyKey<>();
 
+    public static final WritableIntPropertyKey PAGE_COUNT = new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey ACTIVE_PAGE_INDEX = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {TITLE_RES_ID, SUBTITLE_RES_ID, ON_CONTINUE_CLICKED};
+            new PropertyKey[] {
+                TITLE_RES_ID, SUBTITLE_RES_ID, ON_CONTINUE_CLICKED, PAGE_COUNT, ACTIVE_PAGE_INDEX
+            };
 }

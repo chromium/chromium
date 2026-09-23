@@ -22,4 +22,9 @@ found in the LICENSE file.
     <dimen name="safety_fre_carousel_icon_margin_top">64dp</dimen>
     <dimen name="safety_fre_carousel_title_margin_bottom">8dp</dimen>
     <dimen name="safety_fre_carousel_button_margin_bottom">8dp</dimen>
+
+    <!-- Safety FRE carousel page indicator dimensions -->
+    <dimen name="safety_fre_carousel_page_indicator_dot_size">8dp</dimen>
+    <dimen name="safety_fre_carousel_page_indicator_padding">8dp</dimen>
+    <dimen name="safety_fre_carousel_page_indicator_top_margin">16dp</dimen>
 </resources>

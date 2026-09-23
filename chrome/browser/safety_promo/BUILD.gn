@@ -15,12 +15,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoFirstRunView.java",
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoItem.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoPageIndicatorView.java",
   ]
   deps = [
     ":java_resources",
     "//base:callback_java",
     "//base:supplier_java",
     "//build/android:build_java",
+    "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -49,6 +51,8 @@ android_resources("java_resources") {
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
@@ -63,6 +67,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoCarouselViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoPageIndicatorViewUnitTest.java",
   ]
 
   deps = [
