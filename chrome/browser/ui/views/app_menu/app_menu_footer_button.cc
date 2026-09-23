@@ -35,34 +35,27 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr int kRowLineHeight = 16;
+}  // namespace
+
 AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING);
-  const int corner_radius = provider->GetDistanceMetric(
-      DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS);
 
   // Arrange the button's icon, label, and optional submenu arrow in a row
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON),
-      between_spacing);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_cross_axis_alignment(
+  layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      between_spacing));
+  layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetLayoutManager(std::move(layout));
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-
-  // When hovered, InkDrop creates a non-opaque layer on the button. An explicit
-  // opaque background matching the menu is required so subpixel rendering on
-  // the child label can verify it paints over an opaque region in
-  // Label::PaintText().
-  SetBackground(views::CreateRoundedRectBackground(ui::kColorMenuBackground,
-                                                   corner_radius));
 
   auto* const ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -71,8 +64,6 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   ink_drop->SetVisibleOpacity(1.0f);
   ink_drop->SetHighlightOpacity(1.0f);
   SetShowInkDropWhenHotTracked(true);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                corner_radius);
 
   // Icon: hidden by default until populated with an ImageModel.
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
@@ -84,9 +75,7 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
 
   // Label
   label_ = AddChildView(std::make_unique<views::Label>());
-  label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label_->SetTextStyle(views::style::STYLE_BODY_5);
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
   label_->GetViewAccessibility().SetIsIgnored(true);
   label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
@@ -145,17 +134,37 @@ void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
 }
 
 void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
-  if (use_row_style_ == use_row_style) {
-    return;
-  }
   use_row_style_ = use_row_style;
+  const auto* provider = ChromeLayoutProvider::Get();
   if (use_row_style_) {
     label_->SetTextContext(views::style::CONTEXT_MENU);
-    label_->SetTextStyle(views::style::STYLE_PRIMARY);
+    label_->SetTextStyle(views::style::STYLE_BODY_4);
+    label_->SetLineHeight(kRowLineHeight);
     label_->SetEnabledColor(ui::kColorMenuItemForeground);
+
+    views::InstallRectHighlightPathGenerator(this);
+    SetBackground(views::CreateSolidBackground(ui::kColorMenuBackground));
+
+    const int vertical_padding = provider->GetDistanceMetric(
+        DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING);
+    const int horizontal_padding =
+        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN).left() +
+        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON).left();
+    layout_->set_inside_border_insets(
+        gfx::Insets::VH(vertical_padding, horizontal_padding));
   } else {
     label_->SetTextStyle(views::style::STYLE_BODY_5);
     label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
+
+    const int corner_radius = provider->GetDistanceMetric(
+        DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS);
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  corner_radius);
+    SetBackground(views::CreateRoundedRectBackground(ui::kColorMenuBackground,
+                                                     corner_radius));
+
+    layout_->set_inside_border_insets(
+        provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON));
   }
   if (!icon_view_->GetImageModel().IsEmpty()) {
     SetImageModel(icon_view_->GetImageModel());

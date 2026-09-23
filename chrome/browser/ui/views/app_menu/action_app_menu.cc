@@ -473,7 +473,10 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
       base::BindRepeating(&ActionAppMenu::PopulateMenu,
                           base::Unretained(this)));
 
-  auto* footer_item = view_parent->AppendMenuItem(0);
+  auto* footer_item = view_parent->AppendMenuItemImpl(
+      0, /*label=*/std::u16string(), /*icon=*/ui::ImageModel(),
+      views::MenuItemView::Type::kHighlighted);
+  footer_item->SetSelectedColorId(ui::kColorMenuBackground);
   footer_item->SetTriggerActionWithNonIconChildViews(false);
   footer_item->set_children_use_full_width(true);
   footer_item->set_vertical_margin(0);

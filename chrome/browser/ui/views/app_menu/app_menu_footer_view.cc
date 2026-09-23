@@ -77,9 +77,7 @@ AppMenuFooterView::AppMenuFooterView(
   auto bottom_container = std::make_unique<views::BoxLayoutView>();
   bottom_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   bottom_container->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  bottom_container->SetInsideBorderInsets(
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
+      views::BoxLayout::CrossAxisAlignment::kStretch);
 
   // Populate footer buttons from child action items.
   for (const auto& footer_child :
@@ -131,9 +129,11 @@ AppMenuFooterView::AppMenuFooterView(
       button_ptr->SetUseRowStyle(true);
       bottom_container->SetFlexForView(button_ptr, 1);
     } else if (action_id.value() == kActionExit) {
-      right_container_->AddChildView(std::move(button));
+      auto* button_ptr = right_container_->AddChildView(std::move(button));
+      button_ptr->SetUseRowStyle(false);
     } else {
-      left_container_->AddChildView(std::move(button));
+      auto* button_ptr = left_container_->AddChildView(std::move(button));
+      button_ptr->SetUseRowStyle(false);
     }
   }
 
@@ -144,18 +144,14 @@ AppMenuFooterView::AppMenuFooterView(
     separator_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(
-            provider->GetDistanceMetric(
-                DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING),
-            0, 0, 0));
-
-    bottom_container_ = AddChildView(std::move(bottom_container));
-    bottom_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(
             0, 0,
-            -provider->GetDistanceMetric(
-                DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING),
+            provider->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN),
             0));
+
+    bottom_container->SetInsideBorderInsets(provider->GetInsetsMetric(
+        INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER));
+    bottom_container_ = AddChildView(std::move(bottom_container));
   }
 }
 

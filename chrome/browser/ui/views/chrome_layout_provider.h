@@ -44,6 +44,8 @@ enum ChromeInsetsMetric {
   INSETS_ACTION_APP_MENU_HEADER,
   // Margins for the footer container in the Block-style Action App Menu.
   INSETS_ACTION_APP_MENU_FOOTER_MARGIN,
+  // Margins for the footer bottom container in the Block-style Action App Menu.
+  INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER,
   // Padding for a Block-style Action App Menu footer button.
   INSETS_ACTION_APP_MENU_FOOTER_BUTTON,
   // Padding for a status chip in the app menu.
@@ -241,6 +243,9 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING,
   // Spacing for Enterprise Menu in Action App Menu
   DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING,
+  // Bottom margin for the separator in the Block-style Action App Menu
+  // footer.
+  DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN,
   // Corner radius for a Block-style Action App Menu footer button.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS,
   // Vertical margin for section headers in the Action App Menu.

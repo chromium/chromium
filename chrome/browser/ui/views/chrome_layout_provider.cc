@@ -104,7 +104,9 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_ACTION_APP_MENU_HEADER:
       return gfx::Insets::VH(0, 16);
     case INSETS_ACTION_APP_MENU_FOOTER_MARGIN:
-      return gfx::Insets::TLBR(8, 16, 0, 16);
+      return gfx::Insets::TLBR(8, 16, 8, 16);
+    case INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER:
+      return gfx::Insets::TLBR(0, 0, 4, 0);
     case INSETS_ACTION_APP_MENU_FOOTER_BUTTON:
       return gfx::Insets::VH(4, 8);
     case INSETS_APP_MENU_CHIP:
@@ -290,6 +292,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 12;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING:
       return 8;
+    case DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN:
+      return 4;
     case DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN:
       return 16;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING:

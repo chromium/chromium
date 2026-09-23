@@ -215,7 +215,6 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_radius, 0);
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_radius, 8);
 
-  // Check vertical padding:
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(profile_item->GetTopMargin(), 8);
@@ -1109,22 +1108,53 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithManagedAction) {
   views::MenuItemView* footer_item =
       submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
   ASSERT_NE(footer_item, nullptr);
+  EXPECT_EQ(footer_item->GetType(), views::MenuItemView::Type::kHighlighted);
 
   auto* footer_view =
       views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
   ASSERT_EQ(footer_view->children().size(), 3u);
 
+  const auto* provider = ChromeLayoutProvider::Get();
+
   // When managed, separator and bottom container are added inside the footer.
   ASSERT_NE(footer_view->separator_for_testing(), nullptr);
   EXPECT_TRUE(footer_view->separator_for_testing()->GetVisible());
   EXPECT_EQ(footer_view->separator_for_testing()->GetColorId(),
             ui::kColorMenuSeparator);
+  const gfx::Insets* separator_margins =
+      footer_view->separator_for_testing()->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(separator_margins);
+  EXPECT_EQ(*separator_margins,
+            gfx::Insets::TLBR(
+                0, 0,
+                provider->GetDistanceMetric(
+                    DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN),
+                0));
   ASSERT_NE(footer_view->bottom_container_for_testing(), nullptr);
   EXPECT_TRUE(footer_view->bottom_container_for_testing()->GetVisible());
   ASSERT_EQ(footer_view->bottom_container_for_testing()->children().size(), 1u);
+  EXPECT_EQ(
+      footer_view->bottom_container_for_testing()->GetInsideBorderInsets(),
+      provider->GetInsetsMetric(
+          INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER));
+  EXPECT_EQ(footer_view->bottom_container_for_testing()->GetProperty(
+                views::kMarginsKey),
+            nullptr);
   EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
       footer_view->bottom_container_for_testing()->children()[0]));
+
+  auto* button = views::AsViewClass<AppMenuFooterButton>(
+      footer_view->bottom_container_for_testing()->children()[0]);
+  const int vertical_padding = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING);
+  const int horizontal_padding =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN).left() +
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_BUTTON).left();
+  auto* box_layout = static_cast<views::BoxLayout*>(button->GetLayoutManager());
+  ASSERT_NE(box_layout, nullptr);
+  EXPECT_EQ(box_layout->inside_border_insets(),
+            gfx::Insets::VH(vertical_padding, horizontal_padding));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1524,7 +1554,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   EXPECT_EQ(top_container->GetInsideBorderInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
   EXPECT_EQ(top_container->GetInsideBorderInsets(),
-            gfx::Insets::TLBR(8, 16, 0, 16));
+            gfx::Insets::TLBR(8, 16, 8, 16));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

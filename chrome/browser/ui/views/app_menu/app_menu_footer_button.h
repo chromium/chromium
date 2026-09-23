@@ -13,6 +13,7 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
+class BoxLayout;
 class ImageView;
 class Label;
 class MenuItemView;
@@ -43,6 +44,7 @@ class AppMenuFooterButton : public views::Button {
   views::MenuItemView* GetSubmenuItem() const;
 
   bool use_row_style_ = false;
+  raw_ptr<views::BoxLayout> layout_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> submenu_arrow_view_ = nullptr;
