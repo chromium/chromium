@@ -21,7 +21,8 @@
       "win",
       "mac",
       "linux",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {

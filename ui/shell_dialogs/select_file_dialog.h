@@ -248,6 +248,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // The listener to be notified of selection completion.
   raw_ptr<Listener> listener_;
 
+  SelectFilePolicy* select_file_policy() { return select_file_policy_.get(); }
+
  private:
   // Tests if the file selection dialog can be displayed by
   // testing if the AllowFileSelectionDialogs-Policy is

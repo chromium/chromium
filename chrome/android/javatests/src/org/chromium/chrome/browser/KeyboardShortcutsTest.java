@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -245,6 +246,19 @@ public class KeyboardShortcutsTest {
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE)
     public void testOpenFile() {
+        boolean isKeyEventHandled =
+                keyDown(KeyEvent.KEYCODE_O, KeyEvent.META_CTRL_ON, /* isCurrentTabVisible= */ true);
+
+        assertTrue("Expected key event to be handled", isKeyEventHandled);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(/* id= */ eq(R.id.open_file_id), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE)
+    @Policies.Add({@Policies.Item(key = "AllowFileSelectionDialogs", string = "false")})
+    public void testOpenFile_disallowedByPolicy() {
         boolean isKeyEventHandled =
                 keyDown(KeyEvent.KEYCODE_O, KeyEvent.META_CTRL_ON, /* isCurrentTabVisible= */ true);
 

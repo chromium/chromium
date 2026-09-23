@@ -142,6 +142,15 @@ void SelectFileDialogImpl::SelectFileImpl(Type type,
                                           const std::string& default_extension,
                                           gfx::NativeWindow owning_window,
                                           const GURL* caller) {
+  if (select_file_policy() &&
+      !select_file_policy()->CanOpenSelectFileDialog()) {
+    select_file_policy()->SelectFileDenied();
+    if (listener_) {
+      listener_->FileSelectionCanceled();
+    }
+    return;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> intent_action =

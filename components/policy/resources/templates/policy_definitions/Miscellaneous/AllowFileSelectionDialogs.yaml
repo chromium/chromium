@@ -21,6 +21,7 @@ owners:
 schema:
   type: boolean
 supported_on:
+- android:156-
 - chrome.*:12-
 tags: []
 type: main

@@ -869,6 +869,7 @@ source_set("unit_tests") {
     sources += [
       "cloud/user_policy_signin_service_unittest.cc",
       "cloud/user_policy_signin_service_util_unittest.cc",
+      "file_selection_dialogs_policy_handler_unittest.cc",
     ]
   }
 
@@ -893,7 +894,6 @@ source_set("unit_tests") {
       "cbcm_invalidations_initializer_unittest.cc",
       "chrome_browser_cloud_management_register_watcher_unittest.cc",
       "client_data_delegate_desktop_unittest.cc",
-      "file_selection_dialogs_policy_handler_unittest.cc",
     ]
   }
 
@@ -1113,7 +1113,6 @@ source_set("policy") {
         "chrome_browser_cloud_management_controller_desktop.h",
         "client_data_delegate_desktop.h",
         "cloud/user_policy_signin_service.h",
-        "file_selection_dialogs_policy_handler.h",
       ]
     }
   }
@@ -1140,6 +1139,7 @@ source_set("policy") {
       "browser_signin_policy_handler.h",
       "cloud/user_policy_signin_service_factory.h",
       "cloud/user_policy_signin_service_util.h",
+      "file_selection_dialogs_policy_handler.h",
     ]
   }
 
@@ -1424,7 +1424,6 @@ source_set("impl") {
         "chrome_browser_cloud_management_register_watcher.h",
         "client_data_delegate_desktop.cc",
         "cloud/user_policy_signin_service.cc",
-        "file_selection_dialogs_policy_handler.cc",
       ]
       deps += [
         "//chrome/browser/enterprise:browser_launch_reporting",
@@ -1498,6 +1497,7 @@ source_set("impl") {
       "browser_signin_policy_handler.cc",
       "cloud/user_policy_signin_service_factory.cc",
       "cloud/user_policy_signin_service_util.cc",
+      "file_selection_dialogs_policy_handler.cc",
     ]
   }
 
