@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.R;
@@ -40,7 +41,7 @@ import java.util.List;
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
         message = "crbug.com/552571146")
-// TODO(crbug.com/344923212): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 public class ColorPickerDialogRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
