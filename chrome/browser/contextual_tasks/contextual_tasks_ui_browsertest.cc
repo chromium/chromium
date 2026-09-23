@@ -85,6 +85,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, OnCookieSyncCompleted, (), (override));
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
+  MOCK_METHOD(void, FocusComposebox, (), (override));
   MOCK_METHOD(void,
               PostAimMessage,
               (const std::vector<uint8_t>& message),

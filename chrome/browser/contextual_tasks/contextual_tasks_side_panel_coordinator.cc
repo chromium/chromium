@@ -450,6 +450,11 @@ void ContextualTasksSidePanelCoordinator::Show(
 
   UpdateOpenState(/*is_open=*/true);
   UpdateContextualTaskUI();
+  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    if (auto* web_ui_interface = GetWebUiInterface(active_web_contents)) {
+      web_ui_interface->FocusComposebox();
+    }
+  }
   ObserveWebContentsOnActiveTab();
   NotifyActiveTaskContextProvider();
 

@@ -55,6 +55,9 @@ class ContextualTasksWebView
   // Returns the WebContents currently displayed in the content WebView.
   content::WebContents* web_contents() const;
 
+  // Focuses the main content WebView.
+  void RequestContentViewFocus();
+
   // Toggles the visibility of the ghost loader overlay.
   void SetGhostLoaderVisible(bool visible);
 

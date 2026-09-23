@@ -475,6 +475,11 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.listenerIds_ = [
       callbackRouter.onSidePanelStateChanged.addListener(
           () => this.updateSidePanelState()),
+      callbackRouter.focusComposebox.addListener(() => {
+        this.updateComplete.then(() => {
+          this.composebox_?.tryFocus();
+        });
+      }),
       callbackRouter.turnOnSmartTabSharing.addListener(() => {
         // <if expr="not is_android">
         const menu = this.getContextualActionMenu();
@@ -742,6 +747,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       this.forceComposeboxFocus();
     } else if (this.isZeroState_ && !this.isShownInTab_) {
       this.playZeroStateAnimations_();
+      this.forceComposeboxFocus();
     }
 
     // The thread URL is considered pending (not loaded immediately in the

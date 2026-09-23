@@ -251,6 +251,10 @@ interface Page {
   // code should query the `IsShownInTab` method to get the current state.
   OnSidePanelStateChanged();
 
+  // Called by the browser process (C++) when the side panel is opened to focus
+  // the composebox input in the WebUI page.
+  FocusComposebox();
+
   // Called by the browser process (C++) to send a message to the <webview>
   // guest. The WebUI is responsible for taking a serialized
   // `lens.ClientToAimMessage` protobuf and using the <webview> postMessage API

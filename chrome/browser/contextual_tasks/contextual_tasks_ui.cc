@@ -1361,6 +1361,12 @@ void ContextualTasksUI::AddInitialTaskStateToDataSource(
   source->AddString("entryPoint", EntryPointToString(entry_point));
 }
 
+void ContextualTasksUI::FocusComposebox() {
+  if (page_) {
+    page_->FocusComposebox();
+  }
+}
+
 void ContextualTasksUI::OnSidePanelStateChanged() {
   if (page_) {
     page_->OnSidePanelStateChanged();

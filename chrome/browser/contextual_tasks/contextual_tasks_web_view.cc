@@ -163,6 +163,10 @@ content::WebContents* ContextualTasksWebView::web_contents() const {
   return content_web_view_ ? content_web_view_->web_contents() : nullptr;
 }
 
+void ContextualTasksWebView::RequestContentViewFocus() {
+  content_web_view_->RequestFocus();
+}
+
 void ContextualTasksWebView::SetGhostLoaderVisible(bool visible) {
   if (!ghost_loader_view_) {
     return;

@@ -69,6 +69,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
   // a tab.
   virtual void OnSidePanelStateChanged() = 0;
 
+  // Called when the side panel is opened to focus the composebox input.
+  virtual void FocusComposebox() {}
+
   // Called when the active tab has been changed (e.g. new page loaded or title
   // change). This is used to update the UI for both tab/side panel modes.
   // Note that a title can be updated while the page is loading, so this can

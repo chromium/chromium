@@ -191,6 +191,7 @@ class ContextualTasksUI
   void TransferNavigationToEmbeddedPage(content::OpenURLParams params) override;
   void CloseSidePanel() override;
   void OnSidePanelStateChanged() override;
+  void FocusComposebox() override;
   void OnActiveTabContextStatusChanged() override;
   void SyncAutoSuggestedTabContext() override;
   void ResetForNewThread(const base::Uuid& task_id, const GURL& url) override;

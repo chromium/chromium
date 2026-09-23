@@ -31,6 +31,7 @@ class MockContextualTasksPage : public mojom::Page {
                bool replace_navigation_entry),
               (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
+  MOCK_METHOD(void, FocusComposebox, (), (override));
   MOCK_METHOD(void,
               PostAimMessage,
               (const std::vector<uint8_t>& message),

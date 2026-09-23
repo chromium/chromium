@@ -51,6 +51,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'showSmartTabSharingDefaultOnIph',
       'onWindowClosed',
       'resetForNewThread',
+      'focusComposebox',
     ]);
   }
 
@@ -190,6 +191,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   resetForNewThread(taskId: Uuid, threadUrl: Url) {
     this.methodCalled('resetForNewThread', taskId, threadUrl);
+  }
+
+  focusComposebox() {
+    this.methodCalled('focusComposebox');
   }
 }
 

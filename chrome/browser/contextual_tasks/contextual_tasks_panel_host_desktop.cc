@@ -59,6 +59,9 @@ void ContextualTasksPanelHostDesktop::Show(
   // Only show the side panel if it's closed.
   auto* side_panel_ui = SidePanelUI::From(browser_window_);
   if (!side_panel_ui || IsPanelOpenForContextualTask()) {
+    if (web_view_) {
+      web_view_->RequestContentViewFocus();
+    }
     return;
   }
 
@@ -76,6 +79,10 @@ void ContextualTasksPanelHostDesktop::Show(
           /*open_trigger=*/std::nullopt,
           /*suppress_animations=*/true);
       break;
+  }
+
+  if (web_view_) {
+    web_view_->RequestContentViewFocus();
   }
 }
 
