@@ -1002,10 +1002,13 @@ bool VideoRendererImpl::IsBeforeStartTime(const VideoFrame& frame) {
 bool VideoRendererImpl::HasBestFirstFrame(const VideoFrame& frame) {
   // We have the best first frame in the queue if our current frame has a
   // timestamp after `start_timestamp_` or straddles `start_timestamp_`.
+  // Ignore <= 1ms deltas to prevent container timestamp quantization jitter
+  // (e.g. 1ms timecode scale in Matroska) from causing a preceding frame to
+  // appear to straddle the seek target of the subsequent frame.
   return frame.timestamp() >= start_timestamp_ ||
          frame.timestamp() + frame.metadata().frame_duration.value_or(
                                  last_decoder_stream_avg_duration_) >
-             start_timestamp_;
+             start_timestamp_ + base::Milliseconds(1);
 }
 
 void VideoRendererImpl::RemoveFramesForUnderflowOrBackgroundRendering() {

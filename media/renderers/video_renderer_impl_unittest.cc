@@ -486,6 +486,23 @@ TEST_F(VideoRendererImplTest, InitializeAndStartPlayingFromWithDuration) {
   Destroy();
 }
 
+TEST_F(VideoRendererImplTest, InitializeAndStartPlayingFromWithDurationJitter) {
+  Initialize();
+  // Frame 42 has a duration of 42ms (ends at 84ms) due to container timestamp
+  // quantization (e.g. 1ms timecode scale for 24fps in Matroska), which extends
+  // 1ms past the start time of frame 83. We should still paint frame 83 when
+  // seeking to 83.
+  QueueFrames("0d42 42d42 83d41 125d42 167d42 208d41");
+  EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(83)));
+  EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
+  EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+  EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+  EXPECT_CALL(mock_cb_, OnVideoFrameRateChange(_)).Times(AnyNumber());
+  StartPlayingFrom(83);
+  Destroy();
+}
+
 TEST_F(VideoRendererImplTest, InitializeAndEndOfStream) {
   Initialize();
   StartPlayingFrom(0);
