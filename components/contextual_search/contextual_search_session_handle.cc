@@ -442,6 +442,11 @@ bool ContextualSearchSessionHandle::DeleteFile(
   return success;
 }
 
+bool ContextualSearchSessionHandle::RemoveUploadedContextToken(
+    const base::UnguessableToken& file_token) {
+  return std::erase(uploaded_context_tokens_, file_token) > 0;
+}
+
 void ContextualSearchSessionHandle::ClearFiles(bool query_submitted) {
   if (query_submitted) {
     // When submitting query, always track tab tokens in `persisted_tabs_`

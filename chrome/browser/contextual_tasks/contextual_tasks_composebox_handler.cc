@@ -1019,8 +1019,21 @@ void ContextualTasksComposeboxHandler::AddTabContext(
 
   pending_context_uploads_.insert(token);
 
-  ContextualSearchboxHandler::ContinueAddTabContext(tab_id, delay_upload, token,
-                                                    std::move(callback));
+  ContextualSearchboxHandler::ContinueAddTabContext(
+      tab_id, delay_upload, token,
+      base::BindOnce(&ContextualTasksComposeboxHandler::ForwardTabContextResult,
+                     weak_factory_.GetWeakPtr(), token, std::move(callback)));
+}
+
+void ContextualTasksComposeboxHandler::ForwardTabContextResult(
+    const base::UnguessableToken& token,
+    AddTabContextCallback callback,
+    base::expected<base::UnguessableToken,
+                   contextual_search::ContextUploadErrorType> result) {
+  if (!result.has_value()) {
+    MarkContextUploadFinished(token);
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void ContextualTasksComposeboxHandler::ClearFiles(

@@ -234,14 +234,19 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
         tabs.find(tab => tab.showInCurrentTabChip) || null;
   }
 
-  protected onAddTabContext_(e: CustomEvent<{
+  protected async onAddTabContext_(e: CustomEvent<{
     id: number,
     title: string,
     url: Url,
   }>) {
-    this.searchboxBrowserProxy_.handler.addTabContext(
-        e.detail.id, /*delayUpload=*/ false,
-        TabAttachmentSource.kCurrentTabChip);
+    try {
+      await this.searchboxBrowserProxy_.handler.addTabContext(
+          e.detail.id, /*delayUpload=*/ false,
+          TabAttachmentSource.kCurrentTabChip);
+    } catch {
+      // TODO (b/563357265) - Surface addTabContext failures for the current-tab
+      // chip so they are visible to the user in the omnibox popup.
+    }
   }
 
   protected computeShowCurrentTabChip_() {
