@@ -1187,7 +1187,8 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     }
     [gemini_container_mediator_ updateFloatyWithPartialPageContext];
     if (prepopulated_prompt) {
-      ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
+      ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt,
+                                        startup_state.shouldAutoSubmit);
     }
     CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
     bool should_show_suggestion_chips = [gemini_container_mediator_

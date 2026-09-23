@@ -457,6 +457,7 @@ using ios::provider::GeminiViewState;
     config.shouldShowAccountSnackbar = YES;
   }
   config.contextualCueChipLabel = startupState.prepopulatedPrompt;
+  config.shouldAutoSubmit = startupState.shouldAutoSubmit;
   config.entryPoint = startupState.entryPoint;
   config.blockQuerySubmissionWhileLoading =
       [self shouldBlockQuerySubmissionWhileLoadingForEntryPoint:

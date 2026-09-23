@@ -7,6 +7,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -116,6 +118,10 @@ class TestWebState : public web::FakeWebState {
 namespace ios::provider {
 bool WasForceRefreshQuotaInfoCalled();
 void ResetForceRefreshQuotaInfoCalled();
+std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint();
+NSString* GetLastUpdatePromptActionPrompt();
+BOOL GetLastUpdatePromptActionShouldAutoSubmit();
+void ResetGemini();
 }  // namespace ios::provider
 
 // Test fixture for GeminiBrowserAgent.
@@ -2018,4 +2024,44 @@ TEST_F(GeminiBrowserAgentTest,
                     object:nil];
 
   EXPECT_FALSE(ios::provider::WasForceRefreshQuotaInfoCalled());
+}
+
+// Tests that StartGeminiFlow updates prompt action and passes
+// `shouldAutoSubmit` when floaty is already invoked.
+TEST_F(GeminiBrowserAgentTest,
+       TestStartGeminiFlowWithAutoSubmitWhenFloatyInvoked) {
+  // Simulate FRE completion.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->WasShown();
+
+  ios::provider::ResetGemini();
+  SetIsFloatyInvoked(true);
+
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ContextualCueInfobar];
+  startup_state.prepopulatedPrompt = @"Explain this page";
+  startup_state.shouldAutoSubmit = YES;
+
+  gemini_browser_agent_->StartGeminiFlow(base_view_controller, startup_state);
+
+  EXPECT_EQ(ios::provider::GetLastUpdatePromptActionEntryPoint(),
+            gemini::EntryPoint::ContextualCueInfobar);
+  EXPECT_NSEQ(ios::provider::GetLastUpdatePromptActionPrompt(),
+              @"Explain this page");
+  EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
+
+  // Test when `shouldAutoSubmit` is NO.
+  startup_state.entryPoint = gemini::EntryPoint::ContextualCueChip;
+  startup_state.prepopulatedPrompt = @"Summarize this page";
+  startup_state.shouldAutoSubmit = NO;
+
+  gemini_browser_agent_->StartGeminiFlow(base_view_controller, startup_state);
+
+  EXPECT_EQ(ios::provider::GetLastUpdatePromptActionEntryPoint(),
+            gemini::EntryPoint::ContextualCueChip);
+  EXPECT_NSEQ(ios::provider::GetLastUpdatePromptActionPrompt(),
+              @"Summarize this page");
+  EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }

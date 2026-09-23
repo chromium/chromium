@@ -905,6 +905,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Toolbar"/>
   <int value="13" label="App Switcher AI Summarization"/>
   <int value="14" label="AtMemory Search Unsupported Query"/>
+  <int value="15" label="Contextual Cue Chip"/>
+  <int value="16" label="Contextual Cue Infobar"/>
   <int value="100" label="Unknown"/>
 </enum>
 

@@ -127,6 +127,10 @@ class PageContext;
 // page context is loading.
 @property(nonatomic, assign) BOOL showPageLoadingSnackbarOnOpeningInvocation;
 
+// Whether to automatically submit the prepopulated prompt upon presenting the
+// floaty.
+@property(nonatomic, assign) BOOL shouldAutoSubmit;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_

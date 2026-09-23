@@ -245,6 +245,20 @@ TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationActiveWebState) {
                                          baseViewController:nil];
   EXPECT_NE(nil, config);
   EXPECT_EQ(mediator_.gateway, config.gateway);
+  EXPECT_FALSE(config.shouldAutoSubmit);
+}
+
+// Tests that createGeminiConfigurationForActiveWebState sets shouldAutoSubmit
+// on configuration when requested by startup state.
+TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationWithAutoSubmit) {
+  AppendActiveWebState();
+
+  startup_state_.shouldAutoSubmit = YES;
+  GeminiConfiguration* config =
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                         baseViewController:nil];
+  EXPECT_NE(nil, config);
+  EXPECT_TRUE(config.shouldAutoSubmit);
 }
 
 // Tests that suggestion chips are hidden when creating configuration for
