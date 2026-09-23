@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("resource_broker") {
+  sources = [
+    "resource_broker_service_impl.cc",
+    "resource_broker_service_impl.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  public_deps = [
+    "//content/services/resource_broker/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [ "//base" ]
+}

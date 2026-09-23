@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module resource_broker.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "mojo/public/mojom/base/work_in_progress.mojom";
+
+// Control interface for the Resource Broker service.
+//
+// Caller: browser process (ResourceBrokerHost). Callee: sandboxed utility
+// process (ResourceBrokerServiceImpl).
+//
+// METRICS-ONLY: This component only observes eligible subresource responses to
+// measure cross-renderer duplication of identical bytes. It does not modify,
+// substitute, or serve responses, and does not share memory with renderers.
+// Its only outputs are aggregated metrics. Serving behavior, if ever built,
+// will be a separate default-off feature adding new messages to this interface.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService,
+ RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+interface ResourceBrokerService {
+};

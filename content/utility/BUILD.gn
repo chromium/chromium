@@ -47,6 +47,7 @@ source_set("utility") {
     "//content/public/common:content_descriptor_keys",
     "//content/public/utility:utility_sources",
     "//content/services/devtools_media_encoding_service",
+    "//content/services/resource_broker",
     "//content/utility/on_device_model:on_device_model_sandbox_init",
     "//content/utility/webnn:webnn_sandbox_init",
     "//device/vr/buildflags",

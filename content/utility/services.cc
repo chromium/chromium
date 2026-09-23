@@ -21,6 +21,9 @@
 #include "content/public/utility/utility_thread.h"
 #include "content/services/devtools_media_encoding_service/devtools_media_encoding_service_impl.h"
 #include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
+#include "content/services/resource_broker/public/mojom/resource_broker.mojom.h"
+#include "content/services/resource_broker/resource_broker_service_impl.h"
+#include "content/utility/on_device_model/on_device_model_sandbox_init.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
@@ -310,6 +313,13 @@ auto RunMediaDrmSupportService(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+auto RunResourceBroker(
+    mojo::PendingReceiver<resource_broker::mojom::ResourceBrokerService>
+        receiver) {
+  return std::make_unique<resource_broker::ResourceBrokerServiceImpl>(
+      std::move(receiver));
+}
+
 auto RunStorageService(
     mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
   return std::make_unique<storage::StorageServiceImpl>(
@@ -407,6 +417,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunAudio);
 
   services.Add(RunDataDecoder);
+  services.Add(RunResourceBroker);
   services.Add(RunStorageService);
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
