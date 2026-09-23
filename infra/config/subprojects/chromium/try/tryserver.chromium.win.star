@@ -308,6 +308,7 @@ try_.builder(
         # out builder cache
         cancel_stale = False,
         on_default_cq = True,
+        reuse_max_commit_distance = 800 if settings.is_main else None,
     ),
     experiments = {
         "luci.buildbucket.run_in_turboci": 100,
