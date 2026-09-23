@@ -441,8 +441,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     if (blob_info_array_) {
       size_t index = blob_info_array_->size();
       DCHECK_LE(index, std::numeric_limits<uint32_t>::max());
-      blob_info_array_->emplace_back(blob->GetBlobDataHandle(), blob->type(),
-                                     blob->size());
+      blob_info_array_->emplace_back(blob->GetBlobDataHandle());
       WriteAndRequireInterfaceTag(kBlobIndexTag);
       WriteUint32(static_cast<uint32_t>(index));
     } else {

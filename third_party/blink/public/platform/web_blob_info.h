@@ -22,16 +22,6 @@ class WebBlobInfo {
  public:
   WebBlobInfo()
       : is_file_(false), size_(std::numeric_limits<uint64_t>::max()) {}
-  BLINK_EXPORT WebBlobInfo(const WebString& uuid,
-                           const WebString& type,
-                           uint64_t size,
-                           CrossVariantMojoRemote<mojom::BlobInterfaceBase>);
-  BLINK_EXPORT WebBlobInfo(const WebString& uuid,
-                           const WebString& file_name,
-                           const WebString& type,
-                           const std::optional<base::Time>& last_modified,
-                           uint64_t size,
-                           CrossVariantMojoRemote<mojom::BlobInterfaceBase>);
 
   // For testing purposes, these two methods create a WebBlobInfo connected to a
   // dangling mojo message pipe. This means that any operations that actually
@@ -50,7 +40,6 @@ class WebBlobInfo {
   BLINK_EXPORT WebBlobInfo& operator=(const WebBlobInfo& other);
 
   bool IsFile() const { return is_file_; }
-  const WebString& Uuid() const { return uuid_; }
   const WebString& GetType() const { return type_; }
   uint64_t size() const { return size_; }
   const WebString& FileName() const { return file_name_; }
@@ -66,9 +55,6 @@ class WebBlobInfo {
   // TODO(mek): Get rid of these constructors after ensuring that the
   // BlobDataHandle always has the correct type and size.
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
-                           const WebString& type,
-                           uint64_t size);
-  BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
                            const WebString& file_name,
                            const WebString& type,
                            const std::optional<base::Time>& last_modified,
@@ -78,7 +64,6 @@ class WebBlobInfo {
 
  private:
   bool is_file_;
-  WebString uuid_;
   WebString type_;  // MIME type
   uint64_t size_;
   WebPrivatePtrForRefCounted<BlobDataHandle> blob_handle_;

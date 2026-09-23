@@ -10,30 +10,6 @@
 
 namespace blink {
 
-WebBlobInfo::WebBlobInfo(const WebString& uuid,
-                         const WebString& type,
-                         uint64_t size,
-                         CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob)
-    : WebBlobInfo(BlobDataHandle::Create(
-          uuid,
-          type,
-          size,
-          mojo::PendingRemote<mojom::blink::Blob>(std::move(blob)))) {}
-
-WebBlobInfo::WebBlobInfo(const WebString& uuid,
-                         const WebString& file_name,
-                         const WebString& type,
-                         const std::optional<base::Time>& last_modified,
-                         uint64_t size,
-                         CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob)
-    : WebBlobInfo(BlobDataHandle::Create(
-                      uuid,
-                      type,
-                      size,
-                      mojo::PendingRemote<mojom::blink::Blob>(std::move(blob))),
-                  file_name,
-                  last_modified) {}
-
 // static
 WebBlobInfo WebBlobInfo::BlobForTesting(const WebString& uuid,
                                         const WebString& type,
@@ -68,7 +44,10 @@ CrossVariantMojoRemote<mojom::BlobInterfaceBase> WebBlobInfo::CloneBlobRemote()
 }
 
 WebBlobInfo::WebBlobInfo(scoped_refptr<BlobDataHandle> handle)
-    : WebBlobInfo(handle, handle->GetType(), handle->size()) {}
+    : is_file_(false),
+      type_(handle->GetType()),
+      size_(handle->size()),
+      blob_handle_(std::move(handle)) {}
 
 WebBlobInfo::WebBlobInfo(scoped_refptr<BlobDataHandle> handle,
                          const WebString& file_name,
@@ -80,21 +59,11 @@ WebBlobInfo::WebBlobInfo(scoped_refptr<BlobDataHandle> handle,
                   handle->size()) {}
 
 WebBlobInfo::WebBlobInfo(scoped_refptr<BlobDataHandle> handle,
-                         const WebString& type,
-                         uint64_t size)
-    : is_file_(false),
-      uuid_(handle->Uuid()),
-      type_(type),
-      size_(size),
-      blob_handle_(std::move(handle)) {}
-
-WebBlobInfo::WebBlobInfo(scoped_refptr<BlobDataHandle> handle,
                          const WebString& file_name,
                          const WebString& type,
                          const std::optional<base::Time>& last_modified,
                          uint64_t size)
     : is_file_(true),
-      uuid_(handle->Uuid()),
       type_(type),
       size_(size),
       blob_handle_(std::move(handle)),

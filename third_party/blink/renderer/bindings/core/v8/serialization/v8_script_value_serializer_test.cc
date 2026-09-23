@@ -1693,7 +1693,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
   ASSERT_EQ(1u, blob_info_array.size());
   const WebBlobInfo& info = blob_info_array[0];
   EXPECT_FALSE(info.IsFile());
-  EXPECT_EQ(uuid, String(info.Uuid()));
+  EXPECT_EQ(uuid, info.GetBlobHandle()->Uuid());
   EXPECT_EQ("text/plain", info.GetType());
   EXPECT_EQ(sizeof(kHelloWorld), static_cast<size_t>(info.size()));
 }
@@ -1884,7 +1884,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
   const WebBlobInfo& info = blob_info_array[0];
   EXPECT_TRUE(info.IsFile());
   EXPECT_EQ("path", info.FileName());
-  EXPECT_EQ(file->Uuid(), String(info.Uuid()));
+  EXPECT_EQ(file->Uuid(), info.GetBlobHandle()->Uuid());
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
