@@ -522,6 +522,78 @@ TEST_P(ToolbarMediatorTest, TestBrowserLayoutStateUpdatesHasOmnibox) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that consumer updates are skipped while a toolbar does not have the
+// omnibox, except for NTP visibility on the top toolbar.
+TEST_P(ToolbarMediatorTest, TestInactiveToolbarSkipsConsumerUpdates) {
+  BrowserLayoutState* layout_state = browser_->GetBrowserLayoutState();
+  BOOL top_position = GetParam();
+  ToolbarPosition inactive_position =
+      top_position ? ToolbarPosition::kBottom : ToolbarPosition::kTop;
+
+  [layout_state setToolbarPosition:inactive_position
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
+  OCMExpect([consumer_ setHasOmnibox:NO]);
+  mediator_.browserLayoutState = layout_state;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Insert and activate a WebState while this toolbar is inactive. Button and
+  // menu updates should be skipped, while the top toolbar still updates NTP
+  // visibility.
+  if (top_position) {
+    OCMExpect([consumer_ setNTPVisible:NO
+                        isStartSurface:NO
+                             isLoading:NO
+                       loadingProgress:0]);
+  } else {
+    OCMReject([consumer_ setNTPVisible:OCMOCK_ANY
+                        isStartSurface:OCMOCK_ANY
+                             isLoading:OCMOCK_ANY
+                       loadingProgress:0]);
+  }
+  OCMReject([consumer_ setCanGoBack:OCMOCK_ANY]);
+  OCMReject([consumer_ setShareEnabled:OCMOCK_ANY]);
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:ToolbarButtonTypeTabGrid]);
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that consumer state is synced immediately when the toolbar position
+// switches to make the toolbar active.
+TEST_P(ToolbarMediatorTest,
+       TestSwitchingToolbarPositionSyncsNewlyActiveConsumer) {
+  BrowserLayoutState* layout_state = browser_->GetBrowserLayoutState();
+  BOOL top_position = GetParam();
+  ToolbarPosition inactive_position =
+      top_position ? ToolbarPosition::kBottom : ToolbarPosition::kTop;
+  ToolbarPosition active_position =
+      top_position ? ToolbarPosition::kTop : ToolbarPosition::kBottom;
+
+  [layout_state setToolbarPosition:inactive_position
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
+  OCMExpect([consumer_ setHasOmnibox:NO]);
+  mediator_.browserLayoutState = layout_state;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Switching the toolbar position to make this toolbar active should
+  // immediately sync the consumer state.
+  OCMExpect([consumer_ setHasOmnibox:YES]);
+  OCMExpect([consumer_ setCanGoBack:YES]);
+  OCMExpect([consumer_ setShareEnabled:YES]);
+  OCMExpect([consumer_ setMenu:[OCMArg any]
+                 forButtonType:ToolbarButtonTypeTabGrid]);
+  [layout_state setToolbarPosition:active_position
+                           passKey:layout_state::LayoutStateTestPassKeyFactory::
+                                       CreateToolbarKey()];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 // Tests that displayPromoFromAppAgent: calls showBannerPromo on the consumer.
 TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
   if (!GetParam()) {

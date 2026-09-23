@@ -180,12 +180,21 @@
   if (!webState) {
     return;
   }
+  BOOL isNtp = IsVisibleURLNewTabPage(webState);
+  if (![self hasOmnibox]) {
+    if (_topPosition) {
+      [self.consumer setNTPVisible:isNtp
+                    isStartSurface:NO
+                         isLoading:NO
+                   loadingProgress:0];
+    }
+    return;
+  }
   [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
   [self.consumer
       setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)
              animated:animated];
 
-  BOOL isNtp = IsVisibleURLNewTabPage(webState);
   const GURL visibleURL = webState->GetVisibleURL();
   [self.consumer setShareEnabled:!visibleURL.is_empty() && !isNtp];
 
@@ -249,6 +258,7 @@
   _browserLayoutState = browserLayoutState;
   [_browserLayoutState addObserver:self];
   [self updateToolbarPosition];
+  [self updateConsumer];
 }
 
 - (BrowserLayoutState*)browserLayoutState {
@@ -260,11 +270,8 @@
     return;
   }
   _consumer = consumer;
-  if (_webStateList) {
-    [self updateConsumerWithWebState:_webStateList->GetActiveWebState()
-                            animated:NO];
-  }
   [self updateToolbarPosition];
+  [self updateConsumer];
 }
 
 - (void)setUICurrentlySupportsPromo:(BOOL)supports {
@@ -442,12 +449,7 @@
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  if (webStateList->GetActiveWebState()) {
-    [self updateConsumerWithWebState:webStateList->GetActiveWebState()
-                            animated:NO];
-  } else {
-    [self updateConsumerTabCountAndGroupState];
-  }
+  [self updateConsumer];
 }
 
 #pragma mark - BrowserLayoutStateObserver
@@ -455,6 +457,7 @@
 - (void)browserLayoutState:(BrowserLayoutState*)browserLayoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
   [self updateToolbarPosition];
+  [self updateConsumer];
 }
 
 #pragma mark - DefaultBrowserBannerAppAgentObserver
@@ -521,14 +524,34 @@
 
 #pragma mark - Private
 
+// Returns whether this toolbar currently hosts the omnibox.
+- (BOOL)hasOmnibox {
+  if (!_browserLayoutState) {
+    return YES;
+  }
+  return (_browserLayoutState.toolbarPosition == ToolbarPosition::kTop) ==
+         _topPosition;
+}
+
 // Updates the position of the toolbar by updating its visibility.
 - (void)updateToolbarPosition {
   if (!_browserLayoutState) {
     return;
   }
-  BOOL hasOmnibox = (_browserLayoutState.toolbarPosition ==
-                     ToolbarPosition::kTop) == _topPosition;
-  [self.consumer setHasOmnibox:hasOmnibox];
+  [self.consumer setHasOmnibox:[self hasOmnibox]];
+}
+
+// Synchronizes the consumer state with the active WebState and WebStateList.
+- (void)updateConsumer {
+  if (!_webStateList) {
+    return;
+  }
+  if (web::WebState* activeWebState = _webStateList->GetActiveWebState()) {
+    [self updateConsumerWithWebState:activeWebState animated:NO];
+  } else if ([self hasOmnibox]) {
+    [self updateConsumerTabCountAndGroupState];
+    [self updateAssistantButton];
+  }
 }
 
 // Updates keyboard constraints with `notification`. When
@@ -595,6 +618,9 @@
 
 // Updates the consumer tab state.
 - (void)updateConsumerTabCountAndGroupState {
+  if (![self hasOmnibox]) {
+    return;
+  }
   if (_webStateList) {
     const TabGroup* group = GetGroupForActiveWebState(_webStateList);
     if (group) {
@@ -612,6 +638,9 @@
 
 // Updates the consumer with the latest assistant button state.
 - (void)updateAssistantButton {
+  if (![self hasOmnibox]) {
+    return;
+  }
   web::WebState* activeWebState =
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
 

@@ -618,6 +618,10 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
     return;
   }
   _hasOmnibox = hasOmnibox;
+  if (!_hasOmnibox) {
+    _hideProgressBarClosure.Cancel();
+    _progressBar.hidden = YES;
+  }
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
   [self updateTabGroupIndicatorAvailability];
@@ -650,13 +654,13 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
           forFullscreenProgress:_fullscreenProgress];
     }
 
-    if (loadingStateChanged && isLoading) {
+    if (_hasOmnibox && loadingStateChanged && isLoading) {
       [_progressBar setProgress:0.0 animated:NO];
     }
     [self updateProgressBarVisibility];
   }
 
-  if (progress != _progressBar.progress) {
+  if (_hasOmnibox && progress != _progressBar.progress) {
     BOOL isGoingBackward = progress < _progressBar.progress;
     [_progressBar setProgress:progress
                      animated:!_progressBar.isHidden && !isGoingBackward];
@@ -2096,7 +2100,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
 
 // Starts or stops the loading progress bar.
 - (void)updateProgressBarVisibility {
-  if (!_progressBar) {
+  if (!_progressBar || !_hasOmnibox) {
     return;
   }
 
