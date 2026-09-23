@@ -272,4 +272,12 @@ void HTMLMeterElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
+bool HTMLMeterElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

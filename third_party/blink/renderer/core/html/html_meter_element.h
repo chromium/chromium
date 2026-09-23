@@ -72,6 +72,9 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
+
  private:
   bool IsLabelable() const override { return true; }
 

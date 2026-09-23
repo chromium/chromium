@@ -1390,13 +1390,27 @@ output {
 /* meter */
 
 meter {
--webkit-user-modify: read-only !important;
-appearance: auto;
-block-size: 1em;
-box-sizing: border-box;
-display: inline-block;
-inline-size: 5em;
-vertical-align: -0.2em;
+    -webkit-user-modify: read-only !important;
+    appearance: auto;
+    box-sizing: border-box;
+
+    @supports not blink-feature(AppearanceBase) {
+        block-size: 1em;
+        display: inline-block;
+        inline-size: 5em;
+        vertical-align: -0.2em;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        block-size: -internal-auto-base(1em, revert-rule);
+        display: -internal-auto-base(inline-block, revert-rule);
+        inline-size: -internal-auto-base(5em, 100%);
+        vertical-align: -internal-auto-base(-0.2em, revert-rule);
+
+        color: -internal-auto-base(revert-rule, inherit);
+        font: -internal-auto-base(revert-rule, inherit);
+        background-color: -internal-auto-base(revert-rule, transparent);
+    }
 }
 
 meter::-webkit-meter-inner-element {
@@ -1408,25 +1422,55 @@ display: grid;
 grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
 inline-size: 100%;
 position: relative;
+
+@supports blink-feature(AppearanceBase) {
+    /** This pseudo element doesn't exist in the base layout. */
+    display: -internal-auto-base(revert-rule, contents) !important;
+}
 }
 
 meter::-webkit-meter-bar {
--webkit-user-modify: read-only !important;
-align-self: unsafe center;
-background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
-block-size: 100%;
-box-sizing: border-box;
-grid-row-end: line2;
-grid-row-start: line1;
-inline-size: 100%;
-overflow: hidden;
-position: absolute;
+    -webkit-user-modify: read-only !important;
+    box-sizing: border-box;
+    inline-size: 100%;
+
+    @supports not blink-feature(AppearanceBase) {
+        align-self: unsafe center;
+        background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+        block-size: 100%;
+        grid-row-end: line2;
+        grid-row-start: line1;
+        overflow: hidden;
+        position: absolute;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for meter::slider-track,
+         * for now use the webkit pseudo elements. */
+        align-self: -internal-auto-base(unsafe center, revert-rule);
+        background: -internal-auto-base(linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd), revert-rule);
+        block-size: -internal-auto-base(100%, 1em);
+        grid-row-end: -internal-auto-base(line2, revert-rule);
+        grid-row-start: -internal-auto-base(line1, revert-rule);
+        overflow: -internal-auto-base(hidden, revert-rule);
+        position: -internal-auto-base(absolute, revert-rule);
+    }
 }
 
 meter::-webkit-meter-bar:-internal-shadow-host-has-non-auto-appearance {
-background: light-dark(#efefef, #3B3B3B);
-border-radius: 20px;
-border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+    @supports not blink-feature(AppearanceBase) {
+        background: light-dark(#efefef, #3B3B3B);
+        border-radius: 20px;
+        border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for meter::slider-track,
+         * for now use the webkit pseudo elements. */
+        background: -internal-auto-base(light-dark(#efefef, #3B3B3B), transparent);
+        border-radius: -internal-auto-base(20px, revert-rule);
+        border: -internal-auto-base(thin solid light-dark(rgba(118, 118, 118, 0.3), #858585), 1px solid currentColor);
+    }
 }
 
 meter::-webkit-meter-optimum-value {
@@ -1437,7 +1481,15 @@ box-sizing: border-box;
 }
 
 meter::-webkit-meter-optimum-value:-internal-shadow-host-has-non-auto-appearance {
-background: light-dark(#107c10, #74b374);
+    @supports not blink-feature(AppearanceBase) {
+        background: light-dark(#107c10, #74b374);
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for meter::slider-fill,
+         * for now use the webkit pseudo elements. */
+        background: -internal-auto-base(light-dark(#107c10, #74b374), green);
+    }
 }
 
 meter::-webkit-meter-suboptimum-value {
@@ -1448,7 +1500,15 @@ box-sizing: border-box;
 }
 
 meter::-webkit-meter-suboptimum-value:-internal-shadow-host-has-non-auto-appearance {
-background: light-dark(#ffb900, #f2c812);
+    @supports not blink-feature(AppearanceBase) {
+        background: light-dark(#ffb900, #f2c812);
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for meter::slider-fill,
+         * for now use the webkit pseudo elements. */
+        background: -internal-auto-base(light-dark(#ffb900, #f2c812), orange);
+    }
 }
 
 meter::-webkit-meter-even-less-good-value {
@@ -1459,7 +1519,15 @@ box-sizing: border-box;
 }
 
 meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-appearance {
-background: light-dark(#d83b01, #e98f6d);
+    @supports not blink-feature(AppearanceBase) {
+        background: light-dark(#d83b01, #e98f6d);
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for meter::slider-fill,
+         * for now use the webkit pseudo elements. */
+        background: -internal-auto-base(light-dark(#d83b01, #e98f6d), red);
+    }
 }
 
 /* progress */
