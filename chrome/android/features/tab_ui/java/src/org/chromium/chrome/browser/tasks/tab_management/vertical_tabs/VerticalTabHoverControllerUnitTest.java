@@ -47,6 +47,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1065,7 +1066,14 @@ public class VerticalTabHoverControllerUnitTest {
                 listener, TAB_ID_2, tabView2, /* actionButton= */ null, v -> tab2Hovered[0] = v);
 
         // Hover enter on tab 1.
-        MotionEvent enter1 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 10f, 10f, 0);
+        MotionEvent enter1 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
         enter1.setSource(InputDevice.SOURCE_MOUSE);
         tabView1.dispatchGenericMotionEvent(enter1);
         assertEquals(tabView1, mController.getCurrentHoveredView());
@@ -1073,7 +1081,14 @@ public class VerticalTabHoverControllerUnitTest {
         assertFalse(tab2Hovered[0]);
 
         // Hover enter on tab 2 without exit on tab 1 -> clears tab 1 visual state.
-        MotionEvent enter2 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 10f, 10f, 0);
+        MotionEvent enter2 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
         enter2.setSource(InputDevice.SOURCE_MOUSE);
         tabView2.dispatchGenericMotionEvent(enter2);
         assertEquals(tabView2, mController.getCurrentHoveredView());
@@ -1081,7 +1096,14 @@ public class VerticalTabHoverControllerUnitTest {
         assertTrue(tab2Hovered[0]);
 
         // Hover exit on tab 2 outside bounds -> clears tab 2 visual state and currentHoveredView.
-        MotionEvent exit2 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, -10f, -10f, 0);
+        MotionEvent exit2 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ -10f,
+                        /* y= */ -10f,
+                        /* metaState= */ 0);
         exit2.setSource(InputDevice.SOURCE_MOUSE);
         tabView2.dispatchGenericMotionEvent(exit2);
         assertNull(mController.getCurrentHoveredView());
@@ -1113,7 +1135,14 @@ public class VerticalTabHoverControllerUnitTest {
                 /* actionButton= */ null,
                 v -> tab1Hovered[0] = v);
 
-        MotionEvent enter1 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 10f, 10f, 0);
+        MotionEvent enter1 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
         enter1.setSource(InputDevice.SOURCE_MOUSE);
         tabView1.dispatchGenericMotionEvent(enter1);
         assertNull(controller.getCurrentHoveredView());
@@ -1162,9 +1191,23 @@ public class VerticalTabHoverControllerUnitTest {
                 /* actionButton= */ null,
                 v -> tab2Hovered[0] = v);
 
-        MotionEvent enter = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 10f, 10f, 0);
+        MotionEvent enter =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
         enter.setSource(InputDevice.SOURCE_MOUSE);
-        MotionEvent exit = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, -10f, -10f, 0);
+        MotionEvent exit =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ -10f,
+                        /* y= */ -10f,
+                        /* metaState= */ 0);
         exit.setSource(InputDevice.SOURCE_MOUSE);
 
         // 1. Hover tab 1, then open context menu and hide hover card.
@@ -1206,6 +1249,176 @@ public class VerticalTabHoverControllerUnitTest {
         controller.resetHoverState();
         assertNull(controller.getCurrentHoveredView());
         assertFalse(tab1Hovered[0]);
+
+        controller.destroy();
+    }
+
+    @Test
+    public void testSetupTabGroupHeaderHover_SingleHoverGuaranteeAndVisualStateUpdates() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout groupView1 = new FrameLayout(activity);
+        View menuButton = new View(activity);
+        menuButton.setId(R.id.menu_button);
+        groupView1.addView(menuButton);
+        FrameLayout tabView1 = new FrameLayout(activity);
+        groupView1.layout(0, 0, 100, 48);
+        tabView1.layout(0, 48, 100, 96);
+
+        boolean[] group1Hovered = new boolean[] {false};
+        boolean[] tab1Hovered = new boolean[] {false};
+        TabHoverListener listener = mController.getTabHoverListener();
+
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                listener,
+                GROUP_HEADER_TAB_ID_1,
+                GROUP_ID_1,
+                groupView1,
+                menuButton,
+                v -> group1Hovered[0] = v);
+        VerticalTabHoverController.setupTabHover(
+                listener, TAB_ID_1, tabView1, /* actionButton= */ null, v -> tab1Hovered[0] = v);
+
+        UserActionTester userActionTester = new UserActionTester();
+
+        // Hover enter on group header 1 while rail is expanded -> records GroupHeaderHovered.
+        when(mContainerView.isCollapsed()).thenReturn(false);
+        MotionEvent enter1 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        enter1.setSource(InputDevice.SOURCE_MOUSE);
+        groupView1.dispatchGenericMotionEvent(enter1);
+        assertEquals(groupView1, mController.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+        assertFalse(tab1Hovered[0]);
+        assertEquals(1, userActionTester.getActionCount("Android.VerticalTabs.GroupHeaderHovered"));
+
+        // Hover enter on tab 1 without exit on group header 1 -> clears group header 1 visual
+        // state.
+        MotionEvent enter2 =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        enter2.setSource(InputDevice.SOURCE_MOUSE);
+        tabView1.dispatchGenericMotionEvent(enter2);
+        assertEquals(tabView1, mController.getCurrentHoveredView());
+        assertFalse(group1Hovered[0]);
+        assertTrue(tab1Hovered[0]);
+
+        // Hover enter back on group header 1 while rail is collapsed -> clears tab 1 visual state,
+        // does not record GroupHeaderHovered.
+        when(mContainerView.isCollapsed()).thenReturn(true);
+        groupView1.dispatchGenericMotionEvent(enter1);
+        assertEquals(groupView1, mController.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+        assertFalse(tab1Hovered[0]);
+        assertEquals(1, userActionTester.getActionCount("Android.VerticalTabs.GroupHeaderHovered"));
+    }
+
+    @Test
+    public void testTabGroupHeaderHoverStatePersistsDuringContextMenuAndScroll_ClearedOnReset() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout groupView1 = new FrameLayout(activity);
+        groupView1.layout(0, 0, 100, 40);
+        FrameLayout groupView2 = new FrameLayout(activity);
+        groupView2.layout(0, 40, 100, 80);
+
+        boolean[] group1Hovered = new boolean[] {false};
+        boolean[] group2Hovered = new boolean[] {false};
+        boolean[] isContextMenuShowing = new boolean[] {false};
+        VerticalTabHoverController controller =
+                new VerticalTabHoverController(
+                        mContainerView,
+                        mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
+                        mTabModelSelector,
+                        mTabContentManagerSupplier,
+                        () -> isContextMenuShowing[0]);
+
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                controller.getTabHoverListener(),
+                GROUP_HEADER_TAB_ID_1,
+                GROUP_ID_1,
+                groupView1,
+                /* menuButton= */ null,
+                v -> group1Hovered[0] = v);
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                controller.getTabHoverListener(),
+                GROUP_HEADER_TAB_ID_2,
+                GROUP_ID_2,
+                groupView2,
+                /* menuButton= */ null,
+                v -> group2Hovered[0] = v);
+
+        MotionEvent enter =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        enter.setSource(InputDevice.SOURCE_MOUSE);
+        MotionEvent exit =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ -10f,
+                        /* y= */ -10f,
+                        /* metaState= */ 0);
+        exit.setSource(InputDevice.SOURCE_MOUSE);
+
+        // 1. Hover group header 1, then open context menu and hide hover card.
+        groupView1.dispatchGenericMotionEvent(enter);
+        assertEquals(groupView1, controller.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+
+        isContextMenuShowing[0] = true;
+        controller.hideHoverCard();
+
+        // Exiting group 1 or entering group 2 while context menu is open keeps group 1 hovered.
+        groupView1.dispatchGenericMotionEvent(exit);
+        groupView2.dispatchGenericMotionEvent(enter);
+        assertEquals(groupView1, controller.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+        assertFalse(group2Hovered[0]);
+
+        // Dismissing context menu and resetting hover state clears group 1 hover state.
+        isContextMenuShowing[0] = false;
+        controller.resetHoverState();
+        assertNull(controller.getCurrentHoveredView());
+        assertFalse(group1Hovered[0]);
+
+        // 2. Hover group header 1, then start scrolling and hide hover card.
+        groupView1.dispatchGenericMotionEvent(enter);
+        assertEquals(groupView1, controller.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+
+        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_DRAGGING);
+        controller.hideHoverCard();
+
+        // Exiting group 1 or entering group 2 while scrolling keeps group 1 hovered.
+        groupView1.dispatchGenericMotionEvent(exit);
+        groupView2.dispatchGenericMotionEvent(enter);
+        assertEquals(groupView1, controller.getCurrentHoveredView());
+        assertTrue(group1Hovered[0]);
+        assertFalse(group2Hovered[0]);
+
+        // Scroll returning to idle and resetting hover state clears group 1 hover state.
+        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        controller.resetHoverState();
+        assertNull(controller.getCurrentHoveredView());
+        assertFalse(group1Hovered[0]);
 
         controller.destroy();
     }

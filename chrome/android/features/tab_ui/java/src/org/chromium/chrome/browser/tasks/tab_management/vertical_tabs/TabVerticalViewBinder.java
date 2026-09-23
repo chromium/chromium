@@ -37,7 +37,6 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -1147,36 +1146,20 @@ class TabVerticalViewBinder {
      */
     private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable View menuButton = view.findViewById(R.id.menu_button);
+        int tabId = model.get(TabProperties.TAB_ID);
+        @Nullable Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
+        if (tabGroupId == null) {
+            tabGroupId = model.get(TabProperties.TAB_GROUP_ID);
+        }
+        @Nullable TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
 
-        Runnable onHoverEnter =
-                () -> {
-                    TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
-                    // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
-                    if (listener != null
-                            && (listener.isContextMenuShowing() || listener.isScrolling())) {
-                        return;
-                    }
-                    boolean isRailCollapsed =
-                            model.get(TabProperties.RAIL_COLLAPSE_STATE)
-                                    == RailCollapseState.COLLAPSED;
-                    if (!isRailCollapsed && view.findViewById(R.id.menu_button) != null) {
-                        RecordUserAction.record("Android.VerticalTabs.GroupHeaderHovered");
-                    }
-                    updateGroupHeaderIcons(model, view, /* isHovered= */ true);
-                    notifyGroupHeaderHoverChange(model, view, /* isHovered= */ true);
-                };
-        Runnable onHoverExit =
-                () -> {
-                    updateGroupHeaderIcons(model, view, /* isHovered= */ false);
-                    notifyGroupHeaderHoverChange(model, view, /* isHovered= */ false);
-                };
-
-        view.setTag(R.id.tab_hover_exit_listener, onHoverExit);
-        VerticalTabHoverController.setupHoverOrchestration(
-                view, menuButton, onHoverEnter, onHoverExit);
-
-        view.setOnFocusChangeListener(
-                (v, hasFocus) -> notifyGroupHeaderHoverChange(model, v, hasFocus));
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                listener,
+                tabId,
+                tabGroupId,
+                view,
+                menuButton,
+                (isHovered) -> updateGroupHeaderIcons(model, view, isHovered));
     }
 
     private static void updateGroupHeaderIcons(
@@ -1186,23 +1169,6 @@ class TabVerticalViewBinder {
         View menuButton = view.findViewById(R.id.menu_button);
         if (menuButton != null) {
             menuButton.setVisibility(!isRailCollapsed && isHovered ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    /**
-     * Notifies {@link TabHoverListener} of hover or keyboard focus state transitions on tab group
-     * headers.
-     */
-    private static void notifyGroupHeaderHoverChange(
-            PropertyModel model, View view, boolean isHovered) {
-        TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
-        if (listener != null) {
-            int tabId = model.get(TabProperties.TAB_ID);
-            Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-            if (tabGroupId == null) {
-                tabGroupId = model.get(TabProperties.TAB_GROUP_ID);
-            }
-            listener.onTabGroupHoverStateChanged(tabId, tabGroupId, view, isHovered);
         }
     }
 }
