@@ -133,6 +133,10 @@ struct OmniboxPopupSelection {
   // Returns true if this selection represents taking an action.
   bool IsAction() const;
 
+  // Returns true if this selection represents an omnibox-level selection
+  // rather than a match-level selection.
+  bool IsNonMatchSelection() const;
+
   // Returns true if the control represented by this selection's `state` is
   // present on the match for `line` in given `result`.
   bool IsControlPresentOnMatch(const AutocompleteResult& result) const;

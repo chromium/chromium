@@ -1633,11 +1633,11 @@ void SearchboxHandler::SetPopupSelection(
           omnibox::kWebUISearchboxWithoutModelController)) {
     OmniboxPopupSelection popup_selection =
         ConvertSelection(std::move(selection));
-    if (popup_selection.line != OmniboxPopupSelection::kNoMatch &&
-        popup_selection.line >= autocomplete_controller()->result().size()) {
-      return;
+    const AutocompleteResult& result = autocomplete_controller()->result();
+    if (popup_selection.IsNonMatchSelection() ||
+        popup_selection.IsControlPresentOnMatch(result)) {
+      edit_model()->SetPopupSelection(popup_selection, false, false, false);
     }
-    edit_model()->SetPopupSelection(popup_selection, false, false, false);
   }
 }
 
@@ -1654,8 +1654,7 @@ void SearchboxHandler::OpenPopupSelection(
           omnibox::kWebUISearchboxWithoutModelController)) {
     const bool selection_matched =
         popup_selection == edit_model()->GetPopupSelection() ||
-        popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM ||
-        popup_selection.state == OmniboxPopupSelection::CTRL_ENTER;
+        popup_selection.IsNonMatchSelection();
     base::UmaHistogramBoolean("Omnibox.WebUI.SelectionMatched",
                               selection_matched);
     base::UmaHistogramBoolean(

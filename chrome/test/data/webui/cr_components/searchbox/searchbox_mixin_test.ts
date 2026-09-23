@@ -1869,6 +1869,44 @@ suite('SearchboxMixinTest', () => {
     assertEquals('Search Google', element.inputKeywordModel.placeholder);
     assertEquals('Search Google', mockInput.inputElement.placeholder);
     assertEquals('', mockInput.inputElement.value);
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
+  test('chip click keyword entry with additional input text', async () => {
+    const mockInput = element.getInputElement();
+    const keyword = 'bing.com';
+
+    const match = createSearchMatchForTesting({
+      fillIntoEdit: 'bing.com bad',
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword,
+        chipHint: 'Search Bing',
+        placeholder: 'Search Bing',
+      }),
+    });
+    element.lastQueriedInput = 'bing.com bad';
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'bing.com bad',
+      matches: [match],
+    }));
+    await microtasksFinished();
+    testProxy.handler.resetResolver('queryAutocomplete');
+
+    const dropdown = element.getDropdownElement();
+    dropdown.fire('keyword-click', {match, matchIndex: 0});
+    await microtasksFinished();
+
+    assertTrue(element.inputKeywordModel !== null);
+    assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
+    assertEquals(keyword, element.inputKeywordModel.keyword);
+    assertEquals('bad', mockInput.inputElement.value);
+    assertEquals('bad', element.lastQueriedInput);
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const args = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('bad', args.input);
+    assertEquals(keyword, args.keyword);
   });
 
   // TODO(crbug.com/555945371): Fails on multiple OSes.

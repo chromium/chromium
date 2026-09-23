@@ -48,9 +48,14 @@ bool OmniboxPopupSelection::IsAction() const {
   return state == FOCUSED_BUTTON_ACTION;
 }
 
+bool OmniboxPopupSelection::IsNonMatchSelection() const {
+  return line == kNoMatch &&
+         (state == FOCUSED_BUTTON_AIM || state == CTRL_ENTER);
+}
+
 bool OmniboxPopupSelection::IsControlPresentOnMatch(
     const AutocompleteResult& result) const {
-  if (line >= result.size()) {
+  if (line >= result.size() || IsNonMatchSelection()) {
     return false;
   }
 
@@ -77,6 +82,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       return match.SupportsDeletion();
     case FOCUSED_IPH_LINK:
       return match.IsIphSuggestion() && !match.iph_link_url.is_empty();
+    case FOCUSED_BUTTON_AIM:
     case CTRL_ENTER:
       return false;
     default:

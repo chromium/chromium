@@ -1031,9 +1031,20 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         state: SelectionLineState.kKeywordMode,
         actionIndex: 0,
       };
+      if (!this.virtualFocusEnabled) {
+        this.selectedMatchIndex = selection.line;
+      }
       this.setSelection(selection);
       await this.updateComplete;
       this.updateInputForSelection_(selection, 'click');
+      const inputValue = this.getInputElement().getInputValue();
+      if (inputValue) {
+        this.queryAutocomplete(
+            inputValue, /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ false);
+      } else {
+        this.lastQueriedInput = '';
+      }
       this.getInputElement().focus();
     }
 

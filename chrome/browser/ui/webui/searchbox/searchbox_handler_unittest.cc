@@ -1474,6 +1474,16 @@ TEST_F(WebuiOmniboxHandlerTest, SetPopupSelection_IgnoresOutOfBounds) {
   handler_->SetPopupSelection(std::move(selection));
   EXPECT_EQ(0U, omnibox_controller_->edit_model()->GetPopupSelection().line);
 
+  // Calling SetPopupSelection with kKeywordMode when associated_keyword is
+  // empty should be ignored instead of hitting a DCHECK.
+  selection = searchbox::mojom::OmniboxPopupSelection::New();
+  selection->line = 0;
+  selection->state = searchbox::mojom::SelectionLineState::kKeywordMode;
+  selection->action_index = 0;
+  handler_->SetPopupSelection(std::move(selection));
+  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+            omnibox_controller_->edit_model()->GetPopupSelection().state);
+
   // Calling SetPopupSelection with a valid index should succeed.
   selection = searchbox::mojom::OmniboxPopupSelection::New();
   selection->line = 1;
