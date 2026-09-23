@@ -7804,11 +7804,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
 
-    {"search-in-cct-alternate-tap-handling",
-     flag_descriptions::kSearchInCCTAlternateTapHandlingName,
-     flag_descriptions::kSearchInCCTAlternateTapHandlingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSearchInCCTAlternateTapHandling)},
-
     {"session-restore-after-crash",
      flag_descriptions::kSessionRestoreAfterCrashName,
      flag_descriptions::kSessionRestoreAfterCrashDescription, kOsAndroid,

@@ -764,10 +764,6 @@ public abstract class ChromeFeatureList {
             "ExtendedReportingRemovePrefDependency";
     public static final String SCHEDULE_WINDOW_CLEANING = "ScheduleWindowCleaning";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
-    public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
-            "SearchInCCTAlternateTapHandling";
-    public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER =
-            "SearchInCCTAlternateTapHandlingIfEnabledByEmbedder";
     public static final String SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER =
             "SearchInCCTIfEnabledByEmbedder";
     public static final String SEARCH_SETTINGS_UPDATE_V2 = "SearchSettingsUpdateV2";
@@ -1378,10 +1374,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSearchInCCT =
             newCachedFlag(
                     SEARCH_IN_CCT, /* defaultValue= */ false, /* defaultValueInTests= */ true);
-    public static final CachedFlag sSearchInCCTAlternateTapHandling =
-            newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
-    public static final CachedFlag sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder =
-            newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSearchInCCTIfEnabledByEmbedder =
             newCachedFlag(SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSendTabToSelfExtraEntryPoints =
@@ -1681,8 +1673,6 @@ public abstract class ChromeFeatureList {
                     sReportNotificationContentDetectionData,
                     sSafetyHubWeakAndReusedPasswords,
                     sSearchInCCT,
-                    sSearchInCCTAlternateTapHandling,
-                    sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
                     sSearchInCCTIfEnabledByEmbedder,
                     sSendTabToSelfExtraEntryPoints,
                     sSessionRestoreAfterCrash,

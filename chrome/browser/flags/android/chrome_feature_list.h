@@ -292,8 +292,6 @@ BASE_DECLARE_FEATURE(kRobustWindowManagementExperimental);
 BASE_DECLARE_FEATURE(kSafetyFrePromo);
 BASE_DECLARE_FEATURE(kScheduleWindowCleaning);
 BASE_DECLARE_FEATURE(kSearchInCCT);
-BASE_DECLARE_FEATURE(kSearchInCCTAlternateTapHandling);
-BASE_DECLARE_FEATURE(kSearchInCCTAlternateTapHandlingIfEnabledByEmbedder);
 BASE_DECLARE_FEATURE(kSearchInCCTIfEnabledByEmbedder);
 BASE_DECLARE_FEATURE(kSessionRestoreAfterCrash);
 BASE_DECLARE_FEATURE(kSettingsInTab);

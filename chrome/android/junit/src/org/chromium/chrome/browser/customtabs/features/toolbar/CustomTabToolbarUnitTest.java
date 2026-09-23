@@ -221,7 +221,7 @@ public class CustomTabToolbarUnitTest {
     public void testOmniboxUrlBarVisibility() {
         mLocationBar.showEmptyLocationBar();
         CustomTabToolbar.OmniboxParams params =
-                new CustomTabToolbar.OmniboxParams(mSearchActivityClient, null, null, tab -> false);
+                new CustomTabToolbar.OmniboxParams(mSearchActivityClient, null);
         mLocationBar.setOmniboxParams(params);
         mLocationBar.showRegularToolbar();
         assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ true);

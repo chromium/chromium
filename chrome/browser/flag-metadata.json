@@ -8919,11 +8919,6 @@
     "expiry_milestone": 300
   },
   {
-    "name": "search-in-cct-alternate-tap-handling",
-    "owners": [ "edmundw@google.com", "ender@google.com", "aga-cct@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "search-settings-update",
     "owners": [ "amelies@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 158

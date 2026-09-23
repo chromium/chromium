@@ -443,10 +443,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 shouldEnableOmnibox
                         ? new CustomTabToolbar.OmniboxParams(
                                 mCustomTabSearchClient,
-                                mIntentDataProvider.get().getClientPackageName(),
-                                connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()),
-                                connection.getAlternateOmniboxTapHandlerWithVerification(
-                                        mIntentDataProvider.get()))
+                                mIntentDataProvider.get().getClientPackageName())
                         : null;
 
         Supplier<@Nullable AppMenuHandler> appMenuHandler =

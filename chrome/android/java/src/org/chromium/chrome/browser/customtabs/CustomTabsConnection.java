@@ -113,8 +113,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -2220,28 +2218,6 @@ public class CustomTabsConnection {
     /** Whether a CustomTabs instance should include interactive Omnibox. */
     public boolean shouldEnableOmniboxForIntent(BrowserServicesIntentDataProvider intentData) {
         return false;
-    }
-
-    /**
-     * Returns an alternate handler for taps on the Custom Tabs Omnibox, or null if the default
-     * handler should be used.
-     */
-    // TODO(crbug.com/422969546): Remove this method once the new method is used.
-
-    public @Nullable Consumer<Tab> getAlternateOmniboxTapHandler(
-            BrowserServicesIntentDataProvider intentData) {
-        return null;
-    }
-
-    /**
-     * Returns an alternate handler for taps on the Custom Tabs Omnibox. The function returns true
-     * if the tap was handled, false otherwise.
-     */
-    // TODO(crbug.com/422969546): Rename to getAlternateOmniboxTapHandler once the old method is
-    // removed.
-    public Function<Tab, Boolean> getAlternateOmniboxTapHandlerWithVerification(
-            BrowserServicesIntentDataProvider intentData) {
-        return (tab) -> false;
     }
 
     /** Specifies what content should be presented by the CustomTabs instance in location bar. */

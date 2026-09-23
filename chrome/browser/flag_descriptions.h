@@ -1467,10 +1467,6 @@ inline constexpr char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
 inline constexpr char kSearchInCCTDescription[] =
     "Permits apps to create searchable and "
     "navigable custom tabs.";
-inline constexpr char kSearchInCCTAlternateTapHandlingName[] =
-    "Search in Chrome Custom Tabs Alternate Tap Handling";
-inline constexpr char kSearchInCCTAlternateTapHandlingDescription[] =
-    "Search in Chrome Custom Tabs Alternate Tap Handling";
 
 inline constexpr char kSessionRestoreAfterCrashName[] =
     "Session Restore After Crash";

@@ -129,8 +129,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
@@ -207,24 +205,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         /** The package name of the Custom Tabs embedder. */
         public @Nullable String clientPackageName;
 
-        /** A handler for taps on the omnibox, or null if the default handler should be used. */
-        public @Nullable Consumer<Tab> tapHandler;
-
-        /**
-         * A handler for taps on the omnibox. The function returns true if the tap was handled,
-         * false otherwise.
-         */
-        public Function<Tab, Boolean> tapHandlerWithVerification;
-
         public OmniboxParams(
-                SearchActivityClient searchClient,
-                @Nullable String clientPackageName,
-                @Nullable Consumer<Tab> tapHandler,
-                Function<Tab, Boolean> tapHandlerWithVerification) {
+                SearchActivityClient searchClient, @Nullable String clientPackageName) {
             this.searchClient = searchClient;
             this.clientPackageName = clientPackageName;
-            this.tapHandler = tapHandler;
-            this.tapHandlerWithVerification = tapHandlerWithVerification;
         }
     }
 
@@ -1837,23 +1821,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = assumeNonNull(getCurrentTab());
-                        if (omniboxParams.tapHandlerWithVerification.apply(tab)) {
-                            return;
-                        }
-                        if (omniboxParams.tapHandler != null) {
-                            omniboxParams.tapHandler.accept(tab);
-                        } else {
-                            var intent =
-                                    omniboxParams
-                                            .searchClient
-                                            .newIntentBuilder()
-                                            .setPageUrl(tab.getUrl())
-                                            .setReferrer(omniboxParams.clientPackageName)
-                                            .setIncognito(tab.isIncognitoBranded())
-                                            .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                                            .build();
-                            omniboxParams.searchClient.requestOmniboxForResult(intent);
-                        }
+                        var intent =
+                                omniboxParams
+                                        .searchClient
+                                        .newIntentBuilder()
+                                        .setPageUrl(tab.getUrl())
+                                        .setReferrer(omniboxParams.clientPackageName)
+                                        .setIncognito(tab.isIncognitoBranded())
+                                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                                        .build();
+                        omniboxParams.searchClient.requestOmniboxForResult(intent);
                     });
 
             mUrlBar.setAccessibilityDelegate(
