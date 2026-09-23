@@ -44,4 +44,8 @@ bool GpuFeatureInfo::IsInitialized() const {
          kGpuFeatureStatusUndefined;
 }
 
+bool GpuFeatureInfo::IsFeatureEnabled(GpuFeatureType feature) {
+  return status_values[feature] == GpuFeatureStatus::kGpuFeatureStatusEnabled;
+}
+
 }  // namespace gpu

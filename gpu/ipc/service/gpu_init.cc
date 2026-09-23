@@ -235,9 +235,9 @@ void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
 // lost with in-process-gpu.
 void DisableInProcessGpuGraphite(GpuFeatureInfo& gpu_feature_info,
                                  GpuPreferences& gpu_preferences) {
-  if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-          kGpuFeatureStatusEnabled ||
-      gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
+  if (gpu_feature_info.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
+    DCHECK(gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn ||
+           gpu_preferences.gr_context_type == GrContextType::kGraphiteVulkan);
     LOG(ERROR) << "Graphite not supported with in process gpu";
     gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
         kGpuFeatureStatusDisabled;
@@ -748,12 +748,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif  // BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 
-  if (!(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-            kGpuFeatureStatusEnabled ||
-        gpu_feature_info_
-                .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-            kGpuFeatureStatusEnabled) ||
-      !InitializeVulkan()) {
+  bool try_vulkan_init =
+      gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
+      gpu_feature_info_.IsFeatureEnabled(
+          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP) ||
+      (gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) &&
+       gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan);
+
+  if (!try_vulkan_init || !InitializeVulkan()) {
     gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
     gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = false;
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
@@ -761,7 +763,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_feature_info_
         .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
         kGpuFeatureStatusDisabled;
-    if (gpu_preferences_.gr_context_type == GrContextType::kVulkan) {
+    if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
+      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+          kGpuFeatureStatusDisabled;
+    }
+    if (gpu_preferences_.gr_context_type == GrContextType::kVulkan ||
+        gpu_preferences_.gr_context_type == GrContextType::kGraphiteVulkan) {
 #if BUILDFLAG(IS_FUCHSIA)
       // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
       // back to GL if Vulkan init fails.
@@ -938,10 +945,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_ANDROID)
       gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
-  } else if (gpu_preferences.gr_context_type ==
+  } else if (gpu_preferences_.gr_context_type ==
              GrContextType::kGraphiteVulkan) {
-    // TODO(crbug.com/552951905): Implement GraphiteVulkan initialization.
-    NOTREACHED();
+    // Vulkan was already initialized earlier in the function.
+    CHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1409,11 +1416,10 @@ bool GpuInit::InitializeDawn() {
 bool GpuInit::InitializeVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
   TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeVulkan");
-  DCHECK(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-             kGpuFeatureStatusEnabled ||
-         gpu_feature_info_
-                 .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-             kGpuFeatureStatusEnabled);
+  DCHECK(gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_VULKAN) ||
+         gpu_feature_info_.IsFeatureEnabled(GPU_FEATURE_TYPE_SKIA_GRAPHITE) ||
+         gpu_feature_info_.IsFeatureEnabled(
+             GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP));
   DCHECK_NE(gpu_preferences_.use_vulkan, VulkanImplementationName::kNone);
   bool vulkan_use_swiftshader =
       gpu_preferences_.use_vulkan == VulkanImplementationName::kSwiftshader;

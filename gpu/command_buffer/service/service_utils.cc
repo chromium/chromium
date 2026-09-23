@@ -336,10 +336,18 @@ GrContextType ParseDefaultGrContextType(const base::CommandLine* command_line) {
     // With late check, only the disable flag gates Graphite; the full
     // feature/device check is deferred to the GPU process post-blocklist.
     if (!command_line->HasSwitch(switches::kDisableSkiaGraphite)) {
+      if (command_line->HasSwitch(switches::kSkiaGraphiteVulkanBackend)) {
+        return GrContextType::kGraphiteVulkan;
+      }
+
       return GrContextType::kGraphiteDawn;
     }
   } else {
     if (features::IsSkiaGraphiteEnabled(command_line)) {
+      if (command_line->HasSwitch(switches::kSkiaGraphiteVulkanBackend)) {
+        return GrContextType::kGraphiteVulkan;
+      }
+
       auto value =
           command_line->GetSwitchValueASCII(switches::kSkiaGraphiteDawnBackend);
       if (value.empty() || value == switches::kSkiaGraphiteDawnBackendD3D11 ||

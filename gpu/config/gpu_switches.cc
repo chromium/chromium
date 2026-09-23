@@ -153,6 +153,9 @@ const char kSkiaGraphiteDawnBackendOpenGLES[] = "opengles";
 const char kSkiaGraphiteDawnBackendSwiftshader[] = "swiftshader";
 const char kSkiaGraphiteDawnBackendVulkan[] = "vulkan";
 
+// Specify using Skia Graphite with native Vulkan backend.
+const char kSkiaGraphiteVulkanBackend[] = "skia-graphite-vulkan-backend";
+
 // Force disabling/enabling Skia Graphite. Disabling will take precedence over
 // enabling if both are specified.
 const char kDisableSkiaGraphite[] = "disable-skia-graphite";

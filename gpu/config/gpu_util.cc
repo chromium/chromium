@@ -312,7 +312,8 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
   if (blocklisted_features.count(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
     return kGpuFeatureStatusBlocklisted;
   }
-  if (gpu_preferences.gr_context_type != GrContextType::kGraphiteDawn) {
+  if (gpu_preferences.gr_context_type != GrContextType::kGraphiteDawn &&
+      gpu_preferences.gr_context_type != GrContextType::kGraphiteVulkan) {
     return kGpuFeatureStatusDisabled;
   }
   const bool can_use_graphite = [command_line]() -> bool {
@@ -804,7 +805,10 @@ GrContextType GpuModeToGrContextType(GpuMode mode) {
     case GpuMode::HARDWARE_VULKAN:
       return GrContextType::kVulkan;
     case GpuMode::HARDWARE_GRAPHITE:
-      return GrContextType::kGraphiteDawn;
+      return base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 switches::kSkiaGraphiteVulkanBackend)
+                 ? GrContextType::kGraphiteVulkan
+                 : GrContextType::kGraphiteDawn;
     case GpuMode::UNKNOWN:
     case GpuMode::SOFTWARE_GL:
     case GpuMode::DISPLAY_COMPOSITOR:
