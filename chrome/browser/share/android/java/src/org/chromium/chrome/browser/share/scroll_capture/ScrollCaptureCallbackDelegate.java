@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.CancellationSignal;
 import android.os.SystemClock;
 import android.util.Size;
@@ -75,16 +76,22 @@ public class ScrollCaptureCallbackDelegate {
                 pressure,
                 MemoryPressureLevel.CRITICAL + 1);
 
-        int threshold =
-                (FeatureList.isNativeInitialized()
+        boolean noMemoryCheck = ChromeFeatureList.sLongScreenshotsNoMemoryCheck.isEnabled();
+        boolean useCriticalThreshold =
+                noMemoryCheck
+                        || (FeatureList.isNativeInitialized()
                                 && ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK))
-                        ? MemoryPressureLevel.CRITICAL
-                        : MemoryPressureLevel.MODERATE;
+                                        ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK));
+        int threshold =
+                useCriticalThreshold ? MemoryPressureLevel.CRITICAL : MemoryPressureLevel.MODERATE;
 
         // If the system is under memory pressure, don't give the user the option to create
-        // a long screenshot.
-        boolean skipMemoryCheck = ChromeFeatureList.sLongScreenshotsNoMemoryCheck.isEnabled();
+        // a long screenshot. On Android < 16 (BAKLAVA), ScrollCaptureConnection#startCapture can
+        // throw a NullPointerException when the connection closes or times out under critical
+        // memory pressure (b/278379299, fixed in ag/32423253), so only skip the memory check
+        // entirely on Android 16+.
+        boolean skipMemoryCheck =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && noMemoryCheck;
         if (!skipMemoryCheck && pressure >= threshold) {
             return new Rect();
         }

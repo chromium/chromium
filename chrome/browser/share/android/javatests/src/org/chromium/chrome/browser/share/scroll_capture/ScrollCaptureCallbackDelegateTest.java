@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.CancellationSignal;
 import android.util.Size;
 import android.view.Surface;
@@ -37,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
@@ -282,6 +284,7 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     @EnableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_NO_MEMORY_CHECK)
     @DisableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK)
     public void testScrollCaptureSearch_MemoryPressure_NoMemoryCheck() {
@@ -299,11 +302,35 @@ public class ScrollCaptureCallbackDelegateTest {
         Assert.assertEquals(
                 new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
 
-        // Even under CRITICAL memory pressure, it should still work.
+        // On Android 16+ (BAKLAVA), even under CRITICAL memory pressure, it should still work.
         MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
                 MemoryPressureLevel.CRITICAL);
         Assert.assertEquals(
                 new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_NO_MEMORY_CHECK)
+    @DisableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK)
+    public void testScrollCaptureSearch_MemoryPressure_NoMemoryCheck_PreBaklava() {
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
+        CancellationSignal signal = new CancellationSignal();
+
+        when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(500);
+        when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(2000);
+
+        // On Android < 16 (Pre-BAKLAVA), MODERATE pressure should be allowed (lenient threshold).
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.MODERATE);
+        Assert.assertEquals(
+                new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
+
+        // CRITICAL memory pressure should still be blocked on Android < 16 to avoid framework NPE.
+        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
+                MemoryPressureLevel.CRITICAL);
+        Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
     }
 
     @Test
