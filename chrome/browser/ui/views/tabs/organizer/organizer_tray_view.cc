@@ -204,23 +204,6 @@ bool OrganizerTrayView::HasOrganizerPanelView() const {
   return panel_view_;
 }
 
-// ----------------
-// To be removed.
-
-// Set whether the panel should appear elevated with rounded borders.
-void OrganizerTrayView::SetIsElevated(bool elevated) {
-  if (elevated == elevated_) {
-    return;
-  }
-  elevated_ = elevated;
-  if (auto* const bg = background()->AsA<CustomCornersBackground>()) {
-    bg->SetVisible(elevated);
-  }
-  shadow_frame_->SetVisible(elevated);
-}
-
-// ----------------
-
 bool OrganizerTrayView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ESCAPE) {
     ClosePanel();

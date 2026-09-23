@@ -773,21 +773,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         OrganizerPanelLocation::kOrganizerTray;
     gfx::Rect organizer_tray_bounds;
     if (show_organizer_tray) {
-      int target_width = organizer_panel::kOrganizerPanelMinWidth;
-      bool organizer_panel_should_appear_elevated = true;
-      if (layout_data_->tab_strip_type == TabStripType::kVertical) {
-        organizer_panel_should_appear_elevated =
-            horizontal_layout.vertical_tab_strip_width <
-            organizer_panel::kOrganizerPanelMinWidth;
-        if (!organizer_panel_should_appear_elevated) {
-          target_width = std::max(target_width - views::Separator::kThickness,
-                                  horizontal_layout.vertical_tab_strip_width -
-                                      views::Separator::kThickness);
-        }
-      }
+      const int target_width = organizer_panel::kOrganizerPanelMinWidth;
       views().organizer_tray->SetTargetWidth(target_width);
-      views().organizer_tray->SetIsElevated(
-          organizer_panel_should_appear_elevated);
       views().organizer_tray->SetTopLeadingExclusion(
           gfx::ToCeiledSize(params.leading_exclusion.ContentWithPadding()));
 
@@ -1689,17 +1676,13 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     frame_color.opacity = 0.0f;
   }
 
-  // When the organizer panel is animating open or closed and does not appear
-  // elevated, the background of vertical tabs should fade to match the
-  // background color of the panel.
   if (IsParentedTo(views().organizer_tray, views().browser_view)) {
-    const bool is_elevated = views().organizer_tray->is_elevated();
     if (CustomCornersBackground* const background =
             views()
                 .organizer_tray->background()
                 ->AsA<CustomCornersBackground>();
         background && views().organizer_tray->GetVisible()) {
-      const bool blur = features::IsGlassFrameEnabled() && is_elevated;
+      const bool blur = features::IsGlassFrameEnabled();
       background->SetUseBackgroundBlur(blur);
       background->SetPrimaryColor(CustomCorners::ColorChoiceWithAlpha(
           organizer_panel::kOrganizerPanelBackgroundColor,
@@ -1711,34 +1694,10 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       corners[CornerOrientation::kBottomLeading] =
           background->GetWindowCorner(false);
       corners[CornerOrientation::kTopTrailing].type =
-          is_elevated ? CustomCornersBackground::CornerType::kRounded
-                      : CustomCornersBackground::CornerType::kSquare;
+          CustomCornersBackground::CornerType::kRounded;
       corners[CornerOrientation::kBottomTrailing].type =
-          is_elevated ? CustomCornersBackground::CornerType::kRounded
-                      : CustomCornersBackground::CornerType::kSquare;
+          CustomCornersBackground::CornerType::kRounded;
       background->SetCorners(corners);
-    }
-    CustomFloatingCorner* const vertical_tabs_top_corner =
-        views().vertical_tab_strip_top_corner;
-    CustomFloatingCorner* const vertical_tabs_bottom_corner =
-        views().vertical_tab_strip_bottom_corner;
-    if (vertical_tabs_background) {
-      if (views().organizer_tray->GetVisible() && !is_elevated) {
-        CustomCorners::ColorChoiceWithAlpha const fade_background{
-            organizer_panel::kOrganizerPanelBackgroundColor,
-            static_cast<float>(
-                layout_data_->organizer_panel_animation.reveal_amount)};
-        // TODO(https://crbug.com/555248711): Once the organizer panel is
-        // entirely moved into the vertical tab strip region view, the entire
-        // "fade background" system can be removed.
-        vertical_tabs_background->SetFadeBackground(fade_background);
-        vertical_tabs_top_corner->SetFadeBackground(fade_background);
-        vertical_tabs_bottom_corner->SetFadeBackground(fade_background);
-      } else {
-        vertical_tabs_background->SetFadeBackground(std::nullopt);
-        vertical_tabs_top_corner->SetFadeBackground(std::nullopt);
-        vertical_tabs_bottom_corner->SetFadeBackground(std::nullopt);
-      }
     }
 
     if (views().organizer_tray->GetVisible()) {

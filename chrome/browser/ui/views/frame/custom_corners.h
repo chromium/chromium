@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_H_
 
 #include <array>
-#include <optional>
 #include <variant>
 
 #include "base/callback_list.h"
@@ -117,10 +116,6 @@ class CustomCorners : public views::ViewObserver {
   void operator=(const CustomCorners&) = delete;
   ~CustomCorners() override;
 
-  // Fades the background of the region to `fade_background`. If
-  // `fade_background` is nullopt, then the fade is removed.
-  void SetFadeBackground(std::optional<ColorChoiceWithAlpha> fade_background);
-
  protected:
   explicit CustomCorners(BrowserView&);
 
@@ -168,9 +163,6 @@ class CustomCorners : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver>
       browser_view_observation_{this};
   base::CallbackListSubscription browser_paint_as_active_subscription_;
-
-  // Background to be overlaid on the corner's original background.
-  std::optional<ColorChoiceWithAlpha> fade_background_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_H_
